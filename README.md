@@ -2,7 +2,7 @@
 After Effects to html library
 
 ## Setting up After Effects
-- Close After effects
+- Close After Effects
 - Look for the ScriptUI Panels in your Adobe AE install folder. In my case it's C:\Program Files\Adobe\Adobe After Effects CS6\Support Files\Scripts\ScriptUI Panels
 - Paste the 2 files "bodymovin_parser.jsx" and "helperProject.aep" located in the build/parser/ folder
 - Open After Effects
