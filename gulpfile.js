@@ -35,7 +35,7 @@ gulp.task('buildParser', function() {
         ])
         .pipe(concat('bodymovin_parser.jsx', {newLine: '\r\n'}))
         .pipe(wrap('var Gtlym = {};\r\n(function(){\r\n<%= contents %>\r\n}());'))
-        .pipe(gulp.dest('build/'))
+        .pipe(gulp.dest('build/parser/'))
 });
 
 gulp.task('joinModules', function() {
@@ -69,7 +69,7 @@ gulp.task('buildPlayer', function(){
             js: [uglify()]
         }))
         .pipe(wrap('(function(window){<%= contents %>}(window));'))
-        .pipe(gulp.dest('build/'));
+        .pipe(gulp.dest('build/player/'));
 });
 
 gulp.task('gzipPlayer', function(){
