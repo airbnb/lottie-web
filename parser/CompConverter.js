@@ -26,7 +26,6 @@
     }
 
     function layersConverted(duplicateMainComp){
-        $.writeln('all converted');
         DOMAnimationManager.setCallback(saveData);
         //FOR DOM
         DOMAnimationManager.getCompositionAnimationData(duplicateMainComp,compositionData,filesDirectory);
@@ -81,7 +80,6 @@
     }
 
     function start(){
-        $.writeln('startstartstart');
         UI.setExportText('Starting export');
         LayerConverter.convertComposition(mainComp);
     }

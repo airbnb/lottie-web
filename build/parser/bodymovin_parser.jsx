@@ -2303,7 +2303,6 @@ var UI;
     }
 
     function layersConverted(duplicateMainComp){
-        $.writeln('all converted');
         DOMAnimationManager.setCallback(saveData);
         //FOR DOM
         DOMAnimationManager.getCompositionAnimationData(duplicateMainComp,compositionData,filesDirectory);
@@ -2358,7 +2357,6 @@ var UI;
     }
 
     function start(){
-        $.writeln('startstartstart');
         UI.setExportText('Starting export');
         LayerConverter.convertComposition(mainComp);
     }
@@ -2429,6 +2427,8 @@ var UI;
     var renderGroup;
     var compsList;
     var imagesList;
+    var compTab;
+    var imagesTab;
     var compsSelectionButton;
     var compsDestinationButton;
     var imagesCompsDropDown;
@@ -2454,7 +2454,7 @@ var UI;
             myTabbedPanel: Panel{type:'tabbedpanel', text:'',alignment:['fill','fill'],alignChildren:['fill',fill'],\
                compTab: Panel{type:'tab', text:'"+UITextsData.tabs.comps+"',orientation:'columns',\
                },\
-               imagesTab: Panel{type:'tab', text:'"+UITextsData.tabs.images+"',\
+               imagesTab: Panel{type:'tab', text: '"+UITextsData.tabs.images+"',\
                },\
             },\
             generalButtonsGroup: Group{orientation:'row',alignment:['fill','bottom'],alignChildren:['fill',fill'],\
@@ -2523,6 +2523,10 @@ var UI;
 
         bodyMovinPanel.onResizing = bodyMovinPanel.onResize = function () { this.layout.resize(); }
         //panelManager.setPanel(bodyMovinPanel);
+
+        settingsGroup.myTabbedPanel.imagesTab.enabled = false;
+
+        settingsGroup.myTabbedPanel.imagesTab.hide();
 
         return bodyMovinPanel;
     }
