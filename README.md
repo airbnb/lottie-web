@@ -1,5 +1,5 @@
 # bodymovin
-After Effects to html library
+After Effects to html - svg library
 
 ## Setting up After Effects
 - Close After Effects
@@ -59,3 +59,9 @@ So expect a lot of "chimes" coming out from your speakers that will scare your c
 - Trim paths are supported.
 - No effects whatsoever. (stroke is on it's way)
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
+
+## Coming up
+- Exporting images in a sprite
+- Stroke Effect support
+- Experimenting with the webAnimationAPI export
+- Importing into a canvas instead of SVG
