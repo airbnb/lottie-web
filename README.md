@@ -11,6 +11,7 @@ After Effects to html library
 ## How it works
 ### After Effects
 - Open your AE project and select the script (bodymovin_parser.jsx) on the Window menu.
+- A Panel will open with a Compositions tab.
 - On the Compositions tab, click Refresh to get a list of all you project Comps.
 - Select the composition you want to export
 - Select Add to Render Queue
