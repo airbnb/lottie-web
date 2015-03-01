@@ -36,4 +36,6 @@ After Effects to html library
  <br/>
  **Example**
  <br/>
-%lt;div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"&gt;
+ ```
+<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja">
+```
