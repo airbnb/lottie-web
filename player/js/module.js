@@ -26,7 +26,9 @@
     function searchAnimations(){
         animationManager.searchAnimations();
     }
-
+    function registerAnimation(elem){
+        animationManager.registerAnimation(elem);
+    }
 
     function keyActive(e){
         var key = e.keyCode ? e.keyCode : e.which;
@@ -55,15 +57,15 @@
     bodymovinjs.stop = stop;
     bodymovinjs.moveFrame = moveFrame;
     bodymovinjs.searchAnimations = searchAnimations;
+    bodymovinjs.registerAnimation = registerAnimation;
 
     window.bodymovinjs = bodymovinjs;
-    window.onkeydown = keyActive;
+    //window.onkeydown = keyActive;
 
     var readyStateCheckInterval = setInterval(function() {
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
             searchAnimations();
-            //setSpeed(1);
             play();
         }
     }, 100);

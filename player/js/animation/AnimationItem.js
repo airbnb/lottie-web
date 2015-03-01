@@ -31,7 +31,7 @@ AnimationItem.prototype.setData = function (wrapper) {
     this.containerType = 'svg';
     this.repeat = this.wrapper.attributes.getNamedItem("data-anim-repeat") ? this.wrapper.attributes.getNamedItem("data-anim-repeat").value : this.repeat;
     this.loop = this.wrapper.attributes.getNamedItem("data-anim-loop") ? this.wrapper.attributes.getNamedItem("data-anim-loop").value !== 'false' : this.loop;
-    this.name = this.wrapper.attributes.getNamedItem("id") ? this.wrapper.attributes.getNamedItem("id").value : '';
+    this.name = this.wrapper.attributes.getNamedItem("data-name") ? this.wrapper.attributes.getNamedItem("data-name").value : '';
     if (this.path.substr(-1, 1) != '/') {
         this.path += "/";
     }

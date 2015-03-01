@@ -8,9 +8,19 @@ var animationManager = (function(){
     var isPaused = true;
 
     function registerAnimation(element){
+        if(!element){
+            return;
+        }
+        var i=0, len = registeredAnimations.length;
+        while(i<len){
+            if(registeredAnimations[i].elem == element){
+                return;
+            }
+            i+=1;
+        }
         var animItem = createElement(AnimationItem);
         animItem.setData(element);
-        registeredAnimations.push(animItem);
+        registeredAnimations.push({elem: element,animation:animItem});
         return animItem;
     }
 
@@ -18,7 +28,7 @@ var animationManager = (function(){
     function setSpeed(val,animation){
         if (animation === undefined) {
             registeredAnimations.forEach(function(item){
-                item.setSpeed(val);
+                item.animation.setSpeed(val);
             });
         }
     }
@@ -26,7 +36,7 @@ var animationManager = (function(){
     function setDirection(val, animation){
         registeredAnimations.forEach(function(item){
             if (animation === undefined) {
-                item.setDirection(val);
+                item.animation.setDirection(val);
             }
         });
     }
@@ -34,7 +44,7 @@ var animationManager = (function(){
     function play(animation){
         initTime = Date.now();
         registeredAnimations.forEach(function(item){
-            item.play(animation);
+            item.animation.play(animation);
         });
         resume();
     }
@@ -43,7 +53,7 @@ var animationManager = (function(){
         isPaused = false;
         initTime = Date.now();
         registeredAnimations.forEach(function(item){
-            item.moveFrame(value,animation);
+            item.animation.moveFrame(value,animation);
         });
     }
 
@@ -55,7 +65,7 @@ var animationManager = (function(){
         nowTime = Date.now();
         elapsedTime = nowTime - initTime;
         registeredAnimations.forEach(function(item){
-            item.advanceTime(elapsedTime);
+            item.animation.advanceTime(elapsedTime);
         });
         initTime = nowTime;
         requestAnimationFrame(function(){
@@ -66,27 +76,25 @@ var animationManager = (function(){
 
     function pause(animation) {
         registeredAnimations.forEach(function(item){
-            item.pause(animation);
+            item.animation.pause(animation);
         })
     }
 
     function stop(animation) {
         registeredAnimations.forEach(function(item){
-            item.stop(animation);
+            item.animation.stop(animation);
         })
     }
 
     function togglePause(animation) {
         registeredAnimations.forEach(function(item){
-            item.togglePause(animation);
+            item.animation.togglePause(animation);
         })
     }
 
     function searchAnimations(){
         var animElements = document.getElementsByClassName('bodymovin');
-        Array.prototype.forEach.call(animElements,function(item){
-            registerAnimation(item);
-        })
+        Array.prototype.forEach.call(animElements,registerAnimation);
     }
 
     moduleOb.registerAnimation = registerAnimation;
