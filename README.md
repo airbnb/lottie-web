@@ -25,12 +25,15 @@ After Effects to html library
 - create a div that will contain the animation.
 <br/>
  **Required**
+ <br/>
  . a class called "bodymovin"
  . a "data-animation-path" attribute with relative path to the data.json
  <br/>
 **Optional**
+<br/>
  . a "data-anim-loop" attribute
  . a "data-name" attribute to specify a name to target play controls specifically
  <br/>
  **Example**
-<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <br/>
+%lt;div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"&gt;
