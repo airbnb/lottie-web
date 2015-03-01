@@ -39,21 +39,28 @@ After Effects to html - svg library
  **Example**
  <br/>
  ```
-<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja">
+<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 
 ## Disclaimer! Alerts! Warnings!
+
 ### Undos
-The script is **very** invasive. It will perform a lot of actions in your project that will go to the undo stack. So you'll probably won't be able to undo after exporting. I haven't figured out how to prevent this.
+The script is **very** invasive. It will perform a lot of actions in your project that will go to the undo stack. So you'll probably won't be able to undo your work after exporting. I haven't figured out how to prevent this.
 
 ### Files
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors), they will be added to the render queue and exported.
 So expect a lot of "chimes" coming out from your speakers that will scare your cats and wake your neighbours.
 
+### Time
+Some animations take a **lot** of time to render. If you see AE is not responding, be patient, give it some minutes. There is a lot going on and I haven't used an interval function on this version.
+
 ### Help
 If you have any animations that don't work or want me to export them, don't hesitate to write.
-I'm really interested in seing what kind of problems the plugin has.
-my email is **hernantorri@gmail.com**
+I'm really interested in seeing what kind of problems the plugin has.
+my email is **hernantorrisi@gmail.com**
+
+### Version
+this is a very first version of the plug in. It will have bugs for sure. Let me know if anything comes up.
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
