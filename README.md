@@ -50,14 +50,25 @@ The script is **very** invasive. It will perform a lot of actions in your projec
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors), they will be added to the render queue and exported.
 So expect a lot of "chimes" coming out from your speakers that will scare your cats and wake your neighbours.
 
+### Help
+If you have any animations that don't work or want me to export them, don't hesitate to write.
+I'm really interested in seing what kind of problems the plugin has.
+my email is **hernantorri@gmail.com**
+
+## Notes
+- If you want to modify the parser or the player, there are some gulp commands that can simplify the task
+- look at the great animations exported on the demo folder
+- gzipping the animation jsons and the player have a huge impact on the filesize. I recommend doing it if you use it for a project.
+
 ## Support
-- The script supports precomps, shapes, solids, images.
+- The script supports precomps, shapes, solids, images, null objects,
 - Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
 - It supports masks and inverted masks but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping (yeah!)
 - The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
 - Trim paths are supported.
 - No effects whatsoever. (stroke is on it's way)
+- No expressions (maybe some coming)
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
 
 ## Coming up
@@ -65,3 +76,4 @@ So expect a lot of "chimes" coming out from your speakers that will scare your c
 - Stroke Effect support
 - Experimenting with the webAnimationAPI export
 - Importing into a canvas instead of SVG
+- Exporting 3D animations (not vectors because there is no 3d svg support on browsers)
