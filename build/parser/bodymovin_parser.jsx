@@ -1,4 +1,4 @@
-var Gtlym = {};
+var Gtlym = {};var bodymovinWindow = this;
 (function(){
 /****** INIT JSON PARSER ******/
 if (typeof JSON !== 'object') {
@@ -2440,9 +2440,12 @@ var UI;
 
     function myScript_buildUI(thisObj){
         bodyMovinPanel = (thisObj instanceof Panel) ? thisObj : new Window("palette", "Body Movin Exporter", undefined, {resizeable:true});
-        bodyMovinPanel.addEventListener('focus', panelFocusHandler);
-        bodyMovinPanel.addEventListener('blur', panelBlurHandler);
-        bodyMovinPanel.addEventListener('close',closePanel);
+        ////bodyMovinPanel.addEventListener('focus', panelFocusHandler, true);
+        bodyMovinPanel.onActivate = panelFocusHandler;
+        ////bodyMovinPanel.addEventListener('blur', panelBlurHandler, true);
+        bodyMovinPanel.onDeactivate = panelBlurHandler;
+        ////bodyMovinPanel.addEventListener('close',closePanel);
+        bodyMovinPanel.onClose = closePanel;
 
         /****  WINDOW VIEW *****/
 
@@ -2462,8 +2465,10 @@ var UI;
             }\
          }";
         settingsGroup = bodyMovinPanel.mainGroup.add(settingsGroupRes);
-        settingsGroup.myTabbedPanel.addEventListener('change',tabChangedHandler);
-        settingsGroup.generalButtonsGroup.renderButton.addEventListener('click', startRender);
+        ////settingsGroup.myTabbedPanel.addEventListener('change',tabChangedHandler);
+        settingsGroup.myTabbedPanel.onChange = tabChangedHandler;
+        ////settingsGroup.generalButtonsGroup.renderButton.addEventListener('click', startRender);
+        settingsGroup.generalButtonsGroup.renderButton.onClick = startRender;
         /**** COMPOSITION TAB  VIEW *****/
         var compGroup = "Group{orientation:'column',alignment:['fill','fill'],alignChildren:['fill',fill'],\
             buttonGroup: Group{orientation:'row',alignment:['fill','top'],alignChildren:['left',top'],\
@@ -2479,12 +2484,16 @@ var UI;
         compsList = settingsGroup.myTabbedPanel.compTab.compGroup.list;
         compsSelectionButton = settingsGroup.myTabbedPanel.compTab.compGroup.buttonGroup.compsSelectionButton;
         compsDestinationButton = settingsGroup.myTabbedPanel.compTab.compGroup.buttonGroup.compsDestinationButton;
-        compsSelectionButton.addEventListener('click',compRenderButtonClickHandler);
-        compsDestinationButton.addEventListener('click',compDestinationButtonClickHandler);
-        settingsGroup.myTabbedPanel.compTab.compGroup.buttonGroup.compsRefreshButton.addEventListener('click',compRefreshButtonClickHandler);
+        ////compsSelectionButton.addEventListener('click',compRenderButtonClickHandler);
+        compsSelectionButton.onClick = compRenderButtonClickHandler;
+        ////compsDestinationButton.addEventListener('click',compDestinationButtonClickHandler);
+        compsDestinationButton.onClick = compDestinationButtonClickHandler;
+        ////settingsGroup.myTabbedPanel.compTab.compGroup.buttonGroup.compsRefreshButton.addEventListener('click',compRefreshButtonClickHandler);
+        settingsGroup.myTabbedPanel.compTab.compGroup.buttonGroup.compsRefreshButton.onClick = compRefreshButtonClickHandler;
         compsSelectionButton.hide();
         compsDestinationButton.hide();
-        compsList.addEventListener('change',listChangeHandler);
+        ////compsList.addEventListener('change',listChangeHandler);
+        compsList.onChange = listChangeHandler;
         /**** IMAGES TAB  VIEW *****/
         var imagesGroup = "Group{orientation:'column',alignment:['fill','fill'],alignChildren:['fill',fill'],\
             optionsGroup: Group{orientation:'row',alignment:['fill','top'],alignChildren:['left',top'],\
@@ -2515,7 +2524,8 @@ var UI;
          }";
         bodyMovinPanel.mainGroup.renderGroup = bodyMovinPanel.mainGroup.add(renderGroupRes);
         renderGroup = bodyMovinPanel.mainGroup.renderGroup;
-        renderGroup.cancelButton.addEventListener('click',cancelRender);
+        ////renderGroup.cancelButton.addEventListener('click',cancelRender);
+        renderGroup.cancelButton.onClick = cancelRender;
         renderGroup.hide();
 
         bodyMovinPanel.layout.layout(true);
@@ -2639,6 +2649,9 @@ var UI;
     }
 
     function tabChangedHandler(ev){
+        if(!settingsGroup || !settingsGroup.myTabbedPanel || !settingsGroup.myTabbedPanel.selection){
+            return;
+        }
         if(ev !== null && ev.target !== settingsGroup.myTabbedPanel){
             return;
         }
@@ -2679,6 +2692,7 @@ var UI;
     }
 
     function compRenderButtonClickHandler(ev){
+        updateCompositionsTab();
         var sendToQueue;
         if(compsSelectionButton.text === UITextsData.compsButtons.add){
             sendToQueue = true;
@@ -2848,7 +2862,7 @@ var UI;
         bodyMovinPanel.mainGroup.renderGroup.infoText.text = text;
     }
 
-    myScript_buildUI(this);
+    myScript_buildUI(bodymovinWindow);
     if (bodyMovinPanel != null && bodyMovinPanel instanceof Window){
         bodyMovinPanel.center();
         bodyMovinPanel.show();

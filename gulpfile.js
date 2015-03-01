@@ -34,7 +34,7 @@ gulp.task('buildParser', function() {
             'parser/UI.js'
         ])
         .pipe(concat('bodymovin_parser.jsx', {newLine: '\r\n'}))
-        .pipe(wrap('var Gtlym = {};\r\n(function(){\r\n<%= contents %>\r\n}());'))
+        .pipe(wrap('var Gtlym = {};var bodymovinWindow = this;\r\n(function(){\r\n<%= contents %>\r\n}());'))
         .pipe(gulp.dest('build/parser/'))
 });
 
@@ -55,7 +55,7 @@ gulp.task('joinModules', function() {
             'parser/UI.js'
         ])
         .pipe(concat('bodymovin_parser.jsx', {newLine: '\r\n'}))
-        .pipe(wrap('var Gtlym = {};\r\n(function(){\r\n<%= contents %>\r\n}());'))
+        .pipe(wrap('var Gtlym = {};var bodymovinWindow = this;\r\n(function(){\r\n<%= contents %>\r\n}());'))
         .pipe(gulp.dest('/Program Files/Adobe/Adobe After Effects CS6/Support Files/Scripts/ScriptUI Panels'))
 });
 
