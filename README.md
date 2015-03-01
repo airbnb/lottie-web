@@ -40,3 +40,21 @@ After Effects to html library
  ```
 <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja">
 ```
+
+## Disclaimer! Alerts! Warnings!
+### Undos
+The script is **very** invasive. It will perform a lot of actions in your project that will go to the undo stack. So you'll probably won't be able to undo after exporting. I haven't figured out how to prevent this.
+
+### Files
+If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors), they will be added to the render queue and exported.
+So expect a lot of "chimes" coming out from your speakers that will scare your cats and wake your neighbours.
+
+## Support
+- The script supports precomps, shapes, solids, images.
+- Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
+- It supports masks and inverted masks but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
+- It supports time remapping (yeah!)
+- The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
+- Trim paths are supported.
+- No effects whatsoever. (stroke is on it's way)
+- **No layer stretching**! No idea why, but stretching a layer messes with all the data.
