@@ -1,5 +1,5 @@
 # bodymovin
-after effects to html library
+After Effects to html library
 
 ## Setting up After Effects
 - Close After effects
@@ -10,7 +10,7 @@ after effects to html library
 
 ## How it works
 ### After Effects
-- Open your AE project and select the script (bodymovin_parser.jsx) on the Window menu file.
+- Open your AE project and select the script (bodymovin_parser.jsx) on the Window menu.
 - On the Compositions tab, click Refresh to get a list of all you project Comps.
 - Select the composition you want to export
 - Select Add to Render Queue
@@ -23,11 +23,14 @@ after effects to html library
 - include the .js file on your html
 - add the data.json to a folder relative to the html
 - create a div that will contain the animation.
+<br/>
  **Required**
  . a class called "bodymovin"
  . a "data-animation-path" attribute with relative path to the data.json
+ <br/>
 **Optional**
  . a "data-anim-loop" attribute
  . a "data-name" attribute to specify a name to target play controls specifically
+ <br/>
  **Example**
 <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
