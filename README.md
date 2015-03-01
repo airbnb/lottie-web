@@ -49,14 +49,14 @@ The script is **very** invasive. It will perform a lot of actions in your projec
 
 ### Files
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors), they will be added to the render queue and exported.
-So expect a lot of "chimes" coming out from your speakers that will scare your cats and wake your neighbours.
+So expect a lot of "render ready chimes" coming out from your speakers that will scare your cats and wake your neighbours.
 
 ### Time
 Some animations take a **lot** of time to render. If you see AE is not responding, be patient, give it some minutes. There is a lot going on and I haven't used an interval function on this version.
 
 ### Help
-If you have any animations that don't work or want me to export them, don't hesitate to write.
-I'm really interested in seeing what kind of problems the plugin has.
+If you have any animations that don't work or want me to export them, don't hesitate to write. <br/>
+I'm really interested in seeing what kind of problems the plugin has. <br/>
 my email is **hernantorrisi@gmail.com**
 
 ### Version
