@@ -25,13 +25,16 @@ AnimationItem.prototype.setData = function (wrapper) {
     this.wrapper = wrapper;
     this.wrapper.style.position = 'relative';
     var self = this;
-    this.path = this.wrapper.attributes.getNamedItem("data-animation-path").value;
+    this.path = this.wrapper.attributes.getNamedItem("data-animation-path") ? this.wrapper.attributes.getNamedItem("data-animation-path").value : '';
     this.playerType = this.wrapper.attributes.getNamedItem("data-bm-player") ? this.wrapper.attributes.getNamedItem("data-bm-player").value : '0';
     this.animType = this.wrapper.attributes.getNamedItem("data-anim-type") ? this.wrapper.attributes.getNamedItem("data-anim-type").value : 'div';
     this.containerType = 'svg';
     this.repeat = this.wrapper.attributes.getNamedItem("data-anim-repeat") ? this.wrapper.attributes.getNamedItem("data-anim-repeat").value : this.repeat;
     this.loop = this.wrapper.attributes.getNamedItem("data-anim-loop") ? this.wrapper.attributes.getNamedItem("data-anim-loop").value !== 'false' : this.loop;
     this.name = this.wrapper.attributes.getNamedItem("data-name") ? this.wrapper.attributes.getNamedItem("data-name").value : '';
+    if(this.path == ''){
+        return;
+    }
     if (this.path.substr(-1, 1) != '/') {
         this.path += "/";
     }
@@ -316,7 +319,7 @@ AnimationItem.prototype.setSpeed = function (val) {
 };
 
 AnimationItem.prototype.setDirection = function (val) {
-    this.playDirection = val;
+    this.playDirection = val < 0 ? -1 : 1;
     this.updaFrameModifier();
 };
 
