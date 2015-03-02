@@ -68,6 +68,11 @@ So expect a lot of "render ready chimes" coming out from your speakers that will
 ### Time
 Some animations take a **lot** of time to render. If you see AE is not responding, be patient, give it some minutes. There is a lot going on and I haven't used an interval function on this version.
 
+### Performance
+This is real time rendering. Although it does some optimizations, too complex animations can have an impact on performance. (remember flash?)<br/>
+More optimizations are on their way, but try not to use huge shapes in AE only to mask a small part of it.<br/>
+Too many nodes will also affect performance as well as  lots of transformations at the same time.
+
 ### Help
 If you have any animations that don't work or want me to export them, don't hesitate to write. <br/>
 I'm really interested in seeing what kind of problems the plugin has. <br/>
