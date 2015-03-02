@@ -47,12 +47,14 @@ After Effects to html - svg library
 
 ## Usage
 bodymovin has 6 main methods:
-bodymovin.play() -- with 1 optional parameter **name** to target a specific animation <br/>
-bodymovin.stop() -- with 1 optional parameter **name** to target a specific animation <br/>
-bodymovin.setSpeed() -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
-bodymovin.setDirection() -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
-bodymovin.searchAnimations() -- looks for elements with class "bodymovin"
-bodymovin.registerAnimation() -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute
+**bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setSpeed()** -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.searchAnimations()** -- looks for elements with class "bodymovin"
+**bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url
+
+See the demo folders for examples
 
 ## Disclaimer! Alerts! Warnings!
 
@@ -73,6 +75,9 @@ my email is **hernantorrisi@gmail.com**
 
 ### Version
 this is a very first version of the plug in. It will have bugs for sure. Let me know if anything comes up.
+
+## Examples
+
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
