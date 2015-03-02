@@ -12,7 +12,7 @@
         animationManager.togglePause(animation);
     }
     function setSpeed(value,animation){
-        animationManager.setSpeed(value/10, animation);
+        animationManager.setSpeed(value, animation);
     }
     function setDirection(value,animation){
         animationManager.setDirection(value, animation);
@@ -59,7 +59,7 @@
     bodymovinjs.searchAnimations = searchAnimations;
     bodymovinjs.registerAnimation = registerAnimation;
 
-    window.bodymovinjs = bodymovinjs;
+    window.bodymovin = bodymovinjs;
     //window.onkeydown = keyActive;
 
     var readyStateCheckInterval = setInterval(function() {
