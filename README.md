@@ -77,7 +77,9 @@ my email is **hernantorrisi@gmail.com**
 this is a very first version of the plug in. It will have bugs for sure. Let me know if anything comes up.
 
 ## Examples
-
+http://lab.nearpod.com/bodymovin/demo/ninja/ <br/>
+http://lab.nearpod.com/bodymovin/demo/shapes/ <br/>
+http://lab.nearpod.com/bodymovin/demo/gatin/ <br/>
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
