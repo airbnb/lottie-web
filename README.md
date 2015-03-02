@@ -23,6 +23,9 @@ After Effects to html - svg library
 ### HTML
 - get the bodymovin.js file from the build/player/ folder
 - include the .js file on your html
+```
+<script src="js/bodymovin.js" type="text/javascript"></script>
+```
 - add the data.json to a folder relative to the html
 - create a div that will contain the animation.
 <br/>
@@ -41,6 +44,15 @@ After Effects to html - svg library
  ```
 <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
+
+## Usage
+bodymovin has 6 main methods:
+bodymovin.play() -- with 1 optional parameter **name** to target a specific animation <br/>
+bodymovin.stop() -- with 1 optional parameter **name** to target a specific animation <br/>
+bodymovin.setSpeed() -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
+bodymovin.setDirection() -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
+bodymovin.searchAnimations() -- looks for elements with class "bodymovin"
+bodymovin.registerAnimation() -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute
 
 ## Disclaimer! Alerts! Warnings!
 
