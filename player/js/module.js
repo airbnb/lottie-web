@@ -29,6 +29,9 @@
     function registerAnimation(elem){
         animationManager.registerAnimation(elem);
     }
+    function setSubframeRendering(flag){
+        subframeEnabled = flag;
+    }
 
     function keyActive(e){
         var key = e.keyCode ? e.keyCode : e.which;
@@ -58,6 +61,7 @@
     bodymovinjs.moveFrame = moveFrame;
     bodymovinjs.searchAnimations = searchAnimations;
     bodymovinjs.registerAnimation = registerAnimation;
+    bodymovinjs.setSubframeRendering = setSubframeRendering;
 
     window.bodymovin = bodymovinjs;
     //window.onkeydown = keyActive;

@@ -59,6 +59,10 @@ BaseElement.prototype.renderFrame = function(num){
         }
         return false;
     }
+    if(!this.data.an[num]){
+        console.log('num: ',num);
+        console.log('this.data: ',this.data);
+    }
     var animData = this.data.an[this.data.an[num].forwardFrame];
 
     if(this.data.eff){

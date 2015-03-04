@@ -63,8 +63,6 @@ ShapeItemElement.prototype.renderShape = function(num){
 ShapeItemElement.prototype.renderPath = function(num){
     var animData = this.data.an;
     if(!animData.path[num]){
-        console.log('num: ',num);
-        console.log('animData.path: ',animData.path);
     }
     if(animData.path[num].forwardFrame == animData.renderedFrame.path){
         if(this.data.trim){

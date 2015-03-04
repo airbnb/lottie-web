@@ -1,3 +1,5 @@
+var subframeEnabled = false;
+
 function styleDiv(element){
     element.style.position = "absolute";
     element.style.top = 0;

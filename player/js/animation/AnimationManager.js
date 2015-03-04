@@ -18,7 +18,7 @@ var animationManager = (function(){
             }
             i+=1;
         }
-        var animItem = createElement(AnimationItem);
+        var animItem = new AnimationItem();
         animItem.setData(element);
         registeredAnimations.push({elem: element,animation:animItem});
         return animItem;

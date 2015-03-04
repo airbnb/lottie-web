@@ -23,7 +23,7 @@ var AnimationItem = function () {
 
 AnimationItem.prototype.setData = function (wrapper) {
     this.wrapper = wrapper;
-    this.wrapper.style.position = 'relative';
+    //this.wrapper.style.position = 'relative';
     var self = this;
     this.path = this.wrapper.attributes.getNamedItem("data-animation-path") ? this.wrapper.attributes.getNamedItem("data-animation-path").value : '';
     this.playerType = this.wrapper.attributes.getNamedItem("data-bm-player") ? this.wrapper.attributes.getNamedItem("data-bm-player").value : '0';
@@ -57,11 +57,26 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.container.setAttribute('preserveAspectRatio','xMidYMid meet');
     this.container.style.width = '100%';
     this.container.style.height = '100%';
-    this.container.style.opactiy = '.5';
     this.container.style.transformOrigin = this.container.style.mozTransformOrigin = this.container.style.webkitTransformOrigin = this.container.style['-webkit-transform'] = "0px 0px 0px";
-    this.container.style.overflow = 'hidden';
-    styleDiv(this.container);
+    //this.container.style.overflow = 'hidden';
+    //styleDiv(this.container);
     this.wrapper.appendChild(this.container);
+    //Mask animation
+    var defs = document.createElementNS(svgNS, 'defs');
+    this.container.appendChild(defs);
+    var maskElement = document.createElementNS(svgNS, 'clipPath');
+    var rect = document.createElementNS(svgNS,'rect');
+    rect.setAttribute('width',animData.animation.compWidth);
+    rect.setAttribute('height',animData.animation.compHeight);
+    rect.setAttribute('x',0);
+    rect.setAttribute('y',0);
+    maskElement.setAttribute('id', 'animationMask');
+    maskElement.appendChild(rect);
+    var maskedElement = document.createElementNS(svgNS,'g');
+    maskedElement.setAttribute("clip-path", "url(#animationMask)");
+    this.container.appendChild(maskedElement);
+    defs.appendChild(maskElement);
+    this.container = maskedElement;
 
     this.effectsManager = new EffectsManager();
     this.animationData = animData;
@@ -145,9 +160,6 @@ AnimationItem.prototype.buildStage = function (container, layers, parentType) {
             container.appendChild(mainContainer);
             layerData.element.setMainElement(mainContainer);
         } else {
-            if(layerData.element == null){
-                console.log('layerData: ',layerData);
-            }
             layerData.element.getDomElement().setAttribute("data-layer-name", layerData.layerName);
             container.appendChild(layerData.element.getDomElement());
             layerData.element.setMainElement(layerData.element.getDomElement());
@@ -200,7 +212,12 @@ AnimationItem.prototype.buildControls = function () {
 };
 
 AnimationItem.prototype.gotoFrame = function () {
-    this.currentFrame = Math.floor(this.currentRawFrame);
+    if(subframeEnabled){
+        this.renderedFrames = [];
+        this.currentFrame = this.currentRawFrame;
+    }else{
+        this.currentFrame = Math.floor(this.currentRawFrame);
+    }
     this.renderFrame(this.layers);
     if(this.player){
         this.player.setProgress(this.currentFrame / this.totalFrames);
@@ -334,26 +351,3 @@ AnimationItem.prototype.getPath = function () {
 AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };
-
-
-defineDescriptor(AnimationItem, 'name', '', {writable:true});
-defineDescriptor(AnimationItem, 'path', '', {writable:true});
-defineDescriptor(AnimationItem, 'isLoaded', false, {writable:true});
-defineDescriptor(AnimationItem, 'currentFrame', 0, {writable:true});
-defineDescriptor(AnimationItem, 'currentRawFrame', 0, {writable:true});
-defineDescriptor(AnimationItem, 'totalFrames', 0, {writable:true});
-defineDescriptor(AnimationItem, 'frameRate', 0, {writable:true});
-defineDescriptor(AnimationItem, 'frameMult', 0, {writable:true});
-defineDescriptor(AnimationItem, 'playSpeed', 1, {writable:true});
-defineDescriptor(AnimationItem, 'playDirection', 1, {writable:true});
-defineDescriptor(AnimationItem, 'frameModifier', 0, {writable:true});
-defineDescriptor(AnimationItem, 'pendingElements', 0, {writable:true});
-defineDescriptor(AnimationItem, 'repeat', 'indefinite', {writable:true});
-defineDescriptor(AnimationItem, 'animationData', {}, {writable:true});
-defineDescriptor(AnimationItem, 'layers', null, {writable:true});
-defineDescriptor(AnimationItem, 'assets', null, {writable:true});
-defineDescriptor(AnimationItem, 'effectsManager', null, {writable:true});
-defineDescriptor(AnimationItem, 'isPaused', true, {writable:true});
-defineDescriptor(AnimationItem, 'isScrolling', false, {writable:true});
-defineDescriptor(AnimationItem, 'loop', true, {writable:true});
-defineDescriptor(AnimationItem, 'renderedFrames', {}, {writable:true});

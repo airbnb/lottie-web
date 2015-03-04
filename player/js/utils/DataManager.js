@@ -88,13 +88,7 @@ var dataManager = (function(){
         if(!(keyframes instanceof Array) || keyframes[0].t == null){
             valuesArray.push(keyframes);
             return valuesArray;
-            /*for(i=0;i<frameCount;i+=1){
-                valuesArray.push(keyframes);
-            }
-            return valuesArray;*/
         }
-        //console.log('frameCount: ',frameCount);
-        //console.log('offsetTime: ',offsetTime);
         var keyData, nextKeyData;
         valuesArray = [];
         var count;
@@ -485,18 +479,22 @@ var dataManager = (function(){
                 return;
             }
             var trOb = {};
-            trOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime);
+            var dataOb = {};
+            dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime);
             var opacity = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime);
-            trOb.o = opacity instanceof Array ? opacity[0]/100 : opacity/100;
+            dataOb.o = opacity instanceof Array ? opacity[0]/100 : opacity/100;
             var pos = getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime);
             var rot = getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime);
             var scale = getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime);
             trOb.s = scale instanceof Array ? scale.length > 1 ? [scale[0]/100,scale[1]/100,scale[2]/100] : [scale[0]/100,scale[0]/100,scale[0]/100] : [scale/100,scale/100,scale/100];
             trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
             trOb.p = pos;
+            if(subframeEnabled){
+                item.an = [];
+            }
             item.an[offsettedFrameNum] = {
                 forwardFrame : offsettedFrameNum,
-                tr: trOb,
+                tr: dataOb,
                 matrixValue: matrixInstance.getMatrix2(trOb)
             };
             if(item.hasMask){
@@ -504,7 +502,7 @@ var dataManager = (function(){
                 len = maskProps.length;
                 var maskValue;
                 for(i=0;i<len;i+=1){
-                    if(!maskProps[i].pathStrings){
+                    if(!maskProps[i].pathStrings || subframeEnabled){
                         maskProps[i].pathStrings = [];
                         maskProps[i].pathVertices = [];
                         maskProps[i].opacity = [];
@@ -525,7 +523,7 @@ var dataManager = (function(){
                 var fillOpacity,fillColor, shape, strokeColor, strokeOpacity, strokeWidth, elmPos, elmSize, elmRound;
                 for(i=0;i<len;i+=1){
                     shapeItem = item.shapes[i];
-                    if(!shapeItem._created){
+                    if(!shapeItem._created || subframeEnabled){
                         shapeItem.an.tr = [];
                         shapeItem.an.renderedFrame = -1;
                         if(shapeItem.ks){
@@ -542,7 +540,7 @@ var dataManager = (function(){
                             shapeItem.an.stroke = [];
                         }
                     }
-                    if(shapeItem.trim && !shapeItem._created){
+                    if(shapeItem.trim && (!shapeItem._created  || subframeEnabled)){
                         shapeItem.trim.an = [];
                     }
                     if(shapeItem.fl){
@@ -591,6 +589,7 @@ var dataManager = (function(){
                         };
                     }
                     var shapeTrOb = {};
+                   //var shapeDataOb = {};
                     shapeTrOb.a = getInterpolatedValue(shapeItem.tr.a,offsettedFrameNum, item.startTime);
                     shapeTrOb.o = getInterpolatedValue(shapeItem.tr.o,offsettedFrameNum, item.startTime);
                     shapeTrOb.o = shapeTrOb.o instanceof Array ? shapeTrOb.o[0]/100 : shapeTrOb.o/100;
