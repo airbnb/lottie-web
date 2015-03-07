@@ -59,17 +59,13 @@ BaseElement.prototype.renderFrame = function(num){
         }
         return false;
     }
-    if(!this.data.an[num]){
-        console.log('num: ',num);
-        console.log('this.data: ',this.data);
-    }
     var animData = this.data.an[this.data.an[num].forwardFrame];
 
     if(this.data.eff){
         this.effectsManager.renderFrame(num,animData.mk);
     }
 
-    if(this.data.an[num].forwardFrame == this.data.renderedFrame){
+    if(this.data.an[num].forwardFrame === this.data.renderedFrame.num){
         return true;
     }
 
@@ -77,21 +73,37 @@ BaseElement.prototype.renderFrame = function(num){
         this.maskManager.renderFrame(num);
     }
 
-    this.data.renderedFrame = animData.forwardFrame;
+    this.data.renderedFrame.num = animData.forwardFrame;
 
-    this.anchorElement.setAttribute('opacity',animData.tr.o);
-    this.anchorElement.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
-    this.layerElement.setAttribute('transform',animData.matrixValue);
+    if(this.data.renderedFrame.o !== animData.tr.o){
+        this.data.renderedFrame.o = animData.tr.o;
+        this.anchorElement.setAttribute('opacity',animData.tr.o);
+    }
+    var anchorChanged = false;
+    if(!this.data.renderedFrame.a || (this.data.renderedFrame.a[0] !== animData.tr.a[0] && this.data.renderedFrame.a[1] !== animData.tr.a[1])){
+        this.data.renderedFrame.a = [animData.tr.a[0],animData.tr.a[1]];
+        this.anchorElement.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
+        anchorChanged = true;
+    }
+    var transformChanged = false;
+    if(this.data.renderedFrame.tr !== animData.matrixValue){
+        this.layerElement.setAttribute('transform',animData.matrixValue);
+        this.data.renderedFrame.tr = animData.matrixValue;
+        transformChanged = true;
+    }
 
-    if(this.data.relateds){
+    if(this.data.relateds && (transformChanged || anchorChanged)){
         var relateds = this.data.relateds, i, len = relateds.length, item, itemCont, type;
         for(i=0;i<len;i++){
             item = relateds[i].item;
             itemCont = relateds[i].itemCont;
             type = relateds[i].type;
-
-            item.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
-            itemCont.setAttribute('transform',animData.matrixValue);
+            if(anchorChanged){
+                item.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
+            }
+            if(transformChanged){
+                itemCont.setAttribute('transform',animData.matrixValue);
+            }
         }
     }
     return true;
@@ -131,18 +143,3 @@ BaseElement.prototype.getLayerSize = function(){
         return {w:this.data.width,h:this.data.height};
     }
 };
-defineDescriptor(BaseElement,'svgElem', null,{writable:true});
-defineDescriptor(BaseElement,'layerElement', null,{writable:true});
-defineDescriptor(BaseElement,'mainElement', null,{writable:true});
-defineDescriptor(BaseElement,'anchorElement', null,{writable:true});
-defineDescriptor(BaseElement,'maskingGroup', null,{writable:true});
-defineDescriptor(BaseElement,'maskedElement', null,{writable:true});
-defineDescriptor(BaseElement,'maskManager', null,{writable:true});
-defineDescriptor(BaseElement,'effectsManager', null,{writable:true});
-defineDescriptor(BaseElement,'isVisible', null,{writable:true});
-defineDescriptor(BaseElement,'animationItem', null,{writable:true});
-defineDescriptor(BaseElement,'localFrameNum', null,{writable:true});
-/*defineAccessor(BaseElement,'maskingGroup', {get:function(){return this.anchorElement}});
-defineAccessor(BaseElement,'maskedElement', {get:function(){return this.svgElem}});
-defineBasicAccessor(BaseElement,'maskElement');
-*/

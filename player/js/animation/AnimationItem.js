@@ -266,9 +266,6 @@ AnimationItem.prototype.pause = function (name) {
     }
     if(this.isPaused === false){
         this.isPaused = true;
-        if(this.containerType === 'svg'){
-            this.container.pauseAnimations();
-        }
         this.dispatchEvent('bmPause');
     }
 };

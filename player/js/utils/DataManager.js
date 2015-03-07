@@ -23,7 +23,7 @@ var dataManager = (function(){
             if(layerData.parent){
                 layerData.parent = convertLayerNameToID(layerData.parent);
             }
-            layerData.renderedFrame = -1;
+            layerData.renderedFrame = {};
             animArray = [];
             lastFrame = -1;
             if(layerData.tm){
@@ -525,7 +525,7 @@ var dataManager = (function(){
                     shapeItem = item.shapes[i];
                     if(!shapeItem._created || subframeEnabled){
                         shapeItem.an.tr = [];
-                        shapeItem.an.renderedFrame = -1;
+                        shapeItem.an.renderedFrame = {};
                         if(shapeItem.ks){
                             shapeItem.an.path = [];
                         }else if(shapeItem.el){

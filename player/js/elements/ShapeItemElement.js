@@ -62,16 +62,15 @@ ShapeItemElement.prototype.renderShape = function(num){
 
 ShapeItemElement.prototype.renderPath = function(num){
     var animData = this.data.an;
-    if(!animData.path[num]){
-    }
-    if(animData.path[num].forwardFrame == animData.renderedFrame.path){
+    var path = animData.path[animData.path[num].forwardFrame];
+
+    if(path.pathString == animData.renderedFrame.path){
         if(this.data.trim){
             return this.cachedData.pathLengths[animData.path[animData.path[num].forwardFrame].pathString];
         }
         return;
     }
-    var path = animData.path[animData.path[num].forwardFrame];
-    animData.renderedFrame.path = path.forwardFrame;
+    animData.renderedFrame.path = path.pathString;
 
     this.shape.setAttribute('d',path.pathString);
     if(this.data.trim){
@@ -138,11 +137,11 @@ ShapeItemElement.prototype.renderRect = function(num){
 ShapeItemElement.prototype.renderFill = function(num){
     var animData = this.data.an;
     if(animData.fill){
-        if(animData.fill[num].forwardFrame == animData.renderedFrame.fill){
+        var fill = animData.fill[animData.fill[num].forwardFrame];
+        if(animData.renderedFrame.fill && fill.color == animData.renderedFrame.fill.color && fill.opacity == animData.renderedFrame.fill.opacity){
             return;
         }
-        var fill = animData.fill[animData.fill[num].forwardFrame];
-        animData.renderedFrame.fill = fill.forwardFrame;
+        animData.renderedFrame.fill = {color:fill.color,opacity:fill.opacity};
         this.shape.setAttribute('fill',fill.color);
         if(this.data.fillEnabled!==false){
             this.shape.setAttribute('fill-opacity',fill.opacity);
