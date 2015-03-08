@@ -1,4 +1,5 @@
 var subframeEnabled = false;
+var animType = '';
 
 function styleDiv(element){
     element.style.position = "absolute";
