@@ -1,12 +1,12 @@
-function IImageElement(data, animationItem){
+function CVImageElement(data, animationItem){
     this.animationItem = animationItem;
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
     this.parent.constructor.call(this,data, animationItem);
 }
-createElement(BaseElement, IImageElement);
+createElement(CVBaseElement, CVImageElement);
 
-IImageElement.prototype.createElements = function(){
+CVImageElement.prototype.createElements = function(){
 
     var self = this;
 

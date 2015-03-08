@@ -1,10 +1,14 @@
-var BaseElement = function (data, animationItem){
+function CVBaseElement(data,animationItem){
     this.animationItem = animationItem;
     this.data = data;
+    this.currentAnimData = {
+        renderedFrame : -1,
+        data: null
+    };
     this.init();
 };
 
-BaseElement.prototype.init = function(){
+CVBaseElement.prototype.init = function(){
     this.createElements();
     if(this.data.hasMask){
         this.addMasks(this.data);
@@ -14,31 +18,23 @@ BaseElement.prototype.init = function(){
     }
 };
 
-BaseElement.prototype.createElements = function(){
-    this.layerElement = document.createElementNS(svgNS,'g');
-
-    this.anchorElement = document.createElementNS(svgNS,'g');
-    this.anchorElement.setAttribute('id',this.data.layerName);
-    this.layerElement.appendChild(this.anchorElement);
-
-
-    this.maskingGroup = this.anchorElement;
-
-    this.maskedElement = this.svgElem;
+CVBaseElement.prototype.createElements = function(){
 
 };
 
-BaseElement.prototype.renderFrame = function(num){
+CVBaseElement.prototype.getCurrentAnimData = function(){
+    
+}
+
+CVBaseElement.prototype.renderFrame = function(num){
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
     {
         if(this.isVisible !== true){
             this.isVisible = true;
-            this.mainElement.setAttribute('opacity',1);
         }
     }else{
         if(this.isVisible !== false){
             this.isVisible = false;
-            this.mainElement.setAttribute('opacity',0);
         }
         return false;
     }
@@ -91,37 +87,38 @@ BaseElement.prototype.renderFrame = function(num){
     return true;
 };
 
-BaseElement.prototype.getDomElement = function(){
+CVBaseElement.prototype.getDomElement = function(){
     return this.layerElement;
 };
-BaseElement.prototype.setMainElement = function(value){
+CVBaseElement.prototype.setMainElement = function(value){
     this.mainElement = value;
 };
-BaseElement.prototype.getMaskManager = function(){
+CVBaseElement.prototype.getMaskManager = function(){
     return this.maskManager;
 };
-BaseElement.prototype.addMasks = function(data){
+CVBaseElement.prototype.addMasks = function(data){
     var params = {
         'data':{value:data},
         'element':{value:this}
     };
     this.maskManager = createElement(MaskElement,null,params);
 };
-BaseElement.prototype.createEffectsManager = function(data){
+CVBaseElement.prototype.createEffectsManager = function(data){
     var params = {
         'effects':{value:data.eff},
         'element':{value:this}
     };
     this.effectsManager = createElement(EffectsManager,null,params);
 };
-BaseElement.prototype.getType = function(){
+CVBaseElement.prototype.getType = function(){
     return this.type;
 };
 
-BaseElement.prototype.getLayerSize = function(){
+CVBaseElement.prototype.getLayerSize = function(){
     if(this.data.type == 'TextLayer'){
         return {w:this.data.textData.width,h:this.data.textData.height};
     }else{
         return {w:this.data.width,h:this.data.height};
     }
 };
+

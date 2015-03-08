@@ -1,9 +1,9 @@
-function ISolidElement(data, animationItem){
+function CVSolidElement(data, animationItem){
     this.parent.constructor.call(this,data, animationItem);
 }
-createElement(BaseElement, ISolidElement);
+createElement(CVBaseElement, CVSolidElement);
 
-ISolidElement.prototype.createElements = function(){
+CVSolidElement.prototype.createElements = function(){
     this.svgElem = document.createElementNS (svgNS, "g");
     this.parent.createElements.call(this);
     this.anchorElement.appendChild(this.svgElem);

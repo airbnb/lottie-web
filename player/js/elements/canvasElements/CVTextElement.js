@@ -1,9 +1,9 @@
-function ITextElement(data, animationItem){
+function CVTextElement(data, animationItem){
     this.parent.constructor.call(this,data, animationItem);
 }
-createElement(BaseElement, ITextElement);
+createElement(CVBaseElement, CVTextElement);
 
-ITextElement.prototype.createElements = function(){
+CVTextElement.prototype.createElements = function(){
     this.svgElem = document.createElementNS (svgNS, "g");
 
     var textElement = document.createElementNS(svgNS,'text');

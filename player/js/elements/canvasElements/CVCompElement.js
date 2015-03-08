@@ -1,20 +1,20 @@
-function ICompElement(data, animationItem){
+function CVCompElement(data, animationItem){
     this.parent.constructor.call(this,data, animationItem);
     this.layers = data.layers;
 }
-createElement(BaseElement, ICompElement);
+createElement(CVBaseElement, CVCompElement);
 
-ICompElement.prototype.createElements = function(){
+CVCompElement.prototype.createElements = function(){
 
     this.svgElem = document.createElementNS (svgNS, "g");
     this.parent.createElements.call(this);
 };
 
-ICompElement.prototype.getComposingElement = function(){
+CVCompElement.prototype.getComposingElement = function(){
     return this.anchorElement;
 };
 
-ICompElement.prototype.renderFrame = function(num){
+CVCompElement.prototype.renderFrame = function(num){
     var renderParent = this.parent.renderFrame.call(this,num);
     if(renderParent===false){
         return;
