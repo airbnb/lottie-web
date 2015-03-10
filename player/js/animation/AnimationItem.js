@@ -104,13 +104,13 @@ AnimationItem.prototype.gotoFrame = function () {
     }else{
         this.currentFrame = Math.floor(this.currentRawFrame);
     }
-    this.renderFrame(this.layers);
+    this.renderFrame();
     if(this.player){
         this.player.setProgress(this.currentFrame / this.totalFrames);
     }
 };
 
-AnimationItem.prototype.renderFrame = function (layers) {
+AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
@@ -118,10 +118,7 @@ AnimationItem.prototype.renderFrame = function (layers) {
         this.renderedFrames[this.currentFrame] = true;
         dataManager.renderFrame(this.layers,this.currentFrame);
     }
-    var i, len = layers.length;
-    for (i = 0; i < len; i++) {
-        layers[i].element.renderFrame(this.currentFrame - layers[i].startTime);
-    }
+    this.renderer.renderFrame(this.currentFrame);
 };
 
 AnimationItem.prototype.dispatchEvent = function(eventName){

@@ -1,5 +1,6 @@
 function SVGRenderer(animationItem){
     this.animationItem = animationItem;
+    this.layers = null;
 }
 
 SVGRenderer.prototype.buildItems = function(layers){
@@ -70,6 +71,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.appendChild(maskedElement);
     defs.appendChild(maskElement);
     this.animationItem.container = maskedElement;
+    this.layers = animData.animation.layers;
 };
 
 SVGRenderer.prototype.buildStage = function (container, layers) {
@@ -115,3 +117,10 @@ SVGRenderer.prototype.buildItemHierarchy = function (threeItem, layerName, paren
     }
     return null;
 };
+
+SVGRenderer.prototype.renderFrame = function(num){
+    var i, len = this.layers.length;
+    for (i = 0; i < len; i++) {
+        this.layers[i].element.renderFrame(num - this.layers[i].startTime);
+    }
+}

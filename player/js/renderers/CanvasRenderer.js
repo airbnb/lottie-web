@@ -51,6 +51,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.style.height = '100%';
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
+    this.layers = animData.animation.layers;
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers) {
@@ -80,4 +81,23 @@ CanvasRenderer.prototype.buildItemHierarchy = function (threeItem, layers, paren
         }
         i += 1;
     }
+};
+
+CanvasRenderer.prototype.prepareFrame = function(num){
+    var i, len = this.layers.length;
+    for (i = 0; i < len; i++) {
+        this.layers[i].element.prepareFrame(num - this.layers[i].startTime);
+    }
+};
+
+CanvasRenderer.prototype.draw = function(){
+    var i, len = this.layers.length;
+    for (i = 0; i < len; i++) {
+        this.layers[i].element.draw();
+    }
+};
+
+CanvasRenderer.prototype.renderFrame = function(num){
+    this.prepareFrame(num);
+    this.draw();
 };

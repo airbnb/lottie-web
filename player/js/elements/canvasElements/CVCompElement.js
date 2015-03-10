@@ -26,3 +26,20 @@ CVCompElement.prototype.renderFrame = function(num){
         this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime);
     }
 };
+
+CVCompElement.prototype.prepareFrame = function(num){
+    this.parent.renderFrame.call(this,num);
+
+    var i,len = this.layers.length;
+    var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : this.data.tm[num] : num;
+    for( i = 0; i < len; i+=1 ){
+        this.layers[i].element.prepareFrame(timeRemapped - this.layers[i].startTime);
+    }
+};
+
+CVCompElement.prototype.draw = function(){
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i+=1 ){
+        this.layers[i].element.draw();
+    }
+};
