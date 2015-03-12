@@ -39,7 +39,7 @@ CVCompElement.prototype.prepareFrame = function(num){
 
 CVCompElement.prototype.draw = function(){
     var i,len = this.layers.length;
-    for( i = 0; i < len; i+=1 ){
+    for( i = len - 1; i >= 0; i -= 1 ){
         this.layers[i].element.draw();
     }
 };

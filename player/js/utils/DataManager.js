@@ -495,7 +495,8 @@ var dataManager = (function(){
             item.an[offsettedFrameNum] = {
                 forwardFrame : offsettedFrameNum,
                 tr: dataOb,
-                matrixValue: matrixInstance.getMatrix2(trOb)
+                matrixValue: matrixInstance.getMatrix2(trOb),
+                matrixArray: matrixInstance.getMatrixArray(trOb)
             };
             if(item.hasMask){
                 var maskProps = item.masksProperties;
@@ -556,6 +557,8 @@ var dataManager = (function(){
                         shape = getInterpolatedValue(shapeItem.ks,offsettedFrameNum, item.startTime);
                         shapeItem.an.path[offsettedFrameNum] = {
                             pathString : createPathString(shape,shapeItem.closed),
+                            pathNodes: shape,
+                            closed: shapeItem.closed,
                             forwardFrame : offsettedFrameNum
                         };
                     }else if(shapeItem.el){
@@ -599,6 +602,7 @@ var dataManager = (function(){
                     shapeTrOb.r = shapeTrOb.r instanceof Array ? shapeTrOb.r.length > 1 ? [shapeTrOb.r[0]*Math.PI/180,shapeTrOb.r[1]*Math.PI/180,shapeTrOb.r[2]*Math.PI/180] : [shapeTrOb.r[0]*Math.PI/180,shapeTrOb.r[0]*Math.PI/180,shapeTrOb.r[0]*Math.PI/180] : [0,0,shapeTrOb.r*Math.PI/180];
                     shapeTrOb.p = getInterpolatedValue(shapeItem.tr.p,offsettedFrameNum, item.startTime);
                     shapeTrOb.mt = matrixInstance.getMatrix2(shapeTrOb);
+                    shapeTrOb.mtArr = matrixInstance.getMatrixArray(shapeTrOb);
                     shapeTrOb.forwardFrame = offsettedFrameNum;
                     shapeItem.an.tr[offsettedFrameNum] = shapeTrOb;
 

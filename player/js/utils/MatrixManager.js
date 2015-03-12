@@ -62,6 +62,25 @@ var MatrixManager = function(){
         return s;
     };
 
+    var returnMatrix2DArray = function(rX, scaleX, scaleY, tX, tY){
+        var rotationMatrix,  scaleMatrix, transformationMatrix, translationMatrix;
+        //cos(X), sin(X), -sin(X), cos(X)
+        rotationMatrix = $M([
+            [Math.cos(-rX), Math.sin(-rX), 0],
+            [Math.sin(rX), Math.cos(-rX), 0],
+            [0, 0, 1]
+        ]);
+        scaleMatrix = $M([[scaleX, 0, 0], [0, scaleY, 0], [0, 0, 1]]);
+        transformationMatrix = rotationMatrix.x(scaleMatrix);
+        transformationMatrix = transformationMatrix.transpose();
+        translationMatrix = $M([[1, 0, 0], [0, 1, 0], [tX, tY, 1]]);
+        transformationMatrix = transformationMatrix.x(translationMatrix);
+
+        return [transformationMatrix.e(1, 1).toFixed(5),transformationMatrix.e(1, 2).toFixed(5)
+        ,transformationMatrix.e(2, 1).toFixed(5),transformationMatrix.e(2, 2).toFixed(5)
+        ,transformationMatrix.e(3, 1).toFixed(5),transformationMatrix.e(3, 2).toFixed(5)];
+    };
+
     var get2DMatrix = function(animData){
         return returnMatrix2D(animData.r
             ,animData.s[0],animData.s[1]
@@ -90,10 +109,20 @@ var MatrixManager = function(){
             ,animData.p[0],animData.p[1],animData.p[2])
     };
 
+    var getMatrixArray = function(animData, isThreeD){
+        if(!isThreeD){
+            return returnMatrix2DArray(animData.r[2]
+                ,animData.s[0],animData.s[1]
+                ,animData.p[0],animData.p[1]);
+        }
+        return null;
+    };
+
     return {
         get2DMatrix : get2DMatrix,
         getMatrix : getMatrix,
-        getMatrix2 : getMatrix2
+        getMatrix2 : getMatrix2,
+        getMatrixArray : getMatrixArray
     }
 
 };

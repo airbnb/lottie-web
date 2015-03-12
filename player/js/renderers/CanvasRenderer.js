@@ -23,24 +23,24 @@ CanvasRenderer.prototype.buildItems = function(layers){
 }
 
 CanvasRenderer.prototype.createShape = function (data) {
-    data.element = new CVShapeElement(data, this.animationItem);
+    data.element = new CVShapeElement(data, this);
 };
 
 CanvasRenderer.prototype.createText = function (data) {
-    data.element = new CVTextElement(data, this.animationItem);
+    data.element = new CVTextElement(data, this);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
-    data.element = new CVImageElement(data, this.animationItem);
+    data.element = new CVImageElement(data, this);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
-    data.element = new CVCompElement(data, this.animationItem);
+    data.element = new CVCompElement(data, this);
     this.buildItems(data.layers, data.element.getType());
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
-    data.element = new CVSolidElement(data, this.animationItem);
+    data.element = new CVSolidElement(data, this);
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
@@ -52,6 +52,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.layers = animData.animation.layers;
+    this.canvasContext = this.animationItem.container.getContext('2d');
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers) {
@@ -92,12 +93,15 @@ CanvasRenderer.prototype.prepareFrame = function(num){
 
 CanvasRenderer.prototype.draw = function(){
     var i, len = this.layers.length;
-    for (i = 0; i < len; i++) {
+    for (i = len - 1; i >= 0; i-=1) {
+        this.layers[i].element.initDraw();
         this.layers[i].element.draw();
+        this.layers[i].element.endDraw();
     }
 };
 
 CanvasRenderer.prototype.renderFrame = function(num){
+    this.animationItem.container.width = this.animationItem.container.width;
     this.prepareFrame(num);
     this.draw();
 };

@@ -1,5 +1,5 @@
-function CVBaseElement(data,animationItem){
-    this.animationItem = animationItem;
+function CVBaseElement(data,renderer){
+    this.renderer = renderer;
     this.data = data;
     this.currentAnimData = null;
     this.init();
@@ -23,10 +23,37 @@ CVBaseElement.prototype.prepareFrame = function(num){
     this.currentAnimData = this.data.an[this.data.an[num].forwardFrame];
 };
 
+CVBaseElement.prototype.initDraw = function(){
+    this.renderer.canvasContext.save();
+
+};
+
 CVBaseElement.prototype.draw = function(){
+    var ctx = this.renderer.canvasContext;
+    /*console.log('this.data.layerName: ',this.data.layerName);
+    console.log('this.data.width: ',this.data.width);
+    console.log('this.data.height: ',this.data.height);*/
+    //ctx.translate(-this.data.width/2,-this.data.height/2);
     if(this.data.parentHierarchy){
-        console.log(this.data.parentHierarchy.length);
+        var i, len = this.data.parentHierarchy.length, animData;
+        for(i = len - 1; i>=0 ; i -= 1){
+            animData = this.data.parentHierarchy[0].element.getCurrentAnimData();
+            ctx.translate(animData.tr.a[0],animData.tr.a[1]);
+            var matrixValue = animData.matrixArray;
+            ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
+            ctx.translate(-animData.tr.a[0],-animData.tr.a[1]);
+        }
     }
+
+     ctx.translate(this.currentAnimData.tr.a[0],this.currentAnimData.tr.a[1]);
+    var matrixValue = this.currentAnimData.matrixArray;
+     ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
+     ctx.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
+
+};
+
+CVBaseElement.prototype.endDraw = function(){
+    this.renderer.canvasContext.restore();
 
 };
 

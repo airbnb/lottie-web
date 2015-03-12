@@ -1,33 +1,7 @@
-function CVShapeItemElement(data){
+function CVShapeItemElement(data,renderer){
     this.data = data;
-    this.shapeG = document.createElementNS(svgNS, "g");
-    this.pathLength = 0;
-    this.cachedData = [];
-    if(this.data.type === 'pathShape'){
-        this.shape = document.createElementNS(svgNS, "path");
-    }else if(this.data.type === 'rectShape'){
-        this.shape = document.createElementNS(svgNS, "rect");
-    }else if(this.data.type === 'ellipseShape'){
-        this.shape = document.createElementNS(svgNS, "ellipse");
-        if(this.data.trim){
-            this.adjustTrim();
-        }
-    }else{
-        this.shape = document.createElementNS(svgNS, "path");
-    }
-    if(this.data.trim){
-        this.shape.setAttribute('stroke-linecap','butt');
-    }else{
-        this.shape.setAttribute('stroke-linejoin','round');
-        this.shape.setAttribute('stroke-linecap','round');
-    }
-    if(!this.data.renderedData){
-        this.data.renderedData = {};
-    }
-    this.shape.setAttribute('name',this.data.name);
-    styleUnselectableDiv(this.shapeG);
-    styleUnselectableDiv(this.shape);
-    this.shapeG.appendChild(this.shape);
+    this.renderer = renderer;
+    this.frameNum = -1;
 }
 
 CVShapeItemElement.prototype.adjustTrim = function(){
@@ -40,11 +14,11 @@ CVShapeItemElement.prototype.adjustTrim = function(){
     }
 };
 
-CVShapeItemElement.prototype.getElement = function(){
-    return this.shapeG;
-};
-
-CVShapeItemElement.prototype.renderShape = function(num){
+CVShapeItemElement.prototype.renderShape = function(){
+    var num = this.frameNum;
+    var ctx = this.renderer.canvasContext;
+    ctx.save();
+    this.renderTransform(num);
     if(this.data.type=="pathShape"){
         this.pathLength = this.renderPath(num);
     }else if(this.data.type=="rectShape"){
@@ -57,22 +31,64 @@ CVShapeItemElement.prototype.renderShape = function(num){
     }
     this.renderFill(num);
     this.renderStroke(num);
-    this.renderTransform(num);
+    this.renderer.canvasContext.stroke();
+    if(this.data.closed){
+        this.renderer.canvasContext.fill();
+    }
+    ctx.restore();
+};
+
+CVShapeItemElement.prototype.prepareFrame = function(num){
+    this.frameNum = num;
+};
+
+CVShapeItemElement.prototype.renderTransform = function(num){
+    var animData = this.data.an;
+    if(animData.tr){
+        var ctx = this.renderer.canvasContext;
+        var tr = animData.tr[animData.tr[num].forwardFrame];
+        animData.renderedFrame.tr = tr.forwardFrame;
+        var matrixValue = tr.mtArr;
+        ctx.translate(tr.a[0],tr.a[1]);
+        ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
+        ctx.translate(-tr.a[0],-tr.a[1]);
+
+    }
 };
 
 CVShapeItemElement.prototype.renderPath = function(num){
     var animData = this.data.an;
     var path = animData.path[animData.path[num].forwardFrame];
 
-    if(path.pathString == animData.renderedFrame.path){
-        if(this.data.trim){
-            return this.cachedData.pathLengths[animData.path[animData.path[num].forwardFrame].pathString];
-        }
-        return;
-    }
     animData.renderedFrame.path = path.pathString;
+    var ctx = this.renderer.canvasContext;
 
-    this.shape.setAttribute('d',path.pathString);
+    var pathNodes = path.pathNodes;
+    if(pathNodes instanceof Array){
+        pathNodes = pathNodes[0];
+    }
+    var i,len = pathNodes.i.length;
+    ctx.beginPath();
+    for(i=0;i<len;i+=1){
+        if(i == 0){
+            ctx.moveTo(pathNodes.v[i][0],pathNodes.v[i][1]);
+        }else{
+            ctx.bezierCurveTo(pathNodes.o[i-1][0]+pathNodes.v[i-1][0],pathNodes.o[i-1][1]+pathNodes.v[i-1][1]
+                ,pathNodes.i[i][0]+pathNodes.v[i][0],pathNodes.i[i][1]+pathNodes.v[i][1]
+                ,pathNodes.v[i][0],pathNodes.v[i][1]);
+        }
+    }
+    if(path.closed){
+    ctx.bezierCurveTo(pathNodes.o[i-1][0]+pathNodes.v[i-1][0],pathNodes.o[i-1][1]+pathNodes.v[i-1][1]
+        ,pathNodes.i[0][0]+pathNodes.v[0][0],pathNodes.i[0][1]+pathNodes.v[0][1]
+        ,pathNodes.v[0][0],pathNodes.v[0][1]);
+    }
+    getPathSize(path.pathString);
+
+/*    ctx.moveTo(0,0);
+    ctx.lineTo(200,0);
+    ctx.lineTo(200,200);
+    ctx.lineTo(0,200);*/
     if(this.data.trim){
         if(this.cachedData.pathLengths == null){
             this.cachedData.pathLengths = {};
@@ -138,51 +154,36 @@ CVShapeItemElement.prototype.renderFill = function(num){
     var animData = this.data.an;
     if(animData.fill){
         var fill = animData.fill[animData.fill[num].forwardFrame];
-        if(animData.renderedFrame.fill && fill.color == animData.renderedFrame.fill.color && fill.opacity == animData.renderedFrame.fill.opacity){
-            return;
-        }
         animData.renderedFrame.fill = {color:fill.color,opacity:fill.opacity};
-        this.shape.setAttribute('fill',fill.color);
         if(this.data.fillEnabled!==false){
-            this.shape.setAttribute('fill-opacity',fill.opacity);
+            var rgbColor = hexToRgb(fill.color);
+            this.renderer.canvasContext.fillStyle='rgba('+rgbColor.r+','+rgbColor.g+','+rgbColor.b+','+fill.opacity+')';
         }else{
-            this.shape.setAttribute('fill-opacity',0);
+            this.renderer.canvasContext.fillStyle='rgba(0,0,0,0)';
         }
     }else{
-        this.shape.setAttribute('fill-opacity',0);
+        this.renderer.canvasContext.fillStyle='rgba(0,0,0,0)';
     }
+    //this.renderer.canvasContext.fillStyle='rgba(255,0,0,0)';
+    //this.renderer.canvasContext.globalAlpha = .3;
 };
 
 CVShapeItemElement.prototype.renderStroke = function(num){
     var animData = this.data.an;
     if(animData.stroke){
-        if(animData.stroke[num].forwardFrame == animData.renderedFrame.stroke){
-            return;
-        }
         var stroke = animData.stroke[animData.stroke[num].forwardFrame];
         animData.renderedFrame.stroke = stroke.forwardFrame;
-        this.shape.setAttribute('stroke',stroke.color);
-        this.shape.setAttribute('stroke-width',stroke.width);
+        /*ctx.strokeStyle="red";
+         */
+        this.renderer.canvasContext.lineWidth=stroke.width;
         if(this.data.strokeEnabled!==false){
-            this.shape.setAttribute('stroke-opacity',stroke.opacity);
+            var rgbColor = hexToRgb(stroke.color);
+            this.renderer.canvasContext.strokeStyle='rgba('+rgbColor.r+','+rgbColor.g+','+rgbColor.b+','+stroke.opacity+')';
         }else{
-            this.shape.setAttribute('stroke-opacity',0);
+            this.renderer.canvasContext.strokeStyle='rgba(0,0,0,0)';
         }
-    }
-};
-
-CVShapeItemElement.prototype.renderTransform = function(num){
-    var animData = this.data.an;
-    if(animData.tr){
-        if(animData.tr[num].forwardFrame == animData.renderedFrame.tr){
-            return;
-        }
-        var tr = animData.tr[animData.tr[num].forwardFrame];
-        animData.renderedFrame.tr = tr.forwardFrame;
-        var matrixValue = tr.mt;
-
-        this.shapeG.setAttribute('transform',matrixValue);//**//
-        this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');//**//
+    }else{
+        this.renderer.canvasContext.strokeStyle = 'rgba(0,0,0,0)';
     }
 };
 
