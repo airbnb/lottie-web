@@ -21,6 +21,9 @@ CVShapeElement.prototype.createElements = function(){
 
 CVShapeElement.prototype.prepareFrame = function(num){
     this.parent.prepareFrame.call(this,num);
+    if(!this.currentAnimData){
+        return;
+    }
     var i,len = this.data.shapes.length,shapeData;
     var shapeItem;
     for(i=len-1;i>=0;i--){
@@ -31,6 +34,9 @@ CVShapeElement.prototype.prepareFrame = function(num){
 };
 
 CVShapeElement.prototype.draw = function(){
+    if(!this.currentAnimData){
+        return;
+    }
     this.parent.draw.call(this);
     this.drawShapes();
 };

@@ -20,8 +20,10 @@ CVBaseElement.prototype.createElements = function(){
 };
 
 CVBaseElement.prototype.prepareFrame = function(num){
-    console.log('num: ',num);
-    console.log('this.data.an: ',this.data.an);
+    if(!this.data.an[num]){
+        this.currentAnimData = null;
+        return;
+    }
     this.currentAnimData = this.data.an[this.data.an[num].forwardFrame];
 
     if(this.data.hasMask){
@@ -35,6 +37,10 @@ CVBaseElement.prototype.initDraw = function(){
 };
 
 CVBaseElement.prototype.draw = function(){
+    if(!this.currentAnimData){
+
+        return;
+    }
     var ctx = this.renderer.canvasContext;
     /*console.log('this.data.layerName: ',this.data.layerName);
     console.log('this.data.width: ',this.data.width);

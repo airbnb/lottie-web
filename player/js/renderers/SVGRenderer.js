@@ -118,7 +118,7 @@ SVGRenderer.prototype.buildItemHierarchy = function (threeItem, layerName, paren
     return null;
 };
 
-SVGRenderer.prototype.renderFrame = function(num){
+SVGRenderer.prototype.renderFrame = function(num){i
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
         this.layers[i].element.renderFrame(num - this.layers[i].startTime);
