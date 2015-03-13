@@ -20,6 +20,8 @@ CVBaseElement.prototype.createElements = function(){
 };
 
 CVBaseElement.prototype.prepareFrame = function(num){
+    console.log('num: ',num);
+    console.log('this.data.an: ',this.data.an);
     this.currentAnimData = this.data.an[this.data.an[num].forwardFrame];
 
     if(this.data.hasMask){
