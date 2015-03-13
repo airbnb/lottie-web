@@ -37,15 +37,16 @@ CVBaseElement.prototype.draw = function(){
     if(this.data.parentHierarchy){
         var i, len = this.data.parentHierarchy.length, animData;
         for(i = len - 1; i>=0 ; i -= 1){
-            animData = this.data.parentHierarchy[0].element.getCurrentAnimData();
-            ctx.translate(animData.tr.a[0],animData.tr.a[1]);
+            animData = this.data.parentHierarchy[i].element.getCurrentAnimData();
+            //ctx.translate(animData.tr.a[0],animData.tr.a[1]);
             var matrixValue = animData.matrixArray;
             ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
             ctx.translate(-animData.tr.a[0],-animData.tr.a[1]);
         }
     }
 
-     ctx.translate(this.currentAnimData.tr.a[0],this.currentAnimData.tr.a[1]);
+     //ctx.translate(this.currentAnimData.tr.a[0],this.currentAnimData.tr.a[1]);
+    ctx.globalAlpha = this.currentAnimData.tr.o;
     var matrixValue = this.currentAnimData.matrixArray;
      ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
      ctx.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);

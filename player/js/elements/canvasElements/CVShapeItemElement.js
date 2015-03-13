@@ -32,9 +32,7 @@ CVShapeItemElement.prototype.renderShape = function(){
     this.renderFill(num);
     this.renderStroke(num);
     this.renderer.canvasContext.stroke();
-    if(this.data.closed){
-        this.renderer.canvasContext.fill();
-    }
+    this.renderer.canvasContext.fill();
     ctx.restore();
 };
 
@@ -49,9 +47,11 @@ CVShapeItemElement.prototype.renderTransform = function(num){
         var tr = animData.tr[animData.tr[num].forwardFrame];
         animData.renderedFrame.tr = tr.forwardFrame;
         var matrixValue = tr.mtArr;
-        ctx.translate(tr.a[0],tr.a[1]);
+        //ctx.translate(tr.a[0],tr.a[1]);
         ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
         ctx.translate(-tr.a[0],-tr.a[1]);
+        //ctx.translate(-tr.a[0],-tr.a[1]);
+        //ctx.translate(-tr.a[0],-tr.a[1]);
 
     }
 };
@@ -83,12 +83,7 @@ CVShapeItemElement.prototype.renderPath = function(num){
         ,pathNodes.i[0][0]+pathNodes.v[0][0],pathNodes.i[0][1]+pathNodes.v[0][1]
         ,pathNodes.v[0][0],pathNodes.v[0][1]);
     }
-    getPathSize(path.pathString);
 
-/*    ctx.moveTo(0,0);
-    ctx.lineTo(200,0);
-    ctx.lineTo(200,200);
-    ctx.lineTo(0,200);*/
     if(this.data.trim){
         if(this.cachedData.pathLengths == null){
             this.cachedData.pathLengths = {};
