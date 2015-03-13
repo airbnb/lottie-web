@@ -21,6 +21,10 @@ CVBaseElement.prototype.createElements = function(){
 
 CVBaseElement.prototype.prepareFrame = function(num){
     this.currentAnimData = this.data.an[this.data.an[num].forwardFrame];
+
+    if(this.data.hasMask){
+        this.maskManager.prepareFrame(num);
+    }
 };
 
 CVBaseElement.prototype.initDraw = function(){
@@ -50,6 +54,9 @@ CVBaseElement.prototype.draw = function(){
     var matrixValue = this.currentAnimData.matrixArray;
      ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
      ctx.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
+    if(this.data.hasMask){
+        this.maskManager.draw();
+    }
 
 };
 
@@ -66,7 +73,7 @@ CVBaseElement.prototype.addMasks = function(data){
         'data':{value:data},
         'element':{value:this}
     };
-    this.maskManager = createElement(MaskElement,null,params);
+    this.maskManager = createElement(CVMaskElement,null,params);
 };
 CVBaseElement.prototype.createEffectsManager = function(data){
     var params = {
