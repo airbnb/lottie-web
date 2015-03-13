@@ -20,7 +20,10 @@ CVShapeElement.prototype.createElements = function(){
 };
 
 CVShapeElement.prototype.prepareFrame = function(num){
-    this.parent.prepareFrame.call(this,num);
+    var renderParent = this.parent.prepareFrame.call(this,num);
+    if(renderParent===false){
+        return;
+    }
     var i,len = this.data.shapes.length,shapeData;
     var shapeItem;
     for(i=len-1;i>=0;i--){
@@ -31,7 +34,10 @@ CVShapeElement.prototype.prepareFrame = function(num){
 };
 
 CVShapeElement.prototype.draw = function(){
-    this.parent.draw.call(this);
+    var renderParent = this.parent.draw.call(this);
+    if(renderParent===false){
+        return;
+    }
     this.drawShapes();
 };
 

@@ -5,7 +5,10 @@ function CVCompElement(data, animationItem){
 createElement(CVBaseElement, CVCompElement);
 
 CVCompElement.prototype.prepareFrame = function(num){
-    this.parent.prepareFrame.call(this,num);
+    var renderParent = this.parent.prepareFrame.call(this,num);
+    if(renderParent===false){
+        return;
+    }
 
     var i,len = this.layers.length;
     var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : this.data.tm[num] : num;
