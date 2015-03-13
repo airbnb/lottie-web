@@ -20,8 +20,6 @@ CVBaseElement.prototype.createElements = function(){
 };
 
 CVBaseElement.prototype.prepareFrame = function(num){
-    console.log('num: ',num);
-    console.log('this.data.an: ',this.data.an);
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
     {
     }else{
