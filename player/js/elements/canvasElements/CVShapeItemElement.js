@@ -2,7 +2,6 @@ function CVShapeItemElement(data,renderer){
     this.data = data;
     this.renderer = renderer;
     this.frameNum = -1;
-    this.pathsSegments = [];
 }
 
 CVShapeItemElement.prototype.adjustTrim = function(){
@@ -63,15 +62,8 @@ CVShapeItemElement.prototype.renderTransform = function(num){
 CVShapeItemElement.prototype.renderTrimPath = function(num){
     var animData = this.data.an;
     var path = animData.path[animData.path[num].forwardFrame];
-    var i = 0, len = this.pathsSegments.length;
-    var segmentsData;
-    while(i<len){
-        if(this.pathsSegments[i].str == path.pathString){
-            segmentsData = this.pathsSegments[i].segments;
-            break;
-        }
-        i += 1;
-    }
+    var segments = [];
+    
     console.log('path: ',path);
 }
 

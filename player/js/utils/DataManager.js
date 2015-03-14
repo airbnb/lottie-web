@@ -2,6 +2,7 @@ var dataManager = (function(){
     var frameRate = 0;
     var easingFunctions = {};
     var matrixInstance =  new MatrixManager();
+    var storedBezierCurves = [];
 
     function completeTimeRemap(tm, layerFrames, offsetFrame){
         var interpolatedProperty = getInterpolatedValues(tm,layerFrames, offsetFrame);
@@ -276,6 +277,15 @@ var dataManager = (function(){
         console.log('frameCount: ',frameCount);
         console.table(valuesArray);*/
         return valuesArray;
+    }
+
+    function drawBezierCurve(data){
+        var bezierName = data.i.join('_');
+        bezierName += '_'+data.c1.join('_');
+        bezierName += '_'+data.c2.join('_');
+        bezierName += '_'+data.o.join('_');
+        bezierName = bezierName.replace('.','-');
+        console.log('bName: ',bezierName);
     }
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
@@ -632,7 +642,7 @@ var dataManager = (function(){
     var moduleOb = {};
     moduleOb.completeData = completeData;
     moduleOb.renderFrame = renderFrame;
-    moduleOb.buildBezierData = buildBezierData;
+    moduleOb.drawBezierCurve = drawBezierCurve;
 
     return moduleOb;
 }());
