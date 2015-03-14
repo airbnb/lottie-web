@@ -21,6 +21,8 @@ CVCompElement.prototype.draw = function(){
     this.parent.draw.call(this);
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
+        this.layers[i].element.initDraw();
         this.layers[i].element.draw();
+        this.layers[i].element.endDraw();
     }
 };

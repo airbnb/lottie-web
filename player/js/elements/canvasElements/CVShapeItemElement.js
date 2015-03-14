@@ -2,6 +2,7 @@ function CVShapeItemElement(data,renderer){
     this.data = data;
     this.renderer = renderer;
     this.frameNum = -1;
+    this.pathsSegments = [];
 }
 
 CVShapeItemElement.prototype.adjustTrim = function(){
@@ -20,14 +21,15 @@ CVShapeItemElement.prototype.renderShape = function(){
     ctx.save();
     this.renderTransform(num);
     if(this.data.type=="pathShape"){
-        this.pathLength = this.renderPath(num);
+        if(this.data.trim){
+            this.renderTrimPath(num);
+        }else{
+            this.renderPath(num);
+        }
     }else if(this.data.type=="rectShape"){
         this.renderRect(num);
     }else if(this.data.type=="ellipseShape"){
         this.pathLength = this.renderEllipse(num);
-    }
-    if(this.data.trim){
-        this.renderTrim(num);
     }
     this.renderFill(num);
     this.renderStroke(num);
@@ -57,6 +59,21 @@ CVShapeItemElement.prototype.renderTransform = function(num){
 
     }
 };
+
+CVShapeItemElement.prototype.renderTrimPath = function(num){
+    var animData = this.data.an;
+    var path = animData.path[animData.path[num].forwardFrame];
+    var i = 0, len = this.pathsSegments.length;
+    var segmentsData;
+    while(i<len){
+        if(this.pathsSegments[i].str == path.pathString){
+            segmentsData = this.pathsSegments[i].segments;
+            break;
+        }
+        i += 1;
+    }
+    console.log('path: ',path);
+}
 
 CVShapeItemElement.prototype.renderPath = function(num){
     var animData = this.data.an;
@@ -99,12 +116,6 @@ CVShapeItemElement.prototype.renderPath = function(num){
 
 CVShapeItemElement.prototype.renderEllipse = function(num){
     var animData = this.data.an;
-    if(animData.ell[num].forwardFrame == animData.renderedFrame.ell){
-        if(this.data.trim){
-            return this.cachedData.pathLengths['ellipse_'+animData.ell[num].forwardFrame];
-        }
-        return 0;
-    }
     var ell = animData.ell[animData.ell[num].forwardFrame];
     animData.renderedFrame.ell = ell.forwardFrame;
 

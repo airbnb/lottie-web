@@ -632,6 +632,7 @@ var dataManager = (function(){
     var moduleOb = {};
     moduleOb.completeData = completeData;
     moduleOb.renderFrame = renderFrame;
+    moduleOb.buildBezierData = buildBezierData;
 
     return moduleOb;
 }());
