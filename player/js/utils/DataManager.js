@@ -661,6 +661,9 @@ var dataManager = (function(){
                         var trimS = getInterpolatedValue(shapeItem.trim.s,offsettedFrameNum, item.startTime);
                         var trimE = getInterpolatedValue(shapeItem.trim.e,offsettedFrameNum, item.startTime);
                         var trimO = getInterpolatedValue(shapeItem.trim.o,offsettedFrameNum, item.startTime);
+                        console.log('-------------------');
+                        console.log('trimS: ',trimS);
+                        console.log('trimE: ',trimE);
                         shapeItem.trim.an[offsettedFrameNum] = {
                             s: trimS,
                             e: trimE,

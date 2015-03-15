@@ -81,15 +81,30 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
     }
     len = segments.length;
     var segmentLength = totalLength*(trimData.e - trimData.s)/100;
-    var offset = (trimData.s/100 + (trimData.o%360)/360)*totalLength;
-    if(offset + segmentLength > totalLength){
+    var offset = ((trimData.s/100 + (trimData.o%360)/360)%1)*totalLength;
+    var trims = [];
+    /*console.log('offset: ',offset);
+    console.log('segmentLength: ',segmentLength);
+    console.log('totalLength: ',totalLength);
+    console.log('offset + segmentLength: ',offset + segmentLength);
+    console.log('trimData.e: ',trimData.e);
+    console.log('trimData.s: ',trimData.s);
+    console.log('((trimData.s/100 + (trimData.o%360)/360)%1): ',((trimData.s/100 + (trimData.o%360)/360)%1));*/
+    if(offset + segmentLength - totalLength > 0.00001){
         var secondarySegment = offset + segmentLength - totalLength;
-        ctx.moveTo(segments[0].points[0].point[0],segments[0].points[0].point[1]);
+        segmentLength -= secondarySegment;
+        var secondaryPos = [segments[0].points[0].point[0],segments[0].points[0].point[1]];
+    }else{
+        trims.push({
+            s: offset,
+            e: segmentLength
+        })
     }
     var addedLength = 0;
     var firstPoint = true;
     ctx.beginPath();
-    var j, jLen;
+    var j, jLen,perc;
+
     for(i = 0; i < len; i += 1){
         if(offset>addedLength+segments[i].segmentLength && !secondarySegment){
             addedLength += segments[i].segmentLength;
@@ -98,20 +113,100 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
         jLen = segments[i].points.length;
         for(j = 0; j < jLen ; j += 1){
             if(secondarySegment && addedLength < secondarySegment){
+                ctx.moveTo(secondaryPos[0],secondaryPos[1]);
+                if(addedLength + segments[i].points[j].partialLength >= offset + secondarySegment){
+                    perc = 1-(((addedLength + segments[i].points[j].partialLength) - (offset + secondarySegment))/segments[i].points[j].partialLength);
+                    ctx.lineTo(segments[i].points[j-1].point[0]+(segments[i].points[j].point[0]-segments[i].points[j-1].point[0])*perc
+                        ,segments[i].points[j-1].point[1]+(segments[i].points[j].point[1]-segments[i].points[j-1].point[1])*perc);
+                    secondaryPos[0] = segments[i].points[j-1].point[0]+(segments[i].points[j].point[0]-segments[i].points[j-1].point[0])*perc;
+                    secondaryPos[1] = segments[i].points[j-1].point[1]+(segments[i].points[j].point[1]-segments[i].points[j-1].point[1])*perc;
+                }else{
+                    ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
+                    secondaryPos[0] = segments[i].points[j].point[0];
+                    secondaryPos[1] = segments[i].points[j].point[1];
+                }
+            }
+            if(offset >= addedLength + segments[i].points[j].partialLength){
+                if(offset < addedLength + segments[i].points[j].partialLength + segments[i].points[j+1].partialLength){
+                    perc = ( offset - (addedLength + segments[i].points[j].partialLength))/segments[i].points[j+1].partialLength;
+                    ctx.moveTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
+                        ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
+                }
+                addedLength += segments[i].points[j].partialLength;
+                continue;
+            }
+            if(addedLength + segments[i].points[j].partialLength >= offset + segmentLength){
+                perc = 1 - (((addedLength + segments[i].points[j].partialLength) - (offset + segmentLength))/segments[i].points[j].partialLength);
+                //ctx.lineTo(segments[i].points[j-1].point[0]+(segments[i].points[j].point[0]-segments[i].points[j-1].point[0])*perc,segments[i].points[j-1].point[1]+(segments[i].points[j].point[1]-segments[i].points[j-1].point[1])*perc);
+            }else{
+                //ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
+            }
+        }
+        if(offset>addedLength+segments[i].segmentLength && secondarySegment){
+            addedLength += segments[i].segmentLength;
+        }
+        if(addedLength > segmentLength + offset){
+            console.log('breiking i',i);
+            break;
+        }
+    }
+
+
+
+
+    return;
+    for(i = 0; i < len; i += 1){
+        if(offset>addedLength+segments[i].segmentLength && !secondarySegment){
+            addedLength += segments[i].segmentLength;
+            continue;
+        }
+        jLen = segments[i].points.length;
+        for(j = 0; j < jLen ; j += 1){
+            console.log('j: ',j);
+            if(secondarySegment && addedLength < secondarySegment){
                 ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
             }else{
-                if(offset>addedLength){
+                if(offset>addedLength + segments[i].points[j].partialLength){
                     addedLength += segments[i].points[j].partialLength;
+                    if(offset < addedLength + segments[i].points[j+1].partialLength){
+                        perc = (offset - addedLength)/segments[i].points[j].partialLength;
+                        ctx.moveTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0]-segments[i].points[j].point[0])*perc,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1]-segments[i].points[j].point[1])*perc);
+                        firstPoint = false;
+                    }
+                    console.log('continue j',j);
+                    console.log('addedLength: ',addedLength);
+                    console.log('offset: ',offset);
                     continue;
                 }
                 if(addedLength> segmentLength + offset){
+                    console.log('breiking j',j);
                     break;
                 }
                 if(firstPoint){
+                    console.log('first point');
                     ctx.moveTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
                     firstPoint = false;
                 }else{
-                    ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
+                    /*console.log('llllegggo');
+                    console.log('addedLength: ',addedLength);
+                    console.log('segments[i].points[j].partialLength: ',segments[i].points[j].partialLength);
+                    console.log('segmentLength: ',segmentLength);*/
+                    console.log('addedLength + segments[i].points[j].partialLength - (segmentLength + offset): ',addedLength + segments[i].points[j].partialLength - (segmentLength + offset));
+                    if(addedLength + segments[i].points[j].partialLength - (segmentLength + offset) >= 0){
+                        perc = (segmentLength + offset - addedLength)/segments[i].points[j].partialLength;
+                        //console.log('totalLength: ',totalLength);
+                        console.log('trimData.e: ',trimData.e);
+                        console.log('trimData.s: ',trimData.s);
+                        console.log('perc: ',perc);
+                        /*console.log('segmentLength: ',segmentLength);
+                        console.log('offset: ',offset);
+                        console.log('addedLength: ',addedLength);
+                        console.log('segments[i].points[j].partialLength: ',segments[i].points[j].partialLength);*/
+                        ctx.lineTo(segments[i].points[j-1].point[0]+(segments[i].points[j].point[0]-segments[i].points[j-1].point[0])*perc,segments[i].points[j-1].point[1]+(segments[i].points[j].point[1]-segments[i].points[j-1].point[1])*perc);
+
+                    }else{
+                        ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
+                    }
                 }
             }
             addedLength += segments[i].points[j].partialLength;
@@ -120,6 +215,7 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
             addedLength += segments[i].segmentLength;
         }
         if(addedLength > segmentLength + offset){
+            console.log('breiking i',i);
             break;
         }
     }
@@ -156,8 +252,6 @@ CVShapeItemElement.prototype.renderPath = function(num){
         ,pathNodes.i[0][0]+pathNodes.v[0][0],pathNodes.i[0][1]+pathNodes.v[0][1]
         ,pathNodes.v[0][0],pathNodes.v[0][1]);
     }
-
-    console.log('123');
 };
 
 CVShapeItemElement.prototype.renderEllipse = function(num){
