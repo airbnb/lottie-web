@@ -92,18 +92,72 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
     console.log('((trimData.s/100 + (trimData.o%360)/360)%1): ',((trimData.s/100 + (trimData.o%360)/360)%1));*/
     if(offset + segmentLength - totalLength > 0.00001){
         var secondarySegment = offset + segmentLength - totalLength;
-        segmentLength -= secondarySegment;
         var secondaryPos = [segments[0].points[0].point[0],segments[0].points[0].point[1]];
+        trims.push({
+            s: offset,
+            e: offset + segmentLength - secondarySegment
+        });
+        trims.push({
+            s: 0,
+            e: offset + segmentLength - totalLength
+        })
     }else{
         trims.push({
             s: offset,
-            e: segmentLength
+            e: offset + segmentLength
         })
     }
     var addedLength = 0;
     var firstPoint = true;
     ctx.beginPath();
-    var j, jLen,perc;
+    var j, jLen,perc,flag, ended = false;
+    var k, kLen = trims.length;
+
+    for(i = 0; i < len; i += 1){
+        if(ended){
+            break;
+        }
+        jLen = segments[i].points.length;
+        flag = true;
+        for(k = 0; k < kLen; k+=1){
+            if(addedLength + segments[i].segmentLength > trims[k].s){
+                flag = false;
+            }
+        }
+        if(flag){
+            addedLength += segments[i].segmentLength;
+            continue;
+        }
+        for(j = 0; j < jLen-1 ; j += 1){
+            if(ended){
+                break;
+            }
+            kLen = trims.length;
+            addedLength += segments[i].points[j].partialLength;
+            for(k = 0; k < kLen; k+=1){
+                if(trims[k].s >= addedLength && trims[k].s < addedLength + segments[i].points[j+1].partialLength){
+                    perc = ( trims[k].s - addedLength)/segments[i].points[j+1].partialLength;
+                    ctx.moveTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
+                        ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
+                }
+                if(trims[k].e > addedLength && trims[k].e <= addedLength + segments[i].points[j+1].partialLength){
+                    perc = ( trims[k].e - addedLength)/segments[i].points[j+1].partialLength;
+                    ctx.lineTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
+                        ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
+                    trims.splice(k,1);
+                    k -= 1;
+                    kLen -= 1;
+                    if(kLen == 0){
+                        ended = true;
+                        break;
+                    }
+                }else if(addedLength > trims[k].s && addedLength < trims[k].e){
+                    ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
+                }
+            }
+        }
+    }
+    return;
 
     for(i = 0; i < len; i += 1){
         if(offset>addedLength+segments[i].segmentLength && !secondarySegment){
