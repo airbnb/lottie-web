@@ -276,6 +276,7 @@ var dataManager = (function(){
     function drawBezierCurve(coOrdArray){
         var bezierName = coOrdArray.join('_').replace(/\./g, 'p');
         if(storedBezierCurves[bezierName]){
+
             return storedBezierCurves[bezierName];
         }
         var curveSegments = 1000, absToCoord, absTiCoord;

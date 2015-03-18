@@ -39,7 +39,7 @@ var MatrixManager = function(){
         return s;
     };
 
-    var returnMatrix2D = function(rX, scaleX, scaleY, tX, tY){
+    /*var returnMatrix2D = function(rX, scaleX, scaleY, tX, tY){
         var rotationMatrix,  s, scaleMatrix, transformationMatrix, translationMatrix;
         //cos(X), sin(X), -sin(X), cos(X)
         rotationMatrix = $M([
@@ -60,9 +60,13 @@ var MatrixManager = function(){
         s += ")";
 
         return s;
+    };*/
+
+    var returnMatrix2D = function(rX, scaleX, scaleY, tX, tY){
+        return new Matrix().translate(tX,tY).rotate(rX).scale(scaleX,scaleY).toCSS();
     };
 
-    var returnMatrix2DArray = function(rX, scaleX, scaleY, tX, tY){
+    /*var returnMatrix2DArray = function(rX, scaleX, scaleY, tX, tY){
         var rotationMatrix,  scaleMatrix, transformationMatrix, translationMatrix;
         //cos(X), sin(X), -sin(X), cos(X)
         rotationMatrix = $M([
@@ -77,8 +81,12 @@ var MatrixManager = function(){
         transformationMatrix = transformationMatrix.x(translationMatrix);
 
         return [transformationMatrix.e(1, 1).toFixed(5),transformationMatrix.e(1, 2).toFixed(5)
-        ,transformationMatrix.e(2, 1).toFixed(5),transformationMatrix.e(2, 2).toFixed(5)
-        ,transformationMatrix.e(3, 1).toFixed(5),transformationMatrix.e(3, 2).toFixed(5)];
+            ,transformationMatrix.e(2, 1).toFixed(5),transformationMatrix.e(2, 2).toFixed(5)
+            ,transformationMatrix.e(3, 1).toFixed(5),transformationMatrix.e(3, 2).toFixed(5)];
+    };*/
+
+    var returnMatrix2DArray = function(rX, scaleX, scaleY, tX, tY){
+        return new Matrix().translate(tX,tY).rotate(rX).scale(scaleX,scaleY).toArray();
     };
 
     var get2DMatrix = function(animData){
