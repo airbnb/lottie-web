@@ -87,6 +87,10 @@ AnimationItem.prototype.checkLoaded = function () {
     }
 };
 
+AnimationItem.prototype.resize = function () {
+    this.renderer.updateContainerSize();
+};
+
 AnimationItem.prototype.buildControls = function () {
 
     if(this.playerType === '0'){

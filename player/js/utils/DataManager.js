@@ -488,6 +488,8 @@ var dataManager = (function(){
         return propertyArray;
     }
 
+    var pathV,pathO,pathI;
+
     function createPathString(paths,closed){
         if(!(paths instanceof Array)){
             paths = [paths];
@@ -498,24 +500,48 @@ var dataManager = (function(){
         var pathData;
         for(l = 0;l<lLen;l+=1){
             pathData = paths[l];
-            kLen = pathData.v.length;
+            pathV = pathData.v;
+            pathO = pathData.o;
+            pathI = pathData.i;
+            kLen = pathV.length;
             for(k=0;k<kLen;k++){
                 if(k==0){
-                    pathString += "M"+Math.round(10*(pathData.v[k][0]))/10+","+Math.round(10*(pathData.v[k][1]))/10;
+                    pathString += "M"+pathV[k][0]+","+pathV[k][1];
                 }else{
-                    pathString += " C"+Math.round(10*(pathData.o[k-1][0]+pathData.v[k-1][0]))/10+","+Math.round(10*(pathData.o[k-1][1]+pathData.v[k-1][1]))/10;
-                    pathString += " "+Math.round(10*(pathData.i[k][0]+pathData.v[k][0]))/10+","+Math.round(10*(pathData.i[k][1]+pathData.v[k][1]))/10;
-                    pathString += " "+Math.round(10*(pathData.v[k][0]))/10+","+Math.round(10*(pathData.v[k][1]))/10;
+                    pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]);
+                    pathString += " "+(pathI[k][0]+pathV[k][0])+","+(pathI[k][1]+pathV[k][1]);
+                    pathString += " "+pathV[k][0]+","+pathV[k][1];
                 }
             }
             if(closed !== false){
-                pathString += " C"+Math.round(10*(pathData.o[k-1][0]+pathData.v[k-1][0]))/10+","+Math.round(10*(pathData.o[k-1][1]+pathData.v[k-1][1]))/10;
-                pathString += " "+Math.round(10*(pathData.i[0][0]+pathData.v[0][0]))/10+","+Math.round(10*(pathData.i[0][1]+pathData.v[0][1]))/10;
-                pathString += " "+Math.round(10*(pathData.v[0][0]))/10+","+Math.round(10*(pathData.v[0][1]))/10;
+                pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]);
+                pathString += " "+(pathI[0][0]+pathV[0][0])+","+(pathI[0][1]+pathV[0][1]);
+                pathString += " "+pathV[0][0]+","+(pathV[0][1]);
             }
+            /*
+             for(k=0;k<kLen;k++){
+             if(k==0){
+             pathString += "M"+Math.round(10*(pathV[k][0]))/10+","+Math.round(10*(pathV[k][1]))/10;
+             }else{
+             pathString += " C"+Math.round(10*(pathO[k-1][0]+pathV[k-1][0]))/10+","+Math.round(10*(pathO[k-1][1]+pathV[k-1][1]))/10;
+             pathString += " "+Math.round(10*(pathI[k][0]+pathV[k][0]))/10+","+Math.round(10*(pathI[k][1]+pathV[k][1]))/10;
+             pathString += " "+Math.round(10*(pathV[k][0]))/10+","+Math.round(10*(pathV[k][1]))/10;
+             }
+             }
+             if(closed !== false){
+             pathString += " C"+Math.round(10*(pathO[k-1][0]+pathV[k-1][0]))/10+","+Math.round(10*(pathO[k-1][1]+pathV[k-1][1]))/10;
+             pathString += " "+Math.round(10*(pathI[0][0]+pathV[0][0]))/10+","+Math.round(10*(pathI[0][1]+pathV[0][1]))/10;
+             pathString += " "+Math.round(10*(pathV[0][0]))/10+","+Math.round(10*(pathV[0][1]))/10;
+             }*/
         }
         return pathString;
     }
+
+    var trOb, dataOb, opacity,pos,rot,scale;
+    var maskProps,maskValue;
+    var timeRemapped;
+    var shapeItem;
+    var fillOpacity,fillColor, shape, strokeColor, strokeOpacity, strokeWidth, elmPos, elmSize, elmRound;
 
     function iterateLayers(layers, frameNum){
 
@@ -530,14 +556,14 @@ var dataManager = (function(){
             if(item.an[offsettedFrameNum]){
                 continue;
             }
-            var trOb = {};
-            var dataOb = {};
+            trOb = {};
+            dataOb = {};
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime);
-            var opacity = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime);
+            opacity = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime);
             dataOb.o = opacity instanceof Array ? opacity[0]/100 : opacity/100;
-            var pos = getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime);
-            var rot = getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime);
-            var scale = getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime);
+            pos = getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime);
+            rot = getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime);
+            scale = getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime);
             trOb.s = scale instanceof Array ? scale.length > 1 ? [scale[0]/100,scale[1]/100,scale[2]/100] : [scale[0]/100,scale[0]/100,scale[0]/100] : [scale/100,scale/100,scale/100];
             trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
             trOb.p = pos;
@@ -551,9 +577,8 @@ var dataManager = (function(){
                 matrixArray: matrixInstance.getMatrixArray(trOb)
             };
             if(item.hasMask){
-                var maskProps = item.masksProperties;
+                maskProps = item.masksProperties;
                 len = maskProps.length;
-                var maskValue;
                 for(i=0;i<len;i+=1){
                     if(!maskProps[i].pathStrings || subframeEnabled){
                         maskProps[i].pathStrings = [];
@@ -568,12 +593,10 @@ var dataManager = (function(){
                 }
             }
             if(item.type == 'PreCompLayer'){
-                var timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
+                timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
                 iterateLayers(item.layers,timeRemapped);
             }else if(item.type == 'ShapeLayer'){
                 len = item.shapes.length;
-                var shapeItem;
-                var fillOpacity,fillColor, shape, strokeColor, strokeOpacity, strokeWidth, elmPos, elmSize, elmRound;
                 for(i=0;i<len;i+=1){
                     shapeItem = item.shapes[i];
                     if(!shapeItem._created || subframeEnabled){

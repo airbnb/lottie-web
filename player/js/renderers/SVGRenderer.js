@@ -118,6 +118,9 @@ SVGRenderer.prototype.buildItemHierarchy = function (threeItem, layerName, paren
     return null;
 };
 
+SVGRenderer.prototype.updateContainerSize = function () {
+};
+
 SVGRenderer.prototype.renderFrame = function(num){i
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {

@@ -103,6 +103,13 @@ var animationManager = (function(){
         Array.prototype.forEach.call(animElements,registerAnimation);
     }
 
+    function resize(){
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.resize();
+        }
+    }
+
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.setSpeed = setSpeed;
     moduleOb.setDirection = setDirection;
@@ -113,5 +120,6 @@ var animationManager = (function(){
     moduleOb.stop = stop;
     moduleOb.togglePause = togglePause;
     moduleOb.searchAnimations = searchAnimations;
+    moduleOb.resize = resize;
     return moduleOb;
 }());

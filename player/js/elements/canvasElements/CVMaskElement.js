@@ -6,7 +6,6 @@ CVMaskElement.prototype.init = function () {
     this.totalMasks = this.masksProperties.length;
     this.ctx = this.element.renderer.canvasContext;
     this.layerSize = this.element.getLayerSize();
-    console.log('this.layerSize: ',this.layerSize);
 };
 
 CVMaskElement.prototype.prepareFrame = function (num) {
@@ -14,7 +13,6 @@ CVMaskElement.prototype.prepareFrame = function (num) {
 };
 
 CVMaskElement.prototype.draw = function () {
-    console.log('this.frameNum: ',this.frameNum);
     var i, len = this.data.masksProperties.length;
     for (i = 0; i < len; i++) {
         if (this.masksProperties[i].inv) {

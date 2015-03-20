@@ -45,14 +45,36 @@ CanvasRenderer.prototype.createSolid = function (data) {
 
 CanvasRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container = document.createElement('canvas');
-    this.animationItem.container.setAttribute('width',animData.animation.compWidth);
-    this.animationItem.container.setAttribute('height',animData.animation.compHeight);
     this.animationItem.container.style.width = '100%';
     this.animationItem.container.style.height = '100%';
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.layers = animData.animation.layers;
     this.canvasContext = this.animationItem.container.getContext('2d');
+    this.transformCanvas = {};
+    this.transformCanvas.w = animData.animation.compWidth;
+    this.transformCanvas.h = animData.animation.compHeight;
+    this.updateContainerSize();
+};
+
+CanvasRenderer.prototype.updateContainerSize = function () {
+    var elementWidth = this.animationItem.wrapper.offsetWidth;
+    var elementHeight = this.animationItem.wrapper.offsetHeight;
+    this.animationItem.container.setAttribute('width',elementWidth);
+    this.animationItem.container.setAttribute('height',elementHeight);
+    var elementRel = elementWidth/elementHeight;
+    var animationRel = this.transformCanvas.w/this.transformCanvas.h;
+    if(animationRel>elementRel){
+        this.transformCanvas.sx = elementWidth/this.transformCanvas.w;
+        this.transformCanvas.sy = elementWidth/this.transformCanvas.w;
+        this.transformCanvas.tx = 0;
+        this.transformCanvas.ty = (elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2;
+    }else{
+        this.transformCanvas.sx = elementHeight/this.transformCanvas.h;
+        this.transformCanvas.sy = elementHeight/this.transformCanvas.h;
+        this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2;
+        this.transformCanvas.ty = 0;
+    }
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers) {
@@ -102,6 +124,10 @@ CanvasRenderer.prototype.draw = function(){
 
 CanvasRenderer.prototype.renderFrame = function(num){
     this.animationItem.container.width = this.animationItem.container.width;
+    this.canvasContext.transform(this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty);
+    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.canvasContext.clip();
+
     this.prepareFrame(num);
     this.draw();
 };
