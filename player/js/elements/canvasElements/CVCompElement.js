@@ -1,5 +1,5 @@
-function CVCompElement(data, animationItem){
-    this.parent.constructor.call(this,data, animationItem);
+function CVCompElement(data, renderer){
+    this.parent.constructor.call(this,data, renderer);
     this.layers = data.layers;
 }
 createElement(CVBaseElement, CVCompElement);
