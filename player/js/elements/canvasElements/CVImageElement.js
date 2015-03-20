@@ -1,7 +1,6 @@
 function CVImageElement(data, renderer){
     this.renderer = renderer;
     this.animationItem = renderer.animationItem;
-    console.log('this.animationItem: ',this.animationItem);
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
     this.parent.constructor.call(this,data, renderer);
