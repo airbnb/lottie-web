@@ -104,13 +104,12 @@
     }
 
     function waitForRenderDone(){
-        $.sleep(100);
         if(checkRender()){
             replaceCurrentLayer();
             currentLayerNum++;
             verifyNextItem();
         }else{
-            waitForRenderDone();
+            extrasInstance.setTimeout(waitForRenderDone,100);
         }
     }
 
