@@ -1,6 +1,8 @@
 var subframeEnabled = false;
 var svgElement = document.createElementNS(svgNS,'svg');
 var shapeHelper = document.createElementNS(svgNS,'path');
+var supportsPath2D = typeof Path2D === 'function';
+supportsPath2D = false;
 var body;
 
 svgElement.appendChild(shapeHelper);

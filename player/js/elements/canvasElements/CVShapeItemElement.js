@@ -2,6 +2,7 @@ function CVShapeItemElement(data,renderer){
     this.data = data;
     this.renderer = renderer;
     this.frameNum = -1;
+    this.renderedPaths = {};
 }
 
 CVShapeItemElement.prototype.adjustTrim = function(){
@@ -34,8 +35,19 @@ CVShapeItemElement.prototype.renderShape = function(){
     this.renderStroke(num);
     this.renderer.canvasContext.lineCap = 'round';
     this.renderer.canvasContext.lineJoin = 'round';
-    this.renderer.canvasContext.fill();
-    this.renderer.canvasContext.stroke();
+    if(this.renderedPaths[num]){
+        if(supportsPath2D){
+            this.renderer.canvasContext.fill(this.renderedPaths[num]);
+            this.renderer.canvasContext.stroke(this.renderedPaths[num]);
+        }else{
+            this.renderedPaths[num].drawToContext(this.renderer.canvasContext);
+            this.renderer.canvasContext.fill();
+            this.renderer.canvasContext.stroke();
+        }
+    }else{
+        this.renderer.canvasContext.fill();
+        this.renderer.canvasContext.stroke();
+    }
     ctx.restore();
 };
 
@@ -65,6 +77,10 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
         return;
     }
     var ctx = this.renderer.canvasContext;
+    var path2d = new Path2D();
+    if(this.renderedPaths[num]){
+        return;
+    }
     var animData = this.data.an;
     var path = animData.path[animData.path[num].forwardFrame];
     var pathNodes = path.pathNodes;
@@ -100,7 +116,7 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
         })
     }
     var addedLength = 0;
-    ctx.beginPath();
+    //ctx.beginPath();
     var j, jLen,perc,flag, ended = false;
     var k, kLen = trims.length;
 
@@ -128,11 +144,15 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
             for(k = 0; k < kLen; k+=1){
                 if(trims[k].s >= addedLength && trims[k].s < addedLength + segments[i].points[j+1].partialLength){
                     perc = ( trims[k].s - addedLength)/segments[i].points[j+1].partialLength;
+                    /*path2d.moveTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
+                        ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);*/
                     ctx.moveTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
                         ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
                 }
                 if(trims[k].e > addedLength && trims[k].e <= addedLength + segments[i].points[j+1].partialLength){
                     perc = ( trims[k].e - addedLength)/segments[i].points[j+1].partialLength;
+                    /*path2d.lineTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
+                        ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);*/
                     ctx.lineTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
                         ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
                     trims.splice(k,1);
@@ -143,10 +163,12 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
                         break;
                     }
                 }else if(addedLength > trims[k].s && addedLength < trims[k].e){
+                    //path2d.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
                     ctx.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
                 }
             }
         }
+        //this.renderedPaths[num] = path2d;
     }
 };
 
@@ -177,6 +199,7 @@ CVShapeItemElement.prototype.renderPath = function(num){
         ,pathNodes.i[0][0]+pathNodes.v[0][0],pathNodes.i[0][1]+pathNodes.v[0][1]
         ,pathNodes.v[0][0],pathNodes.v[0][1]);
     }
+    ctx.closePath();
 };
 
 CVShapeItemElement.prototype.renderEllipse = function(num){
@@ -188,6 +211,7 @@ CVShapeItemElement.prototype.renderEllipse = function(num){
 
     ctx.beginPath();
     ctx.ellipse(ell.p[0], ell.p[1], ell.size[0]/2, ell.size[1]/2, 0, 0, Math.PI*2, true);
+    ctx.closePath();
 };
 
 CVShapeItemElement.prototype.renderRect = function(num){
