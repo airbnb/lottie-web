@@ -47,7 +47,7 @@
         if(currentLayerNum<totalLayers){
             var layerInfo = currentComposition.layers[currentLayerNum+1];
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'StillLayer'){
+            if(lType == 'StillLayer' && layerInfo.enabled){
                 currentSource = layerInfo.source;
                 var convertedSource = searchConvertedSource(currentSource);
                 if(convertedSource==null){
@@ -104,13 +104,12 @@
     }
 
     function waitForRenderDone(){
-        $.sleep(100);
         if(checkRender()){
             replaceCurrentLayer();
             currentLayerNum++;
             verifyNextItem();
         }else{
-            waitForRenderDone();
+            extrasInstance.setTimeout(waitForRenderDone,100);
         }
     }
 

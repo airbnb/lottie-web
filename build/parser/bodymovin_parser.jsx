@@ -418,6 +418,8 @@ var UI;
     var mainLayers = [];
     var filesDirectory;
     var callback;
+    var pendingLayers = [];
+    var totalLayers = 0;
 
     function getCompositionAnimationData(compo, compositionData,fDirectory){
         mainComp = compo;
@@ -564,18 +566,21 @@ var UI;
         return textDataOb;
     }
 
-    function createLayers(compo, layersData, frameRate){
-        var i, len = compo.layers.length;
-        for(i = 0;i<len;i++){
-            var layerOb = {};
-            var layerInfo = compo.layers[i+1];
+    function analyzeNextLayer(){
+        if(pendingLayers.length == 0){
+            renderNextFrame();
+        }else{
+            var pendingItem = pendingLayers.pop();
+            UI.setProgress(pendingLayers.length/totalLayers);
+            var layerOb = pendingItem.lOb;
+            var layerInfo = pendingItem.lInfo;
+            var frameRate = pendingItem.frameRate;
             var lType = extrasInstance.layerType(layerInfo);
-
             if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
                 //TODO add audios
-                layersData.push(layerOb);
                 layerOb.enabled = false;
-                continue;
+                analyzeNextLayer();
+                return;
             }else if(lType == 'TextLayer'){
                 var textProp = layerInfo.property("Source Text");
                 var textDocument = textProp.value;
@@ -607,10 +612,8 @@ var UI;
             layerOb.an = {};
 
             if(lType=='PreCompLayer'){
-                layerOb.layers = [];
                 layerOb.width = layerInfo.source.width;
                 layerOb.height = layerInfo.source.height;
-                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate);
             }else if(lType == 'StillLayer'){
                 addStillAsset(layerOb,layerInfo);
                 layerOb.width = layerInfo.source.width;
@@ -627,7 +630,6 @@ var UI;
             layerOb.outPoint = layerInfo.outPoint*frameRate;
             layerOb.startTime = layerInfo.startTime*frameRate;
             layerOb.lastData = {};
-            layersData.push(layerOb);
 
             layerOb.ks = {};
             if(layerInfo.transform.opacity.numKeys>1){
@@ -658,6 +660,31 @@ var UI;
 
             if(layerInfo.canSetTimeRemapEnabled && layerInfo.timeRemapEnabled){
                 extrasInstance.convertToBezierValues(layerInfo['Time Remap'], frameRate, layerOb,'tm');
+            }
+            if(!renderCancelled){
+                extrasInstance.setTimeout(analyzeNextLayer,100);
+            }else{
+                callback.apply();
+            }
+        }
+    }
+
+    function createLayers(compo, layersData, frameRate){
+        var i, len = compo.layers.length;
+        for(i = 0;i<len;i++){
+            var layerOb = {};
+            var layerInfo = compo.layers[i+1];
+            var lType = extrasInstance.layerType(layerInfo);
+            layersData.push(layerOb);
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+                //TODO add audios
+                layerOb.enabled = false;
+                continue;
+            }
+            pendingLayers.push({lInfo:layerInfo,lOb:layerOb,frameRate:frameRate});
+            if(lType=='PreCompLayer'){
+                layerOb.layers = [];
+                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate);
             }
 
         }
@@ -755,7 +782,8 @@ var UI;
          processFinalData(mainLayers);
          callback.apply();*/
         // END TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
-        renderNextFrame();
+        totalLayers = pendingLayers.length;
+        analyzeNextLayer();
     }
 
     function iterateLayer(layerInfo, layerOb,frameRate){
@@ -2370,14 +2398,16 @@ var UI;
     }
 
     function searchNextComposition(){
-        var len = compositionsList.length;
-        while(currentExportingComposition < len){
-            if(compositionsList[currentExportingComposition].queued === true){
-                currentCompositionData = compositionsList[currentExportingComposition];
-                exportNextComposition();
-                return;
+        if(!renderCancelled){
+            var len = compositionsList.length;
+            while(currentExportingComposition < len){
+                if(compositionsList[currentExportingComposition].queued === true){
+                    currentCompositionData = compositionsList[currentExportingComposition];
+                    exportNextComposition();
+                    return;
+                }
+                currentExportingComposition+=1;
             }
-            currentExportingComposition+=1;
         }
         //If we get here there are no more compositions to render and callback is executed
         helperFootage.remove();
@@ -2577,6 +2607,11 @@ var UI;
         isPanelFocused = false;
     }
 
+    function setProgress(value){
+        renderGroup.progress.value = (1 - value)*100;
+        renderGroup.infoText.text = ((1 - value)*100).toFixed(2) + '%';
+    }
+
     function cancelRender(){
         renderCancelled = true;
         renderFinished();
@@ -2757,7 +2792,6 @@ var UI;
         var project = app.project;
 
         var i,numItems = project.numItems;
-        var types = '';
         var count = 0;
         for(i=0;i<numItems;i+=1){
             if(extrasInstance.getprojectItemType(project.item(i+1))=='Comp'){
@@ -2766,7 +2800,6 @@ var UI;
             };
         }
         var numComps = availableCompositions.length;
-        var itemsList = [];
         for(i=0;i<numComps;i++){
             availableCompositions[i].item = compsList.add('item',availableCompositions[i].comp.name);
             if(availableCompositions[i].selected){
@@ -2870,6 +2903,7 @@ var UI;
 
     var ob ={};
     ob.setExportText = setExportText;
+    ob.setProgress = setProgress;
 
     UI = ob;
 

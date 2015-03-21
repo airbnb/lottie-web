@@ -168,6 +168,11 @@
         isPanelFocused = false;
     }
 
+    function setProgress(value){
+        renderGroup.progress.value = (1 - value)*100;
+        renderGroup.infoText.text = ((1 - value)*100).toFixed(2) + '%';
+    }
+
     function cancelRender(){
         renderCancelled = true;
         renderFinished();
@@ -348,7 +353,6 @@
         var project = app.project;
 
         var i,numItems = project.numItems;
-        var types = '';
         var count = 0;
         for(i=0;i<numItems;i+=1){
             if(extrasInstance.getprojectItemType(project.item(i+1))=='Comp'){
@@ -357,7 +361,6 @@
             };
         }
         var numComps = availableCompositions.length;
-        var itemsList = [];
         for(i=0;i<numComps;i++){
             availableCompositions[i].item = compsList.add('item',availableCompositions[i].comp.name);
             if(availableCompositions[i].selected){
@@ -461,6 +464,7 @@
 
     var ob ={};
     ob.setExportText = setExportText;
+    ob.setProgress = setProgress;
 
     UI = ob;
 
