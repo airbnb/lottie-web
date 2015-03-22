@@ -36,12 +36,9 @@ CVMaskElement.prototype.drawShape = function (ctx, data) {
     ctx.lineTo(-this.layerSize.w/2,this.layerSize.h-this.layerSize.h/2);
     ctx.lineTo(-this.layerSize.w/2,-this.layerSize.h/2);*/
     var j, jLen = data.v.length;
-    for (j = 0; j < jLen; j++) {
-        if (j == 0) {
-            ctx.moveTo(data.v[j][0], data.v[j][1]);
-        } else {
-            ctx.bezierCurveTo(data.o[j - 1][0] + data.v[j - 1][0], data.o[j - 1][1] + data.v[j - 1][1], data.i[j][0] + data.v[j][0], data.i[j][1] + data.v[j][1], data.v[j][0], data.v[j][1]);
-        }
+    ctx.moveTo(data.v[0][0], data.v[0][1]);
+    for (j = 1; j < jLen; j++) {
+        ctx.bezierCurveTo(data.o[j - 1][0] + data.v[j - 1][0], data.o[j - 1][1] + data.v[j - 1][1], data.i[j][0] + data.v[j][0], data.i[j][1] + data.v[j][1], data.v[j][0], data.v[j][1]);
     }
     ctx.bezierCurveTo(data.o[j - 1][0] + data.v[j - 1][0], data.o[j - 1][1] + data.v[j - 1][1], data.i[0][0] + data.v[0][0], data.i[0][1] + data.v[0][1], data.v[0][0], data.v[0][1]);
     ctx.closePath();

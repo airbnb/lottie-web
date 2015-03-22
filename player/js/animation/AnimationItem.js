@@ -104,7 +104,7 @@ AnimationItem.prototype.buildControls = function () {
 AnimationItem.prototype.gotoFrame = function () {
     if(subframeEnabled){
         this.renderedFrames = [];
-        this.currentFrame = this.currentRawFrame;
+        this.currentFrame = Math.round(this.currentRawFrame*100)/100;
     }else{
         this.currentFrame = Math.floor(this.currentRawFrame);
     }
@@ -120,7 +120,7 @@ AnimationItem.prototype.renderFrame = function () {
     }
     if(!this.renderedFrames[this.currentFrame]){
         this.renderedFrames[this.currentFrame] = true;
-        dataManager.renderFrame(this.layers,this.currentFrame);
+        dataManager.renderFrame(this.layers,this.currentFrame,this.animType);
     }
     this.renderer.renderFrame(this.currentFrame);
 };

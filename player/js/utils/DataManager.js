@@ -1,6 +1,5 @@
 var dataManager = (function(){
     var frameRate = 0;
-    var easingFunctions = {};
     var matrixInstance =  new MatrixManager();
     var storedBezierCurves = {};
 
@@ -48,40 +47,6 @@ var dataManager = (function(){
         return string;
     }
 
-    function bez(encodedFuncName, coOrdArray) {
-        coOrdArray = encodedFuncName;
-        encodedFuncName = 'bez_' + coOrdArray.join('_').replace(/\./g, 'p');
-        if(easingFunctions[encodedFuncName]){
-            return encodedFuncName;
-        }
-        var	polyBez = function(p1, p2) {
-            var A = [null, null], B = [null, null], C = [null, null],
-                bezCoOrd = function(t, ax) {
-                    C[ax] = 3 * p1[ax], B[ax] = 3 * (p2[ax] - p1[ax]) - C[ax], A[ax] = 1 - C[ax] - B[ax];
-                    return t * (C[ax] + t * (B[ax] + t * A[ax]));
-                },
-                xDeriv = function(t) {
-                    return C[0] + t * (2 * B[0] + 3 * A[0] * t);
-                },
-                xForT = function(t) {
-                    var x = t, i = 0, z;
-                    while (++i < 14) {
-                        z = bezCoOrd(x, 0) - t;
-                        if (Math.abs(z) < 1e-3) break;
-                        x -= z / xDeriv(x);
-                    }
-                    return x;
-                };
-            return function(t) {
-                return bezCoOrd(xForT(t), 1);
-            }
-        };
-        easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
-            return c * polyBez([coOrdArray[0], coOrdArray[1]], [coOrdArray[2], coOrdArray[3]])(t/d) + b;
-        };
-        return encodedFuncName;
-    }
-
     function getInterpolatedValues(keyframes, frameCount, offsetTime){
         var i ,len;
         var valuesArray = [];
@@ -94,7 +59,6 @@ var dataManager = (function(){
         var count;
         var propertyArray = [];
         var j, jLen;
-        var easingFnName;
         len = keyframes.length;
         var perc;
         var curveSegments = 1000;
@@ -166,8 +130,7 @@ var dataManager = (function(){
                 }else if(i>=keyData.t && i<nextKeyData.t){
                     propertyArray = [];
                     if(keyData.to){
-                        easingFnName = bez([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y]);
-                        perc = easingFunctions[easingFnName]('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                        perc = bez.getCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
                         var bezierData = keyData.bezierData;
                         var distanceInLine = bezierData.segmentLength*perc;
                         var k, kLen, segmentPerc;
@@ -206,8 +169,7 @@ var dataManager = (function(){
                                     inX = keyData.i.x;
                                     inY = keyData.i.y;
                                 }
-                                easingFnName = bez([outX,outY,inX,inY]);
-                                perc = easingFunctions[easingFnName]('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                                perc = bez.getCurve([outX,outY,inX,inY])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
                             }
                             // for shapes
                             if(startItem.i){
@@ -373,6 +335,8 @@ var dataManager = (function(){
         bezierData.segmentLength = addedLength;
     }
 
+    var keyData, nextKeyData,propertyArray,bezierData;
+
     function getInterpolatedValue(keyframes, frameNum, offsetTime){
 
         //Todo save on each frame the point found. pass to this function the previous frame to iterate points from last point.
@@ -380,7 +344,7 @@ var dataManager = (function(){
         if(!(keyframes instanceof Array) || keyframes[0].t == null){
             return keyframes;
         }
-        var i = 0, len = keyframes.length-1, keyData, nextKeyData;
+        var i = 0, len = keyframes.length-1;
         while(i<len){
             keyData = keyframes[i];
             nextKeyData = keyframes[i+1];
@@ -394,16 +358,16 @@ var dataManager = (function(){
             buildBezierData(keyData);
         }
         var k, kLen;
-        var easingFnName, perc, j = 0, propertyArray = [];
+        var easingFnName, perc, j = 0;
+        propertyArray = [];
         if(keyData.to){
-            var bezierData = keyData.bezierData;
+            bezierData = keyData.bezierData;
             if(frameNum >= nextKeyData.t-offsetTime){
                 return bezierData.points[bezierData.points.length - 1].point;
             }else if(frameNum < keyData.t-offsetTime){
                 return bezierData.points[0].point;
             }
-            easingFnName = bez([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y]);
-            perc = easingFunctions[easingFnName]('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            perc = bez.getCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
             var distanceInLine = bezierData.segmentLength*perc;
             var segmentPerc;
             while(j<bezierData.points.length){
@@ -439,8 +403,7 @@ var dataManager = (function(){
                         inX = keyData.i.x;
                         inY = keyData.i.y;
                     }
-                    easingFnName = bez([outX,outY,inX,inY]);
-                    perc = easingFunctions[easingFnName]('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    perc = bez.getCurve([outX,outY,inX,inY])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-offsetTime){
@@ -489,6 +452,8 @@ var dataManager = (function(){
     }
 
     var pathV,pathO,pathI;
+    var pathString = '';
+    var pathData;
 
     function createPathString(paths,closed){
         if(!(paths instanceof Array)){
@@ -496,43 +461,20 @@ var dataManager = (function(){
         }
         var l,lLen = paths.length;
         var k, kLen;
-        var pathString = '';
-        var pathData;
+        pathString = '';
         for(l = 0;l<lLen;l+=1){
             pathData = paths[l];
             pathV = pathData.v;
             pathO = pathData.o;
             pathI = pathData.i;
             kLen = pathV.length;
-            for(k=0;k<kLen;k++){
-                if(k==0){
-                    pathString += "M"+pathV[k][0]+","+pathV[k][1];
-                }else{
-                    pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]);
-                    pathString += " "+(pathI[k][0]+pathV[k][0])+","+(pathI[k][1]+pathV[k][1]);
-                    pathString += " "+pathV[k][0]+","+pathV[k][1];
-                }
+            pathString += "M"+pathV[0][0]+","+pathV[0][1];
+            for(k=1;k<kLen;k++){
+                pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]) + " "+(pathI[k][0]+pathV[k][0])+","+(pathI[k][1]+pathV[k][1]) + " "+pathV[k][0]+","+pathV[k][1];
             }
             if(closed !== false){
-                pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]);
-                pathString += " "+(pathI[0][0]+pathV[0][0])+","+(pathI[0][1]+pathV[0][1]);
-                pathString += " "+pathV[0][0]+","+(pathV[0][1]);
+                pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]) + " "+(pathI[0][0]+pathV[0][0])+","+(pathI[0][1]+pathV[0][1]) + " "+pathV[0][0]+","+(pathV[0][1]);
             }
-            /*
-             for(k=0;k<kLen;k++){
-             if(k==0){
-             pathString += "M"+Math.round(10*(pathV[k][0]))/10+","+Math.round(10*(pathV[k][1]))/10;
-             }else{
-             pathString += " C"+Math.round(10*(pathO[k-1][0]+pathV[k-1][0]))/10+","+Math.round(10*(pathO[k-1][1]+pathV[k-1][1]))/10;
-             pathString += " "+Math.round(10*(pathI[k][0]+pathV[k][0]))/10+","+Math.round(10*(pathI[k][1]+pathV[k][1]))/10;
-             pathString += " "+Math.round(10*(pathV[k][0]))/10+","+Math.round(10*(pathV[k][1]))/10;
-             }
-             }
-             if(closed !== false){
-             pathString += " C"+Math.round(10*(pathO[k-1][0]+pathV[k-1][0]))/10+","+Math.round(10*(pathO[k-1][1]+pathV[k-1][1]))/10;
-             pathString += " "+Math.round(10*(pathI[0][0]+pathV[0][0]))/10+","+Math.round(10*(pathI[0][1]+pathV[0][1]))/10;
-             pathString += " "+Math.round(10*(pathV[0][0]))/10+","+Math.round(10*(pathV[0][1]))/10;
-             }*/
         }
         return pathString;
     }
@@ -542,8 +484,9 @@ var dataManager = (function(){
     var timeRemapped;
     var shapeItem;
     var fillOpacity,fillColor, shape, strokeColor, strokeOpacity, strokeWidth, elmPos, elmSize, elmRound;
+    var shapeTrOb = {};
 
-    function iterateLayers(layers, frameNum){
+    function iterateLayers(layers, frameNum,renderType){
 
         var offsettedFrameNum, i, len;
         var j, jLen = layers.length, item;
@@ -587,7 +530,9 @@ var dataManager = (function(){
                     }
                     maskValue = getInterpolatedValue(maskProps[i].pt,offsettedFrameNum, item.startTime);
                     maskProps[i].pathVertices[offsettedFrameNum] = maskValue instanceof Array ? maskValue : [maskValue];
-                    maskProps[i].pathStrings[offsettedFrameNum] = createPathString(maskValue,maskProps[i].cl);
+                    if(renderType == 'svg'){
+                        maskProps[i].pathStrings[offsettedFrameNum] = createPathString(maskValue,maskProps[i].cl);
+                    }
                     maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.startTime);
                     maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
                 }
@@ -631,11 +576,13 @@ var dataManager = (function(){
                     if(shapeItem.ks){
                         shape = getInterpolatedValue(shapeItem.ks,offsettedFrameNum, item.startTime);
                         shapeItem.an.path[offsettedFrameNum] = {
-                            pathString : createPathString(shape,shapeItem.closed),
                             pathNodes: shape,
                             closed: shapeItem.closed,
                             forwardFrame : offsettedFrameNum
                         };
+                        if(renderType == 'svg'){
+                            shapeItem.an.path[offsettedFrameNum].pathString = createPathString(shape,shapeItem.closed);
+                        }
                     }else if(shapeItem.el){
                         elmPos = getInterpolatedValue(shapeItem.el.p,offsettedFrameNum, item.startTime);
                         elmSize = getInterpolatedValue(shapeItem.el.s,offsettedFrameNum, item.startTime);
@@ -666,7 +613,7 @@ var dataManager = (function(){
                             forwardFrame : offsettedFrameNum
                         };
                     }
-                    var shapeTrOb = {};
+                    shapeTrOb = {};
                     //var shapeDataOb = {};
                     shapeTrOb.a = getInterpolatedValue(shapeItem.tr.a,offsettedFrameNum, item.startTime);
                     shapeTrOb.o = getInterpolatedValue(shapeItem.tr.o,offsettedFrameNum, item.startTime);
@@ -700,8 +647,8 @@ var dataManager = (function(){
         }
     }
 
-    function renderFrame(layers,num){
-        iterateLayers(layers, num);
+    function renderFrame(layers,num, renderType){
+        iterateLayers(layers, num, renderType);
     }
 
     var moduleOb = {};
