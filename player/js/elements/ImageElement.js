@@ -1,8 +1,8 @@
-function IImageElement(data,parentType, animationItem){
+function IImageElement(data, animationItem){
     this.animationItem = animationItem;
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data,parentType, animationItem);
+    this.parent.constructor.call(this,data, animationItem);
 }
 createElement(BaseElement, IImageElement);
 

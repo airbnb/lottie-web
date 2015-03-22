@@ -1,5 +1,5 @@
-function ICompElement(data,parentType, animationItem){
-    this.parent.constructor.call(this,data,parentType, animationItem);
+function ICompElement(data, animationItem){
+    this.parent.constructor.call(this,data, animationItem);
     this.layers = data.layers;
 }
 createElement(BaseElement, ICompElement);

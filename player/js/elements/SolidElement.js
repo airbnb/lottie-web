@@ -1,5 +1,5 @@
-function ISolidElement(data,parentType, animationItem){
-    this.parent.constructor.call(this,data,parentType, animationItem);
+function ISolidElement(data, animationItem){
+    this.parent.constructor.call(this,data, animationItem);
 }
 createElement(BaseElement, ISolidElement);
 

@@ -26,35 +26,40 @@ var animationManager = (function(){
 
 
     function setSpeed(val,animation){
-        if (animation === undefined) {
-            registeredAnimations.forEach(function(item){
-                item.animation.setSpeed(val);
-            });
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.setSpeed(val, animation);
         }
     }
 
     function setDirection(val, animation){
-        registeredAnimations.forEach(function(item){
-            if (animation === undefined) {
-                item.animation.setDirection(val);
-            }
-        });
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.setDirection(val, animation);
+        }
     }
 
     function play(animation){
         initTime = Date.now();
-        registeredAnimations.forEach(function(item){
-            item.animation.play(animation);
-        });
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.play(animation);
+        }
         resume();
     }
 
     function moveFrame (value, animation) {
         isPaused = false;
         initTime = Date.now();
-        registeredAnimations.forEach(function(item){
-            item.animation.moveFrame(value,animation);
-        });
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.moveFrame(value,animation);
+        }
+    }
+
+    function requestSingleAnimationFrame(){
+        requested = false;
+        resume();
     }
 
     function resume() {
@@ -64,37 +69,45 @@ var animationManager = (function(){
         requested = true;
         nowTime = Date.now();
         elapsedTime = nowTime - initTime;
-        registeredAnimations.forEach(function(item){
-            item.animation.advanceTime(elapsedTime);
-        });
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.advanceTime(elapsedTime);
+        }
         initTime = nowTime;
-        requestAnimationFrame(function(){
-            requested = false;
-            resume();
-        });
+        requestAnimationFrame(requestSingleAnimationFrame);
     }
 
     function pause(animation) {
-        registeredAnimations.forEach(function(item){
-            item.animation.pause(animation);
-        })
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.pause(animation);
+        }
     }
 
     function stop(animation) {
-        registeredAnimations.forEach(function(item){
-            item.animation.stop(animation);
-        })
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.stop(animation);
+        }
     }
 
     function togglePause(animation) {
-        registeredAnimations.forEach(function(item){
-            item.animation.togglePause(animation);
-        })
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.togglePause(animation);
+        }
     }
 
     function searchAnimations(){
         var animElements = document.getElementsByClassName('bodymovin');
         Array.prototype.forEach.call(animElements,registerAnimation);
+    }
+
+    function resize(){
+        var i, len = registeredAnimations.length;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.resize();
+        }
     }
 
     moduleOb.registerAnimation = registerAnimation;
@@ -107,5 +120,6 @@ var animationManager = (function(){
     moduleOb.stop = stop;
     moduleOb.togglePause = togglePause;
     moduleOb.searchAnimations = searchAnimations;
+    moduleOb.resize = resize;
     return moduleOb;
 }());
