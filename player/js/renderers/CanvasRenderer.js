@@ -125,9 +125,9 @@ CanvasRenderer.prototype.draw = function(){
 CanvasRenderer.prototype.renderFrame = function(num){
     this.animationItem.container.width = this.animationItem.container.width;
     this.canvasContext.transform(this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty);
+    this.canvasContext.beginPath();
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
     this.canvasContext.clip();
-
     this.prepareFrame(num);
     this.draw();
 };
