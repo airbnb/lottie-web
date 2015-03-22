@@ -43,10 +43,6 @@ CVBaseElement.prototype.draw = function(){
         return false;
     }
     var ctx = this.renderer.canvasContext;
-    /*console.log('this.data.layerName: ',this.data.layerName);
-    console.log('this.data.width: ',this.data.width);
-    console.log('this.data.height: ',this.data.height);*/
-    //ctx.translate(-this.data.width/2,-this.data.height/2);
     if(this.data.parentHierarchy){
         var i, len = this.data.parentHierarchy.length, animData;
         for(i = len - 1; i>=0 ; i -= 1){
@@ -58,7 +54,6 @@ CVBaseElement.prototype.draw = function(){
         }
     }
 
-     //ctx.translate(this.currentAnimData.tr.a[0],this.currentAnimData.tr.a[1]);
     ctx.globalAlpha = this.currentAnimData.tr.o;
     var matrixValue = this.currentAnimData.matrixArray;
      ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);

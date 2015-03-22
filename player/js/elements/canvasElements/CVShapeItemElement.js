@@ -3,6 +3,8 @@ function CVShapeItemElement(data,renderer){
     this.renderer = renderer;
     this.frameNum = -1;
     this.renderedPaths = {};
+    this.trims = [];
+    this.trimPos = 0;
 }
 
 CVShapeItemElement.prototype.adjustTrim = function(){
@@ -18,8 +20,7 @@ CVShapeItemElement.prototype.adjustTrim = function(){
 CVShapeItemElement.prototype.renderShape = function(){
     var num = this.frameNum;
     var ctx = this.renderer.canvasContext;
-    ctx.save();
-    this.renderTransform(num);
+    var flag = this.renderTransform(num);
     if(this.data.type=="pathShape"){
         if(this.data.trim){
             this.renderTrimPath(num);
@@ -48,8 +49,9 @@ CVShapeItemElement.prototype.renderShape = function(){
         this.renderer.canvasContext.fill();
         this.renderer.canvasContext.stroke();
     }
-    delete this.renderedPaths[num];
-    ctx.restore();
+    if(flag){
+        ctx.restore();
+    }
 };
 
 CVShapeItemElement.prototype.prepareFrame = function(num){
@@ -63,13 +65,23 @@ CVShapeItemElement.prototype.renderTransform = function(num){
         var tr = animData.tr[animData.tr[num].forwardFrame];
         animData.renderedFrame.tr = tr.forwardFrame;
         var matrixValue = tr.mtArr;
-        //ctx.translate(tr.a[0],tr.a[1]);
+        if(matrixValue[0] == 1 && matrixValue[1] == 0 && matrixValue[2] == 0 && matrixValue[3] == 1 && matrixValue[4] == 0 && matrixValue[5] == 0){
+            return false;
+        }
+        ctx.save();
         ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
         ctx.translate(-tr.a[0],-tr.a[1]);
-        //ctx.translate(-tr.a[0],-tr.a[1]);
-        //ctx.translate(-tr.a[0],-tr.a[1]);
-
+        return true;
     }
+};
+
+CVShapeItemElement.prototype.addToTrim = function(pos,s,e){
+    if(!this.trims[pos]){
+        this.trims.push({});
+    }
+    this.trims[pos].s = s;
+    this.trims[pos].e = e;
+    this.trims[pos].ended = false;
 };
 
 CVShapeItemElement.prototype.renderTrimPath = function(num){
@@ -88,36 +100,29 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
     var totalLength = 0;
     var i, len = pathNodes.v.length;
     for(i = 0; i < len - 1; i += 1){
-        segments.push(dataManager.drawBezierCurve([pathNodes.v[i],pathNodes.v[i+1],pathNodes.o[i],pathNodes.i[i+1]]));
+        segments.push(bez.drawBezierCurve(pathNodes.v[i],pathNodes.v[i+1],pathNodes.o[i],pathNodes.i[i+1]));
         totalLength += segments[i].segmentLength;
     }
     if(path.closed){
-        segments.push(dataManager.drawBezierCurve([pathNodes.v[len - 1],pathNodes.v[0],pathNodes.o[len - 1],pathNodes.i[0]]));
+        segments.push(bez.drawBezierCurve(pathNodes.v[len - 1],pathNodes.v[0],pathNodes.o[len - 1],pathNodes.i[0]));
         totalLength += segments[i].segmentLength;
     }
     len = segments.length;
     var segmentLength = totalLength*(trimData.e - trimData.s)/100;
     var offset = ((trimData.s/100 + (trimData.o%360)/360)%1)*totalLength;
-    var trims = [];
+    var endedCount = 0;
     if(offset + segmentLength - totalLength > 0.00001){
         var secondarySegment = offset + segmentLength - totalLength;
-        trims.push({
-            s: offset,
-            e: offset + segmentLength - secondarySegment
-        });
-        trims.push({
-            s: 0,
-            e: offset + segmentLength - totalLength
-        })
+        this.addToTrim(0,offset,offset + segmentLength - secondarySegment);
+        this.addToTrim(1,0,offset + segmentLength - totalLength);
+        endedCount += 2;
     }else{
-        trims.push({
-            s: offset,
-            e: offset + segmentLength
-        })
+        this.addToTrim(0,offset,offset + segmentLength);
+        endedCount += 1;
     }
     var addedLength = 0;
     var j, jLen,perc,flag, ended = false;
-    var k, kLen = trims.length;
+    var k, kLen = this.trims.length;
 
     for(i = 0; i < len; i += 1){
         if(ended){
@@ -126,7 +131,7 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
         jLen = segments[i].points.length;
         flag = true;
         for(k = 0; k < kLen; k+=1){
-            if(addedLength + segments[i].segmentLength > trims[k].s){
+            if(addedLength + segments[i].segmentLength > this.trims[k].s){
                 flag = false;
             }
         }
@@ -138,26 +143,28 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
             if(ended){
                 break;
             }
-            kLen = trims.length;
+            kLen = this.trims.length;
             addedLength += segments[i].points[j].partialLength;
             for(k = 0; k < kLen; k+=1){
-                if(trims[k].s >= addedLength && trims[k].s < addedLength + segments[i].points[j+1].partialLength){
-                    perc = ( trims[k].s - addedLength)/segments[i].points[j+1].partialLength;
+                if(this.trims[k].ended){
+                    continue;
+                }
+                if(this.trims[k].s >= addedLength && this.trims[k].s < addedLength + segments[i].points[j+1].partialLength){
+                    perc = ( this.trims[k].s - addedLength)/segments[i].points[j+1].partialLength;
                     path2d.moveTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
                         ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
                 }
-                if(trims[k].e > addedLength && trims[k].e <= addedLength + segments[i].points[j+1].partialLength){
-                    perc = ( trims[k].e - addedLength)/segments[i].points[j+1].partialLength;
+                if(this.trims[k].e > addedLength && this.trims[k].e <= addedLength + segments[i].points[j+1].partialLength){
+                    perc = ( this.trims[k].e - addedLength)/segments[i].points[j+1].partialLength;
                     path2d.lineTo(segments[i].points[j].point[0]+(segments[i].points[j+1].point[0] - segments[i].points[j].point[0])*perc
                         ,segments[i].points[j].point[1]+(segments[i].points[j+1].point[1] - segments[i].points[j].point[1])*perc);
-                    trims.splice(k,1);
-                    k -= 1;
-                    kLen -= 1;
-                    if(kLen == 0){
+                    endedCount -= 1;
+                    this.trims[k].ended = false;
+                    if(endedCount == 0){
                         ended = true;
                         break;
                     }
-                }else if(addedLength > trims[k].s && addedLength < trims[k].e){
+                }else if(addedLength > this.trims[k].s && addedLength < this.trims[k].e){
                     path2d.lineTo(segments[i].points[j].point[0],segments[i].points[j].point[1]);
                 }
             }
@@ -184,14 +191,11 @@ CVShapeItemElement.prototype.renderPath = function(num){
     }
     var i,len = pathNodes.i.length;
     ctx.beginPath();
-    for(i=0;i<len;i+=1){
-        if(i == 0){
-            path2d.moveTo(pathNodes.v[i][0],pathNodes.v[i][1]);
-        }else{
-            path2d.bezierCurveTo(pathNodes.o[i-1][0]+pathNodes.v[i-1][0],pathNodes.o[i-1][1]+pathNodes.v[i-1][1]
-                ,pathNodes.i[i][0]+pathNodes.v[i][0],pathNodes.i[i][1]+pathNodes.v[i][1]
-                ,pathNodes.v[i][0],pathNodes.v[i][1]);
-        }
+    path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+    for(i=1;i<len;i+=1){
+        path2d.bezierCurveTo(pathNodes.o[i-1][0]+pathNodes.v[i-1][0],pathNodes.o[i-1][1]+pathNodes.v[i-1][1]
+            ,pathNodes.i[i][0]+pathNodes.v[i][0],pathNodes.i[i][1]+pathNodes.v[i][1]
+            ,pathNodes.v[i][0],pathNodes.v[i][1]);
     }
     if(path.closed){
         path2d.bezierCurveTo(pathNodes.o[i-1][0]+pathNodes.v[i-1][0],pathNodes.o[i-1][1]+pathNodes.v[i-1][1]
@@ -244,16 +248,15 @@ CVShapeItemElement.prototype.renderFill = function(num){
         var fill = animData.fill[animData.fill[num].forwardFrame];
         animData.renderedFrame.fill = {color:fill.color,opacity:fill.opacity};
         if(this.data.fillEnabled!==false){
-            var rgbColor = hexToRgb(fill.color);
-            this.renderer.canvasContext.fillStyle='rgba('+rgbColor.r+','+rgbColor.g+','+rgbColor.b+','+fill.opacity+')';
-        }else{
-            this.renderer.canvasContext.fillStyle='rgba(0,0,0,0)';
+            if(fill.opacity < 1){
+                this.renderer.canvasContext.fillStyle=fillToRgba(fill.color, fill.opacity);
+            }else{
+                this.renderer.canvasContext.fillStyle=fill.color;
+            }
+            return;
         }
-    }else{
-        this.renderer.canvasContext.fillStyle='rgba(0,0,0,0)';
     }
-    //this.renderer.canvasContext.fillStyle='rgba(255,0,0,0)';
-    //this.renderer.canvasContext.globalAlpha = .3;
+    this.renderer.canvasContext.fillStyle='rgba(0,0,0,0)';
 };
 
 CVShapeItemElement.prototype.renderStroke = function(num){
@@ -265,12 +268,13 @@ CVShapeItemElement.prototype.renderStroke = function(num){
          */
         this.renderer.canvasContext.lineWidth=stroke.width;
         if(this.data.strokeEnabled!==false){
-            var rgbColor = hexToRgb(stroke.color);
-            this.renderer.canvasContext.strokeStyle='rgba('+rgbColor.r+','+rgbColor.g+','+rgbColor.b+','+stroke.opacity+')';
-        }else{
-            this.renderer.canvasContext.strokeStyle='rgba(0,0,0,0)';
+            if(stroke.opacity < 1){
+                this.renderer.canvasContext.strokeStyle=fillToRgba(stroke.color, stroke.opacity);
+            }else{
+                this.renderer.canvasContext.strokeStyle=stroke.color;
+            }
+            return;
         }
-    }else{
-        this.renderer.canvasContext.strokeStyle = 'rgba(0,0,0,0)';
     }
+    this.renderer.canvasContext.strokeStyle = 'rgba(0,0,0,0)';
 };

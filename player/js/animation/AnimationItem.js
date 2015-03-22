@@ -103,7 +103,7 @@ AnimationItem.prototype.buildControls = function () {
 
 AnimationItem.prototype.gotoFrame = function () {
     if(subframeEnabled){
-        this.renderedFrames = [];
+        //this.renderedFrames = [];
         this.currentFrame = Math.round(this.currentRawFrame*100)/100;
     }else{
         this.currentFrame = Math.floor(this.currentRawFrame);

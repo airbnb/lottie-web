@@ -1,5 +1,7 @@
 var MatrixManager = function(){
 
+    var mat = new Matrix();
+
     var returnMatrix3D = function(rX, rY, rZ, scaleX, scaleY, scaleZ, tX, tY, tZ) {
 
         var rotationXMatrix, rotationYMatrix, rotationZMatrix, s, scaleMatrix, transformationMatrix, translationMatrix;
@@ -63,7 +65,7 @@ var MatrixManager = function(){
     };*/
 
     var returnMatrix2D = function(rX, scaleX, scaleY, tX, tY){
-        return new Matrix().translate(tX,tY).rotate(rX).scale(scaleX,scaleY).toCSS();
+        return mat.reset().translate(tX,tY).rotate(rX).scale(scaleX,scaleY).toCSS();
     };
 
     /*var returnMatrix2DArray = function(rX, scaleX, scaleY, tX, tY){
@@ -86,7 +88,7 @@ var MatrixManager = function(){
     };*/
 
     var returnMatrix2DArray = function(rX, scaleX, scaleY, tX, tY){
-        return new Matrix().translate(tX,tY).rotate(rX).scale(scaleX,scaleY).toArray();
+        return mat.reset().translate(tX,tY).rotate(rX).scale(scaleX,scaleY).toArray();
     };
 
     var get2DMatrix = function(animData){

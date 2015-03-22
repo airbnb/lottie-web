@@ -36,6 +36,8 @@ function Matrix(context) {
 
     me.context = context;
 
+    me.cos = me.sin = 0;
+
     // reset canvas transformations (if any) to enable 100% sync.
     if (context) context.setTransform(1, 0, 0, 1, 0, 0);
 }
@@ -100,9 +102,12 @@ Matrix.prototype = {
      * @param {number} angle - angle in radians
      */
     rotate: function(angle) {
-        var cos = Math.cos(angle),
-            sin = Math.sin(angle);
-        return this._t(cos, sin, -sin, cos, 0, 0);
+        if(angle == 0){
+            return this;
+        }
+        this.cos = Math.cos(angle);
+        this.sin = Math.sin(angle);
+        return this._t(this.cos, this.sin, -this.sin, this.cos, 0, 0);
     },
 
     /**
@@ -138,6 +143,9 @@ Matrix.prototype = {
      * @param {number} sy - scale factor y (1 does nothing)
      */
     scale: function(sx, sy) {
+        if(sx == 1 && sy == 1){
+            return this;
+        }
         return this._t(sx, 0, 0, sy, 0, 0);
     },
 
@@ -217,14 +225,13 @@ Matrix.prototype = {
      * @param {number} f - translate y
      */
     setTransform: function(a, b, c, d, e, f) {
-        var me = this;
-        me.a = a;
-        me.b = b;
-        me.c = c;
-        me.d = d;
-        me.e = e;
-        me.f = f;
-        return me._x();
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.e = e;
+        this.f = f;
+        return this._x();
     },
 
     /**
@@ -263,27 +270,26 @@ Matrix.prototype = {
      */
     transform: function(a2, b2, c2, d2, e2, f2) {
 
-        var me = this,
-            a1 = me.a,
-            b1 = me.b,
-            c1 = me.c,
-            d1 = me.d,
-            e1 = me.e,
-            f1 = me.f;
+        var a1 = this.a,
+            b1 = this.b,
+            c1 = this.c,
+            d1 = this.d,
+            e1 = this.e,
+            f1 = this.f;
 
         /* matrix order (canvas compatible):
          * ace
          * bdf
          * 001
          */
-        me.a = a1 * a2 + c1 * b2;
-        me.b = b1 * a2 + d1 * b2;
-        me.c = a1 * c2 + c1 * d2;
-        me.d = b1 * c2 + d1 * d2;
-        me.e = a1 * e2 + c1 * f2 + e1;
-        me.f = b1 * e2 + d1 * f2 + f1;
+        this.a = a1 * a2 + c1 * b2;
+        this.b = b1 * a2 + d1 * b2;
+        this.c = a1 * c2 + c1 * d2;
+        this.d = b1 * c2 + d1 * d2;
+        this.e = a1 * e2 + c1 * f2 + e1;
+        this.f = b1 * e2 + d1 * f2 + f1;
 
-        return me._x();
+        return this._x();
     },
 
     /**
@@ -672,8 +678,7 @@ Matrix.prototype = {
      * @returns {Array}
      */
     toArray: function() {
-        var me = this;
-        return [me.a, me.b, me.c, me.d, me.e, me.f];
+        return [this.a, this.b, this.c, this.d, this.e, this.f];
     },
 
     /**
@@ -681,7 +686,7 @@ Matrix.prototype = {
      * @returns {string}
      */
     toCSS: function() {
-        return "matrix(" + this.toArray() + ")";
+        return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
     },
 
     /**
@@ -717,9 +722,8 @@ Matrix.prototype = {
      * @private
      */
     _x: function() {
-        var me = this;
-        if (me.context)
-            me.context.setTransform(me.a, me.b, me.c, me.d, me.e, me.f);
-        return me;
+        if (this.context)
+            this.context.setTransform(this.a, this.b, this.c, this.d, this.e, this.f);
+        return this;
     }
 };

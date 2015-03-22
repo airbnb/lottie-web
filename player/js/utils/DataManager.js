@@ -64,6 +64,7 @@ var dataManager = (function(){
         var curveSegments = 1000;
         var absToCoord = [];
         var absTiCoord = [];
+        //len = keyframes.length;
         keyframes.forEach(function(keyData){
             keyData.t -= offsetTime;
             if(keyData.to){
@@ -130,7 +131,7 @@ var dataManager = (function(){
                 }else if(i>=keyData.t && i<nextKeyData.t){
                     propertyArray = [];
                     if(keyData.to){
-                        perc = bez.getCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                        perc = bez.getEasingCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
                         var bezierData = keyData.bezierData;
                         var distanceInLine = bezierData.segmentLength*perc;
                         var k, kLen, segmentPerc;
@@ -169,7 +170,7 @@ var dataManager = (function(){
                                     inX = keyData.i.x;
                                     inY = keyData.i.y;
                                 }
-                                perc = bez.getCurve([outX,outY,inX,inY])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                                perc = bez.getEasingCurve([outX,outY,inX,inY])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
                             }
                             // for shapes
                             if(startItem.i){
@@ -235,106 +236,6 @@ var dataManager = (function(){
         return valuesArray;
     }
 
-    function drawBezierCurve(coOrdArray){
-        var bezierName = coOrdArray.join('_').replace(/\./g, 'p');
-        if(storedBezierCurves[bezierName]){
-
-            return storedBezierCurves[bezierName];
-        }
-        var curveSegments = 1000, absToCoord, absTiCoord;
-        var k;
-        var triCoord1,triCoord2,triCoord3,liCoord1,liCoord2,ptCoord,perc,addedLength = 0;
-        var ptDistance;
-        var point,lastPoint = null;
-        var bezierData = {
-            points :[],
-            segmentLength: 0
-        };
-        if(pointOnLine2D(coOrdArray[0][0],coOrdArray[0][1],coOrdArray[1][0],coOrdArray[1][1],coOrdArray[0][0]+coOrdArray[2][0],coOrdArray[0][1]+coOrdArray[2][1])
-            && pointOnLine2D(coOrdArray[0][0],coOrdArray[0][1],coOrdArray[1][0],coOrdArray[1][1],coOrdArray[1][0]+coOrdArray[3][0],coOrdArray[1][1]+coOrdArray[3][1])){
-            curveSegments = 2;
-        }
-        for(k=0;k<curveSegments;k+=1){
-            point = [];
-            perc = k/(curveSegments-1);
-            ptDistance = 0;
-            absToCoord = [];
-            absTiCoord = [];
-            coOrdArray[2].forEach(function(item,index){
-                if(absToCoord[index] == null){
-                    absToCoord[index] = coOrdArray[0][index] + item;
-                    absTiCoord[index] = coOrdArray[1][index] + coOrdArray[3][index];
-                }
-                triCoord1 = coOrdArray[0][index] + (absToCoord[index] - coOrdArray[0][index])*perc;
-                triCoord2 = absToCoord[index] + (absTiCoord[index] - absToCoord[index])*perc;
-                triCoord3 = absTiCoord[index] + (coOrdArray[1][index] - absTiCoord[index])*perc;
-                liCoord1 = triCoord1 + (triCoord2 - triCoord1)*perc;
-                liCoord2 = triCoord2 + (triCoord3 - triCoord2)*perc;
-                ptCoord = liCoord1 + (liCoord2 - liCoord1)*perc;
-                point.push(ptCoord);
-                if(lastPoint !== null){
-                    ptDistance += Math.pow(point[index] - lastPoint[index],2);
-                }
-            });
-            ptDistance = Math.sqrt(ptDistance);
-            addedLength += ptDistance;
-            bezierData.points.push({partialLength: ptDistance, point: point});
-            lastPoint = point;
-        }
-        bezierData.segmentLength = addedLength;
-        storedBezierCurves[bezierName] = bezierData;
-        return bezierData;
-    }
-
-    function pointOnLine2D(x1,y1, x2,y2, x3,y3){
-        return Math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.0000001;
-    }
-
-    function buildBezierData(keyData){
-        var curveSegments = 1000, absToCoord, absTiCoord;
-        var k;
-        var triCoord1,triCoord2,triCoord3,liCoord1,liCoord2,ptCoord,perc,addedLength = 0;
-        var ptDistance;
-        var point,lastPoint = null;
-        var bezierData = {
-            points :[],
-            segmentLength: 0
-        };
-        if(pointOnLine2D(keyData.s[0],keyData.s[1],keyData.e[0],keyData.e[1],keyData.s[0]+keyData.to[0],keyData.s[1]+keyData.to[1])
-            && pointOnLine2D(keyData.s[0],keyData.s[1],keyData.e[0],keyData.e[1],keyData.e[0]+keyData.ti[0],keyData.e[1]+keyData.ti[1])){
-            curveSegments = 2;
-        }
-        for(k=0;k<curveSegments;k+=1){
-            point = [];
-            perc = k/(curveSegments-1);
-            ptDistance = 0;
-            absToCoord = [];
-            absTiCoord = [];
-            keyData.to.forEach(function(item,index){
-                if(absToCoord[index] == null){
-                    absToCoord[index] = keyData.s[index] + item;
-                    absTiCoord[index] = keyData.e[index] + keyData.ti[index];
-                }
-                triCoord1 = keyData.s[index] + (absToCoord[index] - keyData.s[index])*perc;
-                triCoord2 = absToCoord[index] + (absTiCoord[index] - absToCoord[index])*perc;
-                triCoord3 = absTiCoord[index] + (keyData.e[index] - absTiCoord[index])*perc;
-                liCoord1 = triCoord1 + (triCoord2 - triCoord1)*perc;
-                liCoord2 = triCoord2 + (triCoord3 - triCoord2)*perc;
-                ptCoord = liCoord1 + (liCoord2 - liCoord1)*perc;
-                point.push(ptCoord);
-                if(lastPoint !== null){
-                    ptDistance += Math.pow(point[index] - lastPoint[index],2);
-                }
-            });
-            ptDistance = Math.sqrt(ptDistance);
-            addedLength += ptDistance;
-            bezierData.points.push({partialLength: addedLength, point: point});
-            lastPoint = point;
-        }
-        keyData.bezierData = bezierData;
-        bezierData.segmentLength = addedLength;
-    }
-
     var keyData, nextKeyData,propertyArray,bezierData;
 
     function getInterpolatedValue(keyframes, frameNum, offsetTime){
@@ -355,10 +256,10 @@ var dataManager = (function(){
         }
 
         if(keyData.to && !keyData.bezierData){
-            buildBezierData(keyData);
+            bez.buildBezierData(keyData);
         }
         var k, kLen;
-        var easingFnName, perc, j = 0;
+        var perc, j = 0;
         propertyArray = [];
         if(keyData.to){
             bezierData = keyData.bezierData;
@@ -367,18 +268,20 @@ var dataManager = (function(){
             }else if(frameNum < keyData.t-offsetTime){
                 return bezierData.points[0].point;
             }
-            perc = bez.getCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            perc = bez.getEasingCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
             var distanceInLine = bezierData.segmentLength*perc;
             var segmentPerc;
+            var addedLength = 0;
             while(j<bezierData.points.length){
+                addedLength +=bezierData.points[j].partialLength;
                 if(frameNum == 0 || distanceInLine == 0 || perc == 0){
                     propertyArray = bezierData.points[j].point;
                     break;
                 }else if(j == bezierData.points.length - 1){
                     propertyArray = bezierData.points[j].point;
-                }else if(distanceInLine > bezierData.points[j].partialLength && distanceInLine < bezierData.points[j+1].partialLength){
+                }else if(distanceInLine > addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
                     kLen = bezierData.points[j].point.length;
-                    segmentPerc = (distanceInLine-bezierData.points[j].partialLength)/(bezierData.points[j+1].partialLength-bezierData.points[j].partialLength);
+                    segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
                     for(k=0;k<kLen;k+=1){
                         propertyArray.push(bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc);
                     }
@@ -403,7 +306,7 @@ var dataManager = (function(){
                         inX = keyData.i.x;
                         inY = keyData.i.y;
                     }
-                    perc = bez.getCurve([outX,outY,inX,inY])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    perc = bez.getEasingCurve([outX,outY,inX,inY])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-offsetTime){
@@ -510,9 +413,6 @@ var dataManager = (function(){
             trOb.s = scale instanceof Array ? scale.length > 1 ? [scale[0]/100,scale[1]/100,scale[2]/100] : [scale[0]/100,scale[0]/100,scale[0]/100] : [scale/100,scale/100,scale/100];
             trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
             trOb.p = pos;
-            if(subframeEnabled){
-                item.an = [];
-            }
             item.an[offsettedFrameNum] = {
                 forwardFrame : offsettedFrameNum,
                 tr: dataOb,
@@ -523,7 +423,7 @@ var dataManager = (function(){
                 maskProps = item.masksProperties;
                 len = maskProps.length;
                 for(i=0;i<len;i+=1){
-                    if(!maskProps[i].pathStrings || subframeEnabled){
+                    if(!maskProps[i].pathStrings){
                         maskProps[i].pathStrings = [];
                         maskProps[i].pathVertices = [];
                         maskProps[i].opacity = [];
@@ -544,7 +444,7 @@ var dataManager = (function(){
                 len = item.shapes.length;
                 for(i=0;i<len;i+=1){
                     shapeItem = item.shapes[i];
-                    if(!shapeItem._created || subframeEnabled){
+                    if(!shapeItem._created){
                         shapeItem.an.tr = [];
                         shapeItem.an.renderedFrame = {};
                         if(shapeItem.ks){
@@ -561,7 +461,7 @@ var dataManager = (function(){
                             shapeItem.an.stroke = [];
                         }
                     }
-                    if(shapeItem.trim && (!shapeItem._created  || subframeEnabled)){
+                    if(shapeItem.trim && (!shapeItem._created)){
                         shapeItem.trim.an = [];
                     }
                     if(shapeItem.fl){
@@ -654,7 +554,6 @@ var dataManager = (function(){
     var moduleOb = {};
     moduleOb.completeData = completeData;
     moduleOb.renderFrame = renderFrame;
-    moduleOb.drawBezierCurve = drawBezierCurve;
 
     return moduleOb;
 }());
