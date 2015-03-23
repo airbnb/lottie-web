@@ -180,7 +180,7 @@ ShapeItemElement.prototype.renderTransform = function(num){
         var tr = animData.tr[animData.tr[num].forwardFrame];
         animData.renderedFrame.tr = tr.forwardFrame;
         var matrixValue = tr.mt;
-
+        this.shapeG.setAttribute('opacity',tr.o);
         this.shapeG.setAttribute('transform',matrixValue);//**//
         this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');//**//
     }
