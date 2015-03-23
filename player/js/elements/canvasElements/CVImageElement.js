@@ -30,5 +30,4 @@ CVImageElement.prototype.draw = function(num){
     }
     var ctx = this.renderer.canvasContext;
     ctx.drawImage(this.img,0,0);
-    //console.log('renderFramerenderFrame');
 };

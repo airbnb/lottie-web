@@ -18,6 +18,9 @@ CVShapeItemElement.prototype.adjustTrim = function(){
 };
 
 CVShapeItemElement.prototype.renderShape = function(){
+    if(this.data.type === ''){
+        return;
+    }
     var num = this.frameNum;
     var ctx = this.renderer.canvasContext;
     var flag = this.renderTransform(num);
@@ -65,12 +68,15 @@ CVShapeItemElement.prototype.renderTransform = function(num){
         var tr = animData.tr[animData.tr[num].forwardFrame];
         animData.renderedFrame.tr = tr.forwardFrame;
         var matrixValue = tr.mtArr;
-        if(matrixValue[0] == 1 && matrixValue[1] == 0 && matrixValue[2] == 0 && matrixValue[3] == 1 && matrixValue[4] == 0 && matrixValue[5] == 0){
+        if(matrixValue[0] == 1 && matrixValue[1] == 0 && matrixValue[2] == 0 && matrixValue[3] == 1 && matrixValue[4] == 0 && matrixValue[5] == 0 && tr.o >= 1){
             return false;
         }
         ctx.save();
         ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
         ctx.translate(-tr.a[0],-tr.a[1]);
+        if(tr.o < 1){
+            ctx.globalAlpha = tr.o;
+        }
         return true;
     }
 };

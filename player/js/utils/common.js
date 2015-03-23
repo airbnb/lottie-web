@@ -1,5 +1,6 @@
 var subframeEnabled = false;
 var supportsPath2D = typeof Path2D === 'function';
+//supportsPath2D = false;
 var cachedColors = {};
 var body;
 
