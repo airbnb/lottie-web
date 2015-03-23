@@ -35,6 +35,10 @@ AnimationItem.prototype.setData = function (wrapper) {
             break;
         case 'svg':
             this.renderer = new SVGRenderer(this);
+            break;
+        case 'dom':
+            this.renderer = new DOMRenderer(this);
+            break;
     }
     this.repeat = this.wrapper.attributes.getNamedItem("data-anim-repeat") ? this.wrapper.attributes.getNamedItem("data-anim-repeat").value : this.repeat;
     this.loop = this.wrapper.attributes.getNamedItem("data-anim-loop") ? this.wrapper.attributes.getNamedItem("data-anim-loop").value !== 'false' : this.loop;

@@ -7,9 +7,7 @@ function styleDiv(element){
     element.style.position = 'absolute';
     element.style.top = 0;
     element.style.left = 0;
-    element.style.display = 'block';
-    element.style.verticalAlign = 'top';
-    element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'hidden';
+    element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'visible';
     //element.style.transformStyle = element.style.webkitTransformStyle = "preserve-3d";
     styleUnselectableDiv(element);
 }

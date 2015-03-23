@@ -231,10 +231,28 @@
             }else{
                 layerOb.ks.o = extrasInstance.roundNumber(layerInfo.transform.opacity.valueAtTime(0,false),3);
             }
-            if(layerInfo.transform.rotation.numKeys>1){
-                extrasInstance.convertToBezierValues(layerInfo.transform.rotation, frameRate, layerOb.ks,'r');
+            if(layerInfo.transform.rotation){
+                if(layerInfo.transform.rotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.rotation, frameRate, layerOb.ks,'r');
+                }else{
+                    layerOb.ks.r = extrasInstance.roundNumber(layerInfo.transform.rotation.valueAtTime(0,false),3);
+                }
             }else{
-                layerOb.ks.r = extrasInstance.roundNumber(layerInfo.transform.rotation.valueAtTime(0,false),3);
+                if(layerInfo.transform.xRotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.xRotation, frameRate, layerOb.ks,'rx');
+                }else{
+                    layerOb.ks.rx = extrasInstance.roundNumber(layerInfo.transform.xRotation.valueAtTime(0,false),3);
+                }
+                if(layerInfo.transform.yRotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.yRotation, frameRate, layerOb.ks,'ry');
+                }else{
+                    layerOb.ks.ry = extrasInstance.roundNumber(layerInfo.transform.yRotation.valueAtTime(0,false),3);
+                }
+                if(layerInfo.transform.zRotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.zRotation, frameRate, layerOb.ks,'rz');
+                }else{
+                    layerOb.ks.rz = extrasInstance.roundNumber(layerInfo.transform.zRotation.valueAtTime(0,false),3);
+                }
             }
             if(layerInfo.transform.position.numKeys>1){
                 extrasInstance.convertToBezierValues(layerInfo.transform.position, frameRate, layerOb.ks,'p');

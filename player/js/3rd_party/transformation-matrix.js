@@ -26,20 +26,21 @@
  * @prop {CanvasRenderingContext2D|null} [context=null] - set or get current canvas context
  * @constructor
  */
-function Matrix(context) {
+function Matrix(dimension) {
 
     var me = this;
     me._t = me.transform;
-
-    me.a = me.d = 1;
-    me.b = me.c = me.e = me.f = 0;
-
-    me.context = context;
+    me.dimension = dimension;
+    if(dimension == '2d'){
+        me.a = me.d = 1;
+        me.b = me.c = me.e = me.f = 0;
+    }else{
+        me.a = me.f = me.k = me.p = 1;
+        me.b = me.c = me.d = me.e = me.g = me.h = me.i = me.j = me.l = me.m = me.n = me.o = 0;
+    }
 
     me.cos = me.sin = 0;
 
-    // reset canvas transformations (if any) to enable 100% sync.
-    if (context) context.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 Matrix.prototype = {
@@ -94,7 +95,11 @@ Matrix.prototype = {
      * Short-hand to reset current matrix to an identity matrix.
      */
     reset: function() {
-        return this.setTransform(1, 0, 0, 1, 0, 0);
+        if(this.dimension == '2d'){
+            return this.setTransform(1, 0, 0, 1, 0, 0);
+        }else{
+            return this.setTransform(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        }
     },
 
     /**
@@ -108,6 +113,44 @@ Matrix.prototype = {
         this.cos = Math.cos(angle);
         this.sin = Math.sin(angle);
         return this._t(this.cos, this.sin, -this.sin, this.cos, 0, 0);
+    },
+
+    /**
+     * Rotates current matrix accumulative by angle.
+     * @param {number} angle - angle in radians
+     */
+    rotateX: function(angle) {
+        if(angle == 0){
+            return this;
+        }
+        this.cos = Math.cos(angle);
+        this.sin = Math.sin(angle);
+        return this._t(1, 0, 0, 0
+            , 0, this.cos, -this.sin, 0
+            , 0, this.sin,  this.cos, 0
+            , 0, 0, 0, 0);
+    },
+    rotateY: function(angle) {
+        if(angle == 0){
+            return this;
+        }
+        this.cos = Math.cos(angle);
+        this.sin = Math.sin(angle);
+        return this._t(this.cos,  0,  this.sin, 0
+            , 0, 1, 0, 0
+            , -this.sin,  0,  this.cos, 0
+            , 0, 0, 0, 1);
+    },
+    rotateZ: function(angle) {
+        if(angle == 0){
+            return this;
+        }
+        this.cos = Math.cos(angle);
+        this.sin = Math.sin(angle);
+        return this._t(this.cos, -this.sin,  0, 0
+            , this.sin,  this.cos, 0, 0
+            , 0,  0,  1, 0
+            , 0, 0, 0, 1);
     },
 
     /**
@@ -142,11 +185,14 @@ Matrix.prototype = {
      * @param {number} sx - scale factor x (1 does nothing)
      * @param {number} sy - scale factor y (1 does nothing)
      */
-    scale: function(sx, sy) {
-        if(sx == 1 && sy == 1){
+    scale: function(sx, sy, sz) {
+        if(sx == 1 && sy == 1 && (sz == 1 || sz == null)){
             return this;
         }
-        return this._t(sx, 0, 0, sy, 0, 0);
+        if(this.dimension == '2d'){
+            return this._t(sx, 0, 0, sy, 0, 0);
+        }
+        return this._t(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1);
     },
 
     /**
@@ -154,7 +200,10 @@ Matrix.prototype = {
      * @param {number} sx - scale factor x (1 does nothing)
      */
     scaleX: function(sx) {
-        return this._t(sx, 0, 0, 1, 0, 0);
+        if(this.dimension == '2d'){
+            return this._t(sx, 0, 0, 1, 0, 0);
+        }
+        return this._t(sx, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     },
 
     /**
@@ -162,7 +211,18 @@ Matrix.prototype = {
      * @param {number} sy - scale factor y (1 does nothing)
      */
     scaleY: function(sy) {
-        return this._t(1, 0, 0, sy, 0, 0);
+        if(this.dimension == '2d'){
+            return this._t(1, 0, 0, sy, 0, 0);
+        }
+        return this._t(1, 0, 0, 0, 0, sy, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    },
+
+    /**
+     * Scales current matrix on y axis accumulative.
+     * @param {number} sy - scale factor y (1 does nothing)
+     */
+    scaleZ: function(sz) {
+        return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1);
     },
 
     /**
@@ -224,13 +284,25 @@ Matrix.prototype = {
      * @param {number} e - translate x
      * @param {number} f - translate y
      */
-    setTransform: function(a, b, c, d, e, f) {
+    setTransform: function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
         this.e = e;
         this.f = f;
+        if(this.dimension == '3d'){
+            this.g = g;
+            this.h = h;
+            this.i = i;
+            this.j = j;
+            this.k = k;
+            this.l = l;
+            this.m = m;
+            this.n = n;
+            this.o = o;
+            this.p = p;
+        }
         return this._x();
     },
 
@@ -239,8 +311,11 @@ Matrix.prototype = {
      * @param {number} tx - translation for x
      * @param {number} ty - translation for y
      */
-    translate: function(tx, ty) {
-        return this._t(1, 0, 0, 1, tx, ty);
+    translate: function(tx, ty, tz) {
+        if(this.dimension == '2d'){
+            return this._t(1, 0, 0, 1, tx, ty);
+        }
+        return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
     },
 
     /**
@@ -248,7 +323,10 @@ Matrix.prototype = {
      * @param {number} tx - translation for x
      */
     translateX: function(tx) {
-        return this._t(1, 0, 0, 1, tx, 0);
+        if(this.dimension == '2d'){
+            return this._t(1, 0, 0, 1, tx, 0);
+        }
+        return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, 0, 0, 1);
     },
 
     /**
@@ -256,7 +334,18 @@ Matrix.prototype = {
      * @param {number} ty - translation for y
      */
     translateY: function(ty) {
-        return this._t(1, 0, 0, 1, 0, ty);
+        if(this.dimension == '2d'){
+            return this._t(1, 0, 0, 1, 0, ty);
+        }
+        return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, ty, 0, 1);
+    },
+
+    /**
+     * Translate current matrix on z axis accumulative.
+     * @param {number} tz - translation for z
+     */
+    translateY: function(ty) {
+        return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, tz, 1);
     },
 
     /**
@@ -268,7 +357,7 @@ Matrix.prototype = {
      * @param {number} e2 - translate x
      * @param {number} f2 - translate y
      */
-    transform: function(a2, b2, c2, d2, e2, f2) {
+    transform: function(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
 
         var a1 = this.a,
             b1 = this.b,
@@ -276,18 +365,52 @@ Matrix.prototype = {
             d1 = this.d,
             e1 = this.e,
             f1 = this.f;
+        if(this.dimension == '3d'){
+            var g1 = this.g;
+            var h1 = this.h;
+            var i1 = this.i;
+            var j1 = this.j;
+            var k1 = this.k;
+            var l1 = this.l;
+            var m1 = this.m;
+            var n1 = this.n;
+            var o1 = this.o;
+            var p1 = this.p;
+        }
 
         /* matrix order (canvas compatible):
          * ace
          * bdf
          * 001
          */
-        this.a = a1 * a2 + c1 * b2;
-        this.b = b1 * a2 + d1 * b2;
-        this.c = a1 * c2 + c1 * d2;
-        this.d = b1 * c2 + d1 * d2;
-        this.e = a1 * e2 + c1 * f2 + e1;
-        this.f = b1 * e2 + d1 * f2 + f1;
+        if(this.dimension == '2d'){
+            this.a = a1 * a2 + c1 * b2;
+            this.b = b1 * a2 + d1 * b2;
+            this.c = a1 * c2 + c1 * d2;
+            this.d = b1 * c2 + d1 * d2;
+            this.e = a1 * e2 + c1 * f2 + e1;
+            this.f = b1 * e2 + d1 * f2 + f1;
+        }else{
+            this.a = a1 * a2 + b1 * e2 + c1 * i2 + d1 * m2 ;
+            this.b = a1 * b2 + b1 * f2 + c1 * j2 + d1 * n2 ;
+            this.c = a1 * c2 + b1 * g2 + c1 * k2 + d1 * o2 ;
+            this.d = a1 * d2 + b1 * h2 + c1 * l2 + d1 * p2 ;
+
+            this.e = e1 * a2 + f1 * e2 + g1 * i2 + h1 * m2 ;
+            this.f = e1 * b2 + f1 * f2 + g1 * j2 + h1 * n2 ;
+            this.g = e1 * c2 + f1 * g2 + g1 * k2 + h1 * o2 ;
+            this.h = e1 * d2 + f1 * h2 + g1 * l2 + h1 * p2 ;
+
+            this.i = i1 * a2 + j1 * e2 + k1 * i2 + l1 * m2 ;
+            this.j = i1 * b2 + j1 * f2 + k1 * j2 + l1 * n2 ;
+            this.k = i1 * c2 + j1 * g2 + k1 * k2 + l1 * o2 ;
+            this.l = i1 * d2 + j1 * h2 + k1 * l2 + l1 * p2 ;
+
+            this.m = m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2 ;
+            this.n = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2 ;
+            this.o = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
+            this.p = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
+        }
 
         return this._x();
     },
@@ -678,7 +801,10 @@ Matrix.prototype = {
      * @returns {Array}
      */
     toArray: function() {
-        return [this.a, this.b, this.c, this.d, this.e, this.f];
+        if(this.dimension == '2d'){
+            return [this.a, this.b, this.c, this.d, this.e, this.f];
+        }
+        return [this.a, this.b, this.c, this.d, this.e, this.f, this.g, this.h, this.i, this.j, this.k, this.l, this.m, this.n, this.o, this.p];
     },
 
     /**
@@ -686,7 +812,10 @@ Matrix.prototype = {
      * @returns {string}
      */
     toCSS: function() {
-        return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
+        if(this.dimension == '2d'){
+            return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
+        }
+        return "matrix3d(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ',' + this.g + ',' + this.h + ',' + this.i + ',' + this.j + ',' + this.k + ',' + this.l + ',' + this.m + ',' + this.n + ',' + this.o + ',' + this.p + ")";
     },
 
     /**
@@ -722,8 +851,6 @@ Matrix.prototype = {
      * @private
      */
     _x: function() {
-        if (this.context)
-            this.context.setTransform(this.a, this.b, this.c, this.d, this.e, this.f);
         return this;
     }
 };

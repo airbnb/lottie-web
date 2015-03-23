@@ -382,7 +382,7 @@ var dataManager = (function(){
         return pathString;
     }
 
-    var trOb, dataOb, opacity,pos,rot,scale;
+    var trOb, dataOb, opacity,pos,rot,scale, rotY,rotZ;
     var maskProps,maskValue;
     var timeRemapped;
     var shapeItem;
@@ -408,17 +408,28 @@ var dataManager = (function(){
             opacity = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime);
             dataOb.o = opacity instanceof Array ? opacity[0]/100 : opacity/100;
             pos = getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime);
-            rot = getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime);
             scale = getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime);
             trOb.s = scale instanceof Array ? scale.length > 1 ? [scale[0]/100,scale[1]/100,scale[2]/100] : [scale[0]/100,scale[0]/100,scale[0]/100] : [scale/100,scale/100,scale/100];
-            trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
             trOb.p = pos;
+            if(item.threeD){
+                rot = getInterpolatedValue(item.ks.rx,offsettedFrameNum, item.startTime);
+                rotY = getInterpolatedValue(item.ks.ry,offsettedFrameNum, item.startTime);
+                rotZ = getInterpolatedValue(item.ks.rz,offsettedFrameNum, item.startTime);
+                trOb.rx = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
+                trOb.ry = rotY instanceof Array ? rotY.length > 1 ? [rotY[0]*Math.PI/180,rotY[1]*Math.PI/180,rotY[2]*Math.PI/180] : [rotY[0]*Math.PI/180,rotY[0]*Math.PI/180,rotY[0]*Math.PI/180] : [0,0,rotY*Math.PI/180];
+                trOb.rz = rotZ instanceof Array ? rotZ.length > 1 ? [rotZ[0]*Math.PI/180,rotZ[1]*Math.PI/180,rotZ[2]*Math.PI/180] : [rotZ[0]*Math.PI/180,rotZ[0]*Math.PI/180,rotZ[0]*Math.PI/180] : [0,0,rotZ*Math.PI/180];
+                trOb.a = dataOb.a;
+            }else{
+                rot = getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime);
+                trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
+            }
             item.an[offsettedFrameNum] = {
                 forwardFrame : offsettedFrameNum,
                 tr: dataOb,
-                matrixValue: matrixInstance.getMatrix2(trOb),
-                matrixArray: matrixInstance.getMatrixArray(trOb)
+                matrixValue: matrixInstance.getMatrix2(trOb,item.threeD),
+                matrixArray: matrixInstance.getMatrixArray(trOb,item.threeD)
             };
+            //console.log(item.an[offsettedFrameNum].matrixValue);
             if(item.hasMask){
                 maskProps = item.masksProperties;
                 len = maskProps.length;
