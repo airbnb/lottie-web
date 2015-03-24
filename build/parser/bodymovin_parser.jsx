@@ -2321,8 +2321,8 @@ var UI;
         if(!renderCancelled){
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
-            //dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
-            dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATEADO
+            dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
+            //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATEADO
             dataFile.close();
         }
         currentExportingComposition+=1;
