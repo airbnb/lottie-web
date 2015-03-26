@@ -26,7 +26,7 @@ CVBaseElement.prototype.prepareFrame = function(num){
         this.currentAnimData = null;
         return false;
     }
-    this.currentAnimData = this.data.an[this.data.an[num].forwardFrame];
+    this.currentAnimData = this.data.renderedData[num].an;
 
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);

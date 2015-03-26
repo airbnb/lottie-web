@@ -20,6 +20,7 @@ var AnimationItem = function () {
     this.isScrolling = false;
     this.loop = true;
     this.renderer = null;
+    this.animationID = randomString(10);
 };
 
 AnimationItem.prototype.setData = function (wrapper) {
@@ -60,12 +61,14 @@ AnimationItem.prototype.configAnimation = function (animData) {
 
     this.effectsManager = new EffectsManager();
     this.animationData = animData;
+    this.animationData._id = this.animationID;
+    this.animationData._animType = this.animType;
     this.layers = this.animationData.animation.layers;
     this.assets = this.animationData.assets;
     this.totalFrames = this.animationData.animation.totalFrames;
     this.frameRate = this.animationData.animation.frameRate;
     this.frameMult = this.animationData.animation.frameRate / 1000;
-    dataManager.completeData(this.layers, this.frameRate);
+    dataManager.completeData(this.animationData);
     this.renderer.buildItems(this.animationData.animation.layers);
     this.updaFrameModifier();
     this.checkLoaded();
@@ -120,7 +123,7 @@ AnimationItem.prototype.renderFrame = function () {
     }
     if(!this.renderedFrames[this.currentFrame]){
         this.renderedFrames[this.currentFrame] = true;
-        dataManager.renderFrame(this.layers,this.currentFrame,this.animType);
+        dataManager.renderFrame(this.animationID,this.currentFrame);
     }
     this.renderer.renderFrame(this.currentFrame);
 };
