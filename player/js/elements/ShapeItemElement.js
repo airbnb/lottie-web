@@ -3,6 +3,16 @@ function ShapeItemElement(data){
     this.shapeG = document.createElementNS(svgNS, "g");
     this.pathLength = 0;
     this.cachedData = [];
+    this.renderedFrame = {
+        path: '',
+        stroke: {},
+        fill: {},
+        tr: {
+            a: []
+        },
+        trim:{},
+        ellipse:{}
+    };
     if(this.data.type === 'pathShape'){
         this.shape = document.createElementNS(svgNS, "path");
     }else if(this.data.type === 'rectShape'){
@@ -45,6 +55,7 @@ ShapeItemElement.prototype.getElement = function(){
 };
 
 ShapeItemElement.prototype.renderShape = function(num){
+    this.currentData = this.data.renderedData[num];
     if(this.data.type=="pathShape"){
         this.pathLength = this.renderPath(num);
     }else if(this.data.type=="rectShape"){
@@ -61,16 +72,16 @@ ShapeItemElement.prototype.renderShape = function(num){
 };
 
 ShapeItemElement.prototype.renderPath = function(num){
-    var animData = this.data.an;
-    var path = animData.path[animData.path[num].forwardFrame];
+    var animData = this.currentData;
+    var path = animData.path;
 
-    if(path.pathString == animData.renderedFrame.path){
+    if(path.pathString == this.renderedFrame.path){
         if(this.data.trim){
-            return this.cachedData.pathLengths[animData.path[animData.path[num].forwardFrame].pathString];
+            return this.cachedData.pathLengths[path.pathString];
         }
         return;
     }
-    animData.renderedFrame.path = path.pathString;
+    this.renderedFrame.path = path.pathString;
 
     this.shape.setAttribute('d',path.pathString);
     if(this.data.trim){
@@ -85,20 +96,25 @@ ShapeItemElement.prototype.renderPath = function(num){
 };
 
 ShapeItemElement.prototype.renderEllipse = function(num){
-    var animData = this.data.an;
-    if(animData.ell[num].forwardFrame == animData.renderedFrame.ell){
-        if(this.data.trim){
-            return this.cachedData.pathLengths['ellipse_'+animData.ell[num].forwardFrame];
-        }
-        return 0;
-    }
-    var ell = animData.ell[animData.ell[num].forwardFrame];
-    animData.renderedFrame.ell = ell.forwardFrame;
 
-    this.shape.setAttribute('rx',ell.size[0]/2);
-    this.shape.setAttribute('ry',ell.size[1]/2);
-    this.shape.setAttribute('cx',ell.p[0]);
-    this.shape.setAttribute('cy',ell.p[1]);
+    var ell = this.currentData.ell;
+
+    if(this.renderedFrame.ellipse.rx != ell.size[0]){
+        this.shape.setAttribute('rx',ell.size[0]/2);
+        this.renderedFrame.ellipse.rx = ell.size[0];
+    }
+    if(this.renderedFrame.ellipse.ry != ell.size[1]){
+        this.shape.setAttribute('ry',ell.size[1]/2);
+        this.renderedFrame.ellipse.ry = ell.size[1];
+    }
+    if(this.renderedFrame.ellipse.cx != ell.p[0]){
+        this.shape.setAttribute('cx',ell.p[0]);
+        this.renderedFrame.ellipse.ry = ell.p[0];
+    }
+    if(this.renderedFrame.ellipse.cy != ell.p[1]){
+        this.shape.setAttribute('cy',ell.p[1]);
+        this.renderedFrame.ellipse.ry = ell.p[1];
+    }
     if(this.data.trim){
         if(this.cachedData.pathLengths == null){
             this.cachedData.pathLengths = {};
@@ -135,79 +151,110 @@ ShapeItemElement.prototype.renderRect = function(num){
 };
 
 ShapeItemElement.prototype.renderFill = function(num){
-    var animData = this.data.an;
+    var animData = this.currentData;
     if(animData.fill){
-        var fill = animData.fill[animData.fill[num].forwardFrame];
-        if(animData.renderedFrame.fill && fill.color == animData.renderedFrame.fill.color && fill.opacity == animData.renderedFrame.fill.opacity){
-            return;
+        var fill = animData.fill;
+        if(this.renderedFrame.fill.color !== fill.color){
+            this.shape.setAttribute('fill',fill.color);
+            this.renderedFrame.fill.color = fill.color;
         }
-        animData.renderedFrame.fill = {color:fill.color,opacity:fill.opacity};
-        this.shape.setAttribute('fill',fill.color);
         if(this.data.fillEnabled!==false){
-            this.shape.setAttribute('fill-opacity',fill.opacity);
+            if(this.renderedFrame.fill.opacity !== fill.opacity){
+                this.shape.setAttribute('fill-opacity',fill.opacity);
+                this.renderedFrame.fill.opacity = fill.opacity;
+            }
         }else{
-            this.shape.setAttribute('fill-opacity',0);
+            if(this.renderedFrame.fill.opacity !== 0){
+                this.shape.setAttribute('fill-opacity',0);
+                this.renderedFrame.fill.opacity = 0;
+            }
         }
     }else{
-        this.shape.setAttribute('fill-opacity',0);
+        if(this.renderedFrame.fill.opacity !== 0){
+            this.shape.setAttribute('fill-opacity',0);
+            this.renderedFrame.fill.opacity = 0;
+        }
     }
 };
 
 ShapeItemElement.prototype.renderStroke = function(num){
-    var animData = this.data.an;
+    var animData = this.currentData;
     if(animData.stroke){
-        if(animData.stroke[num].forwardFrame == animData.renderedFrame.stroke){
-            return;
+        var stroke = animData.stroke;
+        if(this.renderedFrame.stroke.color !== stroke.color){
+            this.renderedFrame.stroke.color = stroke.color;
+            this.shape.setAttribute('stroke',stroke.color);
         }
-        var stroke = animData.stroke[animData.stroke[num].forwardFrame];
-        animData.renderedFrame.stroke = stroke.forwardFrame;
-        this.shape.setAttribute('stroke',stroke.color);
-        this.shape.setAttribute('stroke-width',stroke.width);
+        if(this.renderedFrame.stroke.width !== stroke.width){
+            this.renderedFrame.stroke.width = stroke.width;
+            this.shape.setAttribute('stroke-width',stroke.width);
+        }
+        if(this.renderedFrame.stroke.width !== stroke.width){
+            this.renderedFrame.stroke.width = stroke.width;
+            this.shape.setAttribute('stroke-width',stroke.width);
+        }
         if(this.data.strokeEnabled!==false){
-            this.shape.setAttribute('stroke-opacity',stroke.opacity);
+            if(this.renderedFrame.stroke.opacity !== stroke.opacity){
+                this.renderedFrame.stroke.opacity = stroke.opacity;
+                this.shape.setAttribute('stroke-opacity',stroke.opacity);
+            }
         }else{
-            this.shape.setAttribute('stroke-opacity',0);
+            if(this.renderedFrame.stroke.opacity !== 0){
+                this.renderedFrame.stroke.opacity = 0;
+                this.shape.setAttribute('stroke-opacity',0);
+            }
         }
     }
 };
 
 ShapeItemElement.prototype.renderTransform = function(num){
-    var animData = this.data.an;
+    var animData = this.currentData;
     if(animData.tr){
-        if(animData.tr[num].forwardFrame == animData.renderedFrame.tr){
-            return;
+        var tr = animData.tr;
+        if(this.renderedFrame.tr.o !== tr.o){
+            this.renderedFrame.tr.o = tr.o;
+            this.shapeG.setAttribute('opacity',tr.o);
         }
-        var tr = animData.tr[animData.tr[num].forwardFrame];
-        animData.renderedFrame.tr = tr.forwardFrame;
-        var matrixValue = tr.mt;
-        this.shapeG.setAttribute('opacity',tr.o);
-        this.shapeG.setAttribute('transform',matrixValue);//**//
-        this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');//**//
+        if(this.renderedFrame.tr.mt !== tr.mt){
+            this.renderedFrame.tr.mt = tr.mt;
+            this.shapeG.setAttribute('transform',tr.mt);
+        }
+        if(this.renderedFrame.tr.mt !== tr.mt){
+            this.renderedFrame.tr.mt = tr.mt;
+            this.shapeG.setAttribute('transform',tr.mt);
+        }
+        if(this.renderedFrame.tr.a[0] !== tr.a[0] || this.renderedFrame.tr.a[1] !== tr.a[1]){
+            this.renderedFrame.tr.a[0] = tr.a[0];
+            this.renderedFrame.tr.a[1] = tr.a[1];
+            this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');
+        }
     }
 };
 
 ShapeItemElement.prototype.renderTrim = function(num){
-    if(this.data.trim.an[num].forwardFrame == this.data.renderedData.trim){
-        return;
-    }
-    var trimData = this.data.trim.an[this.data.trim.an[num].forwardFrame];
-    this.data.renderedData.trim = trimData.forwardFrame;
+    var trimData = this.currentData.trim;
     if(this.pathLength == 0){
         this.shape.setAttribute('stroke-opacity',0);
     }else{
+        if(this.renderedFrame.trim.e == trimData.e && this.renderedFrame.trim.s == trimData.s && this.renderedFrame.trim.o == trimData.o){
+            //return;
+        }
+        this.renderedFrame.trim.e = trimData.e;
+        this.renderedFrame.trim.s = trimData.s;
+        this.renderedFrame.trim.o = trimData.o;
+
         var dashLength = this.pathLength*(trimData.e - trimData.s)/100;
         var dashSpace = this.pathLength - dashLength;
         var dashOffset = this.pathLength*(trimData.s)/100+(this.pathLength*(trimData.o))/360;
         var strokeDashArray = dashLength+" , "+dashSpace;
         this.shape.setAttribute('stroke-dasharray',strokeDashArray);
-        this.shape.setAttribute('stroke-dashoffset',-dashOffset);
+        this.shape.setAttribute('stroke-dashoffset',this.pathLength - dashOffset);
         if(trimData.e == trimData.s){
             this.shape.setAttribute('stroke-opacity',0);
         }else{
-            if(this.data.an.stroke){
-                var stroke = this.data.an.stroke[this.data.an.stroke[num].forwardFrame];
+            if(this.currentData.stroke){
                 if(this.data.strokeEnabled!==false){
-                    this.shape.setAttribute('stroke-opacity',stroke.opacity/100);
+                    this.shape.setAttribute('stroke-opacity',this.currentData.stroke.opacity);
                 }else{
                     this.shape.setAttribute('stroke-opacity',0);
                 }
