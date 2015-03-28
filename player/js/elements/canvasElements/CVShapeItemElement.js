@@ -114,8 +114,6 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
     }
     len = segments.length;
     var segmentLength = totalLength*(trimData.e - trimData.s)/100;
-    console.log('trimData.e: ',trimData.e);
-    console.log('segmentLength: ',segmentLength);
     var offset = ((trimData.s/100 + (trimData.o%360)/360)%1)*totalLength;
     var endedCount = 0;
     if(offset + segmentLength - totalLength > 0.00001){

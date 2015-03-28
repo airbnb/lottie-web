@@ -79,7 +79,7 @@ function bezFunction(){
             }
             ptDistance = Math.sqrt(ptDistance);
             addedLength += ptDistance;
-            bezierData.points.push({partialLength: ptDistance, point: point});
+            bezierData.points.push({partialLength: ptDistance,cumulatedLength:addedLength, point: point});
             lastPoint = point;
         }
         bezierData.segmentLength = addedLength;
