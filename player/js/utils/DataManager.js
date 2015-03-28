@@ -4,6 +4,7 @@ function dataFunctionManager(isWorker){
     var animations = {};
     var worker;
     var isWorker = isWorker;
+    var degToRads = Math.PI/180;
 
     function completeTimeRemap(tm, layerFrames, offsetFrame){
         var interpolatedProperty = getInterpolatedValues(tm,layerFrames, offsetFrame);
@@ -427,7 +428,7 @@ function dataFunctionManager(isWorker){
             rot = getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime);
             scale = getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime);
             trOb.s = scale instanceof Array ? scale.length > 1 ? [scale[0]/100,scale[1]/100,scale[2]/100] : [scale[0]/100,scale[0]/100,scale[0]/100] : [scale/100,scale/100,scale/100];
-            trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*Math.PI/180,rot[1]*Math.PI/180,rot[2]*Math.PI/180] : [rot[0]*Math.PI/180,rot[0]*Math.PI/180,rot[0]*Math.PI/180] : [0,0,rot*Math.PI/180];
+            trOb.r = rot instanceof Array ? rot.length > 1 ? [rot[0]*degToRads,rot[1]*degToRads,rot[2]*degToRads] : [rot[0]*degToRads,rot[0]*degToRads,rot[0]*degToRads] : [0,0,rot*degToRads];
             trOb.p = pos;
             rendered[j] = {};
             rendered[j].an = {
@@ -541,7 +542,7 @@ function dataFunctionManager(isWorker){
                     shapeTrOb.s = getInterpolatedValue(shapeItem.tr.s,offsettedFrameNum, item.startTime);
                     shapeTrOb.s = shapeTrOb.s instanceof Array ? shapeTrOb.s.length > 1 ? [shapeTrOb.s[0]/100,shapeTrOb.s[1]/100,shapeTrOb.s[2]/100] : [shapeTrOb.s[0]/100,shapeTrOb.s[0]/100,shapeTrOb.s[0]/100] : [shapeTrOb.s/100,shapeTrOb.s/100,shapeTrOb.s/100];
                     shapeTrOb.r = getInterpolatedValue(shapeItem.tr.r,offsettedFrameNum, item.startTime);
-                    shapeTrOb.r = shapeTrOb.r instanceof Array ? shapeTrOb.r.length > 1 ? [shapeTrOb.r[0]*Math.PI/180,shapeTrOb.r[1]*Math.PI/180,shapeTrOb.r[2]*Math.PI/180] : [shapeTrOb.r[0]*Math.PI/180,shapeTrOb.r[0]*Math.PI/180,shapeTrOb.r[0]*Math.PI/180] : [0,0,shapeTrOb.r*Math.PI/180];
+                    shapeTrOb.r = shapeTrOb.r instanceof Array ? shapeTrOb.r.length > 1 ? [shapeTrOb.r[0]*degToRads,shapeTrOb.r[1]*degToRads,shapeTrOb.r[2]*degToRads] : [shapeTrOb.r[0]*degToRads,shapeTrOb.r[0]*degToRads,shapeTrOb.r[0]*degToRads] : [0,0,shapeTrOb.r*degToRads];
                     shapeTrOb.p = getInterpolatedValue(shapeItem.tr.p,offsettedFrameNum, item.startTime);
                     shapeTrOb.mt = matrixInstance.getMatrix2(shapeTrOb);
                     shapeTrOb.mtArr = matrixInstance.getMatrixArray(shapeTrOb);
