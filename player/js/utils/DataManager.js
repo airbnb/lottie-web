@@ -1,7 +1,9 @@
-function dataFunctionManager(){
+function dataFunctionManager(isWorker){
     var frameRate = 0;
     var matrixInstance =  new MatrixManager();
     var animations = {};
+    var worker;
+    var isWorker = isWorker;
 
     function completeTimeRemap(tm, layerFrames, offsetFrame){
         var interpolatedProperty = getInterpolatedValues(tm,layerFrames, offsetFrame);
@@ -42,9 +44,13 @@ function dataFunctionManager(){
     }
 
     function completeData(animationData){
-        animations[animationData._id] = animationData;
+        animations[animationData._id] = {data:animationData,renderedFrames:[]};
         frameRate = animationData.animation.frameRate;
         completeLayers(animationData.animation.layers);
+        if(moduleOb.hasWorker){
+            worker.postMessage({type:'new',animation:JSON.stringify(animationData)});
+            //worker.postMessage({type:'renderAllFrames',id:animationData._id})
+        }
     }
 
     function convertLayerNameToID(string){
@@ -562,10 +568,57 @@ function dataFunctionManager(){
         }
     }
 
+    function prerenderFrames(renderData,num){
+        var totalFrames = 1;
+        if(worker){
+            var renderingFrames = [];
+            totalFrames = 10;
+        }
+        while(totalFrames > 0){
+            num += 1;
+            if(num >= renderData.data.animation.totalFrames){
+                renderData.renderFinished = true;
+                break;
+            }
+            if(!renderData.renderedFrames[num]){
+                if(!worker){
+                    renderFrame(renderData.data._id,num);
+                }else{
+                    renderData.renderedFrames[num] = 1;
+                    renderingFrames.push(num);
+                }
+                totalFrames -= 1;
+            }
+        }
+        if(worker){
+            worker.postMessage({type:'renderFrames',id:renderData.data._id,frames:renderingFrames});
+        }
+    }
+
+    function renderFrames(id,frames){
+        var i, len = frames.length;
+        var renderedFrames = [];
+        for(i=0;i<len;i+=1){
+            renderedFrames.push({num:frames[i],data:renderFrame(id,frames[i])})
+        }
+        self.postMessage({frames:renderedFrames,id:id, type:'done'});
+    }
+
     function renderFrame(animationId,num){
+        if(animations[animationId].renderedFrames[num]==2 && !isWorker){
+            //console.log('returning');
+            if(!animations[animationId].renderFinished){
+                prerenderFrames(animations[animationId],num);
+            }
+            return;
+        }
+        animations[animationId].renderedFrames[num] = 2;
         var renderedArray = [];
-        iterateLayers(animations[animationId].animation.layers, num, animations[animationId]._animType, renderedArray);
-        populateLayers(animations[animationId].animation.layers, num,renderedArray);
+        iterateLayers(animations[animationId].data.animation.layers, num, animations[animationId].data._animType, renderedArray);
+        if(!isWorker){
+            populateLayers(animations[animationId].data.animation.layers, num,renderedArray);
+        }
+        return renderedArray;
     }
 
     function populateLayers(layers, num, rendered){
@@ -591,54 +644,78 @@ function dataFunctionManager(){
         }
     }
 
-    var moduleOb = {};
-    moduleOb.completeData = completeData;
-    moduleOb.renderFrame = renderFrame;
-
-    return moduleOb;
-};
-if(Worker && 1 == 2){
-    function handleEvents(){
-        self.onmessage = function(e){
-            var data = e.data;
-            if(data.message == 'new'){
-                dataManager.completeData(data.animation);
-            }
-            self.postMessage("new anim created");
+    function renderAllFrames(id){
+        var animationData = animations[id].data;
+        var i, len = animationData.animation.totalFrames;
+        var renderedFrames = [];
+        for(i=0;i<len;i+=1){
+            renderedFrames.push({num:i,data:renderFrame(id,i)})
         }
+        self.postMessage({frames:renderedFrames,id:id, type:'done'});
     }
-// URL.createObjectURL
-    window.URL = window.URL || window.webkitURL;
-// Build a worker from an anonymous function body
-    var blobURL = URL.createObjectURL( new Blob([
+
+    function startWorker(){
+        if(Worker && (window.URL || window.webkitURL) && Blob && 1==2){
+            function handleEvents(){
+                self.onmessage = function(e){
+                    var data = e.data;
+                    if(data.type == 'new'){
+                        dataManager.completeData(JSON.parse(data.animation));
+                    }else if(data.type == 'renderAllFrames'){
+                        dataManager.renderAllFrames(data.id);
+                    }else if(data.type == 'renderFrames'){
+                        dataManager.renderFrames(data.id, data.frames);
+                    }
+                }
+            }
+            window.URL = window.URL || window.webkitURL;
+            var blobURL = URL.createObjectURL( new Blob([
+            componentToHex.toString(),
+            rgbToHex.toString(),
             handleEvents.toString(),
+            Matrix.toString(),
+            setMatrixPrototype.toString(),
+            'setMatrixPrototype();',
             matrixManagerFunction.toString(),
+            bezFunction.toString(),
             'var MatrixManager = matrixManagerFunction;',
 
             dataFunctionManager.toString(),
-            Matrix.toString(),
 
-            'var dataManager = dataFunctionManager();handleEvents();' ], { type: 'application/javascript' } ) ),
+            'var bez = bezFunction();var dataManager = dataFunctionManager(true);handleEvents();' ], { type: 'application/javascript' } ) );
 
-        worker = new Worker( blobURL );
-// Won't be needing this anymore
-    URL.revokeObjectURL( blobURL );
+            worker = new Worker( blobURL );
+            URL.revokeObjectURL( blobURL );
 
-    worker.addEventListener('message',function(e){
-        console.log('mensaje', e.data);
-    })
-    var dataManager = function(){
-        function completeData(animationData){
-            worker.postMessage({message:'new',animation:animationData});
+            worker.addEventListener('message',function(e){
+                if(e.data.type == 'done'){
+                    var animation = animations[e.data.id].data.animation;
+                    var i, len = e.data.frames.length;
+                    for(i=0;i<len;i+=1){
+                        if(animations[e.data.id].renderedFrames[e.data.frames[i].num] == 2){
+                            continue;
+                        }
+                        animations[e.data.id].renderedFrames[e.data.frames[i].num] = 2;
+                        populateLayers(animation.layers, e.data.frames[i].num,e.data.frames[i].data);
+
+                    }
+                }
+            });
+            moduleOb.hasWorker = true;
+
         }
-        function renderFrame(num){
+    }
 
-        }
-        return {
-            completeData: completeData
-        }
-    }();
+    var moduleOb = {};
+    moduleOb.completeData = completeData;
+    moduleOb.renderFrame = renderFrame;
+    moduleOb.startWorker = startWorker;
+    moduleOb.renderAllFrames = renderAllFrames;
+    moduleOb.renderFrames = renderFrames;
+    moduleOb.hasWorker = false;
 
-}else{
-    var dataManager = dataFunctionManager();
-}
+    return moduleOb;
+};
+
+var dataManager = dataFunctionManager();
+dataManager.startWorker();

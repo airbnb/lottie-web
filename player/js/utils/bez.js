@@ -1,4 +1,4 @@
-var bez = (function(){
+function bezFunction(){
 
     var easingFunctions = {};
     var storedBezierCurves = {};
@@ -98,4 +98,6 @@ var bez = (function(){
     };
 
     return ob;
-}());
+};
+
+var bez = bezFunction();

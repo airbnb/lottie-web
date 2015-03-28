@@ -14,7 +14,6 @@ var AnimationItem = function () {
     this.animationData = {};
     this.layers = [];
     this.assets = [];
-    this.renderedFrames = {};
     this.effectsManager = null;
     this.isPaused = true;
     this.isScrolling = false;
@@ -81,13 +80,22 @@ AnimationItem.prototype.elementLoaded = function () {
 
 AnimationItem.prototype.checkLoaded = function () {
     if (this.pendingElements == 0) {
-        this.isLoaded = true;
-        this.renderer.buildStage(this.container, this.layers);
-        this.buildControls();
-        this.gotoFrame();
-        //TODO Need polyfill for ios 5.1
-        this.dispatchEvent('bmLoaded');
+        this.prerenderFrames();
     }
+};
+
+AnimationItem.prototype.prerenderFrames = function(){
+    var i = 0;
+    var totalFrames = Math.min(10,this.totalFrames);
+    while(i<totalFrames){
+        dataManager.renderFrame(this.animationID,i);
+        i+=1;
+    }
+    this.isLoaded = true;
+    this.renderer.buildStage(this.container, this.layers);
+    this.buildControls();
+    //TODO Need polyfill for ios 5.1
+    this.dispatchEvent('bmLoaded');
 };
 
 AnimationItem.prototype.resize = function () {
@@ -106,7 +114,6 @@ AnimationItem.prototype.buildControls = function () {
 
 AnimationItem.prototype.gotoFrame = function () {
     if(subframeEnabled){
-        //this.renderedFrames = [];
         this.currentFrame = Math.round(this.currentRawFrame*100)/100;
     }else{
         this.currentFrame = Math.floor(this.currentRawFrame);
@@ -121,10 +128,7 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    if(!this.renderedFrames[this.currentFrame]){
-        this.renderedFrames[this.currentFrame] = true;
-        dataManager.renderFrame(this.animationID,this.currentFrame);
-    }
+    dataManager.renderFrame(this.animationID,this.currentFrame);
     this.renderer.renderFrame(this.currentFrame);
 };
 
