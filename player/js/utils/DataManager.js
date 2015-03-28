@@ -655,7 +655,7 @@ function dataFunctionManager(isWorker){
     }
 
     function startWorker(){
-        if(Worker && (window.URL || window.webkitURL) && Blob && 1==2){
+        if(Worker && (window.URL || window.webkitURL) && Blob && 1 == 2){
             function handleEvents(){
                 self.onmessage = function(e){
                     var data = e.data;
@@ -696,6 +696,7 @@ function dataFunctionManager(isWorker){
                             continue;
                         }
                         animations[e.data.id].renderedFrames[e.data.frames[i].num] = 2;
+                        savedItems.push(e.data.frames[i].num);
                         populateLayers(animation.layers, e.data.frames[i].num,e.data.frames[i].data);
 
                     }
@@ -719,3 +720,4 @@ function dataFunctionManager(isWorker){
 
 var dataManager = dataFunctionManager();
 dataManager.startWorker();
+var savedItems = [];

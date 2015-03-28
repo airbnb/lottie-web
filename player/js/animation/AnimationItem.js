@@ -86,7 +86,7 @@ AnimationItem.prototype.checkLoaded = function () {
 
 AnimationItem.prototype.prerenderFrames = function(){
     var i = 0;
-    var totalFrames = Math.min(10,this.totalFrames);
+    var totalFrames = Math.min(0,this.totalFrames);
     while(i<totalFrames){
         dataManager.renderFrame(this.animationID,i);
         i+=1;
