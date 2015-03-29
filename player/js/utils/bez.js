@@ -7,9 +7,8 @@ function bezFunction(){
         return Math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.0000001;
     }
 
-    function getEasingCurve(encodedFuncName, coOrdArray) {
-        coOrdArray = encodedFuncName;
-        encodedFuncName = 'bez_' + coOrdArray.join('_').replace(/\./g, 'p');
+    function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
+        encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
         if(easingFunctions[encodedFuncName]){
             return easingFunctions[encodedFuncName];
         }
@@ -30,7 +29,7 @@ function bezFunction(){
             }
         };
         easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
-            return c * polyBez([coOrdArray[0], coOrdArray[1]], [coOrdArray[2], coOrdArray[3]])(t/d) + b;
+            return c * polyBez([aa, bb], [cc, dd])(t/d) + b;
         };
         return easingFunctions[encodedFuncName];
     }

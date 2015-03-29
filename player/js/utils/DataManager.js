@@ -142,7 +142,8 @@ function dataFunctionManager(){
         var absToCoord = [];
         var absTiCoord = [];
         //len = keyframes.length;
-        keyframes.forEach(function(keyData){
+        for(i=0;i<len;i+=1){
+            keyData = keyframes[i];
             keyData.t -= offsetTime;
             if(keyData.to){
                 var k;
@@ -183,7 +184,7 @@ function dataFunctionManager(){
                 }
                 bezierData.segmentLength = addedLength;
             }
-        });
+        }
         var lastFrameIndex = 0;
         var lastPointIndex = 0;
         for(i=0;i<frameCount;i+=1){
@@ -208,7 +209,7 @@ function dataFunctionManager(){
                 }else if(i>=keyData.t && i<nextKeyData.t){
                     propertyArray = [];
                     if(keyData.to){
-                        perc = bez.getEasingCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                        perc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y)('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
                         var bezierData = keyData.bezierData;
                         var distanceInLine = bezierData.segmentLength*perc;
                         var k, kLen, segmentPerc;
@@ -247,7 +248,7 @@ function dataFunctionManager(){
                                     inX = keyData.i.x;
                                     inY = keyData.i.y;
                                 }
-                                perc = bez.getEasingCurve([outX,outY,inX,inY])('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                                perc = bez.getEasingCurve(outX,outY,inX,inY)('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
                             }
                             // for shapes
                             if(startItem.i){
@@ -327,13 +328,17 @@ function dataFunctionManager(){
         if(keyframes.__lastFrameNum !== undefined){
             i = keyframes.__lastKey;
             if(keyframes.__lastFrameNum > frameNum){
-                dir = -1;
+                i = 0;
+                //dir = -1;
             }
         }
         if(i == len){
             i -=1;
+        }else if(i == -1){
+            i = 0;
         }
-        while(i<len && i>-1){
+
+        while((i<len && dir == 1) || (i>-1 && dir == -1)){
             keyData = keyframes[i];
             nextKeyData = keyframes[i+1];
             if((nextKeyData.t - offsetTime) > frameNum){
@@ -341,8 +346,8 @@ function dataFunctionManager(){
             }
             i += dir;
         }
-        keyframes.__lastKey = i;
-        keyframes.__lastFrameNum = frameNum;
+        //keyframes.__lastKey = i;
+        //keyframes.__lastFrameNum = frameNum;
 
         if(keyData.to && !keyData.bezierData){
             bez.buildBezierData(keyData);
@@ -357,7 +362,7 @@ function dataFunctionManager(){
             }else if(frameNum < keyData.t-offsetTime){
                 return bezierData.points[0].point;
             }
-            perc = bez.getEasingCurve([keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            perc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y)('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
             var distanceInLine = bezierData.segmentLength*perc;
             var segmentPerc;
             var addedLength = 0;
@@ -366,7 +371,7 @@ function dataFunctionManager(){
                 j = keyData.__lastPoint;
                 addedLength = bezierData.points[j].cumulatedLength;
                 if(distanceInLine < keyData.__lastDistanceInLine){
-                    dir = -1;
+                    j = 0;
                 }
             }
             while(j<bezierData.points.length && j>-1){
@@ -382,8 +387,8 @@ function dataFunctionManager(){
                     for(k=0;k<kLen;k+=1){
                         propertyArray.push(bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc);
                     }
-                    keyData.__lastPoint = j;
-                    keyData.__lastDistanceInLine = distanceInLine;
+                    //keyData.__lastPoint = j;
+                    //keyData.__lastDistanceInLine = distanceInLine;
                     //propertyArray = bezierData.points[j].point;
                     break;
                 }
@@ -405,7 +410,7 @@ function dataFunctionManager(){
                         inX = keyData.i.x;
                         inY = keyData.i.y;
                     }
-                    perc = bez.getEasingCurve([outX,outY,inX,inY])('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    perc = bez.getEasingCurve(outX,outY,inX,inY)('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-offsetTime){
