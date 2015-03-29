@@ -328,26 +328,45 @@ function dataFunctionManager(){
         if(keyframes.__lastFrameNum !== undefined){
             i = keyframes.__lastKey;
             if(keyframes.__lastFrameNum > frameNum){
-                i = 0;
-                //dir = -1;
+                //i = 0;
+                dir = -1;
             }
         }
-        if(i == len){
-            i -=1;
-        }else if(i == -1){
-            i = 0;
-        }
+        var flag = true;
 
-        while((i<len && dir == 1) || (i>-1 && dir == -1)){
+        if(keyframes.__lastFrameNum == frameNum){
+            flag = false;
             keyData = keyframes[i];
             nextKeyData = keyframes[i+1];
-            if((nextKeyData.t - offsetTime) > frameNum){
+        }else{
+            if(i == len){
+                i -=1;
+            }else if(i == -1){
+                i = 0;
+            }
+        }
+        while(flag){
+            keyData = keyframes[i];
+            nextKeyData = keyframes[i+1];
+            if(i == len-1 && frameNum > nextKeyData.t - offsetTime){
                 break;
             }
-            i += dir;
+            if((nextKeyData.t - offsetTime) > frameNum && dir == 1){
+                break;
+            }else if((nextKeyData.t - offsetTime) < frameNum && dir == -1){
+                i += 1;
+                keyData = keyframes[i];
+                nextKeyData = keyframes[i+1];
+                break;
+            }
+            if(i < len - 1 && dir == 1 || i > 0 && dir == -1){
+                i += dir;
+            }else{
+                flag = false;
+            }
         }
-        //keyframes.__lastKey = i;
-        //keyframes.__lastFrameNum = frameNum;
+        keyframes.__lastKey = i;
+        keyframes.__lastFrameNum = frameNum;
 
         if(keyData.to && !keyData.bezierData){
             bez.buildBezierData(keyData);
@@ -387,9 +406,8 @@ function dataFunctionManager(){
                     for(k=0;k<kLen;k+=1){
                         propertyArray.push(bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc);
                     }
-                    //keyData.__lastPoint = j;
-                    //keyData.__lastDistanceInLine = distanceInLine;
-                    //propertyArray = bezierData.points[j].point;
+                    keyData.__lastPoint = j;
+                    keyData.__lastDistanceInLine = distanceInLine;
                     break;
                 }
                 j += dir;
@@ -446,7 +464,6 @@ function dataFunctionManager(){
                     }
                     propertyArray.push(shapeData);
                 }else{
-                    //perc = (i-keyData.t)/(nextKeyData.t-keyData.t);
                     if(keyData.h === 1){
                         propertyArray.push(keyData.s[i]);
                     }else{
