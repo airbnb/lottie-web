@@ -37,6 +37,8 @@ function dataFunctionManager(){
 
     function completeLayers(layers){
         var layerFrames, offsetFrame, layerData;
+        var animArray, lastFrame;
+        var shapeItem;
         var i, len = layers.length;
         var j, jLen;
         for(i=0;i<len;i+=1){
@@ -348,7 +350,7 @@ function dataFunctionManager(){
         while(flag){
             keyData = keyframes[i];
             nextKeyData = keyframes[i+1];
-            if(i == len-1 && frameNum > nextKeyData.t - offsetTime){
+            if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
                 break;
             }
             if((nextKeyData.t - offsetTime) > frameNum && dir == 1){
@@ -390,10 +392,13 @@ function dataFunctionManager(){
                 j = keyData.__lastPoint;
                 addedLength = bezierData.points[j].cumulatedLength;
                 if(distanceInLine < keyData.__lastDistanceInLine){
-                    j = 0;
+                    dir = -1;
+                    //j = 0;
                 }
             }
-            while(j<bezierData.points.length && j>-1){
+            flag = true;
+            jLen = bezierData.points.length;
+            while(flag){
                 addedLength +=bezierData.points[j].partialLength*dir;
                 if(frameNum == 0 || distanceInLine == 0 || perc == 0){
                     propertyArray = bezierData.points[j].point;
@@ -410,7 +415,11 @@ function dataFunctionManager(){
                     keyData.__lastDistanceInLine = distanceInLine;
                     break;
                 }
-                j += dir;
+                if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
+                    j += dir;
+                }else{
+                    flag = false;
+                }
             }
         }else{
             var outX,outY,inX,inY;
@@ -475,17 +484,27 @@ function dataFunctionManager(){
         return propertyArray;
     }
 
-
     function createPathString(paths,closed){
         var pathV,pathO,pathI;
         var pathString = '';
         var pathData;
+        var k, kLen;
 
         if(!(paths instanceof Array)){
-            paths = [paths];
+            pathV = paths.v;
+            pathO = paths.o;
+            pathI = paths.i;
+            kLen = pathV.length;
+            pathString += "M"+pathV[0][0]+","+pathV[0][1];
+            for(k=1;k<kLen;k++){
+                pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]) + " "+(pathI[k][0]+pathV[k][0])+","+(pathI[k][1]+pathV[k][1]) + " "+pathV[k][0]+","+pathV[k][1];
+            }
+            if(closed !== false){
+                pathString += " C"+(pathO[k-1][0]+pathV[k-1][0])+","+(pathO[k-1][1]+pathV[k-1][1]) + " "+(pathI[0][0]+pathV[0][0])+","+(pathI[0][1]+pathV[0][1]) + " "+pathV[0][0]+","+(pathV[0][1]);
+            }
+            return pathString;
         }
         var l,lLen = paths.length;
-        var k, kLen;
         pathString = '';
         for(l = 0;l<lLen;l+=1){
             pathData = paths[l];

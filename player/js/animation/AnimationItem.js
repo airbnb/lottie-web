@@ -86,7 +86,7 @@ AnimationItem.prototype.checkLoaded = function () {
 
 AnimationItem.prototype.prerenderFrames = function(){
     var i = 0;
-    var totalFrames = Math.min(0,this.totalFrames);
+    var totalFrames = Math.min(2,this.totalFrames);
     while(i<totalFrames){
         dataManager.renderFrame(this.animationID,i);
         i+=1;
@@ -96,6 +96,7 @@ AnimationItem.prototype.prerenderFrames = function(){
     this.buildControls();
     //TODO Need polyfill for ios 5.1
     this.dispatchEvent('bmLoaded');
+    this.gotoFrame();
 };
 
 AnimationItem.prototype.resize = function () {
@@ -168,9 +169,11 @@ AnimationItem.prototype.togglePause = function (name) {
     if(name && this.name != name){
         return;
     }
-    if(this.isPaused === false){
+    if(this.isPaused === true){
+        this.isPaused = false;
         this.play();
     }else{
+        this.isPaused = true;
         this.pause();
     }
 };
@@ -181,6 +184,7 @@ AnimationItem.prototype.stop = function (name) {
     }
     this.isPaused = true;
     this.currentFrame = this.currentRawFrame = 0;
+    this.gotoFrame();
     this.dispatchEvent('bmStop');
 };
 

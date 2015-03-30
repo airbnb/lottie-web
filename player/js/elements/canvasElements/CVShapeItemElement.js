@@ -4,7 +4,6 @@ function CVShapeItemElement(data,renderer){
     this.frameNum = -1;
     this.renderedPaths = {};
     this.trims = [];
-    this.trimPos = 0;
 }
 
 CVShapeItemElement.prototype.adjustTrim = function(){

@@ -69,7 +69,7 @@ gulp.task('buildPlayer', function(){
         .pipe(usemin({
             js: [uglify()]
         }))
-        .pipe(wrap('(function(window){<%= contents %>}(window));'))
+        .pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(gulp.dest('build/player/'));
 });
 
