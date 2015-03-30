@@ -36,25 +36,6 @@
         subframeEnabled = flag;
     }
 
-    function keyActive(e){
-        var key = e.keyCode ? e.keyCode : e.which;
-        if (key == 88 || key == 90) {
-            if (key == 88) {
-                bodymovinjs.moveFrame(1);
-            }else if (key == 90) {
-                bodymovinjs.moveFrame(-1);
-            }
-        }else if(key == 32){
-            bodymovinjs.togglePause();
-        }else if(key>48 && key<58){
-            bodymovinjs.setSpeed(key-48);
-        }else if (key == 39) {
-            bodymovinjs.setDirection(1);
-        }else if (key == 37) {
-            bodymovinjs.setDirection(-1);
-        }
-    }
-
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
     bodymovinjs.togglePause = togglePause;
@@ -68,7 +49,6 @@
     bodymovinjs.resize = resize;
 
     window.bodymovin = bodymovinjs;
-    //window.onkeydown = keyActive;
 
     var readyStateCheckInterval = setInterval(function() {
         if (document.readyState === "complete") {

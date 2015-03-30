@@ -42,13 +42,13 @@ BaseElement.prototype.renderFrame = function(num){
         }
         return false;
     }
-    var animData = this.data.an[this.data.an[num].forwardFrame];
+    this.currentAnimData = this.data.renderedData[num].an;
 
     if(this.data.eff){
-        this.effectsManager.renderFrame(num,animData.mk);
+        this.effectsManager.renderFrame(num,this.currentAnimData.mk);
     }
 
-    if(this.data.an[num].forwardFrame === this.data.renderedFrame.num){
+    if(num === this.data.renderedFrame.num){
         return true;
     }
 
@@ -56,22 +56,20 @@ BaseElement.prototype.renderFrame = function(num){
         this.maskManager.renderFrame(num);
     }
 
-    this.data.renderedFrame.num = animData.forwardFrame;
-
-    if(this.data.renderedFrame.o !== animData.tr.o){
-        this.data.renderedFrame.o = animData.tr.o;
-        this.anchorElement.setAttribute('opacity',animData.tr.o);
+    if(this.data.renderedFrame.o !== this.currentAnimData.tr.o){
+        this.data.renderedFrame.o = this.currentAnimData.tr.o;
+        this.anchorElement.setAttribute('opacity',this.currentAnimData.tr.o);
     }
     var anchorChanged = false;
-    if(!this.data.renderedFrame.a || (this.data.renderedFrame.a[0] !== animData.tr.a[0] && this.data.renderedFrame.a[1] !== animData.tr.a[1])){
-        this.data.renderedFrame.a = [animData.tr.a[0],animData.tr.a[1]];
-        this.anchorElement.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
+    if(!this.data.renderedFrame.a || (this.data.renderedFrame.a[0] !== this.currentAnimData.tr.a[0] && this.data.renderedFrame.a[1] !== this.currentAnimData.tr.a[1])){
+        this.data.renderedFrame.a = [this.currentAnimData.tr.a[0],this.currentAnimData.tr.a[1]];
+        this.anchorElement.setAttribute('transform','translate('+ -this.currentAnimData.tr.a[0]+" "+ -this.currentAnimData.tr.a[1]+")");
         anchorChanged = true;
     }
     var transformChanged = false;
-    if(this.data.renderedFrame.tr !== animData.matrixValue){
-        this.layerElement.setAttribute('transform',animData.matrixValue);
-        this.data.renderedFrame.tr = animData.matrixValue;
+    if(this.data.renderedFrame.tr !== this.currentAnimData.matrixValue){
+        this.layerElement.setAttribute('transform',this.currentAnimData.matrixValue);
+        this.data.renderedFrame.tr = this.currentAnimData.matrixValue;
         transformChanged = true;
     }
 
@@ -81,10 +79,10 @@ BaseElement.prototype.renderFrame = function(num){
             item = relateds[i].item;
             itemCont = relateds[i].itemCont;
             if(anchorChanged){
-                item.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
+                item.setAttribute('transform','translate('+ -this.currentAnimData.tr.a[0]+" "+ -this.currentAnimData.tr.a[1]+")");
             }
             if(transformChanged){
-                itemCont.setAttribute('transform',animData.matrixValue);
+                itemCont.setAttribute('transform',this.currentAnimData.matrixValue);
             }
         }
     }

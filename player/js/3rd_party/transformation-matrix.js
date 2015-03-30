@@ -26,6 +26,7 @@
  * @prop {CanvasRenderingContext2D|null} [context=null] - set or get current canvas context
  * @constructor
  */
+
 function Matrix(context) {
 
     var me = this;
@@ -34,14 +35,16 @@ function Matrix(context) {
     me.a = me.d = 1;
     me.b = me.c = me.e = me.f = 0;
 
+    me.a1 = me.b1 = me.c1 = me.d1 = me.e1 = me.f1 = 0;
+
     me.context = context;
 
     me.cos = me.sin = 0;
 
+
     // reset canvas transformations (if any) to enable 100% sync.
     if (context) context.setTransform(1, 0, 0, 1, 0, 0);
 }
-
 Matrix.prototype = {
 
     /**
@@ -270,24 +273,24 @@ Matrix.prototype = {
      */
     transform: function(a2, b2, c2, d2, e2, f2) {
 
-        var a1 = this.a,
-            b1 = this.b,
-            c1 = this.c,
-            d1 = this.d,
-            e1 = this.e,
-            f1 = this.f;
+        this.a1 = this.a;
+        this.b1 = this.b;
+        this.c1 = this.c;
+        this.d1 = this.d;
+        this.e1 = this.e;
+        this.f1 = this.f;
 
         /* matrix order (canvas compatible):
          * ace
          * bdf
          * 001
          */
-        this.a = a1 * a2 + c1 * b2;
-        this.b = b1 * a2 + d1 * b2;
-        this.c = a1 * c2 + c1 * d2;
-        this.d = b1 * c2 + d1 * d2;
-        this.e = a1 * e2 + c1 * f2 + e1;
-        this.f = b1 * e2 + d1 * f2 + f1;
+        this.a = this.a1 * a2 + this.c1 * b2;
+        this.b = this.b1 * a2 + this.d1 * b2;
+        this.c = this.a1 * c2 + this.c1 * d2;
+        this.d = this.b1 * c2 + this.d1 * d2;
+        this.e = this.a1 * e2 + this.c1 * f2 + this.e1;
+        this.f = this.b1 * e2 + this.d1 * f2 + this.f1;
 
         return this._x();
     },
