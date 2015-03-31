@@ -387,11 +387,11 @@ function dataFunctionManager(){
                 return bezierData.points[0].point;
             }
             var fnc;
-            if(keyData.__fncIndex){
-                fnc = bez.getEasingCurveByIndex(keyData.__fncIndex);
+            if(keyData.__fnct){
+                fnc = keyData.__fnct;
             }else{
                 fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
-                keyData.__fncIndex = fnc.__index;
+                keyData.__fnct = fnc;
             }
             perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
             ///perc = 0;
@@ -453,11 +453,11 @@ function dataFunctionManager(){
                         inY = keyData.i.y;
                     }
                     var fnc;
-                    if(keyData.__fncIndex){
-                        fnc = bez.getEasingCurveByIndex(keyData.__fncIndex);
+                    if(keyData.__fnct){
+                        fnc = keyData.__fnct;
                     }else{
                         fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                        keyData.__fncIndex = fnc.__index;
+                        keyData.__fnct = fnc;
                     }
                     perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     ///perc = 0;

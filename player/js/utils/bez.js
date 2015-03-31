@@ -56,8 +56,7 @@ function bezFunction(){
             p2Y:p2Y,
             fnc: fnc
         });
-        fnc.__index = len - 1;
-        return easingFunctions[len-1].fnc;
+        return fnc;
     }
 
     function drawBezierCurve(pt1,pt2,pt3,pt4){
