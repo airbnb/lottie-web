@@ -98,8 +98,10 @@ var animationManager = (function(){
         }
     }
 
-    initTime = Date.now();
-    requestAnimationFrame(resume);
+    setTimeout(function(){
+        initTime = Date.now();
+        requestAnimationFrame(resume);
+    },2000);
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.setSpeed = setSpeed;

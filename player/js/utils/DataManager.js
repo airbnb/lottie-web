@@ -251,6 +251,7 @@ function dataFunctionManager(){
                                     inY = keyData.i.y;
                                 }
                                 perc = bez.getEasingCurve(outX,outY,inX,inY)('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
+                                ///perc = 0;
                             }
                             // for shapes
                             if(startItem.i){
@@ -379,11 +380,22 @@ function dataFunctionManager(){
         if(keyData.to){
             bezierData = keyData.bezierData;
             if(frameNum >= nextKeyData.t-offsetTime){
+                ///return 0;
                 return bezierData.points[bezierData.points.length - 1].point;
             }else if(frameNum < keyData.t-offsetTime){
+                ///return 0;
                 return bezierData.points[0].point;
             }
-            perc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y)('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            var fnc;
+            if(keyData.__fncIndex){
+                fnc = bez.getEasingCurveByIndex(keyData.__fncIndex);
+            }else{
+                fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
+                keyData.__fncIndex = fnc.__index;
+            }
+            perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            ///perc = 0;
+            ///var distanceInLine = 0;
             var distanceInLine = bezierData.segmentLength*perc;
             var segmentPerc;
             var addedLength = 0;
@@ -397,7 +409,9 @@ function dataFunctionManager(){
                 }
             }
             flag = true;
+            ///flag = false;
             jLen = bezierData.points.length;
+            ///jLen = 0;
             while(flag){
                 addedLength +=bezierData.points[j].partialLength*dir;
                 if(frameNum == 0 || distanceInLine == 0 || perc == 0){
@@ -422,6 +436,7 @@ function dataFunctionManager(){
                 }
             }
         }else{
+            //return 0;
             var outX,outY,inX,inY;
             len = keyData.s.length;
             for(i=0;i<len;i+=1){
@@ -437,7 +452,15 @@ function dataFunctionManager(){
                         inX = keyData.i.x;
                         inY = keyData.i.y;
                     }
-                    perc = bez.getEasingCurve(outX,outY,inX,inY)('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    var fnc;
+                    if(keyData.__fncIndex){
+                        fnc = bez.getEasingCurveByIndex(keyData.__fncIndex);
+                    }else{
+                        fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                        keyData.__fncIndex = fnc.__index;
+                    }
+                    perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    ///perc = 0;
                     if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-offsetTime){
