@@ -98,6 +98,7 @@ var animationManager = (function(){
         }
     }
 
+    initTime = Date.now();
     requestAnimationFrame(resume);
 
     moduleOb.registerAnimation = registerAnimation;
