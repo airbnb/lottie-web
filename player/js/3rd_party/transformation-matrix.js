@@ -35,6 +35,10 @@ function Matrix(context) {
     me.a = me.d = 1;
     me.b = me.c = me.e = me.f = 0;
 
+    me.props = [1,0,0,1,0,0];
+
+    me.cssParts = ['matrix(','',')'];
+
     me.a1 = me.b1 = me.c1 = me.d1 = me.e1 = me.f1 = 0;
 
     me.context = context;
@@ -228,12 +232,12 @@ Matrix.prototype = {
      * @param {number} f - translate y
      */
     setTransform: function(a, b, c, d, e, f) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.e = e;
-        this.f = f;
+        this.props[0] = a;
+        this.props[1] = b;
+        this.props[2] = c;
+        this.props[3] = d;
+        this.props[4] = e;
+        this.props[5] = f;
         return this._x();
     },
 
@@ -273,24 +277,24 @@ Matrix.prototype = {
      */
     transform: function(a2, b2, c2, d2, e2, f2) {
 
-        this.a1 = this.a;
-        this.b1 = this.b;
-        this.c1 = this.c;
-        this.d1 = this.d;
-        this.e1 = this.e;
-        this.f1 = this.f;
+        this.a1 = this.props[0];
+        this.b1 = this.props[1];
+        this.c1 = this.props[2];
+        this.d1 = this.props[3];
+        this.e1 = this.props[4];
+        this.f1 = this.props[5];
 
         /* matrix order (canvas compatible):
          * ace
          * bdf
          * 001
          */
-        this.a = this.a1 * a2 + this.c1 * b2;
-        this.b = this.b1 * a2 + this.d1 * b2;
-        this.c = this.a1 * c2 + this.c1 * d2;
-        this.d = this.b1 * c2 + this.d1 * d2;
-        this.e = this.a1 * e2 + this.c1 * f2 + this.e1;
-        this.f = this.b1 * e2 + this.d1 * f2 + this.f1;
+        this.props[0] = this.a1 * a2 + this.c1 * b2;
+        this.props[1] = this.b1 * a2 + this.d1 * b2;
+        this.props[2] = this.a1 * c2 + this.c1 * d2;
+        this.props[3] = this.b1 * c2 + this.d1 * d2;
+        this.props[4] = this.a1 * e2 + this.c1 * f2 + this.e1;
+        this.props[5] = this.b1 * e2 + this.d1 * f2 + this.f1;
 
         return this._x();
     },
@@ -681,7 +685,7 @@ Matrix.prototype = {
      * @returns {Array}
      */
     toArray: function() {
-        return [this.a, this.b, this.c, this.d, this.e, this.f];
+        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
     },
 
     /**
@@ -689,7 +693,9 @@ Matrix.prototype = {
      * @returns {string}
      */
     toCSS: function() {
-        return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
+        this.cssParts[1] = this.props.join(',');
+        return this.cssParts.join('');
+        //return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
     },
 
     /**

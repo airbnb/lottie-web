@@ -580,10 +580,13 @@ function dataFunctionManager(){
             renderedData = {};
             renderedData.an = {
                 forwardFrame : offsettedFrameNum,
-                tr: dataOb,
-                matrixValue: matrixInstance.getMatrix2(trOb),
-                matrixArray: matrixInstance.getMatrixArray(trOb)
+                tr: dataOb
             };
+            if(renderType == 'canvas'){
+                renderedData.an.matrixArray = matrixInstance.getMatrixArray(trOb);
+            }else{
+                renderedData.an.matrixValue = matrixInstance.getMatrix2(trOb);
+            }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
                 maskProps = item.masksProperties;
