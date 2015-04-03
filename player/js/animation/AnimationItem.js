@@ -20,6 +20,7 @@ var AnimationItem = function () {
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
+    this.renderedFrameCount = 0;
 };
 
 AnimationItem.prototype.setData = function (wrapper) {
@@ -83,17 +84,21 @@ AnimationItem.prototype.checkLoaded = function () {
     }
 };
 
-AnimationItem.prototype.prerenderFrames = function(){
-    var i = 0;
-    var totalFrames = Math.min(2,this.totalFrames);
-    while(i<totalFrames){
-        dataManager.renderFrame(this.animationID,i);
-        i+=1;
+AnimationItem.prototype.prerenderFrames = function(timeoutFlag){
+    if(this.renderedFrameCount === this.totalFrames){
+        //TODO Need polyfill for ios 5.1
+        this.renderer.buildStage(this.container, this.layers);
+        this.gotoFrame();
+        this.isLoaded = true;
+    }else{
+        dataManager.renderFrame(this.animationID,this.renderedFrameCount);
+        this.renderedFrameCount+=1;
+        if(timeoutFlag){
+            setTimeout(this.prerenderFrames.bind(this),0);
+        }else{
+            this.prerenderFrames(true);
+        }
     }
-    this.renderer.buildStage(this.container, this.layers);
-    //TODO Need polyfill for ios 5.1
-    this.gotoFrame();
-    this.isLoaded = true;
 };
 
 AnimationItem.prototype.resize = function () {
