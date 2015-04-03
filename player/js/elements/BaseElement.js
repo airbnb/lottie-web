@@ -24,7 +24,7 @@ BaseElement.prototype.createElements = function(){
 
     this.maskingGroup = this.anchorElement;
 
-    this.maskedElement = this.svgElem;
+    this.maskedElement = this.anchorElement;
 
 };
 
