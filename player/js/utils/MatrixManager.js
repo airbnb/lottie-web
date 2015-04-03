@@ -132,7 +132,9 @@ function matrixManagerFunction(){
         get2DMatrix : get2DMatrix,
         getMatrix : getMatrix,
         getMatrix2 : getMatrix2,
-        getMatrixArray : getMatrixArray
+        getMatrixArray : getMatrixArray,
+        getMatrixArrayFromParams : returnMatrix2DArray,
+        getMatrix2FromParams : returnMatrix2D
     }
 
 };

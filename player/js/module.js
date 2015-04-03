@@ -32,6 +32,9 @@
     function resize(){
         animationManager.resize();
     }
+    function start(){
+        animationManager.start();
+    }
     function setSubframeRendering(flag){
         subframeEnabled = flag;
     }
@@ -47,18 +50,23 @@
     bodymovinjs.registerAnimation = registerAnimation;
     bodymovinjs.setSubframeRendering = setSubframeRendering;
     bodymovinjs.resize = resize;
+    bodymovinjs.start = start;
+
+    function checkReady(){
+        if (document.readyState === "complete") {
+            clearInterval(readyStateCheckInterval);
+                searchAnimations();
+                play();
+        }
+    }
+
+    bodymovinjs.checkReady = checkReady;
 
     window.bodymovin = bodymovinjs;
 
-    var readyStateCheckInterval = setInterval(function() {
-        if (document.readyState === "complete") {
-            clearInterval(readyStateCheckInterval);
-            searchAnimations();
-            play();
-        }
-    }, 100);
+    var readyStateCheckInterval = setInterval(checkReady, 100);
 
-    (function () {
+    /*(function () {
         function CustomEvent ( event, params ) {
             params = params || { bubbles: false, cancelable: false, detail: undefined };
             var evt = document.createEvent( 'CustomEvent' );
@@ -69,7 +77,7 @@
         CustomEvent.prototype = window.Event.prototype;
 
         window.CustomEvent = CustomEvent;
-    })();
+    })();*/
 
 }(window));
 

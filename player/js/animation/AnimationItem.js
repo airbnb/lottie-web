@@ -91,12 +91,12 @@ AnimationItem.prototype.prerenderFrames = function(){
         dataManager.renderFrame(this.animationID,i);
         i+=1;
     }
-    this.isLoaded = true;
     this.renderer.buildStage(this.container, this.layers);
     this.buildControls();
     //TODO Need polyfill for ios 5.1
     this.dispatchEvent('bmLoaded');
     this.gotoFrame();
+    this.isLoaded = true;
 };
 
 AnimationItem.prototype.resize = function () {

@@ -2,6 +2,7 @@ var subframeEnabled = false;
 var supportsPath2D = typeof Path2D === 'function';
 //supportsPath2D = false;
 var cachedColors = {};
+var colorMap = [];
 var body;
 
 function styleDiv(element){
@@ -39,7 +40,7 @@ function componentToHex(c) {
 }
 
 function rgbToHex(r, g, b) {
-    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    return '#' + colorMap[r] + colorMap[g] + colorMap[b];
 }
 
 function fillToRgba(hex,alpha){
@@ -49,3 +50,13 @@ function fillToRgba(hex,alpha){
     }
     return 'rgba('+cachedColors[hex]+','+alpha+')';
 }
+
+function createColorMap(){
+    var i;
+    var hex;
+    for(i=0;i<256;i+=1){
+        hex = i.toString(16);
+        colorMap[i] = hex.length == 1 ? '0' + hex : hex;
+    }
+}
+createColorMap();

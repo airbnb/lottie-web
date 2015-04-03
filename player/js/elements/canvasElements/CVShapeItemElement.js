@@ -250,7 +250,7 @@ CVShapeItemElement.prototype.renderFill = function(num){
             if(fill.opacity < 1){
                 this.renderer.canvasContext.fillStyle=fillToRgba(fill.color, fill.opacity);
             }else{
-                this.renderer.canvasContext.fillStyle=fill.color;
+                this.renderer.canvasContext.fillStyle='rgba('+fill.color.join(',')+')';
             }
             return;
         }
@@ -269,7 +269,7 @@ CVShapeItemElement.prototype.renderStroke = function(num){
             if(stroke.opacity < 1){
                 this.renderer.canvasContext.strokeStyle=fillToRgba(stroke.color, stroke.opacity);
             }else{
-                this.renderer.canvasContext.strokeStyle=stroke.color;
+                this.renderer.canvasContext.strokeStyle='rgba('+stroke.color.join(',')+')';
             }
             return;
         }
