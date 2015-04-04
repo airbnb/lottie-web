@@ -80,11 +80,17 @@ AnimationItem.prototype.elementLoaded = function () {
 
 AnimationItem.prototype.checkLoaded = function () {
     if (this.pendingElements == 0) {
-        this.prerenderFrames();
+        //this.prerenderFrames();
+        setTimeout(function(){
+            this.prerenderFrames(0);
+        }.bind(this),3000);
     }
 };
 
-AnimationItem.prototype.prerenderFrames = function(timeoutFlag){
+AnimationItem.prototype.prerenderFrames = function(count){
+    if(!count){
+        count = 0;
+    }
     if(this.renderedFrameCount === this.totalFrames){
         //TODO Need polyfill for ios 5.1
         this.renderer.buildStage(this.container, this.layers);
@@ -93,10 +99,11 @@ AnimationItem.prototype.prerenderFrames = function(timeoutFlag){
     }else{
         dataManager.renderFrame(this.animationID,this.renderedFrameCount);
         this.renderedFrameCount+=1;
-        if(timeoutFlag){
+        if(count > 5){
             setTimeout(this.prerenderFrames.bind(this),0);
         }else{
-            this.prerenderFrames(true);
+            count += 1;
+            this.prerenderFrames(count);
         }
     }
 };

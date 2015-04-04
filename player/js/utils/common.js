@@ -51,6 +51,22 @@ function fillToRgba(hex,alpha){
     return 'rgba('+cachedColors[hex]+','+alpha+')';
 }
 
+var fillColorToString = (function(){
+    var colorMap = [];
+    return function(colorArr){
+        if(!colorMap[colorArr[0]]){
+            colorMap[colorArr[0]] = [];
+        }
+        if(!colorMap[colorArr[0]][colorArr[1]]){
+            colorMap[colorArr[0]][colorArr[1]] = [];
+        }
+        if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]]){
+            colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = 'rgba('+colorArr.join(',')+')';
+        }
+        return colorMap[colorArr[0]][colorArr[1]][colorArr[2]];
+    }
+}());
+
 function createColorMap(){
     var i;
     var hex;

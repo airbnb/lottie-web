@@ -75,6 +75,54 @@ function bezFunction(){
             points :[],
             segmentLength: 0
         };
+        if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1])
+            && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
+            curveSegments = 2;
+        }
+        len = pt3.length;
+        for(k=0;k<curveSegments;k+=1){
+            point = [];
+            perc = k/(curveSegments-1);
+            ptDistance = 0;
+            for(i=0;i<len;i+=1){
+                triCoord1 = pt1[i] + (pt3[i] - pt1[i])*perc;
+                triCoord2 = pt3[i] + (pt4[i] - pt3[i])*perc;
+                triCoord3 = pt4[i] + (pt2[i] - pt4[i])*perc;
+                liCoord1 = triCoord1 + (triCoord2 - triCoord1)*perc;
+                liCoord2 = triCoord2 + (triCoord3 - triCoord2)*perc;
+                ptCoord = liCoord1 + (liCoord2 - liCoord1)*perc;
+                point.push(ptCoord);
+                if(lastPoint !== null){
+                    ptDistance += Math.pow(point[i] - lastPoint[i],2);
+                }
+            }
+            ptDistance = Math.sqrt(ptDistance);
+            addedLength += ptDistance;
+            bezierData.points.push({partialLength: ptDistance,cumulatedLength:addedLength, point: point});
+            lastPoint = point;
+        }
+        bezierData.segmentLength = addedLength;
+        storedBezierCurves[bezierName] = bezierData;
+        return bezierData;
+    }
+
+    function buildBezierData(keyData){
+        ///return 0;
+        ///keyData.bezierData = drawBezierCurve(keyData.s,keyData.e,keyData.to,keyData.ti);
+        var pt1 = keyData.s;
+        var pt2 = keyData.e;
+        var pt3 = keyData.to;
+        var pt4 = keyData.ti;
+        var curveSegments = 500;
+        var k;
+        var i, len;
+        var triCoord1,triCoord2,triCoord3,liCoord1,liCoord2,ptCoord,perc,addedLength = 0;
+        var ptDistance;
+        var point,lastPoint = null;
+        var bezierData = {
+            points :[],
+            segmentLength: 0
+        };
         if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1])
             && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
             curveSegments = 2;
@@ -102,13 +150,8 @@ function bezFunction(){
             lastPoint = point;
         }
         bezierData.segmentLength = addedLength;
-        storedBezierCurves[bezierName] = bezierData;
-        return bezierData;
-    }
-
-    function buildBezierData(keyData){
-        ///return 0;
-        keyData.bezierData = drawBezierCurve(keyData.s,keyData.e,keyData.to,keyData.ti);
+        ///storedBezierCurves[bezierName] = bezierData;
+        keyData.bezierData = bezierData;
     }
 
     var ob = {
