@@ -670,14 +670,6 @@ function dataFunctionManager(){
                 keyData.__fnct = fnc;
             }
             perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
-            if(frameNum == 25){
-                console.log('frameNum: ',frameNum);
-                console.log('perc: ',perc);
-                console.log('keyData.t: ',keyData.t);
-                console.log('nextKeyData.t: ',nextKeyData.t);
-                console.log('offsetTime: ',offsetTime)
-                perc = .5;
-            }
             ///perc = 0;
             ///var distanceInLine = 0;
             var distanceInLine = bezierData.segmentLength*perc;

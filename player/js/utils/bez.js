@@ -18,45 +18,31 @@ function bezFunction(){
         return easingFunctions[index].fnc;
     }
 
-    function getEasingCurve(p1X,p1Y,p2X,p2Y) {
-        //polyCount += 1;
-        //encodedFuncName = ('bez_' + p1X+'_'+p1Y+'_'+p2X+'_'+p2Y).replace(/\./g, 'p');
-        //encodedFuncName = p1X.replace(/\./g, 'p');
-        var i = 0;
-        while(i<len){
-            if(easingFunctions[i].p1X == p1X && easingFunctions[i].p1Y == p1Y && easingFunctions[i].p2X == p2X && easingFunctions[i].p2Y == p2Y){
-                window.retCount += 1;
-                return easingFunctions[i].fnc;
-            }
-            i += 1;
+    function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
+        encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
+        if(easingFunctions[encodedFuncName]){
+            return easingFunctions[encodedFuncName];
         }
-        window.passCount += 1;
-        len += 1;
-        var fnc = function(x, t, b, c, d) {
-            t = t/d;
-            var x2 = t, i = 0, z;
-            var A1,B1,C1,A2,B2,C2;
+        var A0, B0, C0;
+        var A1, B1, C1;
+        easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
+            var tt = t/d;
+            var x = tt, i = 0, z;
             while (++i < 14) {
-                C1 = 3 * p1X, B1 = 3 * (p2X - p1X) - C1, A1 = 1 - C1 - B1;
-                z = t * (C1 + t * (B1 + t * A1));
-                if (math.abs(z) < 1e-3) break;
-                x2 -= z / (C1 + x2 * (2 * B1 + 3 * A1 * x2));
+                C0 = 3 * aa;
+                B0 = 3 * (cc - aa) - C0;
+                A0 = 1 - C0 - B0;
+                z = (x * (C0 + x * (B0 + x * A0))) - tt;
+                if (Math.abs(z) < 1e-3) break;
+                x -= z / (C0 + x * (2 * B0 + 3 * A0 * x));
             }
-            C2 = 3 * p1Y;
-            B2 = 3 * (p2Y - p1Y) - C2;
-            A2 = 1 - C2 - B2;
-            var polybez =  t * (C2 + t * (B2 + t * A2));
-
-            return c * polybez + b;
+            C1 = 3 * bb;
+            B1 = 3 * (dd - bb) - C1;
+            A1 = 1 - C1 - B1;
+            var polyB = x * (C1 + x * (B1 + x * A1));
+            return c * polyB + b;
         };
-        easingFunctions.push({
-            p1X:p1X,
-            p1Y:p1Y,
-            p2X:p2X,
-            p2Y:p2Y,
-            fnc: fnc
-        });
-        return fnc;
+        return easingFunctions[encodedFuncName];
     }
 
     function drawBezierCurve(pt1,pt2,pt3,pt4){
@@ -127,7 +113,6 @@ function bezFunction(){
             && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
             curveSegments = 2;
         }
-        console.log('curveSegments: ',curveSegments);
         len = pt3.length;
         for(k=0;k<curveSegments;k+=1){
             point = [];

@@ -236,7 +236,6 @@ ShapeItemElement.prototype.renderTransform = function(num){
         if(this.renderedFrame.tr.a[0] !== tr.a[0] || this.renderedFrame.tr.a[1] !== tr.a[1]){
             this.renderedFrame.tr.a[0] = tr.a[0];
             this.renderedFrame.tr.a[1] = tr.a[1];
-            console.log('tr.a: ',tr.a);
             this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');
         }
     }
