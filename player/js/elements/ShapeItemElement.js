@@ -11,7 +11,8 @@ function ShapeItemElement(data){
             a: []
         },
         trim:{},
-        ellipse:{}
+        ellipse:{},
+        rect:{}
     };
     if(this.data.type === 'pathShape'){
         this.shape = document.createElementNS(svgNS, "path");
@@ -26,7 +27,7 @@ function ShapeItemElement(data){
         this.shape = document.createElementNS(svgNS, "path");
     }
     if(this.data.trim){
-        this.shape.setAttribute('stroke-linecap','butt');
+        this.shape.setAttribute('stroke-linecap','round');
     }else{
         this.shape.setAttribute('stroke-linejoin','round');
         this.shape.setAttribute('stroke-linecap','round');
@@ -135,19 +136,32 @@ ShapeItemElement.prototype.renderEllipse = function(num){
 };
 
 ShapeItemElement.prototype.renderRect = function(num){
-    var animData = this.data.an;
-    if(animData.rect[num].forwardFrame == animData.renderedFrame.rect){
-        return;
-    }
-    var rect = animData.rect[animData.rect[num].forwardFrame];
-    animData.renderedFrame.rect = rect.forwardFrame;
+    var animData = this.currentData;
+    if(animData.rect){
+        var rect = animData.rect;
 
-    this.shape.setAttribute('width',rect.size[0]);
-    this.shape.setAttribute('height',rect.size[1]);
-    this.shape.setAttribute('rx',rect.roundness);
-    this.shape.setAttribute('ry',rect.roundness);
-    this.shape.setAttribute('x',(rect.position[0] - rect.size[0]/2));
-    this.shape.setAttribute('y',(rect.position[1] - rect.size[1]/2));
+        if(this.renderedFrame.rect.rx != rect.roundness){
+            this.shape.setAttribute('rx',rect.roundness);
+            this.shape.setAttribute('ry',rect.roundness);
+            this.renderedFrame.rect.rx = rect.roundness;
+        }
+        if(this.renderedFrame.rect.width != rect.size[0]){
+            this.shape.setAttribute('width',rect.size[0]);
+            this.renderedFrame.rect.width = rect.size[0];
+        }
+        if(this.renderedFrame.rect.height != rect.size[1]){
+            this.shape.setAttribute('height',rect.size[1]);
+            this.renderedFrame.rect.height = rect.size[1];
+        }
+        if(this.renderedFrame.rect.x != rect.position[0] - rect.size[0]){
+            this.shape.setAttribute('x',rect.position[0] - rect.size[0]/2);
+            this.renderedFrame.rect.x = rect.position[0] - rect.size[0];
+        }
+        if(this.renderedFrame.rect.y != rect.position[1] - rect.size[1]){
+            this.shape.setAttribute('y',rect.position[1] - rect.size[1]/2);
+            this.renderedFrame.rect.y = rect.position[1] - rect.size[1];
+        }
+    }
 };
 
 ShapeItemElement.prototype.renderFill = function(num){
@@ -219,13 +233,10 @@ ShapeItemElement.prototype.renderTransform = function(num){
             this.renderedFrame.tr.mt = tr.mt;
             this.shapeG.setAttribute('transform',tr.mt);
         }
-        if(this.renderedFrame.tr.mt !== tr.mt){
-            this.renderedFrame.tr.mt = tr.mt;
-            this.shapeG.setAttribute('transform',tr.mt);
-        }
         if(this.renderedFrame.tr.a[0] !== tr.a[0] || this.renderedFrame.tr.a[1] !== tr.a[1]){
             this.renderedFrame.tr.a[0] = tr.a[0];
             this.renderedFrame.tr.a[1] = tr.a[1];
+            console.log('tr.a: ',tr.a);
             this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');
         }
     }

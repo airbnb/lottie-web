@@ -10,7 +10,7 @@ function bezFunction(){
     var math = Math;
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
-        return Math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.0000001;
+        return Math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
     }
 
     function getEasingCurveByIndex(index){
@@ -127,6 +127,7 @@ function bezFunction(){
             && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
             curveSegments = 2;
         }
+        console.log('curveSegments: ',curveSegments);
         len = pt3.length;
         for(k=0;k<curveSegments;k+=1){
             point = [];

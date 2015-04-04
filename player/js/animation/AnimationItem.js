@@ -3,7 +3,7 @@ var AnimationItem = function () {
     this.path = '';
     this.isLoaded = false;
     this.currentFrame = 0;
-    this.currentRawFrame = 0;
+    this.currentRawFrame = 25;
     this.totalFrames = 0;
     this.frameRate = 0;
     this.frameMult = 0;
@@ -81,9 +81,10 @@ AnimationItem.prototype.elementLoaded = function () {
 AnimationItem.prototype.checkLoaded = function () {
     if (this.pendingElements == 0) {
         //this.prerenderFrames();
-        setTimeout(function(){
+        this.prerenderFrames(0);
+        /*setTimeout(function(){
             this.prerenderFrames(0);
-        }.bind(this),3000);
+        }.bind(this),3000);*/
     }
 };
 
@@ -94,8 +95,8 @@ AnimationItem.prototype.prerenderFrames = function(count){
     if(this.renderedFrameCount === this.totalFrames){
         //TODO Need polyfill for ios 5.1
         this.renderer.buildStage(this.container, this.layers);
-        this.gotoFrame();
         this.isLoaded = true;
+        this.gotoFrame();
     }else{
         dataManager.renderFrame(this.animationID,this.renderedFrameCount);
         this.renderedFrameCount+=1;

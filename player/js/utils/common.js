@@ -53,7 +53,7 @@ function fillToRgba(hex,alpha){
 
 var fillColorToString = (function(){
     var colorMap = [];
-    return function(colorArr){
+    return function(colorArr,alpha){
         if(!colorMap[colorArr[0]]){
             colorMap[colorArr[0]] = [];
         }
@@ -61,6 +61,9 @@ var fillColorToString = (function(){
             colorMap[colorArr[0]][colorArr[1]] = [];
         }
         if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]]){
+            if(alpha != undefined){
+                colorArr[3] = alpha;
+            }
             colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = 'rgba('+colorArr.join(',')+')';
         }
         return colorMap[colorArr[0]][colorArr[1]][colorArr[2]];

@@ -233,6 +233,9 @@ CVShapeItemElement.prototype.renderRect = function(){
         var y = rect.position[1] - rect.size[1]/2;
         var w = rect.size[0];
         var h = rect.size[1];
+        if(roundness instanceof Array){
+            roundness = roundness[0];
+        }
         ctx.moveTo(x + roundness, y);
         ctx.lineTo(x + w - roundness, y);
         ctx.quadraticCurveTo(x+w, y, x+w, y+roundness);
@@ -251,7 +254,7 @@ CVShapeItemElement.prototype.renderFill = function(num){
         var fill = animData.fill;
         if(this.data.fillEnabled!==false){
             if(fill.opacity < 1){
-                this.renderer.canvasContext.fillStyle=fillToRgba(fill.color, fill.opacity);
+                this.renderer.canvasContext.fillStyle=fillColorToString(fill.color, fill.opacity);
             }else{
                 ///this.renderer.canvasContext.fillStyle='rgba('+fill.color.join(',')+')';
                 this.renderer.canvasContext.fillStyle=fillColorToString(fill.color);
@@ -271,7 +274,7 @@ CVShapeItemElement.prototype.renderStroke = function(num){
         this.renderer.canvasContext.lineWidth=stroke.width;
         if(this.data.strokeEnabled!==false){
             if(stroke.opacity < 1){
-                this.renderer.canvasContext.strokeStyle=fillToRgba(stroke.color, stroke.opacity);
+                this.renderer.canvasContext.strokeStyle=fillColorToString(stroke.color, stroke.opacity);
             }else{
                 ///this.renderer.canvasContext.strokeStyle='rgba('+stroke.color.join(',')+')';
                 this.renderer.canvasContext.strokeStyle=fillColorToString(stroke.color);

@@ -64,7 +64,7 @@
 
     window.bodymovin = bodymovinjs;
 
-    var readyStateCheckInterval = setInterval(checkReady, 0);
+    var readyStateCheckInterval = setInterval(checkReady, 100);
 
 }(window));
 

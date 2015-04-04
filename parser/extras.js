@@ -547,6 +547,7 @@
                 bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);
                 segmentOb.i = bezierIn;
                 segmentOb.o = bezierOut;
+                segmentOb.n = (bezierIn.x.toString()+'_'+bezierIn.y.toString()+'_'+bezierOut.x.toString()+'_'+bezierOut.y.toString()).replace(/\./g, 'p');
                 segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
                 segmentOb.s = getPropertyValue(property.keyValue(j), true);
                 segmentOb.e = getPropertyValue(property.keyValue(j+1), true);

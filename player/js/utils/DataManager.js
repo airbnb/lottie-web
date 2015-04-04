@@ -585,26 +585,25 @@ function dataFunctionManager(){
         i = 0;
         len = keyframes.length- 1;
         var dir=1;
+        var flag = true;
         if(keyframes.__lastFrameNum !== undefined){
             i = keyframes.__lastKey;
             if(keyframes.__lastFrameNum > frameNum){
                 //i = 0;
                 dir = -1;
+            }else if(keyframes.__lastFrameNum == frameNum){
+                flag = false;
+                keyData = keyframes[i];
+                nextKeyData = keyframes[i+1];
+            }else{
+                if(i == len){
+                    i -=1;
+                }else if(i == -1){
+                    i = 0;
+                }
             }
         }
-        var flag = true;
 
-        if(keyframes.__lastFrameNum == frameNum){
-            flag = false;
-            keyData = keyframes[i];
-            nextKeyData = keyframes[i+1];
-        }else{
-            if(i == len){
-                i -=1;
-            }else if(i == -1){
-                i = 0;
-            }
-        }
         while(flag){
             keyData = keyframes[i];
             nextKeyData = keyframes[i+1];
@@ -671,6 +670,14 @@ function dataFunctionManager(){
                 keyData.__fnct = fnc;
             }
             perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            if(frameNum == 25){
+                console.log('frameNum: ',frameNum);
+                console.log('perc: ',perc);
+                console.log('keyData.t: ',keyData.t);
+                console.log('nextKeyData.t: ',nextKeyData.t);
+                console.log('offsetTime: ',offsetTime)
+                perc = .5;
+            }
             ///perc = 0;
             ///var distanceInLine = 0;
             var distanceInLine = bezierData.segmentLength*perc;
@@ -951,7 +958,6 @@ function dataFunctionManager(){
             sy = getInterpolatedTransform(item.ks.s,offsettedFrameNum, item.startTime,1, true);
             renderedData = {};
             renderedData.an = {
-                forwardFrame : offsettedFrameNum,
                 tr: dataOb
             };
             interpolatedParams.arrayFlag = false;
@@ -1015,10 +1021,10 @@ function dataFunctionManager(){
                         fillColor = getInterpolatedValue(shapeItem.fl.c,offsettedFrameNum, item.startTime,interpolatedParams);
                         fillOpacity = getInterpolatedValue(shapeItem.fl.o,offsettedFrameNum, item.startTime,interpolatedParams);
                         shapeData.fill = {
-                            opacity : fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity,
-                            forwardFrame : offsettedFrameNum
+                            opacity : fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
                         };
                         if(renderType == 'canvas'){
+                            roundColor(fillColor);
                             shapeData.fill.color = fillColor;
                         }else{
                             shapeData.fill.color = rgbToHex(Math.round(fillColor[0]),Math.round(fillColor[1]),Math.round(fillColor[2]));
@@ -1033,8 +1039,7 @@ function dataFunctionManager(){
                         };*/
                         shapeData.path = {
                             pathNodes: shape,
-                            closed: shapeItem.closed,
-                            forwardFrame : offsettedFrameNum
+                            closed: shapeItem.closed
                         };
                         if(renderType == 'svg'){
                             shapeData.path.pathString = createPathString(shape,shapeItem.closed);
@@ -1046,8 +1051,7 @@ function dataFunctionManager(){
                         elmSize = getInterpolatedValue(shapeItem.el.s,offsettedFrameNum, item.startTime,interpolatedParams);
                         shapeData.ell = {
                             p : elmPos,
-                            size : elmSize,
-                            forwardFrame : offsettedFrameNum
+                            size : elmSize
                         };
                     }else if(shapeItem.rc){
                         ///elmPos = [0,0];
@@ -1059,8 +1063,7 @@ function dataFunctionManager(){
                         shapeData.rect = {
                             position : elmPos,
                             size : elmSize,
-                            roundness : elmRound,
-                            forwardFrame : offsettedFrameNum
+                            roundness : elmRound
                         };
                     }
                     if(shapeItem.st){
@@ -1072,10 +1075,10 @@ function dataFunctionManager(){
                         strokeWidth = getInterpolatedValue(shapeItem.st.w,offsettedFrameNum, item.startTime,interpolatedParams);
                         shapeData.stroke = {
                             opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
-                            width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth,
-                            forwardFrame : offsettedFrameNum
+                            width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
                         };
                         if(renderType == 'canvas'){
+                            roundColor(strokeColor);
                             shapeData.stroke.color = strokeColor;
                         }else{
                             shapeData.stroke.color = rgbToHex(Math.round(strokeColor[0]),Math.round(strokeColor[1]),Math.round(strokeColor[2]));
@@ -1107,7 +1110,6 @@ function dataFunctionManager(){
                     }else{
                         shapeTrOb.mt = matrixInstance.getMatrix2FromParams(r,sx,sy,px,py);
                     }
-                    shapeTrOb.forwardFrame = offsettedFrameNum;
                     shapeItem.an.tr[offsettedFrameNum] = shapeTrOb;
                     shapeData.tr = shapeTrOb;
 
@@ -1118,8 +1120,7 @@ function dataFunctionManager(){
                         shapeData.trim = {
                             s: trimS,
                             e: trimE,
-                            o: trimO,
-                            forwardFrame: offsettedFrameNum
+                            o: trimO
                         }
                     }
                     if(!shapeItem._created){
@@ -1127,6 +1128,13 @@ function dataFunctionManager(){
                     }
                 }
             }
+        }
+    }
+
+    function roundColor(arr){
+        var i, len = arr.length;
+        for(i=0;i<len ;i+=1){
+            arr[i] = Math.round(arr[i]);
         }
     }
 

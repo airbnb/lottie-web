@@ -22,8 +22,8 @@ StrokeEffectManager.prototype.renderMask = function(num,masks){
     var pathString = masks[this.data.path-1].pathString;
     this.path.setAttribute('d', pathString);
     var length = this.path.getTotalLength();
-    var startValue = this.data.animated.Start[num].forwardFrame === undefined ? this.data.animated.Start[num] : this.data.animated.Start[this.data.animated.Start[num].forwardFrame];
-    var endValue = this.data.animated.End[num].forwardFrame === undefined ? this.data.animated.End[num]:this.data.animated.End[this.data.animated.End[num].forwardFrame];
+    var startValue = this.data.animated.Start[num];
+    var endValue = this.data.animated.End[num];
     var dashArrayString = "0 ";
     dashArrayString +=startValue*length/100+" ";
     dashArrayString +=(endValue-startValue)*length/100+" ";
