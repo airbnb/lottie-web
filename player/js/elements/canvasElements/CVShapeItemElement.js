@@ -113,7 +113,12 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
     }
     len = segments.length;
     var segmentLength = totalLength*(trimData.e - trimData.s)/100;
-    var offset = ((trimData.s/100 + (trimData.o%360)/360)%1)*totalLength;
+    trimData.o = trimData.o%360;
+    if(trimData.o<0){
+        trimData.o += 360;
+    }
+    //this.trims.length = 0;
+    var offset = ((trimData.s/100 + trimData.o/360)%1)*totalLength;
     var endedCount = 0;
     if(offset + segmentLength - totalLength > 0.00001){
         var secondarySegment = offset + segmentLength - totalLength;
@@ -166,7 +171,7 @@ CVShapeItemElement.prototype.renderTrimPath = function(num){
                     path2d.lineTo(currentPt.point[0]+(nextPt.point[0] - currentPt.point[0])*perc
                         ,currentPt.point[1]+(nextPt.point[1] - currentPt.point[1])*perc);
                     endedCount -= 1;
-                    this.trims[k].ended = false;
+                    this.trims[k].ended = true;
                     if(endedCount == 0){
                         ended = true;
                         break;

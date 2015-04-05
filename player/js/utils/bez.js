@@ -3,23 +3,20 @@ function bezFunction(){
     var easingFunctions = [];
     var len = 0;
     var storedBezierCurves = {};
-    window.polyCount = 0;
-    window.curveCount = 0;
-    window.retCount = 0;
-    window.passCount = 0;
     var math = Math;
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
-        return Math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
+        return math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
     }
 
     function getEasingCurveByIndex(index){
-        window.polyCount += 1;
         return easingFunctions[index].fnc;
     }
 
     function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
-        encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
+        if(!encodedFuncName){
+            encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
+        }
         if(easingFunctions[encodedFuncName]){
             return easingFunctions[encodedFuncName];
         }
@@ -136,7 +133,6 @@ function bezFunction(){
             lastPoint = point;
         }
         bezierData.segmentLength = addedLength;
-        ///storedBezierCurves[bezierName] = bezierData;
         keyData.bezierData = bezierData;
     }
 

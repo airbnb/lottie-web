@@ -388,11 +388,10 @@ function dataFunctionManager(){
              }
          }
 
-        var i;
-        var len;
-        i = 0;
-        len = keyframes.length- 1;
+        var i = 0;
+        var len = keyframes.length- 1;
         var dir=1;
+        var jLen;
         if(keyframes.__lastFrameNum !== undefined){
             i = keyframes.__lastKey;
             if(keyframes.__lastFrameNum > frameNum){
@@ -666,7 +665,7 @@ function dataFunctionManager(){
             if(keyData.__fnct){
                 fnc = keyData.__fnct;
             }else{
-                fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
+                fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
                 keyData.__fnct = fnc;
             }
             perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
