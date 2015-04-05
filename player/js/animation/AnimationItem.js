@@ -3,32 +3,35 @@ var AnimationItem = function () {
     this.path = '';
     this.isLoaded = false;
     this.currentFrame = 0;
-    this.currentRawFrame = 5;
+    this.currentRawFrame = 0;
     this.totalFrames = 0;
     this.frameRate = 0;
     this.frameMult = 0;
     this.playSpeed = 1;
     this.playDirection = 1;
     this.pendingElements = 0;
+    this.playCount = 0;
+    this.prerenderFramesFlag = true;
     this.repeat = 'indefinite';
     this.animationData = {};
     this.layers = [];
     this.assets = [];
-    this.effectsManager = null;
     this.isPaused = true;
     this.isScrolling = false;
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
     this.renderedFrameCount = 0;
+    this.math = Math;
 };
 
 AnimationItem.prototype.setData = function (wrapper) {
     this.wrapper = wrapper;
     //this.wrapper.style.position = 'relative';
     var self = this;
-    this.path = this.wrapper.attributes.getNamedItem("data-animation-path") ? this.wrapper.attributes.getNamedItem("data-animation-path").value : '';
-    this.animType = this.wrapper.attributes.getNamedItem("data-anim-type") ? this.wrapper.attributes.getNamedItem("data-anim-type").value : 'div';
+    var wrapperAttributes = this.wrapper.attributes;
+    this.path = wrapperAttributes.getNamedItem('data-animation-path') ? wrapperAttributes.getNamedItem('data-animation-path').value : wrapperAttributes.getNamedItem('data-bm-path') ? wrapperAttributes.getNamedItem('data-bm-path').value :  wrapperAttributes.getNamedItem('bm-path') ? wrapperAttributes.getNamedItem('bm-path').value : '';
+    this.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  'canvas';
     switch(this.animType){
         case 'canvas':
             this.renderer = new CanvasRenderer(this);
@@ -36,21 +39,41 @@ AnimationItem.prototype.setData = function (wrapper) {
         case 'svg':
             this.renderer = new SVGRenderer(this);
     }
-    this.repeat = this.wrapper.attributes.getNamedItem("data-anim-repeat") ? this.wrapper.attributes.getNamedItem("data-anim-repeat").value : this.repeat;
-    this.loop = this.wrapper.attributes.getNamedItem("data-anim-loop") ? this.wrapper.attributes.getNamedItem("data-anim-loop").value !== 'false' : this.loop;
-    this.name = this.wrapper.attributes.getNamedItem("data-name") ? this.wrapper.attributes.getNamedItem("data-name").value : '';
+    this.repeat = wrapperAttributes.getNamedItem('data-anim-repeat') ? wrapperAttributes.getNamedItem('data-anim-repeat').value : this.repeat;
+    var loop = wrapperAttributes.getNamedItem('data-anim-loop') ? wrapperAttributes.getNamedItem('data-anim-loop').value :  wrapperAttributes.getNamedItem('data-bm-loop') ? wrapperAttributes.getNamedItem('data-bm-loop').value :  wrapperAttributes.getNamedItem('bm-loop') ? wrapperAttributes.getNamedItem('bm-loop').value : '';
+    if(loop == ''){
+    }else if(loop === 'false'){
+        this.loop = false;
+    }else if(loop === 'true'){
+        this.loop = true;
+    }else{
+        this.loop = parseInt(loop);
+    }
+    this.name = wrapperAttributes.getNamedItem('data-name') ? wrapperAttributes.getNamedItem('data-name').value :  wrapperAttributes.getNamedItem('data-bm-name') ? wrapperAttributes.getNamedItem('data-bm-name').value : wrapperAttributes.getNamedItem('bm-name') ? wrapperAttributes.getNamedItem('bm-name').value :  '';
+    var prerender = wrapperAttributes.getNamedItem('data-anim-prerender') ? wrapperAttributes.getNamedItem('data-anim-prerender').value :  wrapperAttributes.getNamedItem('data-bm-prerender') ? wrapperAttributes.getNamedItem('data-bm-prerender').value :  wrapperAttributes.getNamedItem('bm-prerender') ? wrapperAttributes.getNamedItem('bm-prerender').value : '';
+    if(prerender === 'false'){
+        this.prerenderFramesFlag = false;
+    }
     if(this.path == ''){
         return;
     }
     if (this.path.substr(-1, 1) != '/') {
-        this.path += "/";
+        this.path += '/';
     }
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", this.path + 'data.json', true);
+    xhr.open('GET', this.path + 'data.json', true);
     xhr.send();
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
-            self.configAnimation(JSON.parse(xhr.responseText));
+            if(xhr.status == 200){
+                self.configAnimation(JSON.parse(xhr.responseText));
+            }else{
+                try{
+                    var response = JSON.parse(xhr.responseText);
+                    self.configAnimation(response);
+                }catch(err){
+                }
+            }
         }
     };
 };
@@ -58,7 +81,6 @@ AnimationItem.prototype.setData = function (wrapper) {
 AnimationItem.prototype.configAnimation = function (animData) {
     this.renderer.configAnimation(animData);
 
-    this.effectsManager = new EffectsManager();
     this.animationData = animData;
     this.animationData._id = this.animationID;
     this.animationData._animType = this.animType;
@@ -79,12 +101,16 @@ AnimationItem.prototype.elementLoaded = function () {
 };
 
 AnimationItem.prototype.checkLoaded = function () {
+    this.renderer.buildStage(this.container, this.layers);
     if (this.pendingElements == 0) {
-        //this.prerenderFrames();
-        this.prerenderFrames(0);
-        /*setTimeout(function(){
+        if(this.prerenderFramesFlag){
             this.prerenderFrames(0);
-        }.bind(this),3000);*/
+            dataManager.renderFrame(this.animationID,this.currentFrame);
+            this.renderer.renderFrame(this.currentFrame);
+        }else{
+            this.isLoaded = true;
+            this.gotoFrame();
+        }
     }
 };
 
@@ -94,7 +120,6 @@ AnimationItem.prototype.prerenderFrames = function(count){
     }
     if(this.renderedFrameCount === this.totalFrames){
         //TODO Need polyfill for ios 5.1
-        this.renderer.buildStage(this.container, this.layers);
         this.isLoaded = true;
         this.gotoFrame();
     }else{
@@ -115,9 +140,9 @@ AnimationItem.prototype.resize = function () {
 
 AnimationItem.prototype.gotoFrame = function () {
     if(subframeEnabled){
-        this.currentFrame = Math.round(this.currentRawFrame*100)/100;
+        this.currentFrame = this.math.round(this.currentRawFrame*100)/100;
     }else{
-        this.currentFrame = Math.floor(this.currentRawFrame);
+        this.currentFrame = this.math.floor(this.currentRawFrame);
     }
     this.renderFrame();
 };
@@ -167,12 +192,14 @@ AnimationItem.prototype.stop = function (name) {
     }
     this.isPaused = true;
     this.currentFrame = this.currentRawFrame = 0;
+    this.playCount = 0;
     this.gotoFrame();
 };
 
 AnimationItem.prototype.goToAndStop = function (pos) {
     this.isPaused = true;
     this.currentFrame = this.currentRawFrame = pos;
+    this.playCount = 0;
     this.gotoFrame();
 };
 
@@ -200,8 +227,19 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
         this.currentRawFrame = this.currentRawFrame % this.totalFrames;
         if(this.loop === false){
             this.goToAndStop(this.totalFrames - 1);
+        }else{
+            this.playCount += 1;
+            if(this.loop !== true){
+                if(this.playCount == this.loop){
+                    this.goToAndStop(this.totalFrames - 1);
+                }
+            }
         }
     } else if (this.currentRawFrame < 0) {
+        this.playCount -= 1;
+        if(this.playCount < 0){
+            this.playCount = 0;
+        }
         this.currentRawFrame = this.totalFrames + this.currentRawFrame;
     }
     this.gotoFrame();
