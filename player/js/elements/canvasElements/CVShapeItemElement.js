@@ -64,19 +64,32 @@ CVShapeItemElement.prototype.prepareFrame = function(num){
 CVShapeItemElement.prototype.renderTransform = function(){
     var animData = this.currentData;
     if(animData.tr){
+        var flag = false;
         var ctx = this.renderer.canvasContext;
         var tr = animData.tr;
         var matrixValue = tr.mtArr;
-        if(matrixValue[0] == 1 && matrixValue[1] == 0 && matrixValue[2] == 0 && matrixValue[3] == 1 && matrixValue[4] == 0 && matrixValue[5] == 0 && tr.o >= 1){
-            return false;
+        if(matrixValue[0] !== 1 || matrixValue[1] !== 0 || matrixValue[2] !== 0 || matrixValue[3] !== 1 || matrixValue[4] !== 0 || matrixValue[5] !== 0){
+            ctx.save();
+            ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
+            flag = true;
         }
-        ctx.save();
-        ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
-        ctx.translate(-tr.a[0],-tr.a[1]);
+        if(tr.a[0] != 0 || tr.a[1] != 0){
+            ctx.translate(-tr.a[0],-tr.a[1]);
+            if(!flag){
+                ctx.save();
+                flag = true;
+            }
+        }
+        ///ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
+        ///ctx.translate(-tr.a[0],-tr.a[1]);
         if(tr.o < 1){
             ctx.globalAlpha *= tr.o;
+            if(!flag){
+                ctx.save();
+                flag = true;
+            }
         }
-        return true;
+        return flag;
     }
 };
 

@@ -1,5 +1,6 @@
 function CanvasRenderer(animationItem){
     this.animationItem = animationItem;
+    this.lastFrame = -1;
 }
 
 CanvasRenderer.prototype.buildItems = function(layers){
@@ -116,16 +117,15 @@ CanvasRenderer.prototype.prepareFrame = function(num){
 CanvasRenderer.prototype.draw = function(){
     var i, len = this.layers.length;
     for (i = len - 1; i >= 0; i-=1) {
-        this.layers[i].element.initDraw();
         this.layers[i].element.draw();
-        this.layers[i].element.endDraw();
     }
 };
 
-var colors = ['#990000','#009900'];
-var colorFlag = false;
-
 CanvasRenderer.prototype.renderFrame = function(num){
+    if(this.lastFrame == num){
+        return;
+    }
+    this.lastFrame = num;
     /*this.canvasContext.fillStyle= colorFlag ? colors[0] : colors[1];
     colorFlag = !colorFlag;
     this.canvasContext.fillRect(0,0,this.animationItem.container.width,this.animationItem.container.height);*/

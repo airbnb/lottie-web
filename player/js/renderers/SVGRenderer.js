@@ -1,6 +1,7 @@
 function SVGRenderer(animationItem){
     this.animationItem = animationItem;
     this.layers = null;
+    this.lastFrame = -1;
 }
 
 SVGRenderer.prototype.buildItems = function(layers){
@@ -121,7 +122,11 @@ SVGRenderer.prototype.buildItemHierarchy = function (threeItem, layerName, paren
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.renderFrame = function(num){i
+SVGRenderer.prototype.renderFrame = function(num){
+    if(this.lastFrame == num){
+        return;
+    }
+    this.lastFrame = num;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
         this.layers[i].element.renderFrame(num - this.layers[i].startTime);

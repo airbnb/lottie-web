@@ -24,29 +24,25 @@ CVShapeElement.prototype.prepareFrame = function(num){
     if(renderParent===false){
         return;
     }
-    var i,len = this.data.shapes.length,shapeData;
-    var shapeItem;
+    var i,len = this.data.shapes.length;
     for(i=len-1;i>=0;i--){
-        shapeData = this.data.shapes[i];
-        shapeItem = this.shapes[len - 1 - i];
-        shapeItem.prepareFrame(num);
+        this.shapes[len - 1 - i].prepareFrame(num);
     }
 };
 
 CVShapeElement.prototype.draw = function(){
-    var renderParent = this.parent.draw.call(this);
+    this.renderer.canvasContext.save();
+    var renderParent = this.parent.draw.call(this, false);
     if(renderParent===false){
         return;
     }
     this.drawShapes();
+    this.renderer.canvasContext.restore();
 };
 
 CVShapeElement.prototype.drawShapes = function(){
-    var i,len = this.data.shapes.length,shapeData;
-    var shapeItem;
+    var i,len = this.data.shapes.length;
     for(i=len-1;i>=0;i--){
-        shapeData = this.data.shapes[i];
-        shapeItem = this.shapes[len - 1 - i];
-        shapeItem.renderShape();
+        this.shapes[len - 1 - i].renderShape();
     }
 };

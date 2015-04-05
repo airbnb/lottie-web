@@ -34,11 +34,13 @@ CVBaseElement.prototype.prepareFrame = function(num){
 };
 
 CVBaseElement.prototype.initDraw = function(){
-    this.renderer.canvasContext.save();
-
+    //this.renderer.canvasContext.save();
 };
 
-CVBaseElement.prototype.draw = function(){
+CVBaseElement.prototype.draw = function(saveFlag){
+    if(saveFlag !== false){
+        this.renderer.canvasContext.save();
+    }
     if(!this.currentAnimData){
         return false;
     }
@@ -61,12 +63,14 @@ CVBaseElement.prototype.draw = function(){
     if(this.data.hasMask){
         this.maskManager.draw();
     }
+    if(saveFlag !== false){
+        this.renderer.canvasContext.restore();
+    }
 
 };
 
 CVBaseElement.prototype.endDraw = function(){
-    this.renderer.canvasContext.restore();
-
+    //this.renderer.canvasContext.restore();
 };
 
 CVBaseElement.prototype.getCurrentAnimData = function(){
