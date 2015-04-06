@@ -920,7 +920,6 @@ function dataFunctionManager(){
             dataOb = {};
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'default';
-            console.log('item.ks.a: ',item.ks.a);
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime,interpolatedParams);
             ///dataOb.a = [0,0];
             interpolatedParams.arrayFlag = false;

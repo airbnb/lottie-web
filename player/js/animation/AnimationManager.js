@@ -59,7 +59,7 @@ var animationManager = (function(){
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
-            //registeredAnimations[i].animation.advanceTime(elapsedTime);
+            registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
         requestAnimationFrame(resume);
