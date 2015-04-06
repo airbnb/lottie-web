@@ -126,6 +126,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     if(this.lastFrame == num){
         return;
     }
+    console.log('num: ',num);
     this.lastFrame = num;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {

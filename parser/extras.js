@@ -497,13 +497,14 @@
                         bezierIn.x = [];
                         bezierOut.x = [];
                         key.easeIn.forEach(function(item, index){
-                            bezierIn.x[index] = item.influence / 100;
+                            bezierIn.x[index] = 1 - item.influence / 100;
                             bezierOut.x[index] = lastKey.easeOut[index].influence / 100;
 
                         });
                         averageSpeed = [];
                         for(i=0;i<len;i+=1){
                             averageSpeed[i] =  (key.value[i] - lastKey.value[i])/duration;
+                            //averageSpeed[i] =  (key.easeIn[i].speed*(key.easeIn[i].influence / 100) + lastKey.easeOut[i].speed*(lastKey.easeOut[i].influence / 100))/duration;
                         }
                         break;
                 }
@@ -515,8 +516,13 @@
                         case PropertyValueType.ThreeD_SPATIAL:
                         case PropertyValueType.TwoD_SPATIAL:
                         case PropertyValueType.SHAPE:
-                            bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                            bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                            if(interpolationType == 'linear'){
+                                bezierIn.y = bezierIn.x;
+                                bezierOut.y = bezierOut.x;
+                            }else{
+                                bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
+                                bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                            }
                             break;
                         case PropertyValueType.ThreeD:
                         case PropertyValueType.TwoD:
@@ -525,7 +531,7 @@
                             bezierIn.y = [];
                             bezierOut.y = [];
                             key.easeIn.forEach(function(item,index){
-                                if(averageSpeed[index] == 0 || averageSpeed[index] == item.speed){
+                                if(averageSpeed[index] == 0 || interpolationType == 'linear'){
                                     bezierIn.y[index] = bezierIn.x[index];
                                     bezierOut.y[index] = bezierOut.x[index];
                                 }else{
@@ -535,8 +541,6 @@
                             });
                             break;
                     }
-                    //bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                   // bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
                 }
                 if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL || property.propertyValueType == PropertyValueType.SHAPE ){
                     property.expression = propertyExpression;
@@ -580,6 +584,9 @@
                 interpolationType = 'hold';
                 realInfluenceReady();
             }else{
+                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR){
+                    interpolationType = 'linear';
+                }
                 buildKeyInfluence(key, lastKey, indexTime);
                 switch(property.propertyValueType){
                     case PropertyValueType.ThreeD_SPATIAL:
@@ -590,7 +597,12 @@
                         influenceReadyCount = 2;
                         var propertyExpression = property.expression;
                         property.expression = "velocityAtTime(time)";
-                        getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
+                        if(interpolationType != 'linear'){
+                            getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
+                        }else{
+                            influenceReadyCount = 0;
+                            realInfluenceReady();
+                        }
                         break;
                     default:
                         realInfluenceReady();

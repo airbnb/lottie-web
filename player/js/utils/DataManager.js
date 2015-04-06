@@ -623,8 +623,8 @@ function dataFunctionManager(){
                 flag = false;
             }
         }
-        keyframes.__lastKey = i;
-        keyframes.__lastFrameNum = frameNum;
+        //keyframes.__lastKey = i;
+        //keyframes.__lastFrameNum = frameNum;
 
         if(keyData.to && !keyData.bezierData){
             bez.buildBezierData(keyData);
@@ -716,8 +716,8 @@ function dataFunctionManager(){
                     }else{
                         propertyArray = bezierData.points[j].point;
                     }
-                    keyData.__lastPoint = j;
-                    keyData.__lastDistanceInLine = distanceInLine;
+                    //keyData.__lastPoint = j;
+                    //keyData.__lastDistanceInLine = distanceInLine;
                     break;
                 }else if(distanceInLine > addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
                     segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
@@ -735,8 +735,8 @@ function dataFunctionManager(){
                             propertyArray.push(bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc);
                         }
                     }
-                    keyData.__lastPoint = j;
-                    keyData.__lastDistanceInLine = distanceInLine;
+                    //keyData.__lastPoint = j;
+                    //keyData.__lastDistanceInLine = distanceInLine;
                     break;
                 }
                 if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
@@ -920,6 +920,7 @@ function dataFunctionManager(){
             dataOb = {};
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'default';
+            console.log('item.ks.a: ',item.ks.a);
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime,interpolatedParams);
             ///dataOb.a = [0,0];
             interpolatedParams.arrayFlag = false;
@@ -928,9 +929,9 @@ function dataFunctionManager(){
             ///dataOb.o = 1;
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'p';
-            ///getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime,interpolatedParams);
-            px = getInterpolatedTransform(item.ks.p,offsettedFrameNum, item.startTime,0);
-            py = getInterpolatedTransform(item.ks.p,offsettedFrameNum, item.startTime,1, true);
+            getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime,interpolatedParams);
+            ///px = getInterpolatedTransform(item.ks.p,offsettedFrameNum, item.startTime,0);
+            ///py = getInterpolatedTransform(item.ks.p,offsettedFrameNum, item.startTime,1, true);
             /*if(px != matrixParams.px || py != matrixParams.py){
                 console.log('diff');
                 console.log('px: ',px);
@@ -940,13 +941,13 @@ function dataFunctionManager(){
             }*/
             interpolatedParams.arrayFlag = true;
             interpolatedParams.type = 'r';
-            ///getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime,interpolatedParams);
-            r = getInterpolatedTransform(item.ks.r,offsettedFrameNum, item.startTime, 0);
+            getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime,interpolatedParams);
+            ///r = getInterpolatedTransform(item.ks.r,offsettedFrameNum, item.startTime, 0);
             interpolatedParams.arrayFlag = true;
             interpolatedParams.type = 's';
-            ///getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime,interpolatedParams);
-            sx = getInterpolatedTransform(item.ks.s,offsettedFrameNum, item.startTime,0);
-            sy = getInterpolatedTransform(item.ks.s,offsettedFrameNum, item.startTime,1, true);
+            getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime,interpolatedParams);
+            ///sx = getInterpolatedTransform(item.ks.s,offsettedFrameNum, item.startTime,0);
+            ///sy = getInterpolatedTransform(item.ks.s,offsettedFrameNum, item.startTime,1, true);
             renderedData = {};
             renderedData.an = {
                 tr: dataOb
@@ -1082,18 +1083,18 @@ function dataFunctionManager(){
                     ///shapeTrOb.o = 1;
                     interpolatedParams.arrayFlag = true;
                     interpolatedParams.type = 's';
-                    sx = getInterpolatedTransform(shapeItem.tr.s,offsettedFrameNum, item.startTime,0);
-                    sy = getInterpolatedTransform(shapeItem.tr.s,offsettedFrameNum, item.startTime,1, true);
-                    ///getInterpolatedValue(shapeItem.tr.s,offsettedFrameNum, item.startTime,interpolatedParams);
+                    ///sx = getInterpolatedTransform(shapeItem.tr.s,offsettedFrameNum, item.startTime,0);
+                    ///sy = getInterpolatedTransform(shapeItem.tr.s,offsettedFrameNum, item.startTime,1, true);
+                    getInterpolatedValue(shapeItem.tr.s,offsettedFrameNum, item.startTime,interpolatedParams);
                     interpolatedParams.arrayFlag = true;
                     interpolatedParams.type = 'r';
-                    r = getInterpolatedTransform(shapeItem.tr.r,offsettedFrameNum, item.startTime, 0);
-                    ///getInterpolatedValue(shapeItem.tr.r,offsettedFrameNum, item.startTime,interpolatedParams);
+                    ///r = getInterpolatedTransform(shapeItem.tr.r,offsettedFrameNum, item.startTime, 0);
+                    getInterpolatedValue(shapeItem.tr.r,offsettedFrameNum, item.startTime,interpolatedParams);
                     interpolatedParams.arrayFlag = false;
                     interpolatedParams.type = 'p';
-                    px = getInterpolatedTransform(shapeItem.tr.p,offsettedFrameNum, item.startTime,0);
-                    py = getInterpolatedTransform(shapeItem.tr.p,offsettedFrameNum, item.startTime,1, true);
-                    ///getInterpolatedValue(shapeItem.tr.p,offsettedFrameNum, item.startTime,interpolatedParams);
+                    ///px = getInterpolatedTransform(shapeItem.tr.p,offsettedFrameNum, item.startTime,0);
+                    ///py = getInterpolatedTransform(shapeItem.tr.p,offsettedFrameNum, item.startTime,1, true);
+                    getInterpolatedValue(shapeItem.tr.p,offsettedFrameNum, item.startTime,interpolatedParams);
                     interpolatedParams.arrayFlag = false;
                     interpolatedParams.type = 'default';
                     if(renderType == 'canvas'){
