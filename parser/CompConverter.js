@@ -17,8 +17,8 @@
         if(!renderCancelled){
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
-            //dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
-            dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
+            dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
+            //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
         currentExportingComposition+=1;
@@ -104,8 +104,9 @@
                 currentExportingComposition+=1;
             }
         }
-        //If we get here there are no more compositions to render and callback is executed
-        helperFootage.remove();
+        //If it gets here there are no more compositions to render and callback is executed
+        //helperSolid.remove();
+        //helperFootage.remove();
         endCallback.apply();
     }
 
@@ -114,6 +115,14 @@
         var helperImportOptions = new ImportOptions();
         helperImportOptions.file = helperFile;
         helperFootage = mainProject.importFile(helperImportOptions);
+        var helperFolder = helperFootage.item(2);
+        var helperComp = helperFootage.item(1);
+        //helperSolid = helperComp.layers.addSolid([1.0,1.0,0], "helperSolid", 10, 10, 1);
+        //helperSolid = helperComp.layers.addNull(2);
+        //helperSolid.layerInfo.transform['Anchor Point']
+        //helperSolid.transform['Anchor Point'].expression = "velocityAtTime(time)";
+        //helperSolid.parentFolder = helperFolder;
+
         rqManager.setProject(app.project);
         LayerConverter.setCallback(layersConverted);
         currentExportingComposition = 0;

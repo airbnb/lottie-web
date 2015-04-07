@@ -1,5 +1,7 @@
 /****** INIT Var Declarations ******/
 var helperFootage;
+//Solid for anchor point fix on shape layers
+var helperSolid;
 //Destination export folder
 var exportFolder;
 //Interval objects container

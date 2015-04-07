@@ -242,6 +242,9 @@
                 layerOb.ks.p = extrasInstance.roundNumber(layerInfo.transform.position.valueAtTime(0,false),3);
             }
             if(layerInfo.transform['Anchor Point'].numKeys>1){
+                /*if(lType == 'ShapeLayer'){
+                    prepareHelperSolid(layerInfo.transform['Anchor Point']);
+                }*/
                 extrasInstance.convertToBezierValues(layerInfo.transform['Anchor Point'], frameRate, layerOb.ks,'a');
             }else{
                 layerOb.ks.a = extrasInstance.roundNumber(layerInfo.transform['Anchor Point'].valueAtTime(0,false),3);
@@ -260,6 +263,23 @@
             }else{
                 callback.apply();
             }
+        }
+    }
+
+    function prepareHelperSolid(property){
+        var helperAnchorPoint = helperSolid.transform["Anchor Point"];
+        var j,jLen = helperAnchorPoint.numKeys;
+        while(jLen > 0){
+            helperAnchorPoint.removeKey(1);
+            jLen -= 1;
+        }
+        jLen = property.numKeys;
+        for(j = 0;j<jLen; j += 1){
+            var keyIn = property.keyInTemporalEase(j+1);
+            var keyOut = property.keyOutTemporalEase(j+1);
+            helperAnchorPoint.addKey(property.keyTime(j+1));
+            helperAnchorPoint.setValueAtKey(j+1,property.keyValue(j+1));
+            //helperAnchorPoint.setTemporalEaseAtKey(j+1, keyIn, keyOut);
         }
     }
 

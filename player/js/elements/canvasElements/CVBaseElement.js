@@ -59,7 +59,7 @@ CVBaseElement.prototype.draw = function(saveFlag){
     ctx.globalAlpha = ctx.globalAlpha*this.currentAnimData.tr.o;
     matrixValue = this.currentAnimData.matrixArray;
      ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
-    console.log('this.currentAnimData.tr.a: ',this.currentAnimData.tr.a);
+    ///console.log('this.currentAnimData.tr.a: ',this.currentAnimData.tr.a);
      ctx.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
     if(this.data.hasMask){
         this.maskManager.draw();

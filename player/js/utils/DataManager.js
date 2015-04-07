@@ -669,9 +669,15 @@ function dataFunctionManager(){
                 keyData.__fnct = fnc;
             }
             perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            //var easing = new BezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y);
+            //var prePerc = ((frameNum)-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+            //console.log('prePerc: ',prePerc);
+            //console.log('easing: ',easing(prePerc));
             ///perc = 0;
             ///var distanceInLine = 0;
             var distanceInLine = bezierData.segmentLength*perc;
+            //console.log('perc: ',perc);
+
             var segmentPerc;
             var addedLength = 0;
             dir = 1;
@@ -701,8 +707,8 @@ function dataFunctionManager(){
                     }else{
                         propertyArray = bezierData.points[j].point;
                     }
-                    keyData.__lastPoint = j;
-                    keyData.__lastDistanceInLine = distanceInLine;
+                    //keyData.__lastPoint = j;
+                    //keyData.__lastDistanceInLine = distanceInLine;
                     break;
                 }else if(j == bezierData.points.length - 1){
                     if(interpolatedParams.type == 'p'){
@@ -954,7 +960,8 @@ function dataFunctionManager(){
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'default';
             if(renderType == 'canvas'){
-                renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(r,sx,sy,px,py);
+                //renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(r,sx,sy,px,py);
+                renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
             }else{
                 renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(r,sx,sy,px,py);
             }
@@ -1097,7 +1104,8 @@ function dataFunctionManager(){
                     interpolatedParams.arrayFlag = false;
                     interpolatedParams.type = 'default';
                     if(renderType == 'canvas'){
-                        shapeTrOb.mtArr = matrixInstance.getMatrixArrayFromParams(r,sx,sy,px,py);
+                        shapeTrOb.mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
+                        ///shapeTrOb.mtArr = matrixInstance.getMatrixArrayFromParams(r,sx,sy,px,py);
                     }else{
                         shapeTrOb.mt = matrixInstance.getMatrix2FromParams(r,sx,sy,px,py);
                     }

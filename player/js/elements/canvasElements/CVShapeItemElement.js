@@ -70,6 +70,7 @@ CVShapeItemElement.prototype.renderTransform = function(){
         var matrixValue = tr.mtArr;
         if(matrixValue[0] !== 1 || matrixValue[1] !== 0 || matrixValue[2] !== 0 || matrixValue[3] !== 1 || matrixValue[4] !== 0 || matrixValue[5] !== 0){
             ctx.save();
+            console.log('matrixValue: ',matrixValue);
             ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
             flag = true;
         }
