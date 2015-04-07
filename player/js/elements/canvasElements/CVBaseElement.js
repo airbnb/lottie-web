@@ -33,10 +33,6 @@ CVBaseElement.prototype.prepareFrame = function(num){
     }
 };
 
-CVBaseElement.prototype.initDraw = function(){
-    //this.renderer.canvasContext.save();
-};
-
 CVBaseElement.prototype.draw = function(saveFlag){
     if(saveFlag !== false){
         this.renderer.canvasContext.save();
@@ -68,10 +64,6 @@ CVBaseElement.prototype.draw = function(saveFlag){
         this.renderer.canvasContext.restore();
     }
 
-};
-
-CVBaseElement.prototype.endDraw = function(){
-    //this.renderer.canvasContext.restore();
 };
 
 CVBaseElement.prototype.getCurrentAnimData = function(){

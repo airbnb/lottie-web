@@ -125,11 +125,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     if(this.lastFrame == num){
         return;
     }
-    console.log('nummm: ',num);
     this.lastFrame = num;
-    /*this.canvasContext.fillStyle= colorFlag ? colors[0] : colors[1];
-    colorFlag = !colorFlag;
-    this.canvasContext.fillRect(0,0,this.animationItem.container.width,this.animationItem.container.height);*/
     this.animationItem.container.width = this.animationItem.container.width;
     this.canvasContext.transform(this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty);
     this.canvasContext.beginPath();

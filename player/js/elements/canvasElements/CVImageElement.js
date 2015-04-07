@@ -27,6 +27,7 @@ CVImageElement.prototype.draw = function(){
     this.renderer.canvasContext.save();
     var renderParent = this.parent.draw.call(this,false);
     if(renderParent===false){
+        this.renderer.canvasContext.restore();
         return;
     }
     var ctx = this.renderer.canvasContext;

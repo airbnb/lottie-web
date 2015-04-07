@@ -42,33 +42,6 @@ function bezFunction(){
         return easingFunctions[encodedFuncName];
     }
 
-    function _getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
-        encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
-        if(easingFunctions[encodedFuncName]){
-            return easingFunctions[encodedFuncName];
-        }
-        var	polyBez = function(p1, p2) {
-            var A = [null, null], B = [null, null], C = [null, null],
-                bezCoOrd = function(t, ax) {
-                    C[ax] = 3 * p1[ax], B[ax] = 3 * (p2[ax] - p1[ax]) - C[ax], A[ax] = 1 - C[ax] - B[ax];
-                    return t * (C[ax] + t * (B[ax] + t * A[ax]));
-                };
-            return function(t) {
-                var x = t, i = 0, z;
-                while (++i < 14) {
-                    z = bezCoOrd(x, 0) - t;
-                    if (Math.abs(z) < 1e-3) break;
-                    x -= z / (C[0] + x * (2 * B[0] + 3 * A[0] * x));
-                }
-                return bezCoOrd(x, 1);
-            }
-        };
-        easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
-            return c * polyBez([aa, bb], [cc, dd])(t/d) + b;
-        };
-        return easingFunctions[encodedFuncName];
-    }
-
     function drawBezierCurve(pt1,pt2,pt3,pt4){
         ///return 0;
         var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
@@ -117,9 +90,6 @@ function bezFunction(){
     }
 
     function buildBezierData(keyData){
-        console.log('buildBezierData');
-        ///return 0;
-        ///keyData.bezierData = drawBezierCurve(keyData.s,keyData.e,keyData.to,keyData.ti);
         var pt1 = keyData.s;
         var pt2 = keyData.e;
         var pt3 = keyData.to;
