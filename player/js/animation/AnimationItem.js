@@ -18,64 +18,98 @@ var AnimationItem = function () {
     this.assets = [];
     this.isPaused = true;
     this.isScrolling = false;
+    this.autoplay = false;
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
     this.renderedFrameCount = 0;
+    this.scaleMode = 'fit';
     this.math = Math;
 };
 
-AnimationItem.prototype.setData = function (wrapper) {
-    this.wrapper = wrapper;
-    //this.wrapper.style.position = 'relative';
+AnimationItem.prototype.setParams = function(params) {
     var self = this;
-    var wrapperAttributes = this.wrapper.attributes;
-    this.path = wrapperAttributes.getNamedItem('data-animation-path') ? wrapperAttributes.getNamedItem('data-animation-path').value : wrapperAttributes.getNamedItem('data-bm-path') ? wrapperAttributes.getNamedItem('data-bm-path').value :  wrapperAttributes.getNamedItem('bm-path') ? wrapperAttributes.getNamedItem('bm-path').value : '';
-    this.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  'canvas';
-    switch(this.animType){
+    if(params.context){
+        this.context = params.context;
+    }
+    if(params.wrapper){
+        this.wrapper = params.wrapper;
+    }
+    var animType = params.animType ? params.animType : 'canvas';
+    switch(animType){
         case 'canvas':
-            this.renderer = new CanvasRenderer(this);
+            this.renderer = new CanvasRenderer(this, params.renderer);
             break;
         case 'svg':
-            this.renderer = new SVGRenderer(this);
+            this.renderer = new SVGRenderer(this, params.renderer);
     }
-    this.repeat = wrapperAttributes.getNamedItem('data-anim-repeat') ? wrapperAttributes.getNamedItem('data-anim-repeat').value : this.repeat;
+    this.animType = animType;
+
+    if(params.loop === '' || params.loop === null){
+    }else if(params.loop === false){
+        this.loop = false;
+    }else if(params.loop === true){
+        this.loop = true;
+    }else{
+        this.loop = parseInt(params.loop);
+    }
+    this.autoplay = 'autoplay' in params ? params.autoplay : true;
+    this.name = params.name ? params.name :  '';
+    this.prerenderFramesFlag = 'prerender' in params ? params.prerender : true;
+    if(params.animationData){
+        self.configAnimation(params.animationData);
+    }else if(params.path){
+        if(params.path.substr(-4) != 'json'){
+            if (params.path.substr(-1, 1) != '/') {
+                params.path += '/';
+            }
+            params.path += 'data.json';
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', params.path, true);
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if(xhr.status == 200){
+                    self.configAnimation(JSON.parse(xhr.responseText));
+                }else{
+                    try{
+                        var response = JSON.parse(xhr.responseText);
+                        self.configAnimation(response);
+                    }catch(err){
+                    }
+                }
+            }
+        };
+    }
+};
+
+AnimationItem.prototype.setData = function (wrapper) {
+    var params = {
+        wrapper: wrapper
+    };
+    var wrapperAttributes = wrapper.attributes;
+
+    params.path = wrapperAttributes.getNamedItem('data-animation-path') ? wrapperAttributes.getNamedItem('data-animation-path').value : wrapperAttributes.getNamedItem('data-bm-path') ? wrapperAttributes.getNamedItem('data-bm-path').value :  wrapperAttributes.getNamedItem('bm-path') ? wrapperAttributes.getNamedItem('bm-path').value : '';
+    params.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  'canvas';
+
     var loop = wrapperAttributes.getNamedItem('data-anim-loop') ? wrapperAttributes.getNamedItem('data-anim-loop').value :  wrapperAttributes.getNamedItem('data-bm-loop') ? wrapperAttributes.getNamedItem('data-bm-loop').value :  wrapperAttributes.getNamedItem('bm-loop') ? wrapperAttributes.getNamedItem('bm-loop').value : '';
     if(loop == ''){
     }else if(loop === 'false'){
-        this.loop = false;
+        params.loop = false;
     }else if(loop === 'true'){
-        this.loop = true;
+        params.loop = true;
     }else{
-        this.loop = parseInt(loop);
+        params.loop = parseInt(loop);
     }
-    this.name = wrapperAttributes.getNamedItem('data-name') ? wrapperAttributes.getNamedItem('data-name').value :  wrapperAttributes.getNamedItem('data-bm-name') ? wrapperAttributes.getNamedItem('data-bm-name').value : wrapperAttributes.getNamedItem('bm-name') ? wrapperAttributes.getNamedItem('bm-name').value :  '';
+    params.name = wrapperAttributes.getNamedItem('data-name') ? wrapperAttributes.getNamedItem('data-name').value :  wrapperAttributes.getNamedItem('data-bm-name') ? wrapperAttributes.getNamedItem('data-bm-name').value : wrapperAttributes.getNamedItem('bm-name') ? wrapperAttributes.getNamedItem('bm-name').value :  '';
     var prerender = wrapperAttributes.getNamedItem('data-anim-prerender') ? wrapperAttributes.getNamedItem('data-anim-prerender').value :  wrapperAttributes.getNamedItem('data-bm-prerender') ? wrapperAttributes.getNamedItem('data-bm-prerender').value :  wrapperAttributes.getNamedItem('bm-prerender') ? wrapperAttributes.getNamedItem('bm-prerender').value : '';
+
     if(prerender === 'false'){
-        this.prerenderFramesFlag = false;
+        params.prerender = false;
     }
-    if(this.path == ''){
-        return;
-    }
-    if (this.path.substr(-1, 1) != '/') {
-        this.path += '/';
-    }
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', this.path + 'data.json', true);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if(xhr.status == 200){
-                self.configAnimation(JSON.parse(xhr.responseText));
-            }else{
-                try{
-                    var response = JSON.parse(xhr.responseText);
-                    self.configAnimation(response);
-                }catch(err){
-                }
-            }
-        }
-    };
+    this.setParams(params);
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -110,6 +144,9 @@ AnimationItem.prototype.checkLoaded = function () {
         }else{
             this.isLoaded = true;
             this.gotoFrame();
+            if(this.autoplay){
+                this.play();
+            }
         }
     }
 };
@@ -122,6 +159,9 @@ AnimationItem.prototype.prerenderFrames = function(count){
         //TODO Need polyfill for ios 5.1
         this.isLoaded = true;
         this.gotoFrame();
+        if(this.autoplay){
+            this.play();
+        }
     }else{
         dataManager.renderFrame(this.animationID,this.renderedFrameCount);
         this.renderedFrameCount+=1;
@@ -196,11 +236,16 @@ AnimationItem.prototype.stop = function (name) {
     this.gotoFrame();
 };
 
-AnimationItem.prototype.goToAndStop = function (pos) {
+AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
+    if(name && this.name != name){
+        return;
+    }
+    if(isFrame){
+        this.setCurrentRawFrameValue(value);
+    }else{
+        this.setCurrentRawFrameValue(value * this.frameModifier);
+    }
     this.isPaused = true;
-    this.currentFrame = this.currentRawFrame = pos;
-    this.playCount = 0;
-    this.gotoFrame();
 };
 
 AnimationItem.prototype.advanceTime = function (value) {
@@ -224,14 +269,19 @@ AnimationItem.prototype.moveFrame = function (value, name) {
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
     if (this.currentRawFrame >= this.totalFrames) {
-        this.currentRawFrame = this.currentRawFrame % this.totalFrames;
         if(this.loop === false){
-            this.goToAndStop(this.totalFrames - 1);
+            this.currentRawFrame = this.totalFrames - 1;
+            this.gotoFrame();
+            this.pause();
+            return;
         }else{
             this.playCount += 1;
             if(this.loop !== true){
                 if(this.playCount == this.loop){
-                    this.goToAndStop(this.totalFrames - 1);
+                    this.currentRawFrame = this.totalFrames - 1;
+                    this.gotoFrame();
+                    this.pause();
+                    return;
                 }
             }
         }
@@ -240,8 +290,19 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
         if(this.playCount < 0){
             this.playCount = 0;
         }
-        this.currentRawFrame = this.totalFrames + this.currentRawFrame;
+        if(this.loop === false){
+            this.currentRawFrame = 0;
+            this.gotoFrame();
+            this.pause();
+            return;
+        }else{
+            this.currentRawFrame = this.totalFrames + this.currentRawFrame;
+            this.gotoFrame();
+            return;
+        }
     }
+
+    this.currentRawFrame = this.currentRawFrame % this.totalFrames;
     this.gotoFrame();
 };
 

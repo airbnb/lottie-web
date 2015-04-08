@@ -27,7 +27,7 @@
         animationManager.searchAnimations();
     }
     function registerAnimation(elem){
-        animationManager.registerAnimation(elem);
+        return animationManager.registerAnimation(elem);
     }
     function resize(){
         animationManager.resize();
@@ -35,8 +35,14 @@
     function start(){
         animationManager.start();
     }
+    function goToAndStop(val,isFrame, animation){
+        animationManager.goToAndStop(val,isFrame, animation);
+    }
     function setSubframeRendering(flag){
         subframeEnabled = flag;
+    }
+    function loadAnimation(params){
+        return animationManager.loadAnimation(params);
     }
 
     bodymovinjs.play = play;
@@ -48,15 +54,16 @@
     bodymovinjs.moveFrame = moveFrame;
     bodymovinjs.searchAnimations = searchAnimations;
     bodymovinjs.registerAnimation = registerAnimation;
+    bodymovinjs.loadAnimation = loadAnimation;
     bodymovinjs.setSubframeRendering = setSubframeRendering;
     bodymovinjs.resize = resize;
     bodymovinjs.start = start;
+    bodymovinjs.goToAndStop = goToAndStop;
 
     function checkReady(){
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
                 searchAnimations();
-                play();
         }
     }
 

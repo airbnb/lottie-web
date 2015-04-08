@@ -7,18 +7,26 @@ var animationManager = (function(){
 
     function registerAnimation(element){
         if(!element){
-            return;
+            return null;
         }
         var i=0;
         while(i<len){
-            if(registeredAnimations[i].elem == element){
-                return;
+            if(registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null ){
+                return registeredAnimations[i].animation;
             }
             i+=1;
         }
         var animItem = new AnimationItem();
         animItem.setData(element);
         registeredAnimations.push({elem: element,animation:animItem});
+        len += 1;
+        return animItem;
+    }
+
+    function loadAnimation(params){
+        var animItem = new AnimationItem();
+        animItem.setParams(params);
+        registeredAnimations.push({elem: null,animation:animItem});
         len += 1;
         return animItem;
     }
@@ -72,6 +80,13 @@ var animationManager = (function(){
         }
     }
 
+    function goToAndStop(value,isFrame,animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.goToAndStop(value,isFrame,animation);
+        }
+    }
+
     function stop(animation) {
         var i;
         for(i=0;i<len;i+=1){
@@ -107,6 +122,7 @@ var animationManager = (function(){
     setTimeout(start,0);
 
     moduleOb.registerAnimation = registerAnimation;
+    moduleOb.loadAnimation = loadAnimation;
     moduleOb.setSpeed = setSpeed;
     moduleOb.setDirection = setDirection;
     moduleOb.play = play;
@@ -117,5 +133,6 @@ var animationManager = (function(){
     moduleOb.searchAnimations = searchAnimations;
     moduleOb.resize = resize;
     moduleOb.start = start;
+    moduleOb.goToAndStop = goToAndStop;
     return moduleOb;
 }());
