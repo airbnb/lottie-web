@@ -263,6 +263,8 @@ var console = {
 };
 /****** INIT Var Declarations ******/
 var helperFootage;
+//Solid for anchor point fix on shape layers
+var helperSolid;
 //Destination export folder
 var exportFolder;
 //Interval objects container
@@ -648,6 +650,9 @@ var UI;
                 layerOb.ks.p = extrasInstance.roundNumber(layerInfo.transform.position.valueAtTime(0,false),3);
             }
             if(layerInfo.transform['Anchor Point'].numKeys>1){
+                /*if(lType == 'ShapeLayer'){
+                    prepareHelperSolid(layerInfo.transform['Anchor Point']);
+                }*/
                 extrasInstance.convertToBezierValues(layerInfo.transform['Anchor Point'], frameRate, layerOb.ks,'a');
             }else{
                 layerOb.ks.a = extrasInstance.roundNumber(layerInfo.transform['Anchor Point'].valueAtTime(0,false),3);
@@ -666,6 +671,23 @@ var UI;
             }else{
                 callback.apply();
             }
+        }
+    }
+
+    function prepareHelperSolid(property){
+        var helperAnchorPoint = helperSolid.transform["Anchor Point"];
+        var j,jLen = helperAnchorPoint.numKeys;
+        while(jLen > 0){
+            helperAnchorPoint.removeKey(1);
+            jLen -= 1;
+        }
+        jLen = property.numKeys;
+        for(j = 0;j<jLen; j += 1){
+            var keyIn = property.keyInTemporalEase(j+1);
+            var keyOut = property.keyOutTemporalEase(j+1);
+            helperAnchorPoint.addKey(property.keyTime(j+1));
+            helperAnchorPoint.setValueAtKey(j+1,property.keyValue(j+1));
+            //helperAnchorPoint.setTemporalEaseAtKey(j+1, keyIn, keyOut);
         }
     }
 
@@ -1541,13 +1563,14 @@ var UI;
                         bezierIn.x = [];
                         bezierOut.x = [];
                         key.easeIn.forEach(function(item, index){
-                            bezierIn.x[index] = item.influence / 100;
+                            bezierIn.x[index] = 1 - item.influence / 100;
                             bezierOut.x[index] = lastKey.easeOut[index].influence / 100;
 
                         });
                         averageSpeed = [];
                         for(i=0;i<len;i+=1){
                             averageSpeed[i] =  (key.value[i] - lastKey.value[i])/duration;
+                            //averageSpeed[i] =  (key.easeIn[i].speed*(key.easeIn[i].influence / 100) + lastKey.easeOut[i].speed*(lastKey.easeOut[i].influence / 100))/duration;
                         }
                         break;
                 }
@@ -1559,8 +1582,13 @@ var UI;
                         case PropertyValueType.ThreeD_SPATIAL:
                         case PropertyValueType.TwoD_SPATIAL:
                         case PropertyValueType.SHAPE:
-                            bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                            bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                            if(interpolationType == 'linear'){
+                                bezierIn.y = bezierIn.x;
+                                bezierOut.y = bezierOut.x;
+                            }else{
+                                bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
+                                bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                            }
                             break;
                         case PropertyValueType.ThreeD:
                         case PropertyValueType.TwoD:
@@ -1569,7 +1597,7 @@ var UI;
                             bezierIn.y = [];
                             bezierOut.y = [];
                             key.easeIn.forEach(function(item,index){
-                                if(averageSpeed[index] == 0 || averageSpeed[index] == item.speed){
+                                if(averageSpeed[index] == 0 || interpolationType == 'linear'){
                                     bezierIn.y[index] = bezierIn.x[index];
                                     bezierOut.y[index] = bezierOut.x[index];
                                 }else{
@@ -1579,18 +1607,17 @@ var UI;
                             });
                             break;
                     }
-                    //bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                   // bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
                 }
                 if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL || property.propertyValueType == PropertyValueType.SHAPE ){
                     property.expression = propertyExpression;
                 }
-                bezierIn.x = extrasInstance.roundNumber(bezierIn.x,3);
+                /*bezierIn.x = extrasInstance.roundNumber(bezierIn.x,3);
                 bezierIn.y = extrasInstance.roundNumber(bezierIn.y,3);
                 bezierOut.x = extrasInstance.roundNumber(bezierOut.x,3);
-                bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);
+                bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);*/
                 segmentOb.i = bezierIn;
                 segmentOb.o = bezierOut;
+                segmentOb.n = (bezierIn.x.toString()+'_'+bezierIn.y.toString()+'_'+bezierOut.x.toString()+'_'+bezierOut.y.toString()).replace(/\./g, 'p');
                 segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
                 segmentOb.s = getPropertyValue(property.keyValue(j), true);
                 segmentOb.e = getPropertyValue(property.keyValue(j+1), true);
@@ -1623,6 +1650,9 @@ var UI;
                 interpolationType = 'hold';
                 realInfluenceReady();
             }else{
+                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR){
+                    interpolationType = 'linear';
+                }
                 buildKeyInfluence(key, lastKey, indexTime);
                 switch(property.propertyValueType){
                     case PropertyValueType.ThreeD_SPATIAL:
@@ -1633,7 +1663,12 @@ var UI;
                         influenceReadyCount = 2;
                         var propertyExpression = property.expression;
                         property.expression = "velocityAtTime(time)";
-                        getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
+                        if(interpolationType != 'linear'){
+                            getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
+                        }else{
+                            influenceReadyCount = 0;
+                            realInfluenceReady();
+                        }
                         break;
                     default:
                         realInfluenceReady();
@@ -2322,7 +2357,7 @@ var UI;
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
             dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
-            //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATEADO
+            //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
         currentExportingComposition+=1;
@@ -2408,8 +2443,9 @@ var UI;
                 currentExportingComposition+=1;
             }
         }
-        //If we get here there are no more compositions to render and callback is executed
-        helperFootage.remove();
+        //If it gets here there are no more compositions to render and callback is executed
+        //helperSolid.remove();
+        //helperFootage.remove();
         endCallback.apply();
     }
 
@@ -2418,6 +2454,14 @@ var UI;
         var helperImportOptions = new ImportOptions();
         helperImportOptions.file = helperFile;
         helperFootage = mainProject.importFile(helperImportOptions);
+        var helperFolder = helperFootage.item(2);
+        var helperComp = helperFootage.item(1);
+        //helperSolid = helperComp.layers.addSolid([1.0,1.0,0], "helperSolid", 10, 10, 1);
+        //helperSolid = helperComp.layers.addNull(2);
+        //helperSolid.layerInfo.transform['Anchor Point']
+        //helperSolid.transform['Anchor Point'].expression = "velocityAtTime(time)";
+        //helperSolid.parentFolder = helperFolder;
+
         rqManager.setProject(app.project);
         LayerConverter.setCallback(layersConverted);
         currentExportingComposition = 0;
