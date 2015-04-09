@@ -699,8 +699,6 @@ function dataFunctionManager(){
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'default';
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime,interpolatedParams);
-            interpolatedParams.arrayFlag = false;
-            interpolatedParams.type = 'default';
             dataOb.o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime,interpolatedParams);
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'p';

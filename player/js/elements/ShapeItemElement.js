@@ -203,10 +203,6 @@ ShapeItemElement.prototype.renderStroke = function(num){
             this.renderedFrame.stroke.width = stroke.width;
             this.shape.setAttribute('stroke-width',stroke.width);
         }
-        if(this.renderedFrame.stroke.width !== stroke.width){
-            this.renderedFrame.stroke.width = stroke.width;
-            this.shape.setAttribute('stroke-width',stroke.width);
-        }
         if(this.data.strokeEnabled!==false){
             if(this.renderedFrame.stroke.opacity !== stroke.opacity){
                 this.renderedFrame.stroke.opacity = stroke.opacity;

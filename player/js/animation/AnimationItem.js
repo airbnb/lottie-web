@@ -67,6 +67,7 @@ AnimationItem.prototype.setParams = function(params) {
         }
 
         var xhr = new XMLHttpRequest();
+        this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         xhr.open('GET', params.path, true);
         xhr.send();
         xhr.onreadystatechange = function () {
