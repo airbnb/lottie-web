@@ -513,27 +513,41 @@ function dataFunctionManager(){
                 }
             }
         }else{
-            var outX,outY,inX,inY;
+            var outX,outY,inX,inY, isArray = false;
             len = keyData.s.length;
             for(i=0;i<len;i+=1){
                 if(keyData.h !== 1){
                     if(keyData.o.x instanceof Array){
-                        outX = keyData.o.x[i];
-                        outY = keyData.o.y[i];
-                        inX = keyData.i.x[i];
-                        inY = keyData.i.y[i];
+                        isArray = true;
+                        outX = keyData.o.x[i] ? keyData.o.x[i] : keyData.o.x[0];
+                        outY = keyData.o.y[i] ? keyData.o.y[i] : keyData.o.y[0];
+                        inX = keyData.i.x[i] ? keyData.i.x[i] : keyData.i.x[0];
+                        inY = keyData.i.y[i] ? keyData.i.y[i] : keyData.i.y[0];
+                        if(!keyData.__fnct){
+                            keyData.__fnct = [];
+                        }
                     }else{
+                        isArray = false;
                         outX = keyData.o.x;
                         outY = keyData.o.y;
                         inX = keyData.i.x;
                         inY = keyData.i.y;
                     }
                     var fnc;
-                    if(keyData.__fnct){
-                        fnc = keyData.__fnct;
+                    if(isArray){
+                        if(keyData.__fnct[i]){
+                            fnc = keyData.__fnct[i];
+                        }else{
+                            fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            keyData.__fnct[i] = fnc;
+                        }
                     }else{
-                        fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                        keyData.__fnct = fnc;
+                        if(keyData.__fnct){
+                            fnc = keyData.__fnct;
+                        }else{
+                            fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            keyData.__fnct = fnc;
+                        }
                     }
                     perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     if(frameNum >= nextKeyData.t-offsetTime){
@@ -824,6 +838,9 @@ function dataFunctionManager(){
                     getInterpolatedValue(shapeItem.tr.p,offsettedFrameNum, item.startTime,interpolatedParams);
                     interpolatedParams.arrayFlag = false;
                     interpolatedParams.type = 'default';
+                    //console.log('frameNum: ',frameNum);
+                    //console.log('matrixParams.sx: ',matrixParams.sx);
+                    //console.log('matrixParams.sy: ',matrixParams.sy);
                     if(renderType == 'canvas'){
                         shapeTrOb.mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                     }else{
