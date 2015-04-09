@@ -1140,17 +1140,14 @@ var UI;
     }
 
     function removeFileFromDisk(f, cb){
-        //$.writeln('f',f.fullName);
         var callback = cb;
         var currentFileIndex =0;
         var removeNextItem = function(){
             currentFileIndex++;
             if(currentFileIndex >= len){
                 if(f.remove()){
-                    //$.writeln('folder success',fName);
                     callback.apply();
                 }else{
-                    //$.writeln('folder failed',fName);
                 }
             }else{
                 removeFileFromDisk(files[currentFileIndex],removeNextItem);
@@ -1158,10 +1155,8 @@ var UI;
         };
         if (f instanceof File){
             if(f.remove()){
-                //$.writeln('file success',fName);
                 callback.apply();
             }else{
-                //$.writeln('file failed',fName);
             }
         }else{
             var files = f.getFiles();
@@ -1322,11 +1317,7 @@ var UI;
             function getRealInfluence(property,handle,time,diff,keyNum, keyOb){
                 function iterateNextInfluence(){
                     referenceValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                    //$.writeln('COMPARE: ',originalValue,referenceValue,' -- count: ',count);
-                    //$.writeln('property.keyInTemporalEase(keyNum): ',property.keyInTemporalEase(keyNum)[0].influence);
-                    //$.writeln('currentInfluence: ',currentInfluence);
                     if(extrasInstance.compareObjects(originalValue,referenceValue) ==  true){
-                        //$.writeln('IGUALES: ',originalValue,referenceValue);
                         if(currentInfluence == 0.1){
                             loop = false;
                         }
@@ -1339,35 +1330,28 @@ var UI;
                             loop = false;
                         }
                     }else{
-                        //$.writeln('DIFERENTES: ',currentInfluence);
                         lastInfluence = currentInfluence;
                         currentInfluence += (topInfluence-currentInfluence)/2;
                         if(currentInfluence - lastInfluence< 0.0001){
                             loop = false;
                         }
                     }
-                    //$.writeln('-- --- --');
                     if(originalInfluence - currentInfluence < 0.0001){
                         loop = false;
                     }
                     count +=1;
                     if(count >= 20){
-                        //$.writeln('count exceeded');
                         loop = false;
                     }
                     if( loop == true){
                         if(handle == 'out'){
-                            //keyOut[0]= new KeyframeEase(keyOut[0].speed,currentInfluence);
                             keyNew = new KeyframeEase(keyOut[0].speed,currentInfluence);
                             property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
                         }else{
-                            //keyIn[0] = new KeyframeEase(keyIn[0].speed,currentInfluence);
                             keyNew = new KeyframeEase(keyIn[0].speed,currentInfluence);
                             property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
                         }
                         iterateNextInfluence();
-                        //AsyncManager.addAsyncCall(iterateNextInfluence);
-                        //extrasInstance.setTimeout(iterateNextInfluence,1);
                     }else{
                         if(handle == 'out'){
                             keyNew = new KeyframeEase(keyOut[0].speed,originalInfluence);
@@ -1376,19 +1360,15 @@ var UI;
                             keyNew = new KeyframeEase(keyIn[0].speed,originalInfluence);
                             property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
                         }
-                        //$.writeln('ccccccccurrentInfluence: ',currentInfluence);
-                        //$.writeln('keyOb: ',keyOb);
                         keyOb.influence = currentInfluence;
                         influenceReadyCount -= 1;
                         realInfluenceReady();
-                        //AsyncManager.removeAsyncCounter();
                     }
                 }
                 var count = 0;
                 var referenceValue;
                 var lastInfluence = 0;
                 var originalValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                //$.writeln('originalValue UNO: ',originalValue);
                 var keyIn = property.keyInTemporalEase(keyNum);
                 var keyOut = property.keyOutTemporalEase(keyNum);
                 var keyNew, originalInfluence;
@@ -1427,7 +1407,6 @@ var UI;
                 while(loop){
                     referenceValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
                     if(extrasInstance.compareObjects(originalValue,referenceValue) ==  true){
-                        //$.writeln('IGUALES: ',originalValue,referenceValue);
                         if(currentInfluence == 0.1){
                             loop = false;
                         }
@@ -1440,20 +1419,17 @@ var UI;
                             loop = false;
                         }
                     }else{
-                        //$.writeln('DIFERENTES: ',currentInfluence);
                         lastInfluence = currentInfluence;
                         currentInfluence += (topInfluence-currentInfluence)/2;
                         if(currentInfluence - lastInfluence< 0.0001){
                             loop = false;
                         }
                     }
-                    //$.writeln('-- --- --');
                     if(originalInfluence - currentInfluence < 0.0001){
                         loop = false;
                     }
                     count +=1;
                     if(count >= 20){
-                        //$.writeln('count exceeded');
                         loop = false;
                     }
                     if(handle == 'out'){
@@ -1570,7 +1546,6 @@ var UI;
                         averageSpeed = [];
                         for(i=0;i<len;i+=1){
                             averageSpeed[i] =  (key.value[i] - lastKey.value[i])/duration;
-                            //averageSpeed[i] =  (key.easeIn[i].speed*(key.easeIn[i].influence / 100) + lastKey.easeOut[i].speed*(lastKey.easeOut[i].influence / 100))/duration;
                         }
                         break;
                 }
@@ -2445,7 +2420,7 @@ var UI;
         }
         //If it gets here there are no more compositions to render and callback is executed
         //helperSolid.remove();
-        //helperFootage.remove();
+        helperFootage.remove();
         endCallback.apply();
     }
 
