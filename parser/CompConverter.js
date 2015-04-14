@@ -105,7 +105,6 @@
             }
         }
         //If it gets here there are no more compositions to render and callback is executed
-        //helperSolid.remove();
         helperFootage.remove();
         endCallback.apply();
     }
@@ -116,12 +115,16 @@
         helperImportOptions.file = helperFile;
         helperFootage = mainProject.importFile(helperImportOptions);
         var helperFolder = helperFootage.item(2);
-        var helperComp = helperFootage.item(1);
-        //helperSolid = helperComp.layers.addSolid([1.0,1.0,0], "helperSolid", 10, 10, 1);
-        //helperSolid = helperComp.layers.addNull(2);
-        //helperSolid.layerInfo.transform['Anchor Point']
-        //helperSolid.transform['Anchor Point'].expression = "velocityAtTime(time)";
-        //helperSolid.parentFolder = helperFolder;
+        var i = 0, len = helperFolder.items.length;
+        while(i<len){
+            if(helperFolder.item(i+1).name == 'helperSolidComp'){
+                helperSolidComp = helperFolder.item(i+1);
+            }
+            i += 1;
+        }
+        helperSolid = helperSolidComp.layer(1);
+        var helperPosition = helperSolid.transform["Anchor Point"];
+        helperPosition.expression = "valueAtTime(time)";
 
         rqManager.setProject(app.project);
         LayerConverter.setCallback(layersConverted);

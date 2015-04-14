@@ -520,10 +520,10 @@
                 if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL || property.propertyValueType == PropertyValueType.SHAPE ){
                     property.expression = propertyExpression;
                 }
-                /*bezierIn.x = extrasInstance.roundNumber(bezierIn.x,3);
+                bezierIn.x = extrasInstance.roundNumber(bezierIn.x,3);
                 bezierIn.y = extrasInstance.roundNumber(bezierIn.y,3);
                 bezierOut.x = extrasInstance.roundNumber(bezierOut.x,3);
-                bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);*/
+                bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);
                 segmentOb.i = bezierIn;
                 segmentOb.o = bezierOut;
                 segmentOb.n = (bezierIn.x.toString()+'_'+bezierIn.y.toString()+'_'+bezierOut.x.toString()+'_'+bezierOut.y.toString()).replace(/\./g, 'p');

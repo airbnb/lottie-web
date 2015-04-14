@@ -1,4 +1,5 @@
 /****** INIT Var Declarations ******/
+var helperSolidComp;
 var helperFootage;
 //Solid for anchor point fix on shape layers
 var helperSolid;
