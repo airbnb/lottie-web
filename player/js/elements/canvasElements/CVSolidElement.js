@@ -5,8 +5,7 @@ createElement(CVBaseElement, CVSolidElement);
 
 CVSolidElement.prototype.draw = function(){
     this.renderer.canvasContext.save();
-    var renderParent = this.parent.draw.call(this, false);
-    if(renderParent===false){
+    if(this.parent.draw.call(this, false)===false){
         this.renderer.canvasContext.restore();
         return;
     }

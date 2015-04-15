@@ -19,7 +19,10 @@ CVCompElement.prototype.prepareFrame = function(num){
 
 CVCompElement.prototype.draw = function(){
     this.renderer.canvasContext.save();
-    this.parent.draw.call(this,false);
+    if(this.parent.draw.call(this,false)===false){
+        this.renderer.canvasContext.restore();
+        return;
+    }
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
         this.layers[i].element.draw();
