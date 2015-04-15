@@ -23,10 +23,15 @@ CanvasRenderer.prototype.buildItems = function(layers){
         } else if (layers[i].type == 'TextLayer') {
             this.createText(layers[i]);
         }else{
+            this.createBase(layers[i]);
             console.log('NO TYPE: ',layers[i]);
         }
     }
 }
+
+CanvasRenderer.prototype.createBase = function (data) {
+    data.element = new CVBaseElement(data, this);
+};
 
 CanvasRenderer.prototype.createShape = function (data) {
     data.element = new CVShapeElement(data, this);
