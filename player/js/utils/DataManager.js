@@ -462,7 +462,7 @@ function dataFunctionManager(){
             jLen = bezierData.points.length;
             while(flag){
                 addedLength +=bezierData.points[j].partialLength*dir;
-                if(frameNum == 0 || distanceInLine == 0 || perc == 0){
+                if(distanceInLine == 0 || perc == 0){
                     if(interpolatedParams.type == 'p'){
                         matrixParams.px = bezierData.points[j].point[0];
                         matrixParams.py = bezierData.points[j].point[1];
@@ -689,9 +689,6 @@ function dataFunctionManager(){
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             offsettedFrameNum = frameNum - item.startTime;
-            if(frameNum < item.inPoint || frameNum > item.outPoint){
-                continue;
-            }
             if(item.an[offsettedFrameNum]){
                 continue;
             }

@@ -40,7 +40,6 @@ BaseElement.prototype.renderFrame = function(num){
             this.isVisible = false;
             this.mainElement.setAttribute('opacity',0);
         }
-        return false;
     }
     this.currentAnimData = this.data.renderedData[num].an;
 
@@ -49,6 +48,9 @@ BaseElement.prototype.renderFrame = function(num){
     }
 
     if(num === this.data.renderedFrame.num){
+        if(!this.isVisible){
+            return false;
+        }
         return true;
     }
 
@@ -85,6 +87,9 @@ BaseElement.prototype.renderFrame = function(num){
                 itemCont.setAttribute('transform',this.currentAnimData.matrixValue);
             }
         }
+    }
+    if(!this.isVisible){
+        return false;
     }
     return true;
 };
