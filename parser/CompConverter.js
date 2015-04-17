@@ -2,7 +2,6 @@
 (function(){
     var isExportDirectoryCreated = false;
     var directoryCreationFailed = false;
-    var currentExportingComposition = 0;
     var compositionsList;
     var currentCompositionData;
     var filesDirectory;
@@ -21,7 +20,7 @@
             //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
-        currentExportingComposition+=1;
+        currentCompositionData.rendered = true;
         searchNextComposition();
     }
 
@@ -87,7 +86,7 @@
     function exportNextComposition(){
         isExportDirectoryCreated = false;
         directoryCreationFailed = false;
-        mainComp = compositionsList[currentExportingComposition].comp;
+        mainComp = currentCompositionData.comp;
         createExportDirectory();
         waitForDirectoryCreated();
     }
@@ -95,13 +94,14 @@
     function searchNextComposition(){
         if(!renderCancelled){
             var len = compositionsList.length;
-            while(currentExportingComposition < len){
-                if(compositionsList[currentExportingComposition].queued === true){
-                    currentCompositionData = compositionsList[currentExportingComposition];
+            var i = 0;
+            while(i < len){
+                if(compositionsList[i].queued === true && compositionsList[i].rendered == false){
+                    currentCompositionData = compositionsList[i];
                     exportNextComposition();
                     return;
                 }
-                currentExportingComposition+=1;
+                i+=1;
             }
         }
         //If it gets here there are no more compositions to render and callback is executed
@@ -128,8 +128,11 @@
 
         rqManager.setProject(app.project);
         LayerConverter.setCallback(layersConverted);
-        currentExportingComposition = 0;
         compositionsList = list;
+        len = compositionsList.length;
+        for(i=0;i<len;i+=1){
+            compositionsList[i].rendered = false;
+        }
         searchNextComposition();
     }
 
