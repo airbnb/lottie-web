@@ -80,7 +80,8 @@ SVGRenderer.prototype.buildStage = function (container, layers) {
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
         if (layerData.parent) {
-            var mainContainer = this.buildItemHierarchy(layerData.element.getDomElement(), layerData.layerName, layerData.parent, layers, container);
+            this.buildItemParenting(layerData,layers,layerData.parent);
+            var mainContainer = layerData.element.getDomElement();
             mainContainer.setAttribute("data-layer-name", layerData.layerName);
             container.appendChild(mainContainer);
             layerData.element.setMainElement(mainContainer);
@@ -94,30 +95,22 @@ SVGRenderer.prototype.buildStage = function (container, layers) {
         }
     }
 };
-
-SVGRenderer.prototype.buildItemHierarchy = function (threeItem, layerName, parentName, layers, container) {
+SVGRenderer.prototype.buildItemParenting = function (layerData,layers,parentName) {
+    if(!layerData.parents){
+        layerData.parents = [];
+    }
     var i = 0, len = layers.length;
-    while (i < len) {
+    while(i<len){
         if (layers[i].layerName == parentName) {
-            if (!layers[i].relateds) {
-                layers[i].relateds = [];
+            layerData.parents.push({elem:layers[i]});
+            if(layers[i].parent){
+                this.buildItemParenting(layerData,layers,layers[i].parent);
             }
-            var div, itemCont;
-            div = document.createElementNS(svgNS, 'g');
-            itemCont = document.createElementNS(svgNS, 'g');
-            layers[i].relateds.push({item:div, itemCont:itemCont});
-            div.appendChild(threeItem);
-            itemCont.appendChild(div);
-            if (layers[i].parent == undefined) {
-            } else {
-                return this.buildItemHierarchy(itemCont, layerName, layers[i].parent, layers, container);
-            }
-            return itemCont;
+            break;
         }
         i += 1;
     }
-    return null;
-};
+}
 
 SVGRenderer.prototype.updateContainerSize = function () {
 };
@@ -128,6 +121,9 @@ SVGRenderer.prototype.renderFrame = function(num){
     }
     this.lastFrame = num;
     var i, len = this.layers.length;
+    for (i = 0; i < len; i++) {
+        this.layers[i].element.prepareFrame(num - this.layers[i].startTime);
+    }
     for (i = 0; i < len; i++) {
         this.layers[i].element.renderFrame(num - this.layers[i].startTime);
     }

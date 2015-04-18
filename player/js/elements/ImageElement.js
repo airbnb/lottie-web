@@ -28,7 +28,7 @@ IImageElement.prototype.createElements = function(){
     this.image.setAttribute('width',this.data.width+"px");
     this.image.setAttribute('height',this.data.height+"px");
     this.svgElem.appendChild(this.image);
-    this.anchorElement.appendChild(this.svgElem);
+    this.layerElement.appendChild(this.svgElem);
     this.maskingGroup = this.svgElem;
     styleUnselectableDiv(this.image);
 

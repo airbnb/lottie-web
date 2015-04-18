@@ -6,7 +6,7 @@ createElement(BaseElement, ISolidElement);
 ISolidElement.prototype.createElements = function(){
     this.svgElem = document.createElementNS (svgNS, "g");
     this.parent.createElements.call(this);
-    this.anchorElement.appendChild(this.svgElem);
+    this.layerElement.appendChild(this.svgElem);
 
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',this.data.width);
