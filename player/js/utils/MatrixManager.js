@@ -1,4 +1,4 @@
-var MatrixManager = function(){
+function matrixManagerFunction(){
 
     var mat = new Matrix('2d');
     var mat3d = new Matrix('3d');
@@ -100,7 +100,10 @@ var MatrixManager = function(){
         get2DMatrix : get2DMatrix,
         getMatrix : getMatrix,
         getMatrix2 : getMatrix2,
-        getMatrixArray : getMatrixArray
+        getMatrixArray : getMatrixArray,
+        getMatrixArrayFromParams : returnMatrix2DArray,
+        getMatrix2FromParams : returnMatrix2D
     }
 
 };
+var MatrixManager = matrixManagerFunction;

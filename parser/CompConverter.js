@@ -2,7 +2,6 @@
 (function(){
     var isExportDirectoryCreated = false;
     var directoryCreationFailed = false;
-    var currentExportingComposition = 0;
     var compositionsList;
     var currentCompositionData;
     var filesDirectory;
@@ -17,11 +16,11 @@
         if(!renderCancelled){
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
-            //dataFile.write(JSON.stringify(compositionData)); //NO BORRAR, JSON SIN FORMATEAR
-            dataFile.write(JSON.stringify(compositionData, null, '  ')); //NO BORRAR ES PARA VER EL JSON FORMATEADO
+            dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
+            //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
-        currentExportingComposition+=1;
+        currentCompositionData.rendered = true;
         searchNextComposition();
     }
 
@@ -87,7 +86,7 @@
     function exportNextComposition(){
         isExportDirectoryCreated = false;
         directoryCreationFailed = false;
-        mainComp = compositionsList[currentExportingComposition].comp;
+        mainComp = currentCompositionData.comp;
         createExportDirectory();
         waitForDirectoryCreated();
     }
@@ -95,16 +94,17 @@
     function searchNextComposition(){
         if(!renderCancelled){
             var len = compositionsList.length;
-            while(currentExportingComposition < len){
-                if(compositionsList[currentExportingComposition].queued === true){
-                    currentCompositionData = compositionsList[currentExportingComposition];
+            var i = 0;
+            while(i < len){
+                if(compositionsList[i].queued === true && compositionsList[i].rendered == false){
+                    currentCompositionData = compositionsList[i];
                     exportNextComposition();
                     return;
                 }
-                currentExportingComposition+=1;
+                i+=1;
             }
         }
-        //If we get here there are no more compositions to render and callback is executed
+        //If it gets here there are no more compositions to render and callback is executed
         helperFootage.remove();
         endCallback.apply();
     }
@@ -114,10 +114,25 @@
         var helperImportOptions = new ImportOptions();
         helperImportOptions.file = helperFile;
         helperFootage = mainProject.importFile(helperImportOptions);
+        var helperFolder = helperFootage.item(2);
+        var i = 0, len = helperFolder.items.length;
+        while(i<len){
+            if(helperFolder.item(i+1).name == 'helperSolidComp'){
+                helperSolidComp = helperFolder.item(i+1);
+            }
+            i += 1;
+        }
+        helperSolid = helperSolidComp.layer(1);
+        var helperPosition = helperSolid.transform["Anchor Point"];
+        helperPosition.expression = "valueAtTime(time)";
+
         rqManager.setProject(app.project);
         LayerConverter.setCallback(layersConverted);
-        currentExportingComposition = 0;
         compositionsList = list;
+        len = compositionsList.length;
+        for(i=0;i<len;i+=1){
+            compositionsList[i].rendered = false;
+        }
         searchNextComposition();
     }
 

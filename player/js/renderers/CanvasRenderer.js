@@ -1,5 +1,11 @@
-function CanvasRenderer(animationItem){
+function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
+    this.renderConfig = config ? config : {
+        clearCanvas: true,
+        context: null,
+        scaleMode: 'fit'
+    };
+    this.lastFrame = -1;
 }
 
 CanvasRenderer.prototype.buildItems = function(layers){
@@ -17,10 +23,15 @@ CanvasRenderer.prototype.buildItems = function(layers){
         } else if (layers[i].type == 'TextLayer') {
             this.createText(layers[i]);
         }else{
+            this.createBase(layers[i]);
             console.log('NO TYPE: ',layers[i]);
         }
     }
 }
+
+CanvasRenderer.prototype.createBase = function (data) {
+    data.element = new CVBaseElement(data, this);
+};
 
 CanvasRenderer.prototype.createShape = function (data) {
     data.element = new CVShapeElement(data, this);
@@ -36,7 +47,7 @@ CanvasRenderer.prototype.createImage = function (data) {
 
 CanvasRenderer.prototype.createComp = function (data) {
     data.element = new CVCompElement(data, this);
-    this.buildItems(data.layers, data.element.getType());
+    this.buildItems(data.layers);
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
@@ -44,13 +55,17 @@ CanvasRenderer.prototype.createSolid = function (data) {
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
-    this.animationItem.container = document.createElement('canvas');
-    this.animationItem.container.style.width = '100%';
-    this.animationItem.container.style.height = '100%';
-    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this.animationItem.container);
+    if(this.animationItem.wrapper){
+        this.animationItem.container = document.createElement('canvas');
+        this.animationItem.container.style.width = '100%';
+        this.animationItem.container.style.height = '100%';
+        this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
+        this.animationItem.wrapper.appendChild(this.animationItem.container);
+        this.canvasContext = this.animationItem.container.getContext('2d');
+    }else{
+        this.canvasContext = this.renderConfig.context;
+    }
     this.layers = animData.animation.layers;
-    this.canvasContext = this.animationItem.container.getContext('2d');
     this.transformCanvas = {};
     this.transformCanvas.w = animData.animation.compWidth;
     this.transformCanvas.h = animData.animation.compHeight;
@@ -58,21 +73,33 @@ CanvasRenderer.prototype.configAnimation = function(animData){
 };
 
 CanvasRenderer.prototype.updateContainerSize = function () {
-    var elementWidth = this.animationItem.wrapper.offsetWidth;
-    var elementHeight = this.animationItem.wrapper.offsetHeight;
-    this.animationItem.container.setAttribute('width',elementWidth);
-    this.animationItem.container.setAttribute('height',elementHeight);
-    var elementRel = elementWidth/elementHeight;
-    var animationRel = this.transformCanvas.w/this.transformCanvas.h;
-    if(animationRel>elementRel){
-        this.transformCanvas.sx = elementWidth/this.transformCanvas.w;
-        this.transformCanvas.sy = elementWidth/this.transformCanvas.w;
-        this.transformCanvas.tx = 0;
-        this.transformCanvas.ty = (elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2;
+    if(this.animationItem.wrapper && this.animationItem.container){
+        var elementWidth = this.animationItem.wrapper.offsetWidth;
+        var elementHeight = this.animationItem.wrapper.offsetHeight;
+        this.animationItem.container.setAttribute('width',elementWidth);
+        this.animationItem.container.setAttribute('height',elementHeight);
     }else{
-        this.transformCanvas.sx = elementHeight/this.transformCanvas.h;
-        this.transformCanvas.sy = elementHeight/this.transformCanvas.h;
-        this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2;
+        var elementWidth = this.canvasContext.canvas.width;
+        var elementHeight = this.canvasContext.canvas.height;
+    }
+    if(this.renderConfig.scaleMode == 'fit'){
+        var elementRel = elementWidth/elementHeight;
+        var animationRel = this.transformCanvas.w/this.transformCanvas.h;
+        if(animationRel>elementRel){
+            this.transformCanvas.sx = elementWidth/this.transformCanvas.w;
+            this.transformCanvas.sy = elementWidth/this.transformCanvas.w;
+            this.transformCanvas.tx = 0;
+            this.transformCanvas.ty = (elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2;
+        }else{
+            this.transformCanvas.sx = elementHeight/this.transformCanvas.h;
+            this.transformCanvas.sy = elementHeight/this.transformCanvas.h;
+            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2;
+            this.transformCanvas.ty = 0;
+        }
+    }else{
+        this.transformCanvas.sx = 1;
+        this.transformCanvas.sy = 1;
+        this.transformCanvas.tx = 0;
         this.transformCanvas.ty = 0;
     }
 };
@@ -116,18 +143,27 @@ CanvasRenderer.prototype.prepareFrame = function(num){
 CanvasRenderer.prototype.draw = function(){
     var i, len = this.layers.length;
     for (i = len - 1; i >= 0; i-=1) {
-        this.layers[i].element.initDraw();
         this.layers[i].element.draw();
-        this.layers[i].element.endDraw();
     }
 };
 
 CanvasRenderer.prototype.renderFrame = function(num){
-    this.animationItem.container.width = this.animationItem.container.width;
+    if(this.lastFrame == num){
+        return;
+    }
+    this.lastFrame = num;
+    if(this.renderConfig.clearCanvas === true){
+        this.canvasContext.canvas.width = this.canvasContext.canvas.width;
+    }else{
+        this.canvasContext.save();
+    }
     this.canvasContext.transform(this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty);
     this.canvasContext.beginPath();
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
     this.canvasContext.clip();
     this.prepareFrame(num);
     this.draw();
+    if(this.renderConfig.clearCanvas !== true){
+        this.canvasContext.restore();
+    }
 };

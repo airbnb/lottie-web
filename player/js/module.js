@@ -27,32 +27,22 @@
         animationManager.searchAnimations();
     }
     function registerAnimation(elem){
-        animationManager.registerAnimation(elem);
+        return animationManager.registerAnimation(elem);
     }
     function resize(){
         animationManager.resize();
     }
+    function start(){
+        animationManager.start();
+    }
+    function goToAndStop(val,isFrame, animation){
+        animationManager.goToAndStop(val,isFrame, animation);
+    }
     function setSubframeRendering(flag){
         subframeEnabled = flag;
     }
-
-    function keyActive(e){
-        var key = e.keyCode ? e.keyCode : e.which;
-        if (key == 88 || key == 90) {
-            if (key == 88) {
-                bodymovinjs.moveFrame(1);
-            }else if (key == 90) {
-                bodymovinjs.moveFrame(-1);
-            }
-        }else if(key == 32){
-            bodymovinjs.togglePause();
-        }else if(key>48 && key<58){
-            bodymovinjs.setSpeed(key-48);
-        }else if (key == 39) {
-            bodymovinjs.setDirection(1);
-        }else if (key == 37) {
-            bodymovinjs.setDirection(-1);
-        }
+    function loadAnimation(params){
+        return animationManager.loadAnimation(params);
     }
 
     bodymovinjs.play = play;
@@ -64,32 +54,24 @@
     bodymovinjs.moveFrame = moveFrame;
     bodymovinjs.searchAnimations = searchAnimations;
     bodymovinjs.registerAnimation = registerAnimation;
+    bodymovinjs.loadAnimation = loadAnimation;
     bodymovinjs.setSubframeRendering = setSubframeRendering;
     bodymovinjs.resize = resize;
+    bodymovinjs.start = start;
+    bodymovinjs.goToAndStop = goToAndStop;
 
-    window.bodymovin = bodymovinjs;
-    //window.onkeydown = keyActive;
-
-    var readyStateCheckInterval = setInterval(function() {
+    function checkReady(){
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
-            searchAnimations();
-            play();
+                searchAnimations();
         }
-    }, 100);
+    }
 
-    (function () {
-        function CustomEvent ( event, params ) {
-            params = params || { bubbles: false, cancelable: false, detail: undefined };
-            var evt = document.createEvent( 'CustomEvent' );
-            evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-            return evt;
-        };
+    bodymovinjs.checkReady = checkReady;
 
-        CustomEvent.prototype = window.Event.prototype;
+    window.bodymovin = bodymovinjs;
 
-        window.CustomEvent = CustomEvent;
-    })();
+    var readyStateCheckInterval = setInterval(checkReady, 100);
 
 }(window));
 

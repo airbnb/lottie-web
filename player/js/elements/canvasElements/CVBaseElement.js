@@ -2,6 +2,7 @@ function CVBaseElement(data,renderer){
     this.renderer = renderer;
     this.data = data;
     this.currentAnimData = null;
+    this.renderFrame = false;
     this.init();
 };
 
@@ -22,50 +23,47 @@ CVBaseElement.prototype.createElements = function(){
 CVBaseElement.prototype.prepareFrame = function(num){
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
     {
+        this.renderFrame = true;
     }else{
-        this.currentAnimData = null;
+        this.renderFrame = false;
+        this.currentAnimData = this.data.renderedData[num].an;
         return false;
     }
-    this.currentAnimData = this.data.an[this.data.an[num].forwardFrame];
+    this.currentAnimData = this.data.renderedData[num].an;
 
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);
     }
 };
 
-CVBaseElement.prototype.initDraw = function(){
-    this.renderer.canvasContext.save();
-
-};
-
-CVBaseElement.prototype.draw = function(){
-    if(!this.currentAnimData){
+CVBaseElement.prototype.draw = function(saveFlag){
+    if(saveFlag !== false){
+        this.renderer.canvasContext.save();
+    }
+    if(!this.renderFrame){
         return false;
     }
     var ctx = this.renderer.canvasContext;
+    var matrixValue;
     if(this.data.parentHierarchy){
         var i, len = this.data.parentHierarchy.length, animData;
         for(i = len - 1; i>=0 ; i -= 1){
             animData = this.data.parentHierarchy[i].element.getCurrentAnimData();
-            //ctx.translate(animData.tr.a[0],animData.tr.a[1]);
-            var matrixValue = animData.matrixArray;
+            matrixValue = animData.matrixArray;
             ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
             ctx.translate(-animData.tr.a[0],-animData.tr.a[1]);
         }
     }
-
-    ctx.globalAlpha = this.currentAnimData.tr.o;
-    var matrixValue = this.currentAnimData.matrixArray;
+    ctx.globalAlpha = ctx.globalAlpha*this.currentAnimData.tr.o;
+    matrixValue = this.currentAnimData.matrixArray;
      ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
      ctx.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
     if(this.data.hasMask){
         this.maskManager.draw();
     }
-
-};
-
-CVBaseElement.prototype.endDraw = function(){
-    this.renderer.canvasContext.restore();
+    if(saveFlag !== false){
+        this.renderer.canvasContext.restore();
+    }
 
 };
 

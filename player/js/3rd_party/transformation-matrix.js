@@ -26,23 +26,37 @@
  * @prop {CanvasRenderingContext2D|null} [context=null] - set or get current canvas context
  * @constructor
  */
-function Matrix(dimension) {
+
+function Matrix(context) {
 
     var me = this;
     me._t = me.transform;
     me.dimension = dimension;
+
     if(dimension == '2d'){
         me.a = me.d = 1;
         me.b = me.c = me.e = me.f = 0;
+        me.props = [1,0,0,1,0,0];
+        me.a1 = me.b1 = me.c1 = me.d1 = me.e1 = me.f1 = 0;
     }else{
         me.a = me.f = me.k = me.p = 1;
         me.b = me.c = me.d = me.e = me.g = me.h = me.i = me.j = me.l = me.m = me.n = me.o = 0;
+        me.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+        me.a1 = me.b1 = me.c1 = me.d1 = me.e1 = me.f1 = me.g1 = me.h1 = me.i1 = me.j1 = me.k1 = me.l1 = me.m1 = me.n1 = me.o1 = me.p1 = 0;
     }
+
+
+    me.cssParts = ['matrix(','',')'];
+
+
+    me.context = context;
 
     me.cos = me.sin = 0;
 
-}
 
+    // reset canvas transformations (if any) to enable 100% sync.
+    if (context) context.setTransform(1, 0, 0, 1, 0, 0);
+}
 Matrix.prototype = {
 
     /**
@@ -285,23 +299,23 @@ Matrix.prototype = {
      * @param {number} f - translate y
      */
     setTransform: function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.e = e;
-        this.f = f;
+        this.props[0] = a;
+        this.props[1] = b;
+        this.props[2] = c;
+        this.props[3] = d;
+        this.props[4] = e;
+        this.props[5] = f;
         if(this.dimension == '3d'){
-            this.g = g;
-            this.h = h;
-            this.i = i;
-            this.j = j;
-            this.k = k;
-            this.l = l;
-            this.m = m;
-            this.n = n;
-            this.o = o;
-            this.p = p;
+            this.props[6] = g;
+            this.props[7] = h;
+            this.props[8] = i;
+            this.props[9] = j;
+            this.props[10] = k;
+            this.props[11] = l;
+            this.props[12] = m;
+            this.props[13] = n;
+            this.props[14] = o;
+            this.props[15] = p;
         }
         return this._x();
     },
@@ -358,24 +372,23 @@ Matrix.prototype = {
      * @param {number} f2 - translate y
      */
     transform: function(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
-
-        var a1 = this.a,
-            b1 = this.b,
-            c1 = this.c,
-            d1 = this.d,
-            e1 = this.e,
-            f1 = this.f;
+        this.a1 = this.props[0];
+        this.b1 = this.props[1];
+        this.c1 = this.props[2];
+        this.d1 = this.props[3];
+        this.e1 = this.props[4];
+        this.f1 = this.props[5];
         if(this.dimension == '3d'){
-            var g1 = this.g;
-            var h1 = this.h;
-            var i1 = this.i;
-            var j1 = this.j;
-            var k1 = this.k;
-            var l1 = this.l;
-            var m1 = this.m;
-            var n1 = this.n;
-            var o1 = this.o;
-            var p1 = this.p;
+            this.g1 = this.props[6];
+            this.h1 = this.props[7];
+            this.i1 = this.props[8];
+            this.j1 = this.props[9];
+            this.k1 = this.props[10];
+            this.l1 = this.props[11];
+            this.m1 = this.props[12];
+            this.n1 = this.props[13];
+            this.o1 = this.props[14];
+            this.p1 = this.props[15];
         }
 
         /* matrix order (canvas compatible):
@@ -383,7 +396,7 @@ Matrix.prototype = {
          * bdf
          * 001
          */
-        if(this.dimension == '2d'){
+        /*if(this.dimension == '2d'){
             this.a = a1 * a2 + c1 * b2;
             this.b = b1 * a2 + d1 * b2;
             this.c = a1 * c2 + c1 * d2;
@@ -410,7 +423,13 @@ Matrix.prototype = {
             this.n = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2 ;
             this.o = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
             this.p = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
-        }
+        }*/
+        this.props[0] = this.a1 * a2 + this.c1 * b2;
+        this.props[1] = this.b1 * a2 + this.d1 * b2;
+        this.props[2] = this.a1 * c2 + this.c1 * d2;
+        this.props[3] = this.b1 * c2 + this.d1 * d2;
+        this.props[4] = this.a1 * e2 + this.c1 * f2 + this.e1;
+        this.props[5] = this.b1 * e2 + this.d1 * f2 + this.f1;
 
         return this._x();
     },
@@ -802,9 +821,9 @@ Matrix.prototype = {
      */
     toArray: function() {
         if(this.dimension == '2d'){
-            return [this.a, this.b, this.c, this.d, this.e, this.f];
+            return return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
         }
-        return [this.a, this.b, this.c, this.d, this.e, this.f, this.g, this.h, this.i, this.j, this.k, this.l, this.m, this.n, this.o, this.p];
+        return return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5],this.props[6],this.props[7],this.props[8],this.props[9],this.props[10],this.props[11],this.props[12],this.props[13],this.props[14],this.props[15]];
     },
 
     /**
@@ -813,7 +832,8 @@ Matrix.prototype = {
      */
     toCSS: function() {
         if(this.dimension == '2d'){
-            return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
+            this.cssParts[1] = this.props.join(',');
+            return this.cssParts.join('');
         }
         return "matrix3d(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ',' + this.g + ',' + this.h + ',' + this.i + ',' + this.j + ',' + this.k + ',' + this.l + ',' + this.m + ',' + this.n + ',' + this.o + ',' + this.p + ")";
     },

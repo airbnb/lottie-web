@@ -1,98 +1,101 @@
 var animationManager = (function(){
     var moduleOb = {};
-    var requested = false;
     var registeredAnimations = [];
     var initTime = 0;
-    var nowTime = 0;
-    var elapsedTime = 0;
     var isPaused = true;
+    var len = 0;
 
     function registerAnimation(element){
         if(!element){
-            return;
+            return null;
         }
-        var i=0, len = registeredAnimations.length;
+        var i=0;
         while(i<len){
-            if(registeredAnimations[i].elem == element){
-                return;
+            if(registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null ){
+                return registeredAnimations[i].animation;
             }
             i+=1;
         }
         var animItem = new AnimationItem();
         animItem.setData(element);
         registeredAnimations.push({elem: element,animation:animItem});
+        len += 1;
+        return animItem;
+    }
+
+    function loadAnimation(params){
+        var animItem = new AnimationItem();
+        animItem.setParams(params);
+        registeredAnimations.push({elem: null,animation:animItem});
+        len += 1;
         return animItem;
     }
 
 
     function setSpeed(val,animation){
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.setSpeed(val, animation);
         }
     }
 
     function setDirection(val, animation){
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.setDirection(val, animation);
         }
     }
 
     function play(animation){
-        initTime = Date.now();
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.play(animation);
         }
-        resume();
     }
 
     function moveFrame (value, animation) {
         isPaused = false;
         initTime = Date.now();
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.moveFrame(value,animation);
         }
     }
 
-    function requestSingleAnimationFrame(){
-        requested = false;
-        resume();
-    }
-
     function resume() {
-        if(requested){
-            return;
-        }
-        requested = true;
-        nowTime = Date.now();
-        elapsedTime = nowTime - initTime;
-        var i, len = registeredAnimations.length;
+        var nowTime = Date.now();
+        var elapsedTime = nowTime - initTime;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        requestAnimationFrame(requestSingleAnimationFrame);
+        requestAnimationFrame(resume);
     }
 
     function pause(animation) {
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.pause(animation);
         }
     }
 
+    function goToAndStop(value,isFrame,animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.goToAndStop(value,isFrame,animation);
+        }
+    }
+
     function stop(animation) {
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.stop(animation);
         }
     }
 
     function togglePause(animation) {
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.togglePause(animation);
         }
@@ -104,22 +107,32 @@ var animationManager = (function(){
     }
 
     function resize(){
-        var i, len = registeredAnimations.length;
+        var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.resize();
         }
     }
 
+    function start(){
+        initTime = Date.now();
+        requestAnimationFrame(resume);
+    }
+    //start();
+
+    setTimeout(start,0);
+
     moduleOb.registerAnimation = registerAnimation;
+    moduleOb.loadAnimation = loadAnimation;
     moduleOb.setSpeed = setSpeed;
     moduleOb.setDirection = setDirection;
     moduleOb.play = play;
     moduleOb.moveFrame = moveFrame;
-    moduleOb.resume = resume;
     moduleOb.pause = pause;
     moduleOb.stop = stop;
     moduleOb.togglePause = togglePause;
     moduleOb.searchAnimations = searchAnimations;
     moduleOb.resize = resize;
+    moduleOb.start = start;
+    moduleOb.goToAndStop = goToAndStop;
     return moduleOb;
 }());

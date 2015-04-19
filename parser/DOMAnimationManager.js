@@ -260,7 +260,11 @@
                 layerOb.ks.p = extrasInstance.roundNumber(layerInfo.transform.position.valueAtTime(0,false),3);
             }
             if(layerInfo.transform['Anchor Point'].numKeys>1){
-                extrasInstance.convertToBezierValues(layerInfo.transform['Anchor Point'], frameRate, layerOb.ks,'a');
+                if(lType == 'ShapeLayer'){
+                    prepareHelperSolid(layerInfo.transform['Anchor Point'],frameRate,layerOb.ks,'a');
+                }else{
+                    extrasInstance.convertToBezierValues(layerInfo.transform['Anchor Point'], frameRate, layerOb.ks,'a');
+                }
             }else{
                 layerOb.ks.a = extrasInstance.roundNumber(layerInfo.transform['Anchor Point'].valueAtTime(0,false),3);
             }
@@ -273,12 +277,156 @@
             if(layerInfo.canSetTimeRemapEnabled && layerInfo.timeRemapEnabled){
                 extrasInstance.convertToBezierValues(layerInfo['Time Remap'], frameRate, layerOb,'tm');
             }
-            if(!renderCancelled){
-                extrasInstance.setTimeout(analyzeNextLayer,100);
+            checkLayerReady();
+        }
+    }
+
+    function checkLayerReady(){
+        if(renderCancelled){
+            callback.apply();
+        }else{
+            extrasInstance.setTimeout(analyzeNextLayer,100);
+        }
+    }
+
+    function prepareHelperSolid(property,frameRate,ob,param){
+        var currentKeyframe = 1;
+        var helperPosition = helperSolid.transform["Anchor Point"];
+        var jLen = helperPosition.numKeys;
+        while(jLen > 0){
+            helperPosition.removeKey(1);
+            jLen -= 1;
+        }
+        helperSolidComp.frameRate = frameRate;
+        jLen = property.numKeys;
+        var keyIn, keyOut;
+        var keyInHelper, keyOutHelper;
+        var propertyValueDelta, helperValueDelta;
+
+        function adjustNextHelperSpeed(){
+            var j;
+            for(j = 0; j<jLen; j+=1){
+                keyIn = property.keyInTemporalEase(j+1)[0];
+                keyOut = property.keyOutTemporalEase(j+1)[0];
+                keyInHelper = new KeyframeEase(keyIn.speed, keyIn.influence);
+                keyOutHelper = new KeyframeEase(keyOut.speed, keyOut.influence);
+                helperPosition.addKey(property.keyTime(j+1));
+                helperPosition.setValueAtTime(property.keyTime(j+1),property.valueAtTime(property.keyTime(j+1),true));
+                helperPosition.setTemporalEaseAtKey(j+1, [keyInHelper], [keyOutHelper]);
+            }
+            correctNextKey();
+        }
+
+        function correctNextKey(){
+
+            var i= 0, len = 20;
+            if(currentKeyframe !== jLen + 1){
+                keyIn = property.keyInTemporalEase(currentKeyframe)[0];
+                keyOut = property.keyOutTemporalEase(currentKeyframe)[0];
+                propertyValueDelta = property.valueAtTime(property.keyTime(currentKeyframe)+0.01,false);
+                keyOutHelper = helperPosition.keyOutTemporalEase(currentKeyframe);
+                keyInHelper = helperPosition.keyInTemporalEase(currentKeyframe);
+                var flag = true;
+                var currentSpeed, deltaSpeed = 10, dir = 0;
+                var helpValue,helpValue2;
+                 if(currentKeyframe != 1){
+                     helpValue = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe),false);
+                     helpValue2 = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe-1),false);
+                    propertyValueDelta = property.valueAtTime(property.keyTime(currentKeyframe)-0.01,false);
+                    helperValueDelta = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe)-0.01,false);
+                    currentSpeed = keyInHelper[0].speed;
+                    deltaSpeed = Math.abs(keyInHelper[0].speed);
+                    if(Math.abs(helperValueDelta[0]) > Math.abs(propertyValueDelta[0]) || Math.abs(helperValueDelta[1]) > Math.abs(propertyValueDelta[1])){
+                        dir = 1;
+                    }else{
+                        dir = -1;
+                    }
+                    while(flag){
+                        helpValue = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe),false);
+                        helpValue2 = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe - 1),false);
+                        helperValueDelta = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe)-0.01,false);
+                        if(Math.abs(helperValueDelta[0]-propertyValueDelta[0]) < 0.001 && Math.abs(helperValueDelta[1]-propertyValueDelta[1]) < 0.001){
+                            flag = false;
+                        }else{
+                            if(Math.abs(helperValueDelta[0]) > Math.abs(propertyValueDelta[0]) || Math.abs(helperValueDelta[1]) > Math.abs(propertyValueDelta[1])){
+                                if(dir == 1){
+                                    deltaSpeed /= 2;
+                                }
+                                dir = -1;
+                                currentSpeed += deltaSpeed;
+                                keyInHelper[0].speed = currentSpeed;
+                                helperPosition.setTemporalEaseAtKey(currentKeyframe, keyInHelper, keyOutHelper);
+                            }else{
+                                if(dir == -1){
+                                    deltaSpeed /= 2;
+                                }
+                                dir = 1;
+                                currentSpeed -= deltaSpeed;
+                                keyInHelper[0].speed = currentSpeed;
+                                helperPosition.setTemporalEaseAtKey(currentKeyframe, keyInHelper, keyOutHelper);
+                            }
+                        }
+                        i += 1;
+                        if(i == len){
+                            keyInHelper[0].speed = keyIn.speed;
+                            helperPosition.setTemporalEaseAtKey(currentKeyframe, keyInHelper, keyOutHelper);
+                            flag = false;
+                        }
+                    }
+                }
+                if(currentKeyframe != jLen){
+                    i = 0;
+                    flag = true;
+                    propertyValueDelta = property.valueAtTime(property.keyTime(currentKeyframe)+0.01,false);
+                    helperValueDelta = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe)+0.01,false);
+                    helpValue = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe),false);
+                    currentSpeed = keyOutHelper[0].speed;
+                    deltaSpeed = Math.abs(keyOutHelper[0].speed);
+                    if(Math.abs(helperValueDelta[0]) > Math.abs(propertyValueDelta[0]) || Math.abs(helperValueDelta[1]) > Math.abs(propertyValueDelta[1])){
+                        dir = -1;
+                    }else{
+                        dir = 1;
+                    }
+                    while(flag){
+                        helpValue = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe),false);
+                        helperValueDelta = helperPosition.valueAtTime(helperPosition.keyTime(currentKeyframe)+0.01,false);
+                        if(Math.abs(helperValueDelta[0]-propertyValueDelta[0]) < 0.001 && Math.abs(helperValueDelta[1]-propertyValueDelta[1]) < 0.001){
+                            flag = false;
+                        }else{
+                            if(Math.abs(helperValueDelta[0]) > Math.abs(propertyValueDelta[0]) || Math.abs(helperValueDelta[1]) > Math.abs(propertyValueDelta[1]) ){
+                                if(dir == -1){
+                                    deltaSpeed /= 2;
+                                }
+                                dir = 1;
+                                currentSpeed -= deltaSpeed;
+                                keyOutHelper[0].speed = currentSpeed;
+                                helperPosition.setTemporalEaseAtKey(currentKeyframe, keyInHelper, keyOutHelper);
+                            }else{
+                                if(dir == 1){
+                                    deltaSpeed /= 2;
+                                }
+                                dir = -1;
+                                currentSpeed += deltaSpeed;
+                                keyOutHelper[0].speed = currentSpeed;
+                                helperPosition.setTemporalEaseAtKey(currentKeyframe, keyInHelper, keyOutHelper);
+                            }
+                        }
+                        i += 1;
+                        if(i == len){
+                            keyOutHelper[0].speed = keyOut.speed;
+                            helperPosition.setTemporalEaseAtKey(currentKeyframe, keyInHelper, keyOutHelper);
+                            flag = false;
+                        }
+                    }
+                }
+                currentKeyframe += 1;
+                correctNextKey();
             }else{
-                callback.apply();
+                extrasInstance.convertToBezierValues(helperPosition, frameRate, ob,param);
             }
         }
+
+        adjustNextHelperSpeed();
     }
 
     function createLayers(compo, layersData, frameRate){

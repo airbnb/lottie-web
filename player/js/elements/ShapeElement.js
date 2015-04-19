@@ -6,14 +6,7 @@ createElement(BaseElement, IShapeElement);
 
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
-    this.svgElem = document.createElementNS(svgNS,'g');
-    //TODO don't erase next line, probably needed
-    //this.svgElem.setAttribute('transform','translate(' +  Math.floor(this.data.rectData.l) + ',' + Math.floor(this.data.rectData.t) + ')');
-
-    styleUnselectableDiv(this.svgElem);
-
     this.parent.createElements.call(this);
-    this.anchorElement.appendChild(this.svgElem);
 
     var i, len = this.data.shapes.length;
     var shapeItem;
@@ -22,7 +15,7 @@ IShapeElement.prototype.createElements = function(){
             this.data.shapes[i].trim = this.data.trim;
         }
         shapeItem = new ShapeItemElement(this.data.shapes[i]);
-        this.svgElem.appendChild(shapeItem.getElement());
+        this.layerElement.appendChild(shapeItem.getElement());
         this.shapes.push(shapeItem);
     }
 };

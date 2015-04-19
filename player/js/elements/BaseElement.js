@@ -1,6 +1,8 @@
 var BaseElement = function (data, animationItem){
     this.animationItem = animationItem;
     this.data = data;
+    this.transformChanged = false;
+    this.forceRender = false;
     this.init();
 };
 
@@ -16,16 +18,19 @@ BaseElement.prototype.init = function(){
 
 BaseElement.prototype.createElements = function(){
     this.layerElement = document.createElementNS(svgNS,'g');
+    this.layerElement.setAttribute('id',this.data.layerName);
+    this.maskingGroup = this.layerElement;
+    this.maskedElement = this.layerElement;
+};
 
-    this.anchorElement = document.createElementNS(svgNS,'g');
-    this.anchorElement.setAttribute('id',this.data.layerName);
-    this.layerElement.appendChild(this.anchorElement);
-
-
-    this.maskingGroup = this.anchorElement;
-
-    this.maskedElement = this.svgElem;
-
+BaseElement.prototype.prepareFrame = function(num){
+    this.currentAnimData = this.data.renderedData[num].an;
+    if(this.data.renderedFrame.tr !== this.currentAnimData.matrixValue){
+        this.transformChanged = true;
+        this.data.renderedFrame.tr = this.currentAnimData.matrixValue;
+    }else{
+        this.transformChanged = false;
+    }
 };
 
 BaseElement.prototype.renderFrame = function(num){
@@ -33,6 +38,7 @@ BaseElement.prototype.renderFrame = function(num){
     {
         if(this.isVisible !== true){
             this.isVisible = true;
+            this.forceRender = true;
             this.mainElement.setAttribute('opacity',1);
         }
     }else{
@@ -40,55 +46,70 @@ BaseElement.prototype.renderFrame = function(num){
             this.isVisible = false;
             this.mainElement.setAttribute('opacity',0);
         }
-        return false;
     }
-    var animData = this.data.an[this.data.an[num].forwardFrame];
 
     if(this.data.eff){
-        this.effectsManager.renderFrame(num,animData.mk);
+        this.effectsManager.renderFrame(num,this.currentAnimData.mk);
     }
 
-    if(this.data.an[num].forwardFrame === this.data.renderedFrame.num){
-        return true;
+    if(num === this.data.renderedFrame.num){
+        return this.isVisible;
     }
 
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
 
-    this.data.renderedFrame.num = animData.forwardFrame;
-
-    if(this.data.renderedFrame.o !== animData.tr.o){
-        this.data.renderedFrame.o = animData.tr.o;
-        this.anchorElement.setAttribute('opacity',animData.tr.o);
-    }
-    var anchorChanged = false;
-    if(!this.data.renderedFrame.a || (this.data.renderedFrame.a[0] !== animData.tr.a[0] && this.data.renderedFrame.a[1] !== animData.tr.a[1])){
-        this.data.renderedFrame.a = [animData.tr.a[0],animData.tr.a[1]];
-        this.anchorElement.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
-        anchorChanged = true;
-    }
-    var transformChanged = false;
-    if(this.data.renderedFrame.tr !== animData.matrixValue){
-        this.layerElement.setAttribute('transform',animData.matrixValue);
-        this.data.renderedFrame.tr = animData.matrixValue;
-        transformChanged = true;
-    }
-
-    if(this.data.relateds && (transformChanged || anchorChanged)){
-        var relateds = this.data.relateds, i, len = relateds.length, item, itemCont;
-        for(i=0;i<len;i++){
-            item = relateds[i].item;
-            itemCont = relateds[i].itemCont;
-            if(anchorChanged){
-                item.setAttribute('transform','translate('+ -animData.tr.a[0]+" "+ -animData.tr.a[1]+")");
-            }
-            if(transformChanged){
-                itemCont.setAttribute('transform',animData.matrixValue);
-            }
+    if(this.data.renderedFrame.o !== this.currentAnimData.tr.o){
+        this.data.renderedFrame.o = this.currentAnimData.tr.o;
+        if(this.isVisible){
+            this.layerElement.setAttribute('opacity',this.currentAnimData.tr.o);
         }
     }
-    return true;
+
+    var transformValue = '';
+
+
+    if(this.data.parents){
+        var changedFlag = false;
+        var i = 0, len = this.data.parents.length, parentAnimData;
+        if(!this.transformChanged){
+            while(i<len){
+                if(this.data.parents[i].elem.element.transformChanged){
+                    changedFlag = true;
+                    break;
+                }
+                i+=1;
+            }
+        }else{
+            changedFlag = true;
+        }
+        if(changedFlag){
+            for(i=len-1;i>=0;i-=1){
+                parentAnimData = this.data.parents[i].elem.element.currentAnimData;
+                transformValue += parentAnimData.matrixValue + ' ';
+            }
+            transformValue += this.currentAnimData.matrixValue;
+            if(this.isVisible){
+                this.layerElement.setAttribute('transform',transformValue);
+            }
+            this.fullTransform = transformValue;
+        }
+    }else if(this.transformChanged){
+        transformValue += this.currentAnimData.matrixValue;
+        if(this.isVisible){
+            this.layerElement.setAttribute('transform',transformValue);
+        }
+        this.fullTransform = transformValue;
+    }
+    if(this.forceRender){
+        this.forceRender = false;
+        this.layerElement.setAttribute('opacity',this.currentAnimData.tr.o);
+        this.layerElement.setAttribute('transform',this.fullTransform);
+    }
+
+
+    return this.isVisible;
 };
 
 BaseElement.prototype.getDomElement = function(){

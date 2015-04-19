@@ -74,17 +74,14 @@
     }
 
     function removeFileFromDisk(f, cb){
-        //$.writeln('f',f.fullName);
         var callback = cb;
         var currentFileIndex =0;
         var removeNextItem = function(){
             currentFileIndex++;
             if(currentFileIndex >= len){
                 if(f.remove()){
-                    //$.writeln('folder success',fName);
                     callback.apply();
                 }else{
-                    //$.writeln('folder failed',fName);
                 }
             }else{
                 removeFileFromDisk(files[currentFileIndex],removeNextItem);
@@ -92,10 +89,8 @@
         };
         if (f instanceof File){
             if(f.remove()){
-                //$.writeln('file success',fName);
                 callback.apply();
             }else{
-                //$.writeln('file failed',fName);
             }
         }else{
             var files = f.getFiles();
@@ -256,11 +251,7 @@
             function getRealInfluence(property,handle,time,diff,keyNum, keyOb){
                 function iterateNextInfluence(){
                     referenceValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                    //$.writeln('COMPARE: ',originalValue,referenceValue,' -- count: ',count);
-                    //$.writeln('property.keyInTemporalEase(keyNum): ',property.keyInTemporalEase(keyNum)[0].influence);
-                    //$.writeln('currentInfluence: ',currentInfluence);
                     if(extrasInstance.compareObjects(originalValue,referenceValue) ==  true){
-                        //$.writeln('IGUALES: ',originalValue,referenceValue);
                         if(currentInfluence == 0.1){
                             loop = false;
                         }
@@ -273,35 +264,28 @@
                             loop = false;
                         }
                     }else{
-                        //$.writeln('DIFERENTES: ',currentInfluence);
                         lastInfluence = currentInfluence;
                         currentInfluence += (topInfluence-currentInfluence)/2;
                         if(currentInfluence - lastInfluence< 0.0001){
                             loop = false;
                         }
                     }
-                    //$.writeln('-- --- --');
                     if(originalInfluence - currentInfluence < 0.0001){
                         loop = false;
                     }
                     count +=1;
                     if(count >= 20){
-                        //$.writeln('count exceeded');
                         loop = false;
                     }
                     if( loop == true){
                         if(handle == 'out'){
-                            //keyOut[0]= new KeyframeEase(keyOut[0].speed,currentInfluence);
                             keyNew = new KeyframeEase(keyOut[0].speed,currentInfluence);
                             property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
                         }else{
-                            //keyIn[0] = new KeyframeEase(keyIn[0].speed,currentInfluence);
                             keyNew = new KeyframeEase(keyIn[0].speed,currentInfluence);
                             property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
                         }
                         iterateNextInfluence();
-                        //AsyncManager.addAsyncCall(iterateNextInfluence);
-                        //extrasInstance.setTimeout(iterateNextInfluence,1);
                     }else{
                         if(handle == 'out'){
                             keyNew = new KeyframeEase(keyOut[0].speed,originalInfluence);
@@ -310,19 +294,15 @@
                             keyNew = new KeyframeEase(keyIn[0].speed,originalInfluence);
                             property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
                         }
-                        //$.writeln('ccccccccurrentInfluence: ',currentInfluence);
-                        //$.writeln('keyOb: ',keyOb);
                         keyOb.influence = currentInfluence;
                         influenceReadyCount -= 1;
                         realInfluenceReady();
-                        //AsyncManager.removeAsyncCounter();
                     }
                 }
                 var count = 0;
                 var referenceValue;
                 var lastInfluence = 0;
                 var originalValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                //$.writeln('originalValue UNO: ',originalValue);
                 var keyIn = property.keyInTemporalEase(keyNum);
                 var keyOut = property.keyOutTemporalEase(keyNum);
                 var keyNew, originalInfluence;
@@ -361,7 +341,6 @@
                 while(loop){
                     referenceValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
                     if(extrasInstance.compareObjects(originalValue,referenceValue) ==  true){
-                        //$.writeln('IGUALES: ',originalValue,referenceValue);
                         if(currentInfluence == 0.1){
                             loop = false;
                         }
@@ -374,20 +353,17 @@
                             loop = false;
                         }
                     }else{
-                        //$.writeln('DIFERENTES: ',currentInfluence);
                         lastInfluence = currentInfluence;
                         currentInfluence += (topInfluence-currentInfluence)/2;
                         if(currentInfluence - lastInfluence< 0.0001){
                             loop = false;
                         }
                     }
-                    //$.writeln('-- --- --');
                     if(originalInfluence - currentInfluence < 0.0001){
                         loop = false;
                     }
                     count +=1;
                     if(count >= 20){
-                        //$.writeln('count exceeded');
                         loop = false;
                     }
                     if(handle == 'out'){
@@ -497,7 +473,7 @@
                         bezierIn.x = [];
                         bezierOut.x = [];
                         key.easeIn.forEach(function(item, index){
-                            bezierIn.x[index] = item.influence / 100;
+                            bezierIn.x[index] = 1 - item.influence / 100;
                             bezierOut.x[index] = lastKey.easeOut[index].influence / 100;
 
                         });
@@ -515,8 +491,13 @@
                         case PropertyValueType.ThreeD_SPATIAL:
                         case PropertyValueType.TwoD_SPATIAL:
                         case PropertyValueType.SHAPE:
-                            bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                            bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                            if(interpolationType == 'linear'){
+                                bezierIn.y = bezierIn.x;
+                                bezierOut.y = bezierOut.x;
+                            }else{
+                                bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
+                                bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                            }
                             break;
                         case PropertyValueType.ThreeD:
                         case PropertyValueType.TwoD:
@@ -525,7 +506,7 @@
                             bezierIn.y = [];
                             bezierOut.y = [];
                             key.easeIn.forEach(function(item,index){
-                                if(averageSpeed[index] == 0 || averageSpeed[index] == item.speed){
+                                if(averageSpeed[index] == 0 || interpolationType == 'linear'){
                                     bezierIn.y[index] = bezierIn.x[index];
                                     bezierOut.y[index] = bezierOut.x[index];
                                 }else{
@@ -535,8 +516,6 @@
                             });
                             break;
                     }
-                    //bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                   // bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
                 }
                 if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL || property.propertyValueType == PropertyValueType.SHAPE ){
                     property.expression = propertyExpression;
@@ -547,6 +526,7 @@
                 bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);
                 segmentOb.i = bezierIn;
                 segmentOb.o = bezierOut;
+                segmentOb.n = (bezierIn.x.toString()+'_'+bezierIn.y.toString()+'_'+bezierOut.x.toString()+'_'+bezierOut.y.toString()).replace(/\./g, 'p');
                 segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
                 segmentOb.s = getPropertyValue(property.keyValue(j), true);
                 segmentOb.e = getPropertyValue(property.keyValue(j+1), true);
@@ -579,6 +559,9 @@
                 interpolationType = 'hold';
                 realInfluenceReady();
             }else{
+                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR){
+                    interpolationType = 'linear';
+                }
                 buildKeyInfluence(key, lastKey, indexTime);
                 switch(property.propertyValueType){
                     case PropertyValueType.ThreeD_SPATIAL:
@@ -589,7 +572,12 @@
                         influenceReadyCount = 2;
                         var propertyExpression = property.expression;
                         property.expression = "velocityAtTime(time)";
-                        getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
+                        if(interpolationType != 'linear'){
+                            getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
+                        }else{
+                            influenceReadyCount = 0;
+                            realInfluenceReady();
+                        }
                         break;
                     default:
                         realInfluenceReady();

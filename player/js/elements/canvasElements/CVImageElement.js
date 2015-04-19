@@ -23,12 +23,13 @@ CVImageElement.prototype.createElements = function(){
 
 };
 
-CVImageElement.prototype.draw = function(num){
-    var renderParent = this.parent.draw.call(this,num);
-    if(renderParent===false){
+CVImageElement.prototype.draw = function(){
+    this.renderer.canvasContext.save();
+    if(this.parent.draw.call(this,false)===false){
+        this.renderer.canvasContext.restore();
         return;
     }
     var ctx = this.renderer.canvasContext;
     ctx.drawImage(this.img,0,0);
-    //console.log('renderFramerenderFrame');
+    this.renderer.canvasContext.restore();
 };
