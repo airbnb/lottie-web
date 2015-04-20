@@ -43,7 +43,7 @@ AnimationItem.prototype.setParams = function(params) {
         case 'svg':
             this.renderer = new SVGRenderer(this, params.renderer);
             break;
-        case 'dom':
+        case 'threed':
             this.renderer = new DOMRenderer(this, params.renderer);
             break;
     }

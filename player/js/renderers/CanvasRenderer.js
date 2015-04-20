@@ -27,7 +27,7 @@ CanvasRenderer.prototype.buildItems = function(layers){
             console.log('NO TYPE: ',layers[i]);
         }
     }
-}
+};
 
 CanvasRenderer.prototype.createBase = function (data) {
     data.element = new CVBaseElement(data, this);

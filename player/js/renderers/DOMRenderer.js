@@ -1,6 +1,7 @@
 function DOMRenderer(animationItem){
     this.animationItem = animationItem;
     this.layers = null;
+    this.camera = null;
 }
 
 DOMRenderer.prototype.buildItems = function(layers){
@@ -17,11 +18,16 @@ DOMRenderer.prototype.buildItems = function(layers){
             this.createShape(layers[i]);
         } else if (layers[i].type == 'TextLayer') {
             this.createText(layers[i]);
-        }else{
-            console.log('NO TYPE: ',layers[i]);
+        } else{
+            this.createBase(layers[i]);
+            //console.log('NO TYPE: ',layers[i]);
         }
     }
-}
+};
+
+DOMRenderer.prototype.createBase = function (data) {
+    data.element = new DBaseElement(data, this);
+};
 
 DOMRenderer.prototype.createShape = function (data) {
     data.element = new DShapeElement(data, this.animationItem);
@@ -37,7 +43,7 @@ DOMRenderer.prototype.createImage = function (data) {
 
 DOMRenderer.prototype.createComp = function (data) {
     data.element = new DCompElement(data, this.animationItem);
-    this.buildItems(data.layers, data.element.getType());
+    this.buildItems(data.layers);
 };
 
 DOMRenderer.prototype.createSolid = function (data) {
@@ -45,14 +51,27 @@ DOMRenderer.prototype.createSolid = function (data) {
 };
 
 DOMRenderer.prototype.configAnimation = function(animData){
-    this.animationItem.container = document.createElement('div');
-    this.animationItem.container.style.width = '100%';
-    this.animationItem.container.style.height = '100%';
-    this.animationItem.container.style.perspective = Math.sqrt(Math.pow(animData.animation.compWidth,2)+Math.pow(animData.animation.compHeight,2))+'px';
-    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.container.style.transformStyle = this.animationItem.container.style.webkitTransformStyle = "preserve-3d";
-    this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.layers = animData.animation.layers;
+    var i = 0, len = this.layers.length;
+    while(i<len){
+        if(this.layers[i].type == 'CameraLayer'){
+            this.camera = this.layers[i];
+            break;
+        }
+        i += 1;
+    }
+    this.animationItem.wrapper.style.perspective = this.camera.pe+'px';
+    this.animationItem.wrapper.style.transformStyle = this.animationItem.wrapper.style.webkitTransformStyle = "preserve-3d";
+    this.animationItem.wrapper.style.transformOrigin = this.animationItem.wrapper.style.mozTransformOrigin = this.animationItem.wrapper.style.webkitTransformOrigin = this.animationItem.wrapper.style['-webkit-transform'] = "0 0 0";
+    this.animationItem.container = document.createElement('div');
+    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "450px 275px "+this.camera.pe+"px";
+    this.animationItem.container.style.transformStyle = this.animationItem.container.style.webkitTransformStyle = "preserve-3d";
+    this.animationItem.container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    this.animationItem.container.style.position = 'absolute';
+    this.animationItem.container.style.backfaceVisibility  = this.animationItem.container.style.webkitBackfaceVisibility = 'hidden';
+    this.animationItem.container.style.top = 0;
+    this.animationItem.container.style.left = 0;
+    this.animationItem.wrapper.appendChild(this.animationItem.container);
 };
 
 DOMRenderer.prototype.buildStage = function (container, layers) {
@@ -64,11 +83,9 @@ DOMRenderer.prototype.buildStage = function (container, layers) {
             this.buildItemHierarchy(layerData, layers, layerData.parent);
         }
         if (layerData.type == 'PreCompLayer') {
-            this.buildStage(null, layerData.layers);
+            this.buildStage(layerData.element.getComposingElement(), layerData.layers);
         }
-        console.log('this.animationItem.container: ',this.animationItem.container);
-        console.log('layerData.mainElement: ',layerData);
-        this.animationItem.container.appendChild(layerData.element.mainElement);
+        container.appendChild(layerData.element.mainElement);
     }
 };
 
@@ -90,9 +107,18 @@ DOMRenderer.prototype.buildItemHierarchy = function (threeItem, layers, parentNa
 DOMRenderer.prototype.updateContainerSize = function () {
 };
 
+DOMRenderer.prototype.renderCamera = function(num){
+    //this.camera.prepareFrame(num - this.camera.startTime);
+    this.animationItem.container.style.transform = this.camera.element.currentAnimData.cameraValue;
+};
+
 DOMRenderer.prototype.renderFrame = function(num){
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
+        this.layers[i].element.prepareFrame(num - this.layers[i].startTime);
+    }
+    for (i = 0; i < len; i++) {
         this.layers[i].element.renderFrame(num - this.layers[i].startTime);
     }
-}
+    this.renderCamera(num);
+};

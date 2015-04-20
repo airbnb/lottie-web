@@ -27,7 +27,7 @@
  * @constructor
  */
 
-function Matrix(context) {
+function Matrix(dimension) {
 
     var me = this;
     me._t = me.transform;
@@ -47,15 +47,12 @@ function Matrix(context) {
 
 
     me.cssParts = ['matrix(','',')'];
+    me.cssParts3d = ['matrix3d(','',')'];
 
-
-    me.context = context;
 
     me.cos = me.sin = 0;
 
 
-    // reset canvas transformations (if any) to enable 100% sync.
-    if (context) context.setTransform(1, 0, 0, 1, 0, 0);
 }
 Matrix.prototype = {
 
@@ -142,7 +139,7 @@ Matrix.prototype = {
         return this._t(1, 0, 0, 0
             , 0, this.cos, -this.sin, 0
             , 0, this.sin,  this.cos, 0
-            , 0, 0, 0, 0);
+            , 0, 0, 0, 1);
     },
     rotateY: function(angle) {
         if(angle == 0){
@@ -317,7 +314,7 @@ Matrix.prototype = {
             this.props[14] = o;
             this.props[15] = p;
         }
-        return this._x();
+        return this;
     },
 
     /**
@@ -396,40 +393,40 @@ Matrix.prototype = {
          * bdf
          * 001
          */
-        /*if(this.dimension == '2d'){
-            this.a = a1 * a2 + c1 * b2;
-            this.b = b1 * a2 + d1 * b2;
-            this.c = a1 * c2 + c1 * d2;
-            this.d = b1 * c2 + d1 * d2;
-            this.e = a1 * e2 + c1 * f2 + e1;
-            this.f = b1 * e2 + d1 * f2 + f1;
+        if(this.dimension == '2d'){
+             this.props[0] = this.a1 * a2 + this.c1 * b2;
+             this.props[1] = this.b1 * a2 + this.d1 * b2;
+             this.props[2] = this.a1 * c2 + this.c1 * d2;
+             this.props[3] = this.b1 * c2 + this.d1 * d2;
+             this.props[4] = this.a1 * e2 + this.c1 * f2 + this.e1;
+             this.props[5] = this.b1 * e2 + this.d1 * f2 + this.f1;
         }else{
-            this.a = a1 * a2 + b1 * e2 + c1 * i2 + d1 * m2 ;
-            this.b = a1 * b2 + b1 * f2 + c1 * j2 + d1 * n2 ;
-            this.c = a1 * c2 + b1 * g2 + c1 * k2 + d1 * o2 ;
-            this.d = a1 * d2 + b1 * h2 + c1 * l2 + d1 * p2 ;
+             this.props[0] = this.a1 * a2 + this.b1 * e2 + this.c1 * i2 + this.d1 * m2;
+             this.props[1] = this.a1 * b2 + this.b1 * f2 + this.c1 * j2 + this.d1 * n2 ;
+             this.props[2] = this.a1 * c2 + this.b1 * g2 + this.c1 * k2 + this.d1 * o2 ;
+             this.props[3] = this.a1 * d2 + this.b1 * h2 + this.c1 * l2 + this.d1 * p2 ;
 
-            this.e = e1 * a2 + f1 * e2 + g1 * i2 + h1 * m2 ;
-            this.f = e1 * b2 + f1 * f2 + g1 * j2 + h1 * n2 ;
-            this.g = e1 * c2 + f1 * g2 + g1 * k2 + h1 * o2 ;
-            this.h = e1 * d2 + f1 * h2 + g1 * l2 + h1 * p2 ;
+             this.props[4] = this.e1 * a2 + this.f1 * e2 + this.g1 * i2 + this.h1 * m2 ;
+             this.props[5] = this.e1 * b2 + this.f1 * f2 + this.g1 * j2 + this.h1 * n2 ;
+             this.props[6] = this.e1 * c2 + this.f1 * g2 + this.g1 * k2 + this.h1 * o2 ;
+             this.props[7] = this.e1 * d2 + this.f1 * h2 + this.g1 * l2 + this.h1 * p2 ;
 
-            this.i = i1 * a2 + j1 * e2 + k1 * i2 + l1 * m2 ;
-            this.j = i1 * b2 + j1 * f2 + k1 * j2 + l1 * n2 ;
-            this.k = i1 * c2 + j1 * g2 + k1 * k2 + l1 * o2 ;
-            this.l = i1 * d2 + j1 * h2 + k1 * l2 + l1 * p2 ;
+         this.props[8] = this.i1 * a2 + this.j1 * e2 + this.k1 * i2 + this.l1 * m2 ;
+         this.props[9] = this.i1 * b2 + this.j1 * f2 + this.k1 * j2 + this.l1 * n2 ;
+         this.props[10] = this.i1 * c2 + this.j1 * g2 + this.k1 * k2 + this.l1 * o2 ;
+         this.props[11] = this.i1 * d2 + this.j1 * h2 + this.k1 * l2 + this.l1 * p2 ;
 
-            this.m = m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2 ;
-            this.n = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2 ;
-            this.o = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
-            this.p = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
-        }*/
-        this.props[0] = this.a1 * a2 + this.c1 * b2;
+         this.props[12] = this.m1 * a2 + this.n1 * e2 + this.o1 * i2 + this.p1 * m2 ;
+         this.props[13] = this.m1 * b2 + this.n1 * f2 + this.o1 * j2 + this.p1 * n2 ;
+         this.props[14] = this.m1 * c2 + this.n1 * g2 + this.o1 * k2 + this.p1 * o2 ;
+         this.props[15] = this.m1 * d2 + this.n1 * h2 + this.o1 * l2 + this.p1 * p2 ;
+        }
+        /*this.props[0] = this.a1 * a2 + this.c1 * b2;
         this.props[1] = this.b1 * a2 + this.d1 * b2;
         this.props[2] = this.a1 * c2 + this.c1 * d2;
         this.props[3] = this.b1 * c2 + this.d1 * d2;
         this.props[4] = this.a1 * e2 + this.c1 * f2 + this.e1;
-        this.props[5] = this.b1 * e2 + this.d1 * f2 + this.f1;
+        this.props[5] = this.b1 * e2 + this.d1 * f2 + this.f1;*/
 
         return this._x();
     },
@@ -821,9 +818,9 @@ Matrix.prototype = {
      */
     toArray: function() {
         if(this.dimension == '2d'){
-            return return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
+            return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
         }
-        return return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5],this.props[6],this.props[7],this.props[8],this.props[9],this.props[10],this.props[11],this.props[12],this.props[13],this.props[14],this.props[15]];
+        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5],this.props[6],this.props[7],this.props[8],this.props[9],this.props[10],this.props[11],this.props[12],this.props[13],this.props[14],this.props[15]];
     },
 
     /**
@@ -835,7 +832,8 @@ Matrix.prototype = {
             this.cssParts[1] = this.props.join(',');
             return this.cssParts.join('');
         }
-        return "matrix3d(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ',' + this.g + ',' + this.h + ',' + this.i + ',' + this.j + ',' + this.k + ',' + this.l + ',' + this.m + ',' + this.n + ',' + this.o + ',' + this.p + ")";
+        this.cssParts3d[1] = this.props.join(',');
+        return this.cssParts3d.join('');
     },
 
     /**

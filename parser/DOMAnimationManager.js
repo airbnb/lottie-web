@@ -170,7 +170,7 @@
             var layerInfo = pendingItem.lInfo;
             var frameRate = pendingItem.frameRate;
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || layerInfo.enabled == false){
                 //TODO add audios
                 layerOb.enabled = false;
                 analyzeNextLayer();
@@ -189,7 +189,7 @@
 
             EffectsParser.createEffects(layerInfo,layerOb);
 
-            if(layerInfo.mask.numProperties>0){
+            if(layerInfo.mask && layerInfo.mask.numProperties>0){
                 setMasks(layerInfo.mask,layerOb);
                 layerOb.hasMask = true;
             }
@@ -429,14 +429,18 @@
         adjustNextHelperSpeed();
     }
 
-    function createLayers(compo, layersData, frameRate){
+    function createLayers(compo, layersData, frameRate,isMain){
         var i, len = compo.layers.length;
         for(i = 0;i<len;i++){
             var layerOb = {};
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
             layersData.push(layerOb);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'CameraLayer' && isMain){
+                layerOb.isCamera = true;
+                layerOb.pe = layerInfo.property('Camera Options').property('Zoom').value;
+            }
+            if(lType == 'AudioLayer' || (lType == 'CameraLayer' && !isMain) || layerInfo.enabled == false){
                 //TODO add audios
                 layerOb.enabled = false;
                 continue;
@@ -444,7 +448,7 @@
             pendingLayers.push({lInfo:layerInfo,lOb:layerOb,frameRate:frameRate});
             if(lType=='PreCompLayer'){
                 layerOb.layers = [];
-                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate);
+                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate,false);
             }
 
         }
@@ -461,12 +465,12 @@
         return {width:0,height:0};
     }
 
-    function traverseAnimation(compo,layersData, frameNum, time){
+    function traverseAnimation(compo,layersData, frameNum, time, isMain){
         var i, len = compo.layers.length;
         for(i = 0;i<len;i++){
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || (lType == 'CameraLayer' && !isMain) || layerInfo.enabled == false){
                 //TODO add audios
                 continue;
             }
@@ -522,7 +526,7 @@
             }
             if(lType == 'PreCompLayer'){
                 var compoInTime = -layerInfo.startTime;
-                traverseAnimation(layerInfo.source,layerOb.layers, frameNum, time+compoInTime);
+                traverseAnimation(layerInfo.source,layerOb.layers, frameNum, time+compoInTime, false);
             }
             //THIS IS REPLACED WITH THE KEYFRAMES. LEAVE THIS FOR NOW.
             /*if(layerOb.lastData.an == null || extrasInstance.compareObjects(animData,layerOb.lastData.an)==false){
@@ -534,7 +538,7 @@
     }
 
     function iterateComposition(){
-        createLayers(mainComp, mainLayers, mainComp.frameRate);
+        createLayers(mainComp, mainLayers, mainComp.frameRate,true);
         // TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
         /*renderCompo(mainComp, mainLayers);
          AssetsManager.createAssetsDataForExport();
@@ -665,7 +669,7 @@
     function renderFrame(){
         currentTime = (currentRenderFrame+firstFrame)/frameRate;
         zCount = 0;
-        traverseAnimation(mainComp,mainLayers, currentRenderFrame,currentTime);
+        traverseAnimation(mainComp,mainLayers, currentRenderFrame,currentTime,true);
     }
 
     function setCallback(cb){

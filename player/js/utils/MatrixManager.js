@@ -4,8 +4,17 @@ function matrixManagerFunction(){
     var mat3d = new Matrix('3d');
 
     var returnMatrix3D = function(rX, rY, rZ, scaleX, scaleY, scaleZ, tX, tY, tZ,aX, aY, aZ) {
-        console.log(tX, tY, tZ,aX, aY, aZ);
-        return mat3d.reset().translate(-aX,-aY,-aZ).rotateX(rX).rotateY(-rY).rotateZ(-rZ).scale(scaleX,scaleY,scaleZ).translate(tX,tY,-tZ).toCSS();
+        //return mat3d.reset().translate(-aX,-aY,-aZ).rotateX(rX).rotateY(-rY).rotateZ(-rZ).scale(scaleX,scaleY,scaleZ).translate(tX,tY,-tZ).toCSS();
+        var tocs = mat3d.reset().translate(tX,tY,tZ).rotateX(rX).rotateY(rY).rotateZ(rZ).scale(scaleX,scaleY,scaleZ).toCSS();
+        return tocs;
+    };
+
+    var returnMatrixAnchored3D = function(rX, rY, rZ, scaleX, scaleY, scaleZ, tX, tY, tZ,aX, aY, aZ) {
+        var mat = new WebKitCSSMatrix();
+        console.log(mat.toString());
+        //return mat3d.reset().translate(-aX,-aY,-aZ).rotateX(rX).rotateY(-rY).rotateZ(-rZ).scale(scaleX,scaleY,scaleZ).translate(tX,tY,-tZ).toCSS();
+        var tocs = mat3d.reset().translate(-aX,-aY,-aZ).rotateZ(-rZ).rotateY(rY).rotateX(rX).scale(scaleX,scaleY,scaleZ).translate(tX,tY,-tZ).toCSS();
+        return tocs;
     };
 
     /*var returnMatrix2D = function(rX, scaleX, scaleY, tX, tY){
@@ -102,7 +111,9 @@ function matrixManagerFunction(){
         getMatrix2 : getMatrix2,
         getMatrixArray : getMatrixArray,
         getMatrixArrayFromParams : returnMatrix2DArray,
-        getMatrix2FromParams : returnMatrix2D
+        getMatrix2FromParams : returnMatrix2D,
+        getMatrix3FromParams : returnMatrix3D,
+        getAnchoredMatrix3FromParams : returnMatrixAnchored3D
     }
 
 };

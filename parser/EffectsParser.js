@@ -4,7 +4,7 @@
     var registeredEffects = {};
 
     function createEffects(layerInfo,layerOb){
-        if(layerInfo.effect.numProperties>0){
+        if(layerInfo.effect && layerInfo.effect.numProperties>0){
             layerOb.eff = [];
             var i, len = layerInfo.effect.numProperties, name;
             for(i=0;i<len;i++){

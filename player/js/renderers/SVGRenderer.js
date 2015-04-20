@@ -38,7 +38,7 @@ SVGRenderer.prototype.createImage = function (data) {
 
 SVGRenderer.prototype.createComp = function (data) {
     data.element = new ICompElement(data, this.animationItem);
-    this.buildItems(data.layers, data.element.getType());
+    this.buildItems(data.layers);
 };
 
 SVGRenderer.prototype.createSolid = function (data) {

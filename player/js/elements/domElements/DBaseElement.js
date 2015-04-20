@@ -1,6 +1,8 @@
 var DBaseElement = function (data, animationItem){
     this.animationItem = animationItem;
     this.data = data;
+    this.transformChanged = false;
+    this.forceRender = false;
     this.init();
 };
 
@@ -15,17 +17,30 @@ DBaseElement.prototype.init = function(){
 };
 
 DBaseElement.prototype.createElements = function(){
-    this.layerElement = document.createElementNS(svgNS,'g');
+    this.layerElement = document.createElementNS(svgNS,'svg');
+    this.layerElement.style.position = 'absolute';
+    this.layerElement.style.top = 0;
+    this.layerElement.style.left = 0;
+    this.layerElement.style.backfaceVisibility  = this.layerElement.style.webkitBackfaceVisibility = 'hidden';
+    this.layerElement.style.transformOrigin = "0 0";
+    this.layerElement.setAttribute('id',this.data.layerName);
 
-    this.anchorElement = document.createElementNS(svgNS,'g');
-    this.anchorElement.setAttribute('id',this.data.layerName);
-    this.layerElement.appendChild(this.anchorElement);
 
+    this.maskingGroup = this.layerElement;
 
-    this.maskingGroup = this.anchorElement;
+    this.maskedElement = this.layerElement;
+    this.mainElement = this.layerElement;
 
-    this.maskedElement = this.svgElem;
+};
 
+DBaseElement.prototype.prepareFrame = function(num){
+    this.currentAnimData = this.data.renderedData[num].an;
+    if(this.data.renderedFrame.tr !== this.currentAnimData.matrixValue){
+        this.transformChanged = true;
+        this.data.renderedFrame.tr = this.currentAnimData.matrixValue;
+    }else{
+        this.transformChanged = false;
+    }
 };
 
 DBaseElement.prototype.renderFrame = function(num){
@@ -33,48 +48,81 @@ DBaseElement.prototype.renderFrame = function(num){
     {
         if(this.isVisible !== true){
             this.isVisible = true;
-            this.mainElement.setAttribute('opacity',1);
+            this.forceRender = true;
+            this.mainElement.style.opacity=1;
         }
     }else{
         if(this.isVisible !== false){
             this.isVisible = false;
-            this.mainElement.setAttribute('opacity',0);
+            this.mainElement.style.opacity=0;
         }
-        return false;
     }
-    var animData = this.data.an[this.data.an[num].forwardFrame];
 
     if(this.data.eff){
-        this.effectsManager.renderFrame(num,animData.mk);
+        this.effectsManager.renderFrame(num,this.currentAnimData.mk);
     }
 
-    if(this.data.an[num].forwardFrame === this.data.renderedFrame.num){
-        return true;
+    if(num === this.data.renderedFrame.num){
+        return this.isVisible;
     }
 
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
 
-    this.data.renderedFrame.num = animData.forwardFrame;
-
-    if(this.data.renderedFrame.o !== animData.tr.o){
-        this.data.renderedFrame.o = animData.tr.o;
-        this.mainElement.style.opacity = animData.tr.o;
-    }
-    var anchorChanged = false;
-    if(!this.data.renderedFrame.a || (this.data.renderedFrame.a[0] !== animData.tr.a[0] && this.data.renderedFrame.a[1] !== animData.tr.a[1])){
-        this.mainElement.style.transformOrigin = '0 0 0';
-        anchorChanged = true;
-    }
-    var transformChanged = false;
-    if(this.data.renderedFrame.tr !== animData.matrixValue){
-        this.mainElement.style.transform = animData.matrixValue;
-        this.data.renderedFrame.tr = animData.matrixValue;
-        transformChanged = true;
+    if(this.data.renderedFrame.o !== this.currentAnimData.tr.o){
+        this.data.renderedFrame.o = this.currentAnimData.tr.o;
+        if(this.isVisible){
+            this.layerElement.style.opacity = this.currentAnimData.tr.o;
+        }
     }
 
-    return true;
+    var transformValue = '';
+
+
+    if(this.data.parents){
+        var changedFlag = false;
+        var i = 0, len = this.data.parents.length, parentAnimData;
+        if(!this.transformChanged){
+            while(i<len){
+                if(this.data.parents[i].elem.element.transformChanged){
+                    changedFlag = true;
+                    break;
+                }
+                i+=1;
+            }
+        }else{
+            changedFlag = true;
+        }
+        if(changedFlag){
+            for(i=len-1;i>=0;i-=1){
+                parentAnimData = this.data.parents[i].elem.element.currentAnimData;
+                transformValue += parentAnimData.matrixValue + ' ';
+            }
+            transformValue += this.currentAnimData.matrixValue;
+            if(this.isVisible){
+                this.layerElement.style.transform = transformValue;
+            }
+            this.fullTransform = transformValue;
+        }
+    }else if(this.transformChanged){
+        transformValue += this.currentAnimData.matrixValue;
+        if(this.isVisible){
+            this.layerElement.style.transform = transformValue;
+        }
+        this.fullTransform = transformValue;
+    }
+    if(this.data.type == 'SolidLayer'){
+        console.log('this.fullTransform: ',this.fullTransform);
+    }
+    if(this.forceRender){
+        this.forceRender = false;
+        this.layerElement.style.opacity = this.currentAnimData.tr.o;
+        this.layerElement.style.transform = this.fullTransform;
+    }
+
+
+    return this.isVisible;
 };
 
 DBaseElement.prototype.getDomElement = function(){
