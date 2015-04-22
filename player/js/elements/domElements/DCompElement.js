@@ -45,6 +45,7 @@ DCompElement.prototype.createElements = function(){
         this.data.compHeight = this.data.height;
         this.renderer.configAnimation({animation:this.data});
         this.renderer.buildItems(this.data.layers);
+        this.renderer.buildStage(this.layerElement, this.data.layers);
     }
 
 
