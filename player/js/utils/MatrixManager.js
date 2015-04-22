@@ -10,8 +10,6 @@ function matrixManagerFunction(){
     };
 
     var returnMatrixAnchored3D = function(rX, rY, rZ, scaleX, scaleY, scaleZ, tX, tY, tZ,aX, aY, aZ) {
-        var mat = new WebKitCSSMatrix();
-        console.log(mat.toString());
         //return mat3d.reset().translate(-aX,-aY,-aZ).rotateX(rX).rotateY(-rY).rotateZ(-rZ).scale(scaleX,scaleY,scaleZ).translate(tX,tY,-tZ).toCSS();
         var tocs = mat3d.reset().translate(-aX,-aY,-aZ).rotateZ(-rZ).rotateY(rY).rotateX(rX).scale(scaleX,scaleY,scaleZ).translate(tX,tY,-tZ).toCSS();
         return tocs;

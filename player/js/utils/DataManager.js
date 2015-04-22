@@ -38,7 +38,7 @@ function dataFunctionManager(){
         }
     }
 
-    function completeLayers(layers){
+    function completeLayers(layers, compWidth,compHeight){
         var layerFrames, offsetFrame, layerData;
         var animArray, lastFrame;
         var shapeItem;
@@ -46,6 +46,8 @@ function dataFunctionManager(){
         var j, jLen, k, kLen;
         for(i=0;i<len;i+=1){
             layerData = layers[i];
+            layerData.compWidth = compWidth;
+            layerData.compHeight = compHeight;
             layerFrames = layerData.outPoint - layerData.startTime;
             offsetFrame = layerData.startTime;
             layerData.layerName = convertLayerNameToID(layerData.layerName);
@@ -107,7 +109,7 @@ function dataFunctionManager(){
                 }
             }
             if(layerData.type=='PreCompLayer'){
-                completeLayers(layerData.layers);
+                completeLayers(layerData.layers, layerData.width,layerData.height);
             }else if(layerData.type == 'ShapeLayer'){
                 jLen = layerData.shapes.length;
                 for(j=0;j<jLen;j+=1){
@@ -173,7 +175,7 @@ function dataFunctionManager(){
     function completeData(animationData){
         animations[animationData._id] = {data:animationData,renderedFrames:[]};
         frameRate = animationData.animation.frameRate;
-        completeLayers(animationData.animation.layers);
+        completeLayers(animationData.animation.layers,animationData.animation.compWidth,animationData.animation.compHeight);
     }
 
     function convertLayerNameToID(string){
@@ -767,7 +769,7 @@ function dataFunctionManager(){
             interpolatedParams.type = 's';
             getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime,interpolatedParams);
 
-            if(renderType == 'threed'){
+            if(renderType == 'threed' && (item.threeD === true || item.type == 'CameraLayer')){
 
                 interpolatedParams.arrayFlag = true;
                 interpolatedParams.type = 'default';
@@ -794,8 +796,10 @@ function dataFunctionManager(){
                 if(item.type == 'CameraLayer'){
                     renderedData.an.matrixValue = matrixInstance.getMatrix3FromParams(matrixParams.rx,matrixParams.ry,matrixParams.rz,matrixParams.sx,matrixParams.sy,matrixParams.sz,matrixParams.px,matrixParams.py,-matrixParams.pz) + ' translate3d('+ -dataOb.a[0]+'px, '+ -dataOb.a[1]+'px, 0)';
                     renderedData.an.cameraValue = matrixInstance.getMatrix3FromParams(-matrixParams.rx,-matrixParams.ry,matrixParams.rz,matrixParams.sx,matrixParams.sy,matrixParams.sz,-matrixParams.px,-matrixParams.py,item.pe+matrixParams.pz) + ' translate3d('+ dataOb.a[0]+'px, '+ dataOb.a[1]+'px, 0)';
-                }else{
+                }else if(item.threeD){
                     renderedData.an.matrixValue = matrixInstance.getAnchoredMatrix3FromParams(matrixParams.rx,matrixParams.ry,matrixParams.rz,matrixParams.sx,matrixParams.sy,matrixParams.sz,matrixParams.px,matrixParams.py,matrixParams.pz,dataOb.a[0],dataOb.a[1],0);
+                }else{
+                    renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 }
             }else{
                 renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py) + 'translate('+ -dataOb.a[0]+' '+ -dataOb.a[1]+')';
@@ -854,7 +858,7 @@ function dataFunctionManager(){
                         shapeData.fill = {
                             opacity : fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
                         };
-                        if(renderType == 'canvas'){
+                        if(renderType == 'canvas' || (renderType == 'threed' && item.threeD === false)){
                             roundColor(fillColor);
                             shapeData.fill.color = fillColor;
                         }else{
@@ -867,7 +871,7 @@ function dataFunctionManager(){
                             pathNodes: shape,
                             closed: shapeItem.closed
                         };
-                        if(renderType == 'svg'){
+                        if(renderType == 'svg' || renderType == 'threed'){
                             shapeData.path.pathString = createPathString(shape,shapeItem.closed);
                         }
                     }else if(shapeItem.el){
@@ -895,7 +899,7 @@ function dataFunctionManager(){
                             opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
                             width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
                         };
-                        if(renderType == 'canvas'){
+                        if(renderType == 'canvas' || (renderType == 'threed' && item.threeD === false)){
                             roundColor(strokeColor);
                             shapeData.stroke.color = strokeColor;
                         }else{
@@ -919,7 +923,7 @@ function dataFunctionManager(){
                     //console.log('frameNum: ',frameNum);
                     //console.log('matrixParams.sx: ',matrixParams.sx);
                     //console.log('matrixParams.sy: ',matrixParams.sy);
-                    if(renderType == 'canvas'){
+                    if(renderType == 'canvas' || (renderType == 'threed' && item.threeD === false)){
                         shapeTrOb.mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                     }else{
                         shapeTrOb.mt = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);

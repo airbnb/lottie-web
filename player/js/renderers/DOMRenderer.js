@@ -43,7 +43,9 @@ DOMRenderer.prototype.createImage = function (data) {
 
 DOMRenderer.prototype.createComp = function (data) {
     data.element = new DCompElement(data, this.animationItem);
-    this.buildItems(data.layers);
+    if(data.threeDComp){
+        this.buildItems(data.layers);
+    }
 };
 
 DOMRenderer.prototype.createSolid = function (data) {
@@ -82,7 +84,7 @@ DOMRenderer.prototype.buildStage = function (container, layers) {
             layerData.parentHierarchy = [];
             this.buildItemHierarchy(layerData, layers, layerData.parent);
         }
-        if (layerData.type == 'PreCompLayer') {
+        if (layerData.type == 'PreCompLayer' && layerData.threeDComp) {
             this.buildStage(layerData.element.getComposingElement(), layerData.layers);
         }
         container.appendChild(layerData.element.mainElement);

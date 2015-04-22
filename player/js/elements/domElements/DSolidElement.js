@@ -5,7 +5,6 @@ createElement(DBaseElement, DSolidElement);
 
 DSolidElement.prototype.createElements = function(){
     this.parent.createElements.call(this);
-
     this.layerElement.setAttribute('width',this.data.width);
     this.layerElement.setAttribute('height',this.data.height);
     var rect = document.createElementNS(svgNS,'rect');

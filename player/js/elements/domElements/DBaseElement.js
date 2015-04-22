@@ -112,9 +112,6 @@ DBaseElement.prototype.renderFrame = function(num){
         }
         this.fullTransform = transformValue;
     }
-    if(this.data.type == 'SolidLayer'){
-        console.log('this.fullTransform: ',this.fullTransform);
-    }
     if(this.forceRender){
         this.forceRender = false;
         this.layerElement.style.opacity = this.currentAnimData.tr.o;

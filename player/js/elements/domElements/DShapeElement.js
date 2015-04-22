@@ -6,12 +6,13 @@ createElement(DBaseElement, DShapeElement);
 
 DShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
-    this.svgElem = document.createElementNS(svgNS,'svg');
-    //TODO don't erase next line, probably needed
-    //this.svgElem.setAttribute('transform','translate(' +  Math.floor(this.data.rectData.l) + ',' + Math.floor(this.data.rectData.t) + ')');
 
     this.parent.createElements.call(this);
-    this.anchorElement.appendChild(this.svgElem);
+
+    this.layerElement.setAttribute('width',this.data.compWidth);
+    this.layerElement.setAttribute('height',this.data.compHeight);
+    this.layerElement.setAttribute('viewBox',-this.data.compWidth/2 + ' '+ -this.data.compHeight/2+' '+this.data.compWidth+' '+this.data.compHeight);
+    this.layerElement.setAttribute('preserveAspectRatio','xMidYMid meet');
 
     var i, len = this.data.shapes.length;
     var shapeItem;
@@ -20,13 +21,14 @@ DShapeElement.prototype.createElements = function(){
             this.data.shapes[i].trim = this.data.trim;
         }
         shapeItem = new ShapeItemElement(this.data.shapes[i]);
-        this.svgElem.appendChild(shapeItem.getElement());
+        this.layerElement.appendChild(shapeItem.getElement());
         this.shapes.push(shapeItem);
     }
 };
 
 DShapeElement.prototype.renderFrame = function(num){
     var renderParent = this.parent.renderFrame.call(this,num);
+    this.layerElement.style.transform = this.fullTransform + ' translate('+ -this.data.compWidth/2 +'px, '+ -this.data.compHeight/2 +'px )';
     if(renderParent===false){
         return;
     }
