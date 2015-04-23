@@ -9,9 +9,9 @@ DShapeElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
 
-    this.layerElement.setAttribute('width',this.data.compWidth);
-    this.layerElement.setAttribute('height',this.data.compHeight);
-    this.layerElement.setAttribute('viewBox',-this.data.compWidth/2 + ' '+ -this.data.compHeight/2+' '+this.data.compWidth+' '+this.data.compHeight);
+    this.layerElement.setAttribute('width',2000);
+    this.layerElement.setAttribute('height',2000);
+    this.layerElement.setAttribute('viewBox',-this.data.compWidth/2 + ' '+ -this.data.compHeight/2+' '+2000+' '+2000);
     this.layerElement.setAttribute('preserveAspectRatio','xMidYMid meet');
 
     var i, len = this.data.shapes.length;

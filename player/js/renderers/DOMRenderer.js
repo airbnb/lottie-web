@@ -62,6 +62,7 @@ DOMRenderer.prototype.configAnimation = function(animData){
         }
         i += 1;
     }
+    this.animationItem.wrapper.style.overflow = 'hidden';
     this.animationItem.wrapper.style.perspective = this.camera.pe+'px';
     this.animationItem.wrapper.style.transformStyle = this.animationItem.wrapper.style.webkitTransformStyle = "preserve-3d";
     this.animationItem.wrapper.style.transformOrigin = this.animationItem.wrapper.style.mozTransformOrigin = this.animationItem.wrapper.style.webkitTransformOrigin = this.animationItem.wrapper.style['-webkit-transform'] = "0 0 0";

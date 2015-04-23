@@ -688,22 +688,33 @@ function dataFunctionManager(){
     }
 
     function createPathString(paths,closed){
+        //return '';
         var pathV,pathO,pathI;
         var pathString = '';
         var pathData;
         var k, kLen;
+        var posO,posI,posV;
 
         if(!(paths instanceof Array)){
             pathV = paths.v;
             pathO = paths.o;
             pathI = paths.i;
             kLen = pathV.length;
-            pathString += "M"+pathV[0].join(',');
+            pathString += "M"+pathV[0][0]+','+pathV[0][1];
+            //pathString += "M"+pathV[0].join(',');
             for(k=1;k<kLen;k++){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
+                posO =pathO[k-1];
+                posI =pathI[k];
+                posV =pathV[k];
+                pathString += " C"+posO[0]+','+posO[1] + " "+posI[0]+','+posI[1] + " "+posV[0]+','+posV[1];
+                //pathString += " C"+pathO[k-1][0]+','+pathO[k-1][1] + " "+pathI[k][0]+','+pathI[k][1] + " "+pathV[k][0]+','+pathV[k][1];
             }
             if(closed !== false){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
+                posO =pathO[k-1];
+                posI =pathI[0];
+                posV =pathV[0];
+                pathString += " C"+posO[0]+','+posO[1] + " "+posI[0]+','+posI[1] + " "+posV[0]+','+posV[1];
+                //pathString += " C"+pathO[k-1][0]+','+pathO[k-1][1] + " "+pathI[0][0]+','+pathI[0][1] + " "+pathV[0][0]+','+pathV[0][1];
             }
             return pathString;
         }
@@ -715,14 +726,26 @@ function dataFunctionManager(){
             pathO = pathData.o;
             pathI = pathData.i;
             kLen = pathV.length;
-            pathString += "M"+pathV[0].join(',');
+            //pathString += "M"+pathV[0].join(',');
+            pathString += "M"+pathV[0][0]+','+pathV[0][1];
             for(k=1;k<kLen;k++){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
+                posO =pathO[k-1];
+                posI =pathI[k];
+                posV =pathV[k];
+                pathString += " C"+posO[0]+','+posO[1] + " "+posI[0]+','+posI[1] + " "+posV[0]+','+posV[1];
+                //pathString += " C"+pathO[k-1][0]+','+pathO[k-1][1] + " "+pathI[k][0]+','+pathI[k][1] + " "+pathV[k][0]+','+pathV[k][1];
+                //pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
             }
             if(closed !== false){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
+                posO =pathO[k-1];
+                posI =pathI[0];
+                posV =pathV[0];
+                pathString += " C"+posO[0]+','+posO[1] + " "+posI[0]+','+posI[1] + " "+posV[0]+','+posV[1];
+                //pathString += " C"+pathO[k-1][0]+','+pathO[k-1][1] + " "+pathI[0][0]+','+pathI[0][1] + " "+pathV[0][0]+','+pathV[0][1];
+                //pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
             }
         }
+        pathsArray.push(pathString);
         return pathString;
     }
 

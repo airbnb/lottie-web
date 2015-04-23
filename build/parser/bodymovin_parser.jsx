@@ -579,7 +579,7 @@ var UI;
             var layerInfo = pendingItem.lInfo;
             var frameRate = pendingItem.frameRate;
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || layerInfo.enabled == false){
                 //TODO add audios
                 layerOb.enabled = false;
                 analyzeNextLayer();
@@ -598,7 +598,7 @@ var UI;
 
             EffectsParser.createEffects(layerInfo,layerOb);
 
-            if(layerInfo.mask.numProperties>0){
+            if(layerInfo.mask && layerInfo.mask.numProperties>0){
                 setMasks(layerInfo.mask,layerOb);
                 layerOb.hasMask = true;
             }
@@ -640,10 +640,28 @@ var UI;
             }else{
                 layerOb.ks.o = extrasInstance.roundNumber(layerInfo.transform.opacity.valueAtTime(0,false),3);
             }
-            if(layerInfo.transform.rotation.numKeys>1){
-                extrasInstance.convertToBezierValues(layerInfo.transform.rotation, frameRate, layerOb.ks,'r');
+            if(layerInfo.transform.rotation){
+                if(layerInfo.transform.rotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.rotation, frameRate, layerOb.ks,'r');
+                }else{
+                    layerOb.ks.r = extrasInstance.roundNumber(layerInfo.transform.rotation.valueAtTime(0,false),3);
+                }
             }else{
-                layerOb.ks.r = extrasInstance.roundNumber(layerInfo.transform.rotation.valueAtTime(0,false),3);
+                if(layerInfo.transform.xRotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.xRotation, frameRate, layerOb.ks,'rx');
+                }else{
+                    layerOb.ks.rx = extrasInstance.roundNumber(layerInfo.transform.xRotation.valueAtTime(0,false),3);
+                }
+                if(layerInfo.transform.yRotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.yRotation, frameRate, layerOb.ks,'ry');
+                }else{
+                    layerOb.ks.ry = extrasInstance.roundNumber(layerInfo.transform.yRotation.valueAtTime(0,false),3);
+                }
+                if(layerInfo.transform.zRotation.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.zRotation, frameRate, layerOb.ks,'rz');
+                }else{
+                    layerOb.ks.rz = extrasInstance.roundNumber(layerInfo.transform.zRotation.valueAtTime(0,false),3);
+                }
             }
             if(layerInfo.transform.position.numKeys>1){
                 extrasInstance.convertToBezierValues(layerInfo.transform.position, frameRate, layerOb.ks,'p');
@@ -820,14 +838,18 @@ var UI;
         adjustNextHelperSpeed();
     }
 
-    function createLayers(compo, layersData, frameRate){
+    function createLayers(compo, layersData, frameRate,isMain){
         var i, len = compo.layers.length;
         for(i = 0;i<len;i++){
             var layerOb = {};
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
             layersData.push(layerOb);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'CameraLayer' && isMain){
+                layerOb.isCamera = true;
+                layerOb.pe = layerInfo.property('Camera Options').property('Zoom').value;
+            }
+            if(lType == 'AudioLayer' || (lType == 'CameraLayer' && !isMain) || layerInfo.enabled == false){
                 //TODO add audios
                 layerOb.enabled = false;
                 continue;
@@ -835,7 +857,7 @@ var UI;
             pendingLayers.push({lInfo:layerInfo,lOb:layerOb,frameRate:frameRate});
             if(lType=='PreCompLayer'){
                 layerOb.layers = [];
-                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate);
+                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate,false);
             }
 
         }
@@ -852,12 +874,12 @@ var UI;
         return {width:0,height:0};
     }
 
-    function traverseAnimation(compo,layersData, frameNum, time){
+    function traverseAnimation(compo,layersData, frameNum, time, isMain){
         var i, len = compo.layers.length;
         for(i = 0;i<len;i++){
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || (lType == 'CameraLayer' && !isMain) || layerInfo.enabled == false){
                 //TODO add audios
                 continue;
             }
@@ -913,7 +935,7 @@ var UI;
             }
             if(lType == 'PreCompLayer'){
                 var compoInTime = -layerInfo.startTime;
-                traverseAnimation(layerInfo.source,layerOb.layers, frameNum, time+compoInTime);
+                traverseAnimation(layerInfo.source,layerOb.layers, frameNum, time+compoInTime, false);
             }
             //THIS IS REPLACED WITH THE KEYFRAMES. LEAVE THIS FOR NOW.
             /*if(layerOb.lastData.an == null || extrasInstance.compareObjects(animData,layerOb.lastData.an)==false){
@@ -925,7 +947,7 @@ var UI;
     }
 
     function iterateComposition(){
-        createLayers(mainComp, mainLayers, mainComp.frameRate);
+        createLayers(mainComp, mainLayers, mainComp.frameRate,true);
         // TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
         /*renderCompo(mainComp, mainLayers);
          AssetsManager.createAssetsDataForExport();
@@ -1056,7 +1078,7 @@ var UI;
     function renderFrame(){
         currentTime = (currentRenderFrame+firstFrame)/frameRate;
         zCount = 0;
-        traverseAnimation(mainComp,mainLayers, currentRenderFrame,currentTime);
+        traverseAnimation(mainComp,mainLayers, currentRenderFrame,currentTime,true);
     }
 
     function setCallback(cb){
@@ -1078,7 +1100,7 @@ var UI;
     var registeredEffects = {};
 
     function createEffects(layerInfo,layerOb){
-        if(layerInfo.effect.numProperties>0){
+        if(layerInfo.effect && layerInfo.effect.numProperties>0){
             layerOb.eff = [];
             var i, len = layerInfo.effect.numProperties, name;
             for(i=0;i<len;i++){
@@ -2459,8 +2481,8 @@ var UI;
         if(!renderCancelled){
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
-            dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
-            //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
+            //dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
+            dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
         currentCompositionData.rendered = true;
