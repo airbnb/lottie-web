@@ -628,6 +628,53 @@ function dataFunctionManager(){
         return propertyArray;
     }
 
+    function interpolateShape(shapeData, frameNum, offsetTime, renderType){
+        var pathData = {};
+        pathData.closed = shapeData.closed;
+        var keyframes = shapeData.ks;
+        if(keyframes['v']){
+            if(renderType == 'svg'){
+                if(!keyframes.__pathString){
+                    keyframes.__pathString = createPathString(keyframes,pathData.closed);
+                }
+                pathData.pathString = keyframes.__pathString;
+            }
+            pathData.pathNodes = keyframes;
+            return pathData;
+        }else{
+            if(frameNum < keyframes[0].t-offsetTime){
+                var shapeData = {
+                    i: [],
+                    o: [],
+                    v: []
+                };
+                var jLen = keyframes[0].s[0].i.length;
+                for(j=0;j<jLen;j+=1){
+                    var coordsIData = [];
+                    var coordsOData = [];
+                    var coordsVData = [];
+                    kLen = keyData.s[i].i[j].length;
+                    for(k=0;k<kLen;k+=1){
+                        if(keyData.h === 1){
+                            coordsIData.push(keyData.s[i].i[j][k]);
+                            coordsOData.push(keyData.s[i].o[j][k]);
+                            coordsVData.push(keyData.s[i].v[j][k]);
+                        }else{
+                            coordsIData.push(keyData.s[i].i[j][k]+(keyData.e[i].i[j][k]-keyData.s[i].i[j][k])*perc);
+                            coordsOData.push(keyData.s[i].o[j][k]+(keyData.e[i].o[j][k]-keyData.s[i].o[j][k])*perc);
+                            coordsVData.push(keyData.s[i].v[j][k]+(keyData.e[i].v[j][k]-keyData.s[i].v[j][k])*perc);
+                        }
+                    }
+                    shapeData.i.push(coordsIData);
+                    shapeData.o.push(coordsOData);
+                    shapeData.v.push(coordsVData);
+                }
+            }
+            return false;
+        }
+
+    }
+
     function createPathString(paths,closed){
         var pathV,pathO,pathI;
         var pathString = '';
@@ -664,6 +711,7 @@ function dataFunctionManager(){
                 pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
             }
         }
+        pathsArray.push(pathString);
         return pathString;
     }
 
@@ -736,11 +784,12 @@ function dataFunctionManager(){
                     maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
                 }
             }
+            if((frameNum < item.inPoint || frameNum > item.outPoint)){
+               continue;
+            }
             if(item.type == 'PreCompLayer'){
-                if(!(frameNum < item.inPoint || frameNum > item.outPoint)){
-                    timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
-                    iterateLayers(item.layers,timeRemapped,renderType);
-                }
+                timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
+                iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.type == 'ShapeLayer'){
                 len = item.shapes.length;
                 for(i=0;i<len;i+=1){
@@ -781,13 +830,16 @@ function dataFunctionManager(){
                         }
                     }
                     if(shapeItem.ks){
-                        shape = getInterpolatedValue(shapeItem.ks,offsettedFrameNum, item.startTime,interpolatedParams);
-                        shapeData.path = {
-                            pathNodes: shape,
-                            closed: shapeItem.closed
-                        };
-                        if(renderType == 'svg'){
-                            shapeData.path.pathString = createPathString(shape,shapeItem.closed);
+                        shapeData.path = interpolateShape(shapeItem,offsettedFrameNum, item.startTime,renderType);
+                        if(shapeData.path == false){
+                            shape = getInterpolatedValue(shapeItem.ks,offsettedFrameNum, item.startTime,interpolatedParams);
+                            shapeData.path = {
+                                pathNodes: shape,
+                                closed: shapeItem.closed
+                            };
+                            if(renderType == 'svg'){
+                                shapeData.path.pathString = createPathString(shape,shapeItem.closed);
+                            }
                         }
                     }else if(shapeItem.el){
                         elmPos = getInterpolatedValue(shapeItem.el.p,offsettedFrameNum, item.startTime,interpolatedParams);

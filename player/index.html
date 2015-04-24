@@ -2,6 +2,7 @@
 <meta charset="UTF-8">
 <head>
     <!-- build:js bodymovin.js -->
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/utils/MatrixManager.js"></script>
@@ -35,6 +36,40 @@
     <!-- endbuild -->
 </head>
 <body style="background-color:#666; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
-<div style="width:510px;height:676px;background-color:#000" class="bodymovin" data-bm-path="exports/mcangel" data-bm-type="canvas" data-bm-loop="true" data-bm-prerender="true"></div>
+<div style="width:510px;height:676px;background-color:#000" class="bodymovin" data-bm-path="exports/mcangel" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="true"></div>
+<script>
+    var pathsArray = [];
+    var uniquePaths = [];
+    var nanCount = 0;
+    function getUniquePaths(){
+        $.each(pathsArray, function(i, el){
+            if($.inArray(el, uniquePaths) === -1) uniquePaths.push(el);
+        });
+    }
+
+    function count() {
+        pathsArray.sort();
+
+        var current = null;
+        var cnt = 0;
+        for (var i = 0; i < pathsArray.length; i++) {
+            if (pathsArray[i] != current) {
+                if (cnt > 1) {
+                    document.write(current + ' comes --> ' + cnt + ' times<br>');
+                    //document.write(cnt + ' times<br>');
+                }
+                current = pathsArray[i];
+                cnt = 1;
+            } else {
+                cnt++;
+            }
+        }
+        if (cnt > 0) {
+            document.write(current + ' comes --> ' + cnt + ' times');
+            //document.write(cnt + ' times');
+        }
+
+    }
+</script>
 </body>
 </html>
