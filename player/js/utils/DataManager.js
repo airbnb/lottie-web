@@ -737,8 +737,10 @@ function dataFunctionManager(){
                 }
             }
             if(item.type == 'PreCompLayer'){
-                timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
-                iterateLayers(item.layers,timeRemapped,renderType);
+                if(!(frameNum < item.inPoint || frameNum > item.outPoint)){
+                    timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
+                    iterateLayers(item.layers,timeRemapped,renderType);
+                }
             }else if(item.type == 'ShapeLayer'){
                 len = item.shapes.length;
                 for(i=0;i<len;i+=1){
