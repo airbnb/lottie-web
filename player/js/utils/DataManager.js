@@ -648,27 +648,63 @@ function dataFunctionManager(){
                     o: [],
                     v: []
                 };
+                var propertyArray = [];
+                var j, k, kLen;
                 var jLen = keyframes[0].s[0].i.length;
                 for(j=0;j<jLen;j+=1){
                     var coordsIData = [];
                     var coordsOData = [];
                     var coordsVData = [];
-                    kLen = keyData.s[i].i[j].length;
+                    kLen = keyframes[0].s[0].i[j].length;
                     for(k=0;k<kLen;k+=1){
-                        if(keyData.h === 1){
-                            coordsIData.push(keyData.s[i].i[j][k]);
-                            coordsOData.push(keyData.s[i].o[j][k]);
-                            coordsVData.push(keyData.s[i].v[j][k]);
-                        }else{
-                            coordsIData.push(keyData.s[i].i[j][k]+(keyData.e[i].i[j][k]-keyData.s[i].i[j][k])*perc);
-                            coordsOData.push(keyData.s[i].o[j][k]+(keyData.e[i].o[j][k]-keyData.s[i].o[j][k])*perc);
-                            coordsVData.push(keyData.s[i].v[j][k]+(keyData.e[i].v[j][k]-keyData.s[i].v[j][k])*perc);
-                        }
+                        coordsIData.push(keyframes[0].s[0].i[j][k]);
+                        coordsOData.push(keyframes[0].s[0].o[j][k]);
+                        coordsVData.push(keyframes[0].s[0].v[j][k]);
                     }
                     shapeData.i.push(coordsIData);
                     shapeData.o.push(coordsOData);
                     shapeData.v.push(coordsVData);
                 }
+                propertyArray.push(shapeData);
+                if(renderType == 'svg'){
+                    if(!keyframes.__minString){
+                        keyframes.__minString = createPathString(propertyArray,pathData.closed);
+                    }
+                    pathData.pathString = keyframes.__minString;
+                }
+                return pathData;
+            }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
+                var shapeData = {
+                    i: [],
+                    o: [],
+                    v: []
+                };
+                var pos = keyframes.length - 2;
+                var propertyArray = [];
+                var j, k, kLen;
+                var jLen = keyframes[pos].s[0].i.length;
+                for(j=0;j<jLen;j+=1){
+                    var coordsIData = [];
+                    var coordsOData = [];
+                    var coordsVData = [];
+                    kLen = keyframes[pos].s[0].i[j].length;
+                    for(k=0;k<kLen;k+=1){
+                        coordsIData.push(keyframes[pos].s[0].i[j][k]+(keyframes[pos].e[0].i[j][k]-keyframes[pos].s[0].i[j][k]));
+                        coordsOData.push(keyframes[pos].s[0].o[j][k]+(keyframes[pos].e[0].o[j][k]-keyframes[pos].s[0].o[j][k]));
+                        coordsVData.push(keyframes[pos].s[0].v[j][k]+(keyframes[pos].e[0].v[j][k]-keyframes[pos].s[0].v[j][k]));
+                    }
+                    shapeData.i.push(coordsIData);
+                    shapeData.o.push(coordsOData);
+                    shapeData.v.push(coordsVData);
+                }
+                propertyArray.push(shapeData);
+                if(renderType == 'svg'){
+                    if(!keyframes.__maxString){
+                        keyframes.__maxString = createPathString(propertyArray,pathData.closed);
+                    }
+                    pathData.pathString = keyframes.__maxString;
+                }
+                return pathData;
             }
             return false;
         }
