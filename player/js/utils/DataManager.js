@@ -418,7 +418,7 @@ function dataFunctionManager(){
             bez.buildBezierData(keyData);
         }
         var k, kLen;
-        var perc, j = 0;
+        var perc,jLen, j = 0;
         if(interpolatedParams.type == 'default'){
             propertyArray = [];
         }
