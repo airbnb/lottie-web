@@ -802,7 +802,6 @@ function dataFunctionManager(){
                 pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
             }
         }
-        pathsArray.push(pathString);
         return pathString;
     }
 
