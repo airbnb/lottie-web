@@ -502,7 +502,7 @@ function dataFunctionManager(){
             var addedLength = 0;
             dir = 1;
             flag = true;
-            jLen = bezierData.points.length;
+            var jLen = bezierData.points.length;
             while(flag){
                 addedLength +=bezierData.points[j].partialLength*dir;
                 if(distanceInLine == 0 || perc == 0){
