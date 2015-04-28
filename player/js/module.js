@@ -63,8 +63,8 @@
     function checkReady(){
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
-            setTimeout(searchAnimations,3000);
-                //searchAnimations();
+            //setTimeout(searchAnimations,3000);
+            searchAnimations();
         }
     }
 
