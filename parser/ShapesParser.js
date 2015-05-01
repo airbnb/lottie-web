@@ -147,9 +147,6 @@
 
     function parseShape(shapeInfo, shapeOb, time){
         //iterateProperty(shapeInfo,0);
-        //Offsets for anchor point;
-        var xOffset = 0;
-        var yOffset = 0;
         var shapeContents = shapeInfo.property('Contents');
 
         var paths = [];
@@ -227,6 +224,7 @@
             extrasInstance.convertToBezierValues(contents.property('ADBE Vector Filter - Trim').property('Offset'), frameRate, layerOb.trim,'o');
         }
         var i, len = contents.numProperties;
+        var j, jLen;
         var shapeInfo, shapeObData;
         for(i=0;i<len;i++){
             shapeInfo = contents.property(i+1);
@@ -234,8 +232,61 @@
             if(propContents === null){
                 continue;
             }
+            jLen = propContents.numProperties;
+            shapeObData = [];
+            var ob, prop;
+            for(j=0;j<jLen;j+=1){
+                prop = propContents.property(j+1);
+                var itemType = getItemType(prop.matchName);
+                if(itemType == 'sh'){
+                    ob = {};
+                    ob.ty = itemType;
+                    ob.closed = prop.closed;
+                    extrasInstance.convertToBezierValues(prop.property('Path'), frameRate, ob,'ks');
+                    shapeObData.push(ob);
+                }else if(itemType == 'rc'){
+                    ob = {};
+                    ob.ty = itemType;
+                    extrasInstance.convertToBezierValues(prop.property('Size'), frameRate, ob,'s');
+                    extrasInstance.convertToBezierValues(prop.property('Position'), frameRate, ob,'p');
+                    extrasInstance.convertToBezierValues(prop.property('Roundness'), frameRate, ob,'r');
+                    shapeObData.push(ob);
+                }else if(itemType == 'el'){
+                    ob = {};
+                    ob.ty = itemType;
+                    extrasInstance.convertToBezierValues(prop.property('Size'), frameRate, ob,'s');
+                    extrasInstance.convertToBezierValues(prop.property('Position'), frameRate, ob,'p');
+                    shapeObData.push(ob);
+                }else if(itemType == 'fl'){
+                    ob = {};
+                    ob.ty = itemType;
+                    ob.fillEnabled = prop.enabled;
+                    extrasInstance.convertToBezierValues(prop.property('Color'), frameRate, ob,'c');
+                    extrasInstance.convertToBezierValues(prop.property('Opacity'), frameRate, ob,'o');
+                    shapeObData.push(ob);
+                }else if(itemType == 'st'){
+                    ob = {};
+                    ob.ty = itemType;
+                    ob.fillEnabled = prop.enabled;
+                    extrasInstance.convertToBezierValues(prop.property('Color'), frameRate, ob,'c');
+                    extrasInstance.convertToBezierValues(prop.property('Opacity'), frameRate, ob,'o');
+                    extrasInstance.convertToBezierValues(prop.property('Stroke Width'), frameRate, ob,'w');
+                    shapeObData.push(ob);
+                }else if(itemType == 'mm'){
+                    ob = {};
+                    ob.ty = itemType;
+                    ob.mm = prop.property('ADBE Vector Merge Type').value;
+                    shapeObData.push(ob);
+                }else if(itemType == 'tm'){
+                    ob = {};
+                    ob.ty = itemType;
+                    extrasInstance.convertToBezierValues(prop.property('Start'), frameRate, ob,'s');
+                    extrasInstance.convertToBezierValues(prop.property('End'), frameRate, ob,'e');
+                    extrasInstance.convertToBezierValues(prop.property('Offset'), frameRate, ob,'o');
+                    shapeObData.push(ob);
+                }
+            }
             var type = shapeType(propContents);
-            shapeObData = {};
             shapeObData.type = type;
             shapeObData.name = shapeInfo.name;
             shapeObData.an = {};
@@ -264,7 +315,6 @@
             if(propContents.property('ADBE Vector Graphic - Fill')){
                 shapeObData.fl = {};
                 shapeObData.fillEnabled = propContents.property('ADBE Vector Graphic - Fill').enabled;
-                var colorProp = propContents.property('ADBE Vector Graphic - Fill').property('Color');
                 extrasInstance.convertToBezierValues(propContents.property('ADBE Vector Graphic - Fill').property('Color'), frameRate, shapeObData.fl,'c');
                 extrasInstance.convertToBezierValues(propContents.property('ADBE Vector Graphic - Fill').property('Opacity'), frameRate, shapeObData.fl,'o');
             }
@@ -293,6 +343,28 @@
             extrasInstance.convertToBezierValues(transformProperty.property('Opacity'), frameRate, shapeObData.tr,'o');
             shapeObData.lastData = {};
             shapes.push(shapeObData);
+        }
+    }
+
+    function getItemType(matchName){
+        switch(matchName){
+            case 'ADBE Vector Shape - Group':
+                return 'sh';
+            case 'ADBE Vector Shape - Rect':
+                return 'rc';
+            case 'ADBE Vector Shape - Ellipse':
+                return 'el';
+            case 'ADBE Vector Graphic - Fill':
+                return 'fl';
+            case 'ADBE Vector Graphic - Stroke':
+                return 'st';
+            case 'ADBE Vector Graphic - Merge':
+                return 'mm';
+            case 'ADBE Vector Graphic - Trim':
+                return 'tm';
+            default:
+                $.writeln('matchName: ',matchName);
+                return '';
         }
     }
 
