@@ -99,49 +99,55 @@ function dataFunctionManager(){
                 jLen = layerData.shapes.length;
                 for(j=0;j<jLen;j+=1){
                     shapeItem = layerData.shapes[j];
-                    shapeItem.renderedData = {};
-                    if(shapeItem.tr.o instanceof Array){
-                        convertNumericValue(shapeItem.tr.o,1/100);
-                    }else{
-                        shapeItem.tr.o /= 100;
-                    }
-                    if(shapeItem.tr.s instanceof Array){
-                        convertNumericValue(shapeItem.tr.s,1/100);
-                    }else{
-                        shapeItem.tr.s /= 100;
-                    }
-                    if(shapeItem.tr.r instanceof Array){
-                        convertNumericValue(shapeItem.tr.r,degToRads);
-                    }else{
-                        shapeItem.tr.r *= degToRads;
-                    }
-                    if(shapeItem.fl){
-                        if(shapeItem.fl.o instanceof Array){
-                            convertNumericValue(shapeItem.fl.o,1/100);
-                        }else{
-                            shapeItem.fl.o *= 1/100;
+                    completeShapes(shapeItem);
+                }
+            }
+        }
+    }
+
+    function completeShapes(arr){
+        var i, len = arr.length;
+        var j, jLen;
+        var transformData;
+        for(i=0;i<len;i+=1){
+            arr[i].renderedData = [];
+            if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+                if(arr[i].o instanceof Array){
+                    convertNumericValue(arr[i].o,1/100);
+                }else{
+                    arr[i].o *= 1/100;
+                }
+            }else if(arr[i].ty == 'sh'){
+                if(arr[i].ks.i){
+                    convertPathsToAbsoluteValues(arr[i].ks);
+                }else{
+                    jLen = shapeItem[i].ks.length;
+                    for(j=0;j<jLen;j+=1){
+                        if(shapeItem[i].ks[j].s){
+                            convertPathsToAbsoluteValues(arr[i].ks[j].s[0]);
+                            convertPathsToAbsoluteValues(arr[i].ks[j].e[0]);
                         }
                     }
-                    if(shapeItem.st){
-                        if(shapeItem.st.o instanceof Array){
-                            convertNumericValue(shapeItem.st.o,1/100);
-                        }else{
-                            shapeItem.st.o *= 1/100;
-                        }
-                    }
-                    if(shapeItem.ks){
-                        if(shapeItem.ks.i){
-                            convertPathsToAbsoluteValues(shapeItem.ks);
-                        }else{
-                            kLen = shapeItem.ks.length;
-                            for(k=0;k<kLen;k+=1){
-                                if(shapeItem.ks[k].s){
-                                    convertPathsToAbsoluteValues(shapeItem.ks[k].s[0]);
-                                    convertPathsToAbsoluteValues(shapeItem.ks[k].e[0]);
-                                }
-                            }
-                        }
-                    }
+                }
+            }else if(arr[i].ty == 'gr'){
+                completeShapes(arr[i].it);
+            }else if(arr[i].ty == 'tr'){
+                transformData = arr[i];
+                transformData.renderedData = [];
+                if(transformData.o instanceof Array){
+                    convertNumericValue(transformData.o,1/100);
+                }else{
+                    transformData.o /= 100;
+                }
+                if(transformData.s instanceof Array){
+                    convertNumericValue(transformData.s,1/100);
+                }else{
+                    transformData.s /= 100;
+                }
+                if(transformData.r instanceof Array){
+                    convertNumericValue(transformData.r,degToRads);
+                }else{
+                    transformData.r *= degToRads;
                 }
             }
         }
@@ -814,15 +820,11 @@ function dataFunctionManager(){
     };
 
     function iterateLayers(layers, frameNum,renderType){
-
         var dataOb;
         var maskProps;
         var timeRemapped;
-        var shapeItem;
-        var fillOpacity,fillColor, strokeColor, strokeOpacity, strokeWidth, elmPos, elmSize, elmRound;
-        var shapeTrOb = {};
 
-        var offsettedFrameNum, i, len, renderedData, shapeData;
+        var offsettedFrameNum, i, len, renderedData;
         var j, jLen = layers.length, item;
         for(j=0;j<jLen;j+=1){
             item = layers[j];
@@ -879,9 +881,9 @@ function dataFunctionManager(){
             }else if(item.type == 'ShapeLayer'){
                 len = item.shapes.length;
                 for(i=0;i<len;i+=1){
-                    shapeData = {};
-                    shapeItem = item.shapes[i];
-                    shapeItem.renderedData[offsettedFrameNum] = shapeData;
+                    iterateShape(item.shapes[i],offsettedFrameNum,item.startTime,renderType);
+                }
+                    /*shapeItem.renderedData[offsettedFrameNum] = shapeData;
                     if(!shapeItem._created){
                         shapeItem.an.tr = [];
                         shapeItem.an.renderedFrame = {};
@@ -987,7 +989,101 @@ function dataFunctionManager(){
                     if(!shapeItem._created){
                         shapeItem._created = true;
                     }
+                }*/
+            }
+        }
+    }
+
+    function iterateShape(arr,offsettedFrameNum,startTime,renderType){
+        var i, len = arr.length;
+        var shapeItem;
+        var fillColor, fillOpacity;
+        var elmPos,elmSize,elmRound;
+        var strokeColor,strokeOpacity,strokeWidth;
+        var trimS,trimE,trimO;
+        for(i=0;i<len;i+=1){
+            shapeItem = arr[i];
+            if(shapeItem.ty == 'sh'){
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    path: interpolateShape(shapeItem,offsettedFrameNum, startTime,renderType)
                 }
+            }else if(shapeItem.ty == 'fl'){
+                fillColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime,interpolatedParams);
+                fillOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    opacity:  fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
+                };
+                if(renderType == 'canvas'){
+                    roundColor(fillColor);
+                    shapeItem.renderedData[offsettedFrameNum].color = fillColor;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(Math.round(fillColor[0]),Math.round(fillColor[1]),Math.round(fillColor[2]));
+                }
+            }else if(shapeItem.ty == 'rc'){
+                elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
+                elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                elmRound = getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    position : elmPos,
+                    size : elmSize,
+                    roundness : elmRound
+                };
+            }else if(shapeItem.ty == 'el'){
+                elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
+                elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    p : elmPos,
+                    size : elmSize
+                };
+            }else if(shapeItem.ty == 'st'){
+                strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime,interpolatedParams);
+                strokeOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams);
+                strokeWidth = getInterpolatedValue(shapeItem.w,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
+                    width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
+                };
+                if(renderType == 'canvas'){
+                    roundColor(strokeColor);
+                    shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(Math.round(strokeColor[0]),Math.round(strokeColor[1]),Math.round(strokeColor[2]));
+                }
+            }else if(shapeItem.ty == 'tr'){
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    a : getInterpolatedValue(shapeItem.a,offsettedFrameNum, startTime,interpolatedParams),
+                    o : getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams)
+                }
+                interpolatedParams.arrayFlag = true;
+                interpolatedParams.type = 's';
+                getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                interpolatedParams.arrayFlag = true;
+                interpolatedParams.type = 'r';
+                getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,interpolatedParams);
+                interpolatedParams.arrayFlag = false;
+                interpolatedParams.type = 'p';
+                getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
+                interpolatedParams.arrayFlag = false;
+                interpolatedParams.type = 'default';
+                //console.log('frameNum: ',frameNum);
+                //console.log('matrixParams.sx: ',matrixParams.sx);
+                //console.log('matrixParams.sy: ',matrixParams.sy);
+                if(renderType == 'canvas'){
+                    shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum].mt = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
+                }
+            }else if(shapeItem.ty == 'tm'){
+                trimS = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                trimE = getInterpolatedValue(shapeItem.e,offsettedFrameNum, startTime,interpolatedParams);
+                trimO = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    s: trimS,
+                    e: trimE,
+                    o: trimO
+                }
+            }else if(shapeItem.ty == 'gr'){
+                iterateShape(shapeItem.it,offsettedFrameNum,startTime,renderType);
             }
         }
     }
