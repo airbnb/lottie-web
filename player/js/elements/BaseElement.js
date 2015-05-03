@@ -3,6 +3,7 @@ var BaseElement = function (data, animationItem){
     this.data = data;
     this.transformChanged = false;
     this.forceRender = false;
+    this.currentMatrix = new Matrix();
     this.init();
 };
 
@@ -98,14 +99,18 @@ BaseElement.prototype.renderFrame = function(num){
     }else if(this.transformChanged){
         transformValue += this.currentAnimData.matrixValue;
         if(this.isVisible){
-            this.layerElement.setAttribute('transform',transformValue);
+            var mat = this.currentAnimData.matrixArray;
+            this.currentMatrix.reset();
+            this.currentMatrix.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+            this.currentMatrix.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
+            //this.layerElement.setAttribute('transform',transformValue);
         }
         this.fullTransform = transformValue;
     }
     if(this.forceRender){
         this.forceRender = false;
         this.layerElement.setAttribute('opacity',this.currentAnimData.tr.o);
-        this.layerElement.setAttribute('transform',this.fullTransform);
+        //this.layerElement.setAttribute('transform',this.fullTransform);
     }
 
 

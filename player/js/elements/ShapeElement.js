@@ -14,8 +14,7 @@ IShapeElement.prototype.createElements = function(){
         if(this.data.trim){
             this.data.shapes[i].trim = this.data.trim;
         }
-        shapeItem = new ShapeItemElement(this.data.shapes[i]);
-        this.layerElement.appendChild(shapeItem.getElement());
+        shapeItem = new ShapeItemElement(this.data.shapes[i],this.layerElement);
         this.shapes.push(shapeItem);
     }
 };
@@ -35,6 +34,6 @@ IShapeElement.prototype.renderShapes = function(num){
     for(i=len-1;i>=0;i--){
         shapeData = this.data.shapes[i];
         shapeItem = this.shapes[len - 1 - i];
-        shapeItem.renderShape(num);
+        shapeItem.renderShape(num,this.currentMatrix);
     }
 };

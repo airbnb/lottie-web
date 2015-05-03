@@ -855,6 +855,7 @@ function dataFunctionManager(){
             if(renderType == 'canvas'){
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
             }else{
+                renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py) + 'translate('+ -dataOb.a[0]+' '+ -dataOb.a[1]+')';
             }
             item.renderedData[offsettedFrameNum] = renderedData;
@@ -1071,6 +1072,7 @@ function dataFunctionManager(){
                 if(renderType == 'canvas'){
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 }else{
+                    shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                     shapeItem.renderedData[offsettedFrameNum].mt = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 }
             }else if(shapeItem.ty == 'tm'){
