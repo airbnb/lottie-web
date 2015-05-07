@@ -1,5 +1,6 @@
 # bodymovin
 After Effects to html - svg library
+and to canvas!
 
 ## Setting up After Effects
 - Close After Effects
@@ -56,7 +57,11 @@ bodymovin has 6 main methods:
 
 See the demo folders for examples
 
-## Disclaimer! Alerts! Warnings!
+## Alerts!
+
+### Grouped and multishapes in single layer
+There are some issues with multiple shapes on a single layer. Should be fixed after the weekend with major changes.
+If you use a single shape per layer, everything should be fine.
 
 ### Undos
 The script is **very** invasive. It will perform a lot of actions in your project that will go to the undo stack. So you'll probably won't be able to undo your work after exporting. I haven't figured out how to prevent this.
