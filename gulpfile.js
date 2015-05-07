@@ -12,8 +12,8 @@ var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 
 gulp.task('gzipFile', function(){
-  gulp.src('demo/hombre/anim2/data.json')
-  //gulp.src('build/player/bodymovin.js')
+  //gulp.src('demo/hombre/anim2/data.json')
+  gulp.src('demo/ninja/anim/data.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });
@@ -71,6 +71,15 @@ gulp.task('buildPlayer', function(){
         }))
         .pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(gulp.dest('build/player/'));
+});
+
+gulp.task('buildGreensock', function(){
+    gulp.src('./player/greensock.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        .pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
+        .pipe(gulp.dest('build/player/greensock'));
 });
 
 gulp.task('buildCanvasPlayer', function(){

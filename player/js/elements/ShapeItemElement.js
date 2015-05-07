@@ -46,7 +46,9 @@ ShapeItemElement.prototype.renderShape = function(num,matrix){
             this.currentMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
             this.currentMatrix.translate(-this.data[i].renderedData[num].a[0],-this.data[i].renderedData[num].a[1]);
         }else if(this.data[i].ty == 'sh'){
-            this.renderPath(this.data[i].renderedData[num]);
+            this.renderPath(this.data[i],num);
+        }else if(this.data[i].ty == 'el'){
+            this.renderEllipse(this.data[i].renderedData[num]);
         }else if(this.data[i].ty == 'fl'){
             this.stylesList[this.posCount].path.setAttribute('fill',this.data[i].renderedData[num].color);
             this.stylesList[this.posCount].path.setAttribute('fill-opacity',this.data[i].renderedData[num].opacity);
@@ -55,14 +57,18 @@ ShapeItemElement.prototype.renderShape = function(num,matrix){
             this.stylesList[this.posCount].path.setAttribute('stroke-width',this.data[i].renderedData[num].width);
             this.stylesList[this.posCount].path.setAttribute('stroke',this.data[i].renderedData[num].color);
             this.stylesList[this.posCount].path.setAttribute('stroke-opacity',this.data[i].renderedData[num].opacity);
+            this.stylesList[this.posCount].path.setAttribute('fill-opacity',0);
             this.posCount += 1;
         }
     }
 
     len = this.stylesList.length;
     for(i=0;i<len;i+=1){
-        this.stylesList[i].path.setAttribute('d',this.stylesList[i].d);
-        this.stylesList[i].path.setAttribute('transform',this.currentMatrix.toCSS())
+        if(this.stylesList[i].lastPath != this.stylesList[i].d){
+            this.stylesList[i].path.setAttribute('d',this.stylesList[i].d);
+            this.stylesList[i].lastPath = this.stylesList[i].d;
+        }
+        //this.stylesList[i].path.setAttribute('transform',this.currentMatrix.toCSS())
     }
 
 
@@ -85,50 +91,106 @@ ShapeItemElement.prototype.renderShape = function(num,matrix){
     this.renderTransform(num);
 };
 
-ShapeItemElement.prototype.renderPath = function(pathData){
-
+ShapeItemElement.prototype.renderPath = function(pathData,num){
+    if(!pathData.renderedFrames){
+        pathData.renderedFrames = [];
+    }
+    var pathString = '';
+    if(pathData.renderedFrames[num]){
+        pathString = pathData.renderedFrames[num];
+    }else{
+        pathString =  this.createPathString(pathData.renderedData[num].path.pathNodes);
+        pathData.renderedFrames[num] = pathString;
+    }
     var i, len = this.stylesList.length;
     for(i=0;i<len;i+=1){
-        this.stylesList[i].d += pathData.path.pathString;
+        //this.stylesList[i].d += pathData.path.pathString;
+        this.stylesList[i].d += pathString;
     }
 };
 
-ShapeItemElement.prototype.renderEllipse = function(num){
+ShapeItemElement.prototype.createPathString = function(paths,closed){
+    var pathV,pathO,pathI;
+    var pathString = '';
+    var pathData;
+    var k, kLen;
 
-    var ell = this.currentData.ell;
+    if(!(paths instanceof Array)){
+        pathV = paths.v;
+        pathO = paths.o;
+        pathI = paths.i;
+        kLen = pathV.length;
+        pt = this.currentMatrix.applyToPoint(pathV[0][0],pathV[0][1]);
+        pathString += "M"+pt.x+','+pt.y;
+        //pathString += "M"+pathV[0].join(',');
+        var pt;
+        for(k=1;k<kLen;k++){
+            //pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
+            pt = this.currentMatrix.applyToPoint(pathO[k-1][0],pathO[k-1][1]);
+            pathString += " C"+pt.x+','+pt.y;
+            pt = this.currentMatrix.applyToPoint(pathI[k][0],pathI[k][1]);
+            pathString += " "+pt.x+','+pt.y;
+            pt = this.currentMatrix.applyToPoint(pathV[k][0],pathV[k][1]);
+            pathString += " "+pt.x+','+pt.y;
+        }
+        if(closed !== false){
+            //pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
+            pt = this.currentMatrix.applyToPoint(pathO[k-1][0],pathO[k-1][1]);
+            pathString += " C"+pt.x+','+pt.y;
+            pt = this.currentMatrix.applyToPoint(pathI[0][0],pathI[0][1]);
+            pathString += " "+pt.x+','+pt.y;
+            pt = this.currentMatrix.applyToPoint(pathV[0][0],pathV[0][1]);
+            pathString += " "+pt.x+','+pt.y;
+        }
+        return pathString;
+    }
+    var l,lLen = paths.length;
+    pathString = '';
+    for(l = 0;l<lLen;l+=1){
+        pathData = paths[l];
+        pathV = pathData.v;
+        pathO = pathData.o;
+        pathI = pathData.i;
+        kLen = pathV.length;
+        pathString += "M"+pathV[0].join(',');
+        for(k=1;k<kLen;k++){
+            pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
+        }
+        if(closed !== false){
+            pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
+        }
+    }
+    return pathString;
+}
 
-    if(this.renderedFrame.ellipse.rx != ell.size[0]){
-        this.shape.setAttribute('rx',ell.size[0]/2);
-        this.renderedFrame.ellipse.rx = ell.size[0];
-    }
-    if(this.renderedFrame.ellipse.ry != ell.size[1]){
-        this.shape.setAttribute('ry',ell.size[1]/2);
-        this.renderedFrame.ellipse.ry = ell.size[1];
-    }
-    if(this.renderedFrame.ellipse.cx != ell.p[0]){
-        this.shape.setAttribute('cx',ell.p[0]);
-        this.renderedFrame.ellipse.ry = ell.p[0];
-    }
-    if(this.renderedFrame.ellipse.cy != ell.p[1]){
-        this.shape.setAttribute('cy',ell.p[1]);
-        this.renderedFrame.ellipse.ry = ell.p[1];
-    }
-    if(this.data.trim){
-        if(this.cachedData.pathLengths == null){
-            this.cachedData.pathLengths = {};
-        }
-        if(this.cachedData.pathLengths['ellipse_'+num] == null){
-            if(ell.size[0] == ell.size[1]){
-                this.cachedData.pathLengths['ellipse_'+num] = Math.PI*ell.size[0];
-            }else{
-                var major = Math.max(ell.size[0],ell.size[1])/2;
-                var minor = Math.max(ell.size[0],ell.size[1])/2;
-                var h = (major-minor)/(major+minor);
-                var perim = (major+minor)*Math.PI*(1+(1/4)*h+(1/64)*Math.pow(h,2)+(1/256)*Math.pow(h,3));
-                this.cachedData.pathLengths['ellipse_'+num] = perim;
-            }
-        }
-        return this.cachedData.pathLengths['ellipse_'+num];
+
+ShapeItemElement.prototype.renderEllipse = function(ellipseData){
+
+    var ellipseStr = 'M';
+    ellipseStr+=ellipseData.p[0] - ellipseData.size[0]/2+','+ellipseData.p[1];
+    ellipseStr+='A'+ellipseData.size[0]/2+','+ellipseData.size[1]/2+' ';
+    ellipseStr+= '0 1,0 ';
+    ellipseStr+=ellipseData.p[0] + ellipseData.size[0]/2+','+ellipseData.p[1];
+    ellipseStr+='A'+ellipseData.size[0]/2+','+ellipseData.size[1]/2+' ';
+    ellipseStr+= '0 1,0 ';
+    ellipseStr+=ellipseData.p[0] - ellipseData.size[0]/2+','+ellipseData.p[1];
+
+    var pSized = this.currentMatrix.applyToPoint(ellipseData.p[0],ellipseData.p[1]);
+    var sSized = this.currentMatrix.applyToPoint(ellipseData.size[0],ellipseData.size[1]);
+
+    ellipseStr = 'M';
+    ellipseStr+=pSized.x - sSized.x/2+','+pSized.y;
+    ellipseStr+='A'+sSized.x/2+','+sSized.y/2+' ';
+    ellipseStr+= '0 1,0 ';
+    ellipseStr+=pSized.x + sSized.x/2+','+pSized.y;
+    ellipseStr+='A'+sSized.x/2+','+sSized.y/2+' ';
+    ellipseStr+= '0 1,0 ';
+    ellipseStr+=pSized.x - sSized.x/2+','+pSized.y;
+
+    var i, len = this.stylesList.length;
+
+    for(i=0;i<len;i+=1){
+        this.stylesList[i].d += ellipseStr;
     }
 };
 

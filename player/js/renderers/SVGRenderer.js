@@ -57,7 +57,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     //Mask animation
-    var defs = document.createElementNS(svgNS, 'defs');
+    /*var defs = document.createElementNS(svgNS, 'defs');
     this.animationItem.container.appendChild(defs);
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
@@ -71,7 +71,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     maskedElement.setAttribute("clip-path", "url(#animationMask)");
     this.animationItem.container.appendChild(maskedElement);
     defs.appendChild(maskElement);
-    this.animationItem.container = maskedElement;
+    this.animationItem.container = maskedElement;*/
     this.layers = animData.animation.layers;
 };
 

@@ -612,10 +612,11 @@ function dataFunctionManager(){
         var keyframes = isMask ? shapeData.pt : shapeData.ks;
         if(keyframes.v){
             if(renderType == 'svg'){
-                if(!keyframes.__pathString){
+                /*if(!keyframes.__pathString){
                     keyframes.__pathString = createPathString(keyframes,pathData.closed);
                 }
-                pathData.pathString = keyframes.__pathString;
+                pathData.pathString = keyframes.__pathString;*/
+                pathData.pathNodes = keyframes;
             }else{
                 pathData.pathNodes = keyframes;
             }
@@ -646,17 +647,17 @@ function dataFunctionManager(){
                     shapeData.v.push(coordsVData);
                 }
                 propertyArray.push(shapeData);
-                if(renderType == 'svg'){
+                /*if(renderType == 'svg'){
                     if(!keyframes.__minValue){
                         keyframes.__minValue = createPathString(propertyArray,pathData.closed);
                     }
                     pathData.pathString = keyframes.__minValue;
-                }else{
+                }else{*/
                     if(!keyframes.__minValue){
                         keyframes.__minValue = propertyArray;
                     }
                     pathData.pathNodes = keyframes.__minValue;
-                }
+                //}
                 return pathData;
             }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
                 var pos = keyframes.length - 2;
@@ -676,17 +677,17 @@ function dataFunctionManager(){
                     shapeData.v.push(coordsVData);
                 }
                 propertyArray.push(shapeData);
-                if(renderType == 'svg'){
+                /*if(renderType == 'svg'){
                     if(!keyframes.__maxValue){
                         keyframes.__maxValue = createPathString(propertyArray,pathData.closed);
                     }
                     pathData.pathString = keyframes.__maxValue;
-                }else{
+                }else{*/
                     if(!keyframes.__maxValue){
                         keyframes.__maxValue = propertyArray;
                     }
                     pathData.pathNodes = keyframes.__maxValue;
-                }
+                //}
                 return pathData;
             }else{
                 var i = 0;
@@ -763,7 +764,8 @@ function dataFunctionManager(){
                     }
                 }
                 if(renderType == 'svg'){
-                    pathData.pathString = createPathString(propertyArray[0],pathData.closed);
+                    //pathData.pathString = createPathString(propertyArray[0],pathData.closed);
+                    pathData.pathNodes = propertyArray[0];
                 }else{
                     pathData.pathNodes = propertyArray[0];
                 }
