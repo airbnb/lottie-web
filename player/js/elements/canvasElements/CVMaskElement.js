@@ -37,4 +37,4 @@ CVMaskElement.prototype.drawShape = function (ctx, data) {
 
 CVMaskElement.prototype.createInvertedMask = function(){
 
-}
+};

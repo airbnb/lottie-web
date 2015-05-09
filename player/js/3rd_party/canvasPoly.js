@@ -9,7 +9,7 @@
  * A polyfill for HTML Canvas features, including
  * Path2D support.
  */
-if (CanvasRenderingContext2D.prototype.ellipse == undefined) {
+if (CanvasRenderingContext2D.prototype.ellipse === undefined) {
     CanvasRenderingContext2D.prototype.ellipse = function(x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
         this.save();
         this.translate(x, y);
@@ -17,7 +17,7 @@ if (CanvasRenderingContext2D.prototype.ellipse == undefined) {
         this.scale(radiusX, radiusY);
         this.arc(0, 0, 1, startAngle, endAngle, antiClockwise);
         this.restore();
-    }
+    };
 }
 
 if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'function' || typeof Path2D.prototype.ellipse !== 'function') {
@@ -28,7 +28,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
 
         function Path_(arg) {
             this.ops_ = [];
-            if (arg == undefined) {
+            if (arg === undefined) {
                 return;
             }
             if (typeof arg == 'string') {
@@ -42,7 +42,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             } else {
                 throw 'Error: ' + typeof arg + 'is not a valid argument to Path';
             }
-        };
+        }
 
         // TODO(jcgregorio) test for arcTo and implement via something.
 
@@ -72,7 +72,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             Path_.prototype[name] = createFunction(name);
         }
 
-        Path_.prototype['addPath'] = function(path, tr) {
+        Path_.prototype.addPath = function(path, tr) {
             var hasTx = false;
             if (tr) {
                 hasTx = true;
@@ -83,7 +83,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             if (hasTx) {
                 this.ops_.push({type: 'restore', args: []});
             }
-        }
+        };
 
         var original_fill = CanvasRenderingContext2D.prototype.fill;
         var original_stroke = CanvasRenderingContext2D.prototype.stroke;
@@ -101,7 +101,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             } else {
                 original_fill.apply(this, arguments);
             }
-        }
+        };
 
         CanvasRenderingContext2D.prototype.stroke = function(arg) {
             if (arg instanceof Path_) {
@@ -114,7 +114,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             } else {
                 original_stroke.call(this);
             }
-        }
+        };
 
         CanvasRenderingContext2D.prototype.clip = function(arg) {
             if (arg instanceof Path_) {
@@ -131,7 +131,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             } else {
                 original_clip.apply(this, arguments);
             }
-        }
+        };
 
         // Set up externs.
         Path2D = Path_;

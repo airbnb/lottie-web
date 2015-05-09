@@ -215,6 +215,9 @@
         var ob, prop;
         for(i=0;i<len;i+=1){
             prop = iteratable.property(i+1);
+            if(!prop.enabled){
+                continue;
+            }
             var itemType = getItemType(prop.matchName);
             if(itemType == 'sh'){
                 ob = {};

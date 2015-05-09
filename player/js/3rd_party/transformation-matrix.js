@@ -109,7 +109,7 @@ Matrix.prototype = {
      * @param {number} angle - angle in radians
      */
     rotate: function(angle) {
-        if(angle == 0){
+        if(angle === 0){
             return this;
         }
         this.cos = Math.cos(angle);
@@ -571,8 +571,9 @@ Matrix.prototype = {
             }
         }
         else {
-            for(; p = points[i]; i++) {
-                mxPoints.push(this.applyToPoint(p.x, p.y));
+            l = points.length;
+            for(i = 0; i<l; i++) {
+                mxPoints.push(this.applyToPoint(points[i].x, points[i].y));
             }
         }
 
@@ -635,7 +636,7 @@ Matrix.prototype = {
      * @returns {boolean}
      */
     isInvertible: function() {
-        return !this._q(this.determinant(), 0)
+        return !this._q(this.determinant(), 0);
     },
 
     /**

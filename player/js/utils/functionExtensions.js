@@ -37,8 +37,8 @@ function defineAccessor(o, propertyName, params){
     var accessor = {
         enumerable : false,
         configurable : false,
-        get: function(){return value},
-        set: function(val){value = val}
+        get: function(){return value;},
+        set: function(val){value = val;}
     };
     if(params){
         for( var s in params){

@@ -4,7 +4,7 @@ function CVBaseElement(data,renderer){
     this.currentAnimData = null;
     this.renderFrame = false;
     this.init();
-};
+}
 
 CVBaseElement.prototype.init = function(){
     this.createElements();

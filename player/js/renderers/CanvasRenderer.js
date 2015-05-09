@@ -27,7 +27,7 @@ CanvasRenderer.prototype.buildItems = function(layers){
             console.log('NO TYPE: ',layers[i]);
         }
     }
-}
+};
 
 CanvasRenderer.prototype.createBase = function (data) {
     data.element = new CVBaseElement(data, this);
@@ -73,14 +73,15 @@ CanvasRenderer.prototype.configAnimation = function(animData){
 };
 
 CanvasRenderer.prototype.updateContainerSize = function () {
+    var elementWidth,elementHeight;
     if(this.animationItem.wrapper && this.animationItem.container){
-        var elementWidth = this.animationItem.wrapper.offsetWidth;
-        var elementHeight = this.animationItem.wrapper.offsetHeight;
+        elementWidth = this.animationItem.wrapper.offsetWidth;
+        elementHeight = this.animationItem.wrapper.offsetHeight;
         this.animationItem.container.setAttribute('width',elementWidth);
         this.animationItem.container.setAttribute('height',elementHeight);
     }else{
-        var elementWidth = this.canvasContext.canvas.width;
-        var elementHeight = this.canvasContext.canvas.height;
+        elementWidth = this.canvasContext.canvas.width;
+        elementHeight = this.canvasContext.canvas.height;
     }
     if(this.renderConfig.scaleMode == 'fit'){
         var elementRel = elementWidth/elementHeight;
@@ -123,7 +124,7 @@ CanvasRenderer.prototype.buildItemHierarchy = function (threeItem, layers, paren
     while (i < len) {
         if (layers[i].layerName == parentName) {
             threeItem.parentHierarchy.push(layers[i]);
-            if (layers[i].parent == undefined) {
+            if (layers[i].parent === undefined) {
             } else {
                 this.buildItemHierarchy(threeItem, layers, layers[i].parent);
             }

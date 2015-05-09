@@ -22,7 +22,7 @@ SVGRenderer.prototype.buildItems = function(layers){
             console.log('NO TYPE: ',layers[i]);
         }
     }
-}
+};
 
 SVGRenderer.prototype.createShape = function (data) {
     data.element = new IShapeElement(data, this.animationItem);
@@ -110,7 +110,7 @@ SVGRenderer.prototype.buildItemParenting = function (layerData,layers,parentName
         }
         i += 1;
     }
-}
+};
 
 SVGRenderer.prototype.updateContainerSize = function () {
 };
@@ -127,4 +127,4 @@ SVGRenderer.prototype.renderFrame = function(num){
     for (i = 0; i < len; i++) {
         this.layers[i].element.renderFrame(num - this.layers[i].startTime);
     }
-}
+};
