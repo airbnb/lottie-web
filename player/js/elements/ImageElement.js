@@ -1,8 +1,8 @@
-function IImageElement(data, animationItem){
+function IImageElement(data, animationItem,parentContainer){
     this.animationItem = animationItem;
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data, animationItem);
+    this.parent.constructor.call(this,data, animationItem,parentContainer);
 }
 createElement(BaseElement, IImageElement);
 
@@ -20,16 +20,13 @@ IImageElement.prototype.createElements = function(){
     img.addEventListener('load', imageLoaded, false);
     img.src = this.path+this.assets[this.data.assetId].path;
 
-    this.svgElem = document.createElementNS(svgNS, "g");
-
     this.parent.createElements.call(this);
 
     this.image = document.createElementNS(svgNS,'image');
     this.image.setAttribute('width',this.data.width+"px");
     this.image.setAttribute('height',this.data.height+"px");
-    this.svgElem.appendChild(this.image);
-    this.layerElement.appendChild(this.svgElem);
-    this.maskingGroup = this.svgElem;
+    this.layerElement.appendChild(this.image);
+    this.maskingGroup = this.image;
     styleUnselectableDiv(this.image);
 
 };

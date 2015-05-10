@@ -1,21 +1,15 @@
-function ICompElement(data, animationItem){
-    this.parent.constructor.call(this,data, animationItem);
+function ICompElement(data, animationItem,parentContainer){
+    this.parent.constructor.call(this,data, animationItem,parentContainer);
     this.layers = data.layers;
 }
 createElement(BaseElement, ICompElement);
-
-ICompElement.prototype.createElements = function(){
-
-    this.svgElem = document.createElementNS (svgNS, "g");
-    this.parent.createElements.call(this);
-};
 
 ICompElement.prototype.getComposingElement = function(){
     return this.layerElement;
 };
 
-ICompElement.prototype.renderFrame = function(num){
-    var renderParent = this.parent.renderFrame.call(this,num);
+ICompElement.prototype.renderFrame = function(num,parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
     if(renderParent===false){
         return;
     }
@@ -26,6 +20,6 @@ ICompElement.prototype.renderFrame = function(num){
         this.layers[i].element.prepareFrame(timeRemapped - this.layers[i].startTime);
     }
     for( i = 0; i < len; i+=1 ){
-        this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime);
+        this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime,this.finalTransform);
     }
 };

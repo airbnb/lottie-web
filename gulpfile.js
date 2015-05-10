@@ -158,6 +158,6 @@ gulp.task('concatPlayer', function() {
             'player/js/module.js'
         ])
         .pipe(concat('concat.js', {newLine: '\r\n'}))
-        .pipe(wrap('\'use strict\';\r\n(function(){\r\n<%= contents %>\r\n}());'))
+        .pipe(wrap('\r\n(function(){\r\n\'use strict\';\r\n<%= contents %>\r\n}());'))
         .pipe(gulp.dest('build/player/'))
 });

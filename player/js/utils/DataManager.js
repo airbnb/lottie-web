@@ -121,9 +121,9 @@ function dataFunctionManager(){
                 if(arr[i].ks.i){
                     convertPathsToAbsoluteValues(arr[i].ks);
                 }else{
-                    jLen = shapeItem[i].ks.length;
+                    jLen = arr[i].ks.length;
                     for(j=0;j<jLen;j+=1){
-                        if(shapeItem[i].ks[j].s){
+                        if(arr[i].ks[j].s){
                             convertPathsToAbsoluteValues(arr[i].ks[j].s[0]);
                             convertPathsToAbsoluteValues(arr[i].ks[j].e[0]);
                         }
@@ -340,7 +340,7 @@ function dataFunctionManager(){
                 return [keyframes];
             }
             return keyframes;
-        }else if(keyframes[0].t === null){
+        }else if(keyframes[0].t === undefined){
             if(interpolatedParams.type == 'p'){
                 matrixParams.px = keyframes[0];
                 matrixParams.py = keyframes[1];
@@ -383,10 +383,10 @@ function dataFunctionManager(){
         }
         var k, kLen;
         var perc,jLen, j = 0;
+        var fnc;
         if(interpolatedParams.type == 'default'){
             propertyArray = [];
         }
-        var fnc;
         if(keyData.to){
             bezierData = keyData.bezierData;
             if(frameNum >= nextKeyData.t-offsetTime){
@@ -720,8 +720,8 @@ function dataFunctionManager(){
                     }
                 }
                 if(renderType == 'svg'){
-                    //pathData.pathString = createPathString(propertyArray[0],pathData.closed);
-                    pathData.pathNodes = propertyArray[0];
+                    pathData.pathString = createPathString(propertyArray[0],pathData.closed);
+                    //pathData.pathNodes = propertyArray[0];
                 }else{
                     pathData.pathNodes = propertyArray[0];
                 }

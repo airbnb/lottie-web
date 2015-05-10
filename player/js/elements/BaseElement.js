@@ -1,9 +1,13 @@
-var BaseElement = function (data, animationItem){
+var BaseElement = function (data, animationItem,parentContainer){
     this.animationItem = animationItem;
     this.data = data;
-    this.transformChanged = false;
     this.forceRender = false;
-    this.currentMatrix = new Matrix();
+    this.ownMatrix = new Matrix();
+    this.finalTransform = {
+        mat: new Matrix(),
+        op: 1
+    };
+    this.parentContainer = parentContainer;
     this.init();
 };
 
@@ -18,35 +22,37 @@ BaseElement.prototype.init = function(){
 };
 
 BaseElement.prototype.createElements = function(){
-    this.layerElement = document.createElementNS(svgNS,'g');
-    this.layerElement.setAttribute('id',this.data.layerName);
+    if(this.data.hasMask){
+        this.layerElement = document.createElementNS(svgNS,'g');
+    }else{
+        this.layerElement = this.parentContainer;
+    }
     this.maskingGroup = this.layerElement;
     this.maskedElement = this.layerElement;
 };
 
 BaseElement.prototype.prepareFrame = function(num){
     this.currentAnimData = this.data.renderedData[num].an;
-    if(this.data.renderedFrame.tr !== this.currentAnimData.matrixValue){
-        this.transformChanged = true;
-        this.data.renderedFrame.tr = this.currentAnimData.matrixValue;
-    }else{
-        this.transformChanged = false;
-    }
+    this.data.renderedFrame.tr = this.currentAnimData.matrixValue;
+    var mat = this.currentAnimData.matrixArray;
+    this.ownMatrix.reset();
+    this.ownMatrix.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+    this.ownMatrix.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
 };
 
-BaseElement.prototype.renderFrame = function(num){
+BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
     {
         if(this.isVisible !== true){
             this.isVisible = true;
             this.forceRender = true;
-            this.mainElement.setAttribute('opacity',1);
         }
+        this.finalTransform.opacity = 1;
     }else{
         if(this.isVisible !== false){
             this.isVisible = false;
-            this.mainElement.setAttribute('opacity',0);
         }
+        this.finalTransform.opacity = 0;
     }
 
     if(this.data.eff){
@@ -61,58 +67,37 @@ BaseElement.prototype.renderFrame = function(num){
         this.maskManager.renderFrame(num);
     }
 
-    if(this.data.renderedFrame.o !== this.currentAnimData.tr.o){
-        this.data.renderedFrame.o = this.currentAnimData.tr.o;
-        if(this.isVisible){
-            this.layerElement.setAttribute('opacity',this.currentAnimData.tr.o);
-        }
+    this.finalTransform.opacity *= this.currentAnimData.tr.o;
+
+    if(parentTransform){
+        this.finalTransform.mat.reset();
+        mat = parentTransform.mat.props;
+        this.finalTransform.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+        this.finalTransform.opacity *= parentTransform.opacity;
     }
-
-    var transformValue = '';
-
 
     if(this.data.parents){
-        var changedFlag = false;
-        var i = 0, len = this.data.parents.length, parentAnimData;
-        if(!this.transformChanged){
-            while(i<len){
-                if(this.data.parents[i].elem.element.transformChanged){
-                    changedFlag = true;
-                    break;
-                }
-                i+=1;
-            }
-        }else{
-            changedFlag = true;
+        var i, len = this.data.parents.length, parentAnimData,mat;
+        if(!parentTransform){
+            this.finalTransform.mat.reset();
         }
-        if(changedFlag){
-            for(i=len-1;i>=0;i-=1){
-                parentAnimData = this.data.parents[i].elem.element.currentAnimData;
-                transformValue += parentAnimData.matrixValue + ' ';
-            }
-            transformValue += this.currentAnimData.matrixValue;
-            if(this.isVisible){
-                this.layerElement.setAttribute('transform',transformValue);
-            }
-            this.fullTransform = transformValue;
+        for(i=len-1;i>=0;i-=1){
+            mat = this.data.parents[i].elem.element.ownMatrix.props;
+            this.finalTransform.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+            parentAnimData = this.data.parents[i].elem.element.currentAnimData;
         }
-    }else if(this.transformChanged){
-        transformValue += this.currentAnimData.matrixValue;
+        mat = this.ownMatrix.props;
+        this.finalTransform.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+    }else{
         if(this.isVisible){
-            var mat = this.currentAnimData.matrixArray;
-            this.currentMatrix.reset();
-            this.currentMatrix.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
-            this.currentMatrix.translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
-            //this.layerElement.setAttribute('transform',transformValue);
+            if(!parentTransform){
+                this.finalTransform.mat = this.ownMatrix;
+            }else{
+                mat = this.ownMatrix.props;
+                this.finalTransform.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+            }
         }
-        this.fullTransform = transformValue;
     }
-    if(this.forceRender){
-        this.forceRender = false;
-        this.layerElement.setAttribute('opacity',this.currentAnimData.tr.o);
-        //this.layerElement.setAttribute('transform',this.fullTransform);
-    }
-
 
     return this.isVisible;
 };

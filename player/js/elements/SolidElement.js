@@ -1,12 +1,10 @@
-function ISolidElement(data, animationItem){
-    this.parent.constructor.call(this,data, animationItem);
+function ISolidElement(data, animationItem,parentContainer){
+    this.parent.constructor.call(this,data, animationItem,parentContainer);
 }
 createElement(BaseElement, ISolidElement);
 
 ISolidElement.prototype.createElements = function(){
-    this.svgElem = document.createElementNS (svgNS, "g");
     this.parent.createElements.call(this);
-    this.layerElement.appendChild(this.svgElem);
 
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',this.data.width);
@@ -14,10 +12,8 @@ ISolidElement.prototype.createElements = function(){
     /*rect.setAttribute('width',1);
     rect.setAttribute('height',1);*/
     rect.setAttribute('fill',this.data.color);
-    this.svgElem.appendChild(rect);
-    styleUnselectableDiv(this.svgElem);
-    styleUnselectableDiv(rect);
+    this.layerElement.appendChild(rect);
 
-    this.maskingGroup = this.svgElem;
+    this.maskingGroup = rect;
     this.maskedElement = rect;
 };
