@@ -1,8 +1,8 @@
-function IImageElement(data, animationItem){
+function IImageElement(data, animationItem,parentContainer,globalData){
     this.animationItem = animationItem;
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data, animationItem);
+    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
 }
 createElement(BaseElement, IImageElement);
 
@@ -20,16 +20,40 @@ IImageElement.prototype.createElements = function(){
     img.addEventListener('load', imageLoaded, false);
     img.src = this.path+this.assets[this.data.assetId].path;
 
-    this.svgElem = document.createElementNS(svgNS, "g");
-
     this.parent.createElements.call(this);
 
     this.image = document.createElementNS(svgNS,'image');
     this.image.setAttribute('width',this.data.width+"px");
     this.image.setAttribute('height',this.data.height+"px");
-    this.svgElem.appendChild(this.image);
-    this.layerElement.appendChild(this.svgElem);
-    this.maskingGroup = this.svgElem;
-    styleUnselectableDiv(this.image);
+    this.layerElement.appendChild(this.image);
 
+};
+
+IImageElement.prototype.renderFrame = function(num,parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
+    if(renderParent===false){
+        if(!this.hidden){
+            this.image.setAttribute('opacity','0');
+            this.hidden = true;
+        }
+        return;
+    }
+    this.hidden = false;
+    if(!this.data.hasMask){
+        if(!this.renderedFrames[this.globalData.frameNum]){
+            this.renderedFrames[this.globalData.frameNum] = {
+                tr: 'matrix('+this.finalTransform.mat.props.join(',')+')',
+                o: this.finalTransform.opacity
+            }
+        }
+        var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
+        if(this.lastData.tr != renderedFrameData.tr){
+            this.lastData.tr = renderedFrameData.tr;
+            this.layerElement.setAttribute('transform',renderedFrameData.tr);
+        }
+        if(this.lastData.o != renderedFrameData.o){
+            this.lastData.o = renderedFrameData.o;
+            this.layerElement.setAttribute('opacity',renderedFrameData.o);
+        }
+    }
 };

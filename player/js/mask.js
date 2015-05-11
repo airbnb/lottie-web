@@ -1,6 +1,7 @@
-function MaskElement() {
+function MaskElement(globalData) {
     this.data = null;
     this.element = null;
+    this.globalData = globalData;
     this.paths = [];
 }
 
@@ -8,11 +9,9 @@ MaskElement.prototype.init = function () {
     this.registeredEffects = [];
     this.masksProperties = this.data.masksProperties;
     this.totalMasks = this.masksProperties.length;
-    var maskingGroup = this.element.maskingGroup;
     var maskedElement = this.element.maskedElement;
-    var defs = document.createElementNS(svgNS, 'defs');
-    maskingGroup.appendChild(defs);
-    var i, len = this.masksProperties.length;
+    var defs = this.globalData.defs;
+    var i=0, len = this.masksProperties.length;
 
     this.layerSize = this.element.getLayerSize();
 

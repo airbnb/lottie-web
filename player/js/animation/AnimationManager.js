@@ -70,6 +70,7 @@ var animationManager = (function(){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
+        //setTimeout(resume,10);
         requestAnimationFrame(resume);
     }
 

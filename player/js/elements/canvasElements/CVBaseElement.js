@@ -4,7 +4,7 @@ function CVBaseElement(data,renderer){
     this.currentAnimData = null;
     this.renderFrame = false;
     this.init();
-};
+}
 
 CVBaseElement.prototype.init = function(){
     this.createElements();
@@ -21,7 +21,7 @@ CVBaseElement.prototype.createElements = function(){
 };
 
 CVBaseElement.prototype.prepareFrame = function(num){
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
+    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
     {
         this.renderFrame = true;
     }else{

@@ -24,7 +24,8 @@ function bezFunction(){
         var A1, B1, C1;
         easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
             var tt = t/d;
-            var x = tt, i = 0, z;
+            x = tt;
+            var i = 0, z;
             while (++i < 14) {
                 C0 = 3 * aa;
                 B0 = 3 * (cc - aa) - C0;
@@ -58,8 +59,7 @@ function bezFunction(){
             points :[],
             segmentLength: 0
         };
-        if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1])
-            && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
+        if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
             curveSegments = 2;
         }
         len = pt3.length;
@@ -104,8 +104,7 @@ function bezFunction(){
             points :[],
             segmentLength: 0
         };
-        if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1])
-            && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+        if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
             curveSegments = 2;
         }
         len = pt3.length;
@@ -142,6 +141,6 @@ function bezFunction(){
     };
 
     return ob;
-};
+}
 
 var bez = bezFunction();

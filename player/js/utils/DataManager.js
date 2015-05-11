@@ -99,49 +99,55 @@ function dataFunctionManager(){
                 jLen = layerData.shapes.length;
                 for(j=0;j<jLen;j+=1){
                     shapeItem = layerData.shapes[j];
-                    shapeItem.renderedData = {};
-                    if(shapeItem.tr.o instanceof Array){
-                        convertNumericValue(shapeItem.tr.o,1/100);
-                    }else{
-                        shapeItem.tr.o /= 100;
-                    }
-                    if(shapeItem.tr.s instanceof Array){
-                        convertNumericValue(shapeItem.tr.s,1/100);
-                    }else{
-                        shapeItem.tr.s /= 100;
-                    }
-                    if(shapeItem.tr.r instanceof Array){
-                        convertNumericValue(shapeItem.tr.r,degToRads);
-                    }else{
-                        shapeItem.tr.r *= degToRads;
-                    }
-                    if(shapeItem.fl){
-                        if(shapeItem.fl.o instanceof Array){
-                            convertNumericValue(shapeItem.fl.o,1/100);
-                        }else{
-                            shapeItem.fl.o *= 1/100;
+                    completeShapes(shapeItem);
+                }
+            }
+        }
+    }
+
+    function completeShapes(arr){
+        var i, len = arr.length;
+        var j, jLen;
+        var transformData;
+        for(i=0;i<len;i+=1){
+            arr[i].renderedData = [];
+            if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+                if(arr[i].o instanceof Array){
+                    convertNumericValue(arr[i].o,1/100);
+                }else{
+                    arr[i].o *= 1/100;
+                }
+            }else if(arr[i].ty == 'sh'){
+                if(arr[i].ks.i){
+                    convertPathsToAbsoluteValues(arr[i].ks);
+                }else{
+                    jLen = arr[i].ks.length;
+                    for(j=0;j<jLen;j+=1){
+                        if(arr[i].ks[j].s){
+                            convertPathsToAbsoluteValues(arr[i].ks[j].s[0]);
+                            convertPathsToAbsoluteValues(arr[i].ks[j].e[0]);
                         }
                     }
-                    if(shapeItem.st){
-                        if(shapeItem.st.o instanceof Array){
-                            convertNumericValue(shapeItem.st.o,1/100);
-                        }else{
-                            shapeItem.st.o *= 1/100;
-                        }
-                    }
-                    if(shapeItem.ks){
-                        if(shapeItem.ks.i){
-                            convertPathsToAbsoluteValues(shapeItem.ks);
-                        }else{
-                            kLen = shapeItem.ks.length;
-                            for(k=0;k<kLen;k+=1){
-                                if(shapeItem.ks[k].s){
-                                    convertPathsToAbsoluteValues(shapeItem.ks[k].s[0]);
-                                    convertPathsToAbsoluteValues(shapeItem.ks[k].e[0]);
-                                }
-                            }
-                        }
-                    }
+                }
+            }else if(arr[i].ty == 'gr'){
+                completeShapes(arr[i].it);
+            }else if(arr[i].ty == 'tr'){
+                transformData = arr[i];
+                transformData.renderedData = [];
+                if(transformData.o instanceof Array){
+                    convertNumericValue(transformData.o,1/100);
+                }else{
+                    transformData.o /= 100;
+                }
+                if(transformData.s instanceof Array){
+                    convertNumericValue(transformData.s,1/100);
+                }else{
+                    transformData.s /= 100;
+                }
+                if(transformData.r instanceof Array){
+                    convertNumericValue(transformData.r,degToRads);
+                }else{
+                    transformData.r *= degToRads;
                 }
             }
         }
@@ -174,7 +180,7 @@ function dataFunctionManager(){
     function getInterpolatedValues(keyframes, frameCount, offsetTime){
         var i ,len;
         var valuesArray = [];
-        if(!(keyframes instanceof Array) || keyframes[0].t == null){
+        if(!(keyframes instanceof Array) || keyframes[0].t === null){
             valuesArray.push(keyframes);
             return valuesArray;
         }
@@ -184,52 +190,10 @@ function dataFunctionManager(){
         var propertyArray = [];
         var j, jLen;
         len = keyframes.length;
-        var perc;
-        var curveSegments = 1000;
-        var absToCoord = [];
-        var absTiCoord = [];
+        var perc,bezierData,k;
         for(i=0;i<len;i+=1){
             keyData = keyframes[i];
             keyData.t -= offsetTime;
-            if(keyData.to){
-                var k;
-                var triCoord1,triCoord2,triCoord3,liCoord1,liCoord2,ptCoord,perc,addedLength = 0;
-                var ptDistance;
-                var point,lastPoint = null;
-                var bezierData = {
-                    points :[],
-                    length: 0
-                };
-                for(k=0;k<curveSegments;k+=1){
-                    point = [];
-                    perc = k/(curveSegments-1);
-                    ptDistance = 0;
-                    absToCoord = [];
-                    absTiCoord = [];
-                    keyData.to.forEach(function(item,index){
-                        if(absToCoord[index] == null){
-                            absToCoord[index] = keyData.s[index] + keyData.to[index];
-                            absTiCoord[index] = keyData.e[index] + keyData.ti[index];
-                        }
-                        triCoord1 = keyData.s[index] + (absToCoord[index] - keyData.s[index])*perc;
-                        triCoord2 = absToCoord[index] + (absTiCoord[index] - absToCoord[index])*perc;
-                        triCoord3 = absTiCoord[index] + (keyData.e[index] - absTiCoord[index])*perc;
-                        liCoord1 = triCoord1 + (triCoord2 - triCoord1)*perc;
-                        liCoord2 = triCoord2 + (triCoord3 - triCoord2)*perc;
-                        ptCoord = liCoord1 + (liCoord2 - liCoord1)*perc;
-                        point.push(ptCoord);
-                        if(lastPoint !== null){
-                            ptDistance += Math.pow(point[index] - lastPoint[index],2);
-                        }
-                    });
-                    ptDistance = Math.sqrt(ptDistance);
-                    addedLength += ptDistance;
-                    bezierData.points.push({partialLength: addedLength, point: point});
-                    lastPoint = point;
-                    keyData.bezierData = bezierData;
-                }
-                bezierData.segmentLength = addedLength;
-            }
         }
         var lastFrameIndex = 0;
         var lastPointIndex = 0;
@@ -239,7 +203,7 @@ function dataFunctionManager(){
             while(count<len-1){
                 keyData = keyframes[count];
                 nextKeyData = keyframes[count+1];
-                if(i<keyData.t && count == 0){
+                if(i<keyData.t && count === 0){
                     jLen = keyData.s.length;
                     propertyArray = [];
                     for(j=0;j<jLen;j+=1){
@@ -256,12 +220,12 @@ function dataFunctionManager(){
                     propertyArray = [];
                     if(keyData.to){
                         perc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y)('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
-                        var bezierData = keyData.bezierData;
+                        bezierData = keyData.bezierData;
                         var distanceInLine = bezierData.segmentLength*perc;
-                        var k, kLen, segmentPerc;
+                        var kLen, segmentPerc;
                         j = lastPointIndex;
                         while(j<bezierData.points.length){
-                            if(i == 0 || distanceInLine == 0 || perc == 0){
+                            if(i === 0 || distanceInLine === 0 || perc === 0){
                                 propertyArray = bezierData.points[j].point;
                                 lastPointIndex = j;
                                 break;
@@ -341,7 +305,7 @@ function dataFunctionManager(){
                 }
                 count += 1;
             }
-            if(found == false){
+            if(found === false){
                 keyData = keyframes[keyframes.length - 2];
                 propertyArray = [];
                 keyData.e.forEach(function(item){
@@ -376,7 +340,7 @@ function dataFunctionManager(){
                 return [keyframes];
             }
             return keyframes;
-        }else if(keyframes[0].t == null){
+        }else if(keyframes[0].t === undefined){
             if(interpolatedParams.type == 'p'){
                 matrixParams.px = keyframes[0];
                 matrixParams.py = keyframes[1];
@@ -419,6 +383,7 @@ function dataFunctionManager(){
         }
         var k, kLen;
         var perc,jLen, j = 0;
+        var fnc;
         if(interpolatedParams.type == 'default'){
             propertyArray = [];
         }
@@ -447,7 +412,6 @@ function dataFunctionManager(){
                 }
                 return bezierData.points[0].point;
             }
-            var fnc;
             if(keyData.__fnct){
                 fnc = keyData.__fnct;
             }else{
@@ -464,7 +428,7 @@ function dataFunctionManager(){
             jLen = bezierData.points.length;
             while(flag){
                 addedLength +=bezierData.points[j].partialLength*dir;
-                if(distanceInLine == 0 || perc == 0){
+                if(distanceInLine === 0 || perc === 0){
                     if(interpolatedParams.type == 'p'){
                         matrixParams.px = bezierData.points[j].point[0];
                         matrixParams.py = bezierData.points[j].point[1];
@@ -535,7 +499,6 @@ function dataFunctionManager(){
                         inX = keyData.i.x;
                         inY = keyData.i.y;
                     }
-                    var fnc;
                     if(isArray){
                         if(keyData.__fnct[i]){
                             fnc = keyData.__fnct[i];
@@ -560,13 +523,13 @@ function dataFunctionManager(){
                 }
                 if(keyData.h === 1){
                     if(interpolatedParams.type == 'p'){
-                        if(i == 0){
+                        if(i === 0){
                             matrixParams.px = keyData.s[i];
                         }else if(i == 1){
                             matrixParams.py = keyData.s[i];
                         }
                     }else if(interpolatedParams.type == 's'){
-                        if(i == 0){
+                        if(i === 0){
                             matrixParams.sx = keyData.s[i];
                         }else if(i == 1){
                             matrixParams.sy = keyData.s[i];
@@ -578,13 +541,13 @@ function dataFunctionManager(){
                     }
                 }else{
                     if(interpolatedParams.type == 'p'){
-                        if(i == 0){
+                        if(i === 0){
                             matrixParams.px = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
                         }else if(i == 1){
                             matrixParams.py = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
                         }
                     }else if(interpolatedParams.type == 's'){
-                        if(i == 0){
+                        if(i === 0){
                             matrixParams.sx = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
                         }else if(i == 1){
                             matrixParams.sy = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
@@ -615,7 +578,7 @@ function dataFunctionManager(){
             }
             return pathData;
         }else{
-            var shapeData = {
+            shapeData = {
                 i: [],
                 o: [],
                 v: []
@@ -624,61 +587,63 @@ function dataFunctionManager(){
             var j,jLen, k, kLen;
             var coordsIData,coordsOData,coordsVData;
             if(frameNum < keyframes[0].t-offsetTime){
-                jLen = keyframes[0].s[0].i.length;
-                for(j=0;j<jLen;j+=1){
-                    coordsIData = [];
-                    coordsOData = [];
-                    coordsVData = [];
-                    kLen = keyframes[0].s[0].i[j].length;
-                    for(k=0;k<kLen;k+=1){
-                        coordsIData.push(keyframes[0].s[0].i[j][k]);
-                        coordsOData.push(keyframes[0].s[0].o[j][k]);
-                        coordsVData.push(keyframes[0].s[0].v[j][k]);
+                if(!keyframes.__minValue){
+                    jLen = keyframes[0].s[0].i.length;
+                    for(j=0;j<jLen;j+=1){
+                        coordsIData = [];
+                        coordsOData = [];
+                        coordsVData = [];
+                        kLen = keyframes[0].s[0].i[j].length;
+                        for(k=0;k<kLen;k+=1){
+                            coordsIData.push(keyframes[0].s[0].i[j][k]);
+                            coordsOData.push(keyframes[0].s[0].o[j][k]);
+                            coordsVData.push(keyframes[0].s[0].v[j][k]);
+                        }
+                        shapeData.i.push(coordsIData);
+                        shapeData.o.push(coordsOData);
+                        shapeData.v.push(coordsVData);
                     }
-                    shapeData.i.push(coordsIData);
-                    shapeData.o.push(coordsOData);
-                    shapeData.v.push(coordsVData);
-                }
-                propertyArray.push(shapeData);
-                if(renderType == 'svg'){
-                    if(!keyframes.__minValue){
+                    propertyArray.push(shapeData);
+                    if(renderType == 'svg'){
                         keyframes.__minValue = createPathString(propertyArray,pathData.closed);
+                    }else{
+                        keyframes.__minValue = propertyArray[0];
                     }
+                }
+                if(renderType == 'svg'){
                     pathData.pathString = keyframes.__minValue;
                 }else{
-                    if(!keyframes.__minValue){
-                        keyframes.__minValue = propertyArray;
-                    }
                     pathData.pathNodes = keyframes.__minValue;
                 }
                 return pathData;
             }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
-                var pos = keyframes.length - 2;
-                jLen = keyframes[pos].s[0].i.length;
-                for(j=0;j<jLen;j+=1){
-                    coordsIData = [];
-                    coordsOData = [];
-                    coordsVData = [];
-                    kLen = keyframes[pos].s[0].i[j].length;
-                    for(k=0;k<kLen;k+=1){
-                        coordsIData.push(keyframes[pos].e[0].i[j][k]);
-                        coordsOData.push(keyframes[pos].e[0].o[j][k]);
-                        coordsVData.push(keyframes[pos].e[0].v[j][k]);
+                if(!keyframes.__maxValue){
+                    var pos = keyframes.length - 2;
+                    jLen = keyframes[pos].s[0].i.length;
+                    for(j=0;j<jLen;j+=1){
+                        coordsIData = [];
+                        coordsOData = [];
+                        coordsVData = [];
+                        kLen = keyframes[pos].s[0].i[j].length;
+                        for(k=0;k<kLen;k+=1){
+                            coordsIData.push(keyframes[pos].e[0].i[j][k]);
+                            coordsOData.push(keyframes[pos].e[0].o[j][k]);
+                            coordsVData.push(keyframes[pos].e[0].v[j][k]);
+                        }
+                        shapeData.i.push(coordsIData);
+                        shapeData.o.push(coordsOData);
+                        shapeData.v.push(coordsVData);
                     }
-                    shapeData.i.push(coordsIData);
-                    shapeData.o.push(coordsOData);
-                    shapeData.v.push(coordsVData);
-                }
-                propertyArray.push(shapeData);
-                if(renderType == 'svg'){
-                    if(!keyframes.__maxValue){
+                    propertyArray.push(shapeData);
+                    if(renderType == 'svg'){
                         keyframes.__maxValue = createPathString(propertyArray,pathData.closed);
+                    }else{
+                        keyframes.__maxValue = propertyArray[0];
                     }
+                }
+                if(renderType == 'svg'){
                     pathData.pathString = keyframes.__maxValue;
                 }else{
-                    if(!keyframes.__maxValue){
-                        keyframes.__maxValue = propertyArray;
-                    }
                     pathData.pathNodes = keyframes.__maxValue;
                 }
                 return pathData;
@@ -758,6 +723,7 @@ function dataFunctionManager(){
                 }
                 if(renderType == 'svg'){
                     pathData.pathString = createPathString(propertyArray[0],pathData.closed);
+                    //pathData.pathNodes = propertyArray[0];
                 }else{
                     pathData.pathNodes = propertyArray[0];
                 }
@@ -814,15 +780,11 @@ function dataFunctionManager(){
     };
 
     function iterateLayers(layers, frameNum,renderType){
-
         var dataOb;
         var maskProps;
         var timeRemapped;
-        var shapeItem;
-        var fillOpacity,fillColor, strokeColor, strokeOpacity, strokeWidth, elmPos, elmSize, elmRound;
-        var shapeTrOb = {};
 
-        var offsettedFrameNum, i, len, renderedData, shapeData;
+        var offsettedFrameNum, i, len, renderedData;
         var j, jLen = layers.length, item;
         for(j=0;j<jLen;j+=1){
             item = layers[j];
@@ -853,6 +815,7 @@ function dataFunctionManager(){
             if(renderType == 'canvas'){
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
             }else{
+                renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py) + 'translate('+ -dataOb.a[0]+' '+ -dataOb.a[1]+')';
             }
             item.renderedData[offsettedFrameNum] = renderedData;
@@ -879,115 +842,103 @@ function dataFunctionManager(){
             }else if(item.type == 'ShapeLayer'){
                 len = item.shapes.length;
                 for(i=0;i<len;i+=1){
-                    shapeData = {};
-                    shapeItem = item.shapes[i];
-                    shapeItem.renderedData[offsettedFrameNum] = shapeData;
-                    if(!shapeItem._created){
-                        shapeItem.an.tr = [];
-                        shapeItem.an.renderedFrame = {};
-                        if(shapeItem.ks){
-                            shapeItem.an.path = [];
-                        }else if(shapeItem.el){
-                            shapeItem.an.ell = [];
-                        }else if(shapeItem.rc){
-                            shapeItem.an.rect = [];
-                        }
-                        if(shapeItem.fl){
-                            shapeItem.an.fill = [];
-                        }
-                        if(shapeItem.st){
-                            shapeItem.an.stroke = [];
-                        }
-                    }
-                    if(shapeItem.trim && (!shapeItem._created)){
-                        shapeItem.trim.an = [];
-                    }
-                    if(shapeItem.fl){
-                        fillColor = getInterpolatedValue(shapeItem.fl.c,offsettedFrameNum, item.startTime,interpolatedParams);
-                        fillOpacity = getInterpolatedValue(shapeItem.fl.o,offsettedFrameNum, item.startTime,interpolatedParams);
-                        shapeData.fill = {
-                            opacity : fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
-                        };
-                        if(renderType == 'canvas'){
-                            roundColor(fillColor);
-                            shapeData.fill.color = fillColor;
-                        }else{
-                            shapeData.fill.color = rgbToHex(Math.round(fillColor[0]),Math.round(fillColor[1]),Math.round(fillColor[2]));
-                        }
-                    }
-                    if(shapeItem.ks){
-                        shapeData.path = interpolateShape(shapeItem,offsettedFrameNum, item.startTime,renderType);
-                    }else if(shapeItem.el){
-                        elmPos = getInterpolatedValue(shapeItem.el.p,offsettedFrameNum, item.startTime,interpolatedParams);
-                        elmSize = getInterpolatedValue(shapeItem.el.s,offsettedFrameNum, item.startTime,interpolatedParams);
-                        shapeData.ell = {
-                            p : elmPos,
-                            size : elmSize
-                        };
-                    }else if(shapeItem.rc){
-                        elmPos = getInterpolatedValue(shapeItem.rc.p,offsettedFrameNum, item.startTime,interpolatedParams);
-                        elmSize = getInterpolatedValue(shapeItem.rc.s,offsettedFrameNum, item.startTime,interpolatedParams);
-                        elmRound = getInterpolatedValue(shapeItem.rc.r,offsettedFrameNum, item.startTime,interpolatedParams);
-                        shapeData.rect = {
-                            position : elmPos,
-                            size : elmSize,
-                            roundness : elmRound
-                        };
-                    }
-                    if(shapeItem.st){
-                        strokeColor = getInterpolatedValue(shapeItem.st.c,offsettedFrameNum, item.startTime,interpolatedParams);
-                        strokeOpacity = getInterpolatedValue(shapeItem.st.o,offsettedFrameNum, item.startTime,interpolatedParams);
-                        strokeWidth = getInterpolatedValue(shapeItem.st.w,offsettedFrameNum, item.startTime,interpolatedParams);
-                        shapeData.stroke = {
-                            opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
-                            width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
-                        };
-                        if(renderType == 'canvas'){
-                            roundColor(strokeColor);
-                            shapeData.stroke.color = strokeColor;
-                        }else{
-                            shapeData.stroke.color = rgbToHex(Math.round(strokeColor[0]),Math.round(strokeColor[1]),Math.round(strokeColor[2]));
-                        }
-                    }
-                    shapeTrOb = {};
-                    shapeTrOb.a = getInterpolatedValue(shapeItem.tr.a,offsettedFrameNum, item.startTime,interpolatedParams);
-                    shapeTrOb.o = getInterpolatedValue(shapeItem.tr.o,offsettedFrameNum, item.startTime,interpolatedParams);
-                    interpolatedParams.arrayFlag = true;
-                    interpolatedParams.type = 's';
-                    getInterpolatedValue(shapeItem.tr.s,offsettedFrameNum, item.startTime,interpolatedParams);
-                    interpolatedParams.arrayFlag = true;
-                    interpolatedParams.type = 'r';
-                    getInterpolatedValue(shapeItem.tr.r,offsettedFrameNum, item.startTime,interpolatedParams);
-                    interpolatedParams.arrayFlag = false;
-                    interpolatedParams.type = 'p';
-                    getInterpolatedValue(shapeItem.tr.p,offsettedFrameNum, item.startTime,interpolatedParams);
-                    interpolatedParams.arrayFlag = false;
-                    interpolatedParams.type = 'default';
-                    //console.log('frameNum: ',frameNum);
-                    //console.log('matrixParams.sx: ',matrixParams.sx);
-                    //console.log('matrixParams.sy: ',matrixParams.sy);
-                    if(renderType == 'canvas'){
-                        shapeTrOb.mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
-                    }else{
-                        shapeTrOb.mt = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
-                    }
-                    shapeItem.an.tr[offsettedFrameNum] = shapeTrOb;
-                    shapeData.tr = shapeTrOb;
-
-                    if(shapeItem.trim){
-                        var trimS = getInterpolatedValue(shapeItem.trim.s,offsettedFrameNum, item.startTime,interpolatedParams);
-                        var trimE = getInterpolatedValue(shapeItem.trim.e,offsettedFrameNum, item.startTime,interpolatedParams);
-                        var trimO = getInterpolatedValue(shapeItem.trim.o,offsettedFrameNum, item.startTime,interpolatedParams);
-                        shapeData.trim = {
-                            s: trimS,
-                            e: trimE,
-                            o: trimO
-                        }
-                    }
-                    if(!shapeItem._created){
-                        shapeItem._created = true;
-                    }
+                    iterateShape(item.shapes[i],offsettedFrameNum,item.startTime,renderType);
                 }
+            }
+        }
+    }
+
+    function iterateShape(arr,offsettedFrameNum,startTime,renderType){
+        var i, len = arr.length;
+        var shapeItem;
+        var fillColor, fillOpacity;
+        var elmPos,elmSize,elmRound;
+        var strokeColor,strokeOpacity,strokeWidth;
+        var trimS,trimE,trimO;
+        for(i=0;i<len;i+=1){
+            shapeItem = arr[i];
+            if(shapeItem.ty == 'sh'){
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    path: interpolateShape(shapeItem,offsettedFrameNum, startTime,renderType)
+                };
+            }else if(shapeItem.ty == 'fl'){
+                fillColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime,interpolatedParams);
+                fillOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    opacity:  fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
+                };
+                if(renderType == 'canvas'){
+                    roundColor(fillColor);
+                    shapeItem.renderedData[offsettedFrameNum].color = fillColor;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(Math.round(fillColor[0]),Math.round(fillColor[1]),Math.round(fillColor[2]));
+                }
+            }else if(shapeItem.ty == 'rc'){
+                elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
+                elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                elmRound = getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    position : elmPos,
+                    size : elmSize,
+                    roundness : elmRound
+                };
+            }else if(shapeItem.ty == 'el'){
+                elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
+                elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    p : elmPos,
+                    size : elmSize
+                };
+            }else if(shapeItem.ty == 'st'){
+                strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime,interpolatedParams);
+                strokeOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams);
+                strokeWidth = getInterpolatedValue(shapeItem.w,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
+                    width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
+                };
+                if(renderType == 'canvas'){
+                    roundColor(strokeColor);
+                    shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(Math.round(strokeColor[0]),Math.round(strokeColor[1]),Math.round(strokeColor[2]));
+                }
+            }else if(shapeItem.ty == 'tr'){
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    a : getInterpolatedValue(shapeItem.a,offsettedFrameNum, startTime,interpolatedParams),
+                    o : getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams)
+                };
+                interpolatedParams.arrayFlag = true;
+                interpolatedParams.type = 's';
+                getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                interpolatedParams.arrayFlag = true;
+                interpolatedParams.type = 'r';
+                getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,interpolatedParams);
+                interpolatedParams.arrayFlag = false;
+                interpolatedParams.type = 'p';
+                getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
+                interpolatedParams.arrayFlag = false;
+                interpolatedParams.type = 'default';
+                //console.log('frameNum: ',frameNum);
+                //console.log('matrixParams.sx: ',matrixParams.sx);
+                //console.log('matrixParams.sy: ',matrixParams.sy);
+                if(renderType == 'canvas'){
+                    shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
+                    shapeItem.renderedData[offsettedFrameNum].mt = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
+                }
+            }else if(shapeItem.ty == 'tm'){
+                trimS = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
+                trimE = getInterpolatedValue(shapeItem.e,offsettedFrameNum, startTime,interpolatedParams);
+                trimO = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime,interpolatedParams);
+                shapeItem.renderedData[offsettedFrameNum] = {
+                    s: trimS,
+                    e: trimE,
+                    o: trimO
+                };
+            }else if(shapeItem.ty == 'gr'){
+                iterateShape(shapeItem.it,offsettedFrameNum,startTime,renderType);
             }
         }
     }
@@ -1030,7 +981,7 @@ function dataFunctionManager(){
         var offsettedFrameNum, timeRemapped;
         var shapes;
         for(i=0;i<len;i+=1){
-            if(rendered[i] == ''){
+            if(rendered[i] === ''){
                 continue;
             }
             offsettedFrameNum = num - layers[i].startTime;
@@ -1053,7 +1004,7 @@ function dataFunctionManager(){
         var i, len = animationData.animation.totalFrames;
         var renderedFrames = [];
         for(i=0;i<len;i+=1){
-            renderedFrames.push({num:i,data:renderFrame(id,i)})
+            renderedFrames.push({num:i,data:renderFrame(id,i)});
         }
     }
 
@@ -1063,6 +1014,6 @@ function dataFunctionManager(){
     moduleOb.renderAllFrames = renderAllFrames;
 
     return moduleOb;
-};
+}
 
 var dataManager = dataFunctionManager();

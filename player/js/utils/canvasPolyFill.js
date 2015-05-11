@@ -1,4 +1,4 @@
-(function(window){
+/*(function(window){
     if (CanvasRenderingContext2D.prototype.ellipse == undefined) {
         CanvasRenderingContext2D.prototype.ellipse = function(x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
             this.save();
@@ -44,4 +44,4 @@
         };
         window.Path2D = Path2D_;
     }
-}(window))
+}(window))*/

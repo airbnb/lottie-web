@@ -92,38 +92,26 @@ function matrixManagerFunction(){
     };
 
     var get2DMatrix = function(animData){
-        return returnMatrix2D(animData.r
-            ,animData.s[0],animData.s[1]
-            ,animData.p[0],animData.p[1]);
+        return returnMatrix2D(animData.r,animData.s[0],animData.s[1],animData.p[0],animData.p[1]);
     };
 
     var getMatrix = function(animData, isThreeD){
         if(!isThreeD){
-            return returnMatrix2D(animData.tr.r[2]
-                ,animData.tr.s[0],animData.tr.s[1]
-                ,animData.tr.p[0],animData.tr.p[1]);
+            return returnMatrix2D(animData.tr.r[2],animData.tr.s[0],animData.tr.s[1],animData.tr.p[0],animData.tr.p[1]);
         }
-        return returnMatrix3D(-animData.tr.r[0],animData.tr.r[1],animData.tr.r[2]
-            ,animData.tr.s[0],animData.tr.s[1],animData.tr.s[2]
-            ,animData.tr.p[0],animData.tr.p[1],animData.tr.p[2])
+        return returnMatrix3D(-animData.tr.r[0],animData.tr.r[1],animData.tr.r[2],animData.tr.s[0],animData.tr.s[1],animData.tr.s[2],animData.tr.p[0],animData.tr.p[1],animData.tr.p[2]);
     };
 
     var getMatrix2 = function(animData, isThreeD){
         if(!isThreeD){
-            return returnMatrix2D(animData.r[2]
-                ,animData.s[0],animData.s[1]
-                ,animData.p[0],animData.p[1]);
+            return returnMatrix2D(animData.r[2],animData.s[0],animData.s[1],animData.p[0],animData.p[1]);
         }
-        return returnMatrix3D(-animData.r[0],animData.r[1],animData.r[2]
-            ,animData.s[0],animData.s[1],animData.s[2]
-            ,animData.p[0],animData.p[1],animData.p[2])
+        return returnMatrix3D(-animData.r[0],animData.r[1],animData.r[2],animData.s[0],animData.s[1],animData.s[2],animData.p[0],animData.p[1],animData.p[2]);
     };
 
     var getMatrixArray = function(animData, isThreeD){
         if(!isThreeD){
-            return returnMatrix2DArray(animData.r[2]
-                ,animData.s[0],animData.s[1]
-                ,animData.p[0],animData.p[1]);
+            return returnMatrix2DArray(animData.r[2],animData.s[0],animData.s[1],animData.p[0],animData.p[1]);
         }
         return null;
     };
@@ -135,7 +123,7 @@ function matrixManagerFunction(){
         getMatrixArray : getMatrixArray,
         getMatrixArrayFromParams : returnMatrix2DArray,
         getMatrix2FromParams : returnMatrix2D
-    }
+    };
 
-};
+}
 var MatrixManager = matrixManagerFunction;

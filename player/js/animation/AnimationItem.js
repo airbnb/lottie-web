@@ -96,7 +96,7 @@ AnimationItem.prototype.setData = function (wrapper) {
     params.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  'canvas';
 
     var loop = wrapperAttributes.getNamedItem('data-anim-loop') ? wrapperAttributes.getNamedItem('data-anim-loop').value :  wrapperAttributes.getNamedItem('data-bm-loop') ? wrapperAttributes.getNamedItem('data-bm-loop').value :  wrapperAttributes.getNamedItem('bm-loop') ? wrapperAttributes.getNamedItem('bm-loop').value : '';
-    if(loop == ''){
+    if(loop === ''){
     }else if(loop === 'false'){
         params.loop = false;
     }else if(loop === 'true'){
@@ -125,7 +125,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.animation.frameRate;
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);
-    this.renderer.buildItems(this.animationData.animation.layers);
+    this.renderer.buildItems(this.animationData.animation.layers,this.container);
     this.updaFrameModifier();
     this.checkLoaded();
 };
@@ -137,7 +137,7 @@ AnimationItem.prototype.elementLoaded = function () {
 
 AnimationItem.prototype.checkLoaded = function () {
     this.renderer.buildStage(this.container, this.layers);
-    if (this.pendingElements == 0) {
+    if (this.pendingElements === 0) {
         if(this.prerenderFramesFlag){
             this.prerenderFrames(0);
             dataManager.renderFrame(this.animationID,this.currentFrame);

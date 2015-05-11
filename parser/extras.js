@@ -186,6 +186,9 @@
                 return "TrackMatteLayer";
             }else if(curLayer.adjustmentLayer){
                 return "AdjustmentLayer";
+            }else if (curLayer.nullLayer)
+            {
+                return "NullLayer";
             }
             for(var i = 0;i<instanceOfArrayLength;i++){
                 if(curLayer instanceof instanceOfArray[i]){

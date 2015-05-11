@@ -70,13 +70,13 @@ var fillColorToString = (function(){
             colorMap[colorArr[0]][colorArr[1]] = [];
         }
         if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]]){
-            if(alpha != undefined){
+            if(alpha !== undefined){
                 colorArr[3] = alpha;
             }
             colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = 'rgba('+colorArr.join(',')+')';
         }
         return colorMap[colorArr[0]][colorArr[1]][colorArr[2]];
-    }
+    };
 }());
 
 function createColorMap(){
@@ -87,4 +87,5 @@ function createColorMap(){
         colorMap[i] = hex.length == 1 ? '0' + hex : hex;
     }
 }
+
 createColorMap();

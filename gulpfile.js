@@ -12,8 +12,8 @@ var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 
 gulp.task('gzipFile', function(){
-  gulp.src('demo/hombre/anim2/data.json')
-  //gulp.src('build/player/bodymovin.js')
+  //gulp.src('demo/hombre/anim2/data.json')
+  gulp.src('demo/ninja/anim/data.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });
@@ -73,6 +73,15 @@ gulp.task('buildPlayer', function(){
         .pipe(gulp.dest('build/player/'));
 });
 
+gulp.task('buildGreensock', function(){
+    gulp.src('./player/greensock.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        .pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
+        .pipe(gulp.dest('build/player/greensock'));
+});
+
 gulp.task('buildCanvasPlayer', function(){
     gulp.src([
             'player/js/main.js',
@@ -112,4 +121,43 @@ gulp.task('gzipPlayer', function(){
         .pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(gzip({ append: true }))
         .pipe(gulp.dest('build/'));
+});
+
+gulp.task('concatPlayer', function() {
+    gulp.src([
+            'player/js/main.js',
+            'player/js/3rd_party/transformation-matrix.js',
+            'player/js/3rd_party/canvasPoly.js',
+            'player/js/utils/MatrixManager.js',
+            'player/js/utils/animationFramePolyFill.js',
+            'player/js/utils/common.js',
+            'player/js/utils/canvasPolyFill.js',
+            'player/js/utils/functionExtensions.js',
+            'player/js/utils/bez.js',
+            'player/js/utils/DataManager.js',
+            'player/js/renderers/SVGRenderer.js',
+            'player/js/renderers/CanvasRenderer.js',
+            'player/js/mask.js',
+            'player/js/elements/BaseElement.js',
+            'player/js/elements/CompElement.js',
+            'player/js/elements/ImageElement.js',
+            'player/js/elements/ShapeElement.js',
+            'player/js/elements/ShapeItemElement.js',
+            'player/js/elements/SolidElement.js',
+            'player/js/elements/TextElement.js',
+            'player/js/elements/canvasElements/CVBaseElement.js',
+            'player/js/elements/canvasElements/CVCompElement.js',
+            'player/js/elements/canvasElements/CVImageElement.js',
+            'player/js/elements/canvasElements/CVShapeElement.js',
+            'player/js/elements/canvasElements/CVShapeItemElement.js',
+            'player/js/elements/canvasElements/CVSolidElement.js',
+            'player/js/elements/canvasElements/CVTextElement.js',
+            'player/js/elements/canvasElements/CVMaskElement.js',
+            'player/js/animation/AnimationManager.js',
+            'player/js/animation/AnimationItem.js',
+            'player/js/module.js'
+        ])
+        .pipe(concat('concat.js', {newLine: '\r\n'}))
+        .pipe(wrap('\r\n(function(){\r\n\'use strict\';\r\n<%= contents %>\r\n}());'))
+        .pipe(gulp.dest('build/player/'))
 });
