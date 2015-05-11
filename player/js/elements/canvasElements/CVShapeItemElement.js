@@ -8,6 +8,7 @@ function CVShapeItemElement(data,renderer,mainFlag){
     this.stylesList = [];
     this.ownStylesList = [];
     this.currentMatrix = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
+    this.mat = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
     var i,len=this.dataLength;
     this.renderedPaths = [];
     for(i=0;i<len;i+=1){
@@ -19,16 +20,24 @@ function CVShapeItemElement(data,renderer,mainFlag){
 
 CVShapeItemElement.prototype.drawPaths = function(){
     var i, len = this.stylesList.length;
+    this.renderer.canvasContext.save();
     for(i=0;i<len;i+=1){
         if(this.stylesList[i].type == 'stroke'){
+            //this.renderer.canvasContext.save();
+            this.renderer.canvasContext.globalAlpha *= this.stylesList[i].opacity;
             this.renderer.canvasContext.strokeStyle = this.stylesList[i].value;
             this.renderer.canvasContext.lineWidth = this.stylesList[i].width;
             this.renderer.canvasContext.stroke(this.stylesList[i].path);
+            //this.renderer.canvasContext.restore();
         }else if(this.stylesList[i].type == 'fill'){
+            //this.renderer.canvasContext.save();
+            this.renderer.canvasContext.globalAlpha *= this.stylesList[i].opacity;
             this.renderer.canvasContext.fillStyle=this.stylesList[i].value;
             this.renderer.canvasContext.fill(this.stylesList[i].path);
+            //this.renderer.canvasContext.restore();
         }
     }
+    this.renderer.canvasContext.restore();
 };
 
 CVShapeItemElement.prototype.prepareFrame = function(num){
@@ -42,6 +51,7 @@ CVShapeItemElement.prototype.prepareFrame = function(num){
 };
 
 CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatrix){
+    this.opacityMultiplier = 1;
     var i, len;
     this.ownStylesList.length = 0;
     if(!parentStylesList){
@@ -59,13 +69,11 @@ CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatr
     var ctx = this.renderer.canvasContext;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    var flag;
     for(i=len;i>=0;i-=1){
         if(this.data[i].ty == 'gr'){
-            //this.checkDrawing();
             this.data[i].item.renderShape(this.stylesList,this.currentMatrix);
         }else if(this.data[i].ty == 'tr'){
-            flag = this.renderTransform(this.data[i]);
+            this.renderTransform(this.data[i]);
         }else if(this.data[i].ty == 'sh'){
             this.renderPath(this.data[i]);
         }else if(this.data[i].ty == 'el'){
@@ -73,45 +81,35 @@ CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatr
         }else if(this.data[i].ty == 'rc'){
             this.renderRect(this.data[i]);
         }else if(this.data[i].ty == 'fl'){
-            //this.checkDrawing();
             this.renderFill(this.data[i]);
         }else if(this.data[i].ty == 'st'){
-            //this.checkDrawing();
             this.renderStroke(this.data[i]);
         }else{
-            console.log(this.data[i].ty);
+            //console.log(this.data[i].ty);
         }
     }
-    //this.checkDrawing();
     if(this.mainFlag){
         this.drawPaths();
     }else{
         len = this.ownStylesList.length;
         for(i=0;i<len;i+=1){
-            this.ownStylesList[i].open = false;
+            this.ownStylesList[i].closed = true;
         }
-    }
-    if(flag){
-        this.stylesList.push({
-            type:'restore'
-        });
-        //ctx.restore();
     }
 };
 
 CVShapeItemElement.prototype.renderTransform = function(animData){
-    var flag = false;
     var tr = animData.renderedData[this.frameNum];
     var matrixValue = tr.mtArr;
-    var mat = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
-    mat.a = matrixValue[0];
-    mat.b = matrixValue[1];
-    mat.c = matrixValue[2];
-    mat.d = matrixValue[3];
-    mat.e = matrixValue[4];
-    mat.f = matrixValue[5];
-    mat = mat.translate(-tr.a[0],-tr.a[1]);
-    this.currentMatrix = this.currentMatrix.multiply(mat);
+    this.mat.a = matrixValue[0];
+    this.mat.b = matrixValue[1];
+    this.mat.c = matrixValue[2];
+    this.mat.d = matrixValue[3];
+    this.mat.e = matrixValue[4];
+    this.mat.f = matrixValue[5];
+    this.mat = this.mat.translate(-tr.a[0],-tr.a[1]);
+    this.opacityMultiplier *= animData.o;
+    this.currentMatrix = this.currentMatrix.multiply(this.mat);
 };
 
 CVShapeItemElement.prototype.renderPath = function(data){
@@ -130,12 +128,7 @@ CVShapeItemElement.prototype.renderPath = function(data){
     if(path.closed){
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
     }
-    len = this.stylesList.length;
-    for(i=0;i<len;i+=1){
-        if(this.stylesList[i].open){
-            this.stylesList[i].path.addPath(path2d, this.currentMatrix);
-        }
-    }
+    this.addPathToStyles(path2d);
 };
 
 CVShapeItemElement.prototype.renderEllipse = function(animData){
@@ -143,12 +136,7 @@ CVShapeItemElement.prototype.renderEllipse = function(animData){
     var ell = animData.renderedData[this.frameNum];
     path2d.moveTo(ell.p[0]+ell.size[0]/2,ell.p[1]);
     path2d.ellipse(ell.p[0], ell.p[1], ell.size[0]/2, ell.size[1]/2, 0, 0, Math.PI*2, false);
-    var i, len = this.stylesList.length;
-    for(i=0;i<len;i+=1){
-        if(this.stylesList[i].open){
-            this.stylesList[i].path.addPath(path2d, this.currentMatrix);
-        }
-    }
+    this.addPathToStyles(path2d);
 };
 
 CVShapeItemElement.prototype.renderRect = function(animData){
@@ -181,33 +169,53 @@ CVShapeItemElement.prototype.renderRect = function(animData){
         path2d.lineTo(x, y+roundness);
         path2d.quadraticCurveTo(x, y, x+roundness, y);
     }
+    this.addPathToStyles(path2d);
+};
+
+CVShapeItemElement.prototype.addPathToStyles = function(path2d){
     var i, len = this.stylesList.length;
-    for(i=0;i<len;i+=1){
-        if(this.stylesList[i].open){
-            this.stylesList[i].path.addPath(path2d, this.currentMatrix);
+    var canStroke = true, canFill = true;
+    for(i=len-1;i>=0;i-=1){
+        if(!this.stylesList[i].closed){
+            if(canStroke && this.stylesList[i].type == 'stroke'){
+                this.stylesList[i].path.addPath(path2d, this.currentMatrix);
+                if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
+                    canStroke = false;
+                }
+            }
+            if(canFill && this.stylesList[i].type == 'fill'){
+                this.stylesList[i].path.addPath(path2d, this.currentMatrix);
+                if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
+                    canFill = false;
+                }
+            }
+        }
+        if(!canStroke && !canFill){
+            break;
         }
     }
-};
+}
 
 CVShapeItemElement.prototype.renderFill = function(animData){
     var fill = animData.renderedData[this.frameNum];
     if(animData.fillEnabled!==false){
         if(fill.opacity < 1){
-            //this.renderer.canvasContext.fillStyle=fillColorToString(fill.color, fill.opacity);
             this.stylesList.push({
                 type:'fill',
                 value:fillColorToString(fill.color, fill.opacity),
                 path: new Path2D(),
-                open: true
+                closed: false,
+                styleOpacity: fill.opacity,
+                opacity: this.opacityMultiplier
             });
         }else{
-            ///this.renderer.canvasContext.fillStyle='rgba('+fill.color.join(',')+')';
-            //this.renderer.canvasContext.fillStyle=fillColorToString(fill.color);
             this.stylesList.push({
                 type:'fill',
                 value:fillColorToString(fill.color),
                 path: new Path2D(),
-                open: true
+                closed: false,
+                styleOpacity: 1,
+                opacity: this.opacityMultiplier
             });
         }
         this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
@@ -217,10 +225,9 @@ CVShapeItemElement.prototype.renderFill = function(animData){
         type:'fill',
         value:'rgba(0,0,0,0)',
         path: new Path2D(),
-        open: true
+        closed: false
     });
     this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
-    //this.renderer.canvasContext.fillStyle='rgba(0,0,0,0)';
 };
 
 CVShapeItemElement.prototype.renderStroke = function(animData){
@@ -228,22 +235,24 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
     //this.renderer.canvasContext.lineWidth=stroke.width;
     if(this.data.strokeEnabled!==false){
         if(stroke.opacity < 1){
-            //this.renderer.canvasContext.strokeStyle=fillColorToString(stroke.color, stroke.opacity);
             this.stylesList.push({
                 type:'stroke',
                 value:fillColorToString(stroke.color, stroke.opacity),
                 width:stroke.width,
                 path: new Path2D(),
-                open: true
+                styleOpacity: stroke.opacity,
+                opacity: this.opacityMultiplier,
+                closed: false
             });
         }else{
-            //this.renderer.canvasContext.strokeStyle=fillColorToString(stroke.color);
             this.stylesList.push({
                 type:'stroke',
                 value:fillColorToString(stroke.color),
                 width:stroke.width,
                 path: new Path2D(),
-                open: true
+                styleOpacity: 1,
+                opacity: this.opacityMultiplier,
+                closed: false
             });
         }
         this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
@@ -254,10 +263,10 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         value:'rgba(0,0,0,0)',
         width:stroke.width,
         path: new Path2D(),
-        open: true
+        closed: false,
+        opacity: this.opacityMultiplier
     });
     this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
-    //this.renderer.canvasContext.strokeStyle = 'rgba(0,0,0,0)';
 };
 
 CVShapeItemElement.prototype.adjustTrim = function(){

@@ -344,7 +344,7 @@
             case 'ADBE Vector Group':
                 return 'gr';
             default:
-                $.writeln('unsupported: ',matchName);
+                //$.writeln('unsupported: ',matchName);
                 return '';
         }
     }

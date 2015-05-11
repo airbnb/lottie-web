@@ -1,6 +1,6 @@
-function IShapeElement(data, animationItem,parentContainer){
+function IShapeElement(data, animationItem,parentContainer,globalData){
     this.shapes = [];
-    this.parent.constructor.call(this,data, animationItem,parentContainer);
+    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
 }
 createElement(BaseElement, IShapeElement);
 
@@ -14,7 +14,7 @@ IShapeElement.prototype.createElements = function(){
         if(this.data.trim){
             this.data.shapes[i].trim = this.data.trim;
         }
-        shapeItem = new ShapeItemElement(this.data.shapes[i],this.layerElement);
+        shapeItem = new ShapeItemElement(this.data.shapes[i],this.layerElement,this.globalData);
         this.shapes.push(shapeItem);
     }
 };
@@ -49,6 +49,10 @@ IShapeElement.prototype.renderShapes = function(num){
     for(i=len-1;i>=0;i--){
         shapeData = this.data.shapes[i];
         shapeItem = this.shapes[len - 1 - i];
-        shapeItem.renderShape(num,this.finalTransform);
+        if(this.data.hasMask){
+            shapeItem.renderShape(num);
+        }else{
+            shapeItem.renderShape(num,this.finalTransform);
+        }
     }
 };

@@ -23,8 +23,7 @@ if (CanvasRenderingContext2D.prototype.ellipse === undefined) {
 if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'function' || typeof Path2D.prototype.ellipse !== 'function') {
     (function() {
 
-        // Include the SVG path parser.
-        //= svgpath.js
+        var canvasPrototype = CanvasRenderingContext2D.prototype;
 
         function Path_(arg) {
             this.ops_ = [];
@@ -62,7 +61,12 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
 
         function createFunction(name) {
             return function() {
-                this.ops_.push({type: name, args: Array.prototype.slice.call(arguments, 0)});
+                var i, len = arguments.length;
+                var args = [];
+                for(i=0;i<len;i+=1){
+                    args.push(arguments[i]);
+                }
+                this.ops_.push({type: name, args: args});
             };
         }
 
@@ -74,7 +78,8 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
 
         Path_.prototype.addPath = function(path, tr) {
             var hasTx = false;
-            if (tr) {
+            if (tr && (tr.a != 1 || tr.b != 0 || tr.c != 0 || tr.d != 1 || tr.e != 0 || tr.f != 0)) {
+
                 hasTx = true;
                 this.ops_.push({type: 'save', args: []});
                 this.ops_.push({type: 'transform', args: [tr.a, tr.b, tr.c, tr.d, tr.e, tr.f]});
@@ -85,30 +90,35 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             }
         };
 
-        var original_fill = CanvasRenderingContext2D.prototype.fill;
-        var original_stroke = CanvasRenderingContext2D.prototype.stroke;
-        var original_clip = CanvasRenderingContext2D.prototype.clip;
+        var original_fill = canvasPrototype.fill;
+        var original_stroke = canvasPrototype.stroke;
+        var original_clip = canvasPrototype.clip;
 
         // Replace methods on CanvasRenderingContext2D with ones that understand Path2D.
-        CanvasRenderingContext2D.prototype.fill = function(arg) {
+        canvasPrototype.fill = function(arg) {
             if (arg instanceof Path_) {
                 this.beginPath();
                 for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
-                    CanvasRenderingContext2D.prototype[op.type].apply(this, op.args);
+                    canvasPrototype[op.type].apply(this, op.args);
                 }
-                original_fill.apply(this, Array.prototype.slice.call(arguments, 1));
+                len = arguments.length;
+                var args = [];
+                for(i=1;i<len;i+=1){
+                    args.push(arguments[i]);
+                }
+                original_fill.apply(this, args);
             } else {
                 original_fill.apply(this, arguments);
             }
         };
 
-        CanvasRenderingContext2D.prototype.stroke = function(arg) {
+        canvasPrototype.stroke = function(arg) {
             if (arg instanceof Path_) {
                 this.beginPath();
                 for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
-                    CanvasRenderingContext2D.prototype[op.type].apply(this, op.args);
+                    canvasPrototype[op.type].apply(this, op.args);
                 }
                 original_stroke.call(this);
             } else {
@@ -116,18 +126,19 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             }
         };
 
-        CanvasRenderingContext2D.prototype.clip = function(arg) {
+        canvasPrototype.clip = function(arg) {
             if (arg instanceof Path_) {
-                // Note that we don't save and restore the context state, since the
-                // clip region is part of the state. Not really a problem since the
-                // HTML 5 spec doesn't say that clip(path) doesn't affect the current
-                // path.
                 this.beginPath();
                 for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
-                    CanvasRenderingContext2D.prototype[op.type].apply(this, op.args);
+                    canvasPrototype[op.type].apply(this, op.args);
                 }
-                original_clip.apply(this, Array.prototype.slice.call(arguments, 1));
+                len = arguments.length;
+                var args = [];
+                for(i=1;i<len;i+=1){
+                    args.push(arguments[i]);
+                }
+                original_clip.apply(this, args);
             } else {
                 original_clip.apply(this, arguments);
             }

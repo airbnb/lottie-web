@@ -1,5 +1,5 @@
-function ICompElement(data, animationItem,parentContainer){
-    this.parent.constructor.call(this,data, animationItem,parentContainer);
+function ICompElement(data, animationItem,parentContainer,globalData){
+    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.layers = data.layers;
 }
 createElement(BaseElement, ICompElement);
@@ -20,6 +20,10 @@ ICompElement.prototype.renderFrame = function(num,parentMatrix){
         this.layers[i].element.prepareFrame(timeRemapped - this.layers[i].startTime);
     }
     for( i = 0; i < len; i+=1 ){
-        this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime,this.finalTransform);
+        if(this.data.hasMask){
+            this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime);
+        }else{
+            this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime,this.finalTransform);
+        }
     }
 };

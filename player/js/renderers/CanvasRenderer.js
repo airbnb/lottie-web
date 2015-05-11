@@ -24,7 +24,7 @@ CanvasRenderer.prototype.buildItems = function(layers){
             this.createText(layers[i]);
         }else{
             this.createBase(layers[i]);
-            console.log('NO TYPE: ',layers[i]);
+            //console.log('NO TYPE: ',layers[i]);
         }
     }
 };

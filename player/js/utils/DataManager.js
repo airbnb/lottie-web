@@ -587,61 +587,63 @@ function dataFunctionManager(){
             var j,jLen, k, kLen;
             var coordsIData,coordsOData,coordsVData;
             if(frameNum < keyframes[0].t-offsetTime){
-                jLen = keyframes[0].s[0].i.length;
-                for(j=0;j<jLen;j+=1){
-                    coordsIData = [];
-                    coordsOData = [];
-                    coordsVData = [];
-                    kLen = keyframes[0].s[0].i[j].length;
-                    for(k=0;k<kLen;k+=1){
-                        coordsIData.push(keyframes[0].s[0].i[j][k]);
-                        coordsOData.push(keyframes[0].s[0].o[j][k]);
-                        coordsVData.push(keyframes[0].s[0].v[j][k]);
+                if(!keyframes.__minValue){
+                    jLen = keyframes[0].s[0].i.length;
+                    for(j=0;j<jLen;j+=1){
+                        coordsIData = [];
+                        coordsOData = [];
+                        coordsVData = [];
+                        kLen = keyframes[0].s[0].i[j].length;
+                        for(k=0;k<kLen;k+=1){
+                            coordsIData.push(keyframes[0].s[0].i[j][k]);
+                            coordsOData.push(keyframes[0].s[0].o[j][k]);
+                            coordsVData.push(keyframes[0].s[0].v[j][k]);
+                        }
+                        shapeData.i.push(coordsIData);
+                        shapeData.o.push(coordsOData);
+                        shapeData.v.push(coordsVData);
                     }
-                    shapeData.i.push(coordsIData);
-                    shapeData.o.push(coordsOData);
-                    shapeData.v.push(coordsVData);
-                }
-                propertyArray.push(shapeData);
-                if(renderType == 'svg'){
-                    if(!keyframes.__minValue){
+                    propertyArray.push(shapeData);
+                    if(renderType == 'svg'){
                         keyframes.__minValue = createPathString(propertyArray,pathData.closed);
+                    }else{
+                        keyframes.__minValue = propertyArray[0];
                     }
+                }
+                if(renderType == 'svg'){
                     pathData.pathString = keyframes.__minValue;
                 }else{
-                    if(!keyframes.__minValue){
-                        keyframes.__minValue = propertyArray;
-                    }
                     pathData.pathNodes = keyframes.__minValue;
                 }
                 return pathData;
             }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
-                var pos = keyframes.length - 2;
-                jLen = keyframes[pos].s[0].i.length;
-                for(j=0;j<jLen;j+=1){
-                    coordsIData = [];
-                    coordsOData = [];
-                    coordsVData = [];
-                    kLen = keyframes[pos].s[0].i[j].length;
-                    for(k=0;k<kLen;k+=1){
-                        coordsIData.push(keyframes[pos].e[0].i[j][k]);
-                        coordsOData.push(keyframes[pos].e[0].o[j][k]);
-                        coordsVData.push(keyframes[pos].e[0].v[j][k]);
+                if(!keyframes.__maxValue){
+                    var pos = keyframes.length - 2;
+                    jLen = keyframes[pos].s[0].i.length;
+                    for(j=0;j<jLen;j+=1){
+                        coordsIData = [];
+                        coordsOData = [];
+                        coordsVData = [];
+                        kLen = keyframes[pos].s[0].i[j].length;
+                        for(k=0;k<kLen;k+=1){
+                            coordsIData.push(keyframes[pos].e[0].i[j][k]);
+                            coordsOData.push(keyframes[pos].e[0].o[j][k]);
+                            coordsVData.push(keyframes[pos].e[0].v[j][k]);
+                        }
+                        shapeData.i.push(coordsIData);
+                        shapeData.o.push(coordsOData);
+                        shapeData.v.push(coordsVData);
                     }
-                    shapeData.i.push(coordsIData);
-                    shapeData.o.push(coordsOData);
-                    shapeData.v.push(coordsVData);
-                }
-                propertyArray.push(shapeData);
-                if(renderType == 'svg'){
-                    if(!keyframes.__maxValue){
+                    propertyArray.push(shapeData);
+                    if(renderType == 'svg'){
                         keyframes.__maxValue = createPathString(propertyArray,pathData.closed);
+                    }else{
+                        keyframes.__maxValue = propertyArray[0];
                     }
+                }
+                if(renderType == 'svg'){
                     pathData.pathString = keyframes.__maxValue;
                 }else{
-                    if(!keyframes.__maxValue){
-                        keyframes.__maxValue = propertyArray;
-                    }
                     pathData.pathNodes = keyframes.__maxValue;
                 }
                 return pathData;

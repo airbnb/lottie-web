@@ -21,11 +21,5 @@ CVTextElement.prototype.createElements = function(){
     this.parent.createElements.call(this);
 
     this.anchorElement.appendChild(this.svgElem);
-    this.maskingGroup = this.svgElem;
     this.maskedElement = textElement;
 };
-
-/*defineDescriptor(ITextElement,'textElement', null,{writable:true});
-defineAccessor(ITextElement,'maskingGroup', {get:function(){return this.svgElem}});
-defineAccessor(ITextElement,'maskedElement', {get:function(){return this.textElement}});
-*/

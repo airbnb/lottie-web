@@ -1,5 +1,5 @@
-function ITextElement(data, animationItem,parentContainer){
-    this.parent.constructor.call(this,data, animationItem,parentContainer);
+function ITextElement(data, animationItem,parentContainer,globalData){
+    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
 }
 createElement(BaseElement, ITextElement);
 
@@ -21,11 +21,5 @@ ITextElement.prototype.createElements = function(){
     this.parent.createElements.call(this);
 
     this.anchorElement.appendChild(this.svgElem);
-    this.maskingGroup = this.svgElem;
     this.maskedElement = textElement;
 };
-
-/*defineDescriptor(ITextElement,'textElement', null,{writable:true});
-defineAccessor(ITextElement,'maskingGroup', {get:function(){return this.svgElem}});
-defineAccessor(ITextElement,'maskedElement', {get:function(){return this.textElement}});
-*/

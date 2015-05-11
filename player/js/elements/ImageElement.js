@@ -1,8 +1,8 @@
-function IImageElement(data, animationItem,parentContainer){
+function IImageElement(data, animationItem,parentContainer,globalData){
     this.animationItem = animationItem;
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data, animationItem,parentContainer);
+    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
 }
 createElement(BaseElement, IImageElement);
 
@@ -26,7 +26,34 @@ IImageElement.prototype.createElements = function(){
     this.image.setAttribute('width',this.data.width+"px");
     this.image.setAttribute('height',this.data.height+"px");
     this.layerElement.appendChild(this.image);
-    this.maskingGroup = this.image;
-    styleUnselectableDiv(this.image);
 
+};
+
+IImageElement.prototype.renderFrame = function(num,parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
+    if(renderParent===false){
+        if(!this.hidden){
+            this.image.setAttribute('opacity','0');
+            this.hidden = true;
+        }
+        return;
+    }
+    this.hidden = false;
+    if(!this.data.hasMask){
+        if(!this.renderedFrames[this.globalData.frameNum]){
+            this.renderedFrames[this.globalData.frameNum] = {
+                tr: 'matrix('+this.finalTransform.mat.props.join(',')+')',
+                o: this.finalTransform.opacity
+            }
+        }
+        var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
+        if(this.lastData.tr != renderedFrameData.tr){
+            this.lastData.tr = renderedFrameData.tr;
+            this.layerElement.setAttribute('transform',renderedFrameData.tr);
+        }
+        if(this.lastData.o != renderedFrameData.o){
+            this.lastData.o = renderedFrameData.o;
+            this.layerElement.setAttribute('opacity',renderedFrameData.o);
+        }
+    }
 };

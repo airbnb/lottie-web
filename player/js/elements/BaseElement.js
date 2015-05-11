@@ -1,5 +1,6 @@
-var BaseElement = function (data, animationItem,parentContainer){
+var BaseElement = function (data, animationItem,parentContainer,globalData){
     this.animationItem = animationItem;
+    this.globalData = globalData;
     this.data = data;
     this.forceRender = false;
     this.ownMatrix = new Matrix();
@@ -7,6 +8,8 @@ var BaseElement = function (data, animationItem,parentContainer){
         mat: new Matrix(),
         op: 1
     };
+    this.renderedFrames = [];
+    this.lastData = {};
     this.parentContainer = parentContainer;
     this.init();
 };
@@ -24,11 +27,11 @@ BaseElement.prototype.init = function(){
 BaseElement.prototype.createElements = function(){
     if(this.data.hasMask){
         this.layerElement = document.createElementNS(svgNS,'g');
+        this.parentContainer.appendChild(this.layerElement);
+        this.maskedElement = this.layerElement;
     }else{
         this.layerElement = this.parentContainer;
     }
-    this.maskingGroup = this.layerElement;
-    this.maskedElement = this.layerElement;
 };
 
 BaseElement.prototype.prepareFrame = function(num){
@@ -41,7 +44,7 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
+    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
     {
         if(this.isVisible !== true){
             this.isVisible = true;
@@ -98,6 +101,23 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
             }
         }
     }
+    if(this.data.hasMask){
+        if(!this.renderedFrames[this.globalData.frameNum]){
+            this.renderedFrames[this.globalData.frameNum] = {
+                tr:'matrix('+this.finalTransform.mat.props.join(',')+')',
+                o:this.finalTransform.opacity
+            }
+        }
+        var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
+        if(this.lastData.tr != renderedFrameData.tr){
+            this.lastData.tr = renderedFrameData.tr;
+            this.layerElement.setAttribute('transform',renderedFrameData.tr);
+        }
+        if(this.lastData.o != renderedFrameData.o){
+            this.lastData.o = renderedFrameData.o;
+            this.layerElement.setAttribute('opacity',renderedFrameData.o);
+        }
+    }
 
     return this.isVisible;
 };
@@ -114,7 +134,8 @@ BaseElement.prototype.getMaskManager = function(){
 BaseElement.prototype.addMasks = function(data){
     var params = {
         'data':{value:data},
-        'element':{value:this}
+        'element':{value:this},
+        'globalData':{value:this.globalData}
     };
     this.maskManager = createElement(MaskElement,null,params);
 };

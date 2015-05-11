@@ -1,8 +1,9 @@
-function ShapeItemElement(data,parentElement){
+function ShapeItemElement(data,parentElement,globalData){
     this.stylesList = [];
     this.currentMatrix = new Matrix();
     this.shape = parentElement;
     this.data = data;
+    this.globalData = globalData;
     this.searchShapes(this.data);
     styleUnselectableDiv(this.shape);
 }
@@ -119,15 +120,27 @@ ShapeItemElement.prototype.getElement = function(){
     return this.shape;
 };
 
-ShapeItemElement.prototype.hideShape = function(){
+ShapeItemElement.prototype.hideShape = function(items){
+    if(!items){
+        items = this.data;
+    }
     var i, len = this.stylesList.length;
     var j, jLen;
     var elements;
-    for(i=0;i<len;i+=1){
-        elements = this.stylesList[i].elements;
-        jLen = elements.length;
-        for(j=0;j<jLen;j+=1){
-            elements[j].setAttribute('opacity','0');
+    len = items.length - 1;
+    for(i=len;i>=0;i-=1){
+        if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
+            items[i].lastData.o = '';
+            elements = items[i].elements;
+            jLen = elements.length;
+            for(j=0;j<jLen;j+=1){
+                elements[j].setAttribute('opacity','0');
+                /*elements[i].setAttribute('fill-opacity','0');
+                 elements[i].setAttribute('stroke-opacity','0');*/
+            }
+
+        }else if(items[i].ty == 'gr'){
+            this.hideShape(items[i].it);
         }
     }
 };
@@ -143,13 +156,19 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
     var groupTransform,groupMatrix;
     for(i=len;i>=0;i-=1){
         if(items[i].ty == 'tr'){
-            var props = parentTransform.mat.props;
             var mtArr = items[i].renderedData[num].mtArr;
             groupTransform = items[i].transform;
-            groupTransform.opacity = parentTransform.opacity;
-            groupTransform.opacity *= items[i].renderedData[num].o;
             groupMatrix = groupTransform.mat;
-            groupMatrix.reset().transform(props[0],props[1],props[2],props[3],props[4],props[5]).transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]).translate(-items[i].renderedData[num].a[0],-items[i].renderedData[num].a[1]);
+            groupMatrix.reset();
+            if(parentTransform){
+                var props = parentTransform.mat.props;
+                groupTransform.opacity = parentTransform.opacity;
+                groupTransform.opacity *= items[i].renderedData[num].o;
+                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+            }else{
+                groupTransform.opacity = items[i].renderedData[num].o;
+            }
+            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]).translate(-items[i].renderedData[num].a[0],-items[i].renderedData[num].a[1]);
         }else if(items[i].ty == 'sh'){
             this.renderPath(items[i],num,groupTransform);
         }else if(items[i].ty == 'el'){
@@ -167,16 +186,17 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
 };
 
 ShapeItemElement.prototype.renderPath = function(pathData,num,transform){
-    if(!pathData.renderedFrames[num]){
-        pathData.renderedFrames[num] = {
+    if(!pathData.renderedFrames[this.globalData.frameNum]){
+        pathData.renderedFrames[this.globalData.frameNum] = {
             d: pathData.renderedData[num].path.pathString,
             tr: 'matrix('+transform.mat.props.join(',')+')',
             o: transform.opacity
         };
     }
-    var pathString = pathData.renderedFrames[num].d;
-    var transformString = pathData.renderedFrames[num].tr;
-    var opacity = pathData.renderedFrames[num].o;
+    var renderedFrameData = pathData.renderedFrames[this.globalData.frameNum];
+    var pathString = renderedFrameData.d;
+    var transformString = renderedFrameData.tr;
+    var opacity = renderedFrameData.o;
     var elements = pathData.elements;
     var i, len = elements.length;
     for(i=0;i<len;i+=1){
@@ -198,8 +218,8 @@ ShapeItemElement.prototype.renderPath = function(pathData,num,transform){
 
 ShapeItemElement.prototype.renderEllipse = function(ellipseData,num,transform){
     var ellipseAttrs = ellipseData.renderedData[num];
-    if(!ellipseData.renderedFrames[num]){
-        ellipseData.renderedFrames[num] = {
+    if(!ellipseData.renderedFrames[this.globalData.frameNum]){
+        ellipseData.renderedFrames[this.globalData.frameNum] = {
             cx: ellipseAttrs.p[0],
             cy: ellipseAttrs.p[1],
             rx: ellipseAttrs.size[0]/2,
@@ -208,12 +228,13 @@ ShapeItemElement.prototype.renderEllipse = function(ellipseData,num,transform){
             o: transform.opacity
         };
     }
-    var cx = ellipseData.renderedFrames[num].cx;
-    var cy = ellipseData.renderedFrames[num].cy;
-    var rx = ellipseData.renderedFrames[num].rx;
-    var ry = ellipseData.renderedFrames[num].ry;
-    var tr = ellipseData.renderedFrames[num].tr;
-    var o = ellipseData.renderedFrames[num].o;
+    var renderedFrameData = ellipseData.renderedFrames[this.globalData.frameNum];
+    var cx = renderedFrameData.cx;
+    var cy = renderedFrameData.cy;
+    var rx = renderedFrameData.rx;
+    var ry = renderedFrameData.ry;
+    var tr = renderedFrameData.tr;
+    var o = renderedFrameData.o;
 
     var elements = ellipseData.elements;
     var i, len = elements.length;
@@ -249,7 +270,7 @@ ShapeItemElement.prototype.renderRect = function(rectData,num,transform){
     var elements = rectData.elements;
     var rectAttrs = rectData.renderedData[num];
     var roundness;
-    if(!rectData.renderedFrames[num]){
+    if(!rectData.renderedFrames[this.globalData.frameNum]){
         roundness = rectAttrs.roundness;
 
         if(roundness > rectAttrs.size[0]/2){
@@ -258,7 +279,7 @@ ShapeItemElement.prototype.renderRect = function(rectData,num,transform){
         if(roundness > rectAttrs.size[1]/2){
             roundness = rectAttrs.size[1]/2;
         }
-        rectData.renderedFrames[num] = {
+        rectData.renderedFrames[this.globalData.frameNum] = {
             round: roundness,
             w: rectAttrs.size[0],
             h: rectAttrs.size[1],
@@ -268,13 +289,14 @@ ShapeItemElement.prototype.renderRect = function(rectData,num,transform){
             o: transform.opacity
         };
     }
-    roundness = rectData.renderedFrames[num].round;
-    var w = rectData.renderedFrames[num].w;
-    var h = rectData.renderedFrames[num].h;
-    var x = rectData.renderedFrames[num].x;
-    var y = rectData.renderedFrames[num].y;
-    var tr = rectData.renderedFrames[num].tr;
-    var o = rectData.renderedFrames[num].o;
+    var renderedFrameData = rectData.renderedFrames[this.globalData.frameNum];
+    roundness = renderedFrameData.round;
+    var w = renderedFrameData.w;
+    var h = renderedFrameData.h;
+    var x = renderedFrameData.x;
+    var y = renderedFrameData.y;
+    var tr = renderedFrameData.tr;
+    var o = renderedFrameData.o;
     var i, len = elements.length;
     for(i=0;i<len;i+=1){
         if(rectData.lastData.roundness != roundness){
@@ -311,15 +333,16 @@ ShapeItemElement.prototype.renderRect = function(rectData,num,transform){
 ShapeItemElement.prototype.renderFill = function(styleData,num){
     var fillData = styleData.renderedData[num];
     var styleElem = styleData.style;
-    if(!styleData.renderedFrames[num]){
-        styleData.renderedFrames[num] = {
+    if(!styleData.renderedFrames[this.globalData.frameNum]){
+        styleData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
             o: fillData.opacity
         }
     }
 
-    var c = styleData.renderedFrames[num].c;
-    var o = styleData.renderedFrames[num].o;
+    var renderedFrameData = styleData.renderedFrames[this.globalData.frameNum];
+    var c = renderedFrameData.c;
+    var o = renderedFrameData.o;
 
     var elements = styleElem.elements;
     var i, len = elements.length;
@@ -338,17 +361,18 @@ ShapeItemElement.prototype.renderFill = function(styleData,num){
 ShapeItemElement.prototype.renderStroke = function(styleData,num){
     var fillData = styleData.renderedData[num];
     var styleElem = styleData.style;
-    if(!styleData.renderedFrames[num]){
-        styleData.renderedFrames[num] = {
+    if(!styleData.renderedFrames[this.globalData.frameNum]){
+        styleData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
             o: fillData.opacity,
             w: fillData.width
         }
     }
 
-    var c = styleData.renderedFrames[num].c;
-    var o = styleData.renderedFrames[num].o;
-    var w = styleData.renderedFrames[num].w;
+    var renderedFrameData = styleData.renderedFrames[this.globalData.frameNum];
+    var c = renderedFrameData.c;
+    var o = renderedFrameData.o;
+    var w = renderedFrameData.w;
 
     var elements = styleElem.elements;
     var i, len = elements.length;
@@ -366,26 +390,6 @@ ShapeItemElement.prototype.renderStroke = function(styleData,num){
     styleData.lastData.c = c;
     styleData.lastData.o = o;
     styleData.lastData.w = w;
-};
-
-ShapeItemElement.prototype.renderTransform = function(num){
-    var animData = this.currentData;
-    if(animData.tr){
-        var tr = animData.tr;
-        if(this.renderedFrame.tr.o !== tr.o){
-            this.renderedFrame.tr.o = tr.o;
-            this.shapeG.setAttribute('opacity',tr.o);
-        }
-        if(this.renderedFrame.tr.mt !== tr.mt){
-            this.renderedFrame.tr.mt = tr.mt;
-            this.shapeG.setAttribute('transform',tr.mt);
-        }
-        if(this.renderedFrame.tr.a[0] !== tr.a[0] || this.renderedFrame.tr.a[1] !== tr.a[1]){
-            this.renderedFrame.tr.a[0] = tr.a[0];
-            this.renderedFrame.tr.a[1] = tr.a[1];
-            this.shape.setAttribute('transform', 'translate('+(-tr.a[0])+', '+(-tr.a[1])+')');
-        }
-    }
 };
 
 ShapeItemElement.prototype.adjustTrim = function(){
