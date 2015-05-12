@@ -2,8 +2,8 @@
 After Effects plugin for export animations to svg + js library or to canvas + js
 
 ##Version 2.0 is out!
-Improved performace
-Better AE features support
+- improved performace
+- better AE features support
 
 ## Setting up After Effects
 - Close After Effects
