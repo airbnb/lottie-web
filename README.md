@@ -33,11 +33,11 @@ Better AE features support
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
-- or path: the relative path to the animation object.
+- path: the relative path to the animation object. (animationData and path are exclu
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
-- animType: svg / canvas to set the renderer
+- animType: 'svg' / 'canvas' to set the renderer
 - prerender: true / false to prerender all animation before starting (true recommended)
 ```
 bodymovin.loadAnimation({
@@ -65,8 +65,9 @@ bodymovin.loadAnimation({
 ```
 If you do this, you will have to handle the canvas clearing after each frame
 <br/>
-Or you can include a div and set it's class to bodymovin.
-If you do it before page Load, it will automatically find it.  
+Another way to load animations is adding some attributes to a dom element.
+You can include a div and set it's class to bodymovin.
+If you do it before page load, it will automatically find it.
 Or you can call bodymovin.searchAnimations() after page load and it will search all elements with the class "bodymovin"
 <br/>
 - add the data.json to a folder relative to the html
@@ -98,7 +99,7 @@ bodymovin has 6 main methods:
 **bodymovin.searchAnimations()** -- looks for elements with class "bodymovin"
 **bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url
 
-See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool examples
+See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations
 
 ## Alerts!
 
@@ -126,6 +127,7 @@ my email is **hernantorrisi@gmail.com**
 This is version 2. It is pretty stable but let me know if anything comes up.
 
 ## Examples
+http://lab.nearpod.com/bodymovin/demo/miked/ <br/>
 http://lab.nearpod.com/bodymovin/demo/ninja/ <br/>
 http://lab.nearpod.com/bodymovin/demo/shapes/ <br/>
 http://lab.nearpod.com/bodymovin/demo/gatin/ <br/>
