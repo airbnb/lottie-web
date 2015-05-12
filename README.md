@@ -66,7 +66,7 @@ bodymovin.loadAnimation({
 If you do this, you will have to handle the canvas clearing after each frame
 <br/>
 Or you can include a div and set it's class to bodymovin.
-If you do it before page Load, it will automatically find it.
+If you do it before page Load, it will automatically find it.  
 Or you can call bodymovin.searchAnimations() after page load and it will search all elements with the class "bodymovin"
 <br/>
 - add the data.json to a folder relative to the html
