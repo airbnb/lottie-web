@@ -1,6 +1,9 @@
 # bodymovin
-After Effects to html - svg library
-and to canvas!
+After Effects plugin for export animations to svg + js library or to canvas + js
+
+##Version 2.0 is out!
+Improved performace
+Better AE features support
 
 ## Setting up After Effects
 - Close After Effects
@@ -23,10 +26,49 @@ and to canvas!
 
 ### HTML
 - get the bodymovin.js file from the build/player/ folder
-- include the .js file on your html
+- include the .js file on your html (remember to zip it for production)
 ```
 <script src="js/bodymovin.js" type="text/javascript"></script>
 ```
+You can call bodymovin.loadAnimation() to start an animation.
+It takes an object as a unique param with:
+- animationData: an Object with the exported animation data.
+- or path: the relative path to the animation object.
+- loop: true / false / number
+- autoplay: true / false it will start playing as soon as it is ready
+- name: animation name for future reference
+- animType: svg / canvas to set the renderer
+- prerender: true / false to prerender all animation before starting (true recommended)
+```
+bodymovin.loadAnimation({
+  wrapper: element, // the dom element
+  animType: 'svg',
+  loop: true,
+  autoplay: true,
+  animationData: JSON.parse(animationData) // the animation data
+});
+```
+- if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
+```
+bodymovin.loadAnimation({
+  wrapper: element, // the dom element
+  animType: 'svg',
+  loop: true,
+  autoplay: true,
+  animationData: animationData, // the animation data
+  renderer: {
+    context: canvasContext, // the canvas context
+    scaleMode: 'noScale',
+    clearCanvas: false
+  }
+});
+```
+If you do this, you will have to handle the canvas clearing after each frame
+<br/>
+Or you can include a div and set it's class to bodymovin.
+If you do it before page Load, it will automatically find it.
+Or you can call bodymovin.searchAnimations() after page load and it will search all elements with the class "bodymovin"
+<br/>
 - add the data.json to a folder relative to the html
 - create a div that will contain the animation.
 <br/>
@@ -45,6 +87,7 @@ and to canvas!
  ```
 <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
+<br/>
 
 ## Usage
 bodymovin has 6 main methods:
@@ -55,28 +98,24 @@ bodymovin has 6 main methods:
 **bodymovin.searchAnimations()** -- looks for elements with class "bodymovin"
 **bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url
 
-See the demo folders for examples
+See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool examples
 
 ## Alerts!
 
-### Grouped and multishapes in single layer
-There are some issues with multiple shapes on a single layer. Should be fixed after the weekend with major changes.
-If you use a single shape per layer, everything should be fine.
-
 ### Undos
-The script is **very** invasive. It will perform a lot of actions in your project that will go to the undo stack. So you'll probably won't be able to undo your work after exporting. I haven't figured out how to prevent this.
+The script is **very** invasive to your AE project. It will perform a lot of actions in your project that will go to the undo stack. So you'll probably won't be able to undo your work after exporting. I haven't figured out how to prevent this.
 
 ### Files
-If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors), they will be added to the render queue and exported.
-So expect a lot of "render ready chimes" coming out from your speakers that will scare your cats and wake your neighbours.
+If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors, right click each layer and do: "Create shapes from Vector Layers"), they will be added to the render queue and exported.
+So expect a lot of "render chimes" coming out from your speakers that will scare your cats and wake your neighbours.
 
 ### Time
-Some animations take a **lot** of time to render. If you see AE is not responding, be patient, give it some minutes. There is a lot going on and I haven't used an interval function on this version.
+If you see AE is not responding, be patient, give it some minutes. There is a lot going on.
 
 ### Performance
-This is real time rendering. Although it does some optimizations, too complex animations can have an impact on performance. (remember flash?)<br/>
+This is real time rendering. Although it is pretty optimized, it always helps if you keep your AE project to what is necessary<br/>
 More optimizations are on their way, but try not to use huge shapes in AE only to mask a small part of it.<br/>
-Too many nodes will also affect performance as well as  lots of transformations at the same time.
+Too many nodes will also affect performance.
 
 ### Help
 If you have any animations that don't work or want me to export them, don't hesitate to write. <br/>
@@ -84,7 +123,7 @@ I'm really interested in seeing what kind of problems the plugin has. <br/>
 my email is **hernantorrisi@gmail.com**
 
 ### Version
-this is a very first version of the plug in. It will have bugs for sure. Let me know if anything comes up.
+This is version 2. It is pretty stable but let me know if anything comes up.
 
 ## Examples
 http://lab.nearpod.com/bodymovin/demo/ninja/ <br/>
@@ -99,10 +138,9 @@ http://lab.nearpod.com/bodymovin/demo/gatin/ <br/>
 ## Support
 - The script supports precomps, shapes, solids, images, null objects,
 - Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
-- It supports masks and inverted masks but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
+- It supports masks and inverted masks (inverted ones only in svg renderer for now) but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping (yeah!)
 - The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
-- Trim paths are supported.
 - No effects whatsoever. (stroke is on it's way)
 - No expressions (maybe some coming)
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
@@ -111,5 +149,4 @@ http://lab.nearpod.com/bodymovin/demo/gatin/ <br/>
 - Exporting images in a sprite
 - Stroke Effect support
 - Experimenting with the webAnimationAPI export
-- Importing into a canvas instead of SVG
 - Exporting 3D animations (not vectors because there is no 3d svg support on browsers)
