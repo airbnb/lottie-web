@@ -74,5 +74,3 @@
     var readyStateCheckInterval = setInterval(checkReady, 100);
 
 }(window));
-
-//window.onkeyup = keyActive;
