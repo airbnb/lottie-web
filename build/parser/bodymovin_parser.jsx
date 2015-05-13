@@ -2416,38 +2416,49 @@ var UI;
         var shapes = [];
         layerOb.shapes = shapes;
         var contents = layerInfo.property('Contents');
-        if(contents.property('ADBE Vector Filter - Trim')){
+        /*if(contents.property('ADBE Vector Filter - Trim')){
             layerOb.trim = {
                 's':{},
                 'e':{},
                 'o':{}
             };
-            extrasInstance.convertToBezierValues(contents.property('ADBE Vector Filter - Trim').property('Start'), frameRate, layerOb.trim,'s');
-            extrasInstance.convertToBezierValues(contents.property('ADBE Vector Filter - Trim').property('End'), frameRate, layerOb.trim,'e');
-            extrasInstance.convertToBezierValues(contents.property('ADBE Vector Filter - Trim').property('Offset'), frameRate, layerOb.trim,'o');
-        }
-        var i, len = contents.numProperties;
+        }*/
+        iterateProperties(contents,shapes,frameRate);
+        /*var i, len = contents.numProperties;
         var shapeInfo, shapeObData;
         for(i=0;i<len;i++){
             shapeInfo = contents.property(i+1);
-            var propContents = shapeInfo.property('Contents');
-            if(propContents === null){
+            var matchName = getItemType(shapeInfo.matchName);
+            $.writeln('matchName: ',matchName);
+            if(matchName == 'gr'){
+                var propContents = shapeInfo.property('Contents');
+                shapeObData = [];
+                iterateProperties(propContents,shapeObData,frameRate);
+                ob = {};
+                ob.ty = 'tr';
+                var transformProperty = shapeInfo.property('Transform');
+                extrasInstance.convertToBezierValues(transformProperty.property('Position'), frameRate, ob,'p');
+                extrasInstance.convertToBezierValues(transformProperty.property('Anchor Point'), frameRate, ob,'a');
+                extrasInstance.convertToBezierValues(transformProperty.property('Scale'), frameRate, ob,'s');
+                extrasInstance.convertToBezierValues(transformProperty.property('Rotation'), frameRate, ob,'r');
+                extrasInstance.convertToBezierValues(transformProperty.property('Opacity'), frameRate, ob,'o');
+                shapeObData.push(ob);
+                shapes.push(shapeObData);
+            }else if(matchName == 'tm'){
+                ob = {
+                    's':{},
+                    'e':{},
+                    'o':{},
+                    'ty':'tm'
+                };
+                extrasInstance.convertToBezierValues(shapeInfo.property('Start'), frameRate, ob,'s');
+                extrasInstance.convertToBezierValues(shapeInfo.property('End'), frameRate, ob,'e');
+                extrasInstance.convertToBezierValues(shapeInfo.property('Offset'), frameRate, ob,'o');
+                shapes.push(ob);
+            }else{
                 continue;
             }
-            shapeObData = [];
-            iterateProperties(propContents,shapeObData,frameRate);
-            ob = {};
-            ob.ty = 'tr';
-            var transformProperty = shapeInfo.property('Transform');
-            extrasInstance.convertToBezierValues(transformProperty.property('Position'), frameRate, ob,'p');
-            extrasInstance.convertToBezierValues(transformProperty.property('Anchor Point'), frameRate, ob,'a');
-            extrasInstance.convertToBezierValues(transformProperty.property('Scale'), frameRate, ob,'s');
-            extrasInstance.convertToBezierValues(transformProperty.property('Rotation'), frameRate, ob,'r');
-            extrasInstance.convertToBezierValues(transformProperty.property('Opacity'), frameRate, ob,'o');
-            shapeObData.push(ob);
-
-            shapes.push(shapeObData);
-        }
+        }*/
     }
 
     function getItemType(matchName){

@@ -96,11 +96,7 @@ function dataFunctionManager(){
             if(layerData.type=='PreCompLayer'){
                 completeLayers(layerData.layers);
             }else if(layerData.type == 'ShapeLayer'){
-                jLen = layerData.shapes.length;
-                for(j=0;j<jLen;j+=1){
-                    shapeItem = layerData.shapes[j];
-                    completeShapes(shapeItem);
-                }
+                completeShapes(layerData.shapes);
             }
         }
     }
@@ -840,10 +836,7 @@ function dataFunctionManager(){
                 timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
                 iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.type == 'ShapeLayer'){
-                len = item.shapes.length;
-                for(i=0;i<len;i+=1){
-                    iterateShape(item.shapes[i],offsettedFrameNum,item.startTime,renderType);
-                }
+                iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
             }
         }
     }

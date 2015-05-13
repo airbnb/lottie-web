@@ -71,7 +71,7 @@ gulp.task('buildPlayer', function(){
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap('(function(window){<%= contents %>}(window));'))
-        .pipe(gulp.dest('build/player/v2/'));
+        .pipe(gulp.dest('build/player/'));
 });
 
 gulp.task('buildGreensock', function(){

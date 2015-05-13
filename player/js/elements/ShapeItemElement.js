@@ -154,6 +154,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
     var i, len;
     len = items.length - 1;
     var groupTransform,groupMatrix;
+    groupTransform = parentTransform;
     for(i=len;i>=0;i-=1){
         if(items[i].ty == 'tr'){
             var mtArr = items[i].renderedData[num].mtArr;

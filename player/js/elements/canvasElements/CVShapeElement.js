@@ -7,16 +7,7 @@ createElement(CVBaseElement, CVShapeElement);
 CVShapeElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
-
-    var i, len = this.data.shapes.length;
-    var shapeItem;
-    for(i=len-1;i>=0;i--){
-        if(this.data.trim){
-            this.data.shapes[i].trim = this.data.trim;
-        }
-        shapeItem = new CVShapeItemElement(this.data.shapes[i], this.renderer, true);
-        this.shapes.push(shapeItem);
-    }
+    this.mainShape = new CVShapeItemElement(this.data.shapes,this.renderer,true);
 };
 
 CVShapeElement.prototype.prepareFrame = function(num){
@@ -24,10 +15,7 @@ CVShapeElement.prototype.prepareFrame = function(num){
     if(renderParent===false){
         return;
     }
-    var i,len = this.data.shapes.length;
-    for(i=len-1;i>=0;i--){
-        this.shapes[len - 1 - i].prepareFrame(num);
-    }
+    this.mainShape.prepareFrame(num);
 };
 
 CVShapeElement.prototype.draw = function(){
@@ -41,8 +29,5 @@ CVShapeElement.prototype.draw = function(){
 };
 
 CVShapeElement.prototype.drawShapes = function(){
-    var i,len = this.data.shapes.length;
-    for(i=len-1;i>=0;i--){
-        this.shapes[len - 1 - i].renderShape();
-    }
+    this.mainShape.renderShape();
 };
