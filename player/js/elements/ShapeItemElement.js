@@ -6,6 +6,12 @@ function ShapeItemElement(data,parentElement,globalData){
     this.globalData = globalData;
     this.searchShapes(this.data);
     styleUnselectableDiv(this.shape);
+    this.currentTrim = {
+        s:0,
+        e:100,
+        o:0,
+        active : false
+    }
 }
 
 ShapeItemElement.prototype.searchShapes = function(arr){
@@ -149,6 +155,9 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
     if(!items){
         items = this.data;
     }
+    if(this.currentTrim.active){
+        this.currentTrim.active = false;
+    }
     this.posCount = 0;
     this.frameNum = num;
     var i, len;
@@ -182,9 +191,30 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
             this.renderStroke(items[i],num);
         }else if(items[i].ty == 'gr'){
             this.renderShape(num,groupTransform,items[i].it);
+        }else if(items[i].ty == 'tm'){
+            this.renderTrim(items[i].renderedData[num]);
         }
     }
 };
+
+ShapeItemElement.prototype.renderTrim = function(trimData){
+    if(trimData.e != 100 || trimData.s != 0 || trimData.o%360 != 0){
+        if(!this.currentTrim.active){
+            this.currentTrim.s = 0;
+            this.currentTrim.e = 100;
+            this.currentTrim.o = 0;
+            this.currentTrim.active = true;
+        }
+        if(this.currentTrim.e == this.currentTrim.s){
+            return;
+        }
+        var currentStrimS = this.currentTrim.s;
+        var currentStrimE = this.currentTrim.e;
+        this.currentTrim.o += trimData.o;
+        this.currentTrim.s = currentStrimS + (currentStrimE - currentStrimS)*(trimData.s/100);
+        this.currentTrim.e = currentStrimE - (currentStrimE - currentStrimS)*(trimData.e/100);
+    }
+}
 
 ShapeItemElement.prototype.renderPath = function(pathData,num,transform){
     if(!pathData.renderedFrames[this.globalData.frameNum]){
@@ -403,7 +433,7 @@ ShapeItemElement.prototype.adjustTrim = function(){
     }
 };
 
-ShapeItemElement.prototype.renderTrim = function(num){
+ShapeItemElement.prototype.renderTrim_ = function(num){
     var trimData = this.currentData.trim;
     if(this.pathLength === 0){
         this.shape.setAttribute('stroke-opacity',0);
