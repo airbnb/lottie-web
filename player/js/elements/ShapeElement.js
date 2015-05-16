@@ -14,18 +14,18 @@ IShapeElement.prototype.createElements = function(){
 IShapeElement.prototype.renderFrame = function(num,parentMatrix){
     var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
     if(renderParent===false){
-        if(!this.hidden){
-            this.hideShapes();
-        }
+        this.hide();
         return;
     }
 
     this.renderShapes(num);
 };
 
-IShapeElement.prototype.hideShapes = function(){
-    this.mainShape.hideShape();
-    this.hidden = true;
+IShapeElement.prototype.hide = function(){
+    if(!this.hidden){
+        this.mainShape.hideShape();
+        this.hidden = true;
+    }
 };
 
 IShapeElement.prototype.renderShapes = function(num){
