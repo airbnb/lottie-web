@@ -2,7 +2,6 @@ var BaseElement = function (data, animationItem,parentContainer,globalData){
     this.animationItem = animationItem;
     this.globalData = globalData;
     this.data = data;
-    this.forceRender = false;
     this.ownMatrix = new Matrix();
     this.finalTransform = {
         mat: new Matrix(),
@@ -48,7 +47,6 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     {
         if(this.isVisible !== true){
             this.isVisible = true;
-            this.forceRender = true;
         }
         this.finalTransform.opacity = 1;
     }else{
@@ -157,3 +155,7 @@ BaseElement.prototype.getLayerSize = function(){
         return {w:this.data.width,h:this.data.height};
     }
 };
+
+BaseElement.prototype.hide = function(){
+
+}

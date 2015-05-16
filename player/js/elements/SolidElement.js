@@ -16,13 +16,17 @@ ISolidElement.prototype.createElements = function(){
     this.rectElement = rect;
 };
 
+ISolidElement.prototype.hide = function(){
+    if(!this.hidden){
+        this.rectElement.setAttribute('opacity','0');
+        this.hidden = true;
+    }
+}
+
 ISolidElement.prototype.renderFrame = function(num,parentMatrix){
     var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
     if(renderParent===false){
-        if(!this.hidden){
-            this.rectElement.setAttribute('opacity','0');
-            this.hidden = true;
-        }
+        this.hide();
         return;
     }
     this.hidden = false;

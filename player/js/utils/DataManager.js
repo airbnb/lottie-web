@@ -833,7 +833,7 @@ function dataFunctionManager(){
                continue;
             }
             if(item.type == 'PreCompLayer'){
-                timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : item.tm[offsettedFrameNum] : offsettedFrameNum;
+                timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= item.tm.length ? item.tm[item.tm.length - 1] :  item.tm[offsettedFrameNum] : offsettedFrameNum;
                 iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.type == 'ShapeLayer'){
                 iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
@@ -980,7 +980,7 @@ function dataFunctionManager(){
             offsettedFrameNum = num - layers[i].startTime;
             layers[i].renderedData[offsettedFrameNum] = rendered[i];
             if(layers[i].type == 'PreCompLayer'){
-                timeRemapped = layers[i].tm ? layers[i].tm[offsettedFrameNum] < 0 ? 0 : layers[i].tm[offsettedFrameNum] : offsettedFrameNum;
+                timeRemapped = layers[i].tm ? layers[i].tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= layers[i].tm.length ? layers[i].tm[layers[i].tm.length - 1] : layers[i].tm[offsettedFrameNum] : offsettedFrameNum;
                 populateLayers(layers[i].layers,timeRemapped,rendered.renderedArray);
             }else if(layers[i].type == 'ShapeLayer'){
                 shapes = layers[i].shapes;

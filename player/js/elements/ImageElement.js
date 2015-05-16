@@ -29,13 +29,17 @@ IImageElement.prototype.createElements = function(){
 
 };
 
+IImageElement.prototype.hide = function(){
+    if(!this.hidden){
+        this.image.setAttribute('opacity','0');
+        this.hidden = true;
+    }
+};
+
 IImageElement.prototype.renderFrame = function(num,parentMatrix){
     var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
     if(renderParent===false){
-        if(!this.hidden){
-            this.image.setAttribute('opacity','0');
-            this.hidden = true;
-        }
+        this.hide();
         return;
     }
     this.hidden = false;
