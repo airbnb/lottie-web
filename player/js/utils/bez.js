@@ -71,6 +71,7 @@ function bezFunction(){
                 triCoord1 = pt1[i] + (pt3[i] - pt1[i])*perc;
                 triCoord2 = pt3[i] + (pt4[i] - pt3[i])*perc;
                 triCoord3 = pt4[i] + (pt2[i] - pt4[i])*perc;
+
                 liCoord1 = triCoord1 + (triCoord2 - triCoord1)*perc;
                 liCoord2 = triCoord2 + (triCoord3 - triCoord2)*perc;
                 ptCoord = liCoord1 + (liCoord2 - liCoord1)*perc;
@@ -89,6 +90,14 @@ function bezFunction(){
         return bezierData;
     }
 
+    function createBezierPath(pt1,pt2,pt3,pt4){
+        var curveStr = 'M'+pt1[0]+','+pt1[1];
+        curveStr += 'C'+(pt1[0]+pt3[0])+','+(pt1[1]+pt3[1]);
+        curveStr += ' '+(pt2[0]+pt4[0])+','+(pt2[0]+pt4[1]);
+        curveStr += ' '+pt2[0]+','+pt2[1];
+        return curveStr;
+    }
+
     function buildBezierData(keyData){
         var pt1 = keyData.s;
         var pt2 = keyData.e;
@@ -105,7 +114,7 @@ function bezFunction(){
             segmentLength: 0
         };
         if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
-            curveSegments = 2;
+            curveSegments = 20;
         }
         len = pt3.length;
         for(k=0;k<curveSegments;k+=1){
@@ -113,12 +122,14 @@ function bezFunction(){
             perc = k/(curveSegments-1);
             ptDistance = 0;
             for(i=0;i<len;i+=1){
+                // DON'T ERASE. MIGHT BE USEDFUL FOR DRAWING PARTIAL BEZIER CURVES.
                 triCoord1 = pt1[i] + (pt3[i])*perc;
                 triCoord2 = pt1[i] + pt3[i] + (pt2[i] + pt4[i] - (pt1[i] + pt3[i]))*perc;
                 triCoord3 = pt2[i] + pt4[i] + -pt4[i]*perc;
                 liCoord1 = triCoord1 + (triCoord2 - triCoord1)*perc;
                 liCoord2 = triCoord2 + (triCoord3 - triCoord2)*perc;
                 ptCoord = liCoord1 + (liCoord2 - liCoord1)*perc;
+                //ptCoord = Math.pow(1-perc,3)*pt1[i]+3*Math.pow(1-perc,2)*perc*pt3[i]+3*(1-perc)*Math.pow(perc,2)*pt4[i]+Math.pow(perc,3)*pt2[i];
                 point.push(ptCoord);
                 if(lastPoint !== null){
                     ptDistance += Math.pow(point[i] - lastPoint[i],2);
@@ -130,6 +141,17 @@ function bezFunction(){
             lastPoint = point;
         }
         bezierData.segmentLength = addedLength;
+        var lepath = document.createElementNS(svgNS,'path');
+        lepath.setAttribute('d',createBezierPath(pt1,pt2,pt3,pt4));
+        bezierData.lepath = lepath;
+        bezierData.totalLength = lepath.getTotalLength();
+        if(ptDistance == 0){
+            console.log('lepath: ',lepath);
+            console.log('curveSegments: ',curveSegments);
+            console.log('ptDistance: ',ptDistance);
+            console.log('bezierData.segmentLength: ',bezierData.segmentLength);
+            console.log('bezierData.totalLength: ',bezierData.totalLength);
+        }
         keyData.bezierData = bezierData;
     }
 

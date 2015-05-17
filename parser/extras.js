@@ -562,7 +562,7 @@
                 interpolationType = 'hold';
                 realInfluenceReady();
             }else{
-                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR){
+                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR && property.keyInInterpolationType(indexTime + 1) == KeyframeInterpolationType.LINEAR){
                     interpolationType = 'linear';
                 }
                 buildKeyInfluence(key, lastKey, indexTime);
