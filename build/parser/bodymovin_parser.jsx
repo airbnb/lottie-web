@@ -437,7 +437,7 @@ var UI;
         var animationOb = {};
         compositionData.animation = animationOb;
         compositionData.assets = AssetsManager.getAssetsData();
-        compositionData.v = '2.0.0';
+        compositionData.v = '2.0.1';
         animationOb.layers = mainLayers;
         animationOb.totalFrames = totalFrames;
         animationOb.frameRate = frameRate;
@@ -1758,7 +1758,7 @@ var UI;
                 interpolationType = 'hold';
                 realInfluenceReady();
             }else{
-                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR){
+                if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR && property.keyInInterpolationType(indexTime + 1) == KeyframeInterpolationType.LINEAR){
                     interpolationType = 'linear';
                 }
                 buildKeyInfluence(key, lastKey, indexTime);
