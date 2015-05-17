@@ -28,7 +28,7 @@
         var animationOb = {};
         compositionData.animation = animationOb;
         compositionData.assets = AssetsManager.getAssetsData();
-        compositionData.v = '2.0.0';
+        compositionData.v = '2.0.1';
         animationOb.layers = mainLayers;
         animationOb.totalFrames = totalFrames;
         animationOb.frameRate = frameRate;
