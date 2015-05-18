@@ -455,15 +455,6 @@ function dataFunctionManager(){
                     if(interpolatedParams.type == 'p'){
                         matrixParams.px = bezierData.points[j].point[0] + (bezierData.points[j+1].point[0] - bezierData.points[j].point[0])*segmentPerc;
                         matrixParams.py = bezierData.points[j].point[1] + (bezierData.points[j+1].point[1] - bezierData.points[j].point[1])*segmentPerc;
-                        //console.log(bezierData.lepath.getPointAtLength(bezierData.totalLength*perc));
-                        var pt = bezierData.lepath.getPointAtLength(bezierData.totalLength*perc);
-                        /*console.log('bezierData.lepath: ',bezierData.lepath);
-                        console.log('matrixParams.px: ',matrixParams.px);
-                        console.log('matrixParams.py: ',matrixParams.py);
-                        console.log('pt: ',pt);
-                        console.log('perc: ',perc);*/
-                        //matrixParams.px = pt.x;
-                       // matrixParams.py = pt.y;
                     }else if(interpolatedParams.type == 's'){
                         matrixParams.sx = bezierData.points[j].point[0] + (bezierData.points[j+1].point[0] - bezierData.points[j].point[0])*segmentPerc;
                         matrixParams.sy = bezierData.points[j].point[1] + (bezierData.points[j+1].point[1] - bezierData.points[j].point[1])*segmentPerc;

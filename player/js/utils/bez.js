@@ -93,7 +93,7 @@ function bezFunction(){
     function createBezierPath(pt1,pt2,pt3,pt4){
         var curveStr = 'M'+pt1[0]+','+pt1[1];
         curveStr += 'C'+(pt1[0]+pt3[0])+','+(pt1[1]+pt3[1]);
-        curveStr += ' '+(pt2[0]+pt4[0])+','+(pt2[0]+pt4[1]);
+        curveStr += ' '+(pt2[0]+pt4[0])+','+(pt2[1]+pt4[1]);
         curveStr += ' '+pt2[0]+','+pt2[1];
         return curveStr;
     }
@@ -113,8 +113,8 @@ function bezFunction(){
             points :[],
             segmentLength: 0
         };
-        if(pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
-            curveSegments = 20;
+        if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+            curveSegments = 2;
         }
         len = pt3.length;
         for(k=0;k<curveSegments;k+=1){
@@ -141,17 +141,6 @@ function bezFunction(){
             lastPoint = point;
         }
         bezierData.segmentLength = addedLength;
-        var lepath = document.createElementNS(svgNS,'path');
-        lepath.setAttribute('d',createBezierPath(pt1,pt2,pt3,pt4));
-        bezierData.lepath = lepath;
-        bezierData.totalLength = lepath.getTotalLength();
-        if(ptDistance == 0){
-            console.log('lepath: ',lepath);
-            console.log('curveSegments: ',curveSegments);
-            console.log('ptDistance: ',ptDistance);
-            console.log('bezierData.segmentLength: ',bezierData.segmentLength);
-            console.log('bezierData.totalLength: ',bezierData.totalLength);
-        }
         keyData.bezierData = bezierData;
     }
 
