@@ -57,6 +57,7 @@ function dataFunctionManager(){
             animArray = [];
             lastFrame = -1;
             if(layerData.tm){
+                layerData.trmp = layerData.tm;
                 layerData.tm = completeTimeRemap(layerData.tm, layerFrames, offsetFrame);
             }
             if(layerData.ks.o instanceof Array){
@@ -833,7 +834,12 @@ function dataFunctionManager(){
                continue;
             }
             if(item.type == 'PreCompLayer'){
+
                 timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= item.tm.length ? item.tm[item.tm.length - 1] :  item.tm[offsettedFrameNum] : offsettedFrameNum;
+                if(timeRemapped === undefined){
+                    timeRemapped = getInterpolatedValue(item.trmp,offsettedFrameNum, item.startTime,interpolatedParams)[0]*frameRate;
+                    item.tm[offsettedFrameNum] = timeRemapped;
+                }
                 iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.type == 'ShapeLayer'){
                 iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
@@ -965,6 +971,7 @@ function dataFunctionManager(){
             }
             return;
         }
+        frameRate = animations[animationId].data.animation.frameRate;
         animations[animationId].renderedFrames[num] = 2;
         iterateLayers(animations[animationId].data.animation.layers, num, animations[animationId].data._animType);
     }

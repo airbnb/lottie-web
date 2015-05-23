@@ -1,9 +1,5 @@
 var subframeEnabled = false;
-var supportsPath2D = typeof Path2D === 'function';
-//supportsPath2D = false;
 var cachedColors = {};
-var colorMap = [];
-var body;
 
 function styleDiv(element){
     element.style.position = 'absolute';
@@ -39,18 +35,28 @@ function componentToHex(c) {
     return hex.length == 1 ? '0' + hex : hex;
 }
 
-function rgbToHex(r, g, b) {
-    if(r<0){
-        r = 0;
+var rgbToHex = (function(){
+    var colorMap = [];
+    var i;
+    var hex;
+    for(i=0;i<256;i+=1){
+        hex = i.toString(16);
+        colorMap[i] = hex.length == 1 ? '0' + hex : hex;
     }
-    if(g<0){
-        g = 0;
+
+    return function(r, g, b) {
+        if(r<0){
+            r = 0;
+        }
+        if(g<0){
+            g = 0;
+        }
+        if(b<0){
+            b = 0;
+        }
+        return '#' + colorMap[r] + colorMap[g] + colorMap[b];
     }
-    if(b<0){
-        b = 0;
-    }
-    return '#' + colorMap[r] + colorMap[g] + colorMap[b];
-}
+}());
 
 function fillToRgba(hex,alpha){
     if(!cachedColors[hex]){
@@ -78,14 +84,3 @@ var fillColorToString = (function(){
         return colorMap[colorArr[0]][colorArr[1]][colorArr[2]];
     };
 }());
-
-function createColorMap(){
-    var i;
-    var hex;
-    for(i=0;i<256;i+=1){
-        hex = i.toString(16);
-        colorMap[i] = hex.length == 1 ? '0' + hex : hex;
-    }
-}
-
-createColorMap();

@@ -12,7 +12,7 @@ var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 
 gulp.task('gzipFile', function(){
-  gulp.src('demo/miked/anim/data.js')
+  gulp.src('demo/prisma/anim/data.js')
   //gulp.src('build/player/bodymovin.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
