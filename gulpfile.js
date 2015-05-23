@@ -12,8 +12,8 @@ var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 
 gulp.task('gzipFile', function(){
-  //gulp.src('demo/camera/anim/data.json')
-  gulp.src('build/player/bodymovin.js')
+  gulp.src('demo/camera/anim/data.js')
+  //gulp.src('build/player/bodymovin3d.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });
