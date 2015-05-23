@@ -174,27 +174,25 @@ CVShapeItemElement.prototype.renderRect = function(animData){
 
 CVShapeItemElement.prototype.addPathToStyles = function(path2d){
     var i, len = this.stylesList.length;
-    var canStroke = true, canFill = true;
+    var canFill = true, strokeWidth = 0;
     for(i=len-1;i>=0;i-=1){
         if(!this.stylesList[i].closed){
-            if(canStroke && this.stylesList[i].type == 'stroke'){
-                this.stylesList[i].path.addPath(path2d, this.currentMatrix);
-                if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
-                    canStroke = false;
+            if(this.stylesList[i].type == 'stroke'){
+                if(this.stylesList[i].width > strokeWidth){
+                    this.stylesList[i].path.addPath(path2d, this.currentMatrix);
                 }
-            }
-            if(canFill && this.stylesList[i].type == 'fill'){
+                if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
+                    strokeWidth = this.stylesList[i].width;
+                }
+            }else if(canFill && this.stylesList[i].type == 'fill'){
                 this.stylesList[i].path.addPath(path2d, this.currentMatrix);
                 if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
                     canFill = false;
                 }
             }
         }
-        if(!canStroke && !canFill){
-            break;
-        }
     }
-}
+};
 
 CVShapeItemElement.prototype.renderFill = function(animData){
     var fill = animData.renderedData[this.frameNum];
