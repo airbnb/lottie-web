@@ -971,6 +971,7 @@ function dataFunctionManager(){
             }
             return;
         }
+        frameRate = animations[animationId].data.animation.frameRate;
         animations[animationId].renderedFrames[num] = 2;
         iterateLayers(animations[animationId].data.animation.layers, num, animations[animationId].data._animType);
     }
