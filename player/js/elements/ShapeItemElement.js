@@ -17,6 +17,7 @@ function ShapeItemElement(data,parentElement,globalData){
 ShapeItemElement.prototype.searchShapes = function(arr){
     var i, len = arr.length - 1;
     var j, jLen;
+    var k, kLen;
     var pathNode;
     var ownArrays = [];
     for(i=len;i>=0;i-=1){
@@ -50,9 +51,20 @@ ShapeItemElement.prototype.searchShapes = function(arr){
                 tr:''
             };
             jLen = this.stylesList.length;
+            kLen = arr[i].ks.v ? arr[i].ks.v.length :  arr[i].ks[0].s[0].v.length;
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
                     pathNode = document.createElementNS(svgNS, "path");
+                    pathNode.__items = [];
+                    pathNode.__items.push(pathNode.createSVGPathSegMovetoAbs(0,0));
+                    pathNode.pathSegList.appendItem(pathNode.__items[0]);
+                    if(arr[i].closed){
+                        kLen += 1;
+                    }
+                    for(k=1;k<kLen;k+=1){
+                        pathNode.__items.push(pathNode.createSVGPathSegCurvetoCubicAbs(0,0,0,0,0,0));
+                        pathNode.pathSegList.appendItem(pathNode.__items[k]);
+                    }
                     arr[i].elements.push(pathNode);
                     this.shape.appendChild(pathNode);
                     this.stylesList[j].elements.push(pathNode);
@@ -230,7 +242,60 @@ ShapeItemElement.prototype.renderPath = function(pathData,num,transform){
     var opacity = renderedFrameData.o;
     var elements = pathData.elements;
     var i, len = elements.length;
+    var pathNodes = pathData.renderedData[num].path.pathNodes;
+    //var j, jLen = pathNodes.v.length;
+    var elem, item;
     for(i=0;i<len;i+=1){
+        elem = elements[i];
+        /*item = elem.__items[0];
+        if(item.x != pathNodes.v[0][0]){
+            item.x = pathNodes.v[0][0];
+        }
+        if(item.y != pathNodes.v[0][1]){
+            item.y = pathNodes.v[0][1];
+        }
+        for(j = 1; j < jLen ; j +=1){
+            item = elem.__items[j];
+            if(item.x != pathNodes.v[j][0]){
+                item.x = pathNodes.v[j][0];
+            }
+            if(item.y != pathNodes.v[j][1]){
+                item.y = pathNodes.v[j][1];
+            }
+            if(item.x1 != pathNodes.o[j-1][0]){
+                item.x1 = pathNodes.o[j-1][0];
+            }
+            if(item.y1 != pathNodes.o[j-1][1]){
+                item.y1 = pathNodes.o[j-1][1];
+            }
+            if(item.x2 != pathNodes.i[j][0]){
+                item.x2 = pathNodes.i[j][0];
+            }
+            if(item.y2 != pathNodes.i[j][1]){
+                item.y2 = pathNodes.i[j][1];
+            }
+        }
+        if(pathData.closed){
+            item = elem.__items[j];
+            if(item.x != pathNodes.v[0][0]){
+                item.x = pathNodes.v[0][0];
+            }
+            if(item.y != pathNodes.v[0][1]){
+                item.y = pathNodes.v[0][1];
+            }
+            if(item.x1 != pathNodes.o[j-1][0]){
+                item.x1 = pathNodes.o[j-1][0];
+            }
+            if(item.y1 != pathNodes.o[j-1][1]){
+                item.y1 = pathNodes.o[j-1][1];
+            }
+            if(item.x2 != pathNodes.i[0][0]){
+                item.x2 = pathNodes.i[0][0];
+            }
+            if(item.y2 != pathNodes.i[0][1]){
+                item.y2 = pathNodes.i[0][1];
+            }
+        }*/
         if(pathData.lastData.d != pathString){
             elements[i].setAttribute('d',pathString);
         }

@@ -40,11 +40,11 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
             this.lastData.tr = renderedFrameData.tr;
-            this.layerElement.setAttribute('transform',renderedFrameData.tr);
+            this.rectElement.setAttribute('transform',renderedFrameData.tr);
         }
         if(this.lastData.o != renderedFrameData.o){
             this.lastData.o = renderedFrameData.o;
-            this.layerElement.setAttribute('opacity',renderedFrameData.o);
+            this.rectElement.setAttribute('opacity',renderedFrameData.o);
         }
     }
 };
