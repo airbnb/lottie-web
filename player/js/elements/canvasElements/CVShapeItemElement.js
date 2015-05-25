@@ -123,7 +123,6 @@ CVShapeItemElement.prototype.renderPath = function(data){
     var i,len = pathNodes.i.length;
     path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
     for(i=1;i<len;i+=1){
-        bez.drawBezierCurve(pathNodes.v[i-1],pathNodes.v[i],pathNodes.o[i-1],pathNodes.i[i]);
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
     }
     if(path.closed){
