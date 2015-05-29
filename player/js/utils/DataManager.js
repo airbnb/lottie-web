@@ -565,9 +565,13 @@ function dataFunctionManager(){
         return propertyArray;
     }
 
-    function getSegmentsLength(keyframes,pathData){
+    function getSegmentsLength(keyframes,closed){
         if(keyframes.__lengths){
             return;
+        }
+        if(!keyframes.v){
+            var err = new Error();
+            console.log(err.stack);
         }
         keyframes.__lengths = [];
         keyframes.__totalLength = 0;
@@ -579,7 +583,7 @@ function dataFunctionManager(){
             keyframes.__lengths.push(bez.getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]));
             keyframes.__totalLength += keyframes.__lengths[i].addedLength;
         }
-        if(pathData.closed){
+        if(closed){
             keyframes.__lengths.push(bez.getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]));
             keyframes.__totalLength += keyframes.__lengths[i].addedLength;
         }
@@ -591,20 +595,22 @@ function dataFunctionManager(){
         pathData.closed = isMask ? shapeData.cl : shapeData.closed;
         var keyframes = isMask ? shapeData.pt : shapeData.ks;
         if(keyframes.v){
-            if(isTrimmed){
-                getSegmentsLength(keyframes,pathData);
-            }
-            if(renderType == 'svg'){
-                if(!isTrimmed){
+
+            if(!isTrimmed){
+                if(renderType == 'svg'){
                     if(!keyframes.__pathString){
                         keyframes.__pathString = createPathString(keyframes,pathData.closed);
                     }
                     pathData.pathString = keyframes.__pathString;
                 }else{
-                    pathData.pathString = trimPathString(keyframes,pathData.closed, trimData);
+                    pathData.pathNodes = keyframes;
                 }
             }else{
-                pathData.pathNodes = keyframes;
+                if(renderType == 'svg'){
+                    pathData.pathString = trimPath(keyframes,pathData.closed, trimData, true);
+                }else{
+                    pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
+                }
             }
             return pathData;
         }else{
@@ -634,21 +640,24 @@ function dataFunctionManager(){
                         shapeData.v.push(coordsVData);
                     }
                     propertyArray.push(shapeData);
-                    if(renderType == 'svg'){
-                        keyframes.__minValueS = createPathString(propertyArray,pathData.closed);
-                        keyframes.__minValue = propertyArray[0];
+                    if(renderType == 'svg' && !isTrimmed){
+                        keyframes.__minValue = createPathString(propertyArray,pathData.closed);
                     }else{
                         keyframes.__minValue = propertyArray[0];
                     }
-                    if(isTrimmed){
-                        getSegmentsLength(keyframes.__minValue,pathData);
-                    }
                 }
-                if(renderType == 'svg'){
-                    pathData.pathString = keyframes.__minValueS;
-                    pathData.pathNodes = keyframes.__minValue;
+                if(!isTrimmed){
+                    if(renderType == 'svg'){
+                        pathData.pathString = keyframes.__minValue;
+                    }else{
+                        pathData.pathNodes = keyframes.__minValue;
+                    }
                 }else{
-                    pathData.pathNodes = keyframes.__minValue;
+                    if(renderType == 'svg'){
+                        pathData.pathString = trimPath(keyframes,pathData.closed, trimData, true);
+                    }else{
+                        pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
+                    }
                 }
                 return pathData;
             }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
@@ -670,21 +679,24 @@ function dataFunctionManager(){
                         shapeData.v.push(coordsVData);
                     }
                     propertyArray.push(shapeData);
-                    if(renderType == 'svg'){
-                        keyframes.__maxValueS = createPathString(propertyArray,pathData.closed);
-                        keyframes.__maxValue = propertyArray[0];
+                    if(renderType == 'svg' && !isTrimmed){
+                        keyframes.__maxValue = createPathString(propertyArray,pathData.closed);
                     }else{
                         keyframes.__maxValue = propertyArray[0];
                     }
-                    if(isTrimmed){
-                        getSegmentsLength(keyframes.__maxValue,pathData);
-                    }
                 }
-                if(renderType == 'svg'){
-                    pathData.pathString = keyframes.__maxValueS;
-                    pathData.pathNodes = keyframes.__maxValue;
+                if(!isTrimmed){
+                    if(renderType == 'svg'){
+                        pathData.pathString = keyframes.__maxValue;
+                    }else{
+                        pathData.pathNodes = keyframes.__maxValue;
+                    }
                 }else{
-                    pathData.pathNodes = keyframes.__maxValue;
+                    if(renderType == 'svg'){
+                        pathData.pathString = trimPath(keyframes.__maxValue,pathData.closed, trimData, true);
+                    }else{
+                        pathData.pathNodes = trimPath(keyframes.__maxValue,pathData.closed, trimData, false);
+                    }
                 }
                 return pathData;
             }else{
@@ -761,21 +773,25 @@ function dataFunctionManager(){
                         propertyArray.push(shapeData);
                     }
                 }
-                if(isTrimmed){
-                    getSegmentsLength(propertyArray[0],pathData);
-                }
-                if(renderType == 'svg'){
-                    pathData.pathString = createPathString(propertyArray[0],pathData.closed);
-                    pathData.pathNodes = propertyArray[0];
+                if(!isTrimmed){
+                    if(renderType == 'svg'){
+                        pathData.pathString = createPathString(propertyArray[0],pathData.closed);
+                    }else{
+                        pathData.pathNodes = propertyArray[0];
+                    }
                 }else{
-                    pathData.pathNodes = propertyArray[0];
+                    if(renderType == 'svg'){
+                        pathData.pathString = trimPath(propertyArray[0],pathData.closed, trimData, true);
+                    }else{
+                        pathData.pathNodes = trimPath(propertyArray[0],pathData.closed, trimData, false);
+                    }
                 }
                 return pathData;
             }
         }
     }
 
-    var trimPathString = (function(){
+    var trimPath = (function(){
 
         var pathStarted = false;
         var pathString = '';
@@ -784,18 +800,18 @@ function dataFunctionManager(){
         var nextTotalLength;
         var segmentCount;
         function addSegment(pt1,pt2,pt3,pt4, lengthData){
-            console.log('pt1',pt1);
-            console.log('pt2',pt2);
-            console.log('pt3',pt3);
-            console.log('pt4',pt4);
             nextO[segmentCount] = pt2;
             nextI[segmentCount+1] = pt3;
             nextV[segmentCount+1] = pt4;
-            nextV[segmentCount] = pt1;
             if(!pathStarted){
                 pathString += " M"+pt1.join(',');
                 pathStarted = true;
-                nextV[segmentCount].__newSegment = true;
+                if(!nextV[segmentCount]){
+                    nextV[segmentCount] = {};
+                }
+                nextV[segmentCount].__newSegment = pt1;
+            }else{
+                nextV[segmentCount] = pt1;
             }
             pathString += " C"+pt2.join(',') + " "+pt3.join(',') + " "+pt4.join(',');
             nextLengths[segmentCount] = lengthData;
@@ -803,10 +819,11 @@ function dataFunctionManager(){
             nextTotalLength += lengthData.addedLength;
         }
 
-        return function (paths,closed, trimData){
-            console.log('----- trimPathString -----');
+        return function (paths,closed, trimData, stringifyFlag){
+            getSegmentsLength(paths,closed);
             var j, jLen = trimData.length;
             var finalPaths = paths;
+            nextV = nextI = nextO = null;
             for(j=jLen-1;j>=0;j-=1){
                 var segments = [];
                 var o = (trimData[j].o%360)/360;
@@ -826,7 +843,11 @@ function dataFunctionManager(){
                 var s = trimData[j].s/100 + o;
                 var e = (trimData[j].e/100) + o;
                 if(s == e){
-                    return '';
+                    if(stringifyFlag){
+                        return '';
+                    }else{
+                        return {}
+                    }
                 }
                 if(s>e){
                     var _s = s;
@@ -863,38 +884,9 @@ function dataFunctionManager(){
                         }
                         if(segments[i].s <= addedLength && segments[i].e >= addedLength + segmentLength){
                             addSegment(pathV[k-1],pathO[k-1],pathI[k],pathV[k],lengths[k-1]);
-                            /*if(!pathStarted){
-                                console.log('setting V 1',segmentCount);
-                                nextV[segmentCount] = pathV[k-1];
-                                pathString += " M"+pathV[k-1].join(',');
-                                pathStarted = true;
-                            }
-                            console.log('setting V 2',segmentCount+1);
-                            pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
-                            nextO[segmentCount] = pathO[k-1];
-                            nextI[segmentCount+1] = pathI[k];
-                            nextV[segmentCount+1] = pathV[k];
-                            nextV[segmentCount] = pathV[k-1];
-                            nextLengths[segmentCount] = lengths[k-1];
-                            segmentCount+=1;
-                            nextTotalLength += lengths[k-1].addedLength;*/
                         }else{
                             segment = bez.getNewSegment(pathV[k-1],pathV[k],pathO[k-1],pathI[k], (segments[i].s - addedLength)/segmentLength,(segments[i].e - addedLength)/segmentLength, lengths[k-1]);
                             addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3));
-                            /*if(!pathStarted){
-                                pathString += " M"+segment.pt1.join(',');
-                                pathStarted = true;
-                            }
-                            console.log('setting V 4',segmentCount+1);
-                            console.log('pathStringpathString2: ',pathString);
-                            pathString += " C"+segment.pt3.join(',') + " "+segment.pt4.join(',') + " "+segment.pt2.join(',');
-                            nextO[segmentCount] = segment.pt3;
-                            nextI[segmentCount+1] = segment.pt4;
-                            nextV[segmentCount+1] = segment.pt2;
-                            nextV[segmentCount] = segment.pt1;
-                            nextLengths[segmentCount] = bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3);
-                            nextTotalLength += nextLengths[segmentCount].addedLength;
-                            segmentCount += 1;*/
                         }
                         addedLength += segmentLength;
                     }
@@ -903,50 +895,16 @@ function dataFunctionManager(){
                             segmentLength = lengths[k-1].addedLength;
                             if(segments[i].s <= addedLength && segments[i].e >= addedLength + segmentLength){
                                 addSegment(pathV[k-1],pathO[k-1],pathI[0],pathV[0],lengths[k-1]);
-                                /*if(!pathStarted){
-                                    console.log('setting V 5',segmentCount);
-                                    nextV[segmentCount] = pathV[k-1];
-                                    pathString += " M"+pathV[k-1].join(',');
-                                    pathStarted = true;
-                                }
-                                pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
-                                nextO[segmentCount] = pathO[k-1];
-                                nextI[segmentCount+1] = pathI[0];
-                                nextV[segmentCount+1] = pathV[0];
-                                nextV[segmentCount] = pathV[k-1];
-                                nextLengths[segmentCount] = lengths[k-1];
-                                nextTotalLength += lengths[k-1].addedLength;
-                                segmentCount += 1;*/
                             }else{
                                 segment = bez.getNewSegment(pathV[k-1],pathV[0],pathO[k-1],pathI[0], (segments[i].s - addedLength)/segmentLength,(segments[i].e - addedLength)/segmentLength, lengths[k-1]);
                                 addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3));
-                                /*if(!pathStarted){
-                                    console.log('setting V 6',segmentCount);
-                                    nextV[segmentCount] = segment.pt1;
-                                    pathString += " M"+segment.pt1.join(',');
-                                    pathStarted = true;
-                                }
-                                console.log('segmentCount: ',segmentCount);
-                                console.log('setting V 7',segmentCount + 1);
-                                pathString += " C"+segment.pt3.join(',') + " "+segment.pt4.join(',') + " "+segment.pt2.join(',');
-                                nextO[segmentCount] = segment.pt3;
-                                nextI[segmentCount+1] = segment.pt4;
-                                nextV[segmentCount+1] = segment.pt2;
-                                nextV[segmentCount] = segment.pt1;
-                                nextLengths[segmentCount] = bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3);
-                                nextTotalLength += nextLengths[segmentCount].addedLength;
-                                segmentCount += 1;*/
                             }
                         }
                     }else{
                         pathStarted = false;
                     }
                 }
-                /*console.log('nextO: ',nextO);
-                 console.log('nextV: ',nextV);
-                 console.log('segmentCount: ',segmentCount);
-                 console.log('pathString: ',pathString);*/
-                console.log('pathString: ',pathString);
+                //console.log('pathString: ',pathString);
                 finalPaths = {
                     v : nextV,
                     o : nextO,
@@ -958,26 +916,40 @@ function dataFunctionManager(){
                     closed = false;
                 }
             }
-            pathV = nextV;
-            pathO = nextO;
-            pathI = nextI;
-            console.log('pathV: ',pathV);
-            console.log('pathO: ',pathO);
-            console.log('pathI: ',pathI);
+            if(!nextV){
+                pathV = finalPaths.v;
+                pathO = finalPaths.o;
+                pathI = finalPaths.i;
+            }else{
+                pathV = nextV;
+                pathO = nextO;
+                pathI = nextI;
+            }
             kLen = pathV.length;
-            pathString = '';
-            //pathString += "M"+pathV[0].join(',');
-            for(k=1;k<kLen;k++){
-                if(pathV[k-1].__newSegment){
-                    pathString += "M"+pathV[k-1].join(',');
+            if(stringifyFlag){
+                pathString = '';
+                //pathString += "M"+pathV[0].join(',');
+                for(k=1;k<kLen;k++){
+                    if(pathV[k-1].__newSegment){
+                        pathString += "M"+pathV[k-1].__newSegment.join(',');
+                    }else if(k == 1){
+                        pathString += "M"+pathV[0].join(',');
+                    }else if(pathV[k-1].__newSegment){
+                        pathString += "M"+pathV[k-1].__newSegment.join(',');
+                    }
+                    pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
                 }
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
+                if(closed !== false){
+                    //pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
+                }
+                return pathString;
+            }else{
+                return {
+                    i: pathI,
+                    o: pathO,
+                    v: pathV
+                }
             }
-            if(closed !== false){
-                //pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
-            }
-            console.log('pathString2: ',pathString);
-            return pathString;
         }
     }());
 

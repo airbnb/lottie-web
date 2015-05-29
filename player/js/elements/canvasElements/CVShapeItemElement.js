@@ -2,7 +2,6 @@ function CVShapeItemElement(data,renderer,mainFlag){
     this.data = data;
     this.renderer = renderer;
     this.frameNum = -1;
-    this.trims = [];
     this.dataLength = this.data.length;
     this.mainFlag = mainFlag;
     this.stylesList = [];
@@ -113,6 +112,11 @@ CVShapeItemElement.prototype.renderTransform = function(animData){
 };
 
 CVShapeItemElement.prototype.renderPath = function(data){
+    if(data.trimmed){
+        var ctx = this.renderer.canvasContext;
+        ctx.lineCap = 'butt';
+        ctx.lineJoin = 'round';
+    }
     var path = data.renderedData[this.frameNum].path;
     var path2d = new Path2D();
 
@@ -120,12 +124,18 @@ CVShapeItemElement.prototype.renderPath = function(data){
     if(pathNodes instanceof Array){
         pathNodes = pathNodes[0];
     }
-    var i,len = pathNodes.i.length;
+    if(!pathNodes.v){
+        return;
+    }
+    var i,len = pathNodes.v.length;
     path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
     for(i=1;i<len;i+=1){
+        if(pathNodes.v[i-1].__newSegment){
+            path2d.moveTo(pathNodes.v[i-1].__newSegment[0],pathNodes.v[i-1].__newSegment[1]);
+        }
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
     }
-    if(path.closed){
+    if(path.closed && !data.trimmed){
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
     }
     this.addPathToStyles(path2d);
@@ -265,117 +275,4 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         opacity: this.opacityMultiplier
     });
     this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
-};
-
-CVShapeItemElement.prototype.adjustTrim = function(){
-    var trimData = this.data.trim;
-    var i, len = trimData.length;
-    for(i=0;i<len;i+=1){
-        if(trimData[i].o){
-            trimData[i].o -= 90;
-        }
-    }
-};
-
-CVShapeItemElement.prototype.addToTrim = function(pos,s,e){
-    if(!this.trims[pos]){
-        this.trims.push({});
-    }
-    this.trims[pos].s = s;
-    this.trims[pos].e = e;
-    this.trims[pos].ended = false;
-};
-
-CVShapeItemElement.prototype.renderTrimPath = function(num){
-    var trimData = this.currentData.trim;
-    if(trimData.e == trimData.s){
-        return;
-    }
-    if(this.renderedPaths[num]){
-        return;
-    }
-    var path2d = new Path2D();
-    var path = this.currentData.path;
-    var pathNodes = path.pathNodes;
-    var segments = [];
-    var totalLength = 0;
-    var i, len = pathNodes.v.length;
-    for(i = 0; i < len - 1; i += 1){
-        segments.push(bez.drawBezierCurve(pathNodes.v[i],pathNodes.v[i+1],pathNodes.o[i],pathNodes.i[i+1]));
-        totalLength += segments[i].segmentLength;
-    }
-    if(path.closed){
-        segments.push(bez.drawBezierCurve(pathNodes.v[i],pathNodes.v[0],pathNodes.o[i],pathNodes.i[0]));
-        totalLength += segments[i].segmentLength;
-    }
-    len = segments.length;
-    var segmentLength = totalLength*(trimData.e - trimData.s)/100;
-    trimData.o = trimData.o%360;
-    if(trimData.o<0){
-        trimData.o += 360;
-    }
-    //this.trims.length = 0;
-    var offset = ((trimData.s/100 + trimData.o/360)%1)*totalLength;
-    var endedCount = 0;
-    if(offset + segmentLength - totalLength > 0.00001){
-        var secondarySegment = offset + segmentLength - totalLength;
-        this.addToTrim(0,offset,offset + segmentLength - secondarySegment);
-        this.addToTrim(1,0,offset + segmentLength - totalLength);
-        endedCount += 2;
-    }else{
-        this.addToTrim(0,offset,offset + segmentLength);
-        endedCount += 1;
-    }
-    var addedLength = 0;
-    var j, jLen,perc,flag, ended = false;
-    var k, kLen = this.trims.length;
-
-    for(i = 0; i < len; i += 1){
-        if(ended){
-            break;
-        }
-        jLen = segments[i].points.length;
-        flag = true;
-        for(k = 0; k < kLen; k+=1){
-            if(addedLength + segments[i].segmentLength > this.trims[k].s){
-                flag = false;
-            }
-        }
-        if(flag){
-            addedLength += segments[i].segmentLength;
-            continue;
-        }
-        var currentPt, nextPt;
-        for(j = 0; j < jLen-1 ; j += 1){
-            if(ended){
-                break;
-            }
-            kLen = this.trims.length;
-            currentPt = segments[i].points[j];
-            nextPt = segments[i].points[j+1];
-            addedLength += currentPt.partialLength;
-            for(k = 0; k < kLen; k+=1){
-                if(this.trims[k].ended){
-                    continue;
-                }
-                if(this.trims[k].s >= addedLength && this.trims[k].s < addedLength + nextPt.partialLength){
-                    perc = ( this.trims[k].s - addedLength)/nextPt.partialLength;
-                    path2d.moveTo(currentPt.point[0]+(nextPt.point[0] - currentPt.point[0])*perc,currentPt.point[1]+(nextPt.point[1] - currentPt.point[1])*perc);
-                }
-                if(this.trims[k].e > addedLength && this.trims[k].e <= addedLength + nextPt.partialLength){
-                    perc = ( this.trims[k].e - addedLength)/nextPt.partialLength;
-                    path2d.lineTo(currentPt.point[0]+(nextPt.point[0] - currentPt.point[0])*perc,currentPt.point[1]+(nextPt.point[1] - currentPt.point[1])*perc);
-                    endedCount -= 1;
-                    this.trims[k].ended = true;
-                    if(endedCount === 0){
-                        ended = true;
-                        break;
-                    }
-                }else if(addedLength > this.trims[k].s && addedLength < this.trims[k].e){
-                    path2d.lineTo(currentPt.point[0],currentPt.point[1]);
-                }
-            }
-        }
-        this.renderedPaths[num] = path2d;
-    }
 };
