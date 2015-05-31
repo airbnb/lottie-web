@@ -569,10 +569,6 @@ function dataFunctionManager(){
         if(keyframes.__lengths){
             return;
         }
-        if(!keyframes.v){
-            var err = new Error();
-            console.log(err.stack);
-        }
         keyframes.__lengths = [];
         keyframes.__totalLength = 0;
         var pathV = keyframes.v;
@@ -654,9 +650,9 @@ function dataFunctionManager(){
                     }
                 }else{
                     if(renderType == 'svg'){
-                        pathData.pathString = trimPath(keyframes,pathData.closed, trimData, true);
+                        pathData.pathString = trimPath(keyframes.__minValue,pathData.closed, trimData, true);
                     }else{
-                        pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
+                        pathData.pathNodes = trimPath(keyframes.__minValue,pathData.closed, trimData, false);
                     }
                 }
                 return pathData;
