@@ -6,6 +6,9 @@ function CanvasRenderer(animationItem, config){
         scaleMode: 'fit'
     };
     this.lastFrame = -1;
+    this.globalData = {
+        frameNum: -1
+    }
 }
 
 CanvasRenderer.prototype.buildItems = function(layers){
@@ -30,28 +33,28 @@ CanvasRenderer.prototype.buildItems = function(layers){
 };
 
 CanvasRenderer.prototype.createBase = function (data) {
-    data.element = new CVBaseElement(data, this);
+    data.element = new CVBaseElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createShape = function (data) {
-    data.element = new CVShapeElement(data, this);
+    data.element = new CVShapeElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createText = function (data) {
-    data.element = new CVTextElement(data, this);
+    data.element = new CVTextElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
-    data.element = new CVImageElement(data, this);
+    data.element = new CVImageElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
-    data.element = new CVCompElement(data, this);
+    data.element = new CVCompElement(data, this,this.globalData);
     this.buildItems(data.layers);
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
-    data.element = new CVSolidElement(data, this);
+    data.element = new CVSolidElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
@@ -153,6 +156,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
         return;
     }
     this.lastFrame = num;
+    this.globalData.frameNum = num;
     if(this.renderConfig.clearCanvas === true){
         this.canvasContext.canvas.width = this.canvasContext.canvas.width;
     }else{
