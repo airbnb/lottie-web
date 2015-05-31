@@ -123,6 +123,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.assets = this.animationData.assets;
     this.totalFrames = this.animationData.animation.totalFrames;
     this.frameRate = this.animationData.animation.frameRate;
+    this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);
     this.renderer.buildItems(this.animationData.animation.layers,this.container);
@@ -140,8 +141,8 @@ AnimationItem.prototype.checkLoaded = function () {
     if (this.pendingElements === 0) {
         if(this.prerenderFramesFlag){
             this.prerenderFrames(0);
-            dataManager.renderFrame(this.animationID,this.currentFrame);
-            this.renderer.renderFrame(this.currentFrame);
+            dataManager.renderFrame(this.animationID,this.currentFrame + this.firstFrame);
+            this.renderer.renderFrame(this.currentFrame + this.firstFrame);
         }else{
             this.isLoaded = true;
             this.gotoFrame();
@@ -164,7 +165,7 @@ AnimationItem.prototype.prerenderFrames = function(count){
             this.play();
         }
     }else{
-        dataManager.renderFrame(this.animationID,this.renderedFrameCount);
+        dataManager.renderFrame(this.animationID,this.renderedFrameCount + this.firstFrame);
         this.renderedFrameCount+=1;
         if(count > 5){
             setTimeout(this.prerenderFrames.bind(this),0);
