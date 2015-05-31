@@ -1,5 +1,5 @@
-function CVCompElement(data, renderer){
-    this.parent.constructor.call(this,data, renderer);
+function CVCompElement(data, renderer,globalData){
+    this.parent.constructor.call(this,data, renderer,globalData);
     this.layers = data.layers;
 }
 createElement(CVBaseElement, CVCompElement);

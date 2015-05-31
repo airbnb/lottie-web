@@ -1,6 +1,7 @@
-function CVBaseElement(data,renderer){
+function CVBaseElement(data,renderer,globalData){
     this.renderer = renderer;
     this.data = data;
+    this.globalData = globalData;
     this.currentAnimData = null;
     this.renderFrame = false;
     this.init();

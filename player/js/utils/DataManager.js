@@ -516,11 +516,12 @@ function dataFunctionManager(){
                             keyData.__fnct = fnc;
                         }
                     }
-                    perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-offsetTime){
                         perc = 0;
+                    }else{
+                        perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     }
                 }
                 if(keyData.h === 1){
@@ -1056,10 +1057,9 @@ function dataFunctionManager(){
                continue;
             }
             if(item.type == 'PreCompLayer'){
-
                 timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= item.tm.length ? item.tm[item.tm.length - 1] :  item.tm[offsettedFrameNum] : offsettedFrameNum;
                 if(timeRemapped === undefined){
-                    timeRemapped = getInterpolatedValue(item.trmp,offsettedFrameNum, item.startTime,interpolatedParams)[0]*frameRate;
+                    timeRemapped = getInterpolatedValue(item.trmp,offsettedFrameNum, 0,interpolatedParams)[0]*frameRate;
                     item.tm[offsettedFrameNum] = timeRemapped;
                 }
                 iterateLayers(item.layers,timeRemapped,renderType);
