@@ -20,15 +20,13 @@ if (CanvasRenderingContext2D.prototype.ellipse === undefined) {
     };
 }
 
-if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'function' || typeof Path2D.prototype.ellipse !== 'function' || typeof Path2D.prototype.clear !== 'function') {
+if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'function' || typeof Path2D.prototype.ellipse !== 'function') {
     (function() {
 
         var canvasPrototype = CanvasRenderingContext2D.prototype;
 
         function Path_(arg) {
             this.ops_ = [];
-            this.opsPos = 0;
-            this.opsLength = 0;
             if (arg === undefined) {
                 return;
             }
@@ -68,8 +66,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
                 for(i=0;i<len;i+=1){
                     args.push(arguments[i]);
                 }
-                this.addNewOp(name,args);
-                ///this.ops_.push({type: name, args: args});
+                this.ops_.push({type: name, args: args});
             };
         }
 
@@ -79,43 +76,17 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
             Path_.prototype[name] = createFunction(name);
         }
 
-        Path_.prototype.addNewOp = function(type,args){
-            if(this.opsLength == this.opsPos){
-                this.ops_.push({
-                    type:type,args:args
-                })
-                this.opsLength += 1;
-            }else{
-                this.ops_[this.opsPos].type = type;
-                this.ops_[this.opsPos].args = args;
-            }
-            //console.log('opsPos: ',this.opsPos);
-            this.opsPos += 1;
-        };
-
-        Path_.prototype.clear = function() {
-            this.opsPos = 0;
-            return this;
-        };
-
         Path_.prototype.addPath = function(path, tr) {
             var hasTx = false;
             if (tr && (tr.a != 1 || tr.b != 0 || tr.c != 0 || tr.d != 1 || tr.e != 0 || tr.f != 0)) {
 
                 hasTx = true;
-                this.addNewOp('save',[]);
-                this.addNewOp('transform',[tr.a, tr.b, tr.c, tr.d, tr.e, tr.f]);
-                ///this.ops_.push({type: 'save', args: []});
-                ///this.ops_.push({type: 'transform', args: [tr.a, tr.b, tr.c, tr.d, tr.e, tr.f]});
+                this.ops_.push({type: 'save', args: []});
+                this.ops_.push({type: 'transform', args: [tr.a, tr.b, tr.c, tr.d, tr.e, tr.f]});
             }
-            var i, len = path.opsPos;
-            for(i=0;i<len;i+=1){
-                this.addNewOp(path.ops_[i].type,path.ops_[i].args);
-            }
-            ///this.ops_ = this.ops_.concat(path.ops_);
+            this.ops_ = this.ops_.concat(path.ops_);
             if (hasTx) {
-                this.addNewOp('restore',[]);
-                ///this.ops_.push({type: 'restore', args: []});
+                this.ops_.push({type: 'restore', args: []});
             }
         };
 
@@ -127,7 +98,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
         canvasPrototype.fill = function(arg) {
             if (arg instanceof Path_) {
                 this.beginPath();
-                for (var i = 0, len = arg.opsPos; i < len; i++) {
+                for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
                     canvasPrototype[op.type].apply(this, op.args);
                 }
@@ -145,7 +116,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
         canvasPrototype.stroke = function(arg) {
             if (arg instanceof Path_) {
                 this.beginPath();
-                for (var i = 0, len = arg.opsPos; i < len; i++) {
+                for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
                     canvasPrototype[op.type].apply(this, op.args);
                 }
@@ -158,7 +129,7 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
         canvasPrototype.clip = function(arg) {
             if (arg instanceof Path_) {
                 this.beginPath();
-                for (var i = 0, len = arg.opsPos; i < len; i++) {
+                for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
                     canvasPrototype[op.type].apply(this, op.args);
                 }

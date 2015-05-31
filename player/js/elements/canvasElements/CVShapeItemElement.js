@@ -13,7 +13,7 @@ function CVShapeItemElement(data,renderer,mainFlag,globalData){
     this.currentMatrix = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
     this.mat = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
     var i,len=this.dataLength-1;
-    this.renderedPaths = [];
+    this.renderedPaths = {};
     var styleData;
     for(i=len;i>=0;i-=1){
         if(this.data[i].ty == 'gr'){
@@ -21,7 +21,7 @@ function CVShapeItemElement(data,renderer,mainFlag,globalData){
         }else if(this.data[i].ty == 'st' || this.data[i].ty == 'fl'){
             styleData = {
                 type:'fill',
-                path: new Path2D(),
+                /*path: new Path2D(),*/
                 styleOpacity: 0,
                 opacity: 0,
                 value:'rgba(0,0,0,0)',
@@ -35,13 +35,19 @@ function CVShapeItemElement(data,renderer,mainFlag,globalData){
             }
             this.stylesPool.push(styleData);
         }else if(this.data[i].ty == 'sh' || this.data[i].ty == 'el' || this.data[i].ty == 'rc'){
-            this.data[i].pth = new Path2D();
+            //this.data[i].pth = new Path2D();
         }
     }
 }
 
-CVShapeItemElement.prototype.drawPaths = function(){
-    var stylesList = this.renderedPaths[this.globalData.frameNum];
+CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
+    var stylesList;
+    if(cacheFlag){
+        var cache = [];
+        stylesList = this.stylesList;
+    }else{
+        stylesList = this.renderedPaths[this.globalData.frameNum];
+    }
     var i, len = stylesList.length;
     this.renderer.canvasContext.save();
     for(i=0;i<len;i+=1){
@@ -52,15 +58,35 @@ CVShapeItemElement.prototype.drawPaths = function(){
             this.renderer.canvasContext.lineWidth = stylesList[i].width;
             this.renderer.canvasContext.stroke(stylesList[i].path);
             //this.renderer.canvasContext.restore();
+            if(cacheFlag){
+                cache.push({
+                    type: stylesList[i].type,
+                    opacity: stylesList[i].opacity,
+                    value: stylesList[i].value,
+                    width: stylesList[i].width,
+                    path: stylesList[i].path
+                })
+            }
         }else if(stylesList[i].type == 'fill'){
             //this.renderer.canvasContext.save();
             this.renderer.canvasContext.globalAlpha *= stylesList[i].opacity;
-            this.renderer.canvasContext.fillStyle=stylesList[i].value;
+            this.renderer.canvasContext.fillStyle = stylesList[i].value;
             this.renderer.canvasContext.fill(stylesList[i].path);
             //this.renderer.canvasContext.restore();
+            if(cacheFlag){
+                cache.push({
+                    type: stylesList[i].type,
+                    opacity: stylesList[i].opacity,
+                    value: stylesList[i].value,
+                    path: stylesList[i].path
+                })
+            }
         }
     }
     this.renderer.canvasContext.restore();
+    if(cacheFlag){
+        this.renderedPaths[this.globalData.frameNum] = cache;
+    }
 };
 
 CVShapeItemElement.prototype.prepareFrame = function(num){
@@ -75,7 +101,7 @@ CVShapeItemElement.prototype.prepareFrame = function(num){
 
 CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatrix){
     if(this.renderedPaths[this.globalData.frameNum]){
-        this.drawPaths();
+        this.drawPaths(false);
         return;
     }
     this.opacityMultiplier = 1;
@@ -117,8 +143,7 @@ CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatr
         }
     }
     if(this.mainFlag){
-        this.renderedPaths[this.globalData.frameNum] = this.stylesList;
-        this.drawPaths();
+        this.drawPaths(true);
     }else{
         len = this.ownStylesList.length;
         for(i=0;i<len;i+=1){
@@ -137,13 +162,13 @@ CVShapeItemElement.prototype.renderTransform = function(animData){
     this.mat.e = matrixValue[4];
     this.mat.f = matrixValue[5];
     this.mat = this.mat.translate(-tr.a[0],-tr.a[1]);
-    this.opacityMultiplier *= animData.o;
+    this.opacityMultiplier *= tr.o;
     this.currentMatrix = this.currentMatrix.multiply(this.mat);
 };
 
 CVShapeItemElement.prototype.renderPath = function(data){
     var path = data.renderedData[this.frameNum].path;
-    var path2d = data.pth.clear();
+    var path2d = new Path2D();
 
     var pathNodes = path.pathNodes;
     if(pathNodes instanceof Array){
@@ -161,7 +186,7 @@ CVShapeItemElement.prototype.renderPath = function(data){
 };
 
 CVShapeItemElement.prototype.renderEllipse = function(animData){
-    var path2d = data.pth.clear();
+    var path2d = new Path2D();
     var ell = animData.renderedData[this.frameNum];
     path2d.moveTo(ell.p[0]+ell.size[0]/2,ell.p[1]);
     path2d.ellipse(ell.p[0], ell.p[1], ell.size[0]/2, ell.size[1]/2, 0, 0, Math.PI*2, false);
@@ -169,7 +194,7 @@ CVShapeItemElement.prototype.renderEllipse = function(animData){
 };
 
 CVShapeItemElement.prototype.renderRect = function(animData){
-    var path2d = data.pth.clear();
+    var path2d = new Path2D();
     var rect = animData.renderedData[this.frameNum];
     var roundness = rect.roundness;
     if(roundness === 0){
@@ -226,18 +251,7 @@ CVShapeItemElement.prototype.addPathToStyles = function(path2d){
 CVShapeItemElement.prototype.renderFill = function(animData){
     var fill = animData.renderedData[this.frameNum];
     if(animData.fillEnabled!==false){
-
-        /*this.stylesList.push({
-            type:'fill',
-            path: new Path2D(),
-            closed: false,
-            styleOpacity: fill.opacity < 1 ? fill.opacity : 1,
-            opacity: this.opacityMultiplier
-        });
-         this.stylesList[this.stylesList.length-1].value = fill.opacity < 1 ? fillColorToString(fill.color, fill.opacity) : fillColorToString(fill.color);
-         this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
-        */
-        this.stylesPool[this.currentStylePoolPos].path.clear();
+        this.stylesPool[this.currentStylePoolPos].path = new Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = fill.opacity < 1 ? fill.opacity : 1;
         this.stylesPool[this.currentStylePoolPos].opacity = this.opacityMultiplier;
@@ -247,12 +261,6 @@ CVShapeItemElement.prototype.renderFill = function(animData){
         this.currentStylePoolPos += 1;
         return;
     }
-    /*this.stylesList.push({
-        type:'fill',
-        value:'rgba(0,0,0,0)',
-        path: new Path2D(),
-        closed: false
-    });*/
     this.stylesList.push(this.stylesPool[this.currentStylePoolPos]);
     this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
     this.currentStylePoolPos += 1;
@@ -260,19 +268,8 @@ CVShapeItemElement.prototype.renderFill = function(animData){
 
 CVShapeItemElement.prototype.renderStroke = function(animData){
     var stroke = animData.renderedData[this.frameNum];
-    //this.renderer.canvasContext.lineWidth=stroke.width;
     if(this.data.strokeEnabled!==false){
-        /*this.stylesList.push({
-            type:'stroke',
-            width:stroke.width,
-            path: new Path2D(),
-            styleOpacity: stroke.opacity < 1 ? stroke.opacity : 1,
-            opacity: this.opacityMultiplier,
-            closed: false
-        });
-        this.stylesList[this.stylesList.length - 1].value = stroke.opacity < 1 ? fillColorToString(stroke.color, stroke.opacity) : fillColorToString(stroke.color);
-         this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);*/
-        this.stylesPool[this.currentStylePoolPos].path.clear();
+        this.stylesPool[this.currentStylePoolPos].path = new Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = stroke.opacity < 1 ? stroke.opacity : 1;
         this.stylesPool[this.currentStylePoolPos].width = stroke.width;
@@ -283,15 +280,6 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         this.currentStylePoolPos += 1;
         return;
     }
-    /*this.stylesList.push({
-        type:'stroke',
-        value:'rgba(0,0,0,0)',
-        width:stroke.width,
-        path: new Path2D(),
-        closed: false,
-        opacity: this.opacityMultiplier
-    });
-    this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);*/
     this.stylesList.push(this.stylesPool[this.currentStylePoolPos]);
     this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
     this.currentStylePoolPos += 1;
