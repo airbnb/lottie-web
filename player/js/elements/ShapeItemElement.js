@@ -55,7 +55,7 @@ ShapeItemElement.prototype.searchShapes = function(arr){
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
                     pathNode = document.createElementNS(svgNS, "path");
-                    pathNode.__items = [];
+                    /*pathNode.__items = [];
                     pathNode.__items.push(pathNode.createSVGPathSegMovetoAbs(0,0));
                     pathNode.pathSegList.appendItem(pathNode.__items[0]);
                     if(arr[i].closed){
@@ -64,7 +64,7 @@ ShapeItemElement.prototype.searchShapes = function(arr){
                     for(k=1;k<kLen;k+=1){
                         pathNode.__items.push(pathNode.createSVGPathSegCurvetoCubicAbs(0,0,0,0,0,0));
                         pathNode.pathSegList.appendItem(pathNode.__items[k]);
-                    }
+                    }*/
                     arr[i].elements.push(pathNode);
                     this.shape.appendChild(pathNode);
                     this.stylesList[j].elements.push(pathNode);

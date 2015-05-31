@@ -179,10 +179,6 @@ function bezFunction(){
             pt3:[],
             pt4:[]
         };
-        var pth = document.createElementNS(svgNS,'path');
-        pth.setAttribute('d','M'+pt1[0]+','+pt1[1]+' C'+pt3[0]+','+pt3[1]+' '+pt4[0]+','+pt4[1]+' '+pt2[0]+','+pt2[1]);
-        //console.log('pth: ',pth.getPointAtLength(pth.getTotalLength()*endPerc));
-        var pto = pth.getPointAtLength(pth.getTotalLength()*endPerc);
         startPerc = startPerc < 0 ? 0 : startPerc;
         var t0 = getDistancePerc(startPerc,bezierData);
         endPerc = endPerc > 1 ? 1 : endPerc;

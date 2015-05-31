@@ -102,11 +102,11 @@ function dataFunctionManager(){
         }
     }
 
-    function completeShapes(arr){
+    function completeShapes(arr,trimmedFlag){
         var i, len = arr.length;
         var j, jLen;
         var transformData;
-        var isTrimmed = false;
+        var isTrimmed = trimmedFlag ? trimmedFlag : false;
         for(i=len-1;i>=0;i-=1){
             arr[i].renderedData = [];
             if(arr[i].ty == 'tm'){
@@ -132,7 +132,7 @@ function dataFunctionManager(){
                     }
                 }
             }else if(arr[i].ty == 'gr'){
-                completeShapes(arr[i].it);
+                completeShapes(arr[i].it,isTrimmed);
             }else if(arr[i].ty == 'tr'){
                 transformData = arr[i];
                 transformData.renderedData = [];
@@ -792,7 +792,7 @@ function dataFunctionManager(){
 
         var pathStarted = false;
         var pathString = '';
-        var nextI,nextV,nextO;
+        var nextI,nextV,nextO, stops;
         var nextLengths;
         var nextTotalLength;
         var segmentCount;
@@ -803,24 +803,21 @@ function dataFunctionManager(){
             if(!pathStarted){
                 pathString += " M"+pt1.join(',');
                 pathStarted = true;
-                if(!nextV[segmentCount]){
-                    nextV[segmentCount] = {};
-                }
-                nextV[segmentCount].__newSegment = pt1;
+                stops[segmentCount] = pt1;
             }else{
                 nextV[segmentCount] = pt1;
             }
             pathString += " C"+pt2.join(',') + " "+pt3.join(',') + " "+pt4.join(',');
-            nextLengths[segmentCount] = lengthData;
+            //nextLengths[segmentCount] = lengthData;
             segmentCount+=1;
-            nextTotalLength += lengthData.addedLength;
+            //nextTotalLength += lengthData.addedLength;
         }
 
-        return function (paths,closed, trimData, stringifyFlag){
+        return function trimPath_(paths,closed, trimData, stringifyFlag){
             getSegmentsLength(paths,closed);
             var j, jLen = trimData.length;
             var finalPaths = paths;
-            nextV = nextI = nextO = null;
+            nextV = nextI = nextO = stops = null;
             for(j=jLen-1;j>=0;j-=1){
                 var segments = [];
                 var o = (trimData[j].o%360)/360;
@@ -832,6 +829,7 @@ function dataFunctionManager(){
                 nextI = [];
                 nextO = [];
                 nextV = [];
+                stops = [];
                 nextLengths = [];
                 nextTotalLength = 0;
                 if(o < 0){
@@ -858,7 +856,7 @@ function dataFunctionManager(){
                     segments.push({s:0,e:finalPaths.__totalLength*(e-1)});
                 }
 
-                var pathV,pathO,pathI, lengths;
+                var pathV=[],pathO=[],pathI=[], lengths;
                 var k, kLen;
                 pathV = finalPaths.v;
                 pathO = finalPaths.o;
@@ -882,8 +880,11 @@ function dataFunctionManager(){
                         if(segments[i].s <= addedLength && segments[i].e >= addedLength + segmentLength){
                             addSegment(pathV[k-1],pathO[k-1],pathI[k],pathV[k],lengths[k-1]);
                         }else{
+                            if(pathV[k-1]== null){
+                                console.log(JSON.parse(JSON.stringify(pathV)));
+                            }
                             segment = bez.getNewSegment(pathV[k-1],pathV[k],pathO[k-1],pathI[k], (segments[i].s - addedLength)/segmentLength,(segments[i].e - addedLength)/segmentLength, lengths[k-1]);
-                            addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3));
+                            addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
                         }
                         addedLength += segmentLength;
                     }
@@ -894,7 +895,7 @@ function dataFunctionManager(){
                                 addSegment(pathV[k-1],pathO[k-1],pathI[0],pathV[0],lengths[k-1]);
                             }else{
                                 segment = bez.getNewSegment(pathV[k-1],pathV[0],pathO[k-1],pathI[0], (segments[i].s - addedLength)/segmentLength,(segments[i].e - addedLength)/segmentLength, lengths[k-1]);
-                                addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3));
+                                addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
                             }
                         }
                     }else{
@@ -902,21 +903,20 @@ function dataFunctionManager(){
                     }
                 }
                 //console.log('pathString: ',pathString);
-                finalPaths = {
+                /*finalPaths = {
                     v : nextV,
                     o : nextO,
                     i : nextI,
                     __totalLength : nextTotalLength,
                     __lengths : nextLengths
-                }
-                if(trimData[j].o != 0 || trimData[j].s != 0 || trimData[j].e != 100){
-                    closed = false;
-                }
+                };*/
+                closed = false;
             }
             if(!nextV){
                 pathV = finalPaths.v;
                 pathO = finalPaths.o;
                 pathI = finalPaths.i;
+                stops = [];
             }else{
                 pathV = nextV;
                 pathO = nextO;
@@ -925,26 +925,29 @@ function dataFunctionManager(){
             kLen = pathV.length;
             if(stringifyFlag){
                 pathString = '';
-                //pathString += "M"+pathV[0].join(',');
                 for(k=1;k<kLen;k++){
-                    if(pathV[k-1].__newSegment){
-                        pathString += "M"+pathV[k-1].__newSegment.join(',');
+                    if(stops[k-1]){
+                        pathString += "M"+stops[k-1].join(',');
                     }else if(k == 1){
                         pathString += "M"+pathV[0].join(',');
-                    }else if(pathV[k-1].__newSegment){
-                        pathString += "M"+pathV[k-1].__newSegment.join(',');
                     }
                     pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
                 }
                 if(closed !== false){
-                    //pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
+                    pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
                 }
+                if(pathString.indexOf('M 0') != -1){
+                    console.log(pathString);
+                }
+                //console.log('pathString: ',pathString);
                 return pathString;
             }else{
                 return {
                     i: pathI,
                     o: pathO,
-                    v: pathV
+                    v: pathV,
+                    s: stops,
+                    c: closed
                 }
             }
         }
@@ -998,7 +1001,6 @@ function dataFunctionManager(){
         px: 1,
         py: 1
     };
-
     function iterateLayers(layers, frameNum,renderType){
         var dataOb;
         var maskProps;
