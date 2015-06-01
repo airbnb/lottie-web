@@ -33,8 +33,6 @@ function CVShapeItemElement(data,renderer,mainFlag,globalData){
                 styleData.width = 0;
             }
             this.stylesPool.push(styleData);
-        }else if(this.data[i].ty == 'sh' || this.data[i].ty == 'el' || this.data[i].ty == 'rc'){
-            //this.data[i].pth = new Path2D();
         }
     }
 }
@@ -132,7 +130,11 @@ CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatr
         }else if(this.data[i].ty == 'el'){
             this.renderEllipse(this.data[i]);
         }else if(this.data[i].ty == 'rc'){
-            this.renderRect(this.data[i]);
+            if(this.data[i].trimmed){
+                this.renderPath(this.data[i]);
+            }else{
+                this.renderRect(this.data[i]);
+            }
         }else if(this.data[i].ty == 'fl'){
             this.renderFill(this.data[i]);
         }else if(this.data[i].ty == 'st'){
@@ -173,7 +175,6 @@ CVShapeItemElement.prototype.renderPath = function(data){
     }
     var path = data.renderedData[this.frameNum].path;
     var path2d = new Path2D();
-
     var pathNodes = path.pathNodes;
     if(pathNodes instanceof Array){
         pathNodes = pathNodes[0];

@@ -151,6 +151,9 @@ function dataFunctionManager(){
                 }else{
                     transformData.r *= degToRads;
                 }
+            }else if(arr[i].ty == 'rc'){
+                arr[i].trimmed = isTrimmed;
+                arr[i].trimmed = true;
             }
         }
     }
@@ -851,6 +854,8 @@ function dataFunctionManager(){
                 }
                 if(e <= 1){
                     segments.push({s:finalPaths.__totalLength*s,e:finalPaths.__totalLength*e});
+                }else if(s >= 1){
+                    segments.push({s:finalPaths.__totalLength*(s-1),e:finalPaths.__totalLength*(e-1)});
                 }else{
                     segments.push({s:finalPaths.__totalLength*s,e:finalPaths.__totalLength});
                     segments.push({s:0,e:finalPaths.__totalLength*(e-1)});
@@ -880,9 +885,6 @@ function dataFunctionManager(){
                         if(segments[i].s <= addedLength && segments[i].e >= addedLength + segmentLength){
                             addSegment(pathV[k-1],pathO[k-1],pathI[k],pathV[k],lengths[k-1]);
                         }else{
-                            if(pathV[k-1]== null){
-                                console.log(JSON.parse(JSON.stringify(pathV)));
-                            }
                             segment = bez.getNewSegment(pathV[k-1],pathV[k],pathO[k-1],pathI[k], (segments[i].s - addedLength)/segmentLength,(segments[i].e - addedLength)/segmentLength, lengths[k-1]);
                             addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
                         }
@@ -1071,6 +1073,63 @@ function dataFunctionManager(){
         }
     }
 
+    function convertRectToPath(pos,size,round){
+        var nextV = [];
+        var nextI = [];
+        var nextO = [];
+        var cPoint = round/2;
+        round *= 1;
+
+        nextV.push([pos[0]+size[0]/2,pos[1]-size[1]/2+round]);
+        nextO.push(nextV[0]);
+        nextI.push([pos[0]+size[0]/2,pos[1]-size[1]/2+cPoint]);
+
+        nextV.push([pos[0]+size[0]/2,pos[1]+size[1]/2-round]);
+        nextO.push([pos[0]+size[0]/2,pos[1]+size[1]/2-cPoint]);
+        nextI.push(nextV[1]);
+
+        nextV.push([pos[0]+size[0]/2-round,pos[1]+size[1]/2]);
+        nextO.push(nextV[2]);
+        nextI.push([pos[0]+size[0]/2-cPoint,pos[1]+size[1]/2]);
+
+        nextV.push([pos[0]-size[0]/2+round,pos[1]+size[1]/2]);
+        nextO.push([pos[0]-size[0]/2+cPoint,pos[1]+size[1]/2]);
+        nextI.push(nextV[3]);
+
+        nextV.push([pos[0]-size[0]/2,pos[1]+size[1]/2-round]);
+        nextO.push(nextV[4]);
+        nextI.push([pos[0]-size[0]/2,pos[1]+size[1]/2-cPoint]);
+
+        nextV.push([pos[0]-size[0]/2,pos[1]-size[1]/2+round]);
+        nextO.push([pos[0]-size[0]/2,pos[1]-size[1]/2+cPoint]);
+        nextI.push(nextV[5]);
+
+        nextV.push([pos[0]-size[0]/2+round,pos[1]-size[1]/2]);
+        nextO.push(nextV[6]);
+        nextI.push([pos[0]-size[0]/2+cPoint,pos[1]-size[1]/2]);
+
+        nextV.push([pos[0]+size[0]/2-round,pos[1]-size[1]/2]);
+        nextO.push([pos[0]+size[0]/2-cPoint,pos[1]-size[1]/2]);
+        nextI.push(nextV[7]);
+
+
+
+
+        /*nextV.push([pos[0]+size[0]/2,pos[1]-size[1]/2]);
+        nextO.push(nextV[0]);
+        nextI.push(nextV[0]);
+        nextV.push([pos[0]+size[0]/2,pos[1]+size[1]/2]);
+        nextO.push(nextV[1]);
+        nextI.push(nextV[1]);
+        nextV.push([pos[0]-size[0]/2,pos[1]+size[1]/2]);
+        nextO.push(nextV[2]);
+        nextI.push(nextV[2]);
+        nextV.push([pos[0]-size[0]/2,pos[1]-size[1]/2]);
+        nextO.push(nextV[3]);
+        nextI.push(nextV[3]);*/
+        return {v:nextV,o:nextO,i:nextI,c:true};
+    }
+
     function iterateShape(arr,offsettedFrameNum,startTime,renderType,addedTrim){
         var i, len = arr.length;
         var shapeItem;
@@ -1103,11 +1162,30 @@ function dataFunctionManager(){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
                 elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
                 elmRound = getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,interpolatedParams);
-                shapeItem.renderedData[offsettedFrameNum] = {
-                    position : elmPos,
-                    size : elmSize,
-                    roundness : elmRound
-                };
+                if(!shapeItem.trimmed){
+                    shapeItem.renderedData[offsettedFrameNum] = {
+                        position : elmPos,
+                        size : elmSize,
+                        roundness : elmRound
+                    };
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum] = {
+                        path: {
+                            closed: true
+                        }
+                    };
+                    /*if(renderType == 'svg'){
+                     pathData.pathString = trimPath(keyframes,pathData.closed, trimData, true);
+                     }else{
+                     pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
+                     }*/
+                    if(renderType == 'svg'){
+                        //shapeItem.renderedData[offsettedFrameNum].path.pathString = convertRectToPath(elmPos,elmSize,elmRound,renderType);
+                        shapeItem.renderedData[offsettedFrameNum].path.pathString = trimPath(convertRectToPath(elmPos,elmSize,elmRound),true, addedTrim, true);
+                    }else{
+                        shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound),true, addedTrim, false);
+                    }
+                }
             }else if(shapeItem.ty == 'el'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
                 elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);

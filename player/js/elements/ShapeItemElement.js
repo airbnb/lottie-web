@@ -92,12 +92,20 @@ ShapeItemElement.prototype.searchShapes = function(arr){
             jLen = this.stylesList.length;
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
-                    pathNode = document.createElementNS(svgNS, "rect");
+                    if(arr[i].trimmed){
+                        pathNode = document.createElementNS(svgNS, "path");
+                    }else{
+                        pathNode = document.createElementNS(svgNS, "rect");
+                    }
                     arr[i].elements.push(pathNode);
                     this.shape.appendChild(pathNode);
                     this.stylesList[j].elements.push(pathNode);
                     if(this.stylesList[j].type == 'st'){
                         pathNode.setAttribute('fill-opacity',0);
+                        if(arr[i].trimmed){
+                            pathNode.setAttribute('stroke-linejoin','round');
+                            pathNode.setAttribute('stroke-linecap','round');
+                        }
                     }
                 }
             }
@@ -196,7 +204,11 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
         }else if(items[i].ty == 'el'){
             this.renderEllipse(items[i],num,groupTransform);
         }else if(items[i].ty == 'rc'){
-            this.renderRect(items[i],num,groupTransform);
+            if(items[i].trimmed){
+                this.renderPath(items[i],num,groupTransform);
+            }else{
+                this.renderRect(items[i],num,groupTransform);
+            }
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],num);
         }else if(items[i].ty == 'st'){
@@ -204,29 +216,10 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items){
         }else if(items[i].ty == 'gr'){
             this.renderShape(num,groupTransform,items[i].it);
         }else if(items[i].ty == 'tm'){
-            this.renderTrim(items[i].renderedData[num]);
+            //
         }
     }
 };
-
-ShapeItemElement.prototype.renderTrim = function(trimData){
-    if(trimData.e != 100 || trimData.s != 0 || trimData.o%360 != 0){
-        if(!this.currentTrim.active){
-            this.currentTrim.s = 0;
-            this.currentTrim.e = 100;
-            this.currentTrim.o = 0;
-            this.currentTrim.active = true;
-        }
-        if(this.currentTrim.e == this.currentTrim.s){
-            return;
-        }
-        var currentStrimS = this.currentTrim.s;
-        var currentStrimE = this.currentTrim.e;
-        this.currentTrim.o += trimData.o;
-        this.currentTrim.s = currentStrimS + (currentStrimE - currentStrimS)*(trimData.s/100);
-        this.currentTrim.e = currentStrimE - (currentStrimE - currentStrimS)*(trimData.e/100);
-    }
-}
 
 ShapeItemElement.prototype.renderPath = function(pathData,num,transform){
     if(!pathData.renderedFrames[this.globalData.frameNum]){
