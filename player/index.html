@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta charset="UTF-8">
 <head>
+    <!-- <script src="extras/jquery-2.1.4.min.js"></script> -->
     <!-- build:js bodymovin.js -->
     <script src="js/main.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
@@ -36,6 +37,14 @@
     <!-- endbuild -->
 </head>
 <body style="background-color:#666; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
-<div style="width:700px;height:300px;background-color:#000;display:inline-block" class="bodymovin" data-bm-path="exports/letter_i" data-bm-type="canvas" data-bm-loop="true" data-bm-prerender="true"></div>
+<div style="width:700px;height:300px;background-color:#000;display:inline-block" class="bodymovers bodymover1" data-bm-path="exports/letter_i" data-bm-type="canvas" data-bm-loop="true" data-bm-prerender="true"></div>
+<div style="width:100px;height:50px;background-color:#000;display:inline-block" class="bodymovers bodymover2" data-bm-path="exports/letter_i" data-bm-type="canvas" data-bm-loop="true" data-bm-prerender="true"></div>
+<script>
+    /*$('.bodymovers').bodymovin('registerAnimation',{
+        animType: 'canvas',
+        loop: true,
+        path: 'exports/letter_i'
+    });*/
+</script>
 </body>
 </html>

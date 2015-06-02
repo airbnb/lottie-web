@@ -73,4 +73,65 @@
 
     var readyStateCheckInterval = setInterval(checkReady, 100);
 
+    if(window.jQuery && jQuery.fn){
+
+        var initializePlugin = (function(){
+            var animationMap = [];
+
+            var iterateElements = function(elements,params){
+                elements.each(function(){
+                    params.wrapper = this;
+                    animationMap.push({
+                        elem : this,
+                        anim: bodymovin.loadAnimation(params)
+                    });
+                });
+                /*this.each(function() {
+                 // Do something to each element here.
+                 });*/
+            };
+
+            var performAction = function(elements,action,params){
+                var i, len = animationMap.length;
+                elements.each(function(){
+                    i = 0;
+                    while(i<len){
+                        if(animationMap[i].elem == this){
+                            animationMap[i].anim[action].apply(animationMap[i].anim,params);
+                            break;
+                        }
+                        i+=1;
+                    }
+                })
+            };
+
+            jQuery.fn.bodymovin = function(action,params){
+                switch(action){
+                    case 'pause':
+                    case 'play':
+                    case 'togglePause':
+                    case 'setSpeed':
+                    case 'setDirection':
+                    case 'moveFrame':
+                    case 'stop':
+                    case 'resize':
+                    case 'goToAndStop':
+                    case 'gotoAndStop':
+                        performAction(this,action,Array.prototype.slice.call(arguments,1));
+                        break;
+                    case 'registerAnimation':
+                    case 'loadAnimation':
+                        iterateElements(this,params);
+                        break;
+                    case 'setSubframeRendering':
+                        setSubframeRendering(params);
+                        break;
+                    case 'start':
+                        start();
+                        break;
+                }
+            }
+        }());
+    }
+
 }(window));
