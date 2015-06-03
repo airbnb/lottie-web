@@ -56,6 +56,13 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
             ctx.globalAlpha *= stylesList[i].opacity;
             ctx.strokeStyle = stylesList[i].value;
             ctx.lineWidth = stylesList[i].width;
+            if(stylesList[i].dasharray){
+                ctx.setLineDash(stylesList[i].dasharray);
+                ctx.lineDashOffset = stylesList[i].dashoffset;
+            }else{
+                ctx.setLineDash([]);
+                ctx.lineDashOffset = 0;
+            }
             ctx.stroke(stylesList[i].path);
             //this.renderer.canvasContext.restore();
             if(cacheFlag){
@@ -65,7 +72,11 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                     value: stylesList[i].value,
                     width: stylesList[i].width,
                     path: stylesList[i].path
-                })
+                });
+                if(stylesList[i].dasharray){
+                    cache[cache.length-1].dasharray = stylesList[i].dasharray;
+                    cache[cache.length-1].dashoffset = stylesList[i].dashoffset;
+                }
             }
         }else if(stylesList[i].type == 'fill'){
             //this.renderer.canvasContext.save();
@@ -288,6 +299,22 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         this.stylesPool[this.currentStylePoolPos].width = stroke.width;
         this.stylesPool[this.currentStylePoolPos].opacity = this.opacityMultiplier;
         this.stylesPool[this.currentStylePoolPos].value = stroke.opacity < 1 ? fillColorToString(stroke.color, stroke.opacity) : fillColorToString(stroke.color);
+
+        if(stroke.dashes){
+            var d = stroke.dashes;
+            var j, jLen = d.length;
+            var dasharray = [];
+            var dashoffset = '';
+            for(j=0;j<jLen;j+=1){
+                if(d[j].n != 'o'){
+                    dasharray.push(d[j].v);
+                }else{
+                    dashoffset = d[j].v;
+                }
+            }
+            this.stylesPool[this.currentStylePoolPos].dasharray = dasharray;
+            this.stylesPool[this.currentStylePoolPos].dashoffset = dashoffset;
+        }
         this.stylesList.push(this.stylesPool[this.currentStylePoolPos]);
         this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
         this.currentStylePoolPos += 1;
