@@ -384,7 +384,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,num){
         if(styleData.lastData.o != o){
             elements[i].setAttribute('stroke-opacity',o);
         }
-        if(styleData.lastData.o != o){
+        if(styleData.lastData.w != w){
             elements[i].setAttribute('stroke-width',w);
         }
     }
