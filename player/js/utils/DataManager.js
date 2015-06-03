@@ -1140,6 +1140,7 @@ function dataFunctionManager(){
             addedTrim = [];
         }
         var trimS,trimE,trimO;
+        var j, jLen;
         for(i=len-1;i>=0;i-=1){
             shapeItem = arr[i];
             if(shapeItem.ty == 'sh'){
@@ -1201,6 +1202,19 @@ function dataFunctionManager(){
                     opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
                     width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
                 };
+                if(shapeItem.d){
+                    var dashes = [];
+                    jLen = shapeItem.d.length;
+                    var val;
+                    for(j=0;j<jLen;j+=1){
+                        val = getInterpolatedValue(shapeItem.d[j].v,offsettedFrameNum, startTime,interpolatedParams);
+                        dashes.push({
+                            v : val instanceof Array ? val[0] : val,
+                            n : shapeItem.d[j].n
+                        })
+                    }
+                    shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
+                }
                 if(renderType == 'canvas'){
                     roundColor(strokeColor);
                     shapeItem.renderedData[offsettedFrameNum].color = strokeColor;

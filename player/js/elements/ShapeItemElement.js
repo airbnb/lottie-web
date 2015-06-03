@@ -448,6 +448,8 @@ ShapeItemElement.prototype.renderFill = function(styleData,num){
 };
 
 ShapeItemElement.prototype.renderStroke = function(styleData,num){
+    /*stroke-dasharray: 10 10 20;
+     stroke-dashoffset: 276;*/
     var fillData = styleData.renderedData[num];
     var styleElem = styleData.style;
     if(!styleData.renderedFrames[this.globalData.frameNum]){
@@ -455,6 +457,9 @@ ShapeItemElement.prototype.renderStroke = function(styleData,num){
             c: fillData.color,
             o: fillData.opacity,
             w: fillData.width
+        };
+        if(fillData.dashes){
+            styleData.renderedFrames[this.globalData.frameNum].d = fillData.dashes;
         }
     }
 

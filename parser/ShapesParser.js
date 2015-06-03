@@ -252,6 +252,35 @@
                 extrasInstance.convertToBezierValues(prop.property('Color'), frameRate, ob,'c');
                 extrasInstance.convertToBezierValues(prop.property('Opacity'), frameRate, ob,'o');
                 extrasInstance.convertToBezierValues(prop.property('Stroke Width'), frameRate, ob,'w');
+                var j, jLen = prop.property('Dashes').numProperties;
+                var dashValue = prop.property('Dashes').property(1);
+                extrasInstance.iterateProperty(prop.property('Dashes').property(1));
+                var dashesData = [];
+                var changed = false;
+                for(j=0;j<jLen;j+=1){
+                    if(prop.property('Dashes').property(j+1).numKeys > 0 || (prop.property('Dashes').property(j+1).name == 'Offset' && changed)) {
+                        changed = true;
+                        var dashData = {};
+                        var name = '';
+                        if(prop.property('Dashes').property(j+1).name == 'Dash'){
+                            name = 'd';
+                        }else if(prop.property('Dashes').property(j+1).name == 'Gap'){
+                            name = 'g';
+                        }else if(prop.property('Dashes').property(j+1).name == 'Offset'){
+                            name = 'o';
+                        }
+                        dashData.n = name;
+                        extrasInstance.convertToBezierValues(prop.property('Dashes').property(j+1), frameRate, dashData,'v');
+                        dashesData.push(dashData)
+                    }
+                    /*$.writeln('matchName: ',prop.property('Dashes').property(j+1).matchName);
+                    $.writeln('value: ',prop.property('Dashes').property(j+1).value);
+                    $.writeln('enabled: ',prop.property('Dashes').property(j+1).enabled);*/
+                }
+                if(changed){
+                    ob.d = dashesData;
+                }
+                //extrasInstance.iterateProperty(prop);
                 array.push(ob);
             }else if(itemType == 'mm'){
                 ob = {};
@@ -265,7 +294,7 @@
                 extrasInstance.convertToBezierValues(prop.property('End'), frameRate, ob,'e');
                 extrasInstance.convertToBezierValues(prop.property('Offset'), frameRate, ob,'o');
                 ob.m = prop.property('Trim Multiple Shapes').value;
-                extrasInstance.iterateProperty(prop);
+                //extrasInstance.iterateProperty(prop);
                 array.push(ob);
             }else if(itemType == 'gr'){
                 ob = {
