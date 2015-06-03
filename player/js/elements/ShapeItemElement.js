@@ -467,6 +467,19 @@ ShapeItemElement.prototype.renderStroke = function(styleData,num){
     var c = renderedFrameData.c;
     var o = renderedFrameData.o;
     var w = renderedFrameData.w;
+    var d = renderedFrameData.d;
+    if(d){
+        var j, jLen = d.length;
+        var dasharray = '';
+        var dashoffset = '';
+        for(j=0;j<jLen;j+=1){
+            if(d[j].n != 'o'){
+                dasharray += ' ' + d[j].v;
+            }else{
+                dashoffset += d[j].v;
+            }
+        }
+    }
 
     var elements = styleElem.elements;
     var i, len = elements.length;
@@ -480,8 +493,20 @@ ShapeItemElement.prototype.renderStroke = function(styleData,num){
         if(styleData.lastData.w != w){
             elements[i].setAttribute('stroke-width',w);
         }
+        if(d){
+            if(styleData.lastData.da != dasharray){
+                elements[i].setAttribute('stroke-dasharray',dasharray);
+            }
+            if(styleData.lastData.do != dashoffset){
+                elements[i].setAttribute('stroke-dashoffset',dashoffset);
+            }
+        }
     }
     styleData.lastData.c = c;
     styleData.lastData.o = o;
     styleData.lastData.w = w;
+    if(d){
+        styleData.lastData.da = dasharray;
+        styleData.lastData.do = dashoffset;
+    }
 };

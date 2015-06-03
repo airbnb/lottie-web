@@ -590,7 +590,7 @@ function dataFunctionManager(){
     }
 
     function interpolateShape(shapeData, frameNum, offsetTime, renderType, isMask, trimData){
-        var isTrimmed = trimData.length > 0;
+        var isTrimmed = trimData && trimData.length > 0;
         var pathData = {};
         pathData.closed = isMask ? shapeData.cl : shapeData.closed;
         var keyframes = isMask ? shapeData.pt : shapeData.ks;
