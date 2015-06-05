@@ -128,7 +128,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = 10;*/
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);
-    this.renderer.buildItems(this.animationData.animation.layers,this.container);
+    this.renderer.buildItems(this.animationData.animation.layers);
     this.updaFrameModifier();
     this.checkLoaded();
 };

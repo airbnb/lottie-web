@@ -38,7 +38,10 @@ function dataFunctionManager(){
         }
     }
 
-    function completeLayers(layers){
+    function completeLayers(layers, mainLayers){
+        if(!mainLayers){
+            mainLayers = layers;
+        }
         var layerFrames, offsetFrame, layerData;
         var animArray, lastFrame;
         var shapeItem;
@@ -95,11 +98,37 @@ function dataFunctionManager(){
                 }
             }
             if(layerData.type=='PreCompLayer'){
-                completeLayers(layerData.layers);
+                if(layerData.refId && !layerData.layers){
+                    layerData.layers = findCompLayers(layerData.refId,mainLayers);
+                }else{
+                    completeLayers(layerData.layers,mainLayers);
+                }
             }else if(layerData.type == 'ShapeLayer'){
                 completeShapes(layerData.shapes);
             }
         }
+    }
+
+    function findCompLayers(id,layers,mainLayers){
+        if(!mainLayers){
+            mainLayers = layers;
+        }
+        var i, len = layers.length;
+        for(i=0;i<len;i+=1){
+            if(layers[i].compId == id){
+                if(!layers[i].layers){
+                    layers[i].layers = findCompLayers(layers[i].refId,mainLayers);
+                }
+                return layers[i].layers;
+            }
+            if(layers[i].type == 'PreCompLayer'){
+                var elem = findCompLayers(id,layers[i].layers,mainLayers);
+                if(elem){
+                    return elem;
+                }
+            }
+        }
+        return null;
     }
 
     function completeShapes(arr){
