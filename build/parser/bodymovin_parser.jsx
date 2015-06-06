@@ -583,7 +583,7 @@ var UI;
             if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
                 //TODO add audios
                 layerOb.enabled = false;
-                analyzeNextLayer();
+                extrasInstance.setTimeout(analyzeNextLayer,100);
                 return;
             }else if(lType == 'TextLayer'){
                 var textProp = layerInfo.property("Source Text");
@@ -935,7 +935,7 @@ var UI;
          callback.apply();*/
         // END TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
         totalLayers = pendingLayers.length;
-        analyzeNextLayer();
+        extrasInstance.setTimeout(analyzeNextLayer,100);
     }
 
     function iterateLayer(layerInfo, layerOb,frameRate){
@@ -2001,7 +2001,7 @@ var UI;
         duplicatedSources = [];
         pendingComps.push(duplicateMainComp);
         if(pendingComps.length == 1){
-            iterateNextComposition();
+            extrasInstance.setTimeout(iterateNextComposition,100);
         }
     };
 
@@ -2015,7 +2015,7 @@ var UI;
         currentComposition = pendingComps[currentCompositionNum];
         currentLayerNum = 0;
         totalLayers = currentComposition.layers.length;
-        verifyNextItem();
+        extrasInstance.setTimeout(verifyNextItem,100);
     }
 
     function verifyNextItem(){
@@ -2035,7 +2035,7 @@ var UI;
                     AssetsManager.associateLayerToSource(layerInfo,currentSource);
                     //replaceCurrentLayerSource(convertedSource); //NOT REPLACING FOOTAGE. NOT SURE IF NEEDED.
                     currentLayerNum++;
-                    verifyNextItem();
+                    extrasInstance.setTimeout(verifyNextItem,100);
                 }
             }else{
                 if(lType=='PreCompLayer'){
@@ -2045,11 +2045,11 @@ var UI;
                     copy.parentFolder = helperFolder;
                 }
                 currentLayerNum++;
-                verifyNextItem();
+                extrasInstance.setTimeout(verifyNextItem,100);
             }
         }else{
             currentCompositionNum++;
-            iterateNextComposition();
+            extrasInstance.setTimeout(iterateNextComposition,100);
         }
     }
 
@@ -2082,7 +2082,7 @@ var UI;
         if(checkRender()){
             replaceCurrentLayer();
             currentLayerNum++;
-            verifyNextItem();
+            extrasInstance.setTimeout(verifyNextItem,100);
         }else{
             extrasInstance.setTimeout(waitForRenderDone,100);
         }

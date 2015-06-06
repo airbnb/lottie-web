@@ -174,7 +174,7 @@
             if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
                 //TODO add audios
                 layerOb.enabled = false;
-                analyzeNextLayer();
+                extrasInstance.setTimeout(analyzeNextLayer,100);
                 return;
             }else if(lType == 'TextLayer'){
                 var textProp = layerInfo.property("Source Text");
@@ -526,7 +526,7 @@
          callback.apply();*/
         // END TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
         totalLayers = pendingLayers.length;
-        analyzeNextLayer();
+        extrasInstance.setTimeout(analyzeNextLayer,100);
     }
 
     function iterateLayer(layerInfo, layerOb,frameRate){

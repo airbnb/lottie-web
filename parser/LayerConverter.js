@@ -26,7 +26,7 @@
         duplicatedSources = [];
         pendingComps.push(duplicateMainComp);
         if(pendingComps.length == 1){
-            iterateNextComposition();
+            extrasInstance.setTimeout(iterateNextComposition,100);
         }
     };
 
@@ -40,7 +40,7 @@
         currentComposition = pendingComps[currentCompositionNum];
         currentLayerNum = 0;
         totalLayers = currentComposition.layers.length;
-        verifyNextItem();
+        extrasInstance.setTimeout(verifyNextItem,100);
     }
 
     function verifyNextItem(){
@@ -60,7 +60,7 @@
                     AssetsManager.associateLayerToSource(layerInfo,currentSource);
                     //replaceCurrentLayerSource(convertedSource); //NOT REPLACING FOOTAGE. NOT SURE IF NEEDED.
                     currentLayerNum++;
-                    verifyNextItem();
+                    extrasInstance.setTimeout(verifyNextItem,100);
                 }
             }else{
                 if(lType=='PreCompLayer'){
@@ -70,11 +70,11 @@
                     copy.parentFolder = helperFolder;
                 }
                 currentLayerNum++;
-                verifyNextItem();
+                extrasInstance.setTimeout(verifyNextItem,100);
             }
         }else{
             currentCompositionNum++;
-            iterateNextComposition();
+            extrasInstance.setTimeout(iterateNextComposition,100);
         }
     }
 
@@ -107,7 +107,7 @@
         if(checkRender()){
             replaceCurrentLayer();
             currentLayerNum++;
-            verifyNextItem();
+            extrasInstance.setTimeout(verifyNextItem,100);
         }else{
             extrasInstance.setTimeout(waitForRenderDone,100);
         }
