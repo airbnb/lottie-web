@@ -45,11 +45,6 @@ function bezFunction(){
         var storedBezierCurves = {};
 
         return function(pt1,pt2,pt3,pt4){
-            ///return 0;
-            /*console.log('pt1: ',pt1);
-            console.log('pt2: ',pt2);
-            console.log('pt3: ',pt3);
-            console.log('pt4: ',pt4);*/
             var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
             if(storedBezierCurves[bezierName]){
                 return storedBezierCurves[bezierName];

@@ -15,7 +15,7 @@ CVImageElement.prototype.createElements = function(){
         self.animationItem.elementLoaded();
     };
     var imageFailed = function(){
-        console.log('imageFailed');
+        //console.log('imageFailed');
         self.failed = true;
         self.animationItem.elementLoaded();
     };

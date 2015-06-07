@@ -967,10 +967,6 @@ function dataFunctionManager(){
                 if(closed !== false){
                     pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
                 }
-                if(pathString.indexOf('M 0') != -1){
-                    console.log(pathString);
-                }
-                //console.log('pathString: ',pathString);
                 return pathString;
             }else{
                 return {
@@ -1266,9 +1262,6 @@ function dataFunctionManager(){
                 getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
                 interpolatedParams.arrayFlag = false;
                 interpolatedParams.type = 'default';
-                //console.log('frameNum: ',frameNum);
-                //console.log('matrixParams.sx: ',matrixParams.sx);
-                //console.log('matrixParams.sy: ',matrixParams.sy);
                 if(renderType == 'canvas'){
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 }else{
