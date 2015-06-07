@@ -8,7 +8,7 @@ function CanvasRenderer(animationItem, config){
     this.lastFrame = -1;
     this.globalData = {
         frameNum: -1
-    }
+    };
     this.elements = [];
 }
 
@@ -40,27 +40,27 @@ CanvasRenderer.prototype.buildItems = function(layers,elements){
 };
 
 CanvasRenderer.prototype.createBase = function (data) {
-    return new CVBaseElement(data, this,this.globalData);
+    return new CVBaseElement(data, this.globalData);
 };
 
 CanvasRenderer.prototype.createShape = function (data) {
-    return new CVShapeElement(data, this,this.globalData);
+    return new CVShapeElement(data, this.globalData);
 };
 
 CanvasRenderer.prototype.createText = function (data) {
-    return new CVTextElement(data, this,this.globalData);
+    return new CVTextElement(data, this.globalData);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
-    return new CVImageElement(data, this,this.globalData);
+    return new CVImageElement(data, this.globalData);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
-    return new CVCompElement(data, this,this.globalData);
+    return new CVCompElement(data, this.globalData);
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
-    return new CVSolidElement(data, this,this.globalData);
+    return new CVSolidElement(data, this.globalData);
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
@@ -74,6 +74,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     }else{
         this.canvasContext = this.renderConfig.context;
     }
+    this.globalData.canvasContext = this.canvasContext;
     this.layers = animData.animation.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.animation.compWidth;

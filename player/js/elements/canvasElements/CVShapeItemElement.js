@@ -1,7 +1,7 @@
-function CVShapeItemElement(data,renderer,mainFlag,globalData){
+function CVShapeItemElement(data,mainFlag,globalData){
     this.data = data;
     this.globalData = globalData;
-    this.renderer = renderer;
+    this.canvasContext = globalData.canvasContext;
     this.frameNum = -1;
     this.dataLength = this.data.length;
     this.mainFlag = mainFlag;
@@ -16,7 +16,7 @@ function CVShapeItemElement(data,renderer,mainFlag,globalData){
     var styleData;
     for(i=len;i>=0;i-=1){
         if(this.data[i].ty == 'gr'){
-            this.data[i].item = new CVShapeItemElement(this.data[i].it, this.renderer,false,this.globalData);
+            this.data[i].item = new CVShapeItemElement(this.data[i].it,false,this.globalData);
         }else if(this.data[i].ty == 'st' || this.data[i].ty == 'fl'){
             styleData = {
                 type:'fill',
@@ -46,13 +46,13 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
         stylesList = this.renderedPaths[this.globalData.frameNum];
     }
     var i, len = stylesList.length;
-    var ctx = this.renderer.canvasContext;
+    var ctx = this.canvasContext;
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     for(i=0;i<len;i+=1){
         if(stylesList[i].type == 'stroke'){
-            //this.renderer.canvasContext.save();
+            //this.canvasContext.save();
             ctx.globalAlpha *= stylesList[i].opacity;
             ctx.strokeStyle = stylesList[i].value;
             ctx.lineWidth = stylesList[i].width;
@@ -64,7 +64,7 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                 ctx.lineDashOffset = 0;
             }
             ctx.stroke(stylesList[i].path);
-            //this.renderer.canvasContext.restore();
+            //this.canvasContext.restore();
             if(cacheFlag){
                 cache.push({
                     type: stylesList[i].type,
@@ -79,11 +79,11 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                 }
             }
         }else if(stylesList[i].type == 'fill'){
-            //this.renderer.canvasContext.save();
+            //this.canvasContext.save();
             ctx.globalAlpha *= stylesList[i].opacity;
             ctx.fillStyle = stylesList[i].value;
             ctx.fill(stylesList[i].path);
-            //this.renderer.canvasContext.restore();
+            //this.canvasContext.restore();
             if(cacheFlag){
                 cache.push({
                     type: stylesList[i].type,
@@ -180,7 +180,7 @@ CVShapeItemElement.prototype.renderTransform = function(animData){
 
 CVShapeItemElement.prototype.renderPath = function(data){
     if(data.trimmed){
-        var ctx = this.renderer.canvasContext;
+        var ctx = this.canvasContext;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
     }

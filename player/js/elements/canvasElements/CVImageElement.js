@@ -1,9 +1,8 @@
-function CVImageElement(data, renderer,globalData){
-    this.renderer = renderer;
+function CVImageElement(data,globalData){
     this.animationItem = renderer.animationItem;
     this.assets = this.animationItem.getAssets();
     this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data, renderer,globalData);
+    this.parent.constructor.call(this,data,globalData);
     this.animationItem.pendingElements += 1;
 }
 createElement(CVBaseElement, CVImageElement);
@@ -33,12 +32,12 @@ CVImageElement.prototype.draw = function(){
     if(this.failed){
         return;
     }
-    this.renderer.canvasContext.save();
+    this.canvasContext.save();
     if(this.parent.draw.call(this,false)===false){
-        this.renderer.canvasContext.restore();
+        this.canvasContext.restore();
         return;
     }
-    var ctx = this.renderer.canvasContext;
+    var ctx = this.canvasContext;
     ctx.drawImage(this.img,0,0);
-    this.renderer.canvasContext.restore();
+    this.canvasContext.restore();
 };

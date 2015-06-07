@@ -1,13 +1,13 @@
-function CVShapeElement(data, renderer,globalData){
+function CVShapeElement(data,globalData){
     this.shapes = [];
-    this.parent.constructor.call(this,data, renderer,globalData);
+    this.parent.constructor.call(this,data,globalData);
 }
 createElement(CVBaseElement, CVShapeElement);
 
 CVShapeElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
-    this.mainShape = new CVShapeItemElement(this.data.shapes,this.renderer,true,this.globalData);
+    this.mainShape = new CVShapeItemElement(this.data.shapes,true,this.globalData);
 };
 
 CVShapeElement.prototype.prepareFrame = function(num){
@@ -19,13 +19,13 @@ CVShapeElement.prototype.prepareFrame = function(num){
 };
 
 CVShapeElement.prototype.draw = function(){
-    this.renderer.canvasContext.save();
+    this.canvasContext.save();
     if(this.parent.draw.call(this, false)===false){
-        this.renderer.canvasContext.restore();
+        this.canvasContext.restore();
         return;
     }
     this.drawShapes();
-    this.renderer.canvasContext.restore();
+    this.canvasContext.restore();
 };
 
 CVShapeElement.prototype.drawShapes = function(){

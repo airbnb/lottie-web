@@ -1,5 +1,5 @@
-function CVCompElement(data, renderer,globalData){
-    this.parent.constructor.call(this,data, renderer,globalData);
+function CVCompElement(data,globalData){
+    this.parent.constructor.call(this,data,globalData);
     this.layers = data.layers;
 }
 createElement(CVBaseElement, CVCompElement);
@@ -17,16 +17,16 @@ CVCompElement.prototype.prepareFrame = function(num){
 };
 
 CVCompElement.prototype.draw = function(){
-    this.renderer.canvasContext.save();
+    this.canvasContext.save();
     if(this.parent.draw.call(this,false)===false){
-        this.renderer.canvasContext.restore();
+        this.canvasContext.restore();
         return;
     }
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
         this.elements[i].draw();
     }
-    this.renderer.canvasContext.restore();
+    this.canvasContext.restore();
 };
 
 CVCompElement.prototype.setElements = function(elems){

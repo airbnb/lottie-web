@@ -4,7 +4,7 @@ CVMaskElement.prototype.init = function () {
     this.registeredEffects = [];
     this.masksProperties = this.data.masksProperties;
     this.totalMasks = this.masksProperties.length;
-    this.ctx = this.element.renderer.canvasContext;
+    this.ctx = this.element.canvasContext;
     this.layerSize = this.element.getLayerSize();
 };
 

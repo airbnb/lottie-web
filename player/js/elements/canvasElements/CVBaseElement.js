@@ -1,7 +1,7 @@
-function CVBaseElement(data,renderer,globalData){
-    this.renderer = renderer;
+function CVBaseElement(data,globalData){
     this.data = data;
     this.globalData = globalData;
+    this.canvasContext = globalData.canvasContext;
     this.currentAnimData = null;
     this.renderFrame = false;
     this.init();
@@ -39,12 +39,12 @@ CVBaseElement.prototype.prepareFrame = function(num){
 
 CVBaseElement.prototype.draw = function(saveFlag){
     if(saveFlag !== false){
-        this.renderer.canvasContext.save();
+        this.canvasContext.save();
     }
     if(!this.renderFrame){
         return false;
     }
-    var ctx = this.renderer.canvasContext;
+    var ctx = this.canvasContext;
     var matrixValue;
     if(this.hierarchy){
         var i, len = this.hierarchy.length, animData;
@@ -63,7 +63,7 @@ CVBaseElement.prototype.draw = function(saveFlag){
         this.maskManager.draw();
     }
     if(saveFlag !== false){
-        this.renderer.canvasContext.restore();
+        this.canvasContext.restore();
     }
 
 };

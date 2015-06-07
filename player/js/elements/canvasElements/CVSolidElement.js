@@ -1,16 +1,16 @@
-function CVSolidElement(data, animationItem,globalData){
-    this.parent.constructor.call(this,data, animationItem,globalData);
+function CVSolidElement(data,globalData){
+    this.parent.constructor.call(this,data,globalData);
 }
 createElement(CVBaseElement, CVSolidElement);
 
 CVSolidElement.prototype.draw = function(){
-    this.renderer.canvasContext.save();
+    this.canvasContext.save();
     if(this.parent.draw.call(this, false)===false){
-        this.renderer.canvasContext.restore();
+        this.canvasContext.restore();
         return;
     }
-    var ctx = this.renderer.canvasContext;
+    var ctx = this.canvasContext;
     ctx.fillStyle=this.data.color;
     ctx.fillRect(0,0,this.data.width,this.data.height);
-    this.renderer.canvasContext.restore();
+    this.canvasContext.restore();
 };
