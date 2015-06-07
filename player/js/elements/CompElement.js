@@ -10,9 +10,9 @@ ICompElement.prototype.getComposingElement = function(){
 
 ICompElement.prototype.hide = function(){
     if(!this.hidden){
-        var i,len = this.layers.length;
+        var i,len = this.elements.length;
         for( i = 0; i < len; i+=1 ){
-            this.layers[i].element.hide();
+            this.elements[i].hide();
         }
         this.hidden = true;
     }
@@ -29,13 +29,21 @@ ICompElement.prototype.renderFrame = function(num,parentMatrix){
     var i,len = this.layers.length;
     var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : num >= this.data.tm.length ? this.data.tm[this.data.tm.length - 1] : this.data.tm[num] : num;
     for( i = 0; i < len; i+=1 ){
-        this.layers[i].element.prepareFrame(timeRemapped - this.layers[i].startTime);
+        this.elements[i].prepareFrame(timeRemapped - this.layers[i].startTime);
     }
     for( i = 0; i < len; i+=1 ){
         if(this.data.hasMask){
-            this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime);
+            this.elements[i].renderFrame(timeRemapped - this.layers[i].startTime);
         }else{
-            this.layers[i].element.renderFrame(timeRemapped - this.layers[i].startTime,this.finalTransform);
+            this.elements[i].renderFrame(timeRemapped - this.layers[i].startTime,this.finalTransform);
         }
     }
+};
+
+ICompElement.prototype.setElements = function(elems){
+    this.elements = elems;
+};
+
+ICompElement.prototype.getElements = function(){
+    return this.elements;
 };

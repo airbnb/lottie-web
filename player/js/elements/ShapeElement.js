@@ -7,7 +7,6 @@ createElement(BaseElement, IShapeElement);
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this.parent.createElements.call(this);
-
     this.mainShape = new ShapeItemElement(this.data.shapes,this.layerElement,this.globalData);
 };
 

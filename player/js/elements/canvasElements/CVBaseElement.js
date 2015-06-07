@@ -46,10 +46,10 @@ CVBaseElement.prototype.draw = function(saveFlag){
     }
     var ctx = this.renderer.canvasContext;
     var matrixValue;
-    if(this.data.parentHierarchy){
-        var i, len = this.data.parentHierarchy.length, animData;
+    if(this.hierarchy){
+        var i, len = this.hierarchy.length, animData;
         for(i = len - 1; i>=0 ; i -= 1){
-            animData = this.data.parentHierarchy[i].element.getCurrentAnimData();
+            animData = this.hierarchy[i].getCurrentAnimData();
             matrixValue = animData.matrixArray;
             ctx.transform(matrixValue[0], matrixValue[1], matrixValue[2], matrixValue[3], matrixValue[4], matrixValue[5]);
             ctx.translate(-animData.tr.a[0],-animData.tr.a[1]);
@@ -87,6 +87,13 @@ CVBaseElement.prototype.createEffectsManager = function(data){
 };
 CVBaseElement.prototype.getType = function(){
     return this.type;
+};
+
+CVBaseElement.prototype.getHierarchy = function(){
+    if(!this.hierarchy){
+        this.hierarchy = [];
+    }
+    return this.hierarchy;
 };
 
 CVBaseElement.prototype.getLayerSize = function(){

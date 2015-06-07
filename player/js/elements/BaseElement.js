@@ -77,15 +77,15 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         this.finalTransform.opacity *= parentTransform.opacity;
     }
 
-    if(this.data.parents){
-        var i, len = this.data.parents.length, parentAnimData,mat;
+    if(this.hierarchy){
+        var i, len = this.hierarchy.length,mat;
         if(!parentTransform){
             this.finalTransform.mat.reset();
         }
         for(i=len-1;i>=0;i-=1){
-            mat = this.data.parents[i].elem.element.ownMatrix.props;
+            //mat = this.data.parents[i].elem.element.ownMatrix.props;
+            mat = this.hierarchy[i].ownMatrix.props;
             this.finalTransform.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
-            parentAnimData = this.data.parents[i].elem.element.currentAnimData;
         }
         mat = this.ownMatrix.props;
         this.finalTransform.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
@@ -123,8 +123,8 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
 BaseElement.prototype.getDomElement = function(){
     return this.layerElement;
 };
-BaseElement.prototype.setMainElement = function(value){
-    this.mainElement = value;
+BaseElement.prototype.setMainElement = function(){
+    this.mainElement = this.layerElement;
 };
 BaseElement.prototype.getMaskManager = function(){
     return this.maskManager;
@@ -154,6 +154,13 @@ BaseElement.prototype.getLayerSize = function(){
     }else{
         return {w:this.data.width,h:this.data.height};
     }
+};
+
+BaseElement.prototype.getHierarchy = function(){
+    if(!this.hierarchy){
+        this.hierarchy = [];
+    }
+    return this.hierarchy;
 };
 
 BaseElement.prototype.hide = function(){

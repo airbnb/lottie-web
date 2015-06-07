@@ -14,8 +14,10 @@
     var callback;
     var pendingLayers = [];
     var totalLayers = 0;
+    var exportedComps = [];
 
     function getCompositionAnimationData(compo, compositionData,fDirectory){
+        exportedComps = [];
         mainComp = compo;
         frameRate = mainComp.frameRate;
         currentRenderFrame = 0;
@@ -109,7 +111,7 @@
                     delete shapes[j].lastData;
                 }
             }
-            if(layerOb.type == 'PreCompLayer'){
+            if(layerOb.type == 'PreCompLayer' && layerOb.layers){
                 removeExtraData(layerOb.layers);
             }
             EffectsParser.saveEffectData(layerOb);
@@ -124,7 +126,7 @@
                 layerOb.rectData.w = extrasInstance.roundNumber(layerOb.rectData.r - layerOb.rectData.l,3);
                 layerOb.rectData.h = extrasInstance.roundNumber(layerOb.rectData.b - layerOb.rectData.t,3);
             }
-            if(layerOb.type == 'PreCompLayer'){
+            if(layerOb.type == 'PreCompLayer' && layerOb.layers){
                 processFinalData(layerOb.layers);
             }
         }
@@ -426,8 +428,27 @@
             }
             pendingLayers.push({lInfo:layerInfo,lOb:layerOb,frameRate:frameRate});
             if(lType=='PreCompLayer'){
-                layerOb.layers = [];
-                createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate);
+                var j = 0, jLen = exportedComps.length, isRendered = false;
+                while(j<jLen){
+                    if(exportedComps[j].lInfo.source == layerInfo.source){
+                        isRendered = true;
+                        break;
+                    }
+                    j+=1;
+                }
+                if(isRendered){
+                    if(!exportedComps[j].lOb.compId){
+                        exportedComps[j].lOb.compId = extrasInstance.getRandomName(7);
+                    }
+                    layerOb.refId = exportedComps[j].lOb.compId;
+                }else{
+                    layerOb.layers = [];
+                    createLayers(layerInfo.source,layerOb.layers,layerInfo.source.frameRate);
+                    exportedComps.push({
+                        lInfo: layerInfo,
+                        lOb: layerOb
+                    })
+                }
             }
 
         }

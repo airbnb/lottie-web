@@ -9,52 +9,58 @@ function CanvasRenderer(animationItem, config){
     this.globalData = {
         frameNum: -1
     }
+    this.elements = [];
 }
 
-CanvasRenderer.prototype.buildItems = function(layers){
+CanvasRenderer.prototype.buildItems = function(layers,elements){
+    if(!elements){
+        elements = this.elements;
+    }
     var count = 0, i, len = layers.length;
     for (i = 0; i < len; i++) {
         if (layers[i].type == 'StillLayer') {
             count++;
-            this.createImage(layers[i]);
+            elements.push(this.createImage(layers[i]));
         } else if (layers[i].type == 'PreCompLayer') {
-            this.createComp(layers[i]);
+            elements.push(this.createComp(layers[i]));
+            var elems = [];
+            this.buildItems(layers[i].layers,elems);
+            elements[elements.length - 1].setElements(elems);
         } else if (layers[i].type == 'SolidLayer') {
-            this.createSolid(layers[i]);
+            elements.push(this.createSolid(layers[i]));
         } else if (layers[i].type == 'ShapeLayer') {
-            this.createShape(layers[i]);
+            elements.push(this.createShape(layers[i]));
         } else if (layers[i].type == 'TextLayer') {
-            this.createText(layers[i]);
+            elements.push(this.createText(layers[i]));
         }else{
-            this.createBase(layers[i]);
+            elements.push(this.createBase(layers[i]));
             //console.log('NO TYPE: ',layers[i]);
         }
     }
 };
 
 CanvasRenderer.prototype.createBase = function (data) {
-    data.element = new CVBaseElement(data, this,this.globalData);
+    return new CVBaseElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createShape = function (data) {
-    data.element = new CVShapeElement(data, this,this.globalData);
+    return new CVShapeElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createText = function (data) {
-    data.element = new CVTextElement(data, this,this.globalData);
+    return new CVTextElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
-    data.element = new CVImageElement(data, this,this.globalData);
+    return new CVImageElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
-    data.element = new CVCompElement(data, this,this.globalData);
-    this.buildItems(data.layers);
+    return new CVCompElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
-    data.element = new CVSolidElement(data, this,this.globalData);
+    return new CVSolidElement(data, this,this.globalData);
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
@@ -108,28 +114,30 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     }
 };
 
-CanvasRenderer.prototype.buildStage = function (container, layers) {
+CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
+    if(!elements){
+        elements = this.elements;
+    }
     var i, len = layers.length, layerData;
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
         if (layerData.parent) {
-            layerData.parentHierarchy = [];
-            this.buildItemHierarchy(layerData, layers, layerData.parent);
+            this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements);
         }
         if (layerData.type == 'PreCompLayer') {
-            this.buildStage(null, layerData.layers);
+            this.buildStage(null, layerData.layers, elements[i].getElements());
         }
     }
 };
 
-CanvasRenderer.prototype.buildItemHierarchy = function (threeItem, layers, parentName) {
+CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements) {
     var i = 0, len = layers.length;
     while (i < len) {
         if (layers[i].layerName == parentName) {
-            threeItem.parentHierarchy.push(layers[i]);
+            element.getHierarchy().push(elements[i]);
             if (layers[i].parent === undefined) {
             } else {
-                this.buildItemHierarchy(threeItem, layers, layers[i].parent);
+                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements);
             }
             break;
         }
@@ -138,16 +146,16 @@ CanvasRenderer.prototype.buildItemHierarchy = function (threeItem, layers, paren
 };
 
 CanvasRenderer.prototype.prepareFrame = function(num){
-    var i, len = this.layers.length;
+    var i, len = this.elements.length;
     for (i = 0; i < len; i++) {
-        this.layers[i].element.prepareFrame(num - this.layers[i].startTime);
+        this.elements[i].prepareFrame(num - this.layers[i].startTime);
     }
 };
 
 CanvasRenderer.prototype.draw = function(){
     var i, len = this.layers.length;
     for (i = len - 1; i >= 0; i-=1) {
-        this.layers[i].element.draw();
+        this.elements[i].draw();
     }
 };
 
