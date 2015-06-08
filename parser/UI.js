@@ -10,8 +10,8 @@
         compsColumns : {name:'Name',queue:'In Queue',destination:'Destination Path'},
         imagesButtons : {refresh:'Refresh', exportTxt:'Export', notExportTxt:'Do not export'},
         imagesColumns : {name:'Name',exportTxt:'Export'},
-        renderTexts : {cancel:'Cancel Render'}
-    }
+        renderTexts : {cancel:'Cancel Render',start:'Starting export',duplicating:'Duplicating Comp: ',processing:'Processing layers'}
+    };
     var availableCompositions = [];
     var bodyMovinPanel;
     var settingsGroup;
@@ -108,9 +108,9 @@
 
         /**** RENDER GROUP ****/
         var renderGroupRes = "group{orientation:'column',alignment:['fill','fill'],alignChildren:['fill',fill'],\
-            componentText:StaticText{text:'Rendering Composition ',alignment:['left','top']},\
+            componentText:StaticText{text:'Rendering Composition ',alignment:['fill','top']},\
             infoText:StaticText{text:'Exporting images ',alignment:['left','top']},\
-            progress:Progressbar{value:50,alignment:['fill','top']},\
+            progress:Progressbar{value:0,alignment:['fill','top']},\
             cancelButton: Button{text:'"+UITextsData.renderTexts.cancel+"',alignment:['center','top']},\
          }";
         bodyMovinPanel.mainGroup.renderGroup = bodyMovinPanel.mainGroup.add(renderGroupRes);
@@ -456,6 +456,24 @@
         bodyMovinPanel.mainGroup.renderGroup.infoText.text = text;
     }
 
+    function setState(state,compName){
+        switch(state){
+            case 'start':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.start;
+                setProgress(1);
+                break;
+            case 'duplicating':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.duplicating + compName;
+                break;
+            case 'processing':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.processing;
+                break;
+            default:
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = 'default: '+state;
+                break;
+        }
+    }
+
     myScript_buildUI(bodymovinWindow);
     if (bodyMovinPanel != null && bodyMovinPanel instanceof Window){
         bodyMovinPanel.center();
@@ -465,6 +483,7 @@
     var ob ={};
     ob.setExportText = setExportText;
     ob.setProgress = setProgress;
+    ob.setState = setState;
 
     UI = ob;
 

@@ -16,6 +16,7 @@
     function convertComposition(comp){
         helperFolder = helperFootage.item(2);
         AssetsManager.reset();
+        UI.setState('duplicating',comp.name);
         duplicateMainComp = comp.duplicate();
         //duplicateMainComp.openInViewer() ;
         duplicateMainComp.parentFolder = helperFolder;
@@ -30,10 +31,19 @@
         }
     };
 
+    function changeSourceToLayers(){
+        var i, len = duplicatedSources.length;
+        for(i=0;i<len;i+=1){
+            duplicatedSources[i].l.replaceSource(duplicatedSources[i].c,false);
+            //layerInfo.replaceSource(copy, false);
+        }
+    }
+
     function iterateNextComposition(){
         if(currentCompositionNum == pendingComps.length){
             //TODO dar acceso externo a main comp
             //TODO despachar evento de fin
+            changeSourceToLayers();
             callback.apply(null,[duplicateMainComp]);
             return;
         }
@@ -64,10 +74,9 @@
                 }
             }else{
                 if(lType=='PreCompLayer'){
-                    var copy = searchCompositionDuplicate(layerInfo);
-                    layerInfo.replaceSource(copy, false);
-                    pendingComps.push(copy);
-                    copy.parentFolder = helperFolder;
+                    searchCompositionDuplicate(layerInfo);
+                    //layerInfo.replaceSource(copy, false);
+                    pendingComps.push(layerInfo.source);
                 }
                 currentLayerNum++;
                 extrasInstance.setTimeout(verifyNextItem,100);
@@ -80,16 +89,29 @@
 
     function searchCompositionDuplicate(layerInfo){
         var i=0,len = duplicatedSources.length;
+        $.writeln('--- new ---');
         while(i<len){
+            //$.writeln('duplicatedSources[i].s.source: ',duplicatedSources[i].s);
+            //$.writeln('layerInfo.source: ',layerInfo.source);
+            //$.writeln('layerInfo.source.name: ',layerInfo.source.name);
+            /*$.writeln('duplicatedSources[i].s.source.name: ',duplicatedSources[i].s.name);
+            $.writeln('layerInfo.source: ',layerInfo.source);
+            $.writeln('layerInfo.source.name: ',layerInfo.source.name);*/
             if(duplicatedSources[i].s == layerInfo.source){
-                return duplicatedSources[i].c;
+                $.writeln('is found');
+                duplicatedSources.push({c:duplicatedSources[i].c,l:layerInfo});
+                return;
             }
             i++;
         }
+        $.writeln('not found');
+        UI.setState('duplicating',layerInfo.source.name);
         var copy = layerInfo.source.duplicate();
+        copy.parentFolder = helperFolder;
+        copy.parentFolder = helperFolder;
         //copy.openInViewer() ;
-        duplicatedSources.push({s:layerInfo.source,c:copy});
-        return copy;
+        duplicatedSources.push({s:layerInfo.source,c:copy,l:layerInfo});
+        return;
     }
 
     function searchConvertedSource(source){

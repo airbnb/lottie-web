@@ -547,6 +547,7 @@
          callback.apply();*/
         // END TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
         totalLayers = pendingLayers.length;
+        UI.setState('processing');
         extrasInstance.setTimeout(analyzeNextLayer,100);
     }
 
