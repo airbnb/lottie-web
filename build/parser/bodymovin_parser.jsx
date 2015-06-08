@@ -1678,7 +1678,6 @@ var UI;
                     case PropertyValueType.ThreeD_SPATIAL:
                     case PropertyValueType.TwoD_SPATIAL:
                         bezierIn.x = 1 - key.easeIn.influence / 100;
-                        $.writeln('bezierIn.x: ',bezierIn.x);
                         bezierOut.x = lastKey.easeOut.influence / 100;
                         averageSpeed = getCurveLength(lastKey.value,key.value, lastKey.to, key.ti)/duration;
                         break;
