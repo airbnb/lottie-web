@@ -956,6 +956,7 @@ var UI;
          callback.apply();*/
         // END TO TRAVERSE LAYER BY LAYER. NEEDED FOR TIME REMAP?
         totalLayers = pendingLayers.length;
+        UI.setState('processing');
         extrasInstance.setTimeout(analyzeNextLayer,100);
     }
 
@@ -1678,7 +1679,6 @@ var UI;
                     case PropertyValueType.ThreeD_SPATIAL:
                     case PropertyValueType.TwoD_SPATIAL:
                         bezierIn.x = 1 - key.easeIn.influence / 100;
-                        $.writeln('bezierIn.x: ',bezierIn.x);
                         bezierOut.x = lastKey.easeOut.influence / 100;
                         averageSpeed = getCurveLength(lastKey.value,key.value, lastKey.to, key.ti)/duration;
                         break;
@@ -1997,6 +1997,7 @@ var UI;
 /****** END rqManager ******/
 /****** INIT LayerConverter ******/
 (function(){
+    var compsIndexes;
     var pendingComps = [];
     var convertedSources = [];
     var duplicatedSources = [];
@@ -2005,14 +2006,16 @@ var UI;
     var currentCompositionNum = 0;
     var totalLayers;
     var tempConverterComp;
-    var currentComposition;
+    var currentCompositionData;
     var currentSource;
     var currentLayerInfo;
     var duplicateMainComp;
+    var positions;
     var callback;
     function convertComposition(comp){
         helperFolder = helperFootage.item(2);
         AssetsManager.reset();
+        UI.setState('duplicating',comp.name);
         duplicateMainComp = comp.duplicate();
         //duplicateMainComp.openInViewer() ;
         duplicateMainComp.parentFolder = helperFolder;
@@ -2021,28 +2024,43 @@ var UI;
         pendingComps = [];
         convertedSources = [];
         duplicatedSources = [];
-        pendingComps.push(duplicateMainComp);
+        compsIndexes = [];
+        positions = [];
+        pendingComps.push({comp:duplicateMainComp,items:compsIndexes});
         if(pendingComps.length == 1){
             extrasInstance.setTimeout(iterateNextComposition,100);
         }
     };
 
+    function changeSourceToLayers(comp,indexes){
+        var i, len = indexes.length;
+        for(i=0;i<len;i+=1){
+            var layerInfo = comp.layers[indexes[i].index];
+            layerInfo.replaceSource(indexes[i].src,false);
+            if(indexes[i].items.length>0){
+                changeSourceToLayers(layerInfo.source,indexes[i].items);
+            }
+        }
+    }
+
     function iterateNextComposition(){
         if(currentCompositionNum == pendingComps.length){
             //TODO dar acceso externo a main comp
             //TODO despachar evento de fin
+            UI.setState('sourcing');
+            changeSourceToLayers(duplicateMainComp,compsIndexes);
             callback.apply(null,[duplicateMainComp]);
             return;
         }
-        currentComposition = pendingComps[currentCompositionNum];
+        currentCompositionData = pendingComps[currentCompositionNum];
         currentLayerNum = 0;
-        totalLayers = currentComposition.layers.length;
+        totalLayers = currentCompositionData.comp.layers.length;
         extrasInstance.setTimeout(verifyNextItem,100);
     }
 
     function verifyNextItem(){
         if(currentLayerNum<totalLayers){
-            var layerInfo = currentComposition.layers[currentLayerNum+1];
+            var layerInfo = currentCompositionData.comp.layers[currentLayerNum+1];
             var lType = extrasInstance.layerType(layerInfo);
             if(lType == 'StillLayer' && layerInfo.enabled){
                 currentSource = layerInfo.source;
@@ -2061,10 +2079,11 @@ var UI;
                 }
             }else{
                 if(lType=='PreCompLayer'){
-                    var copy = searchCompositionDuplicate(layerInfo);
-                    layerInfo.replaceSource(copy, false);
-                    pendingComps.push(copy);
-                    copy.parentFolder = helperFolder;
+                    var src = searchCompositionDuplicate(layerInfo);
+                    //layerInfo.replaceSource(copy, false);
+                    var indexes = [];
+                    currentCompositionData.items.push({index:currentLayerNum+1,src:src,items:indexes});
+                    pendingComps.push({comp:layerInfo.source,items:indexes});
                 }
                 currentLayerNum++;
                 extrasInstance.setTimeout(verifyNextItem,100);
@@ -2083,7 +2102,10 @@ var UI;
             }
             i++;
         }
+        UI.setState('duplicating',layerInfo.source.name);
         var copy = layerInfo.source.duplicate();
+        copy.parentFolder = helperFolder;
+        copy.parentFolder = helperFolder;
         //copy.openInViewer() ;
         duplicatedSources.push({s:layerInfo.source,c:copy});
         return copy;
@@ -2118,7 +2140,7 @@ var UI;
     }
 
     function replaceCurrentLayerSource(source){
-        var layerInfo = currentComposition.layers[currentLayerNum+1];
+        var layerInfo = currentCompositionData.comp.layers[currentLayerNum+1];
         layerInfo.replaceSource(source, false);
     }
 
@@ -2402,7 +2424,6 @@ var UI;
                 extrasInstance.convertToBezierValues(prop.property('Opacity'), frameRate, ob,'o');
                 extrasInstance.convertToBezierValues(prop.property('Stroke Width'), frameRate, ob,'w');
                 var j, jLen = prop.property('Dashes').numProperties;
-                extrasInstance.iterateProperty(prop.property('Dashes').property(1));
                 var dashesData = [];
                 var changed = false;
                 for(j=0;j<jLen;j+=1){
@@ -2586,7 +2607,7 @@ var UI;
     }
 
     function start(){
-        UI.setExportText('Starting export');
+        UI.setState('start');
         LayerConverter.convertComposition(mainComp);
     }
 
@@ -2666,8 +2687,8 @@ var UI;
         compsColumns : {name:'Name',queue:'In Queue',destination:'Destination Path'},
         imagesButtons : {refresh:'Refresh', exportTxt:'Export', notExportTxt:'Do not export'},
         imagesColumns : {name:'Name',exportTxt:'Export'},
-        renderTexts : {cancel:'Cancel Render'}
-    }
+        renderTexts : {cancel:'Cancel Render',start:'Starting export',duplicating:'Duplicating Comp: ',processing:'Processing layers',sourcing:'Changing sources'}
+    };
     var availableCompositions = [];
     var bodyMovinPanel;
     var settingsGroup;
@@ -2764,9 +2785,9 @@ var UI;
 
         /**** RENDER GROUP ****/
         var renderGroupRes = "group{orientation:'column',alignment:['fill','fill'],alignChildren:['fill',fill'],\
-            componentText:StaticText{text:'Rendering Composition ',alignment:['left','top']},\
+            componentText:StaticText{text:'Rendering Composition ',alignment:['fill','top']},\
             infoText:StaticText{text:'Exporting images ',alignment:['left','top']},\
-            progress:Progressbar{value:50,alignment:['fill','top']},\
+            progress:Progressbar{value:0,alignment:['fill','top']},\
             cancelButton: Button{text:'"+UITextsData.renderTexts.cancel+"',alignment:['center','top']},\
          }";
         bodyMovinPanel.mainGroup.renderGroup = bodyMovinPanel.mainGroup.add(renderGroupRes);
@@ -3112,6 +3133,27 @@ var UI;
         bodyMovinPanel.mainGroup.renderGroup.infoText.text = text;
     }
 
+    function setState(state,compName){
+        switch(state){
+            case 'start':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.start;
+                setProgress(1);
+                break;
+            case 'duplicating':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.duplicating + compName;
+                break;
+            case 'processing':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.processing;
+                break;
+            case 'sourcing':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.sourcing;
+                break;
+            default:
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = 'default: '+state;
+                break;
+        }
+    }
+
     myScript_buildUI(bodymovinWindow);
     if (bodyMovinPanel != null && bodyMovinPanel instanceof Window){
         bodyMovinPanel.center();
@@ -3121,6 +3163,7 @@ var UI;
     var ob ={};
     ob.setExportText = setExportText;
     ob.setProgress = setProgress;
+    ob.setState = setState;
 
     UI = ob;
 

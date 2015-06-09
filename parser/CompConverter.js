@@ -105,7 +105,7 @@
             }
         }
         //If it gets here there are no more compositions to render and callback is executed
-        //helperFootage.remove();
+        helperFootage.remove();
         endCallback.apply();
     }
 

@@ -1,5 +1,6 @@
 /****** INIT LayerConverter ******/
 (function(){
+    var compsIndexes;
     var pendingComps = [];
     var convertedSources = [];
     var duplicatedSources = [];
@@ -8,10 +9,11 @@
     var currentCompositionNum = 0;
     var totalLayers;
     var tempConverterComp;
-    var currentComposition;
+    var currentCompositionData;
     var currentSource;
     var currentLayerInfo;
     var duplicateMainComp;
+    var positions;
     var callback;
     function convertComposition(comp){
         helperFolder = helperFootage.item(2);
@@ -25,17 +27,22 @@
         pendingComps = [];
         convertedSources = [];
         duplicatedSources = [];
-        pendingComps.push(duplicateMainComp);
+        compsIndexes = [];
+        positions = [];
+        pendingComps.push({comp:duplicateMainComp,items:compsIndexes});
         if(pendingComps.length == 1){
             extrasInstance.setTimeout(iterateNextComposition,100);
         }
     };
 
-    function changeSourceToLayers(){
-        var i, len = duplicatedSources.length;
+    function changeSourceToLayers(comp,indexes){
+        var i, len = indexes.length;
         for(i=0;i<len;i+=1){
-            duplicatedSources[i].l.replaceSource(duplicatedSources[i].c,false);
-            //layerInfo.replaceSource(copy, false);
+            var layerInfo = comp.layers[indexes[i].index];
+            layerInfo.replaceSource(indexes[i].src,false);
+            if(indexes[i].items.length>0){
+                changeSourceToLayers(layerInfo.source,indexes[i].items);
+            }
         }
     }
 
@@ -43,19 +50,20 @@
         if(currentCompositionNum == pendingComps.length){
             //TODO dar acceso externo a main comp
             //TODO despachar evento de fin
-            changeSourceToLayers();
+            UI.setState('sourcing');
+            changeSourceToLayers(duplicateMainComp,compsIndexes);
             callback.apply(null,[duplicateMainComp]);
             return;
         }
-        currentComposition = pendingComps[currentCompositionNum];
+        currentCompositionData = pendingComps[currentCompositionNum];
         currentLayerNum = 0;
-        totalLayers = currentComposition.layers.length;
+        totalLayers = currentCompositionData.comp.layers.length;
         extrasInstance.setTimeout(verifyNextItem,100);
     }
 
     function verifyNextItem(){
         if(currentLayerNum<totalLayers){
-            var layerInfo = currentComposition.layers[currentLayerNum+1];
+            var layerInfo = currentCompositionData.comp.layers[currentLayerNum+1];
             var lType = extrasInstance.layerType(layerInfo);
             if(lType == 'StillLayer' && layerInfo.enabled){
                 currentSource = layerInfo.source;
@@ -74,9 +82,11 @@
                 }
             }else{
                 if(lType=='PreCompLayer'){
-                    searchCompositionDuplicate(layerInfo);
+                    var src = searchCompositionDuplicate(layerInfo);
                     //layerInfo.replaceSource(copy, false);
-                    pendingComps.push(layerInfo.source);
+                    var indexes = [];
+                    currentCompositionData.items.push({index:currentLayerNum+1,src:src,items:indexes});
+                    pendingComps.push({comp:layerInfo.source,items:indexes});
                 }
                 currentLayerNum++;
                 extrasInstance.setTimeout(verifyNextItem,100);
@@ -89,29 +99,19 @@
 
     function searchCompositionDuplicate(layerInfo){
         var i=0,len = duplicatedSources.length;
-        $.writeln('--- new ---');
         while(i<len){
-            //$.writeln('duplicatedSources[i].s.source: ',duplicatedSources[i].s);
-            //$.writeln('layerInfo.source: ',layerInfo.source);
-            //$.writeln('layerInfo.source.name: ',layerInfo.source.name);
-            /*$.writeln('duplicatedSources[i].s.source.name: ',duplicatedSources[i].s.name);
-            $.writeln('layerInfo.source: ',layerInfo.source);
-            $.writeln('layerInfo.source.name: ',layerInfo.source.name);*/
             if(duplicatedSources[i].s == layerInfo.source){
-                $.writeln('is found');
-                duplicatedSources.push({c:duplicatedSources[i].c,l:layerInfo});
-                return;
+                return duplicatedSources[i].c;
             }
             i++;
         }
-        $.writeln('not found');
         UI.setState('duplicating',layerInfo.source.name);
         var copy = layerInfo.source.duplicate();
         copy.parentFolder = helperFolder;
         copy.parentFolder = helperFolder;
         //copy.openInViewer() ;
-        duplicatedSources.push({s:layerInfo.source,c:copy,l:layerInfo});
-        return;
+        duplicatedSources.push({s:layerInfo.source,c:copy});
+        return copy;
     }
 
     function searchConvertedSource(source){
@@ -143,7 +143,7 @@
     }
 
     function replaceCurrentLayerSource(source){
-        var layerInfo = currentComposition.layers[currentLayerNum+1];
+        var layerInfo = currentCompositionData.comp.layers[currentLayerNum+1];
         layerInfo.replaceSource(source, false);
     }
 

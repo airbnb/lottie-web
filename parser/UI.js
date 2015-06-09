@@ -10,7 +10,7 @@
         compsColumns : {name:'Name',queue:'In Queue',destination:'Destination Path'},
         imagesButtons : {refresh:'Refresh', exportTxt:'Export', notExportTxt:'Do not export'},
         imagesColumns : {name:'Name',exportTxt:'Export'},
-        renderTexts : {cancel:'Cancel Render',start:'Starting export',duplicating:'Duplicating Comp: ',processing:'Processing layers'}
+        renderTexts : {cancel:'Cancel Render',start:'Starting export',duplicating:'Duplicating Comp: ',processing:'Processing layers',sourcing:'Changing sources'}
     };
     var availableCompositions = [];
     var bodyMovinPanel;
@@ -467,6 +467,9 @@
                 break;
             case 'processing':
                 bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.processing;
+                break;
+            case 'sourcing':
+                bodyMovinPanel.mainGroup.renderGroup.componentText.text = UITextsData.renderTexts.sourcing;
                 break;
             default:
                 bodyMovinPanel.mainGroup.renderGroup.componentText.text = 'default: '+state;
