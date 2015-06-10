@@ -127,10 +127,7 @@ my email is **hernantorrisi@gmail.com**
 This is version 2. It is pretty stable but let me know if anything comes up.
 
 ## Examples
-http://lab.nearpod.com/bodymovin/demo/miked/ <br/>
-http://lab.nearpod.com/bodymovin/demo/ninja/ <br/>
-http://lab.nearpod.com/bodymovin/demo/shapes/ <br/>
-http://lab.nearpod.com/bodymovin/demo/gatin/ <br/>
+http://codepen.io/collection/nVYWZR/ <br/>
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
