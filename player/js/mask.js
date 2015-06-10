@@ -30,7 +30,7 @@ MaskElement.prototype.init = function () {
             path.setAttribute('stroke-width', '1');
             path.setAttribute('stroke-miterlimit', '10');
         }
-        path.setAttribute('clip-rule','nonezero');
+        path.setAttribute('clip-rule','nonzero');
         this.maskElement.appendChild(path);
         properties[i].elem = path;
         properties[i].lastPath = '';

@@ -161,7 +161,7 @@ CanvasRenderer.prototype.draw = function(){
 };
 
 CanvasRenderer.prototype.renderFrame = function(num){
-    if(this.lastFrame == num){
+    if(this.lastFrame == num && this.renderConfig.clearCanvas === true){
         return;
     }
     this.lastFrame = num;
