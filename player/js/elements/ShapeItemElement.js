@@ -172,7 +172,7 @@ ShapeItemElement.prototype.hideShape = function(items,data){
     len = items.length - 1;
     for(i=len;i>=0;i-=1){
         if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
-            data[i].lastData.o = '';
+            data[i].lastData.o = -1;
             elements = data[i].elements;
             jLen = elements.length;
             for(j=0;j<jLen;j+=1){

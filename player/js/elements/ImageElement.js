@@ -31,7 +31,7 @@ IImageElement.prototype.createElements = function(){
 };
 
 IImageElement.prototype.hide = function(){
-    if(!this.hidden){
+    if(!this.hidden && !this.data.hasMask){
         this.image.setAttribute('opacity','0');
         this.hidden = true;
     }

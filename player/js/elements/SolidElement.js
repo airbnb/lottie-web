@@ -17,7 +17,7 @@ ISolidElement.prototype.createElements = function(){
 };
 
 ISolidElement.prototype.hide = function(){
-    if(!this.hidden){
+    if(!this.hidden && !this.data.hasMask){
         this.rectElement.setAttribute('opacity','0');
         this.hidden = true;
     }
@@ -29,7 +29,10 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
         this.hide();
         return;
     }
-    this.hidden = false;
+    if(this.hidden){
+        this.lastData.o = -1;
+        this.hidden = false;
+    }
     if(!this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){
             this.renderedFrames[this.globalData.frameNum] = {
