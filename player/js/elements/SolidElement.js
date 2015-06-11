@@ -42,7 +42,7 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
             this.lastData.tr = renderedFrameData.tr;
             this.rectElement.setAttribute('transform',renderedFrameData.tr);
         }
-        if(this.lastData.o != renderedFrameData.o){
+        if(this.lastData.o !== renderedFrameData.o){
             this.lastData.o = renderedFrameData.o;
             this.rectElement.setAttribute('opacity',renderedFrameData.o);
         }

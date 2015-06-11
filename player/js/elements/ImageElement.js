@@ -56,7 +56,7 @@ IImageElement.prototype.renderFrame = function(num,parentMatrix){
             this.lastData.tr = renderedFrameData.tr;
             this.image.setAttribute('transform',renderedFrameData.tr);
         }
-        if(this.lastData.o != renderedFrameData.o){
+        if(this.lastData.o !== renderedFrameData.o){
             this.lastData.o = renderedFrameData.o;
             this.image.setAttribute('opacity',renderedFrameData.o);
         }

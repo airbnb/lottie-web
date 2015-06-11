@@ -67,7 +67,6 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
-
     this.finalTransform.opacity *= this.currentAnimData.tr.o;
 
     if(parentTransform){
@@ -111,7 +110,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
             this.lastData.tr = renderedFrameData.tr;
             this.layerElement.setAttribute('transform',renderedFrameData.tr);
         }
-        if(this.lastData.o != renderedFrameData.o){
+        if(this.lastData.o !== renderedFrameData.o){
             this.lastData.o = renderedFrameData.o;
             this.layerElement.setAttribute('opacity',renderedFrameData.o);
         }

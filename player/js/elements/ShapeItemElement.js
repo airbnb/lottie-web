@@ -314,7 +314,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
         if(viewData.lastData.tr != transformString){
             elements[i].setAttribute('transform',transformString);
         }
-        if(viewData.lastData.o != opacity){
+        if(viewData.lastData.o !== opacity){
             elements[i].setAttribute('opacity',opacity);
         }
     }
