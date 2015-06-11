@@ -26,11 +26,15 @@ function dataFunctionManager(){
                     jLen = data[i].s.length;
                     for(j=0;j<jLen;j+=1){
                         data[i].s[j] *= multiplier;
-                        data[i].e[j] *= multiplier;
+                        if(data[i].e != undefined){
+                            data[i].e[j] *= multiplier;
+                        }
                     }
                 }else if(data[i].s){
                     data[i].s *= multiplier;
-                    data[i].e *= multiplier;
+                    if(data[i].e){
+                        data[i].e *= multiplier;
+                    }
                 }
             }else{
                 data[i] = data[i]*multiplier;
