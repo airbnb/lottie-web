@@ -38,6 +38,9 @@ CVBaseElement.prototype.prepareFrame = function(num){
 };
 
 CVBaseElement.prototype.draw = function(saveFlag){
+    if(this.data.type == 'NullLayer'){
+        return;
+    }
     if(saveFlag !== false){
         this.canvasContext.save();
     }
