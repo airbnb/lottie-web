@@ -141,9 +141,9 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
                 this.renderRect(items[i],data[i],num,groupTransform);
             }
         }else if(items[i].ty == 'fl'){
-            this.renderFill(items[i],data[i],num);
+            this.renderFill(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],num);
+            this.renderStroke(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'gr'){
             this.renderShape(num,groupTransform,items[i].it,data[i].it);
         }else if(items[i].ty == 'tm'){
@@ -191,13 +191,13 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
     }
 };
 
-ShapeItemElement.prototype.renderFill = function(styleData,viewData,num){
+ShapeItemElement.prototype.renderFill = function(styleData,viewData,num,groupTransform){
     var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
         viewData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
-            o: fillData.opacity
+            o: fillData.opacity*groupTransform.opacity
         }
     }
 
@@ -214,13 +214,13 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num){
     viewData.lastData.o = o;
 };
 
-ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num){
+ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupTransform){
     var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
         viewData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
-            o: fillData.opacity,
+            o: fillData.opacity*groupTransform.opacity,
             w: fillData.width
         };
         if(fillData.dashes){
