@@ -263,6 +263,23 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
     var i, len = elements.length;
     var pathNodes = pathData.renderedData[num].path.pathNodes;
     var j, jLen = pathNodes.v.length;
+    ////
+
+    console.log(transform.mat);
+
+    var pathV = pathNodes.v;
+    var pathO = pathNodes.o;
+    var pathI = pathNodes.i;
+    var k,kLen = pathV.length;
+    var pathStringTransformed = "M"+transform.mat.applyToPointStringified(pathV[0][0],pathV[0][1]);
+    for(k=1;k<kLen;k++){
+        pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathO[k-1][0],pathO[k-1][1]) + " "+transform.mat.applyToPointStringified(pathI[k][0],pathI[k][1]) + " "+transform.mat.applyToPointStringified(pathV[k][0],pathV[k][1]);
+    }
+    if(pathData.closed !== false){
+        pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathO[k-1][0],pathO[k-1][1]) + " "+transform.mat.applyToPointStringified(pathI[0][0],pathI[0][1]) + " "+transform.mat.applyToPointStringified(pathV[0][0],pathV[0][1]);
+    }
+
+    ////
     var elem, item;
     for(i=0;i<len;i+=1){
         elem = elements[i];
@@ -316,10 +333,11 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
             }
         }*/
         if(viewData.lastData.d != pathString){
-            elements[i].setAttribute('d',pathString);
+            //elements[i].setAttribute('d',pathString);
+            elements[i].setAttribute('d',pathStringTransformed);
         }
         if(viewData.lastData.tr != transformString){
-            elements[i].setAttribute('transform',transformString);
+            //elements[i].setAttribute('transform',transformString);
         }
         if(viewData.lastData.o !== opacity){
             elements[i].setAttribute('opacity',opacity);

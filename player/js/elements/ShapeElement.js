@@ -32,6 +32,7 @@ IShapeElement.prototype.renderShapes = function(num){
     if(this.data.hasMask){
         this.mainShape.renderShape(num);
     }else{
+        console.log('this.finalTransform:',this.finalTransform);
         this.mainShape.renderShape(num,this.finalTransform);
     }
 };

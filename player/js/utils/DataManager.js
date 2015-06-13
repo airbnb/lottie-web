@@ -1269,19 +1269,20 @@ function dataFunctionManager(){
                         o:[]
                     };
                     pathNodes.v.push([elmPos[0],elmPos[1]-elmSize[1]/2]);
-                    pathNodes.v.push([elmPos[0]-elmSize[0]/2,elmPos[1]]);
-                    pathNodes.v.push([elmPos[0],elmPos[1]+elmSize[1]/2]);
-                    pathNodes.v.push([elmPos[0]+elmSize[0]/2,elmPos[1]+elmPos[1]]);
                     pathNodes.o.push([elmPos[0] - (elmSize[0]/2)*.55,elmPos[1] - elmSize[1]/2]);
+                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] - elmSize[1]/2]);
+                    pathNodes.v.push([elmPos[0] - elmSize[0]/2,elmPos[1]]);
                     pathNodes.o.push([elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);
-                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] + (elmSize[1]/2)]);
-                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
-                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] - (elmSize[1]/2)]);
                     pathNodes.i.push([elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
+                    pathNodes.v.push([elmPos[0],elmPos[1]+elmSize[1]/2]);
+                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] + (elmSize[1]/2)]);
                     pathNodes.i.push([elmPos[0] - (elmSize[0]/2)*.55,elmPos[1] + (elmSize[1]/2)]);
+                    pathNodes.v.push([elmPos[0] + elmSize[0]/2,elmPos[1]]);
+                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
                     pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);
 
                     shapeItem.renderedData[offsettedFrameNum].path = {pathString:pathString,pathNodes:pathNodes};
+                    shapeItem.closed = true;
                 }
             }else if(shapeItem.ty == 'st'){
                 strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime,interpolatedParams);
