@@ -43,6 +43,9 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
+    if(this.data.type == 'NullLayer'){
+        return;
+    }
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
     {
         if(this.isVisible !== true){
