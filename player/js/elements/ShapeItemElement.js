@@ -33,6 +33,8 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
             };
             this.stylesList.push({
                 elements: [],
+                datas: [],
+                pathElement: document.createElementNS(svgNS, "path"),
                 type: arr[i].ty,
                 d: ''
             });
@@ -78,6 +80,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                     data[i].elements.push(pathNode);
                     this.shape.appendChild(pathNode);
                     this.stylesList[j].elements.push(pathNode);
+                    this.stylesList[j].datas.push(data[i]);
                     if(this.stylesList[j].type == 'st'){
                         pathNode.setAttribute('fill-opacity',0);
                         pathNode.setAttribute('stroke-linejoin','round');
@@ -111,6 +114,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                     data[i].elements.push(pathNode);
                     this.shape.appendChild(pathNode);
                     this.stylesList[j].elements.push(pathNode);
+                    this.stylesList[j].datas.push(data[i]);
                     if(this.stylesList[j].type == 'st'){
                         pathNode.setAttribute('fill-opacity',0);
                         if(arr[i].trimmed){
@@ -137,10 +141,12 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
             jLen = this.stylesList.length;
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
-                    pathNode = document.createElementNS(svgNS, "ellipse");
+                    pathNode = document.createElementNS(svgNS, "path");
+                    //pathNode = document.createElementNS(svgNS, "ellipse");
                     data[i].elements.push(pathNode);
                     this.shape.appendChild(pathNode);
                     this.stylesList[j].elements.push(pathNode);
+                    this.stylesList[j].datas.push(data[i]);
                     if(this.stylesList[j].type == 'st'){
                         pathNode.setAttribute('fill-opacity',0);
                     }
@@ -221,7 +227,8 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
         }else if(items[i].ty == 'sh'){
             this.renderPath(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'el'){
-            this.renderEllipse(items[i],data[i],num,groupTransform);
+            this.renderPath(items[i],data[i],num,groupTransform);
+            //this.renderEllipse(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'rc'){
             if(items[i].trimmed){
                 this.renderPath(items[i],data[i],num,groupTransform);
@@ -255,7 +262,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
     var elements = viewData.elements;
     var i, len = elements.length;
     var pathNodes = pathData.renderedData[num].path.pathNodes;
-    //var j, jLen = pathNodes.v.length;
+    var j, jLen = pathNodes.v.length;
     var elem, item;
     for(i=0;i<len;i+=1){
         elem = elements[i];
@@ -451,9 +458,10 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num){
     var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
     var c = renderedFrameData.c;
     var o = renderedFrameData.o;
-
     var elements = styleElem.elements;
     var i, len = elements.length;
+    styleElem.pathElement.setAttribute('fill',c);
+    styleElem.pathElement.setAttribute('fill-opacity',o);
     for(i=0;i<len;i+=1){
         if(viewData.lastData.c != c){
             elements[i].setAttribute('fill',c);
@@ -500,6 +508,9 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num){
 
     var elements = styleElem.elements;
     var i, len = elements.length;
+    styleElem.pathElement.setAttribute('stroke',c);
+    styleElem.pathElement.setAttribute('stroke-opacity',o);
+    styleElem.pathElement.setAttribute('stroke-width',w);
     for(i=0;i<len;i+=1){
         if(viewData.lastData.c != c){
             elements[i].setAttribute('stroke',c);
