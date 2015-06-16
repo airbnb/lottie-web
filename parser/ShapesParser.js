@@ -253,7 +253,6 @@
                 extrasInstance.convertToBezierValues(prop.property('Opacity'), frameRate, ob,'o');
                 extrasInstance.convertToBezierValues(prop.property('Stroke Width'), frameRate, ob,'w');
                 var j, jLen = prop.property('Dashes').numProperties;
-                extrasInstance.iterateProperty(prop.property('Dashes').property(1));
                 var dashesData = [];
                 var changed = false;
                 for(j=0;j<jLen;j+=1){
