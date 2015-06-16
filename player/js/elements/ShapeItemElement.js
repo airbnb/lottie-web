@@ -7,12 +7,6 @@ function ShapeItemElement(data,parentElement,globalData){
     this.globalData = globalData;
     this.searchShapes(this.data,this.viewData);
     styleUnselectableDiv(this.shape);
-    this.currentTrim = {
-        s:0,
-        e:100,
-        o:0,
-        active : false
-    }
 }
 
 ShapeItemElement.prototype.searchShapes = function(arr,data){
@@ -27,7 +21,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                 renderedFrames : [],
                 lastData : {
                     c: '',
-                    o:'',
+                    o:-1,
                     w: ''
                 }
             };
@@ -104,9 +98,6 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     }
     if(!data){
         data = this.viewData;
-    }
-    if(this.currentTrim.active){
-        this.currentTrim.active = false;
     }
     this.frameNum = num;
     ///
