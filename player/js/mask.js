@@ -47,7 +47,7 @@ MaskElement.prototype.init = function () {
 MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
     for (i = 0; i < len; i++) {
-        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathString);
+        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes);
     }
 };
 
@@ -75,7 +75,26 @@ MaskElement.prototype.createLayerSolidPath = function(){
     return path;
 };
 
-MaskElement.prototype.drawPath = function(pathData,pathString){
+MaskElement.prototype.drawPath = function(pathData,pathNodes){
+    var pathString = '';
+    if(!pathNodes.__renderedString){
+        var i, len = pathNodes.v.length;
+        for(i=1;i<len;i+=1){
+            if(i==1){
+                pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+            }
+            pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
+        }
+        if(pathData.cl){
+            pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+        }
+        pathNodes.__renderedString = pathString;
+    }else{
+        pathString = pathNodes.__renderedString;
+    }
+
+
+
     if(pathData.lastPath !== pathString){
         if(pathData.inv){
             pathData.elem.setAttribute('d',this.solidPath+pathString);

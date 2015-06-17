@@ -150,31 +150,32 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
 
 ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform){
     if(!viewData.renderedFrames[this.globalData.frameNum]){
-        ////
 
         var pathNodes = pathData.renderedData[num].path.pathNodes;
-        if(!pathNodes.v || !pathNodes.v[0]){
+        if(!pathNodes.v){
             return;
         }
-        var pathV = pathNodes.v;
-        var pathO = pathNodes.o;
-        var pathI = pathNodes.i;
-        var k,kLen = pathV.length;
-        var pathStringTransformed = " M"+transform.mat.applyToPointStringified(pathV[0][0],pathV[0][1]);
-        for(k=1;k<kLen;k++){
-            pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathO[k-1][0],pathO[k-1][1]) + " "+transform.mat.applyToPointStringified(pathI[k][0],pathI[k][1]) + " "+transform.mat.applyToPointStringified(pathV[k][0],pathV[k][1]);
+
+        var i,len = pathNodes.v.length;
+        var stops = pathNodes.s ? pathNodes.s : [];
+        var pathStringTransformed = '';
+        for(i=1;i<len;i+=1){
+            if(stops[i-1]){
+                pathStringTransformed += " M"+transform.mat.applyToPointStringified(stops[i-1][0],stops[i-1][1]);
+            }else if(i==1){
+                pathStringTransformed += " M"+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+            }
+            pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[i][0],pathNodes.i[i][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[i][0],pathNodes.v[i][1]);
         }
-        if(pathData.closed !== false){
-            pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathO[k-1][0],pathO[k-1][1]) + " "+transform.mat.applyToPointStringified(pathI[0][0],pathI[0][1]) + " "+transform.mat.applyToPointStringified(pathV[0][0],pathV[0][1]);
+        if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
+            pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
         }
 
-        ////
         viewData.renderedFrames[this.globalData.frameNum] = {
             dTr: pathStringTransformed
         };
     }
     var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
-    var i, len;
 
     len = viewData.styles.length;
     for(i=0;i<len;i+=1){
