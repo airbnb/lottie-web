@@ -640,11 +640,7 @@ function dataFunctionManager(){
                     pathData.pathNodes = keyframes;
                 }
             }else{
-                if(renderType == 'svg'){
-                    pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
-                }else{
-                    pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
-                }
+                pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
             }
             return pathData;
         }else{
@@ -687,11 +683,7 @@ function dataFunctionManager(){
                         pathData.pathNodes = keyframes.__minValue;
                     }
                 }else{
-                    if(renderType == 'svg'){
-                        pathData.pathNodes = trimPath(keyframes.__minValue,pathData.closed, trimData, false);
-                    }else{
-                        pathData.pathNodes = trimPath(keyframes.__minValue,pathData.closed, trimData, false);
-                    }
+                    pathData.pathNodes = trimPath(keyframes.__minValue,pathData.closed, trimData, false);
                 }
                 return pathData;
             }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
@@ -726,11 +718,7 @@ function dataFunctionManager(){
                         pathData.pathNodes = keyframes.__maxValue;
                     }
                 }else{
-                    if(renderType == 'svg'){
-                        pathData.pathNodes = trimPath(keyframes.__maxValue,pathData.closed, trimData, false);
-                    }else{
-                        pathData.pathNodes = trimPath(keyframes.__maxValue,pathData.closed, trimData, false);
-                    }
+                    pathData.pathNodes = trimPath(keyframes.__maxValue,pathData.closed, trimData, false);
                 }
                 return pathData;
             }else{
@@ -814,11 +802,7 @@ function dataFunctionManager(){
                         pathData.pathNodes = propertyArray[0];
                     }
                 }else{
-                    if(renderType == 'svg'){
-                        pathData.pathNodes = trimPath(propertyArray[0],pathData.closed, trimData, false);
-                    }else{
-                        pathData.pathNodes = trimPath(propertyArray[0],pathData.closed, trimData, false);
-                    }
+                    pathData.pathNodes = trimPath(propertyArray[0],pathData.closed, trimData, false);
                 }
                 return pathData;
             }
@@ -1070,7 +1054,6 @@ function dataFunctionManager(){
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
             }else{
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
-                renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py) + 'translate('+ -dataOb.a[0]+' '+ -dataOb.a[1]+')';
             }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
@@ -1205,17 +1188,7 @@ function dataFunctionManager(){
                             closed: true
                         }
                     };
-                    /*if(renderType == 'svg'){
-                     pathData.pathString = trimPath(keyframes,pathData.closed, trimData, true);
-                     }else{
-                     pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
-                     }*/
-                    if(renderType == 'svg'){
-                        //shapeItem.renderedData[offsettedFrameNum].path.pathString = convertRectToPath(elmPos,elmSize,elmRound,renderType);
-                        shapeItem.renderedData[offsettedFrameNum].path.pathString = trimPath(convertRectToPath(elmPos,elmSize,elmRound),true, addedTrim, true);
-                    }else{
-                        shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound),true, addedTrim, false);
-                    }
+                    shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound),true, addedTrim, false);
                 }
             }else if(shapeItem.ty == 'el'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,interpolatedParams);
@@ -1225,34 +1198,6 @@ function dataFunctionManager(){
                     size : elmSize
                 };
                 if(renderType == 'svg'){
-                    var cp1X,cp1Y,cp2X,cp2Y;
-                    var pathString = '';
-                    pathString += 'M'+elmPos[0]+','+ (elmPos[1]-elmSize[1]/2);
-
-                    cp1X = elmPos[0] - (elmSize[0]/2)*.55;
-                    cp1Y = elmPos[1] - elmSize[1]/2;
-                    cp2X = elmPos[0] - (elmSize[0]/2);
-                    cp2Y = elmPos[1] - (elmSize[1]/2)*.55;
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0]-elmSize[0]/2)+','+elmPos[1];
-
-                    cp1X = elmPos[0] - (elmSize[0]/2);
-                    cp1Y = elmPos[1] + (elmSize[1]/2)*.55;
-                    cp2X = elmPos[0] - (elmSize[0]/2)*.55;
-                    cp2Y = elmPos[1] + (elmSize[1]/2);
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0])+','+(elmPos[1]+elmSize[1]/2);
-
-                    cp1X = elmPos[0] + (elmSize[0]/2)*.55;
-                    cp1Y = elmPos[1] + (elmSize[1]/2);
-                    cp2X = elmPos[0] + (elmSize[0]/2);
-                    cp2Y = elmPos[1] + (elmSize[1]/2)*.55;
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0]+elmSize[0]/2)+','+(elmPos[1]);
-
-
-                    cp1X = elmPos[0] + (elmSize[0]/2);
-                    cp1Y = elmPos[1] - (elmSize[1]/2)*.55;
-                    cp2X = elmPos[0] + (elmSize[0]/2)*.55;
-                    cp2Y = elmPos[1] - (elmSize[1]/2);
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0])+','+(elmPos[1]-elmSize[1]/2);
 
                     var pathNodes = {
                         v:[],
@@ -1272,7 +1217,7 @@ function dataFunctionManager(){
                     pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
                     pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);
 
-                    shapeItem.renderedData[offsettedFrameNum].path = {pathString:pathString,pathNodes:pathNodes};
+                    shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
                     shapeItem.closed = true;
                 }
             }else if(shapeItem.ty == 'st'){
@@ -1322,7 +1267,6 @@ function dataFunctionManager(){
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 }else{
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
-                    shapeItem.renderedData[offsettedFrameNum].mt = matrixInstance.getMatrix2FromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 }
             }else if(shapeItem.ty == 'tm'){
                 trimS = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
