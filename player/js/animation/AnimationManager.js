@@ -119,7 +119,7 @@ var animationManager = (function(){
     }
     //start();
 
-    setTimeout(start,0);
+    setTimeout(start,5000);
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;

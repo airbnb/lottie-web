@@ -1060,7 +1060,7 @@ function dataFunctionManager(){
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]);
             }else{
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]);
-                renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]) + 'translate('+ -dataOb.a[0]+' '+ -dataOb.a[1]+')';
+                //renderedData.an.matrixValue = matrixInstance.getMatrix2FromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]) + 'translate('+ -dataOb.a[0]+' '+ -dataOb.a[1]+')';
             }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
@@ -1200,40 +1200,14 @@ function dataFunctionManager(){
                     size : elmSize
                 };
                 if(renderType == 'svg'){
-                    var cp1X,cp1Y,cp2X,cp2Y;
-                    var pathString = '';
-                    pathString += 'M'+elmPos[0]+','+ (elmPos[1]-elmSize[1]/2);
-
-                    cp1X = elmPos[0] - (elmSize[0]/2)*.55;
-                    cp1Y = elmPos[1] - elmSize[1]/2;
-                    cp2X = elmPos[0] - (elmSize[0]/2);
-                    cp2Y = elmPos[1] - (elmSize[1]/2)*.55;
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0]-elmSize[0]/2)+','+elmPos[1];
-
-                    cp1X = elmPos[0] - (elmSize[0]/2);
-                    cp1Y = elmPos[1] + (elmSize[1]/2)*.55;
-                    cp2X = elmPos[0] - (elmSize[0]/2)*.55;
-                    cp2Y = elmPos[1] + (elmSize[1]/2);
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0])+','+(elmPos[1]+elmSize[1]/2);
-
-                    cp1X = elmPos[0] + (elmSize[0]/2)*.55;
-                    cp1Y = elmPos[1] + (elmSize[1]/2);
-                    cp2X = elmPos[0] + (elmSize[0]/2);
-                    cp2Y = elmPos[1] + (elmSize[1]/2)*.55;
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0]+elmSize[0]/2)+','+(elmPos[1]);
 
 
-                    cp1X = elmPos[0] + (elmSize[0]/2);
-                    cp1Y = elmPos[1] - (elmSize[1]/2)*.55;
-                    cp2X = elmPos[0] + (elmSize[0]/2)*.55;
-                    cp2Y = elmPos[1] - (elmSize[1]/2);
-                    pathString += ' C'+cp1X+','+cp1Y+' '+cp2X+','+cp2Y+ ' '+(elmPos[0])+','+(elmPos[1]-elmSize[1]/2);
-
-                    var pathNodes = {
-                        v:[],
-                        i:[],
-                        o:[]
-                    };
+                    /*
+                     var pathNodes = {
+                     v:[],
+                     i:[],
+                     o:[]
+                     };
                     pathNodes.v.push([elmPos[0],elmPos[1]-elmSize[1]/2]);
                     pathNodes.o.push([elmPos[0] - (elmSize[0]/2)*.55,elmPos[1] - elmSize[1]/2]);
                     pathNodes.i.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] - elmSize[1]/2]);
@@ -1245,9 +1219,40 @@ function dataFunctionManager(){
                     pathNodes.i.push([elmPos[0] - (elmSize[0]/2)*.55,elmPos[1] + (elmSize[1]/2)]);
                     pathNodes.v.push([elmPos[0] + elmSize[0]/2,elmPos[1]]);
                     pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
-                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);
+                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);*/
 
-                    shapeItem.renderedData[offsettedFrameNum].path = {pathString:pathString,pathNodes:pathNodes};
+                    var pathNodes = {
+                        v:[[0,0],[0,0],[0,0],[0,0]],
+                        i:[[0,0],[0,0],[0,0],[0,0]],
+                        o:[[0,0],[0,0],[0,0],[0,0]]
+                    };
+
+                     pathNodes.v[0][0] = elmPos[0];
+                     pathNodes.v[0][1] = elmPos[1]-elmSize[1]/2;
+                     pathNodes.o[0][0] = elmPos[0] - (elmSize[0]/2)*.55;
+                     pathNodes.o[0][1] = elmPos[1] - elmSize[1]/2;
+                     pathNodes.i[0][0] = elmPos[0] + (elmSize[0]/2)*.55;
+                     pathNodes.i[0][1] = elmPos[1] - elmSize[1]/2;
+                     pathNodes.v[1][0] = elmPos[0] - elmSize[0]/2;
+                     pathNodes.v[1][1] = elmPos[1];
+                     pathNodes.o[1][0] = elmPos[0] - (elmSize[0]/2);
+                     pathNodes.o[1][1] = elmPos[1] + (elmSize[1]/2)*.55;
+                     pathNodes.i[1][0] = elmPos[0] - (elmSize[0]/2);
+                     pathNodes.i[1][1] = elmPos[1] - (elmSize[1]/2)*.55;
+                     pathNodes.v[2][0] = elmPos[0];
+                     pathNodes.v[2][1] = elmPos[1]+elmSize[1]/2;
+                     pathNodes.o[2][0] = elmPos[0] + (elmSize[0]/2)*.55;
+                     pathNodes.o[2][1] = elmPos[1] + (elmSize[1]/2);
+                     pathNodes.i[2][0] = elmPos[0] - (elmSize[0]/2)*.55;
+                     pathNodes.i[2][1] = elmPos[1] + (elmSize[1]/2);
+                     pathNodes.v[3][0] = elmPos[0];
+                     pathNodes.v[3][1] = elmPos[1];
+                     pathNodes.o[3][0] = elmPos[0] + (elmSize[0]/2);
+                     pathNodes.o[3][1] = elmPos[1] - (elmSize[1]/2)*.55;
+                     pathNodes.i[3][0] = elmPos[0] + (elmSize[0]/2);
+                     pathNodes.i[3][1] = elmPos[1] + (elmSize[1]/2)*.55;
+
+                    shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
                     shapeItem.closed = true;
                 }
             }else if(shapeItem.ty == 'st'){
@@ -1297,7 +1302,7 @@ function dataFunctionManager(){
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]);
                 }else{
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]);
-                    shapeItem.renderedData[offsettedFrameNum].mt = matrixInstance.getMatrix2FromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]);
+                    //shapeItem.renderedData[offsettedFrameNum].mt = matrixInstance.getMatrix2FromParams(matrixParams[0],matrixParams[1],matrixParams[2],matrixParams[3],matrixParams[4]);
                 }
             }else if(shapeItem.ty == 'tm'){
                 trimS = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,interpolatedParams);
