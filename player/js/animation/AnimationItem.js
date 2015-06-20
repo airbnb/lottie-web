@@ -159,7 +159,7 @@ AnimationItem.prototype.prerenderFrames = function(count){
     if(!count){
         count = 0;
     }
-    if(this.renderedFrameCount === this.totalFrames){
+    if(this.renderedFrameCount === Math.floor(this.totalFrames)){
         //TODO Need polyfill for ios 5.1
         this.isLoaded = true;
         this.gotoFrame();
@@ -169,7 +169,7 @@ AnimationItem.prototype.prerenderFrames = function(count){
     }else{
         dataManager.renderFrame(this.animationID,this.renderedFrameCount + this.firstFrame);
         this.renderedFrameCount+=1;
-        if(count > 5){
+        if(count > 10){
             setTimeout(this.prerenderFrames.bind(this),0);
         }else{
             count += 1;
