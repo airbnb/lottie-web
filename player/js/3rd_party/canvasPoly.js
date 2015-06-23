@@ -145,6 +145,8 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
         };
 
         // Set up externs.
-        Path2D = Path_;
+        BM_Path2D = Path_;
     })();
+}else{
+    BM_Path2D = Path2D;
 }
