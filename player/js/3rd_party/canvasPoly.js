@@ -19,7 +19,7 @@ if (CanvasRenderingContext2D.prototype.ellipse === undefined) {
         this.restore();
     };
 }
-
+var BM_Path2D;
 if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'function' || typeof Path2D.prototype.ellipse !== 'function') {
     (function() {
 
