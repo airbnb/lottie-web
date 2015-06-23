@@ -20,7 +20,7 @@ function CVShapeItemElement(data,mainFlag,globalData){
         }else if(this.data[i].ty == 'st' || this.data[i].ty == 'fl'){
             styleData = {
                 type:'fill',
-                /*path: new Path2D(),*/
+                /*path: new BM_Path2D(),*/
                 styleOpacity: 0,
                 opacity: 0,
                 value:'rgba(0,0,0,0)',
@@ -185,7 +185,7 @@ CVShapeItemElement.prototype.renderPath = function(data){
         ctx.lineJoin = 'round';
     }
     var path = data.renderedData[this.frameNum].path;
-    var path2d = new Path2D();
+    var path2d = new BM_Path2D();
     var pathNodes = path.pathNodes;
     if(pathNodes instanceof Array){
         pathNodes = pathNodes[0];
@@ -210,7 +210,7 @@ CVShapeItemElement.prototype.renderPath = function(data){
 };
 
 CVShapeItemElement.prototype.renderEllipse = function(animData){
-    var path2d = new Path2D();
+    var path2d = new BM_Path2D();
     var ell = animData.renderedData[this.frameNum];
     path2d.moveTo(ell.p[0]+ell.size[0]/2,ell.p[1]);
     path2d.ellipse(ell.p[0], ell.p[1], ell.size[0]/2, ell.size[1]/2, 0, 0, Math.PI*2, false);
@@ -218,7 +218,7 @@ CVShapeItemElement.prototype.renderEllipse = function(animData){
 };
 
 CVShapeItemElement.prototype.renderRect = function(animData){
-    var path2d = new Path2D();
+    var path2d = new BM_Path2D();
     var rect = animData.renderedData[this.frameNum];
     var roundness = rect.roundness;
     if(roundness === 0){
@@ -275,7 +275,7 @@ CVShapeItemElement.prototype.addPathToStyles = function(path2d){
 CVShapeItemElement.prototype.renderFill = function(animData){
     var fill = animData.renderedData[this.frameNum];
     if(animData.fillEnabled!==false){
-        this.stylesPool[this.currentStylePoolPos].path = new Path2D();
+        this.stylesPool[this.currentStylePoolPos].path = new BM_Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = fill.opacity < 1 ? fill.opacity : 1;
         this.stylesPool[this.currentStylePoolPos].opacity = this.opacityMultiplier;
@@ -293,7 +293,7 @@ CVShapeItemElement.prototype.renderFill = function(animData){
 CVShapeItemElement.prototype.renderStroke = function(animData){
     var stroke = animData.renderedData[this.frameNum];
     if(this.data.strokeEnabled!==false){
-        this.stylesPool[this.currentStylePoolPos].path = new Path2D();
+        this.stylesPool[this.currentStylePoolPos].path = new BM_Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = stroke.opacity < 1 ? stroke.opacity : 1;
         this.stylesPool[this.currentStylePoolPos].width = stroke.width;
