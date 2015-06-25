@@ -21,6 +21,10 @@ MaskElement.prototype.init = function () {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
         }
+
+        if(properties[i].mode == 'f' && i > 0){
+            continue;
+        }
         path = document.createElementNS(svgNS, 'path');
         if (properties[i].cl) {
             path.setAttribute('fill', '#ffffff');
@@ -47,6 +51,9 @@ MaskElement.prototype.init = function () {
 MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
     for (i = 0; i < len; i++) {
+        if(this.data.masksProperties[i].mode == 'f' && i > 0){
+            continue;
+        }
         this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes);
     }
 };
@@ -77,20 +84,43 @@ MaskElement.prototype.createLayerSolidPath = function(){
 
 MaskElement.prototype.drawPath = function(pathData,pathNodes){
     var pathString = '';
-    if(!pathNodes.__renderedString){
-        var i, len = pathNodes.v.length;
-        for(i=1;i<len;i+=1){
-            if(i==1){
-                pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+    var i, len;
+    if(pathNodes.constructor === Array){
+        var j, jLen = pathNodes.length, node,str = '';
+        for(j=0;j<jLen;j+=1){
+            str = '';
+            node = pathNodes[j];
+            if(!node.__renderedString){
+                len = node.v.length;
+                for(i=1;i<len;i+=1){
+                    if(i==1){
+                        str += " M"+node.v[0][0]+','+node.v[0][1];
+                    }
+                    str += " C"+node.o[i-1][0]+','+node.o[i-1][1] + " "+node.i[i][0]+','+node.i[i][1] + " "+node.v[i][0]+','+node.v[i][1];
+                }
+                if(pathData.cl){
+                    str += " C"+node.o[i-1][0]+','+node.o[i-1][1] + " "+node.i[0][0]+','+node.i[0][1] + " "+node.v[0][0]+','+node.v[0][1];
+                }
+                node.__renderedString = str;
             }
-            pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
+            pathString += node.__renderedString;
         }
-        if(pathData.cl){
-            pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-        }
-        pathNodes.__renderedString = pathString;
     }else{
-        pathString = pathNodes.__renderedString;
+        if(!pathNodes.__renderedString){
+            len = pathNodes.v.length;
+            for(i=1;i<len;i+=1){
+                if(i==1){
+                    pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                }
+                pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
+            }
+            if(pathData.cl){
+                pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+            }
+            pathNodes.__renderedString = pathString;
+        }else{
+            pathString = pathNodes.__renderedString;
+        }
     }
 
 

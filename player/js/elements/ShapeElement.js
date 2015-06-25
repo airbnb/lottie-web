@@ -30,7 +30,7 @@ IShapeElement.prototype.hide = function(){
 IShapeElement.prototype.renderShapes = function(num){
     this.hidden = false;
     if(this.data.hasMask){
-        this.mainShape.renderShape(num);
+        this.mainShape.renderShape(num,{opacity:1,mat:new Matrix()});
     }else{
         this.mainShape.renderShape(num,this.finalTransform);
     }

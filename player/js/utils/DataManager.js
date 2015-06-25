@@ -1059,15 +1059,25 @@ function dataFunctionManager(){
             if(item.hasMask){
                 maskProps = item.masksProperties;
                 len = maskProps.length;
+                var lastProps;
+                //console.log('len: ',len);
                 for(i=0;i<len;i+=1){
                     if(!maskProps[i].paths){
                         maskProps[i].paths = [];
                         maskProps[i].opacity = [];
                     }
 
-                    maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.startTime,renderType,true);
-                    maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.startTime,interpolatedParams);
-                    maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
+                    if(maskProps[i].mode == 'f' && i > 0 && renderType == 'svg'){
+                        var nodes = lastProps.paths[offsettedFrameNum];
+                        nodes.pathNodes = nodes.pathNodes.constructor === Array ? nodes.pathNodes : [nodes.pathNodes];
+                        nodes.pathNodes.push(interpolateShape(maskProps[i],offsettedFrameNum, item.startTime,renderType,true).pathNodes);
+                    }else{
+                        maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.startTime,renderType,true);
+                        maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.startTime,interpolatedParams);
+                        maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
+                        lastProps = maskProps[i];
+                    }
+
                 }
             }
             if((frameNum < item.inPoint || frameNum > item.outPoint)){
