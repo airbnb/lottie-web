@@ -33,8 +33,10 @@ CVBaseElement.prototype.prepareFrame = function(num){
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
     {
         this.renderFrame = true;
+        this.finalTransform.opacity = 1;
     }else{
         this.renderFrame = false;
+        this.finalTransform.opacity = 0;
         return false;
     }
 

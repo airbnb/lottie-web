@@ -55,8 +55,10 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
     ctx.lineJoin = 'round';
     for(i=0;i<len;i+=1){
         if(stylesList[i].type == 'stroke'){
-            //this.canvasContext.save();
-            ctx.globalAlpha *= stylesList[i].opacity;
+            if(stylesList[i].opacity != 1){
+                this.canvasContext.save();
+                ctx.globalAlpha *= stylesList[i].opacity;
+            }
             ctx.strokeStyle = stylesList[i].value;
             ctx.lineWidth = stylesList[i].width;
             if(stylesList[i].dasharray){
@@ -67,7 +69,9 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                 ctx.lineDashOffset = 0;
             }
             ctx.stroke(stylesList[i].path);
-            //this.canvasContext.restore();
+            if(stylesList[i].opacity != 1){
+                this.canvasContext.restore();
+            }
             if(cacheFlag){
                 cache.push({
                     type: stylesList[i].type,
@@ -82,12 +86,15 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                 }
             }
         }else if(stylesList[i].type == 'fill'){
-            //this.canvasContext.save();
-            //console.log('stylesList[i].opacity: ',stylesList[i].opacity);
-            ctx.globalAlpha *= stylesList[i].opacity;
+            if(stylesList[i].opacity != 1){
+                this.canvasContext.save();
+                ctx.globalAlpha *= stylesList[i].opacity;
+            }
             ctx.fillStyle = stylesList[i].value;
             ctx.fill(stylesList[i].path);
-            //this.canvasContext.restore();
+            if(stylesList[i].opacity != 1){
+                this.canvasContext.restore();
+            }
             if(cacheFlag){
                 cache.push({
                     type: stylesList[i].type,
@@ -129,7 +136,6 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,parentStyles
         this.stylesList = parentStylesList;
     }
     if(parentTransform){
-        this.transform.mat = parentTransform.mat;
         this.transform.mat.props[0] = parentTransform.mat.props[0];
         this.transform.mat.props[1] = parentTransform.mat.props[1];
         this.transform.mat.props[2] = parentTransform.mat.props[2];
