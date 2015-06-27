@@ -173,7 +173,7 @@
             var layerInfo = pendingItem.lInfo;
             var frameRate = pendingItem.frameRate;
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
                 //TODO add audios
                 layerOb.enabled = false;
                 extrasInstance.setTimeout(analyzeNextLayer,100);
@@ -426,11 +426,18 @@
             var layerOb = {};
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
+            //$.writeln('layerInfo.isTrackMatte: ',layerInfo.isTrackMatte);
+            //$.writeln('layerInfo.hasTrackMatte: ',layerInfo.hasTrackMatte);
             layersData.push(layerOb);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
                 //TODO add audios
                 layerOb.enabled = false;
                 continue;
+            }
+            if(layerInfo.hasTrackMatte){
+                layerOb.tt = 1;
+            }else if(layerInfo.isTrackMatte){
+                layerOb.td = 1;
             }
             pendingLayers.push({lInfo:layerInfo,lOb:layerOb,frameRate:frameRate});
             if(lType=='PreCompLayer'){
@@ -476,7 +483,7 @@
         for(i = 0;i<len;i++){
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
                 //TODO add audios
                 continue;
             }
@@ -563,7 +570,7 @@
         var time = layerInfo.startTime;
 
         var lType = extrasInstance.layerType(layerInfo);
-        if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+        if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
             //TODO add audios
             return;
         }

@@ -7,9 +7,11 @@ var BaseElement = function (data, animationItem,parentContainer,globalData){
         mat: new Matrix(),
         op: 1
     };
+    this.matteElement = null;
     this.renderedFrames = [];
     this.lastData = {};
     this.parentContainer = parentContainer;
+    this.layerId = randomString(10);
     this.init();
 };
 
@@ -26,8 +28,23 @@ BaseElement.prototype.init = function(){
 BaseElement.prototype.createElements = function(){
     if(this.data.hasMask){
         this.layerElement = document.createElementNS(svgNS,'g');
-        this.parentContainer.appendChild(this.layerElement);
+        if(this.data.tt){
+            this.matteElement = document.createElementNS(svgNS,'g');
+            this.matteElement.appendChild(this.layerElement);
+            this.parentContainer.appendChild(this.matteElement);
+        }else{
+            this.parentContainer.appendChild(this.layerElement);
+        }
         this.maskedElement = this.layerElement;
+    }else if(this.data.td){
+        this.layerElement = document.createElementNS(svgNS,'clipPath');
+        this.layerElement.setAttribute('id',this.layerId);
+        this.globalData.defs.appendChild(this.layerElement);
+    }else if(this.data.tt){
+        this.matteElement = document.createElementNS(svgNS,'g');
+        this.matteElement.setAttribute('id',this.layerId);
+        this.parentContainer.appendChild(this.matteElement);
+        this.layerElement = this.matteElement;
     }else{
         this.layerElement = this.parentContainer;
     }
@@ -164,6 +181,10 @@ BaseElement.prototype.getHierarchy = function(){
     }
     return this.hierarchy;
 };
+
+BaseElement.prototype.setMatte = function(id){
+    this.matteElement.setAttribute("clip-path", "url(#" + id + ")");
+}
 
 BaseElement.prototype.hide = function(){
 

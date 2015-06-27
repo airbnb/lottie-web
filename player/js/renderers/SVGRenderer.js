@@ -35,6 +35,9 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
             elements[i] = this.createBase(layers[i],parentContainer);
             //console.log('NO TYPE: ',layers[i]);
         }
+        if(layers[i].td){
+            elements[i+1].setMatte(elements[i].layerId);
+        }
         //NullLayer
     }
 };

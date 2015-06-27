@@ -182,8 +182,6 @@
             instanceOfArrayLength = instanceOfArray.length;
             if(curLayer.guideLayer){
                 return "GuideLayer";
-            }else if(curLayer.isTrackMatte){
-                return "TrackMatteLayer";
             }else if(curLayer.adjustmentLayer){
                 return "AdjustmentLayer";
             }else if (curLayer.nullLayer)
