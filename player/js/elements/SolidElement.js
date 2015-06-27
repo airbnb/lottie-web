@@ -21,7 +21,7 @@ ISolidElement.prototype.hide = function(){
         this.rectElement.setAttribute('opacity','0');
         this.hidden = true;
     }
-}
+};
 
 ISolidElement.prototype.renderFrame = function(num,parentMatrix){
     var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);

@@ -16,17 +16,21 @@ CVCompElement.prototype.prepareFrame = function(num){
     }
 };
 
-CVCompElement.prototype.draw = function(){
-    this.canvasContext.save();
-    if(this.parent.draw.call(this,false)===false){
-        this.canvasContext.restore();
+CVCompElement.prototype.draw = function(parentMatrix){
+    if(this.parent.draw.call(this,parentMatrix)===false){
         return;
     }
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
-        this.elements[i].draw();
+        if(this.data.hasMask){
+            this.elements[i].draw();
+        }else{
+            this.elements[i].draw(this.finalTransform);
+        }
     }
-    this.canvasContext.restore();
+    if(this.data.hasMask){
+        this.canvasContext.restore();
+    }
 };
 
 CVCompElement.prototype.setElements = function(elems){
