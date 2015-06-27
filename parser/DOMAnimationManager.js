@@ -239,10 +239,16 @@
             }else{
                 layerOb.ks.r = extrasInstance.roundNumber(layerInfo.transform.rotation.valueAtTime(0,false),3);
             }
-            if(layerInfo.transform.position.numKeys>1){
-                extrasInstance.convertToBezierValues(layerInfo.transform.position, frameRate, layerOb.ks,'p');
+            if(layerInfo.transform.position.dimensionsSeparated){
+                layerOb.ks.p = {s:true};
+                extrasInstance.convertToBezierValues(layerInfo.transform['X Position'], frameRate, layerOb.ks.p,'x');
+                extrasInstance.convertToBezierValues(layerInfo.transform['Y Position'], frameRate, layerOb.ks.p,'y');
             }else{
-                layerOb.ks.p = extrasInstance.roundNumber(layerInfo.transform.position.valueAtTime(0,false),3);
+                if(layerInfo.transform.position.numKeys>1){
+                    extrasInstance.convertToBezierValues(layerInfo.transform.position, frameRate, layerOb.ks,'p');
+                }else{
+                    layerOb.ks.p = extrasInstance.roundNumber(layerInfo.transform.position.valueAtTime(0,false),3);
+                }
             }
             if(layerInfo.transform['Anchor Point'].numKeys>1){
                 if(lType == 'ShapeLayer'){

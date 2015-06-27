@@ -371,8 +371,8 @@ function dataFunctionManager(){
             }else if(interpolatedParams.type == 's'){
                 matrixParams.sx = keyframes;
                 matrixParams.sy = keyframes;
-            }else if(interpolatedParams.type == 'r'){
-                matrixParams.r = keyframes;
+            }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                matrixParams[interpolatedParams.type] = keyframes;
             }
             if(interpolatedParams.toArray){
                 return [keyframes];
@@ -385,8 +385,8 @@ function dataFunctionManager(){
             }else if(interpolatedParams.type == 's'){
                 matrixParams.sx = keyframes[0];
                 matrixParams.sy = keyframes[1];
-            }else if(interpolatedParams.type == 'r'){
-                matrixParams.r = keyframes[0];
+            }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                matrixParams[interpolatedParams.type] = keyframes[0];
             }
             return keyframes;
         }
@@ -434,8 +434,8 @@ function dataFunctionManager(){
                 }else if(interpolatedParams.type == 's'){
                     matrixParams.sx = bezierData.points[bezierData.points.length - 1].point[0];
                     matrixParams.sy = bezierData.points[bezierData.points.length - 1].point[1];
-                }else if(interpolatedParams.type == 'r'){
-                    matrixParams.r = bezierData.points[bezierData.points.length - 1].point[0];
+                }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                    matrixParams[interpolatedParams.type] = bezierData.points[bezierData.points.length - 1].point[0];
                 }
                 return bezierData.points[bezierData.points.length - 1].point;
             }else if(frameNum < keyData.t-offsetTime){
@@ -445,8 +445,8 @@ function dataFunctionManager(){
                 }else if(interpolatedParams.type == 's'){
                     matrixParams.sx = bezierData.points[0].point[0];
                     matrixParams.sy = bezierData.points[0].point[1];
-                }else if(interpolatedParams.type == 'r'){
-                    matrixParams.r = bezierData.points[0].point[0];
+                }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                    matrixParams[interpolatedParams.type] = bezierData.points[0].point[0];
                 }
                 return bezierData.points[0].point;
             }
@@ -473,8 +473,8 @@ function dataFunctionManager(){
                     }else if(interpolatedParams.type == 's'){
                         matrixParams.sx = bezierData.points[j].point[0];
                         matrixParams.sy = bezierData.points[j].point[1];
-                    }else if(interpolatedParams.type == 'r'){
-                        matrixParams.r = bezierData.points[j].point[0];
+                    }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                        matrixParams[interpolatedParams.type] = bezierData.points[j].point[0];
                     }else{
                         propertyArray = bezierData.points[j].point;
                     }
@@ -486,8 +486,8 @@ function dataFunctionManager(){
                     }else if(interpolatedParams.type == 's'){
                         matrixParams.sx = bezierData.points[j].point[0];
                         matrixParams.sy = bezierData.points[j].point[1];
-                    }else if(interpolatedParams.type == 'r'){
-                        matrixParams.r = bezierData.points[j].point[0];
+                    }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                        matrixParams[interpolatedParams.type] = bezierData.points[j].point[0];
                     }else{
                         propertyArray = bezierData.points[j].point;
                     }
@@ -500,8 +500,8 @@ function dataFunctionManager(){
                     }else if(interpolatedParams.type == 's'){
                         matrixParams.sx = bezierData.points[j].point[0] + (bezierData.points[j+1].point[0] - bezierData.points[j].point[0])*segmentPerc;
                         matrixParams.sy = bezierData.points[j].point[1] + (bezierData.points[j+1].point[1] - bezierData.points[j].point[1])*segmentPerc;
-                    }else if(interpolatedParams.type == 'r'){
-                        matrixParams.r = bezierData.points[j].point[0] + (bezierData.points[j+1].point[0] - bezierData.points[j].point[0])*segmentPerc;
+                    }else if(interpolatedParams.type == 'r' || interpolatedParams.type == 'px' || interpolatedParams.type == 'py'){
+                        matrixParams[interpolatedParams.type] = bezierData.points[j].point[0] + (bezierData.points[j+1].point[0] - bezierData.points[j].point[0])*segmentPerc;
                     }else{
                         kLen = bezierData.points[j].point.length;
                         for(k=0;k<kLen;k+=1){
@@ -573,8 +573,8 @@ function dataFunctionManager(){
                         }else if(i == 1){
                             matrixParams.sy = keyData.s[i];
                         }
-                    }else if(interpolatedParams.type == 'r'){
-                        matrixParams.r = keyData.s[i];
+                    }else if(interpolatedParams.type == 'px' || interpolatedParams.type == 'py' || interpolatedParams.type == 'r'){
+                        matrixParams[interpolatedParams.type] = keyData.s[i];
                     }else{
                         propertyArray.push(keyData.s[i]);
                     }
@@ -591,8 +591,8 @@ function dataFunctionManager(){
                         }else if(i == 1){
                             matrixParams.sy = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
                         }
-                    }else if(interpolatedParams.type == 'r'){
-                        matrixParams.r = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
+                    }else if(interpolatedParams.type == 'px' || interpolatedParams.type == 'py' || interpolatedParams.type == 'r'){
+                        matrixParams[interpolatedParams.type] = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
                     }else{
                         propertyArray.push(keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc);
                     }
@@ -1036,8 +1036,15 @@ function dataFunctionManager(){
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime,interpolatedParams);
             dataOb.o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime,interpolatedParams);
             interpolatedParams.arrayFlag = false;
-            interpolatedParams.type = 'p';
-            getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime,interpolatedParams);
+            if(item.ks.p.s){
+                interpolatedParams.type = 'px';
+                getInterpolatedValue(item.ks.p.x,offsettedFrameNum, item.startTime,interpolatedParams);
+                interpolatedParams.type = 'py';
+                getInterpolatedValue(item.ks.p.y,offsettedFrameNum, item.startTime,interpolatedParams);
+            }else{
+                interpolatedParams.type = 'p';
+                getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime,interpolatedParams);
+            }
             interpolatedParams.arrayFlag = true;
             interpolatedParams.type = 'r';
             getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime,interpolatedParams);
