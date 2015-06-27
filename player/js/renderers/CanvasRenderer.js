@@ -75,6 +75,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.canvasContext = this.renderConfig.context;
     }
     this.globalData.canvasContext = this.canvasContext;
+    this.globalData.renderer = this;
     this.layers = animData.animation.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.animation.compWidth;
