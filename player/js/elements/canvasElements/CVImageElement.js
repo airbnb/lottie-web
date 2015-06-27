@@ -41,6 +41,7 @@ CVImageElement.prototype.draw = function(parentMatrix){
         var finalMat = this.finalTransform.mat.props;
         ctx.transform(finalMat[0], finalMat[1], finalMat[2], finalMat[3], finalMat[4], finalMat[5]);
     }
+    ctx.globalAlpha = ctx.globalAlpha*this.finalTransform.opacity;
     ctx.drawImage(this.img,0,0);
     ctx.restore();
 };

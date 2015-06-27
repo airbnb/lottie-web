@@ -18,16 +18,19 @@ CVShapeElement.prototype.prepareFrame = function(num){
     this.mainShape.prepareFrame(num);
 };
 
-CVShapeElement.prototype.draw = function(){
-    this.canvasContext.save();
-    if(this.parent.draw.call(this, false)===false){
-        this.canvasContext.restore();
+CVShapeElement.prototype.draw = function(parentMatrix){
+    if(this.parent.draw.call(this, parentMatrix)===false){
         return;
     }
-    this.drawShapes();
-    this.canvasContext.restore();
+    if(!this.data.hasMask){
+        this.drawShapes(this.finalTransform);
+    }else{
+        this.canvasContext.globalAlpha = this.canvasContext.globalAlpha*this.finalTransform.opacity;
+        this.drawShapes();
+        this.canvasContext.restore();
+    }
 };
 
-CVShapeElement.prototype.drawShapes = function(){
-    this.mainShape.renderShape();
+CVShapeElement.prototype.drawShapes = function(parentTransform){
+    this.mainShape.renderShape(parentTransform);
 };

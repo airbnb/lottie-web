@@ -1,7 +1,6 @@
 function ShapeItemElement(data,parentElement,globalData){
     this.stylesList = [];
     this.viewData = [];
-    this.currentMatrix = new Matrix();
     this.shape = parentElement;
     this.data = data;
     this.globalData = globalData;
@@ -155,7 +154,6 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
         if(!pathNodes.v){
             return;
         }
-
         var i,len = pathNodes.v.length;
         var stops = pathNodes.s ? pathNodes.s : [];
         var pathStringTransformed = '';

@@ -78,11 +78,11 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
 
         Path_.prototype.addPath = function(path, tr) {
             var hasTx = false;
-            if (tr && (tr.a != 1 || tr.b != 0 || tr.c != 0 || tr.d != 1 || tr.e != 0 || tr.f != 0)) {
+            if (tr && (tr[0] != 1 || tr[1] != 0 || tr[2] != 0 || tr[3] != 1 || tr[4] != 0 || tr[5] != 0)) {
 
                 hasTx = true;
                 this.ops_.push({type: 'save', args: []});
-                this.ops_.push({type: 'transform', args: [tr.a, tr.b, tr.c, tr.d, tr.e, tr.f]});
+                this.ops_.push({type: 'transform', args: [tr[0], tr[1], tr[2], tr[3], tr[4], tr[5]]});
             }
             this.ops_ = this.ops_.concat(path.ops_);
             if (hasTx) {

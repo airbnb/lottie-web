@@ -7,7 +7,7 @@ function CVBaseElement(data,globalData){
     this.ownMatrix = new Matrix();
     this.finalTransform = {
         mat: new Matrix(),
-        op: 1
+        opacity: 1
     };
     this.init();
 }

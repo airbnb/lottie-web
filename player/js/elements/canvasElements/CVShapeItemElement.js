@@ -9,8 +9,11 @@ function CVShapeItemElement(data,mainFlag,globalData){
     this.ownStylesList = [];
     this.stylesPool = [];
     this.currentStylePoolPos = 0;
-    this.currentMatrix = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
-    this.mat = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix();
+    this.transform = {
+        opacity: 1,
+        mat: new Matrix()
+    };
+    this.mat = new Matrix();
     var i,len=this.dataLength-1;
     this.renderedPaths = {};
     var styleData;
@@ -80,6 +83,7 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
             }
         }else if(stylesList[i].type == 'fill'){
             //this.canvasContext.save();
+            //console.log('stylesList[i].opacity: ',stylesList[i].opacity);
             ctx.globalAlpha *= stylesList[i].opacity;
             ctx.fillStyle = stylesList[i].value;
             ctx.fill(stylesList[i].path);
@@ -110,12 +114,12 @@ CVShapeItemElement.prototype.prepareFrame = function(num){
     }
 };
 
-CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatrix){
+CVShapeItemElement.prototype.renderShape = function(parentTransform,parentStylesList){
     if(this.renderedPaths[this.globalData.frameNum]){
         this.drawPaths(false);
         return;
     }
-    this.opacityMultiplier = 1;
+    this.transform.opacity = 1;
     var i, len;
     this.ownStylesList.length = 0;
     this.currentStylePoolPos = 0;
@@ -124,16 +128,23 @@ CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatr
     }else{
         this.stylesList = parentStylesList;
     }
-    if(parentMatrix){
-        this.currentMatrix = parentMatrix;
+    if(parentTransform){
+        this.transform.mat = parentTransform.mat;
+        this.transform.mat.props[0] = parentTransform.mat.props[0];
+        this.transform.mat.props[1] = parentTransform.mat.props[1];
+        this.transform.mat.props[2] = parentTransform.mat.props[2];
+        this.transform.mat.props[3] = parentTransform.mat.props[3];
+        this.transform.mat.props[4] = parentTransform.mat.props[4];
+        this.transform.mat.props[5] = parentTransform.mat.props[5];
+        this.transform.opacity *= parentTransform.opacity;
     }else{
-        this.currentMatrix.a = this.currentMatrix.d = 1;
-        this.currentMatrix.b = this.currentMatrix.c = this.currentMatrix.e = this.currentMatrix.f = 0;
+        this.transform.mat.props[0] = this.transform.mat.props[3] = 1;
+        this.transform.mat.props[1] = this.transform.mat.props[2] = this.transform.mat.props[4] = this.transform.mat.props[5] = 0;
     }
     len = this.dataLength - 1;
     for(i=len;i>=0;i-=1){
         if(this.data[i].ty == 'gr'){
-            this.data[i].item.renderShape(this.stylesList,this.currentMatrix);
+            this.data[i].item.renderShape(this.transform,this.stylesList);
         }else if(this.data[i].ty == 'tr'){
             this.renderTransform(this.data[i]);
         }else if(this.data[i].ty == 'sh'){
@@ -167,15 +178,8 @@ CVShapeItemElement.prototype.renderShape = function(parentStylesList, parentMatr
 CVShapeItemElement.prototype.renderTransform = function(animData){
     var tr = animData.renderedData[this.frameNum];
     var matrixValue = tr.mtArr;
-    this.mat.a = matrixValue[0];
-    this.mat.b = matrixValue[1];
-    this.mat.c = matrixValue[2];
-    this.mat.d = matrixValue[3];
-    this.mat.e = matrixValue[4];
-    this.mat.f = matrixValue[5];
-    this.mat = this.mat.translate(-tr.a[0],-tr.a[1]);
-    this.opacityMultiplier *= tr.o;
-    this.currentMatrix = this.currentMatrix.multiply(this.mat);
+    this.transform.mat.transform(matrixValue[0],matrixValue[1],matrixValue[2],matrixValue[3],matrixValue[4],matrixValue[5]).translate(-tr.a[0],-tr.a[1]);
+    this.transform.opacity *= tr.o;
 };
 
 CVShapeItemElement.prototype.renderPath = function(data){
@@ -257,13 +261,13 @@ CVShapeItemElement.prototype.addPathToStyles = function(path2d){
         if(!this.stylesList[i].closed){
             if(this.stylesList[i].type == 'stroke'){
                 if(this.stylesList[i].width > strokeWidth){
-                    this.stylesList[i].path.addPath(path2d, this.currentMatrix);
+                    this.stylesList[i].path.addPath(path2d, this.transform.mat.props);
                 }
                 if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
                     strokeWidth = this.stylesList[i].width;
                 }
             }else if(canFill && this.stylesList[i].type == 'fill'){
-                this.stylesList[i].path.addPath(path2d, this.currentMatrix);
+                this.stylesList[i].path.addPath(path2d, this.transform.mat.props);
                 if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
                     canFill = false;
                 }
@@ -278,7 +282,7 @@ CVShapeItemElement.prototype.renderFill = function(animData){
         this.stylesPool[this.currentStylePoolPos].path = new BM_Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = fill.opacity < 1 ? fill.opacity : 1;
-        this.stylesPool[this.currentStylePoolPos].opacity = this.opacityMultiplier;
+        this.stylesPool[this.currentStylePoolPos].opacity = this.transform.opacity;
         this.stylesPool[this.currentStylePoolPos].value = fill.opacity < 1 ? fillColorToString(fill.color, fill.opacity) : fillColorToString(fill.color);
         this.stylesList.push(this.stylesPool[this.currentStylePoolPos]);
         this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
@@ -297,7 +301,7 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = stroke.opacity < 1 ? stroke.opacity : 1;
         this.stylesPool[this.currentStylePoolPos].width = stroke.width;
-        this.stylesPool[this.currentStylePoolPos].opacity = this.opacityMultiplier;
+        this.stylesPool[this.currentStylePoolPos].opacity = this.transform.opacity;
         this.stylesPool[this.currentStylePoolPos].value = stroke.opacity < 1 ? fillColorToString(stroke.color, stroke.opacity) : fillColorToString(stroke.color);
 
         if(stroke.dashes){
