@@ -29,7 +29,7 @@ CVCompElement.prototype.draw = function(parentMatrix){
         }
     }
     if(this.data.hasMask){
-        this.canvasContext.restore();
+        this.globalData.renderer.restore(true);
     }
 };
 

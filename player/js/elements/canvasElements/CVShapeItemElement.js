@@ -50,14 +50,15 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
     }
     var i, len = stylesList.length;
     var ctx = this.canvasContext;
-    ctx.save();
+    this.globalData.renderer.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     for(i=0;i<len;i+=1){
         if(stylesList[i].type == 'stroke'){
             if(stylesList[i].opacity != 1){
-                this.canvasContext.save();
-                ctx.globalAlpha *= stylesList[i].opacity;
+                this.globalData.renderer.save();
+                this.globalData.renderer.ctxOpacity(stylesList[i].opacity);
+                ///ctx.globalAlpha *= stylesList[i].opacity;
             }
             ctx.strokeStyle = stylesList[i].value;
             ctx.lineWidth = stylesList[i].width;
@@ -68,9 +69,9 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                 ctx.setLineDash([]);
                 ctx.lineDashOffset = 0;
             }
-            ctx.stroke(stylesList[i].path);
+            this.globalData.bmCtx.stroke(stylesList[i].path);
             if(stylesList[i].opacity != 1){
-                this.canvasContext.restore();
+                this.globalData.renderer.restore();
             }
             if(cacheFlag){
                 cache.push({
@@ -87,13 +88,14 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
             }
         }else if(stylesList[i].type == 'fill'){
             if(stylesList[i].opacity != 1){
-                this.canvasContext.save();
-                ctx.globalAlpha *= stylesList[i].opacity;
+                this.globalData.renderer.save();
+                this.globalData.renderer.ctxOpacity(stylesList[i].opacity);
+                ///ctx.globalAlpha *= stylesList[i].opacity;
             }
             ctx.fillStyle = stylesList[i].value;
-            ctx.fill(stylesList[i].path);
+            this.globalData.bmCtx.fill(stylesList[i].path);
             if(stylesList[i].opacity != 1){
-                this.canvasContext.restore();
+                this.globalData.renderer.restore();
             }
             if(cacheFlag){
                 cache.push({
@@ -105,7 +107,7 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
             }
         }
     }
-    ctx.restore();
+    this.globalData.renderer.restore();
     if(cacheFlag){
         this.renderedPaths[this.globalData.frameNum] = cache;
     }

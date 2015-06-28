@@ -37,11 +37,13 @@ CVImageElement.prototype.draw = function(parentMatrix){
     }
     var ctx = this.canvasContext;
     if(!this.data.hasMask){
-        ctx.save();
+        this.globalData.renderer.save();
         var finalMat = this.finalTransform.mat.props;
-        ctx.transform(finalMat[0], finalMat[1], finalMat[2], finalMat[3], finalMat[4], finalMat[5]);
+        this.globalData.renderer.ctxTransform('',finalMat);
+        ///ctx.transform(finalMat[0], finalMat[1], finalMat[2], finalMat[3], finalMat[4], finalMat[5]);
     }
-    ctx.globalAlpha = ctx.globalAlpha*this.finalTransform.opacity;
+    this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
+    ///ctx.globalAlpha = ctx.globalAlpha*this.finalTransform.opacity;
     ctx.drawImage(this.img,0,0);
-    ctx.restore();
+    this.globalData.renderer.restore(this.data.hasMask);
 };

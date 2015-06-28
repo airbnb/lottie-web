@@ -25,9 +25,10 @@ CVShapeElement.prototype.draw = function(parentMatrix){
     if(!this.data.hasMask){
         this.drawShapes(this.finalTransform);
     }else{
-        this.canvasContext.globalAlpha = this.canvasContext.globalAlpha*this.finalTransform.opacity;
+        this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
+        ///this.canvasContext.globalAlpha = this.canvasContext.globalAlpha*this.finalTransform.opacity;
         this.drawShapes();
-        this.canvasContext.restore();
+        this.globalData.renderer.restore(true);
     }
 };
 

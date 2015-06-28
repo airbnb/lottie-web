@@ -89,8 +89,9 @@ CVBaseElement.prototype.draw = function(parentTransform){
 
     ////
     if(this.data.hasMask){
-        ctx.save();
-        ctx.transform(finalMat.props[0], finalMat.props[1], finalMat.props[2], finalMat.props[3], finalMat.props[4], finalMat.props[5]);
+        this.globalData.renderer.save(true);
+        this.globalData.renderer.ctxTransform('',finalMat.props);
+        ///ctx.transform(finalMat.props[0], finalMat.props[1], finalMat.props[2], finalMat.props[3], finalMat.props[4], finalMat.props[5]);
         this.maskManager.draw();
     }
 

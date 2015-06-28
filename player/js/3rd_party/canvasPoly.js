@@ -20,10 +20,15 @@ if (CanvasRenderingContext2D.prototype.ellipse === undefined) {
     };
 }
 var BM_Path2D;
+function BM_CanvasRenderingContext2D(renderer){
+    this.renderer = renderer;
+}
 if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'function' || typeof Path2D.prototype.ellipse !== 'function') {
     (function() {
 
         var canvasPrototype = CanvasRenderingContext2D.prototype;
+
+        var bm_canvasPrototype = BM_CanvasRenderingContext2D.prototype;
 
         function Path_(arg) {
             this.ops_ = [];
@@ -95,52 +100,60 @@ if (typeof Path2D !== 'function' || typeof Path2D.prototype.addPath !== 'functio
         var original_clip = canvasPrototype.clip;
 
         // Replace methods on CanvasRenderingContext2D with ones that understand Path2D.
-        canvasPrototype.fill = function(arg) {
+        bm_canvasPrototype.fill = function(arg) {
             if (arg instanceof Path_) {
-                this.beginPath();
+                this.renderer.canvasContext.beginPath();
                 for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
-                    canvasPrototype[op.type].apply(this, op.args);
+                    if(op.type == 'transform'){
+                        this.renderer.ctxTransform('',op.args);
+                    }else if(op.type == 'save'){
+                        this.renderer.save();
+                    }else if(op.type == 'restore'){
+                        this.renderer.restore();
+                    }else{
+                        this.renderer.canvasContext[op.type].apply(this.renderer.canvasContext, op.args);
+                    }
                 }
                 len = arguments.length;
                 var args = [];
                 for(i=1;i<len;i+=1){
                     args.push(arguments[i]);
                 }
-                original_fill.apply(this, args);
+                original_fill.apply(this.renderer.canvasContext, args);
             } else {
-                original_fill.apply(this, arguments);
+                original_fill.apply(this.renderer.canvasContext, arguments);
             }
         };
 
-        canvasPrototype.stroke = function(arg) {
+        bm_canvasPrototype.stroke = function(arg) {
             if (arg instanceof Path_) {
-                this.beginPath();
+                this.renderer.canvasContext.beginPath();
                 for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
-                    canvasPrototype[op.type].apply(this, op.args);
+                    this.renderer.canvasContext[op.type].apply(this.renderer.canvasContext, op.args);
                 }
-                original_stroke.call(this);
+                original_stroke.call(this.renderer.canvasContext);
             } else {
-                original_stroke.call(this);
+                original_stroke.call(this.renderer.canvasContext);
             }
         };
 
-        canvasPrototype.clip = function(arg) {
+        bm_canvasPrototype.clip = function(arg) {
             if (arg instanceof Path_) {
                 this.beginPath();
                 for (var i = 0, len = arg.ops_.length; i < len; i++) {
                     var op = arg.ops_[i];
-                    canvasPrototype[op.type].apply(this, op.args);
+                    this.renderer.canvasContext[op.type].apply(this.renderer.canvasContext, op.args);
                 }
                 len = arguments.length;
                 var args = [];
                 for(i=1;i<len;i+=1){
                     args.push(arguments[i]);
                 }
-                original_clip.apply(this, args);
+                original_clip.apply(this.renderer.canvasContext, args);
             } else {
-                original_clip.apply(this, arguments);
+                original_clip.apply(this.renderer.canvasContext, arguments);
             }
         };
 
