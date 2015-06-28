@@ -22,12 +22,8 @@ CVShapeElement.prototype.draw = function(parentMatrix){
     if(this.parent.draw.call(this, parentMatrix)===false){
         return;
     }
-    if(!this.data.hasMask){
-        this.drawShapes(this.finalTransform);
-    }else{
-        this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
-        ///this.canvasContext.globalAlpha = this.canvasContext.globalAlpha*this.finalTransform.opacity;
-        this.drawShapes();
+    this.drawShapes(this.finalTransform);
+    if(this.data.hasMask){
         this.globalData.renderer.restore(true);
     }
 };

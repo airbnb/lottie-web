@@ -90,9 +90,7 @@ CVBaseElement.prototype.draw = function(parentTransform){
     ////
     if(this.data.hasMask){
         this.globalData.renderer.save(true);
-        this.globalData.renderer.ctxTransform('',finalMat.props);
-        ///ctx.transform(finalMat.props[0], finalMat.props[1], finalMat.props[2], finalMat.props[3], finalMat.props[4], finalMat.props[5]);
-        this.maskManager.draw();
+        this.maskManager.draw(this.finalTransform);
     }
 
 };
@@ -103,7 +101,8 @@ CVBaseElement.prototype.getCurrentAnimData = function(){
 CVBaseElement.prototype.addMasks = function(data){
     var params = {
         'data':{value:data},
-        'element':{value:this}
+        'element':{value:this},
+        'globalData':{value:this.globalData}
     };
     this.maskManager = createElement(CVMaskElement,null,params);
 };

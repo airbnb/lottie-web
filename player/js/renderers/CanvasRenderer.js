@@ -12,6 +12,7 @@ function CanvasRenderer(animationItem, config){
     this.contextData = {
         saved : [],
         savedOp: [],
+        savedClips:[],
         cArrPos : 0,
         cTr : new Matrix(),
         cO : 1
@@ -70,7 +71,7 @@ CanvasRenderer.prototype.createSolid = function (data) {
     return new CVSolidElement(data, this.globalData);
 };
 
-CanvasRenderer.prototype.ctxTransform = function(type,props){
+CanvasRenderer.prototype.ctxTransform = function(props){
     this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
     var trProps = this.contextData.cTr.props;
     this.canvasContext.setTransform(trProps[0],trProps[1],trProps[2],trProps[3],trProps[4],trProps[5]);
@@ -103,7 +104,6 @@ CanvasRenderer.prototype.restore = function(actionFlag){
     if(actionFlag){
         this.canvasContext.restore();
     }
-    //this.canvasContext.restore();
     var popped = this.contextData.saved.pop();
     this.contextData.cTr.props = popped;
     this.canvasContext.setTransform(popped[0],popped[1],popped[2],popped[3],popped[4],popped[5]);
@@ -126,6 +126,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.bmCtx = new BM_CanvasRenderingContext2D(this);
     this.globalData.renderer = this;
+    this.globalData.totalFrames = Math.floor(animData.animation.totalFrames);
     this.layers = animData.animation.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.animation.compWidth;
@@ -164,6 +165,9 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.tx = 0;
         this.transformCanvas.ty = 0;
     }
+    this.transformCanvas.props = [this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty];
+    this.clipper = new BM_Path2D();
+    this.clipper.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
@@ -216,18 +220,15 @@ CanvasRenderer.prototype.renderFrame = function(num){
         return;
     }
     this.lastFrame = num;
-    this.globalData.frameNum = num;
+    this.globalData.frameNum = num - this.animationItem.firstFrame;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
         this.canvasContext.canvas.width = this.canvasContext.canvas.width;
     }else{
         this.save();
     }
-    this.ctxTransform('',[this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty]);
-    ///this.canvasContext.transform(this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty);
-    this.canvasContext.beginPath();
-    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
-    this.canvasContext.clip();
+    this.ctxTransform(this.transformCanvas.props);
+    this.globalData.bmCtx.clip(this.clipper);
     this.prepareFrame(num);
     this.draw();
     if(this.renderConfig.clearCanvas !== true){

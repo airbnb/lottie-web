@@ -15,7 +15,7 @@ function CVShapeItemElement(data,mainFlag,globalData){
     };
     this.mat = new Matrix();
     var i,len=this.dataLength-1;
-    this.renderedPaths = {};
+    this.renderedPaths = new Array(this.globalData.totalFrames);
     var styleData;
     for(i=len;i>=0;i-=1){
         if(this.data[i].ty == 'gr'){

@@ -22,11 +22,7 @@ CVCompElement.prototype.draw = function(parentMatrix){
     }
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
-        if(this.data.hasMask){
-            this.elements[i].draw();
-        }else{
-            this.elements[i].draw(this.finalTransform);
-        }
+        this.elements[i].draw(this.finalTransform);
     }
     if(this.data.hasMask){
         this.globalData.renderer.restore(true);
