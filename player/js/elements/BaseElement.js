@@ -37,8 +37,13 @@ BaseElement.prototype.createElements = function(){
         }
         this.maskedElement = this.layerElement;
     }else if(this.data.td){
-        this.layerElement = document.createElementNS(svgNS,'clipPath');
+        this.layerElement = document.createElementNS(svgNS,'mask');
         this.layerElement.setAttribute('id',this.layerId);
+        if(this.data.td == 3){
+            this.layerElement.setAttribute('mask-type','luminance');
+        }else{
+            this.layerElement.setAttribute('mask-type','alpha');
+        }
         this.globalData.defs.appendChild(this.layerElement);
     }else if(this.data.tt){
         this.matteElement = document.createElementNS(svgNS,'g');
@@ -181,7 +186,7 @@ BaseElement.prototype.getHierarchy = function(){
 };
 
 BaseElement.prototype.setMatte = function(id){
-    this.matteElement.setAttribute("clip-path", "url(#" + id + ")");
+    this.matteElement.setAttribute("mask", "url(#" + id + ")");
 }
 
 BaseElement.prototype.hide = function(){

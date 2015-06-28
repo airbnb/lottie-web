@@ -422,6 +422,7 @@
 
     function createLayers(compo, layersData, frameRate){
         var i, len = compo.layers.length;
+        var pendingType;
         for(i = 0;i<len;i++){
             var layerOb = {};
             var layerInfo = compo.layers[i+1];
@@ -435,7 +436,21 @@
                 continue;
             }
             if(layerInfo.hasTrackMatte){
-                layerOb.tt = 1;
+                switch(layerInfo.trackMatteType){
+                    case TrackMatteType.ALPHA:
+                        pendingType = 1;
+                        break;
+                    case TrackMatteType.ALPHA_INVERTED:
+                        pendingType = 2;
+                        break;
+                    case TrackMatteType.LUMA:
+                        pendingType = 3;
+                        break;
+                    case TrackMatteType.LUMA_INVERTED :
+                        pendingType = 4;
+                        break;
+                }
+                layerOb.tt = pendingType;
             }else if(layerInfo.isTrackMatte){
                 layerOb.td = 1;
             }

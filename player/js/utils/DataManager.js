@@ -59,6 +59,9 @@ function dataFunctionManager(){
             if(layerData.parent){
                 layerData.parent = convertLayerNameToID(layerData.parent);
             }
+            if(layerData.tt){
+                layers[i-1].td = layerData.tt;
+            }
             layerData.renderedFrame = {};
             layerData.renderedData = {};
             animArray = [];
