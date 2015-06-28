@@ -23,10 +23,9 @@ CVMaskElement.prototype.draw = function (transform) {
         path = new BM_Path2D();
         for (i = 0; i < len; i++) {
             if (this.masksProperties[i].inv) {
-                this.createInvertedMask(this.masksProperties[i], this.frameNum);
-            } else {
-                this.drawShape(tmpPath, this.data.masksProperties[i].paths[this.frameNum].pathNodes);
+                this.createInvertedMask(tmpPath, this.data.masksProperties[i].paths[this.frameNum].pathNodes);
             }
+            this.drawShape(tmpPath, this.data.masksProperties[i].paths[this.frameNum].pathNodes);
         }
         path.addPath(tmpPath,transform.mat.props);
         this.renderedFrames[this.globalData.frameNum] = path;
@@ -44,6 +43,10 @@ CVMaskElement.prototype.drawShape = function (path, data) {
     path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[0][0], data.i[0][1], data.v[0][0], data.v[0][1]);
 };
 
-CVMaskElement.prototype.createInvertedMask = function(){
-
+CVMaskElement.prototype.createInvertedMask = function(path){
+    path.moveTo(0, 0);
+    path.lineTo(this.globalData.compWidth, 0);
+    path.lineTo(this.globalData.compWidth, this.globalData.compHeight);
+    path.lineTo(0, this.globalData.compHeight);
+    path.lineTo(0, 0);
 };
