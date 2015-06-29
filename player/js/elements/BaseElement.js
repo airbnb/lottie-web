@@ -58,7 +58,7 @@ BaseElement.prototype.createElements = function(){
 BaseElement.prototype.prepareFrame = function(num){
     this.currentAnimData = this.data.renderedData[num].an;
     var mat = this.currentAnimData.matrixArray;
-    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1])
+    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
@@ -126,7 +126,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
             this.renderedFrames[this.globalData.frameNum] = {
                 tr:'matrix('+finalMat.props.join(',')+')',
                 o:this.finalTransform.opacity
-            }
+            };
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
@@ -187,8 +187,8 @@ BaseElement.prototype.getHierarchy = function(){
 
 BaseElement.prototype.setMatte = function(id){
     this.matteElement.setAttribute("mask", "url(#" + id + ")");
-}
+};
 
 BaseElement.prototype.hide = function(){
 
-}
+};

@@ -41,9 +41,9 @@ function CVShapeItemElement(data,mainFlag,globalData){
 }
 
 CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
-    var stylesList;
+    var stylesList,cache;
     if(cacheFlag){
-        var cache = [];
+        cache = [];
         stylesList = this.stylesList;
     }else{
         stylesList = this.renderedPaths[this.globalData.frameNum];
@@ -103,7 +103,7 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                     opacity: stylesList[i].opacity,
                     value: stylesList[i].value,
                     path: stylesList[i].path
-                })
+                });
             }
         }
     }

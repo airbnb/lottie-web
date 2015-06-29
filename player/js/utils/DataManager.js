@@ -26,7 +26,7 @@ function dataFunctionManager(){
                     jLen = data[i].s.length;
                     for(j=0;j<jLen;j+=1){
                         data[i].s[j] *= multiplier;
-                        if(data[i].e != undefined){
+                        if(data[i].e !== undefined){
                             data[i].e[j] *= multiplier;
                         }
                     }
@@ -842,10 +842,12 @@ function dataFunctionManager(){
             var j, jLen = trimData.length;
             var finalPaths = paths;
             nextV = nextI = nextO = stops = null;
+            var pathV,pathO,pathI;
+            var k, kLen;
             for(j=jLen-1;j>=0;j-=1){
                 var segments = [];
                 var o = (trimData[j].o%360)/360;
-                if(o == 0 && trimData[j].s == 0 && trimData[j].e == 100){
+                if(o === 0 && trimData[j].s === 0 && trimData[j].e == 100){
                     continue;
                 }
                 pathString = '';
@@ -865,7 +867,7 @@ function dataFunctionManager(){
                     if(stringifyFlag){
                         return '';
                     }else{
-                        return {}
+                        return {};
                     }
                 }
                 if(s>e){
@@ -882,8 +884,11 @@ function dataFunctionManager(){
                     segments.push({s:0,e:finalPaths.__totalLength*(e-1)});
                 }
 
-                var pathV=[],pathO=[],pathI=[], lengths;
-                var k, kLen;
+                pathV=[];
+                pathO=[];
+                pathI=[];
+
+                var lengths;
                 pathV = finalPaths.v;
                 pathO = finalPaths.o;
                 pathI = finalPaths.i;
@@ -912,7 +917,7 @@ function dataFunctionManager(){
                         addedLength += segmentLength;
                     }
                     if(closed !== false){
-                        if(!(addedLength > segments[i].e)){
+                        if(addedLength <= segments[i].e){
                             segmentLength = lengths[k-1].addedLength;
                             if(segments[i].s <= addedLength && segments[i].e >= addedLength + segmentLength){
                                 addSegment(pathV[k-1],pathO[k-1],pathI[0],pathV[0],lengths[k-1]);
@@ -967,9 +972,9 @@ function dataFunctionManager(){
                     v: pathV,
                     s: stops,
                     c: closed
-                }
+                };
             }
-        }
+        };
     }());
 
 
@@ -1225,17 +1230,17 @@ function dataFunctionManager(){
                         o:[]
                     };
                     pathNodes.v.push([elmPos[0],elmPos[1]-elmSize[1]/2]);
-                    pathNodes.o.push([elmPos[0] - (elmSize[0]/2)*.55,elmPos[1] - elmSize[1]/2]);
-                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] - elmSize[1]/2]);
+                    pathNodes.o.push([elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2]);
+                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2]);
                     pathNodes.v.push([elmPos[0] - elmSize[0]/2,elmPos[1]]);
-                    pathNodes.o.push([elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);
-                    pathNodes.i.push([elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
+                    pathNodes.o.push([elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55]);
+                    pathNodes.i.push([elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55]);
                     pathNodes.v.push([elmPos[0],elmPos[1]+elmSize[1]/2]);
-                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2)*.55,elmPos[1] + (elmSize[1]/2)]);
-                    pathNodes.i.push([elmPos[0] - (elmSize[0]/2)*.55,elmPos[1] + (elmSize[1]/2)]);
+                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)]);
+                    pathNodes.i.push([elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)]);
                     pathNodes.v.push([elmPos[0] + elmSize[0]/2,elmPos[1]]);
-                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*.55]);
-                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*.55]);
+                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55]);
+                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55]);
 
                     shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
                     shapeItem.closed = true;
@@ -1257,7 +1262,7 @@ function dataFunctionManager(){
                         dashes.push({
                             v : val instanceof Array ? val[0] : val,
                             n : shapeItem.d[j].n
-                        })
+                        });
                     }
                     shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
                 }

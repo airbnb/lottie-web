@@ -21,8 +21,8 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
 
     var self = this;
     this.animationItem = item;
-    wrapper.addEventListener('bmPlay',function(){self.playStarted()});
-    wrapper.addEventListener('bmPause',function(){self.pauseStarted()});
+    wrapper.addEventListener('bmPlay',function(){self.playStarted();});
+    wrapper.addEventListener('bmPause',function(){self.pauseStarted();});
 
     this.controls = document.createElement('div');
     this.controls.style.width = '100%';
@@ -98,7 +98,7 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
     this.pauseButton.setAttribute('data-anim-name','pause');
     this.pauseButton.setAttribute('data-anim-repeat','0');
     this.pauseAnimation = animationManager.registerAnimation(this.pauseButton);
-    this.pauseAnimation.wrapper.addEventListener('bmLoaded',function(){self.pauseAnimation.goToAndStop(self.pauseAnimation.totalFrames - 1)});
+    this.pauseAnimation.wrapper.addEventListener('bmLoaded',function(){self.pauseAnimation.goToAndStop(self.pauseAnimation.totalFrames - 1);});
     this.pauseAnimation.loop = false;
     this.controls.appendChild(this.pauseButton);
     styleUnselectableDiv(this.pauseButton);

@@ -148,13 +148,14 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
 };
 
 ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform){
+    var len,i;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
 
         var pathNodes = pathData.renderedData[num].path.pathNodes;
         if(!pathNodes.v){
             return;
         }
-        var i,len = pathNodes.v.length;
+        len = pathNodes.v.length;
         var stops = pathNodes.s ? pathNodes.s : [];
         var pathStringTransformed = '';
         for(i=1;i<len;i+=1){
@@ -188,7 +189,7 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num,groupTra
         viewData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
             o: fillData.opacity*groupTransform.opacity
-        }
+        };
     }
 
     var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
@@ -223,10 +224,11 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     var o = renderedFrameData.o;
     var w = renderedFrameData.w;
     var d = renderedFrameData.d;
+    var dasharray,dashoffset;
     if(d){
         var j, jLen = d.length;
-        var dasharray = '';
-        var dashoffset = '';
+        dasharray = '';
+        dashoffset = '';
         for(j=0;j<jLen;j+=1){
             if(d[j].n != 'o'){
                 dasharray += ' ' + d[j].v;

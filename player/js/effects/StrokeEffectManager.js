@@ -38,8 +38,8 @@ StrokeEffectManager.prototype.setStaticAttributes = function(){
     if(staticData['Brush Size']){
         this.path.setAttribute('stroke-width',staticData['Brush Size']*2);
     }
-    if(staticData['Color']){
-        this.path.setAttribute('stroke',staticData['Color']);
+    if(staticData.Color){
+        this.path.setAttribute('stroke',staticData.Color);
     }
 };
 

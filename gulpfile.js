@@ -20,7 +20,7 @@ gulp.task('gzipFile', function(){
 });
 
 gulp.task('lint', function() {
-    return gulp.src('player/js/*.js')
+    return gulp.src('player/js/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });

@@ -38,7 +38,7 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
             this.renderedFrames[this.globalData.frameNum] = {
                 tr: 'matrix('+this.finalTransform.mat.props.join(',')+')',
                 o: this.finalTransform.opacity
-            }
+            };
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){

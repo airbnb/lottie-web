@@ -82,7 +82,7 @@ function BM_CanvasRenderingContext2D(renderer){
 
     Path_.prototype.addPath = function(path, tr) {
         var hasTx = false;
-        if (tr && (tr[0] != 1 || tr[1] != 0 || tr[2] != 0 || tr[3] != 1 || tr[4] != 0 || tr[5] != 0)) {
+        if (tr && (tr[0] != 1 || tr[1] !== 0 || tr[2] !== 0 || tr[3] != 1 || tr[4] !== 0 || tr[5] !== 0)) {
 
             hasTx = true;
             this.ops_.push({type: 'save', args: []});

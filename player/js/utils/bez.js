@@ -83,24 +83,8 @@ function bezFunction(){
             lengthData.addedLength = addedLength;
             storedBezierCurves[bezierName] = lengthData;
             return lengthData;
-        }
+        };
     }());
-
-    function createBezierPath(pt1,pt2,pt3,pt4){
-        var curveStr = 'M'+pt1[0]+','+pt1[1];
-        curveStr += 'C'+(pt1[0]+pt3[0])+','+(pt1[1]+pt3[1]);
-        curveStr += ' '+(pt2[0]+pt4[0])+','+(pt2[1]+pt4[1]);
-        curveStr += ' '+pt2[0]+','+pt2[1];
-        return curveStr;
-    }
-
-    function createAbsolutePath(pt1,pt2,pt3,pt4){
-        var curveStr = 'M'+pt1[0]+','+pt1[1];
-        curveStr += 'C'+(pt3[0])+','+(pt3[1]);
-        curveStr += ' '+(pt4[0])+','+(pt4[1]);
-        curveStr += ' '+pt2[0]+','+pt2[1];
-        return curveStr;
-    }
 
     function buildBezierData(keyData){
         var pt1 = keyData.s;

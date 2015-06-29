@@ -55,7 +55,7 @@ var rgbToHex = (function(){
             b = 0;
         }
         return '#' + colorMap[r] + colorMap[g] + colorMap[b];
-    }
+    };
 }());
 
 function fillToRgba(hex,alpha){
