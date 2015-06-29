@@ -10,13 +10,16 @@ function CanvasRenderer(animationItem, config){
         frameNum: -1
     };
     this.contextData = {
-        saved : [],
-        savedOp: [],
-        savedClips:[],
+        saved : new Array(15),
+        savedOp: new Array(15),
         cArrPos : 0,
         cTr : new Matrix(),
         cO : 1
     };
+    var i, len = 15;
+    for(i=0;i<len;i+=1){
+        this.contextData.saved[i] = new Array(6);
+    }
     this.elements = [];
 }
 
@@ -85,8 +88,7 @@ CanvasRenderer.prototype.ctxOpacity = function(op){
 };
 
 CanvasRenderer.prototype.reset = function(){
-    this.contextData.saved.length = 0;
-    this.contextData.savedOp.length = 0;
+    this.contextData.cArrPos = 0;
     this.contextData.cTr.reset();
     this.contextData.cO = 1;
 };
@@ -96,18 +98,29 @@ CanvasRenderer.prototype.save = function(actionFlag){
         this.canvasContext.save();
     }
     var props = this.contextData.cTr.props;
-    this.contextData.saved.push([props[0],props[1],props[2],props[3],props[4],props[5]]);
-    this.contextData.savedOp.push(this.contextData.cO);
+    if(this.contextData.saved[this.contextData.cArrPos] === null){
+        this.contextData.saved[this.contextData.cArrPos] = new Array(6);
+    }
+    var i, len = 6,arr = this.contextData.saved[this.contextData.cArrPos];
+    for(i=0;i<len;i+=1){
+        arr[i] = props[i];
+    }
+    this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
+    this.contextData.cArrPos += 1;
 };
 
 CanvasRenderer.prototype.restore = function(actionFlag){
     if(actionFlag){
         this.canvasContext.restore();
     }
-    var popped = this.contextData.saved.pop();
-    this.contextData.cTr.props = popped;
+    this.contextData.cArrPos -= 1;
+    var popped = this.contextData.saved[this.contextData.cArrPos];
+    var i, len = 6,arr = this.contextData.cTr.props;
+    for(i=0;i<len;i+=1){
+        arr[i] = popped[i];
+    }
     this.canvasContext.setTransform(popped[0],popped[1],popped[2],popped[3],popped[4],popped[5]);
-    popped = this.contextData.savedOp.pop();
+    popped = this.contextData.savedOp[this.contextData.cArrPos];
     this.contextData.cO = popped;
     this.canvasContext.globalAlpha = popped;
 };

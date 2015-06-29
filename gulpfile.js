@@ -10,12 +10,19 @@ var wrap = require('gulp-wrap');
 var gzip = require('gulp-gzip');
 var concat = require('gulp-concat');
 var watch = require('gulp-watch');
+var jshint = require('gulp-jshint');
 
 gulp.task('gzipFile', function(){
   //gulp.src('demo/murally/data.js')
   gulp.src('build/player/bodymovin.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
+});
+
+gulp.task('lint', function() {
+    return gulp.src('player/js/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'));
 });
 
 gulp.task('buildParser', function() {

@@ -31,7 +31,6 @@ CVMaskElement.prototype.draw = function (transform) {
         this.renderedFrames[this.globalData.frameNum] = path;
     }
     this.globalData.bmCtx.clip(path);
-    ///this.ctx.clip();
 };
 
 CVMaskElement.prototype.drawShape = function (path, data) {
