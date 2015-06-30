@@ -582,7 +582,7 @@ var UI;
             var layerInfo = pendingItem.lInfo;
             var frameRate = pendingItem.frameRate;
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
                 //TODO add audios
                 layerOb.enabled = false;
                 extrasInstance.setTimeout(analyzeNextLayer,100);
@@ -831,15 +831,37 @@ var UI;
 
     function createLayers(compo, layersData, frameRate){
         var i, len = compo.layers.length;
+        var pendingType;
         for(i = 0;i<len;i++){
             var layerOb = {};
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
+            //$.writeln('layerInfo.isTrackMatte: ',layerInfo.isTrackMatte);
+            //$.writeln('layerInfo.hasTrackMatte: ',layerInfo.hasTrackMatte);
             layersData.push(layerOb);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
                 //TODO add audios
                 layerOb.enabled = false;
                 continue;
+            }
+            if(layerInfo.hasTrackMatte){
+                switch(layerInfo.trackMatteType){
+                    case TrackMatteType.ALPHA:
+                        pendingType = 1;
+                        break;
+                    case TrackMatteType.ALPHA_INVERTED:
+                        pendingType = 2;
+                        break;
+                    case TrackMatteType.LUMA:
+                        pendingType = 3;
+                        break;
+                    case TrackMatteType.LUMA_INVERTED :
+                        pendingType = 4;
+                        break;
+                }
+                layerOb.tt = pendingType;
+            }else if(layerInfo.isTrackMatte){
+                layerOb.td = 1;
             }
             pendingLayers.push({lInfo:layerInfo,lOb:layerOb,frameRate:frameRate});
             if(lType=='PreCompLayer'){
@@ -885,7 +907,7 @@ var UI;
         for(i = 0;i<len;i++){
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
-            if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+            if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
                 //TODO add audios
                 continue;
             }
@@ -972,7 +994,7 @@ var UI;
         var time = layerInfo.startTime;
 
         var lType = extrasInstance.layerType(layerInfo);
-        if(lType == 'AudioLayer' || lType == 'CameraLayer' || layerInfo.enabled == false){
+        if(lType == 'AudioLayer' || lType == 'CameraLayer' || (layerInfo.enabled == false && !layerInfo.isTrackMatte)){
             //TODO add audios
             return;
         }
@@ -1405,8 +1427,6 @@ var UI;
             instanceOfArrayLength = instanceOfArray.length;
             if(curLayer.guideLayer){
                 return "GuideLayer";
-            }else if(curLayer.isTrackMatte){
-                return "TrackMatteLayer";
             }else if(curLayer.adjustmentLayer){
                 return "AdjustmentLayer";
             }else if (curLayer.nullLayer)
@@ -2527,7 +2547,9 @@ var UI;
         if(!renderCancelled){
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
-            dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
+            var string = JSON.stringify(compositionData);
+            string = string.replace(/\n/g,'')  ;
+            dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
             //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
