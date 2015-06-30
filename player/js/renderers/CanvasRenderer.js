@@ -75,6 +75,10 @@ CanvasRenderer.prototype.createSolid = function (data) {
 };
 
 CanvasRenderer.prototype.ctxTransform = function(props){
+    if(!this.renderConfig.clearCanvas){
+        this.canvasContext.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+        return;
+    }
     this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
     var trProps = this.contextData.cTr.props;
     this.canvasContext.setTransform(trProps[0],trProps[1],trProps[2],trProps[3],trProps[4],trProps[5]);
@@ -82,18 +86,30 @@ CanvasRenderer.prototype.ctxTransform = function(props){
 };
 
 CanvasRenderer.prototype.ctxOpacity = function(op){
+    if(!this.renderConfig.clearCanvas){
+        this.canvasContext.globalAlpha *= op;
+        return;
+    }
     this.contextData.cO *= op;
      this.canvasContext.globalAlpha = this.contextData.cO;
     ///this.canvasContext.globalAlpha = this.canvasContext.globalAlpha * op;
 };
 
 CanvasRenderer.prototype.reset = function(){
+    if(!this.renderConfig.clearCanvas){
+        this.canvasContext.restore();
+        return;
+    }
     this.contextData.cArrPos = 0;
     this.contextData.cTr.reset();
     this.contextData.cO = 1;
 };
 
 CanvasRenderer.prototype.save = function(actionFlag){
+    if(!this.renderConfig.clearCanvas){
+        this.canvasContext.save();
+        return;
+    }
     if(actionFlag){
         this.canvasContext.save();
     }
@@ -110,6 +126,10 @@ CanvasRenderer.prototype.save = function(actionFlag){
 };
 
 CanvasRenderer.prototype.restore = function(actionFlag){
+    if(!this.renderConfig.clearCanvas){
+        this.canvasContext.restore();
+        return;
+    }
     if(actionFlag){
         this.canvasContext.restore();
     }

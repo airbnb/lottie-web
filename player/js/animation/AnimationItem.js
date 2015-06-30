@@ -271,6 +271,8 @@ AnimationItem.prototype.moveFrame = function (value, name) {
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
+
+
     this.currentRawFrame = value;
     if (this.currentRawFrame >= this.totalFrames) {
         if(this.loop === false){
