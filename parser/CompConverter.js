@@ -16,7 +16,9 @@
         if(!renderCancelled){
             var dataFile = new File(exportFolder.fullName+'/data.json');
             dataFile.open('w','TEXT','????');
-            dataFile.write(JSON.stringify(compositionData)); //DO NOT ERASE, JSON UNFORMATTED
+            var string = JSON.stringify(compositionData);
+            string = string.replace(/\n/g,'')  ;
+            dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
             //dataFile.write(JSON.stringify(compositionData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         }
