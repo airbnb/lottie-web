@@ -1,6 +1,13 @@
 # bodymovin
 After Effects plugin for export animations to svg + js library or to canvas + js
 
+## V 2.0.3
+- svg alpha and luma matte masks support
+- canvas inverted masks support
+- lots of canvas optimizations
+- custom Path2d to avoid overriding native implementation
+- json fixed to export on single line
+
 ##Version 2.0 is out!
 - improved performace
 - better AE features support
@@ -137,7 +144,7 @@ http://codepen.io/collection/nVYWZR/ <br/>
 ## Support
 - The script supports precomps, shapes, solids, images, null objects,
 - Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
-- It supports masks and inverted masks (inverted ones only in svg renderer for now) but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
+- It supports masks and inverted masks but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping (yeah!)
 - The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
 - No effects whatsoever. (stroke is on it's way)
