@@ -86,6 +86,11 @@ function bezFunction(){
         };
     }());
 
+    function BezierData(length){
+        this.segmentLength = 0;
+        this.points = new Array(length);
+    }
+
     function buildBezierData(keyData){
         var pt1 = keyData.s;
         var pt2 = keyData.e;
@@ -97,13 +102,10 @@ function bezFunction(){
         var ptCoord,perc,addedLength = 0;
         var ptDistance;
         var point,lastPoint = null;
-        var bezierData = {
-            points :[],
-            segmentLength: 0
-        };
         if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
             curveSegments = 2;
         }
+        var bezierData = new BezierData(curveSegments);
         len = pt3.length;
         for(k=0;k<curveSegments;k+=1){
             point = [];
@@ -118,7 +120,7 @@ function bezFunction(){
             }
             ptDistance = Math.sqrt(ptDistance);
             addedLength += ptDistance;
-            bezierData.points.push({partialLength: ptDistance,cumulatedLength:addedLength, point: point});
+            bezierData.points[k] = {partialLength: ptDistance,cumulatedLength:addedLength, point: point};
             lastPoint = point;
         }
         bezierData.segmentLength = addedLength;
@@ -151,13 +153,15 @@ function bezFunction(){
         }
     }
 
+    function SegmentPoints(){
+        this.pt1 = new Array(2);
+        this.pt2 = new Array(2);
+        this.pt3 = new Array(2);
+        this.pt4 = new Array(2);
+    }
+
     function getNewSegment(pt1,pt2,pt3,pt4,startPerc,endPerc, bezierData){
-        var pts = {
-            pt1:[],
-            pt2:[],
-            pt3:[],
-            pt4:[]
-        };
+        var pts = new SegmentPoints();
         startPerc = startPerc < 0 ? 0 : startPerc;
         var t0 = getDistancePerc(startPerc,bezierData);
         endPerc = endPerc > 1 ? 1 : endPerc;
@@ -165,19 +169,12 @@ function bezFunction(){
         var i, len = pt1.length;
         var u0 = 1 - t0;
         var u1 = 1 - t1;
-        var Q1 = [],Q2 = [],Q3=[],Q4=[];
         for(i=0;i<len;i+=1){
-            Q1[i] =  u0*u0*u0* pt1[i] + (t0*u0*u0 + u0*t0*u0 + u0*u0*t0) * pt3[i] + (t0*t0*u0 + u0*t0*t0 + t0*u0*t0)* pt4[i] + t0*t0*t0* pt2[i];
-            Q2[i] = u0*u0*u1*pt1[i] + (t0*u0*u1 + u0*t0*u1 + u0*u0*t1)* pt3[i] + (t0*t0*u1 + u0*t0*t1 + t0*u0*t1)* pt4[i] + t0*t0*t1* pt2[i];
-            Q3[i] = u0*u1*u1* pt1[i] + (t0*u1*u1 + u0*t1*u1 + u0*u1*t1)* pt3[i] + (t0*t1*u1 + u0*t1*t1 + t0*u1*t1)* pt4[i] + t0*t1*t1* pt2[i];
-            Q4[i] = u1*u1*u1* pt1[i] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[i] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[i] + t1*t1*t1* pt2[i];
+            pts.pt1[i] =  u0*u0*u0* pt1[i] + (t0*u0*u0 + u0*t0*u0 + u0*u0*t0) * pt3[i] + (t0*t0*u0 + u0*t0*t0 + t0*u0*t0)* pt4[i] + t0*t0*t0* pt2[i];
+            pts.pt3[i] = u0*u0*u1*pt1[i] + (t0*u0*u1 + u0*t0*u1 + u0*u0*t1)* pt3[i] + (t0*t0*u1 + u0*t0*t1 + t0*u0*t1)* pt4[i] + t0*t0*t1* pt2[i];
+            pts.pt4[i] = u0*u1*u1* pt1[i] + (t0*u1*u1 + u0*t1*u1 + u0*u1*t1)* pt3[i] + (t0*t1*u1 + u0*t1*t1 + t0*u1*t1)* pt4[i] + t0*t1*t1* pt2[i];
+            pts.pt2[i] = u1*u1*u1* pt1[i] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[i] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[i] + t1*t1*t1* pt2[i];
         }
-        pts.pt1 = Q1;
-        pts.pt2 = Q4;
-        pts.pt3 = Q2;
-        pts.pt4 = Q3;
-        /*pts.pt2[0] = pto.x;
-        pts.pt2[1] = pto.y;*/
         return pts;
     }
 

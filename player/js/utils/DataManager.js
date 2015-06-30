@@ -633,15 +633,7 @@ function dataFunctionManager(){
         if(keyframes.v){
 
             if(!isTrimmed){
-                if(renderType == 'svg'){
-                    /*if(!keyframes.__pathString){
-                        keyframes.__pathString = createPathString(keyframes,pathData.closed);
-                    }
-                    pathData.pathString = keyframes.__pathString;*/
-                    pathData.pathNodes = keyframes;
-                }else{
-                    pathData.pathNodes = keyframes;
-                }
+                pathData.pathNodes = keyframes;
             }else{
                 pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
             }
@@ -673,18 +665,10 @@ function dataFunctionManager(){
                         shapeData.v.push(coordsVData);
                     }
                     propertyArray.push(shapeData);
-                    if(renderType == 'svg' && !isTrimmed){
-                        keyframes.__minValueN = propertyArray[0];
-                    }else{
-                        keyframes.__minValue = propertyArray[0];
-                    }
+                    keyframes.__minValue = propertyArray[0];
                 }
                 if(!isTrimmed){
-                    if(renderType == 'svg'){
-                        pathData.pathNodes = keyframes.__minValueN;
-                    }else{
-                        pathData.pathNodes = keyframes.__minValue;
-                    }
+                    pathData.pathNodes = keyframes.__minValue;
                 }else{
                     pathData.pathNodes = trimPath(keyframes.__minValue,pathData.closed, trimData, false);
                 }
@@ -708,18 +692,10 @@ function dataFunctionManager(){
                         shapeData.v.push(coordsVData);
                     }
                     propertyArray.push(shapeData);
-                    if(renderType == 'svg' && !isTrimmed){
-                        keyframes.__maxValueN = propertyArray[0];
-                    }else{
-                        keyframes.__maxValue = propertyArray[0];
-                    }
+                    keyframes.__maxValue = propertyArray[0];
                 }
                 if(!isTrimmed){
-                    if(renderType == 'svg'){
-                        pathData.pathNodes = keyframes.__maxValueN;
-                    }else{
-                        pathData.pathNodes = keyframes.__maxValue;
-                    }
+                    pathData.pathNodes = keyframes.__maxValue;
                 }else{
                     pathData.pathNodes = trimPath(keyframes.__maxValue,pathData.closed, trimData, false);
                 }
@@ -799,11 +775,7 @@ function dataFunctionManager(){
                     }
                 }
                 if(!isTrimmed){
-                    if(renderType == 'svg'){
-                        pathData.pathNodes = propertyArray[0];
-                    }else{
-                        pathData.pathNodes = propertyArray[0];
-                    }
+                    pathData.pathNodes = propertyArray[0];
                 }else{
                     pathData.pathNodes = trimPath(propertyArray[0],pathData.closed, trimData, false);
                 }
@@ -1112,59 +1084,44 @@ function dataFunctionManager(){
     }
 
     function convertRectToPath(pos,size,round){
-        var nextV = [];
-        var nextI = [];
-        var nextO = [];
+        var nextV = new Array(8);
+        var nextI = new Array(8);
+        var nextO = new Array(8);
         var cPoint = round/2;
         round *= 1;
 
-        nextV.push([pos[0]+size[0]/2,pos[1]-size[1]/2+round]);
-        nextO.push(nextV[0]);
-        nextI.push([pos[0]+size[0]/2,pos[1]-size[1]/2+cPoint]);
+        nextV[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+round];
+        nextO[0] = nextV[0];
+        nextI[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+cPoint];
 
-        nextV.push([pos[0]+size[0]/2,pos[1]+size[1]/2-round]);
-        nextO.push([pos[0]+size[0]/2,pos[1]+size[1]/2-cPoint]);
-        nextI.push(nextV[1]);
+        nextV[1] = [pos[0]+size[0]/2,pos[1]+size[1]/2-round];
+        nextO[1] = [pos[0]+size[0]/2,pos[1]+size[1]/2-cPoint];
+        nextI[1] = nextV[1];
 
-        nextV.push([pos[0]+size[0]/2-round,pos[1]+size[1]/2]);
-        nextO.push(nextV[2]);
-        nextI.push([pos[0]+size[0]/2-cPoint,pos[1]+size[1]/2]);
+        nextV[2] = [pos[0]+size[0]/2-round,pos[1]+size[1]/2];
+        nextO[2] = nextV[2];
+        nextI[2] = [pos[0]+size[0]/2-cPoint,pos[1]+size[1]/2];
 
-        nextV.push([pos[0]-size[0]/2+round,pos[1]+size[1]/2]);
-        nextO.push([pos[0]-size[0]/2+cPoint,pos[1]+size[1]/2]);
-        nextI.push(nextV[3]);
+        nextV[3] = [pos[0]-size[0]/2+round,pos[1]+size[1]/2];
+        nextO[3] = [pos[0]-size[0]/2+cPoint,pos[1]+size[1]/2];
+        nextI[3] = nextV[3];
 
-        nextV.push([pos[0]-size[0]/2,pos[1]+size[1]/2-round]);
-        nextO.push(nextV[4]);
-        nextI.push([pos[0]-size[0]/2,pos[1]+size[1]/2-cPoint]);
+        nextV[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-round];
+        nextO[4] = nextV[4];
+        nextI[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-cPoint];
 
-        nextV.push([pos[0]-size[0]/2,pos[1]-size[1]/2+round]);
-        nextO.push([pos[0]-size[0]/2,pos[1]-size[1]/2+cPoint]);
-        nextI.push(nextV[5]);
+        nextV[5] = [pos[0]-size[0]/2,pos[1]-size[1]/2+round];
+        nextO[5] = [pos[0]-size[0]/2,pos[1]-size[1]/2+cPoint];
+        nextI[5] = nextV[5];
 
-        nextV.push([pos[0]-size[0]/2+round,pos[1]-size[1]/2]);
-        nextO.push(nextV[6]);
-        nextI.push([pos[0]-size[0]/2+cPoint,pos[1]-size[1]/2]);
+        nextV[6] = [pos[0]-size[0]/2+round,pos[1]-size[1]/2];
+        nextO[6] = nextV[6];
+        nextI[6] = [pos[0]-size[0]/2+cPoint,pos[1]-size[1]/2];
 
-        nextV.push([pos[0]+size[0]/2-round,pos[1]-size[1]/2]);
-        nextO.push([pos[0]+size[0]/2-cPoint,pos[1]-size[1]/2]);
-        nextI.push(nextV[7]);
+        nextV[7] = [pos[0]+size[0]/2-round,pos[1]-size[1]/2];
+        nextO[7] = [pos[0]+size[0]/2-cPoint,pos[1]-size[1]/2];
+        nextI[7] = nextV[7];
 
-
-
-
-        /*nextV.push([pos[0]+size[0]/2,pos[1]-size[1]/2]);
-        nextO.push(nextV[0]);
-        nextI.push(nextV[0]);
-        nextV.push([pos[0]+size[0]/2,pos[1]+size[1]/2]);
-        nextO.push(nextV[1]);
-        nextI.push(nextV[1]);
-        nextV.push([pos[0]-size[0]/2,pos[1]+size[1]/2]);
-        nextO.push(nextV[2]);
-        nextI.push(nextV[2]);
-        nextV.push([pos[0]-size[0]/2,pos[1]-size[1]/2]);
-        nextO.push(nextV[3]);
-        nextI.push(nextV[3]);*/
         return {v:nextV,o:nextO,i:nextI,c:true};
     }
 
@@ -1225,22 +1182,22 @@ function dataFunctionManager(){
                 if(renderType == 'svg'){
 
                     var pathNodes = {
-                        v:[],
-                        i:[],
-                        o:[]
+                        v: new Array(4),
+                        i:new Array(4),
+                        o:new Array(4)
                     };
-                    pathNodes.v.push([elmPos[0],elmPos[1]-elmSize[1]/2]);
-                    pathNodes.o.push([elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2]);
-                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2]);
-                    pathNodes.v.push([elmPos[0] - elmSize[0]/2,elmPos[1]]);
-                    pathNodes.o.push([elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55]);
-                    pathNodes.i.push([elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55]);
-                    pathNodes.v.push([elmPos[0],elmPos[1]+elmSize[1]/2]);
-                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)]);
-                    pathNodes.i.push([elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)]);
-                    pathNodes.v.push([elmPos[0] + elmSize[0]/2,elmPos[1]]);
-                    pathNodes.o.push([elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55]);
-                    pathNodes.i.push([elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55]);
+                    pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
+                    pathNodes.o[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                    pathNodes.i[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                    pathNodes.v[1] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
+                    pathNodes.o[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                    pathNodes.i[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                    pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
+                    pathNodes.o[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                    pathNodes.i[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                    pathNodes.v[3] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
+                    pathNodes.o[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                    pathNodes.i[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
 
                     shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
                     shapeItem.closed = true;
