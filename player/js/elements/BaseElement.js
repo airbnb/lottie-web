@@ -21,7 +21,7 @@ BaseElement.prototype.init = function(){
         this.addMasks(this.data);
     }
     if(this.data.eff){
-        this.createEffectsManager(this.data);
+        //this.createEffectsManager(this.data);
     }
 };
 
@@ -79,7 +79,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }
 
     if(this.data.eff){
-        this.effectsManager.renderFrame(num,this.currentAnimData.mk);
+       // this.effectsManager.renderFrame(num,this.currentAnimData.mk);
     }
 
     if(num === this.data.renderedFrame.num){

@@ -18,7 +18,7 @@ CVBaseElement.prototype.init = function(){
         this.addMasks(this.data);
     }
     if(this.data.eff){
-        this.createEffectsManager(this.data);
+        //this.createEffectsManager(this.data);
     }
 };
 
