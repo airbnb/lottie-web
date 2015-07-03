@@ -4,7 +4,9 @@ function ITextElement(data, animationItem,parentContainer,globalData){
 createElement(BaseElement, ITextElement);
 
 ITextElement.prototype.createElements = function(){
-    this.svgElem = document.createElementNS (svgNS, "g");
+
+    this.parent.createElements.call(this);
+    /*this.svgElem = document.createElementNS (svgNS, "g");
 
     var textElement = document.createElementNS(svgNS,'text');
     textElement.textContent = this.data.textData.text;
@@ -21,5 +23,5 @@ ITextElement.prototype.createElements = function(){
     this.parent.createElements.call(this);
 
     this.anchorElement.appendChild(this.svgElem);
-    this.maskedElement = textElement;
+    this.maskedElement = textElement;*/
 };

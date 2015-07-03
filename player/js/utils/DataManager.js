@@ -56,9 +56,9 @@ function dataFunctionManager(){
             layerFrames = layerData.outPoint - layerData.startTime;
             offsetFrame = layerData.startTime;
             layerData.layerName = convertLayerNameToID(layerData.layerName);
-            if(layerData.parent){
+            /*if(layerData.parent){
                 layerData.parent = convertLayerNameToID(layerData.parent);
-            }
+            }*/
             if(layerData.tt){
                 layers[i-1].td = layerData.tt;
             }
