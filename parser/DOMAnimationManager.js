@@ -30,7 +30,7 @@
         var animationOb = {};
         compositionData.animation = animationOb;
         compositionData.assets = AssetsManager.getAssetsData();
-        compositionData.v = '2.0.4';
+        compositionData.v = '2.0.5';
         animationOb.layers = mainLayers;
         animationOb.totalFrames = totalFrames;
         animationOb.frameRate = frameRate;
@@ -425,6 +425,7 @@
         var pendingType;
         for(i = 0;i<len;i++){
             var layerOb = {};
+            layerOb.ind = i;
             var layerInfo = compo.layers[i+1];
             var lType = extrasInstance.layerType(layerInfo);
             //$.writeln('layerInfo.isTrackMatte: ',layerInfo.isTrackMatte);

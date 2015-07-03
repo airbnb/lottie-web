@@ -222,10 +222,16 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
 };
 
 CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements) {
-    element.getHierarchy().push(elements[parentName]);
-    if (layers[parentName].parent === undefined) {
-    } else {
-        this.buildItemHierarchy(data,element, layers, layers[parentName].parent,elements);
+    var i=0, len = layers.length;
+    while(i<len){
+        if(layers[i].ind === parentName){
+            element.getHierarchy().push(elements[i]);
+            if (layers[i].parent === undefined) {
+            } else {
+                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements);
+            }
+        }
+        i += 1;
     }
 };
 

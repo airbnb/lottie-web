@@ -118,9 +118,15 @@ SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,pa
     if(!layerData.parents){
         layerData.parents = [];
     }
-    element.getHierarchy().push(elements[parentName]);
-    if(layers[parentName].parent){
-        this.buildItemParenting(layerData,element,layers,layers[parentName].parent,elements);
+    var i=0, len = layers.length;
+    while(i<len){
+        if(layers[i].ind == parentName){
+            element.getHierarchy().push(elements[i]);
+            if(layers[i].parent){
+                this.buildItemParenting(layerData,element,layers,layers[i].parent,elements);
+            }
+        }
+        i += 1;
     }
 };
 
