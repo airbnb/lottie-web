@@ -439,7 +439,7 @@ var UI;
         var animationOb = {};
         compositionData.animation = animationOb;
         compositionData.assets = AssetsManager.getAssetsData();
-        compositionData.v = '2.0.3';
+        compositionData.v = '2.0.4';
         animationOb.layers = mainLayers;
         animationOb.totalFrames = totalFrames;
         animationOb.frameRate = frameRate;
@@ -611,7 +611,7 @@ var UI;
                 layerOb.rectData = {l:0,t:0,b:0,r:0,w:0,h:0};
             }
             if(layerInfo.parent != null){
-                layerOb.parent = layerInfo.parent.name;
+                layerOb.parent = layerInfo.parent.index - 1;
             }
             layerOb.layerName = layerInfo.name;
             layerOb.threeD = layerInfo.threeDLayer;

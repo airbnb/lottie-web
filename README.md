@@ -7,6 +7,10 @@ I'm on it.
 And they've removed the "live" expression evaluation I used as a "hack" to get speed and influence graphs, so I'll need to find another solution.
 I'm on it.
 
+## V 2.0.4
+- huge bug related to layers with the same name acting as parents
+- also ignoring text layers and effects on layers in case they have any
+
 ## V 2.0.3
 - svg alpha and luma matte masks support
 - canvas inverted masks support
