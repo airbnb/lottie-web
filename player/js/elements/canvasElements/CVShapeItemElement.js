@@ -308,7 +308,7 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         this.stylesPool[this.currentStylePoolPos].path = new BM_Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = stroke.opacity < 1 ? stroke.opacity : 1;
-        this.stylesPool[this.currentStylePoolPos].width = stroke.width;
+        this.stylesPool[this.currentStylePoolPos].width = stroke.width*Math.abs(Math.min(this.transform.mat.props[0],this.transform.mat.props[3]));
         this.stylesPool[this.currentStylePoolPos].opacity = this.transform.opacity;
         this.stylesPool[this.currentStylePoolPos].value = stroke.opacity < 1 ? fillColorToString(stroke.color, stroke.opacity) : fillColorToString(stroke.color);
 

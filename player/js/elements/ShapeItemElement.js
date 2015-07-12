@@ -166,7 +166,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
             }
             pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[i][0],pathNodes.i[i][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[i][0],pathNodes.v[i][1]);
         }
-        if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
+        if(pathData.renderedData[num].path.closed && !(pathData.trimmed && !pathNodes.c)){
             pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
         }
 
@@ -244,7 +244,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
         styleElem.pathElement.setAttribute('stroke-opacity',o);
     }
     if(viewData.lastData.w !== w){
-        styleElem.pathElement.setAttribute('stroke-width',w);
+        styleElem.pathElement.setAttribute('stroke-width',w*Math.abs(Math.min(groupTransform.mat.props[0],groupTransform.mat.props[3])));
     }
     if(d){
         if(viewData.lastData.da != dasharray){
@@ -256,7 +256,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     }
     viewData.lastData.c = c;
     viewData.lastData.o = o;
-    viewData.lastData.w = w;
+    viewData.lastData.w = w*Math.abs(Math.min(groupTransform.mat.props[0],groupTransform.mat.props[3]));
     if(d){
         viewData.lastData.da = dasharray;
         viewData.lastData.do = dashoffset;

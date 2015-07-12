@@ -152,12 +152,9 @@ BaseElement.prototype.getMaskManager = function(){
     return this.maskManager;
 };
 BaseElement.prototype.addMasks = function(data){
-    var params = {
-        'data':{value:data},
-        'element':{value:this},
-        'globalData':{value:this.globalData}
-    };
-    this.maskManager = createElement(MaskElement,null,params);
+    //this.maskManager = createElement(MaskElement,null,params);
+    this.maskManager = new MaskElement(data,this,this.globalData);
+    this.maskManager.init();
 };
 BaseElement.prototype.createEffectsManager = function(data){
     var params = {

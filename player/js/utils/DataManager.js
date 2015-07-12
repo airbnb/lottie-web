@@ -1084,6 +1084,7 @@ function dataFunctionManager(){
     }
 
     function convertRectToPath(pos,size,round){
+        round = Math.min(size[0],size[1],round/2);
         var nextV = new Array(8);
         var nextI = new Array(8);
         var nextO = new Array(8);

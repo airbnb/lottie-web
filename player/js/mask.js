@@ -1,6 +1,7 @@
-function MaskElement(globalData) {
-    this.data = null;
-    this.element = null;
+function MaskElement(data,element,globalData) {
+    this.data = data;
+    this.storedData = [];
+    this.element = element;
     this.globalData = globalData;
     this.paths = [];
 }
@@ -23,6 +24,7 @@ MaskElement.prototype.init = function () {
         }
 
         if(properties[i].mode == 'f' && i > 0){
+        
             continue;
         }
         path = document.createElementNS(svgNS, 'path');
@@ -36,8 +38,10 @@ MaskElement.prototype.init = function () {
         }
         path.setAttribute('clip-rule','nonzero');
         this.maskElement.appendChild(path);
-        properties[i].elem = path;
-        properties[i].lastPath = '';
+        this.storedData[i] = {
+         elem: path,
+            lastPath: ''
+        }
     }
 
     var layerId = randomString(10);
@@ -54,7 +58,7 @@ MaskElement.prototype.renderFrame = function (num) {
         if(this.data.masksProperties[i].mode == 'f' && i > 0){
             continue;
         }
-        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes);
+        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes,this.storedData[i]);
     }
 };
 
@@ -82,7 +86,7 @@ MaskElement.prototype.createLayerSolidPath = function(){
     return path;
 };
 
-MaskElement.prototype.drawPath = function(pathData,pathNodes){
+MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
     var pathString = '';
     var i, len;
     if(pathNodes.constructor === Array){
@@ -125,12 +129,12 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes){
 
 
 
-    if(pathData.lastPath !== pathString){
+    if(storedData.lastPath !== pathString){
         if(pathData.inv){
-            pathData.elem.setAttribute('d',this.solidPath+pathString);
+            storedData.elem.setAttribute('d',this.solidPath+pathString);
         }else{
-            pathData.elem.setAttribute('d',pathString);
+            storedData.elem.setAttribute('d',pathString);
         }
-        pathData.lastPath = pathString;
+        storedData.lastPath = pathString;
     }
 };
