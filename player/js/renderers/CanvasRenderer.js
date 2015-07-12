@@ -87,10 +87,10 @@ CanvasRenderer.prototype.ctxTransform = function(props){
 
 CanvasRenderer.prototype.ctxOpacity = function(op){
     if(!this.renderConfig.clearCanvas){
-        this.canvasContext.globalAlpha *= op;
+        this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
         return;
     }
-    this.contextData.cO *= op;
+    this.contextData.cO *= op < 0 ? 0 : op;
      this.canvasContext.globalAlpha = this.contextData.cO;
     ///this.canvasContext.globalAlpha = this.canvasContext.globalAlpha * op;
 };
@@ -114,7 +114,7 @@ CanvasRenderer.prototype.save = function(actionFlag){
         this.canvasContext.save();
     }
     var props = this.contextData.cTr.props;
-    if(this.contextData.saved[this.contextData.cArrPos] === null){
+    if(this.contextData.saved[this.contextData.cArrPos] === null || this.contextData.saved[this.contextData.cArrPos] === undefined){
         this.contextData.saved[this.contextData.cArrPos] = new Array(6);
     }
     var i, len = 6,arr = this.contextData.saved[this.contextData.cArrPos];

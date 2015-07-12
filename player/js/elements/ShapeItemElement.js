@@ -243,7 +243,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     if(viewData.lastData.o != o){
         styleElem.pathElement.setAttribute('stroke-opacity',o);
     }
-    if(viewData.lastData.w != w){
+    if(viewData.lastData.w !== w){
         styleElem.pathElement.setAttribute('stroke-width',w);
     }
     if(d){
