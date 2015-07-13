@@ -114,7 +114,12 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }else{
         if(this.isVisible){
             if(!parentTransform){
-                this.finalTransform.mat = this.ownMatrix;
+                this.finalTransform.mat.props[0] = this.ownMatrix.props[0];
+                this.finalTransform.mat.props[1] = this.ownMatrix.props[1];
+                this.finalTransform.mat.props[2] = this.ownMatrix.props[2];
+                this.finalTransform.mat.props[3] = this.ownMatrix.props[3];
+                this.finalTransform.mat.props[4] = this.ownMatrix.props[4];
+                this.finalTransform.mat.props[5] = this.ownMatrix.props[5];
             }else{
                 mat = this.ownMatrix.props;
                 finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
