@@ -215,7 +215,7 @@ CVShapeItemElement.prototype.renderPath = function(data){
         }
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
     }
-    if(path.closed && !(data.trimmed && !pathNodes.c)){
+    if(data.closed && !(data.trimmed && !pathNodes.c)){
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
     }
     this.addPathToStyles(path2d);
@@ -308,7 +308,7 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
         this.stylesPool[this.currentStylePoolPos].path = new BM_Path2D();
         this.stylesPool[this.currentStylePoolPos].closed = false;
         this.stylesPool[this.currentStylePoolPos].styleOpacity = stroke.opacity < 1 ? stroke.opacity : 1;
-        this.stylesPool[this.currentStylePoolPos].width = stroke.width*Math.abs(Math.min(this.transform.mat.props[0],this.transform.mat.props[3]));
+        this.stylesPool[this.currentStylePoolPos].width = stroke.width;
         this.stylesPool[this.currentStylePoolPos].opacity = this.transform.opacity;
         this.stylesPool[this.currentStylePoolPos].value = stroke.opacity < 1 ? fillColorToString(stroke.color, stroke.opacity) : fillColorToString(stroke.color);
 

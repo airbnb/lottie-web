@@ -249,155 +249,6 @@
         var averageSpeed, duration;
         var bezierIn, bezierOut;
         function buildSegment(segmentOb, indexTime){
-            function getRealInfluence(property,handle,time,diff,keyNum, keyOb){
-                function iterateNextInfluence(){
-                    referenceValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                    if(extrasInstance.compareObjects(originalValue,referenceValue) ==  true){
-                        if(currentInfluence == 0.1){
-                            loop = false;
-                        }
-                        topInfluence = currentInfluence;
-                        currentInfluence -= (currentInfluence - lastInfluence)/2;
-                        if(currentInfluence < 0.1){
-                            currentInfluence = 0.1;
-                        }
-                        if(topInfluence - currentInfluence < 0.0001){
-                            loop = false;
-                        }
-                    }else{
-                        lastInfluence = currentInfluence;
-                        currentInfluence += (topInfluence-currentInfluence)/2;
-                        if(currentInfluence - lastInfluence< 0.0001){
-                            loop = false;
-                        }
-                    }
-                    if(originalInfluence - currentInfluence < 0.0001){
-                        loop = false;
-                    }
-                    count +=1;
-                    if(count >= 20){
-                        loop = false;
-                    }
-                    if( loop == true){
-                        if(handle == 'out'){
-                            keyNew = new KeyframeEase(keyOut[0].speed,currentInfluence);
-                            property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                        }else{
-                            keyNew = new KeyframeEase(keyIn[0].speed,currentInfluence);
-                            property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                        }
-                        iterateNextInfluence();
-                    }else{
-                        if(handle == 'out'){
-                            keyNew = new KeyframeEase(keyOut[0].speed,originalInfluence);
-                            property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                        }else{
-                            keyNew = new KeyframeEase(keyIn[0].speed,originalInfluence);
-                            property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                        }
-                        keyOb.influence = currentInfluence;
-                        influenceReadyCount -= 1;
-                        realInfluenceReady();
-                    }
-                }
-                var count = 0;
-                var referenceValue;
-                var lastInfluence = 0;
-                var originalValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                var keyIn = property.keyInTemporalEase(keyNum);
-                var keyOut = property.keyOutTemporalEase(keyNum);
-                var keyNew, originalInfluence;
-                if(handle == 'out'){
-                    originalInfluence = keyOut[0].influence;
-                }else{
-                    originalInfluence = keyIn[0].influence;
-                }
-                if(originalInfluence<0.1){
-                    keyOb.influence = originalInfluence;
-                    influenceReadyCount -= 1;
-                    realInfluenceReady();
-                    return;
-                }
-                if(handle == 'out'){
-                    //keyOut[0]= new KeyframeEase(keyOut[0].speed,originalInfluence);
-                    keyNew = new KeyframeEase(keyOut[0].speed,originalInfluence);
-                    property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                }else{
-                    //keyIn[0] = new KeyframeEase(keyIn[0].speed,originalInfluence);
-                    keyNew = new KeyframeEase(keyIn[0].speed,originalInfluence);
-                    property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                }
-                var topInfluence = originalInfluence;
-                var currentInfluence = originalInfluence/2;
-                //AsyncManager.addAsyncCounter();
-                originalValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                if(handle == 'out'){
-                    keyNew= new KeyframeEase(keyOut[0].speed,currentInfluence);
-                    property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                }else{
-                    keyNew = new KeyframeEase(keyIn[0].speed,currentInfluence);
-                    property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                }
-                var loop = true;
-                while(loop){
-                    referenceValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                    if(extrasInstance.compareObjects(originalValue,referenceValue) ==  true){
-                        if(currentInfluence == 0.1){
-                            loop = false;
-                        }
-                        topInfluence = currentInfluence;
-                        currentInfluence -= (currentInfluence - lastInfluence)/2;
-                        if(currentInfluence < 0.1){
-                            currentInfluence = 0.1;
-                        }
-                        if(topInfluence - currentInfluence < 0.0001){
-                            loop = false;
-                        }
-                    }else{
-                        lastInfluence = currentInfluence;
-                        currentInfluence += (topInfluence-currentInfluence)/2;
-                        if(currentInfluence - lastInfluence< 0.0001){
-                            loop = false;
-                        }
-                    }
-                    if(originalInfluence - currentInfluence < 0.0001){
-                        loop = false;
-                    }
-                    count +=1;
-                    if(count >= 20){
-                        loop = false;
-                    }
-                    if(handle == 'out'){
-                        keyNew = new KeyframeEase(keyOut[0].speed,currentInfluence);
-                        property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                    }else{
-                        keyNew = new KeyframeEase(keyIn[0].speed,currentInfluence);
-                        property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                    }
-                }
-                if(handle == 'out'){
-                    keyNew = new KeyframeEase(keyOut[0].speed,originalInfluence);
-                    property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                }else{
-                    keyNew = new KeyframeEase(keyIn[0].speed,originalInfluence);
-                    property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                }
-                keyOb.influence = currentInfluence;
-                influenceReadyCount -= 1;
-                realInfluenceReady();
-
-                /*AsyncManager.addAsyncCall(function(){
-                    originalValue = getPropertyValue(property.valueAtTime(time+diff, false), false);
-                    if(handle == 'out'){
-                        keyNew= new KeyframeEase(keyOut[0].speed,currentInfluence);
-                        property.setTemporalEaseAtKey(keyNum, [keyIn[0]], [keyNew]);
-                    }else{
-                        keyNew = new KeyframeEase(keyIn[0].speed,currentInfluence);
-                        property.setTemporalEaseAtKey(keyNum, [keyNew], [keyOut[0]]);
-                    }
-                    AsyncManager.addAsyncCall(iterateNextInfluence,1);
-                },1);*/
-            }
 
             function getCurveLength(initPos,endPos, outBezier, inBezier){
                 var k, curveSegments = 5000;
@@ -434,117 +285,7 @@
                 return addedLength;
             }
 
-            function realInfluenceReady(){
-                if(influenceReadyCount != 0){
-                    getRealInfluence(property,'out',lastKey.time,0.01/frameRate,indexTime,lastKey.easeOut);
-                    return;
-                }
-                if(interpolationType == 'hold'){
-                    segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
-                    segmentOb.s = getPropertyValue(property.keyValue(j), true);
-                    if(!(segmentOb.s instanceof Array)){
-                        segmentOb.s = [segmentOb.s];
-                    }
-                    segmentOb.h = 1;
-                    j += 1;
-                    buildNextSegment();
-                    return;
-                }
-                duration = key.time - lastKey.time;
-                len = key.value.length;
-                bezierIn = {};
-                bezierOut = {};
-                averageSpeed = 0;
-                switch(property.propertyValueType){
-                    case PropertyValueType.ThreeD_SPATIAL:
-                    case PropertyValueType.TwoD_SPATIAL:
-                        bezierIn.x = 1 - key.easeIn.influence / 100;
-                        bezierOut.x = lastKey.easeOut.influence / 100;
-                        averageSpeed = getCurveLength(lastKey.value,key.value, lastKey.to, key.ti)/duration;
-                        break;
-                    case PropertyValueType.SHAPE:
-                        bezierIn.x = 1 - key.easeIn.influence / 100;
-                        bezierOut.x = lastKey.easeOut.influence / 100;
-                        averageSpeed = 1;
-                        break;
-                    case PropertyValueType.ThreeD:
-                    case PropertyValueType.TwoD:
-                    case PropertyValueType.OneD:
-                    case PropertyValueType.COLOR:
-                        bezierIn.x = [];
-                        bezierOut.x = [];
-                        key.easeIn.forEach(function(item, index){
-                            bezierIn.x[index] = 1 - item.influence / 100;
-                            bezierOut.x[index] = lastKey.easeOut[index].influence / 100;
-
-                        });
-                        averageSpeed = [];
-                        for(i=0;i<len;i+=1){
-                            averageSpeed[i] =  (key.value[i] - lastKey.value[i])/duration;
-                        }
-                        break;
-                }
-                if(averageSpeed == 0){
-                    bezierIn.y = bezierIn.x;
-                    bezierOut.y = bezierOut.x;
-                }else{
-                    switch(property.propertyValueType){
-                        case PropertyValueType.ThreeD_SPATIAL:
-                        case PropertyValueType.TwoD_SPATIAL:
-                        case PropertyValueType.SHAPE:
-                            if(interpolationType == 'linear'){
-                                bezierIn.y = bezierIn.x;
-                                bezierOut.y = bezierOut.x;
-                            }else{
-                                bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (key.easeIn.influence / 100);
-                                bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
-                            }
-                            break;
-                        case PropertyValueType.ThreeD:
-                        case PropertyValueType.TwoD:
-                        case PropertyValueType.OneD:
-                        case PropertyValueType.COLOR:
-                            bezierIn.y = [];
-                            bezierOut.y = [];
-                            key.easeIn.forEach(function(item,index){
-                                if(averageSpeed[index] == 0 || interpolationType == 'linear'){
-                                    bezierIn.y[index] = bezierIn.x[index];
-                                    bezierOut.y[index] = bezierOut.x[index];
-                                }else{
-                                    bezierIn.y[index] = 1 - ((item.speed) / averageSpeed[index]) * (item.influence / 100);
-                                    bezierOut.y[index] = ((lastKey.easeOut[index].speed) / averageSpeed[index]) * bezierOut.x[index];
-                                }
-                            });
-                            break;
-                    }
-                }
-                if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL || property.propertyValueType == PropertyValueType.SHAPE ){
-                    property.expression = propertyExpression;
-                }
-                bezierIn.x = extrasInstance.roundNumber(bezierIn.x,3);
-                bezierIn.y = extrasInstance.roundNumber(bezierIn.y,3);
-                bezierOut.x = extrasInstance.roundNumber(bezierOut.x,3);
-                bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);
-                segmentOb.i = bezierIn;
-                segmentOb.o = bezierOut;
-                segmentOb.n = (bezierIn.x.toString()+'_'+bezierIn.y.toString()+'_'+bezierOut.x.toString()+'_'+bezierOut.y.toString()).replace(/\./g, 'p');
-                segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
-                segmentOb.s = getPropertyValue(property.keyValue(j), true);
-                segmentOb.e = getPropertyValue(property.keyValue(j+1), true);
-                if(!(segmentOb.s instanceof Array)){
-                    segmentOb.s = [segmentOb.s];
-                    segmentOb.e = [segmentOb.e];
-                }
-                if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL ){
-                    segmentOb.to = lastKey.to;
-                    segmentOb.ti = key.ti;
-                }
-                j += 1;
-                buildNextSegment();
-            }
-
             var i, len;
-            var influenceReadyCount = 0;
             var key = {};
             var lastKey = {};
             var interpolationType = '';
@@ -558,7 +299,6 @@
             }
             if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.HOLD){
                 interpolationType = 'hold';
-                realInfluenceReady();
             }else{
                 if(property.keyOutInterpolationType(indexTime) == KeyframeInterpolationType.LINEAR && property.keyInInterpolationType(indexTime + 1) == KeyframeInterpolationType.LINEAR){
                     interpolationType = 'linear';
@@ -569,21 +309,112 @@
                     case PropertyValueType.TwoD_SPATIAL:
                         lastKey.to = property.keyOutSpatialTangent(indexTime);
                         key.ti = property.keyInSpatialTangent(indexTime+1);
-                    case PropertyValueType.SHAPE:
-                        influenceReadyCount = 2;
-                        var propertyExpression = property.expression;
-                        property.expression = "velocityAtTime(time)";
-                        if(interpolationType != 'linear'){
-                            getRealInfluence(property,'in',key.time,-0.01/frameRate,indexTime+1,key.easeIn);
-                        }else{
-                            influenceReadyCount = 0;
-                            realInfluenceReady();
-                        }
                         break;
-                    default:
-                        realInfluenceReady();
                 }
             }
+            if(interpolationType == 'hold'){
+                segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
+                segmentOb.s = getPropertyValue(property.keyValue(j), true);
+                if(!(segmentOb.s instanceof Array)){
+                    segmentOb.s = [segmentOb.s];
+                }
+                segmentOb.h = 1;
+                j += 1;
+                buildNextSegment();
+                return;
+            }
+            duration = key.time - lastKey.time;
+            len = key.value.length;
+            bezierIn = {};
+            bezierOut = {};
+            averageSpeed = 0;
+            switch(property.propertyValueType){
+                case PropertyValueType.ThreeD_SPATIAL:
+                case PropertyValueType.TwoD_SPATIAL:
+                    var curveLength = getCurveLength(lastKey.value,key.value, lastKey.to, key.ti);
+                    averageSpeed = curveLength/duration;
+                    var infOut = Math.min(100*curveLength/(lastKey.easeOut.speed*duration), lastKey.easeOut.influence);
+                    var infIn = Math.min(100*curveLength/(key.easeIn.speed*duration), key.easeIn.influence);
+                    bezierIn.x = 1 - infIn / 100;
+                    bezierOut.x = infOut / 100;
+                    break;
+                case PropertyValueType.SHAPE:
+                    bezierIn.x = 1 - infIn / 100;
+                    bezierOut.x = infOut / 100;
+                    averageSpeed = 1;
+                    break;
+                case PropertyValueType.ThreeD:
+                case PropertyValueType.TwoD:
+                case PropertyValueType.OneD:
+                case PropertyValueType.COLOR:
+                    bezierIn.x = [];
+                    bezierOut.x = [];
+                    key.easeIn.forEach(function(item, index){
+                        bezierIn.x[index] = 1 - item.influence / 100;
+                        bezierOut.x[index] = lastKey.easeOut[index].influence / 100;
+
+                    });
+                    averageSpeed = [];
+                    for(i=0;i<len;i+=1){
+                        averageSpeed[i] =  (key.value[i] - lastKey.value[i])/duration;
+                    }
+                    break;
+            }
+            if(averageSpeed == 0){
+                bezierIn.y = bezierIn.x;
+                bezierOut.y = bezierOut.x;
+            }else{
+                switch(property.propertyValueType){
+                    case PropertyValueType.ThreeD_SPATIAL:
+                    case PropertyValueType.TwoD_SPATIAL:
+                    case PropertyValueType.SHAPE:
+                        if(interpolationType == 'linear'){
+                            bezierIn.y = bezierIn.x;
+                            bezierOut.y = bezierOut.x;
+                        }else{
+                            bezierIn.y =  1 - ((key.easeIn.speed) / averageSpeed) * (infIn / 100);
+                            bezierOut.y = ((lastKey.easeOut.speed) / averageSpeed) * bezierOut.x;
+                        }
+                        break;
+                    case PropertyValueType.ThreeD:
+                    case PropertyValueType.TwoD:
+                    case PropertyValueType.OneD:
+                    case PropertyValueType.COLOR:
+                        bezierIn.y = [];
+                        bezierOut.y = [];
+                        key.easeIn.forEach(function(item,index){
+                            if(averageSpeed[index] == 0 || interpolationType == 'linear'){
+                                bezierIn.y[index] = bezierIn.x[index];
+                                bezierOut.y[index] = bezierOut.x[index];
+                            }else{
+                                bezierIn.y[index] = 1 - ((item.speed) / averageSpeed[index]) * (item.influence / 100);
+                                bezierOut.y[index] = ((lastKey.easeOut[index].speed) / averageSpeed[index]) * bezierOut.x[index];
+                            }
+                        });
+                        break;
+                }
+            }
+
+            bezierIn.x = extrasInstance.roundNumber(bezierIn.x,3);
+            bezierIn.y = extrasInstance.roundNumber(bezierIn.y,3);
+            bezierOut.x = extrasInstance.roundNumber(bezierOut.x,3);
+            bezierOut.y = extrasInstance.roundNumber(bezierOut.y,3);
+            segmentOb.i = bezierIn;
+            segmentOb.o = bezierOut;
+            segmentOb.n = (bezierIn.x.toString()+'_'+bezierIn.y.toString()+'_'+bezierOut.x.toString()+'_'+bezierOut.y.toString()).replace(/\./g, 'p');
+            segmentOb.t = extrasInstance.roundNumber(lastKey.time*frameRate,3);
+            segmentOb.s = getPropertyValue(property.keyValue(j), true);
+            segmentOb.e = getPropertyValue(property.keyValue(j+1), true);
+            if(!(segmentOb.s instanceof Array)){
+                segmentOb.s = [segmentOb.s];
+                segmentOb.e = [segmentOb.e];
+            }
+            if(property.propertyValueType == PropertyValueType.ThreeD_SPATIAL || property.propertyValueType == PropertyValueType.TwoD_SPATIAL ){
+                segmentOb.to = lastKey.to;
+                segmentOb.ti = key.ti;
+            }
+            j += 1;
+            buildNextSegment();
         }
 
         if(property.numKeys <= 1){
