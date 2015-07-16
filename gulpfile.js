@@ -13,8 +13,8 @@ var watch = require('gulp-watch');
 var jshint = require('gulp-jshint');
 
 gulp.task('gzipFile', function(){
-  gulp.src('demo/gabriel/data.js')
-  //gulp.src('build/player/bodymovin.js')
+  //gulp.src('demo/celula/data.js')
+  gulp.src('build/player/bodymovin.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });
