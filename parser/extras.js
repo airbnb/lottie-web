@@ -251,7 +251,7 @@
         function buildSegment(segmentOb, indexTime){
 
             function getCurveLength(initPos,endPos, outBezier, inBezier){
-                var k, curveSegments = 5000;
+                var k, curveSegments = 200;
                 var point,lastPoint = null;
                 var ptDistance;
                 var absToCoord,absTiCoord;
