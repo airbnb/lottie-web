@@ -256,7 +256,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     }
     viewData.lastData.c = c;
     viewData.lastData.o = o;
-    viewData.lastData.w = w*Math.abs(Math.min(groupTransform.mat.props[0],groupTransform.mat.props[3]));
+    viewData.lastData.w = w;
     if(d){
         viewData.lastData.da = dasharray;
         viewData.lastData.do = dashoffset;
