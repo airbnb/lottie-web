@@ -212,7 +212,7 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
     var i, len = layers.length, layerData;
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
-        if (layerData.parent) {
+        if (layerData.parent !== undefined) {
             this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements);
         }
         if (layerData.type == 'PreCompLayer') {
@@ -226,8 +226,7 @@ CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, pa
     while(i<len){
         if(layers[i].ind === parentName){
             element.getHierarchy().push(elements[i]);
-            if (layers[i].parent === undefined) {
-            } else {
+            if (layers[i].parent !== undefined) {
                 this.buildItemHierarchy(data,element, layers, layers[i].parent,elements);
             }
         }
