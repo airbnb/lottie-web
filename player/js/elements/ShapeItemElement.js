@@ -160,14 +160,18 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
         var pathStringTransformed = '';
         for(i=1;i<len;i+=1){
             if(stops[i-1]){
-                pathStringTransformed += " M"+transform.mat.applyToPointStringified(stops[i-1][0],stops[i-1][1]);
+                //pathStringTransformed += " M"+transform.mat.applyToPointStringified(stops[i-1][0],stops[i-1][1]);
+                pathStringTransformed += " M"+stops[i-1][0]+','+stops[i-1][1];
             }else if(i==1){
-                pathStringTransformed += " M"+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                //pathStringTransformed += " M"+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                pathStringTransformed += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
             }
-            pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[i][0],pathNodes.i[i][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[i][0],pathNodes.v[i][1]);
+            //pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[i][0],pathNodes.i[i][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[i][0],pathNodes.v[i][1]);
+            pathStringTransformed += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
         }
         if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
-            pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+            //pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+            pathStringTransformed += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
         }
 
         viewData.renderedFrames[this.globalData.frameNum] = {
@@ -188,21 +192,27 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num,groupTra
     if(!viewData.renderedFrames[this.globalData.frameNum]){
         viewData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
-            o: fillData.opacity*groupTransform.opacity
+            o: fillData.opacity*groupTransform.opacity,
+            t: 'matrix('+groupTransform.mat.props.join(',')+')'
         };
     }
 
     var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
     var c = renderedFrameData.c;
     var o = renderedFrameData.o;
+    var t = renderedFrameData.t;
     if(viewData.lastData.c != c){
         styleElem.pathElement.setAttribute('fill',c);
     }
     if(viewData.lastData.o != o){
         styleElem.pathElement.setAttribute('fill-opacity',o);
     }
+    if(viewData.lastData.t != t){
+        styleElem.pathElement.setAttribute('transform',t);
+    }
     viewData.lastData.c = c;
     viewData.lastData.o = o;
+    viewData.lastData.t = t;
 };
 
 ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupTransform){
@@ -212,7 +222,8 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
         viewData.renderedFrames[this.globalData.frameNum] = {
             c: fillData.color,
             o: fillData.opacity*groupTransform.opacity,
-            w: fillData.width
+            w: fillData.width,
+            t: 'matrix('+groupTransform.mat.props.join(',')+')'
         };
         if(fillData.dashes){
             viewData.renderedFrames[this.globalData.frameNum].d = fillData.dashes;
@@ -224,6 +235,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     var o = renderedFrameData.o;
     var w = renderedFrameData.w;
     var d = renderedFrameData.d;
+    var t = renderedFrameData.t;
     var dasharray,dashoffset;
     if(d){
         var j, jLen = d.length;
@@ -246,6 +258,9 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     if(viewData.lastData.w !== w){
         styleElem.pathElement.setAttribute('stroke-width',w);
     }
+    if(viewData.lastData.t !== t){
+        styleElem.pathElement.setAttribute('transform',t);
+    }
     if(d){
         if(viewData.lastData.da != dasharray){
             styleElem.pathElement.setAttribute('stroke-dasharray',dasharray);
@@ -257,6 +272,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     viewData.lastData.c = c;
     viewData.lastData.o = o;
     viewData.lastData.w = w;
+    viewData.lastData.t = t;
     if(d){
         viewData.lastData.da = dasharray;
         viewData.lastData.do = dashoffset;
