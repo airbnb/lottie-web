@@ -105,7 +105,7 @@ SVGRenderer.prototype.buildStage = function (container, layers,elements) {
     }
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
-        if (layerData.parent) {
+        if (layerData.parent !== undefined) {
             this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements);
         }
         elements[i].setMainElement();
@@ -122,7 +122,7 @@ SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,pa
     while(i<len){
         if(layers[i].ind == parentName){
             element.getHierarchy().push(elements[i]);
-            if(layers[i].parent){
+            if(layers[i].parent !== undefined){
                 this.buildItemParenting(layerData,element,layers,layers[i].parent,elements);
             }
         }

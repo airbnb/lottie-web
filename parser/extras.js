@@ -328,20 +328,28 @@
             bezierIn = {};
             bezierOut = {};
             averageSpeed = 0;
+            var infOut,infIn;
             switch(property.propertyValueType){
                 case PropertyValueType.ThreeD_SPATIAL:
                 case PropertyValueType.TwoD_SPATIAL:
                     var curveLength = getCurveLength(lastKey.value,key.value, lastKey.to, key.ti);
                     averageSpeed = curveLength/duration;
-                    var infOut = Math.min(100*curveLength/(lastKey.easeOut.speed*duration), lastKey.easeOut.influence);
-                    var infIn = Math.min(100*curveLength/(key.easeIn.speed*duration), key.easeIn.influence);
+                    if(curveLength === 0){
+                        infOut = lastKey.easeOut.influence;
+                        infIn = key.easeIn.influence;
+                    }else{
+                        infOut = Math.min(100*curveLength/(lastKey.easeOut.speed*duration), lastKey.easeOut.influence);
+                        infIn = Math.min(100*curveLength/(key.easeIn.speed*duration), key.easeIn.influence);
+                    }
                     bezierIn.x = 1 - infIn / 100;
                     bezierOut.x = infOut / 100;
                     break;
                 case PropertyValueType.SHAPE:
+                    averageSpeed = 1;
+                    infOut = Math.min(100/lastKey.easeOut.speed, lastKey.easeOut.influence);
+                    infIn = Math.min(100/key.easeIn.speed, key.easeIn.influence);
                     bezierIn.x = 1 - infIn / 100;
                     bezierOut.x = infOut / 100;
-                    averageSpeed = 1;
                     break;
                 case PropertyValueType.ThreeD:
                 case PropertyValueType.TwoD:
