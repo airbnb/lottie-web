@@ -169,6 +169,15 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,transform
             //pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[i][0],pathNodes.i[i][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[i][0],pathNodes.v[i][1]);
             pathStringTransformed += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
         }
+        if(len == 1){
+            if(stops[0]){
+                //pathStringTransformed += " M"+transform.mat.applyToPointStringified(stops[i-1][0],stops[0][1]);
+                pathStringTransformed += " M"+stops[0][0]+','+stops[0][1];
+            }else{
+                //pathStringTransformed += " M"+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                pathStringTransformed += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+            }
+        }
         if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
             //pathStringTransformed += " C"+transform.mat.applyToPointStringified(pathNodes.o[i-1][0],pathNodes.o[i-1][1]) + " "+transform.mat.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+transform.mat.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
             pathStringTransformed += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
