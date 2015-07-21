@@ -27,14 +27,51 @@ BaseElement.prototype.init = function(){
 
 BaseElement.prototype.createElements = function(){
     if(this.data.td){
-        this.layerElement = document.createElementNS(svgNS,'mask');
-        this.layerElement.setAttribute('id',this.layerId);
         if(this.data.td == 3){
+            this.layerElement = document.createElementNS(svgNS,'mask');
+            this.layerElement.setAttribute('id',this.layerId);
             this.layerElement.setAttribute('mask-type','luminance');
+            this.globalData.defs.appendChild(this.layerElement);
+        }else if(this.data.td == 2){
+            var maskGroup = document.createElementNS(svgNS,'mask');
+            maskGroup.setAttribute('id',this.layerId);
+            maskGroup.setAttribute('mask-type','alpha');
+            var maskGrouper = document.createElementNS(svgNS,'g');
+            maskGroup.appendChild(maskGrouper);
+            this.layerElement = document.createElementNS(svgNS,'g');
+            var fil = document.createElementNS(svgNS,'filter');
+            var filId = randomString(10);
+            fil.setAttribute('id',filId);
+            fil.setAttribute('filterUnits','objectBoundingBox');
+            fil.setAttribute('x','0%');
+            fil.setAttribute('y','0%');
+            fil.setAttribute('width','100%');
+            fil.setAttribute('height','100%');
+            var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
+            feCTr.setAttribute('in','SourceGraphic');
+            fil.appendChild(feCTr);
+            var feFunc = document.createElementNS(svgNS,'feFuncA');
+            feFunc.setAttribute('type','table');
+            feFunc.setAttribute('tableValues','1.0 0.0');
+            feCTr.appendChild(feFunc);
+            this.globalData.defs.appendChild(fil);
+            var alphaRect = document.createElementNS(svgNS,'rect');
+            alphaRect.setAttribute('width','100%');
+            alphaRect.setAttribute('height','100%');
+            alphaRect.setAttribute('x','0');
+            alphaRect.setAttribute('y','0');
+            alphaRect.setAttribute('fill','#ffffff');
+            alphaRect.setAttribute('opacity','0');
+            maskGrouper.setAttribute('filter','url(#'+filId+')');
+            maskGrouper.appendChild(alphaRect);
+            maskGrouper.appendChild(this.layerElement);
+            this.globalData.defs.appendChild(maskGroup);
         }else{
+            this.layerElement = document.createElementNS(svgNS,'mask');
+            this.layerElement.setAttribute('id',this.layerId);
             this.layerElement.setAttribute('mask-type','alpha');
+            this.globalData.defs.appendChild(this.layerElement);
         }
-        this.globalData.defs.appendChild(this.layerElement);
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;
         }
@@ -152,9 +189,6 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
 
 BaseElement.prototype.getDomElement = function(){
     return this.layerElement;
-};
-BaseElement.prototype.setMainElement = function(){
-    this.mainElement = this.layerElement;
 };
 BaseElement.prototype.getMaskManager = function(){
     return this.maskManager;

@@ -108,7 +108,6 @@ SVGRenderer.prototype.buildStage = function (container, layers,elements) {
         if (layerData.parent !== undefined) {
             this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements);
         }
-        elements[i].setMainElement();
         if (layerData.type == 'PreCompLayer') {
             this.buildStage(elements[i].getComposingElement(), layerData.layers, elements[i].getElements());
         }
