@@ -215,6 +215,13 @@ CVShapeItemElement.prototype.renderPath = function(data){
         }
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
     }
+    if(len == 1){
+        if(stops[0]){
+            path2d.moveTo(stops[0][0],stops[0][1]);
+        }else{
+            path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+        }
+    }
     if(data.closed && !(data.trimmed && !pathNodes.c)){
         path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
     }
