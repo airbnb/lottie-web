@@ -88,10 +88,11 @@ SVGRenderer.prototype.configAnimation = function(animData){
     rect.setAttribute('height',animData.animation.compHeight);
     rect.setAttribute('x',0);
     rect.setAttribute('y',0);
-    maskElement.setAttribute('id', 'animationMask');
+    var maskId = 'animationMask_'+randomString(10);
+    maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
     var maskedElement = document.createElementNS(svgNS,'g');
-    maskedElement.setAttribute("clip-path", "url(#animationMask)");
+    maskedElement.setAttribute("clip-path", "url(#"+maskId+")");
     this.animationItem.container.appendChild(maskedElement);
     defs.appendChild(maskElement);
     this.animationItem.container = maskedElement;
