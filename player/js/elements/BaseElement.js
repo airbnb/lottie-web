@@ -115,6 +115,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         if(this.isVisible !== false){
             this.isVisible = false;
         }
+        console.log(this.data.type);
         this.finalTransform.opacity = 0;
     }
 
