@@ -17,8 +17,8 @@ ISolidElement.prototype.createElements = function(){
 };
 
 ISolidElement.prototype.hide = function(){
-    if(!this.hidden && !this.data.hasMask){
-        this.rectElement.setAttribute('opacity','0');
+    if(!this.hidden){
+        this.layerElement.setAttribute('opacity','0');
         this.hidden = true;
     }
 };

@@ -12,6 +12,7 @@ var BaseElement = function (data, animationItem,parentContainer,globalData){
     this.lastData = {};
     this.parentContainer = parentContainer;
     this.layerId = randomString(10);
+    this.hidden = false;
     this.init();
 };
 
@@ -115,7 +116,6 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         if(this.isVisible !== false){
             this.isVisible = false;
         }
-        console.log(this.data.type);
         this.finalTransform.opacity = 0;
     }
 

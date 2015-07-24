@@ -18,15 +18,19 @@ MaskElement.prototype.init = function () {
 
     this.maskElement = document.createElementNS(svgNS, 'clipPath');
     var path, properties = this.data.masksProperties;
+    var count = 0;
     for (i = 0; i < len; i++) {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
         }
 
-        if(properties[i].mode == 'f' && i > 0){
+        //console.log('properties[i].mode: ',properties[i].mode);
+
+        if((properties[i].mode == 'f' && i > 0) || properties[i].mode == 'n' || properties[i].mode == 'i'  || properties[i].mode == 's' ) {
         
             continue;
         }
+        count += 1;
         path = document.createElementNS(svgNS, 'path');
         if (properties[i].cl) {
             path.setAttribute('fill', '#ffffff');
@@ -45,9 +49,10 @@ MaskElement.prototype.init = function () {
     }
 
     var layerId = randomString(10);
-
     this.maskElement.setAttribute('id', layerId);
-    maskedElement.setAttribute("clip-path", "url(#" + layerId + ")");
+    if(count > 0){
+        maskedElement.setAttribute("clip-path", "url(#" + layerId + ")");
+    }
 
     defs.appendChild(this.maskElement);
 };
@@ -55,10 +60,10 @@ MaskElement.prototype.init = function () {
 MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.data.masksProperties[i].mode == 'f' && i > 0){
+        if((this.data.masksProperties[i].mode == 'f' && i > 0)  || this.data.masksProperties[i].mode == 'n'  || this.data.masksProperties[i].mode == 'i'  || this.data.masksProperties[i].mode == 's' ){
             continue;
         }
-        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes,this.storedData[i]);
+        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes,this.storedData[i],this.data.masksProperties[i].mode);
     }
 };
 
@@ -86,7 +91,7 @@ MaskElement.prototype.createLayerSolidPath = function(){
     return path;
 };
 
-MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
+MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData, mode){
     var pathString = '';
     var i, len;
     if(pathNodes.constructor === Array){
@@ -112,14 +117,26 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
     }else{
         if(!pathNodes.__renderedString){
             len = pathNodes.v.length;
-            for(i=1;i<len;i+=1){
-                if(i==1){
-                    pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+            if(mode == 's'){
+                for(i = len - 2; i > 0; i -= 1){
+                    if(i==len - 2){
+                        pathString += " M"+pathNodes.v[len - 1][0]+','+pathNodes.v[len - 1][1];
+                    }
+                    pathString += " C"+pathNodes.o[i+1][0]+','+pathNodes.o[i+1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
                 }
-                pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
-            }
-            if(pathData.cl){
-                pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                if(pathData.cl){
+                    pathString += " C"+pathNodes.o[i+1][0]+','+pathNodes.o[i+1][1] + " "+pathNodes.i[len - 1][0]+','+pathNodes.i[len - 1][1] + " "+pathNodes.v[len - 1][0]+','+pathNodes.v[len - 1][1];
+                }
+            }else{
+                for(i=1;i<len;i+=1){
+                    if(i==1){
+                        pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                    }
+                    pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
+                }
+                if(pathData.cl){
+                    pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                }
             }
             pathNodes.__renderedString = pathString;
         }else{

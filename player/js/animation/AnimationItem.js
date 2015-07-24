@@ -124,8 +124,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = this.animationData.animation.totalFrames;
     this.frameRate = this.animationData.animation.frameRate;
     this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
-    this.firstFrame = 60;
-    this.totalFrames = 1;
+    /*this.firstFrame = 85;
+    this.totalFrames = 1;*/
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);
     this.renderer.buildItems(this.animationData.animation.layers);
@@ -253,8 +253,6 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.advanceTime = function (value) {
-    console.log('advanceTime: ');
-    console.log('this.animationID: ',this.animationID);
     if (this.isPaused === true || this.isScrolling === true || this.isLoaded === false) {
         return;
     }
