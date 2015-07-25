@@ -68,10 +68,12 @@ BaseElement.prototype.createElements = function(){
             maskGrouper.appendChild(this.layerElement);
             this.globalData.defs.appendChild(maskGroup);
         }else{
-            this.layerElement = document.createElementNS(svgNS,'mask');
-            this.layerElement.setAttribute('id',this.layerId);
-            this.layerElement.setAttribute('mask-type','alpha');
-            this.globalData.defs.appendChild(this.layerElement);
+            this.layerElement = document.createElementNS(svgNS,'g');
+            var masker = document.createElementNS(svgNS,'mask');
+            masker.setAttribute('id',this.layerId);
+            masker.setAttribute('mask-type','alpha');
+            masker.appendChild(this.layerElement);
+            this.globalData.defs.appendChild(masker);
         }
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;
@@ -106,7 +108,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.type == 'NullLayer'){
         return;
     }
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
+    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
     {
         if(this.isVisible !== true){
             this.isVisible = true;

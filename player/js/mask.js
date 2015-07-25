@@ -22,6 +22,7 @@ MaskElement.prototype.init = function () {
     var currentMasks = [];
     var j, jLen;
     var layerId = randomString(10);
+    this.maskElement = document.createElementNS(svgNS, 'mask');
     for (i = 0; i < len; i++) {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
@@ -29,7 +30,7 @@ MaskElement.prototype.init = function () {
 
         //console.log('properties[i].mode: ',properties[i].mode);
 
-        if((properties[i].mode == 'f' && i > 0) || properties[i].mode == 'n' || (properties[i].mode == 's' && i == 0) || (properties[i].mode == 'i' && i == 0) ) {
+        if((properties[i].mode == 'f' && count > 0) || properties[i].mode == 'n' || (properties[i].mode == 's' && count == 0) || (properties[i].mode == 'i' && count == 0) ) {
 
             continue;
         }
@@ -91,10 +92,12 @@ MaskElement.prototype.init = function () {
 
 MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
+    var count = 0;
     for (i = 0; i < len; i++) {
-        if((this.data.masksProperties[i].mode == 'f' && i > 0)  || this.data.masksProperties[i].mode == 'n' || (this.data.masksProperties[i].mode == 's' && i == 0) || (this.data.masksProperties[i].mode == 'i' && i == 0)){
+        if((this.data.masksProperties[i].mode == 'f' && count > 0)  || this.data.masksProperties[i].mode == 'n' || (this.data.masksProperties[i].mode == 's' && count == 0) || (this.data.masksProperties[i].mode == 'i' && count == 0)){
             continue;
         }
+        count += 1;
         this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes,this.storedData[i],this.data.masksProperties[i].mode);
     }
 };
