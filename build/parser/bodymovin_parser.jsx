@@ -439,7 +439,7 @@ var UI;
         var animationOb = {};
         compositionData.animation = animationOb;
         compositionData.assets = AssetsManager.getAssetsData();
-        compositionData.v = '2.0.5';
+        compositionData.v = '2.0.6';
         animationOb.layers = mainLayers;
         animationOb.totalFrames = totalFrames;
         animationOb.frameRate = frameRate;
@@ -596,10 +596,9 @@ var UI;
                 layerOb.textData.yOffset = r.top;
                 layerOb.textData.width = r.width;
                 layerOb.textData.height = r.height;
-                //iterateProperty(layerInfo,0);
             }
 
-            EffectsParser.createEffects(layerInfo,layerOb);
+            //EffectsParser.createEffects(layerInfo,layerOb);
 
             if(layerInfo.mask.numProperties>0){
                 setMasks(layerInfo.mask,layerOb);
@@ -2487,8 +2486,16 @@ var UI;
         var helperImportOptions = new ImportOptions();
         helperImportOptions.file = helperFile;
         helperFootage = mainProject.importFile(helperImportOptions);
-        var helperFolder = helperFootage.item(2);
-        var i = 0, len = helperFolder.items.length;
+        var i=0, len = helperFootage.items.length;
+        var helperFolder;
+        while(i<len){
+            if(extrasInstance.getprojectItemType(helperFootage.item(i+1)) == 'Folder'){
+                helperFolder = helperFootage.item(i+1);
+            }
+            i += 1;
+        }
+        i = 0;
+        len = helperFolder.items.length;
         while(i<len){
             if(helperFolder.item(i+1).name == 'helperSolidComp'){
                 helperSolidComp = helperFolder.item(i+1);
