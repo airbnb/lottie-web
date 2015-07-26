@@ -116,8 +116,16 @@
         var helperImportOptions = new ImportOptions();
         helperImportOptions.file = helperFile;
         helperFootage = mainProject.importFile(helperImportOptions);
-        var helperFolder = helperFootage.item(2);
-        var i = 0, len = helperFolder.items.length;
+        var i=0, len = helperFootage.items.length;
+        var helperFolder;
+        while(i<len){
+            if(extrasInstance.getprojectItemType(helperFootage.item(i+1)) == 'Folder'){
+                helperFolder = helperFootage.item(i+1);
+            }
+            i += 1;
+        }
+        i = 0;
+        len = helperFolder.items.length;
         while(i<len){
             if(helperFolder.item(i+1).name == 'helperSolidComp'){
                 helperSolidComp = helperFolder.item(i+1);
