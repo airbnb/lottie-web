@@ -7,6 +7,11 @@ I'm on it.
 And they've removed the "live" expression evaluation I used as a "hack" to get speed and influence graphs, so I'll need to find another solution.
 I'm on it.
 
+## V 2.0.6
+- bug fix for exporter when project files were in case sensitive descending order.
+- bug fix for exporter for layers with stroke effect
+- new svg support for substract, intersect and adding masks!
+
 ## V 2.0.4
 - huge bug related to layers with the same name acting as parents
 - also ignoring text layers and effects on layers in case they have any
