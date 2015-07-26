@@ -187,10 +187,9 @@
                 layerOb.textData.yOffset = r.top;
                 layerOb.textData.width = r.width;
                 layerOb.textData.height = r.height;
-                //iterateProperty(layerInfo,0);
             }
 
-            EffectsParser.createEffects(layerInfo,layerOb);
+            //EffectsParser.createEffects(layerInfo,layerOb);
 
             if(layerInfo.mask.numProperties>0){
                 setMasks(layerInfo.mask,layerOb);
