@@ -22,6 +22,7 @@ MaskElement.prototype.init = function () {
     var currentMasks = [];
     var j, jLen;
     var layerId = randomString(10);
+    var rect;
     this.maskElement = document.createElementNS(svgNS, 'mask');
     for (i = 0; i < len; i++) {
         if(properties[i].inv && !this.solidPath){
@@ -29,9 +30,17 @@ MaskElement.prototype.init = function () {
         }
 
         //console.log('properties[i].mode: ',properties[i].mode);
+        if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
+            rect = document.createElementNS(svgNS, 'rect');
+            rect.setAttribute('fill', '#ffffff');
+            rect.setAttribute('x', '0');
+            rect.setAttribute('y', '0');
+            rect.setAttribute('width', '100%');
+            rect.setAttribute('height', '100%');
+            currentMasks.push(rect);
+        }
 
-        if((properties[i].mode == 'f' && count > 0) || properties[i].mode == 'n' || (properties[i].mode == 's' && count == 0) || (properties[i].mode == 'i' && count == 0) ) {
-
+        if((properties[i].mode == 'f' && count > 0) || properties[i].mode == 'n') {
             continue;
         }
         count += 1;
@@ -94,11 +103,11 @@ MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
     var count = 0;
     for (i = 0; i < len; i++) {
-        if((this.data.masksProperties[i].mode == 'f' && count > 0)  || this.data.masksProperties[i].mode == 'n' || (this.data.masksProperties[i].mode == 's' && count == 0) || (this.data.masksProperties[i].mode == 'i' && count == 0)){
+        if((this.data.masksProperties[i].mode == 'f' && count > 0)  || this.data.masksProperties[i].mode == 'n'){
             continue;
         }
         count += 1;
-        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes,this.storedData[i],this.data.masksProperties[i].mode);
+        this.drawPath(this.data.masksProperties[i],this.data.masksProperties[i].paths[num].pathNodes,this.storedData[i]);
     }
 };
 
@@ -126,7 +135,7 @@ MaskElement.prototype.createLayerSolidPath = function(){
     return path;
 };
 
-MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData, mode){
+MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
     var pathString = '';
     var i, len;
     if(pathNodes.constructor === Array){
