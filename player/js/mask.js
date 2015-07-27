@@ -138,42 +138,20 @@ MaskElement.prototype.createLayerSolidPath = function(){
 MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
     var pathString = '';
     var i, len;
-    if(pathNodes.constructor === Array){
-        var j, jLen = pathNodes.length, node,str = '';
-        for(j=0;j<jLen;j+=1){
-            str = '';
-            node = pathNodes[j];
-            if(!node.__renderedString){
-                len = node.v.length;
-                for(i=1;i<len;i+=1){
-                    if(i==1){
-                        str += " M"+node.v[0][0]+','+node.v[0][1];
-                    }
-                    str += " C"+node.o[i-1][0]+','+node.o[i-1][1] + " "+node.i[i][0]+','+node.i[i][1] + " "+node.v[i][0]+','+node.v[i][1];
+    if(!pathNodes.__renderedString){
+        len = pathNodes.v.length;
+            for(i=1;i<len;i+=1){
+                if(i==1){
+                    pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
                 }
-                if(pathData.cl){
-                    str += " C"+node.o[i-1][0]+','+node.o[i-1][1] + " "+node.i[0][0]+','+node.i[0][1] + " "+node.v[0][0]+','+node.v[0][1];
-                }
-                node.__renderedString = str;
+                pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
             }
-            pathString += node.__renderedString;
-        }
+            if(pathData.cl){
+                pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+            }
+        pathNodes.__renderedString = pathString;
     }else{
-        if(!pathNodes.__renderedString){
-            len = pathNodes.v.length;
-                for(i=1;i<len;i+=1){
-                    if(i==1){
-                        pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-                    }
-                    pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
-                }
-                if(pathData.cl){
-                    pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-                }
-            pathNodes.__renderedString = pathString;
-        }else{
-            pathString = pathNodes.__renderedString;
-        }
+        pathString = pathNodes.__renderedString;
     }
 
 
