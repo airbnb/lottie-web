@@ -14,7 +14,14 @@
     var duplicateMainComp;
     var callback;
     function convertComposition(comp){
-        helperFolder = helperFootage.item(2);
+        var i=0, len = helperFootage.items.length;
+        while(i<len){
+            if(extrasInstance.getprojectItemType(helperFootage.item(i+1)) == 'Folder'){
+                helperFolder = helperFootage.item(i+1);
+                break;
+            }
+            i += 1;
+        }
         AssetsManager.reset();
         duplicateMainComp = comp.duplicate();
         //duplicateMainComp.openInViewer() ;

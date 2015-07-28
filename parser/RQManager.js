@@ -25,11 +25,21 @@
     }
 
     function importHelperProject(){
-        var helperComp = helperFootage.item(1);
+        var i=0, len = helperFootage.items.length;
+        var helperComp;
+        while(i<len){
+            if(extrasInstance.getprojectItemType(helperFootage.item(i+1)) == 'Comp'){
+                helperComp = helperFootage.item(i+1);
+                break;
+            }
+            i += 1;
+        }
         var renderer = searchHelperRenderer(helperComp);
         var helperModule = renderer.outputModule(1);
         var templates = helperModule.templates;
-        var i = 0, len = templates.length, found = false;
+        i = 0;
+        len = templates.length;
+        var found = false;
         while(i<len){
             if(templates[i] === templateName){
                 found = true;

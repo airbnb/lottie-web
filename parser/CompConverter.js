@@ -121,6 +121,7 @@
         while(i<len){
             if(extrasInstance.getprojectItemType(helperFootage.item(i+1)) == 'Folder'){
                 helperFolder = helperFootage.item(i+1);
+                break;
             }
             i += 1;
         }

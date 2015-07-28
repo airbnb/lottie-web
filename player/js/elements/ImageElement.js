@@ -32,7 +32,7 @@ IImageElement.prototype.createElements = function(){
 
 IImageElement.prototype.hide = function(){
     if(!this.hidden){
-        this.layerElement.setAttribute('opacity','0');
+        this.image.setAttribute('opacity','0');
         this.hidden = true;
     }
 };
@@ -43,7 +43,11 @@ IImageElement.prototype.renderFrame = function(num,parentMatrix){
         this.hide();
         return;
     }
-    this.hidden = false;
+    if(this.hidden){
+        this.lastData.o = -1;
+        this.hidden = false;
+        this.image.setAttribute('opacity', '1');
+    }
     if(!this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){
             this.renderedFrames[this.globalData.frameNum] = {
