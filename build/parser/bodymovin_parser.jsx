@@ -1909,7 +1909,9 @@ var UI;
     };
 
     function iterateNextComposition(){
+        UI.setExportText('Searching next comp');
         if(currentCompositionNum == pendingComps.length){
+            UI.setExportText('Done');
             //TODO dar acceso externo a main comp
             //TODO despachar evento de fin
             callback.apply(null,[duplicateMainComp]);
@@ -1924,6 +1926,7 @@ var UI;
     function verifyNextItem(){
         if(currentLayerNum<totalLayers){
             var layerInfo = currentComposition.layers[currentLayerNum+1];
+            UI.setExportText('Verifying item: ' + currentLayerNum + ' from '+ layerInfo.name);
             var lType = extrasInstance.layerType(layerInfo);
             if(lType == 'StillLayer' && layerInfo.enabled){
                 currentSource = layerInfo.source;
@@ -1965,6 +1968,7 @@ var UI;
             i++;
         }
         var copy = layerInfo.source.duplicate();
+        UI.setExportText('Duplicating: '+layerInfo.name);
         //copy.openInViewer() ;
         duplicatedSources.push({s:layerInfo.source,c:copy});
         return copy;
@@ -2656,7 +2660,7 @@ var UI;
         /**** RENDER GROUP ****/
         var renderGroupRes = "group{orientation:'column',alignment:['fill','fill'],alignChildren:['fill',fill'],\
             componentText:StaticText{text:'Rendering Composition ',alignment:['left','top']},\
-            infoText:StaticText{text:'Exporting images ',alignment:['left','top']},\
+            infoText:StaticText{text:'Exporting images ',alignment:['fill','top']},\
             progress:Progressbar{value:50,alignment:['fill','top']},\
             cancelButton: Button{text:'"+UITextsData.renderTexts.cancel+"',alignment:['center','top']},\
          }";

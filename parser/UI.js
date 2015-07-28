@@ -109,7 +109,7 @@
         /**** RENDER GROUP ****/
         var renderGroupRes = "group{orientation:'column',alignment:['fill','fill'],alignChildren:['fill',fill'],\
             componentText:StaticText{text:'Rendering Composition ',alignment:['left','top']},\
-            infoText:StaticText{text:'Exporting images ',alignment:['left','top']},\
+            infoText:StaticText{text:'Exporting images ',alignment:['fill','top']},\
             progress:Progressbar{value:50,alignment:['fill','top']},\
             cancelButton: Button{text:'"+UITextsData.renderTexts.cancel+"',alignment:['center','top']},\
          }";
