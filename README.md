@@ -1,10 +1,8 @@
 # bodymovin
-After Effects plugin for export animations to svg + js library or to canvas + js
+After Effects plugin for exporting animations to svg + js or to canvas + js
 
 ## CC 2015
 Unfortunately it doesn't work.
-I'm on it.
-And they've removed the "live" expression evaluation I used as a "hack" to get speed and influence graphs, so I'll need to find another solution.
 I'm on it.
 
 ## V 2.0.6
