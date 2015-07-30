@@ -2,3 +2,5 @@
 player/exports/
 player/tests/
 node_modules/
+
+.DS_Store
