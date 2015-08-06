@@ -1,5 +1,4 @@
 var AnimationItem = function () {
-    this.name = '';
     this.path = '';
     this.isLoaded = false;
     this.currentFrame = 0;
@@ -12,13 +11,10 @@ var AnimationItem = function () {
     this.pendingElements = 0;
     this.playCount = 0;
     this.prerenderFramesFlag = true;
-    this.repeat = 'indefinite';
     this.animationData = {};
     this.layers = [];
     this.assets = [];
     this.isPaused = true;
-    this.isScrolling = false;
-    this.autoplay = false;
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
@@ -53,7 +49,6 @@ AnimationItem.prototype.setParams = function(params) {
     }else{
         this.loop = parseInt(params.loop);
     }
-    this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
     this.prerenderFramesFlag = 'prerender' in params ? params.prerender : true;
     if(params.animationData){
@@ -148,9 +143,7 @@ AnimationItem.prototype.checkLoaded = function () {
         }else{
             this.isLoaded = true;
             this.gotoFrame();
-            if(this.autoplay){
-                this.play();
-            }
+            // autoplayed
         }
     }
 };
@@ -163,9 +156,7 @@ AnimationItem.prototype.prerenderFrames = function(count){
         //TODO Need polyfill for ios 5.1
         this.isLoaded = true;
         this.gotoFrame();
-        if(this.autoplay){
-            this.play();
-        }
+        // autoplayed
     }else{
         dataManager.renderFrame(this.animationID,this.renderedFrameCount + this.firstFrame);
         this.renderedFrameCount+=1;
@@ -200,27 +191,18 @@ AnimationItem.prototype.renderFrame = function () {
 };
 
 AnimationItem.prototype.play = function (name) {
-    if(name && this.name != name){
-        return;
-    }
     if(this.isPaused === true){
         this.isPaused = false;
     }
 };
 
 AnimationItem.prototype.pause = function (name) {
-    if(name && this.name != name){
-        return;
-    }
     if(this.isPaused === false){
         this.isPaused = true;
     }
 };
 
 AnimationItem.prototype.togglePause = function (name) {
-    if(name && this.name != name){
-        return;
-    }
     if(this.isPaused === true){
         this.isPaused = false;
         this.play();
@@ -231,9 +213,6 @@ AnimationItem.prototype.togglePause = function (name) {
 };
 
 AnimationItem.prototype.stop = function (name) {
-    if(name && this.name != name){
-        return;
-    }
     this.isPaused = true;
     this.currentFrame = this.currentRawFrame = 0;
     this.playCount = 0;
@@ -241,9 +220,6 @@ AnimationItem.prototype.stop = function (name) {
 };
 
 AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
-    if(name && this.name != name){
-        return;
-    }
     if(isFrame){
         this.setCurrentRawFrameValue(value);
     }else{
@@ -253,7 +229,7 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.advanceTime = function (value) {
-    if (this.isPaused === true || this.isScrolling === true || this.isLoaded === false) {
+    if (this.isPaused === true || this.isLoaded === false) {
         return;
     }
     this.setCurrentRawFrameValue(this.currentRawFrame + value * this.frameModifier);
@@ -264,9 +240,6 @@ AnimationItem.prototype.updateAnimation = function (perc) {
 };
 
 AnimationItem.prototype.moveFrame = function (value, name) {
-    if(name && this.name != name){
-        return;
-    }
     this.setCurrentRawFrameValue(this.currentRawFrame+value);
 };
 

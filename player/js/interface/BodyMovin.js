@@ -32,7 +32,7 @@ BodyMovin.TIMEUPDATE = 'bodymoving:timeupdate';
 
 
 
-// -------------------------------------------------------------------o Public
+// -------------------------------------------------------------------o Trigger / Listener behavior
 
 BodyMovin.prototype.trigger = function(eventName, args){
 
@@ -41,17 +41,24 @@ BodyMovin.prototype.trigger = function(eventName, args){
 
 	if (delay){
 		setTimeout(function(){
-			that.callbacks[eventName](args);
+			for (var i = 0; i < this.callbacks[eventName].length; i++){
+				this.callbacks[eventName][i](args);
+			}
 		}, 0);
 	}
 	else {
-		this.callbacks[eventName](args);
+		for (var i = 0; i < this.callbacks[eventName].length; i++){
+			this.callbacks[eventName][i](args);
+		}
 	}
 };
 
 BodyMovin.prototype.addEventListener = function(eventName, callback){
 
-	this.callbacks[eventName] = callback;
+	if (this.callbacks[eventName]){
+		this.callbacks[eventName] = [];
+	}
+	this.callbacks[eventName].push(callback);
 
 };
 
@@ -59,7 +66,9 @@ BodyMovin.prototype.addEventListener = function(eventName, callback){
 
 BodyMovin.prototype._init = function () {
 
-	this.animationItem = new AnimationItemTemp();
+	this.animationItem = new AnimationItemTemp({
+		element: this.element
+	});
 	
 	if (this.data){
 		this._canPlay();
@@ -69,13 +78,27 @@ BodyMovin.prototype._init = function () {
 		this.play();
 	}
 
+	this.bodyMovinManager = new BodyMovinManager();
+
+	var that = this;
+
 	this._initEvents();
 
 }
 
 BodyMovin.prototype._initEvents = function () {
 
+	this.bodyMovinManager
+		.addEventListener(BodyMovinManager.UPDATE, this._onUpdate.bind(this));
 
+}
+
+
+// -------------------------------------------------------------------o Private
+
+BodyMovin.prototype._onUpdate = function (e) {
+
+	this.render(this.bodyMovinManager.getElapsedTime());
 
 }
 
@@ -122,6 +145,12 @@ BodyMovin.prototype.pause = function () {
 BodyMovin.prototype.seek = function () {
 
 
+
+}
+
+BodyMovin.prototype.render = function (elapsedTime) {
+
+	this.animationItem.advanceTime(elapsedTime);
 
 }
 

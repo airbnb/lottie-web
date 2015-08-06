@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-	bodyMovin();
+	//bodyMovin();
 
-	//var bodyMovin = new BodyMovin();
-
-	//bodyMovin.addEventListener('test', function(){
-	//	console.log('okkkk');
-	//});
+	var bodyMovin = new BodyMovin({
+		element: document.getElementsByClassName('bodymovin')[0],
+		engine: 'svg'
+	});
 
 }, false);
