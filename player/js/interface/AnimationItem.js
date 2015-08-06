@@ -1,4 +1,4 @@
-var AnimationItemTemp = function (options) {
+var AnimationItem = function (options) {
 	
 	if (!options) {
 		options = {};
@@ -12,7 +12,7 @@ var AnimationItemTemp = function (options) {
 
 // -------------------------------------------------------------------o Public
 
-AnimationItemTemp.prototype.trigger = function(eventName, args){
+AnimationItem.prototype.trigger = function(eventName, args){
 
 	var delay = (this.callbacks.length === 0) ? true : false;
 	var that = this;
@@ -27,7 +27,7 @@ AnimationItemTemp.prototype.trigger = function(eventName, args){
 	}
 };
 
-AnimationItemTemp.prototype.addEventListener = function(eventName, callback){
+AnimationItem.prototype.addEventListener = function(eventName, callback){
 
 	this.callbacks[eventName] = callback;
 
@@ -35,7 +35,7 @@ AnimationItemTemp.prototype.addEventListener = function(eventName, callback){
 
 // -------------------------------------------------------------------o Init
 
-AnimationItemTemp.prototype._init = function () {
+AnimationItem.prototype._init = function () {
 
 	this.animationID = randomString(10);
 	this.renderer = null;
@@ -64,7 +64,7 @@ AnimationItemTemp.prototype._init = function () {
 
 }
 
-AnimationItemTemp.prototype._initEvents = function () {
+AnimationItem.prototype._initEvents = function () {
 
 
 
@@ -76,31 +76,31 @@ AnimationItemTemp.prototype._initEvents = function () {
 
 // -------------------------------------------------------------------o Public
 
-AnimationItemTemp.prototype.play = function () {
+AnimationItem.prototype.play = function () {
 
 	this._changeState(BodyMovin.PLAYING);
 
 }
 
-AnimationItemTemp.prototype.pause = function () {
+AnimationItem.prototype.pause = function () {
 
 	this._changeState(BodyMovin.PLAYING);
 
 }
 
-AnimationItemTemp.prototype.pause = function () {
+AnimationItem.prototype.pause = function () {
 
 	this._changeState(BodyMovin.PAUSED);
 
 }
 
-AnimationItemTemp.prototype.seek = function (frame) {
+AnimationItem.prototype.seek = function (frame) {
 
 	
 
 }
 
-AnimationItemTemp.prototype.timeUpdate = function (frame) {
+AnimationItem.prototype.timeUpdate = function (frame) {
 
 
 
@@ -108,7 +108,7 @@ AnimationItemTemp.prototype.timeUpdate = function (frame) {
 
 }
 
-AnimationItemTemp.prototype.render = function (elapsedTime) {
+AnimationItem.prototype.render = function (elapsedTime) {
 
 
 	this.animItem.advanceTime(elapsedTime);
@@ -119,13 +119,13 @@ AnimationItemTemp.prototype.render = function (elapsedTime) {
 
 // -------------------------------------------------------------------o Getters
 
-AnimationItemTemp.prototype.getDuration = function () {
+AnimationItem.prototype.getDuration = function () {
 
 	return this.duration;
 
 }
 
-AnimationItemTemp.prototype.getCurrentFrame = function () {
+AnimationItem.prototype.getCurrentFrame = function () {
 
 	return this.currentFrame;
 
@@ -133,13 +133,13 @@ AnimationItemTemp.prototype.getCurrentFrame = function () {
 
 // -------------------------------------------------------------------o Setters
 
-/*AnimationItemTemp.prototype.setData = function (data) {
+/*AnimationItem.prototype.setData = function (data) {
 
 	this.data = data;
 
 }*/
 
-AnimationItemTemp.prototype.setParams = function (params) {
+AnimationItem.prototype.setParams = function (params) {
 
 	var self = this;
 
@@ -211,7 +211,7 @@ AnimationItemTemp.prototype.setParams = function (params) {
 
 }
 
-AnimationItemTemp.prototype.setData = function (wrapper) {
+AnimationItem.prototype.setData = function (wrapper) {
 
     var params = {
         wrapper: wrapper
@@ -245,7 +245,7 @@ AnimationItemTemp.prototype.setData = function (wrapper) {
 }
 
 
-AnimationItemTemp.prototype.configAnimation = function (animData) {
+AnimationItem.prototype.configAnimation = function (animData) {
 
     this.renderer.configAnimation(animData);
 
@@ -267,7 +267,7 @@ AnimationItemTemp.prototype.configAnimation = function (animData) {
 
 }
 
-AnimationItemTemp.prototype.elementLoaded = function () {
+AnimationItem.prototype.elementLoaded = function () {
 
     this.pendingElements--;
     this.checkLoaded();
@@ -275,7 +275,7 @@ AnimationItemTemp.prototype.elementLoaded = function () {
 }
 
 
-AnimationItemTemp.prototype.checkLoaded = function () {
+AnimationItem.prototype.checkLoaded = function () {
 
     if (this.pendingElements === 0) {
         this.renderer.buildStage(this.container, this.layers);
@@ -291,7 +291,7 @@ AnimationItemTemp.prototype.checkLoaded = function () {
     }
 };
 
-AnimationItemTemp.prototype.prerenderFrames = function (count) {
+AnimationItem.prototype.prerenderFrames = function (count) {
 
     if (!count) {
         count = 0;
@@ -315,12 +315,12 @@ AnimationItemTemp.prototype.prerenderFrames = function (count) {
     }
 };
 
-AnimationItemTemp.prototype.resize = function () {
+AnimationItem.prototype.resize = function () {
 
     this.renderer.updateContainerSize();
 
 };
-AnimationItemTemp.prototype.gotoFrame = function () {
+AnimationItem.prototype.gotoFrame = function () {
 
     if (subframeEnabled){
         this.currentFrame = Math.round(this.currentRawFrame*100)/100;
@@ -332,7 +332,7 @@ AnimationItemTemp.prototype.gotoFrame = function () {
 
 };
 
-AnimationItemTemp.prototype.renderFrame = function () {
+AnimationItem.prototype.renderFrame = function () {
 
     if(this.isLoaded === false){
         return;
@@ -343,7 +343,7 @@ AnimationItemTemp.prototype.renderFrame = function () {
 
 };
 
-AnimationItemTemp.prototype.play = function (name) {
+AnimationItem.prototype.play = function (name) {
 
     if (this.isPaused === true) {
         this.isPaused = false;
@@ -351,7 +351,7 @@ AnimationItemTemp.prototype.play = function (name) {
 
 };
 
-AnimationItemTemp.prototype.pause = function (name) {
+AnimationItem.prototype.pause = function (name) {
 
     if (this.isPaused === false) {
         this.isPaused = true;
@@ -359,7 +359,7 @@ AnimationItemTemp.prototype.pause = function (name) {
 
 };
 
-AnimationItemTemp.prototype.togglePause = function (name) {
+AnimationItem.prototype.togglePause = function (name) {
 
     if (this.isPaused === true) {
         this.isPaused = false;
@@ -371,7 +371,7 @@ AnimationItemTemp.prototype.togglePause = function (name) {
 
 };
 
-AnimationItemTemp.prototype.stop = function (name) {
+AnimationItem.prototype.stop = function (name) {
 
     this.isPaused = true;
     this.currentFrame = this.currentRawFrame = 0;
@@ -380,7 +380,7 @@ AnimationItemTemp.prototype.stop = function (name) {
 
 };
 
-AnimationItemTemp.prototype.goToAndStop = function (value, isFrame, name) {
+AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
 
     if (isFrame) {
         this.setCurrentRawFrameValue(value);
@@ -392,7 +392,7 @@ AnimationItemTemp.prototype.goToAndStop = function (value, isFrame, name) {
 
 };
 
-AnimationItemTemp.prototype.advanceTime = function (value) {
+AnimationItem.prototype.advanceTime = function (value) {
 
     if (this.isPaused === true || this.isLoaded === false) {
         return;
@@ -402,19 +402,19 @@ AnimationItemTemp.prototype.advanceTime = function (value) {
 
 };
 
-AnimationItemTemp.prototype.updateAnimation = function (perc) {
+AnimationItem.prototype.updateAnimation = function (perc) {
 
     this.setCurrentRawFrameValue(this.totalFrames * perc);
 
 };
 
-AnimationItemTemp.prototype.moveFrame = function (value, name) {
+AnimationItem.prototype.moveFrame = function (value, name) {
 
     this.setCurrentRawFrameValue(this.currentRawFrame + value);
 
 };
 
-AnimationItemTemp.prototype.setCurrentRawFrameValue = function(value){
+AnimationItem.prototype.setCurrentRawFrameValue = function(value){
 
     this.currentRawFrame = value;
     if (this.currentRawFrame >= this.totalFrames) {
@@ -459,33 +459,33 @@ AnimationItemTemp.prototype.setCurrentRawFrameValue = function(value){
 
 };
 
-AnimationItemTemp.prototype.setSpeed = function (val) {
+AnimationItem.prototype.setSpeed = function (val) {
 
     this.playSpeed = val;
     this.updaFrameModifier();
 
 };
 
-AnimationItemTemp.prototype.setDirection = function (val) {
+AnimationItem.prototype.setDirection = function (val) {
 
     this.playDirection = val < 0 ? -1 : 1;
     this.updaFrameModifier();
 
 };
 
-AnimationItemTemp.prototype.updaFrameModifier = function () {
+AnimationItem.prototype.updaFrameModifier = function () {
 
     this.frameModifier = this.frameMult * this.playSpeed * this.playDirection;
 
 };
 
-AnimationItemTemp.prototype.getPath = function () {
+AnimationItem.prototype.getPath = function () {
 
     return this.path;
 
 };
 
-AnimationItemTemp.prototype.getAssets = function () {
+AnimationItem.prototype.getAssets = function () {
 
     return this.assets;
 

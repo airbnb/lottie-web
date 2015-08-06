@@ -66,7 +66,7 @@ BodyMovin.prototype.addEventListener = function(eventName, callback){
 
 BodyMovin.prototype._init = function () {
 
-	this.animationItem = new AnimationItemTemp({
+	this.animationItem = new AnimationItem({
 		element: this.element
 	});
 	

@@ -6,5 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		element: document.getElementsByClassName('bodymovin')[0],
 		engine: 'svg'
 	});
+	
 
 }, false);
