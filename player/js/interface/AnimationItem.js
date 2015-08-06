@@ -4,7 +4,8 @@ var AnimationItem = function (options) {
 		options = {};
 	}
 
-	element = options.element;
+	this.element = options.element;
+	this.src = options.src;
 
 	this._init();
 
@@ -60,7 +61,7 @@ AnimationItem.prototype._init = function () {
 	this.isLoaded = false;
 	this.isPaused = false;
 
-	this.setData(element);
+	this.setData(this.element);
 
 }
 
@@ -221,6 +222,8 @@ AnimationItem.prototype.setData = function (wrapper) {
 
     params.path = wrapperAttributes.getNamedItem('data-animation-path') ? wrapperAttributes.getNamedItem('data-animation-path').value : wrapperAttributes.getNamedItem('data-bm-path') ? wrapperAttributes.getNamedItem('data-bm-path').value :  wrapperAttributes.getNamedItem('bm-path') ? wrapperAttributes.getNamedItem('bm-path').value : '';
     params.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  'canvas';
+
+    params.path = this.src;
 
     var loop = wrapperAttributes.getNamedItem('data-anim-loop') ? wrapperAttributes.getNamedItem('data-anim-loop').value :  wrapperAttributes.getNamedItem('data-bm-loop') ? wrapperAttributes.getNamedItem('data-bm-loop').value :  wrapperAttributes.getNamedItem('bm-loop') ? wrapperAttributes.getNamedItem('bm-loop').value : '';
     if (loop === '') {

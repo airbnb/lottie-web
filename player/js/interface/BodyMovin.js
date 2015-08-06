@@ -67,7 +67,8 @@ BodyMovin.prototype.addEventListener = function(eventName, callback){
 BodyMovin.prototype._init = function () {
 
 	this.animationItem = new AnimationItem({
-		element: this.element
+		element: this.element,
+		src: this.src
 	});
 	
 	if (this.data){
@@ -151,6 +152,12 @@ BodyMovin.prototype.seek = function () {
 BodyMovin.prototype.render = function (elapsedTime) {
 
 	this.animationItem.advanceTime(elapsedTime);
+
+}
+
+BodyMovin.prototype.destroy = function (elapsedTime) {
+
+	this.element.innerHTML = '';
 
 }
 
