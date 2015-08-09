@@ -105,7 +105,7 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
-    if(this.data.type == 'NullLayer'){
+    if(this.data.ty == 'NullLayer'){
         return;
     }
     if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
@@ -213,7 +213,7 @@ BaseElement.prototype.getType = function(){
 };
 
 BaseElement.prototype.getLayerSize = function(){
-    if(this.data.type == 'TextLayer'){
+    if(this.data.ty == 'TextLayer'){
         return {w:this.data.textData.width,h:this.data.textData.height};
     }else{
         return {w:this.data.width,h:this.data.height};

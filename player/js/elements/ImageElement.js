@@ -1,6 +1,6 @@
 function IImageElement(data, animationItem,parentContainer,globalData){
     this.animationItem = animationItem;
-    this.assets = this.animationItem.getAssets();
+    this.assetData = this.animationItem.getAssetData(data.id);
     this.path = this.animationItem.getPath();
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
 }
@@ -11,7 +11,7 @@ IImageElement.prototype.createElements = function(){
     var self = this;
 
     var imageLoaded = function(){
-        self.image.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assets[self.data.assetId].path);
+        self.image.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
         self.maskedElement = self.image;
         self.animationItem.elementLoaded();
     };
@@ -19,13 +19,14 @@ IImageElement.prototype.createElements = function(){
     var img = new Image();
     img.addEventListener('load', imageLoaded, false);
     img.addEventListener('error', imageLoaded, false);
-    img.src = this.path+this.assets[this.data.assetId].path;
+
+    img.src = this.path+this.assetData.p;
 
     this.parent.createElements.call(this);
 
     this.image = document.createElementNS(svgNS,'image');
-    this.image.setAttribute('width',this.data.width+"px");
-    this.image.setAttribute('height',this.data.height+"px");
+    this.image.setAttribute('width',this.assetData.w+"px");
+    this.image.setAttribute('height',this.assetData.h+"px");
     this.layerElement.appendChild(this.image);
 
 };

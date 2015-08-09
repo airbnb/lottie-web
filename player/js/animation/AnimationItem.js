@@ -330,6 +330,17 @@ AnimationItem.prototype.getPath = function () {
     return this.path;
 };
 
+AnimationItem.prototype.getAssetData = function (id) {
+    var i = 0, len = this.assets.length;
+    while (i < len) {
+        if(id == this.assets[i].id){
+            return this.assets[i];
+        }
+        i += 1;
+    }
+    return this.assets;
+};
+
 AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };

@@ -249,7 +249,7 @@
         var averageSpeed, duration;
         var bezierIn, bezierOut;
         function buildSegment(segmentOb, indexTime){
-
+i
             function getCurveLength(initPos,endPos, outBezier, inBezier){
                 var k, curveSegments = 200;
                 var point,lastPoint = null;

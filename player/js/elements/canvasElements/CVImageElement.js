@@ -1,6 +1,6 @@
 function CVImageElement(data,globalData){
     this.animationItem = globalData.renderer.animationItem;
-    this.assets = this.animationItem.getAssets();
+    this.assetData = this.animationItem.getAssetData(data.id);
     this.path = this.animationItem.getPath();
     this.parent.constructor.call(this,data,globalData);
     this.animationItem.pendingElements += 1;
@@ -22,7 +22,7 @@ CVImageElement.prototype.createElements = function(){
     this.img = new Image();
     this.img.addEventListener('load', imageLoaded, false);
     this.img.addEventListener('error', imageFailed, false);
-    this.img.src = this.path+this.assets[this.data.assetId].path;
+    this.img.src = this.path+this.assetData.p;
 
     this.parent.createElements.call(this);
 

@@ -29,19 +29,19 @@ CanvasRenderer.prototype.buildItems = function(layers,elements){
     }
     var count = 0, i, len = layers.length;
     for (i = 0; i < len; i++) {
-        if (layers[i].type == 'StillLayer') {
+        if (layers[i].ty == 'StillLayer') {
             count++;
             elements.push(this.createImage(layers[i]));
-        } else if (layers[i].type == 'PreCompLayer') {
+        } else if (layers[i].ty == 'PreCompLayer') {
             elements.push(this.createComp(layers[i]));
             var elems = [];
             this.buildItems(layers[i].layers,elems);
             elements[elements.length - 1].setElements(elems);
-        } else if (layers[i].type == 'SolidLayer') {
+        } else if (layers[i].ty == 'SolidLayer') {
             elements.push(this.createSolid(layers[i]));
-        } else if (layers[i].type == 'ShapeLayer') {
+        } else if (layers[i].ty == 'ShapeLayer') {
             elements.push(this.createShape(layers[i]));
-        } else if (layers[i].type == 'TextLayer') {
+        } else if (layers[i].ty == 'TextLayer') {
             elements.push(this.createText(layers[i]));
         }else{
             elements.push(this.createBase(layers[i]));
@@ -215,7 +215,7 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
         if (layerData.parent !== undefined) {
             this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements);
         }
-        if (layerData.type == 'PreCompLayer') {
+        if (layerData.ty == 'PreCompLayer') {
             this.buildStage(null, layerData.layers, elements[i].getElements());
         }
     }

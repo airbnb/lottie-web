@@ -55,7 +55,7 @@ function dataFunctionManager(){
             layerData = layers[i];
             layerFrames = layerData.outPoint - layerData.startTime;
             offsetFrame = layerData.startTime;
-            layerData.layerName = convertLayerNameToID(layerData.layerName);
+            //layerData.layerName = convertLayerNameToID(layerData.layerName);
             /*if(layerData.parent){
                 layerData.parent = convertLayerNameToID(layerData.parent);
             }*/
@@ -104,13 +104,13 @@ function dataFunctionManager(){
                     }
                 }
             }
-            if(layerData.type=='PreCompLayer'){
+            if(layerData.ty=='PreCompLayer'){
                 if(layerData.refId && !layerData.layers){
                     layerData.layers = findCompLayers(layerData.refId,mainLayers);
                 }else{
                     completeLayers(layerData.layers,mainLayers);
                 }
-            }else if(layerData.type == 'ShapeLayer'){
+            }else if(layerData.ty == 'ShapeLayer'){
                 completeShapes(layerData.shapes);
             }
         }
@@ -128,7 +128,7 @@ function dataFunctionManager(){
                 }
                 return layers[i].layers;
             }
-            if(layers[i].type == 'PreCompLayer'){
+            if(layers[i].ty == 'PreCompLayer'){
                 var elem = findCompLayers(id,layers[i].layers,mainLayers);
                 if(elem){
                     return elem;
@@ -1007,9 +1007,9 @@ function dataFunctionManager(){
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             offsettedFrameNum = frameNum - item.startTime;
-            if(item.an[offsettedFrameNum]){
+            /*if(item.an[offsettedFrameNum]){
                 continue;
-            }
+            }*/
             dataOb = {};
             interpolatedParams.arrayFlag = false;
             interpolatedParams.type = 'default';
@@ -1061,14 +1061,14 @@ function dataFunctionManager(){
             if((frameNum < item.inPoint || frameNum > item.outPoint)){
                continue;
             }
-            if(item.type == 'PreCompLayer'){
+            if(item.ty == 'PreCompLayer'){
                 timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= item.tm.length ? item.tm[item.tm.length - 1] :  item.tm[offsettedFrameNum] : offsettedFrameNum;
                 if(timeRemapped === undefined){
                     timeRemapped = getInterpolatedValue(item.trmp,offsettedFrameNum, 0,interpolatedParams)[0]*frameRate;
                     item.tm[offsettedFrameNum] = timeRemapped;
                 }
                 iterateLayers(item.layers,timeRemapped,renderType);
-            }else if(item.type == 'ShapeLayer'){
+            }else if(item.ty == 'ShapeLayer'){
                 iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
             }
         }
@@ -1308,10 +1308,10 @@ function dataFunctionManager(){
             }
             offsettedFrameNum = num - layers[i].startTime;
             layers[i].renderedData[offsettedFrameNum] = rendered[i];
-            if(layers[i].type == 'PreCompLayer'){
+            if(layers[i].ty == 'PreCompLayer'){
                 timeRemapped = layers[i].tm ? layers[i].tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= layers[i].tm.length ? layers[i].tm[layers[i].tm.length - 1] : layers[i].tm[offsettedFrameNum] : offsettedFrameNum;
                 populateLayers(layers[i].layers,timeRemapped,rendered.renderedArray);
-            }else if(layers[i].type == 'ShapeLayer'){
+            }else if(layers[i].ty == 'ShapeLayer'){
                 shapes = layers[i].shapes;
                 jLen = shapes.length;
                 for(j=0;j<jLen;j+=1){
