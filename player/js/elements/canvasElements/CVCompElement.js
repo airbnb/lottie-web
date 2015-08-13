@@ -36,3 +36,13 @@ CVCompElement.prototype.setElements = function(elems){
 CVCompElement.prototype.getElements = function(){
     return this.elements;
 };
+
+CVCompElement.prototype.destroy = function(){
+    var i,len = this.layers.length;
+    for( i = len - 1; i >= 0; i -= 1 ){
+        this.elements[i].destroy();
+    }
+    this.layers = null;
+    this.elements = null;
+    this.parent.destroy.call();
+};

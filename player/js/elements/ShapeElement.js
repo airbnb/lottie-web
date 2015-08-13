@@ -1,6 +1,6 @@
-function IShapeElement(data, animationItem,parentContainer,globalData){
+function IShapeElement(data,parentContainer,globalData){
     this.shapes = [];
-    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
+    this.parent.constructor.call(this,data,parentContainer,globalData);
 }
 createElement(BaseElement, IShapeElement);
 
@@ -34,4 +34,9 @@ IShapeElement.prototype.renderShapes = function(num){
     }else{
         this.mainShape.renderShape(num,this.finalTransform);
     }
+};
+
+IShapeElement.prototype.destroy = function(){
+    this.parent.destroy.call();
+    this.mainShape.destroy();
 };

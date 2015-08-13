@@ -1,5 +1,5 @@
-function ICompElement(data, animationItem,parentContainer,globalData){
-    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
+function ICompElement(data,parentContainer,globalData){
+    this.parent.constructor.call(this,data,parentContainer,globalData);
     this.layers = data.layers;
 }
 createElement(BaseElement, ICompElement);
@@ -46,4 +46,12 @@ ICompElement.prototype.setElements = function(elems){
 
 ICompElement.prototype.getElements = function(){
     return this.elements;
+};
+
+ICompElement.prototype.destroy = function(){
+    this.parent.destroy.call();
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i+=1 ){
+        this.elements[i].destroy();
+    }
 };

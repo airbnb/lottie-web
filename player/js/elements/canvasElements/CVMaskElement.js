@@ -49,3 +49,7 @@ CVMaskElement.prototype.createInvertedMask = function(path){
     path.lineTo(0, this.globalData.compHeight);
     path.lineTo(0, 0);
 };
+
+CVMaskElement.prototype.destroy = function(){
+    this.ctx = null;
+};

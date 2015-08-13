@@ -6,6 +6,7 @@ function SVGRenderer(animationItem){
         frameNum: -1
     };
     this.elements = [];
+    this.destroyed = false;
 }
 
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
@@ -43,28 +44,28 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
 };
 
 SVGRenderer.prototype.createBase = function (data,parentContainer) {
-    return new BaseElement(data, this.animationItem,parentContainer,this.globalData);
+    return new BaseElement(data, parentContainer,this.globalData);
 };
 
 SVGRenderer.prototype.createShape = function (data,parentContainer) {
-    return new IShapeElement(data, this.animationItem,parentContainer,this.globalData);
+    return new IShapeElement(data, parentContainer,this.globalData);
 };
 
 SVGRenderer.prototype.createText = function (data,parentContainer) {
-    return new ITextElement(data, this.animationItem,parentContainer,this.globalData);
+    return new ITextElement(data, parentContainer,this.globalData);
 };
 
 SVGRenderer.prototype.createImage = function (data,parentContainer) {
-    return new IImageElement(data, this.animationItem,parentContainer,this.globalData);
+    return new IImageElement(data, parentContainer,this.globalData);
 };
 
 SVGRenderer.prototype.createComp = function (data,parentContainer) {
-    return new ICompElement(data, this.animationItem,parentContainer,this.globalData);
+    return new ICompElement(data, parentContainer,this.globalData);
 
 };
 
 SVGRenderer.prototype.createSolid = function (data,parentContainer) {
-    return new ISolidElement(data, this.animationItem,parentContainer,this.globalData);
+    return new ISolidElement(data, parentContainer,this.globalData);
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
@@ -82,6 +83,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
     var defs = document.createElementNS(svgNS, 'defs');
     this.globalData.defs = defs;
     this.animationItem.container.appendChild(defs);
+    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
+    this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
+    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',animData.animation.compWidth);
@@ -131,11 +135,23 @@ SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,pa
     }
 };
 
+SVGRenderer.prototype.destroy = function () {
+    this.animationItem.wrapper.innerHTML = '';
+    this.animationItem.container = null;
+    this.globalData.defs = null;
+    var i, len = this.layers.length;
+    for (i = 0; i < len; i++) {
+        this.elements[i].destroy();
+    }
+    this.elements.length = 0;
+    this.destroyed = true;
+};
+
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
 SVGRenderer.prototype.renderFrame = function(num){
-    if(this.lastFrame == num){
+    if(this.lastFrame == num || this.destroyed){
         return;
     }
     this.lastFrame = num;

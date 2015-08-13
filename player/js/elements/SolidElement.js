@@ -1,5 +1,5 @@
-function ISolidElement(data, animationItem,parentContainer,globalData){
-    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
+function ISolidElement(data,parentContainer,globalData){
+    this.parent.constructor.call(this,data,parentContainer,globalData);
 }
 createElement(BaseElement, ISolidElement);
 
@@ -53,4 +53,9 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
             this.rectElement.setAttribute('opacity',renderedFrameData.o);
         }
     }
+};
+
+ICompElement.prototype.destroy = function(){
+    this.parent.destroy.call();
+    this.rectElement = null;
 };

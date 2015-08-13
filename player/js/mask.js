@@ -6,7 +6,8 @@ function MaskElement(data,element,globalData) {
     this.paths = [];
     this.registeredEffects = [];
     this.masksProperties = [];
-    this.maskElement = document.createElementNS(svgNS, 'mask');
+    this.maskElement = null;
+    this.layerSize = null;
 }
 
 MaskElement.prototype.init = function () {
@@ -164,4 +165,14 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
         }
         storedData.lastPath = pathString;
     }
+};
+
+MaskElement.prototype.destroy = function(){
+    this.element = null;
+    this.globalData = null;
+    this.maskElement = null;
+    this.data = null;
+    this.paths = null;
+    this.registeredEffects = null;
+    this.masksProperties = null;
 };

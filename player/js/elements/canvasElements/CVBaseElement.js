@@ -132,3 +132,13 @@ CVBaseElement.prototype.getLayerSize = function(){
     }
 };
 
+
+CVBaseElement.prototype.destroy = function(){
+    this.canvasContext = null;
+    this.data = null;
+    this.globalData = null;
+    if(this.maskManager) {
+        this.maskManager.destroy();
+    }
+};
+

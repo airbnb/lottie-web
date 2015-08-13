@@ -291,3 +291,41 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
         viewData.lastData.do = dashoffset;
     }
 };
+
+ShapeItemElement.prototype.destroy = function(items, data){
+    this.shape = null;
+    this.data = null;
+    this.viewData = null;
+    /*if(!items){
+        items = this.data;
+    }
+    if(!data){
+        data = this.viewData;
+    }
+    var i, len = items.length;
+    var groupTransform,groupMatrix;
+    groupTransform = parentTransform;
+    for(i = 0; i < len; i += 1){
+        if(items[i].ty == 'tr'){
+        }else if(items[i].ty == 'sh'){
+            this.renderPath(items[i],data[i],num,groupTransform);
+        }else if(items[i].ty == 'el'){
+            this.renderPath(items[i],data[i],num,groupTransform);
+            //this.renderEllipse(items[i],data[i],num,groupTransform);
+        }else if(items[i].ty == 'rc'){
+            if(items[i].trimmed){
+                this.renderPath(items[i],data[i],num,groupTransform);
+            }else{
+                this.renderRect(items[i],data[i],num,groupTransform);
+            }
+        }else if(items[i].ty == 'fl'){
+            this.renderFill(items[i],data[i],num,groupTransform);
+        }else if(items[i].ty == 'st'){
+            this.renderStroke(items[i],data[i],num,groupTransform);
+        }else if(items[i].ty == 'gr'){
+            this.renderShape(num,groupTransform,items[i].it,data[i].it);
+        }else if(items[i].ty == 'tm'){
+            //
+        }
+    }*/
+};

@@ -25,6 +25,7 @@ var AnimationItem = function () {
     this.renderedFrameCount = 0;
     this.scaleMode = 'fit';
     this.math = Math;
+    this.removed = false;
 };
 
 AnimationItem.prototype.setParams = function(params) {
@@ -270,9 +271,21 @@ AnimationItem.prototype.moveFrame = function (value, name) {
     this.setCurrentRawFrameValue(this.currentRawFrame+value);
 };
 
+AnimationItem.prototype.remove = function (name) {
+    if(name && this.name != name){
+        return;
+    }
+    this.renderer.destroy();
+};
+
+AnimationItem.prototype.destroy = function (name) {
+    if(name && this.name != name){
+        return;
+    }
+    this.renderer.destroy();
+};
+
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
-
-
     this.currentRawFrame = value;
     if (this.currentRawFrame >= this.totalFrames) {
         if(this.loop === false){

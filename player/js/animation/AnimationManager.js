@@ -67,7 +67,13 @@ var animationManager = (function(){
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
-            registeredAnimations[i].animation.advanceTime(elapsedTime);
+            if(registeredAnimations[i].animation.renderer.destroyed) {
+                registeredAnimations.splice(i,1);
+                i -= 1;
+                len -= 1;
+            }else{
+                registeredAnimations[i].animation.advanceTime(elapsedTime);
+            }
         }
         initTime = nowTime;
         //setTimeout(resume,10);

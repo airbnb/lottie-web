@@ -343,3 +343,9 @@ CVShapeItemElement.prototype.renderStroke = function(animData){
     this.ownStylesList.push(this.stylesList[this.stylesList.length -1]);
     this.currentStylePoolPos += 1;
 };
+
+CVShapeItemElement.prototype.destroy = function(){
+    this.data = null;
+    this.globalData = null;
+    this.canvasContext = null;
+};

@@ -1,8 +1,7 @@
-function IImageElement(data, animationItem,parentContainer,globalData){
-    this.animationItem = animationItem;
-    this.assetData = this.animationItem.getAssetData(data.id);
-    this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
+function IImageElement(data,parentContainer,globalData){
+    this.assetData = globalData.getAssetData(data.id);
+    this.path = globalData.getPath();
+    this.parent.constructor.call(this,data,parentContainer,globalData);
 }
 createElement(BaseElement, IImageElement);
 
@@ -13,7 +12,6 @@ IImageElement.prototype.createElements = function(){
     var imageLoaded = function(){
         self.image.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
         self.maskedElement = self.image;
-        self.animationItem.elementLoaded();
     };
 
     var img = new Image();
@@ -66,4 +64,9 @@ IImageElement.prototype.renderFrame = function(num,parentMatrix){
             this.image.setAttribute('opacity',renderedFrameData.o);
         }
     }
+};
+
+IImageElement.prototype.destroy = function(){
+    this.parent.destroy.call();
+    this.image =  null;
 };

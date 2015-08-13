@@ -43,3 +43,9 @@ CVImageElement.prototype.draw = function(parentMatrix){
     ctx.drawImage(this.img,0,0);
     this.globalData.renderer.restore(this.data.hasMask);
 };
+
+CVImageElement.prototype.destroy = function(){
+    this.img = null;
+    this.animationItem = null;
+    this.parent.destroy.call();
+};

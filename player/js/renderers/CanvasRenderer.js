@@ -235,6 +235,9 @@ CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, pa
 };
 
 CanvasRenderer.prototype.prepareFrame = function(num){
+    if(this.destroyed) {
+        return;
+    }
     var i, len = this.elements.length;
     for (i = 0; i < len; i++) {
         this.elements[i].prepareFrame(num - this.layers[i].startTime);
@@ -248,8 +251,23 @@ CanvasRenderer.prototype.draw = function(){
     }
 };
 
+CanvasRenderer.prototype.destroy = function () {
+    if(this.renderConfig.clearCanvas) {
+        this.animationItem.wrapper.innerHTML = '';
+    }
+    var i, len = this.layers.length;
+    for (i = len - 1; i >= 0; i-=1) {
+        this.elements[i].destroy();
+    }
+    this.elements.length = 0;
+    this.globalData.bmCtx = null;
+    this.globalData.canvasContext = null;
+    this.animationItem.container = null;
+    this.destroyed = true;
+};
+
 CanvasRenderer.prototype.renderFrame = function(num){
-    if(this.lastFrame == num && this.renderConfig.clearCanvas === true){
+    if((this.lastFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed){
         return;
     }
     this.lastFrame = num;

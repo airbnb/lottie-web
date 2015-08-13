@@ -1,5 +1,4 @@
-var BaseElement = function (data, animationItem,parentContainer,globalData){
-    this.animationItem = animationItem;
+var BaseElement = function (data,parentContainer,globalData){
     this.globalData = globalData;
     this.data = data;
     this.ownMatrix = new Matrix();
@@ -188,6 +187,17 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }
 
     return this.isVisible;
+};
+
+BaseElement.prototype.destroy = function(){
+    this.layerElement = null;
+    this.parentContainer = null;
+    if(this.matteElement) {
+        this.matteElement = null;
+    }
+    if(this.maskManager) {
+        this.maskManager.destroy();
+    }
 };
 
 BaseElement.prototype.getDomElement = function(){

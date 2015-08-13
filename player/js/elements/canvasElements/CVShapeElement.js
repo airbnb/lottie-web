@@ -31,3 +31,8 @@ CVShapeElement.prototype.draw = function(parentMatrix){
 CVShapeElement.prototype.drawShapes = function(parentTransform){
     this.mainShape.renderShape(parentTransform);
 };
+
+CVShapeElement.prototype.destroy = function(){
+    this.mainShape.destroy();
+    this.parent.destroy.call();
+};
