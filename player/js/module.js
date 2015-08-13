@@ -44,6 +44,9 @@
     function loadAnimation(params){
         return animationManager.loadAnimation(params);
     }
+    function destroy(animation){
+        return animationManager.destroy(animation);
+    }
 
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
@@ -59,6 +62,7 @@
     bodymovinjs.resize = resize;
     bodymovinjs.start = start;
     bodymovinjs.goToAndStop = goToAndStop;
+    bodymovinjs.destroy = destroy;
 
     function checkReady(){
         if (document.readyState === "complete") {

@@ -108,6 +108,13 @@ var animationManager = (function(){
         }
     }
 
+    function destroy(animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.destroy(animation);
+        }
+    }
+
     function searchAnimations(){
         var animElements = document.getElementsByClassName('bodymovin');
         Array.prototype.forEach.call(animElements,registerAnimation);
@@ -141,5 +148,6 @@ var animationManager = (function(){
     moduleOb.resize = resize;
     moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
+    moduleOb.destroy = destroy;
     return moduleOb;
 }());

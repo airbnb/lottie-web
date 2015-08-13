@@ -279,7 +279,7 @@ AnimationItem.prototype.remove = function (name) {
 };
 
 AnimationItem.prototype.destroy = function (name) {
-    if(name && this.name != name){
+    if((name && this.name != name) || (this.renderer && this.renderer.destroyed)){
         return;
     }
     this.renderer.destroy();
