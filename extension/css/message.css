@@ -1,0 +1,53 @@
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0,.8);
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+
+#message .messageBox{
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#message .messageBox .content{
+    max-width: 280px;
+    background-color: #EAD3A8;
+    margin: auto;
+    border-radius: 4px;
+    padding: 20px 10px;
+    border: 2px solid #D23641;
+}
+
+#message .messageBox .alertAnimation{
+    width: 100%;
+    height: 60px;
+}
+#message .messageBox .text{
+    font-size: 14px;
+    font-variant: small-caps;
+    color: #484043;
+}
+
+#message .messageBox .buttons{
+    margin-top: 10px;
+}

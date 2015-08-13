@@ -1,0 +1,125 @@
+/*Your styles */
+
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+body{
+    overflow: auto;
+    min-width: 250px;
+}
+
+body::-webkit-scrollbar {
+    width: .8em;
+    height: .8em;
+}
+ 
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+body::-webkit-scrollbar-thumb {
+    background-color: #484043;
+    border: 1px solid #EAD3A8;
+    width: 10px;
+    border-radius: .4em;
+}
+
+#content {
+    margin-right:auto;
+    margin-left:auto;
+    vertical-align:middle;
+    width:100%;
+    padding: 0 10px;
+}
+
+
+#btn_test{
+    width: 100%;
+}
+
+button{
+    border: none;
+    background-color: #FFFFFF;
+}
+
+button.generalButton{
+    color: #EAD3A8;
+    padding: 8px 12px 6px;
+    font-size: 12px;
+    background-color: #6E6568;
+    border-radius: 1px;
+    font-weight: bold;
+    font-variant: small-caps;
+    border-bottom: 2px solid #FFFFFF;
+    min-width: 80px;
+}
+
+button.generalButton:hover{
+    color: #FFFFFF;
+    /*border-bottom: 2px solid #D23641;*/
+}
+
+button.highlightButton{
+    background-color: #484043;
+    color: #FFFFFF;
+    border-bottom: 2px solid #D23641;
+}
+
+button.highlightButton:hover{
+    background-color: #FFFFFF;
+    color: #D23641;
+}
+
+button.disabled, button.disabled:hover{
+    color: rgba(110, 101, 104, .3);
+    background-color: #FFFFFF;
+    border-bottom: 2px solid #FFFFFF;
+    cursor: default;
+}
+
+.buttonSeparator{
+    width: 10px;
+    display: inline-block;
+}
+
+.hideExtra { white-space: nowrap; overflow: hidden; text-overflow:ellipsis; }
+
+/*
+Those classes will be edited at runtime with values specified
+by the settings of the CC application
+*/
+.hostFontColor{}
+.hostFontFamily{}
+.hostFontSize{}
+
+/*font family, color and size*/
+.hostFont{}
+/*background color*/
+.hostBgd{}
+/*lighter background color*/
+.hostBgdLight{}
+/*darker background color*/
+.hostBgdDark{}
+/*background color and font*/
+.hostElt{}
+
+
+.hostButton{
+    border:1px solid;
+    border-radius:2px;
+    height:20px;
+    vertical-align:bottom;
+    font-family:inherit;
+    color:inherit;
+    font-size:inherit;
+}

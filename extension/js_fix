@@ -1,0 +1,8 @@
+TreeElement.prototype.isEventWithinDisclosureTriangle = function(event) {
+  var computedLeftPadding = 10;
+  if(window.getComputedStyle(this._listItemNode).getPropertyCSSValue) {
+    computedLeftPadding = window.getComputedStyle(this._listItemNode).getPropertyCSSValue("padding-left").getFloatValue(CSSPrimitiveValue.CSS_PX);
+  }
+  var left = this._listItemNode.totalOffsetLeft() + computedLeftPadding;
+  return event.pageX >= left && event.pageX <= left + this.arrowToggleWidth && this.hasChildren;
+}

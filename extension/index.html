@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+        
+<link rel="stylesheet" href="css/topcoat-desktop-dark.min.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/boilerplate.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/styles.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/compsSelection.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/compsRender.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/message.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/info.css"/>
+
+<title></title>
+</head>
+
+<body class="hostElt">
+
+    <div id="content">
+        <div id='compsSelection'>
+            <div class='buttons'>
+                <button class='generalButton settings'>Info</button>
+                <button class='generalButton refresh'>Refresh</button>
+                <div class='buttonSeparator'></div>
+                <button class='generalButton highlightButton render disabled'>Render</button>
+            </div>
+            <table class='compsTable'>
+            <thead>
+                <tr>
+                    <th class='th state'>Selected</th>
+                    <th class='th name'>Name</th>
+                    <th class='th destination'>Destination Folder</th>
+                </tr>
+            </thead>
+            <tbody class='compsList'>
+            </tbody>
+            </table>
+        </div>
+        <div id='compsRender'>
+            <div class='renders'>
+            </div>
+            <div class='buttons'>
+                <button class='generalButton cancel'>Cancel</button>
+                <button class='generalButton return'>Return</button>
+            </div>
+        </div>
+        <div id='info'>
+            <div class='buttons'>
+                <button class='generalButton return'>Back</button>
+            </div>
+            <div class='animHeader'>
+                </div>
+            <h1>BODYMOVIN</h1>
+            <h2>After Effects to html exporter</h2>
+            <p>This plugin exports After Effects animations to a web compatible format.</p>
+            <p>In order to play the exported animation on your browser please follow the instructions at <a class='link' href='#'>Bodymovin on github</a></p>
+            <br />
+            <p>You can get the latest version of the player from the repository or copy the one included in the extensios here.</p>
+            <div class="buttons">
+                <button class='generalButton highlightButton save unzipped'>Get Player</button>
+                <div class='buttonSeparator'></div>
+                <button class='generalButton highlightButton save zipped'>Get Player Gzipped</button>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div id='message'>
+        <div class='messageBox'>
+            <div class='content'>
+                <div class='alertAnimation sucessAnimation'></div>
+                <div class='alertAnimation failAnimation'></div>
+                <div class='text'></div>
+                <div class='buttons'>
+                    <button class='generalButton ok'>Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/libs/CSInterface.js"></script>
+    <script src="js/libs/jquery-2.0.2.min.js"></script>
+    <script src="js/libs/bodymovin.js"></script>
+    
+    <script src="js/animations/radio.js"></script>
+    <script src="js/animations/alert.js"></script>
+    <script src="js/animations/bm.js"></script>
+    <script src="js/animations/rendering.js"></script>
+    <script src="js/animations/sucess.js"></script>
+    <script src="js/animations/folder.js"></script>
+
+    <script src="js/themeManager.js"></script>
+    <script src="js/controllers/CompSelectionController.js"></script>
+    <script src="js/controllers/CompRenderController.js"></script>
+    <script src="js/controllers/messageController.js"></script>
+    <script src="js/controllers/InfoController.js"></script>
+    <script src="js/main.js"></script>
+
+        
+</body>
+</html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<ExtensionList>
+    <Extension Id="com.bodymovin.bodymovin">
+        <HostList>
+           
+            <!-- Comment Host tags according to the apps you want your panel to support -->
+            
+            <!-- Photoshop -->
+            <Host Name="PHXS" Port="8088"/>
+            
+            <!-- Illustrator -->
+            <Host Name="ILST" Port="8089"/>
+
+            <!-- InDesign -->
+            <Host Name="IDSN" Port="8090" />
+            
+            <!-- Premiere -->
+            <Host Name="PPRO" Port="8091" />
+            
+            <!-- AfterEffects -->
+            <Host Name="AEFT" Port="8092" />
+            
+            <!-- PRELUDE -->
+            <Host Name="PRLD" Port="8093" />
+            
+            <!-- FLASH Pro -->
+            <Host Name="FLPR" Port="8094" />
+                        
+        </HostList>
+    </Extension>
+</ExtensionList>
+ 

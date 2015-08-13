@@ -1,0 +1,53 @@
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#info {
+    width: 100%;
+}
+
+#info .animHeader{
+    height: 100px;
+    width: 100%;
+    clear: both;
+}
+
+#info h1 {
+    text-align: center;
+    color: #D23641;
+}
+
+#info h2 {
+    text-align: center;
+    color: #EAD3A8;
+}
+
+#info .buttons{
+    margin-top: 10px;
+    text-align: center;
+    
+}
+
+#info .buttons .return{
+    float: right;
+}
+
+#info p{
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+#info p a.link{
+    color: #D23641;
+}

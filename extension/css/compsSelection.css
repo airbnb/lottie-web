@@ -1,0 +1,81 @@
+
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#compsSelection {
+    width: 100%;
+}
+
+#compsSelection .buttons{
+    margin-top: 10px;
+    
+}
+
+#compsSelection .buttons .settings{
+    float: right;
+}
+
+#compsSelection .compsTable{
+    width: 100%;
+    font-size: 10px;
+    margin-top: 10px;
+    table-layout: fixed;
+}
+
+#compsSelection .compsTable .th,#compsSelection .compsTable .td{
+    border-right: 1px solid #333333;
+    vertical-align: middle;
+}
+
+#compsSelection .compsTable .th{
+    background-color: #D23641;
+    color: #EAD3A8;
+    padding: 5px;
+    
+}
+
+#compsSelection .compsTable tr{
+    background-color: #6E6568;
+    color: #EAD3A8;
+    height: 42px;
+}
+
+#compsSelection .compsTable tr.selected{
+    background-color: #EAD3A8;
+    color: #D23641;
+}
+
+#compsSelection .compsTable .th.state{
+    width: 56px;
+}
+
+#compsSelection .compsTable .td .state{
+    height: 100%;
+    width: 100%;
+}
+
+#compsSelection .compsTable .td .hideExtra{
+    padding: 5px;
+}
+
+#compsSelection .compsTable .td .hideExtra.state{
+    padding: 0;
+}
+
+#compsSelection .compsTable .td .destination{
+    cursor: pointer;
+}
+
+#compsSelection .compsTable tr .td .destination:hover{
+    text-decoration: underline;
+}

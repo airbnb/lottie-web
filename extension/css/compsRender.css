@@ -1,0 +1,86 @@
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#compsRender {
+    width: 100%;
+}
+
+#compsRender div.buttons{
+    text-align: center;
+}
+
+#compsRender div.renders{
+    width: 100%;
+    margin-top: 20px;
+    padding: 0 10px;
+    
+}
+
+#compsRender div.renders div.renderingElement{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#compsRender div.renders div.renderingElement .header{
+    background-color: #D23641;
+    color: #484043;
+    border-bottom: 2px solid #484043;
+}
+
+#compsRender div.renders div.renderingElement .header .compName{
+    font-size: 14px;
+    line-height: 29px;
+    padding-left: 20px;
+    font-variant: small-caps;
+    color: #EAD3A8;
+}
+
+#compsRender div.renders div.renderingElement .progressBar{
+    width: 0%;
+    background-color: #D23641;
+    height: 2px;
+}
+
+#compsRender div.renders div.renderingElement .status{
+    background-color: #FFFFFF;
+    color: #333;
+    padding: 15px 10px 17px;
+    font-size: 20px;
+    border-bottom: 2px solid #484043;
+    position: relative;
+}
+
+#compsRender div.renders div.renderingElement .compAnim{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    vertical-align: middle;
+}
+
+#compsRender div.renders div.renderingElement .statusText{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#compsRender div.folder, #compsRender div.buttonHover{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    margin: auto;
+    /*display: none;*/
+    cursor: pointer;
+}
