@@ -11,6 +11,7 @@ var gzip = require('gulp-gzip');
 var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 var jshint = require('gulp-jshint');
+var rename = require('gulp-rename');
 
 gulp.task('gzipFile', function(){
   //gulp.src('demo/monstruo/data.js')
@@ -79,6 +80,17 @@ gulp.task('buildPlayer', function(){
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap('(function(window){<%= contents %>}(window));'))
+        .pipe(gulp.dest('build/player/'));
+});
+
+gulp.task('zipPlayer',['buildPlayer'], function(){
+    gulp.src('./player/index.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
+        .pipe(wrap('(function(window){<%= contents %>}(window));'))
+        .pipe(gzip({ append: true }))
         .pipe(gulp.dest('build/player/'));
 });
 

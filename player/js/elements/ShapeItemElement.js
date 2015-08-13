@@ -82,7 +82,7 @@ ShapeItemElement.prototype.getElement = function(){
 ShapeItemElement.prototype.hideShape = function(){
     var i, len = this.stylesList.length;
     for(i=len-1;i>=0;i-=1){
-        this.stylesList[i].pathElement.setAttribute('d','');
+        this.stylesList[i].pathElement.setAttribute('d','M 0,0');
     }
 };
 
@@ -142,7 +142,11 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     }
     len = this.stylesList.length;
     for(i=0;i<len;i+=1){
-        this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
+        if(this.stylesList[i].d == ''){
+            this.stylesList[i].pathElement.setAttribute('d','M 0,0');
+        }else{
+            this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
+        }
     }
 
 };
