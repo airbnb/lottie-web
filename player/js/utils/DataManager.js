@@ -8,11 +8,11 @@ function dataFunctionManager(){
     };
 
     function completeTimeRemap(tm, layerFrames, offsetFrame){
-        var interpolatedProperty = getInterpolatedValues(tm,layerFrames, offsetFrame);
         var i;
         var timeValues = [];
+        interpolatedParams.type = 'default';
         for(i=0 ; i<layerFrames; i+=1){
-            timeValues.push(Math.floor(interpolatedProperty[i]*frameRate));
+            timeValues.push(Math.floor(getInterpolatedValue(tm,i,offsetFrame,interpolatedParams)*frameRate));
         }
         return timeValues;
     }
@@ -216,151 +216,6 @@ function dataFunctionManager(){
         string = string.replace(/\./g,"_");
         string = string.replace(/\//g,"_");
         return string;
-    }
-
-    function getInterpolatedValues(keyframes, frameCount, offsetTime){
-        var i ,len;
-        var valuesArray = [];
-        if(!(keyframes instanceof Array) || keyframes[0].t === null){
-            valuesArray.push(keyframes);
-            return valuesArray;
-        }
-        var keyData, nextKeyData;
-        valuesArray = [];
-        var count;
-        var propertyArray = [];
-        var j, jLen;
-        len = keyframes.length;
-        var perc,bezierData,k;
-        for(i=0;i<len;i+=1){
-            keyData = keyframes[i];
-            keyData.t -= offsetTime;
-        }
-        var lastFrameIndex = 0;
-        var lastPointIndex = 0;
-        for(i=0;i<frameCount;i+=1){
-            count = lastFrameIndex;
-            var found = false;
-            while(count<len-1){
-                keyData = keyframes[count];
-                nextKeyData = keyframes[count+1];
-                if(i<keyData.t && count === 0){
-                    jLen = keyData.s.length;
-                    propertyArray = [];
-                    for(j=0;j<jLen;j+=1){
-                        propertyArray.push(keyData.s[j]);
-                    }
-                    valuesArray.push(propertyArray);
-                    found = true;
-                    if(lastFrameIndex != count){
-                        lastFrameIndex = count;
-                        lastPointIndex = 0;
-                    }
-                    break;
-                }else if(i>=keyData.t && i<nextKeyData.t){
-                    propertyArray = [];
-                    if(keyData.to){
-                        perc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y)('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
-                        bezierData = keyData.bezierData;
-                        var distanceInLine = bezierData.segmentLength*perc;
-                        var kLen, segmentPerc;
-                        j = lastPointIndex;
-                        while(j<bezierData.points.length){
-                            if(i === 0 || distanceInLine === 0 || perc === 0){
-                                propertyArray = bezierData.points[j].point;
-                                lastPointIndex = j;
-                                break;
-                            }else if(j == bezierData.points.length - 1){
-                                propertyArray = bezierData.points[j].point;
-                            }else if(distanceInLine > bezierData.points[j].partialLength && distanceInLine < bezierData.points[j+1].partialLength){
-                                kLen = bezierData.points[j].point.length;
-                                segmentPerc = (distanceInLine-bezierData.points[j].partialLength)/(bezierData.points[j+1].partialLength-bezierData.points[j].partialLength);
-                                for(k=0;k<kLen;k+=1){
-                                    propertyArray.push(bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc);
-                                }
-                                lastPointIndex = j;
-                                break;
-                            }
-                            j += 1;
-                        }
-                    }else{
-                        var outX,outY,inX,inY;
-                        keyData.s.forEach(function(startItem,index){
-                            if(keyData.h !== 1){
-                                if(keyData.o.x instanceof Array){
-                                    outX = keyData.o.x[index];
-                                    outY = keyData.o.y[index];
-                                    inX = keyData.i.x[index];
-                                    inY = keyData.i.y[index];
-                                }else{
-                                    outX = keyData.o.x;
-                                    outY = keyData.o.y;
-                                    inX = keyData.i.x;
-                                    inY = keyData.i.y;
-                                }
-                                perc = bez.getEasingCurve(outX,outY,inX,inY)('',i-keyData.t,0,1,nextKeyData.t-keyData.t);
-                            }
-                            // for shapes
-                            if(startItem.i){
-                                var shapeData = {
-                                    i: [],
-                                    o: [],
-                                    v: []
-                                };
-                                startItem.i.forEach(function(inItem,inIndex){
-                                    var coordsIData = [];
-                                    var coordsOData = [];
-                                    var coordsVData = [];
-                                    inItem.forEach(function(pointItem,pointIndex){
-                                        if(keyData.h === 1){
-                                            coordsIData.push(pointItem);
-                                            coordsOData.push(startItem.o[inIndex][pointIndex]);
-                                            coordsVData.push(startItem.v[inIndex][pointIndex]);
-                                        }else{
-                                            coordsIData.push(pointItem+(keyData.e[index].i[inIndex][pointIndex]-pointItem)*perc);
-                                            coordsOData.push(startItem.o[inIndex][pointIndex]+(keyData.e[index].o[inIndex][pointIndex]-startItem.o[inIndex][pointIndex])*perc);
-                                            coordsVData.push(startItem.v[inIndex][pointIndex]+(keyData.e[index].v[inIndex][pointIndex]-startItem.v[inIndex][pointIndex])*perc);
-                                        }
-                                    });
-                                    shapeData.i.push(coordsIData);
-                                    shapeData.o.push(coordsOData);
-                                    shapeData.v.push(coordsVData);
-                                });
-                                propertyArray.push(shapeData);
-                            }else{
-                                if(keyData.h === 1){
-                                    propertyArray.push(startItem);
-                                }else{
-                                    propertyArray.push(startItem+(keyData.e[index]-startItem)*perc);
-                                }
-                            }
-                        });
-                    }
-                    valuesArray.push(propertyArray);
-                    found = true;
-                    if(lastFrameIndex != count){
-                        lastFrameIndex = count;
-                        lastPointIndex = 0;
-                    }
-                    break;
-                }
-                count += 1;
-            }
-            if(found === false){
-                keyData = keyframes[keyframes.length - 2];
-                propertyArray = [];
-                keyData.e.forEach(function(item){
-                    propertyArray.push(item);
-                });
-                valuesArray.push(propertyArray);
-            }
-        }
-        count = valuesArray.length;
-        while(count < frameCount){
-            valuesArray.push(propertyArray);
-            count += 1;
-        }
-        return valuesArray;
     }
 
     function getInterpolatedValue(keyframes, frameNum, offsetTime,interpolatedParams){
