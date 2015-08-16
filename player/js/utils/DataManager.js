@@ -3,12 +3,10 @@ function dataFunctionManager(){
     var matrixInstance =  new MatrixManager();
     var animations = {};
     var degToRads = Math.PI/180;
-    //var interpolatedParams = {};
 
     function completeTimeRemap(tm, layerFrames, offsetFrame){
         var i;
         var timeValues = [];
-        //interpolatedParams.type = 'default';
         for(i=0 ; i<layerFrames; i+=1){
             timeValues.push(Math.floor(getInterpolatedValue(tm,i,offsetFrame)*frameRate));
         }
@@ -362,19 +360,23 @@ function dataFunctionManager(){
                 if(keyData.h !== 1){
                     if(keyData.o.x instanceof Array){
                         isArray = true;
-                        outX = keyData.o.x[i] ? keyData.o.x[i] : keyData.o.x[0];
-                        outY = keyData.o.y[i] ? keyData.o.y[i] : keyData.o.y[0];
-                        inX = keyData.i.x[i] ? keyData.i.x[i] : keyData.i.x[0];
-                        inY = keyData.i.y[i] ? keyData.i.y[i] : keyData.i.y[0];
                         if(!keyData.__fnct){
                             keyData.__fnct = [];
                         }
+                        if(!keyData.__fnct[i]){
+                            outX = keyData.o.x[i] ? keyData.o.x[i] : keyData.o.x[0];
+                            outY = keyData.o.y[i] ? keyData.o.y[i] : keyData.o.y[0];
+                            inX = keyData.i.x[i] ? keyData.i.x[i] : keyData.i.x[0];
+                            inY = keyData.i.y[i] ? keyData.i.y[i] : keyData.i.y[0];
+                        }
                     }else{
                         isArray = false;
-                        outX = keyData.o.x;
-                        outY = keyData.o.y;
-                        inX = keyData.i.x;
-                        inY = keyData.i.y;
+                        if(!keyData.__fnct) {
+                            outX = keyData.o.x;
+                            outY = keyData.o.y;
+                            inX = keyData.i.x;
+                            inY = keyData.i.y;
+                        }
                     }
                     if(isArray){
                         if(keyData.__fnct[i]){
@@ -401,15 +403,21 @@ function dataFunctionManager(){
                 }
                 if(keyData.h === 1){
                     if(paramArr){
-                        paramArr[arrPos+paramCnt] = keyData.s[i];
-                        paramCnt += 1;
+                        if(arrLen > 0) {
+                            paramArr[arrPos + paramCnt] = keyData.s[i];
+                            paramCnt += 1;
+                            arrLen -= 1;
+                        }
                     }else{
                         propertyArray.push(keyData.s[i]);
                     }
                 }else{
                     if(paramArr){
-                        paramArr[arrPos+paramCnt] = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
-                        paramCnt += 1;
+                        if(arrLen > 0){
+                            paramArr[arrPos+paramCnt] = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
+                            paramCnt += 1;
+                            arrLen -= 1;
+                        }
                     }else{
                         propertyArray.push(keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc);
                     }
@@ -716,14 +724,6 @@ function dataFunctionManager(){
                         pathStarted = false;
                     }
                 }
-                //console.log('pathString: ',pathString);
-                /*finalPaths = {
-                    v : nextV,
-                    o : nextO,
-                    i : nextI,
-                    __totalLength : nextTotalLength,
-                    __lengths : nextLengths
-                };*/
                 closed = false;
             }
             if(!nextV){
@@ -763,55 +763,6 @@ function dataFunctionManager(){
         };
     }());
 
-
-
-    function createPathString(paths,closed){
-        var pathV,pathO,pathI;
-        var pathString = '';
-        var pathData;
-        var k, kLen;
-
-        if(!(paths instanceof Array)){
-            pathV = paths.v;
-            pathO = paths.o;
-            pathI = paths.i;
-            kLen = pathV.length;
-            pathString += "M"+pathV[0].join(',');
-            for(k=1;k<kLen;k++){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
-            }
-            if(closed !== false){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
-            }
-            return pathString;
-        }
-        var l,lLen = paths.length;
-        pathString = '';
-        for(l = 0;l<lLen;l+=1){
-            pathData = paths[l];
-            pathV = pathData.v;
-            pathO = pathData.o;
-            pathI = pathData.i;
-            kLen = pathV.length;
-            pathString += "M"+pathV[0].join(',');
-            for(k=1;k<kLen;k++){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
-            }
-            if(closed !== false){
-                pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
-            }
-        }
-        return pathString;
-    }
-
-    var matrixParams = {
-        r: 0,
-        sx: 1,
-        sy: 1,
-        px: 1,
-        py: 1
-    };
-
     var mtParams = [0,1,1,0,0];
     function iterateLayers(layers, frameNum,renderType){
         var dataOb;
@@ -823,41 +774,30 @@ function dataFunctionManager(){
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             offsettedFrameNum = frameNum - item.startTime;
-            /*if(item.an[offsettedFrameNum]){
-                continue;
-            }*/
             dataOb = {};
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime);
             dataOb.o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime);
             if(item.ks.p.s){
-                //interpolatedParams.type = 'px';
                 getInterpolatedValue(item.ks.p.x,offsettedFrameNum, item.startTime,mtParams,3,1);
-                //interpolatedParams.type = 'py';
                 getInterpolatedValue(item.ks.p.y,offsettedFrameNum, item.startTime,mtParams,4,1);
             }else{
-                //interpolatedParams.type = 'p';
                 getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime,mtParams,3,2);
             }
-            //interpolatedParams.type = 'r';
             getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime,mtParams,0,1);
-            //interpolatedParams.type = 's';
             getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime,mtParams,1,2);
             renderedData = {};
             renderedData.an = {
                 tr: dataOb
             };
             if(renderType == 'canvas'){
-                //renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
             }else{
-                //renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
             }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
                 maskProps = item.masksProperties;
                 len = maskProps.length;
-                //console.log('len: ',len);
                 for(i=0;i<len;i+=1){
                     if(!maskProps[i].paths){
                         maskProps[i].paths = [];
@@ -1037,18 +977,12 @@ function dataFunctionManager(){
                     a : getInterpolatedValue(shapeItem.a,offsettedFrameNum, startTime),
                     o : getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime)
                 };
-                //interpolatedParams.type = 's';
                 getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,mtParams,1,2);
-                //interpolatedParams.type = 'r';
                 getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,mtParams,0,1);
-                //interpolatedParams.type = 'p';
                 getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,mtParams,3,2);
-                //interpolatedParams.type = 'default';
                 if(renderType == 'canvas'){
-                    //shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
                 }else{
-                    //shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(matrixParams.r,matrixParams.sx,matrixParams.sy,matrixParams.px,matrixParams.py);
                     shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
                 }
             }else if(shapeItem.ty == 'tm'){
