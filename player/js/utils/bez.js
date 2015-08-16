@@ -1,7 +1,6 @@
 function bezFunction(){
 
     var easingFunctions = [];
-    var len = 0;
     var math = Math;
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
@@ -30,7 +29,7 @@ function bezFunction(){
                 B0 = 3 * (cc - aa) - C0;
                 A0 = 1 - C0 - B0;
                 z = (x * (C0 + x * (B0 + x * A0))) - tt;
-                if (Math.abs(z) < 1e-3) break;
+                if (math.abs(z) < 1e-3) break;
                 x -= z / (C0 + x * (2 * B0 + 3 * A0 * x));
             }
             C1 = 3 * bb;
@@ -67,15 +66,15 @@ function bezFunction(){
                 perc = k/(curveSegments-1);
                 ptDistance = 0;
                 for(i=0;i<len;i+=1){
-                    ptCoord = Math.pow(1-perc,3)*pt1[i]+3*Math.pow(1-perc,2)*perc*pt3[i]+3*(1-perc)*Math.pow(perc,2)*pt4[i]+Math.pow(perc,3)*pt2[i];
+                    ptCoord = math.pow(1-perc,3)*pt1[i]+3*math.pow(1-perc,2)*perc*pt3[i]+3*(1-perc)*math.pow(perc,2)*pt4[i]+math.pow(perc,3)*pt2[i];
                     point[i] = ptCoord;
                     if(lastPoint[i] !== null){
-                        ptDistance += Math.pow(point[i] - lastPoint[i],2);
+                        ptDistance += math.pow(point[i] - lastPoint[i],2);
                     }
                     lastPoint[i] = point[i];
                 }
                 if(ptDistance){
-                    ptDistance = Math.sqrt(ptDistance);
+                    ptDistance = math.sqrt(ptDistance);
                     addedLength += ptDistance;
                 }
                 lengthData.segments.push({l:addedLength,p:perc});
@@ -112,13 +111,13 @@ function bezFunction(){
             perc = k/(curveSegments-1);
             ptDistance = 0;
             for(i=0;i<len;i+=1){
-                ptCoord = Math.pow(1-perc,3)*pt1[i]+3*Math.pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*Math.pow(perc,2)*(pt2[i] + pt4[i])+Math.pow(perc,3)*pt2[i];
+                ptCoord = math.pow(1-perc,3)*pt1[i]+3*math.pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*math.pow(perc,2)*(pt2[i] + pt4[i])+math.pow(perc,3)*pt2[i];
                 point.push(ptCoord);
                 if(lastPoint !== null){
-                    ptDistance += Math.pow(point[i] - lastPoint[i],2);
+                    ptDistance += math.pow(point[i] - lastPoint[i],2);
                 }
             }
-            ptDistance = Math.sqrt(ptDistance);
+            ptDistance = math.sqrt(ptDistance);
             addedLength += ptDistance;
             bezierData.points[k] = {partialLength: ptDistance,cumulatedLength:addedLength, point: point};
             lastPoint = point;
@@ -130,7 +129,7 @@ function bezFunction(){
     function getDistancePerc(perc,bezierData){
         var segments = bezierData.segments;
         var len = segments.length;
-        var initPos = Math.floor((len-1)*perc);
+        var initPos = math.floor((len-1)*perc);
         var lengthPos = perc*bezierData.addedLength;
         var lPerc = 0;
         if(lengthPos == segments[initPos].l){

@@ -1,17 +1,7 @@
 function dataFunctionManager(){
     var frameRate = 0;
     var matrixInstance =  new MatrixManager();
-    var animations = {};
     var degToRads = Math.PI/180;
-
-    function completeTimeRemap(tm, layerFrames, offsetFrame){
-        var i;
-        var timeValues = [];
-        for(i=0 ; i<layerFrames; i+=1){
-            timeValues.push(Math.floor(getInterpolatedValue(tm,i,offsetFrame)*frameRate));
-        }
-        return timeValues;
-    }
 
     function convertNumericValue(data,multiplier){
         var i, len = data.length;
@@ -44,7 +34,6 @@ function dataFunctionManager(){
         }
         var layerFrames, offsetFrame, layerData;
         var animArray, lastFrame;
-        var shapeItem;
         var i, len = layers.length;
         var j, jLen, k, kLen;
         for(i=0;i<len;i+=1){
@@ -64,7 +53,11 @@ function dataFunctionManager(){
             lastFrame = -1;
             if(layerData.tm){
                 layerData.trmp = layerData.tm;
-                layerData.tm = completeTimeRemap(layerData.tm, layerFrames, offsetFrame);
+                var timeValues = new Array(layerFrames);
+                for(j=0 ; j<layerFrames; j+=1){
+                    timeValues.push(Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate));
+                }
+                layerData.tm = timeValues;
             }
             if(layerData.ks.o instanceof Array){
                 convertNumericValue(layerData.ks.o,1/100);
@@ -201,7 +194,8 @@ function dataFunctionManager(){
     }
 
     function completeData(animationData){
-        animations[animationData._id] = {data:animationData,renderedFrames:[]};
+        animationData.__renderedFrames = new Array(animationData.animation.totalFrames);
+        animationData.__renderFinished = false;
         frameRate = animationData.animation.frameRate;
         completeLayers(animationData.animation.layers);
     }
@@ -274,24 +268,16 @@ function dataFunctionManager(){
         }
         if(keyData.to){
             bezierData = keyData.bezierData;
-            if(frameNum >= nextKeyData.t-offsetTime){
+            if(frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime){
+                var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
                 if(paramArr){
                     while(arrLen>0){
-                        paramArr[arrPos+paramCnt] = bezierData.points[bezierData.points.length - 1].point[paramCnt];
+                        paramArr[arrPos+paramCnt] = bezierData.points[ind].point[paramCnt];
                         paramCnt += 1;
                         arrLen -= 1;
                     }
                 }
-                return bezierData.points[bezierData.points.length - 1].point;
-            }else if(frameNum < keyData.t-offsetTime){
-                if(paramArr){
-                    while(arrLen>0){
-                        paramArr[arrPos+paramCnt] = bezierData.points[0].point[paramCnt];
-                        paramCnt += 1;
-                        arrLen -= 1;
-                    }
-                }
-                return bezierData.points[0].point;
+                return bezierData.points[ind].point;
             }
             if(keyData.__fnct){
                 fnc = keyData.__fnct;
@@ -309,18 +295,7 @@ function dataFunctionManager(){
             jLen = bezierData.points.length;
             while(flag){
                 addedLength +=bezierData.points[j].partialLength*dir;
-                if(distanceInLine === 0 || perc === 0){
-                    if(paramArr){
-                        while(arrLen>0){
-                            paramArr[arrPos+paramCnt] = bezierData.points[j].point[paramCnt];
-                            paramCnt += 1;
-                            arrLen -= 1;
-                        }
-                    }else{
-                        propertyArray = bezierData.points[j].point;
-                    }
-                    break;
-                }else if(j == bezierData.points.length - 1){
+                if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                     if(paramArr){
                         while(arrLen>0){
                             paramArr[arrPos+paramCnt] = bezierData.points[j].point[paramCnt];
@@ -354,7 +329,7 @@ function dataFunctionManager(){
                 }
             }
         }else{
-            var outX,outY,inX,inY, isArray = false;
+            var outX,outY,inX,inY, isArray = false, keyValue;
             len = keyData.s.length;
             for(i=0;i<len;i+=1){
                 if(keyData.h !== 1){
@@ -401,26 +376,15 @@ function dataFunctionManager(){
                         perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     }
                 }
-                if(keyData.h === 1){
-                    if(paramArr){
-                        if(arrLen > 0) {
-                            paramArr[arrPos + paramCnt] = keyData.s[i];
-                            paramCnt += 1;
-                            arrLen -= 1;
-                        }
-                    }else{
-                        propertyArray.push(keyData.s[i]);
+                keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
+                if(paramArr){
+                    if(arrLen > 0) {
+                        paramArr[arrPos + paramCnt] = keyValue;
+                        paramCnt += 1;
+                        arrLen -= 1;
                     }
                 }else{
-                    if(paramArr){
-                        if(arrLen > 0){
-                            paramArr[arrPos+paramCnt] = keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
-                            paramCnt += 1;
-                            arrLen -= 1;
-                        }
-                    }else{
-                        propertyArray.push(keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc);
-                    }
+                    propertyArray.push(keyValue);
                 }
             }
         }
@@ -461,66 +425,46 @@ function dataFunctionManager(){
             }
             return pathData;
         }else{
-            shapeData = {
-                i: [],
-                o: [],
-                v: []
-            };
-            var propertyArray = [];
             var j,jLen, k, kLen;
             var coordsIData,coordsOData,coordsVData;
-            if(frameNum < keyframes[0].t-offsetTime){
-                if(!keyframes.__minValue){
-                    jLen = keyframes[0].s[0].i.length;
-                    for(j=0;j<jLen;j+=1){
-                        coordsIData = [];
-                        coordsOData = [];
-                        coordsVData = [];
-                        kLen = keyframes[0].s[0].i[j].length;
-                        for(k=0;k<kLen;k+=1){
-                            coordsIData.push(keyframes[0].s[0].i[j][k]);
-                            coordsOData.push(keyframes[0].s[0].o[j][k]);
-                            coordsVData.push(keyframes[0].s[0].v[j][k]);
-                        }
-                        shapeData.i.push(coordsIData);
-                        shapeData.o.push(coordsOData);
-                        shapeData.v.push(coordsVData);
-                    }
-                    propertyArray.push(shapeData);
-                    keyframes.__minValue = propertyArray[0];
-                }
-                if(!isTrimmed){
-                    pathData.pathNodes = keyframes.__minValue;
+            if(frameNum < keyframes[0].t-offsetTime || frameNum > keyframes[keyframes.length - 1].t-offsetTime){
+                var ob, pos, stored, key;
+                if(frameNum < keyframes[0].t-offsetTime){
+                    key = '__minValue';
+                    pos = 0;
+                    stored = keyframes.__minValue;
+                    ob = keyframes[pos].s;
                 }else{
-                    pathData.pathNodes = trimPath(keyframes.__minValue,pathData.closed, trimData, false);
+                    key = '__maxValue';
+                    pos = keyframes.length - 2;
+                    stored = keyframes.__maxValue;
+                    ob = keyframes[pos].e;
                 }
-                return pathData;
-            }else if(frameNum > keyframes[keyframes.length - 1].t-offsetTime){
-                if(!keyframes.__maxValue){
-                    var pos = keyframes.length - 2;
+                if(!stored){
                     jLen = keyframes[pos].s[0].i.length;
+                    shapeData = {
+                        i: new Array(jLen),
+                        o: new Array(jLen),
+                        v: new Array(jLen)
+                    };
                     for(j=0;j<jLen;j+=1){
-                        coordsIData = [];
-                        coordsOData = [];
-                        coordsVData = [];
                         kLen = keyframes[pos].s[0].i[j].length;
+                        coordsIData = new Array(kLen);
+                        coordsOData = new Array(kLen);
+                        coordsVData = new Array(kLen);
                         for(k=0;k<kLen;k+=1){
-                            coordsIData.push(keyframes[pos].e[0].i[j][k]);
-                            coordsOData.push(keyframes[pos].e[0].o[j][k]);
-                            coordsVData.push(keyframes[pos].e[0].v[j][k]);
+                            coordsIData[k] = ob[0].i[j][k];
+                            coordsOData[k] = ob[0].o[j][k];
+                            coordsVData[k] = ob[0].v[j][k];
                         }
-                        shapeData.i.push(coordsIData);
-                        shapeData.o.push(coordsOData);
-                        shapeData.v.push(coordsVData);
+                        shapeData.i[j] = coordsIData;
+                        shapeData.o[j] = coordsOData;
+                        shapeData.v[j] = coordsVData;
                     }
-                    propertyArray.push(shapeData);
-                    keyframes.__maxValue = propertyArray[0];
+                    keyframes[key] = shapeData;
+                    stored = shapeData;
                 }
-                if(!isTrimmed){
-                    pathData.pathNodes = keyframes.__maxValue;
-                }else{
-                    pathData.pathNodes = trimPath(keyframes.__maxValue,pathData.closed, trimData, false);
-                }
+                pathData.pathNodes = isTrimmed ? trimPath(stored,pathData.closed, trimData, false) : stored;
                 return pathData;
             }else{
                 var i = 0;
@@ -542,65 +486,57 @@ function dataFunctionManager(){
                     }
                 }
 
-                var outX,outY,inX,inY,perc;
+                var perc;
                 if(keyData.h !== 1){
-                    outX = keyData.o.x;
-                    outY = keyData.o.y;
-                    inX = keyData.i.x;
-                    inY = keyData.i.y;
                     var fnc;
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
                     }else{
-                        fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                        fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
                         keyData.__fnct = fnc;
                     }
-                    perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-offsetTime){
                         perc = 0;
+                    }else{
+                        perc = fnc('',(frameNum)-(keyData.t-offsetTime),0,1,(nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
                     }
                 }
                 if(keyData.h === 1 && keyData.__hValue){
-                    propertyArray.push(keyData.__hValue);
+                    shapeData = keyData.__hValue;
                 }else{
-                    shapeData = {
-                        i: [],
-                        o: [],
-                        v: []
-                    };
                     jLen = keyData.s[0].i.length;
+                    shapeData = {
+                        i: new Array(jLen),
+                        o: new Array(jLen),
+                        v: new Array(jLen)
+                    };
                     for(j=0;j<jLen;j+=1){
-                        coordsIData = [];
-                        coordsOData = [];
-                        coordsVData = [];
                         kLen = keyData.s[0].i[j].length;
+                        coordsIData = new Array(kLen);
+                        coordsOData = new Array(kLen);
+                        coordsVData = new Array(kLen);
                         for(k=0;k<kLen;k+=1){
                             if(keyData.h === 1){
-                                coordsIData.push(keyData.s[0].i[j][k]);
-                                coordsOData.push(keyData.s[0].o[j][k]);
-                                coordsVData.push(keyData.s[0].v[j][k]);
+                                coordsIData[k] = keyData.s[0].i[j][k];
+                                coordsOData[k] = keyData.s[0].o[j][k];
+                                coordsVData[k] = keyData.s[0].v[j][k];
                             }else{
-                                coordsIData.push(keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc);
-                                coordsOData.push(keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc);
-                                coordsVData.push(keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc);
+                                coordsIData[k] = keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc;
+                                coordsOData[k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
+                                coordsVData[k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
                             }
                         }
-                        shapeData.i.push(coordsIData);
-                        shapeData.o.push(coordsOData);
-                        shapeData.v.push(coordsVData);
+                        shapeData.i[j] = coordsIData;
+                        shapeData.o[j] = coordsOData;
+                        shapeData.v[j] = coordsVData;
                         if(keyData.h === 1){
                             keyData.__hValue = shapeData;
                         }
-                        propertyArray.push(shapeData);
                     }
                 }
-                if(!isTrimmed){
-                    pathData.pathNodes = propertyArray[0];
-                }else{
-                    pathData.pathNodes = trimPath(propertyArray[0],pathData.closed, trimData, false);
-                }
+                pathData.pathNodes = isTrimmed ? trimPath(shapeData,pathData.closed, trimData, false) : shapeData;
                 return pathData;
             }
         }
@@ -789,11 +725,7 @@ function dataFunctionManager(){
             renderedData.an = {
                 tr: dataOb
             };
-            if(renderType == 'canvas'){
-                renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
-            }else{
-                renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
-            }
+            renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
                 maskProps = item.masksProperties;
@@ -980,11 +912,7 @@ function dataFunctionManager(){
                 getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,mtParams,1,2);
                 getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,mtParams,0,1);
                 getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,mtParams,3,2);
-                if(renderType == 'canvas'){
-                    shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
-                }else{
-                    shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
-                }
+                shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
             }else if(shapeItem.ty == 'tm'){
                 trimS = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime);
                 trimE = getInterpolatedValue(shapeItem.e,offsettedFrameNum, startTime);
@@ -1014,31 +942,31 @@ function dataFunctionManager(){
         }
     }
 
-    function prerenderFrames(renderData,num){
+    function prerenderFrames(animationData,num){
         var totalFrames = 1;
         while(totalFrames > 0){
             num += 1;
-            if(num >= renderData.data.animation.totalFrames){
-                renderData.renderFinished = true;
+            if(num >= animationData.animation.totalFrames){
+                animationData.__renderFinished = true;
                 break;
             }
-            if(!renderData.renderedFrames[num]){
-                renderFrame(renderData.data._id,num);
+            if(!animationData.__renderedFrames[num]){
+                renderFrame(animationData,num);
                 totalFrames -= 1;
             }
         }
     }
 
-    function renderFrame(animationId,num){
-        if(animations[animationId].renderedFrames[num]==2){
-            if(!animations[animationId].renderFinished){
-                prerenderFrames(animations[animationId],num);
+    function renderFrame(animationData,num){
+        if(animationData.__renderedFrames[num]==2){
+            if(!animationData.__renderFinished){
+                prerenderFrames(animationData,num);
             }
             return;
         }
-        frameRate = animations[animationId].data.animation.frameRate;
-        animations[animationId].renderedFrames[num] = 2;
-        iterateLayers(animations[animationId].data.animation.layers, num, animations[animationId].data._animType);
+        frameRate = animationData.animation.frameRate;
+        animationData.__renderedFrames[num] = 2;
+        iterateLayers(animationData.animation.layers, num, animationData._animType);
     }
 
     function populateLayers(layers, num, rendered){
@@ -1064,19 +992,9 @@ function dataFunctionManager(){
         }
     }
 
-    function renderAllFrames(id){
-        var animationData = animations[id].data;
-        var i, len = animationData.animation.totalFrames;
-        var renderedFrames = [];
-        for(i=0;i<len;i+=1){
-            renderedFrames.push({num:i,data:renderFrame(id,i)});
-        }
-    }
-
     var moduleOb = {};
     moduleOb.completeData = completeData;
     moduleOb.renderFrame = renderFrame;
-    moduleOb.renderAllFrames = renderAllFrames;
 
     return moduleOb;
 }
