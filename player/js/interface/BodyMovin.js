@@ -5,11 +5,12 @@ var BodyMovin = function (options) {
 	}
 
 	this.element = options.element || document.getElementsByClassName('bodymovin')[0];
-	this.engine = options.engine || 'svg';
-	this.src = options.src || this.element.getAttribute('data-bm-path');
-	this.data = options.data || undefined;
-	this.loop = options.loop || true;
-	this.autoplay = this.autoplay || true;
+	this.engine = (options.engine != undefined) ? options.engine : 'svg';
+	this.src = (options.src != undefined) ? options.src : (this.element.getAttribute('data-bm-path') != undefined) ? this.element.getAttribute('data-bm-path') : '';
+	this.data = (options.data != undefined) ? options.data : undefined;
+	this.loop = (options.loop != undefined) ? options.loop : true;
+	this.autoplay = (options.autoplay != undefined) ? options.autoplay : true;
+	this.prerender = (options.prerender != undefined) ? options.prerender : true;
 
 	this.canPlay = false;
 
@@ -36,28 +37,39 @@ BodyMovin.TIMEUPDATE = 'bodymoving:timeupdate';
 
 BodyMovin.prototype.trigger = function(eventName, args){
 
+	if (!this.callbacks){
+		this.callbacks = [];
+	}
+
 	var delay = (this.callbacks.length === 0) ? true : false;
 	var that = this;
 
-	if (delay){
-		setTimeout(function(){
+	if (this.callbacks[eventName]) {
+		if (delay){
+			setTimeout(function(){
+				for (var i = 0; i < that.callbacks[eventName].length; i++){
+					that.callbacks[eventName][i](args);
+				}
+			}, 0);
+		}
+		else {
 			for (var i = 0; i < this.callbacks[eventName].length; i++){
 				this.callbacks[eventName][i](args);
 			}
-		}, 0);
-	}
-	else {
-		for (var i = 0; i < this.callbacks[eventName].length; i++){
-			this.callbacks[eventName][i](args);
 		}
 	}
 };
 
 BodyMovin.prototype.addEventListener = function(eventName, callback){
 
-	if (this.callbacks[eventName]){
+	if (!this.callbacks){
+		this.callbacks = [];
+	}
+
+	if (!this.callbacks[eventName]){
 		this.callbacks[eventName] = [];
 	}
+
 	this.callbacks[eventName].push(callback);
 
 };
@@ -68,7 +80,11 @@ BodyMovin.prototype._init = function () {
 
 	this.animationItem = new AnimationItem({
 		element: this.element,
-		src: this.src
+		src: this.src,
+		data: this.data,
+		loop: this.loop,
+		autoplay: this.autoplay,
+		engine: this.engine
 	});
 	
 	if (this.data){
@@ -92,6 +108,9 @@ BodyMovin.prototype._initEvents = function () {
 	this.bodyMovinManager
 		.addEventListener(BodyMovinManager.UPDATE, this._onUpdate.bind(this));
 
+	this.animationItem
+		.addEventListener(BodyMovin.PAUSED, this._onBodyMovinPaused.bind(this));
+
 }
 
 
@@ -100,6 +119,12 @@ BodyMovin.prototype._initEvents = function () {
 BodyMovin.prototype._onUpdate = function (e) {
 
 	this.render(this.bodyMovinManager.getElapsedTime());
+
+}
+
+BodyMovin.prototype._onBodyMovinPaused = function (e) {
+
+	console.log('paused');
 
 }
 
@@ -151,7 +176,7 @@ BodyMovin.prototype.seek = function () {
 
 BodyMovin.prototype.render = function (elapsedTime) {
 
-	this.animationItem.advanceTime(elapsedTime);
+	this.animationItem.update(elapsedTime);
 
 }
 

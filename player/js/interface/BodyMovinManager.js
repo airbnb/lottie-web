@@ -31,22 +31,23 @@ BodyMovinManager.prototype.trigger = function(eventName, args){
 	var delay = (this.callbacks.length === 0) ? true : false;
 	var that = this;
 
-	if (delay){
-		setTimeout(function(){
-			for (var i = 0; i < that.callbacks[eventName].length; i++){
-				that.callbacks[eventName][i](args);
+	if (this.callbacks[eventName]) {
+		if (delay){
+			setTimeout(function(){
+				for (var i = 0; i < that.callbacks[eventName].length; i++){
+					that.callbacks[eventName][i](args);
+				}
+			}, 0);
+		}
+		else {
+			for (var i = 0; i < this.callbacks[eventName].length; i++){
+				this.callbacks[eventName][i](args);
 			}
-		}, 0);
-	}
-	else {
-		for (var i = 0; i < this.callbacks[eventName].length; i++){
-			this.callbacks[eventName][i](args);
 		}
 	}
 };
 
 BodyMovinManager.prototype.addEventListener = function(eventName, callback){
-
 
 	if (!this.callbacks){
 		this.callbacks = [];

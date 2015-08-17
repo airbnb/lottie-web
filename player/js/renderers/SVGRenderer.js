@@ -8,6 +8,39 @@ function SVGRenderer(animationItem){
     this.elements = [];
 }
 
+SVGRenderer.prototype.configAnimation = function(animData){
+    this.animationItem.container = document.createElementNS(svgNS,'svg');
+    this.animationItem.container.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    this.animationItem.container.setAttribute('width',animData.animation.compWidth);
+    this.animationItem.container.setAttribute('height',animData.animation.compHeight);
+    this.animationItem.container.setAttribute('viewBox','0 0 '+animData.animation.compWidth+' '+animData.animation.compHeight);
+    this.animationItem.container.setAttribute('preserveAspectRatio','xMidYMid meet');
+    this.animationItem.container.style.width = '100%';
+    this.animationItem.container.style.height = '100%';
+    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
+    this.animationItem.wrapper.appendChild(this.animationItem.container);
+    //Mask animation
+    var defs = document.createElementNS(svgNS, 'defs');
+    this.globalData.defs = defs;
+    this.animationItem.container.appendChild(defs);
+    var maskElement = document.createElementNS(svgNS, 'clipPath');
+    var rect = document.createElementNS(svgNS,'rect');
+    rect.setAttribute('width',animData.animation.compWidth);
+    rect.setAttribute('height',animData.animation.compHeight);
+    rect.setAttribute('x',0);
+    rect.setAttribute('y',0);
+    var maskId = 'animationMask_'+randomString(10);
+    maskElement.setAttribute('id', maskId);
+    maskElement.appendChild(rect);
+    var maskedElement = document.createElementNS(svgNS,'g');
+    maskedElement.setAttribute("clip-path", "url(#"+maskId+")");
+    this.animationItem.container.appendChild(maskedElement);
+    defs.appendChild(maskElement);
+    this.animationItem.container = maskedElement;
+    this.layers = animData.animation.layers;
+    console.log(this.layers);
+};
+
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
     var count = 0, i, len = layers.length;
     if(!elements){
@@ -65,38 +98,6 @@ SVGRenderer.prototype.createComp = function (data,parentContainer) {
 
 SVGRenderer.prototype.createSolid = function (data,parentContainer) {
     return new ISolidElement(data, this.animationItem,parentContainer,this.globalData);
-};
-
-SVGRenderer.prototype.configAnimation = function(animData){
-    this.animationItem.container = document.createElementNS(svgNS,'svg');
-    this.animationItem.container.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.animationItem.container.setAttribute('width',animData.animation.compWidth);
-    this.animationItem.container.setAttribute('height',animData.animation.compHeight);
-    this.animationItem.container.setAttribute('viewBox','0 0 '+animData.animation.compWidth+' '+animData.animation.compHeight);
-    this.animationItem.container.setAttribute('preserveAspectRatio','xMidYMid meet');
-    this.animationItem.container.style.width = '100%';
-    this.animationItem.container.style.height = '100%';
-    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this.animationItem.container);
-    //Mask animation
-    var defs = document.createElementNS(svgNS, 'defs');
-    this.globalData.defs = defs;
-    this.animationItem.container.appendChild(defs);
-    var maskElement = document.createElementNS(svgNS, 'clipPath');
-    var rect = document.createElementNS(svgNS,'rect');
-    rect.setAttribute('width',animData.animation.compWidth);
-    rect.setAttribute('height',animData.animation.compHeight);
-    rect.setAttribute('x',0);
-    rect.setAttribute('y',0);
-    var maskId = 'animationMask_'+randomString(10);
-    maskElement.setAttribute('id', maskId);
-    maskElement.appendChild(rect);
-    var maskedElement = document.createElementNS(svgNS,'g');
-    maskedElement.setAttribute("clip-path", "url(#"+maskId+")");
-    this.animationItem.container.appendChild(maskedElement);
-    defs.appendChild(maskElement);
-    this.animationItem.container = maskedElement;
-    this.layers = animData.animation.layers;
 };
 
 SVGRenderer.prototype.buildStage = function (container, layers,elements) {
