@@ -104,7 +104,7 @@ function bezFunction(){
                 keyData.bezierData = storedData[bezierName];
                 return;
             }
-            var curveSegments = 500;
+            var curveSegments = 200;
             var k;
             var i, len;
             var ptCoord,perc,addedLength = 0;

@@ -123,7 +123,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             this.pathElem.setAttribute('d',pathString);
 
 
-            /* ptsString = 'M0,0';
+            /* var ptsString = 'M0,0';
             var segments = pathInfo.segments;
             for(var s = 0; s < segments.length; s += 1){
                 var points = segments[s].bezierData.points;
@@ -135,30 +135,31 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         }
         len = this.textSpans.length;
         //console.log(this.textSpans);
-        var currentLength = 0, segmentInd = 0, pointInd = 0, currentSegment, currentPoint, prevPoint, points;
+        var currentLength = this.data.t.p.f, segmentInd = 0, pointInd = 0, currentSegment, currentPoint, prevPoint, points;
         var segmentLength = 0, flag = true, contador = 0;
         var segments = pathInfo.segments;
         points = segments[segmentInd].bezierData.points;
         currentPoint = prevPoint = points[pointInd];
+        var ptsString = '';
         for( i = 0; i < len; i += 1){
             if(!points){
                 break;
             }
+            currentLength += this.textSpans[i].l/2;
             flag = true;
             while(flag){
                 contador = 0;
                 if(segmentLength + currentPoint.partialLength >= currentLength){
                     var prevPt = prevPoint.point;
                     var currPt = currentPoint.point;
+                    ptsString += ' M'+prevPt[0]+','+prevPt[1];
+                    ptsString += ' L'+currPt[0]+','+currPt[1];
                     var tanAngle = (currPt[1]-prevPt[1])/(currPt[0]-prevPt[0]);
-                    if(isNaN(tanAngle)){
-                        tanAngle = 1;
-                    }
                    // console.log(Math.atan(tanAngle)*180/Math.PI);
                     //this.textSpans[i].elem.setAttribute('x',currentPoint.point[0]);
                     //this.textSpans[i].elem.setAttribute('y',currentPoint.point[1]);
                     this.textSpans[i].elem.setAttribute('transform','translate('+currentPoint.point[0]+','+currentPoint.point[1]+')');
-                    this.textSpans[i].i.setAttribute('transform','rotate('+Math.atan(tanAngle)*180/Math.PI+')');
+                    this.textSpans[i].i.setAttribute('transform','rotate('+Math.atan(tanAngle)*180/Math.PI+') translate(-'+this.textSpans[i].l/2+',0)');
                     flag = false;
                 }
                 segmentLength += currentPoint.partialLength;
@@ -182,9 +183,10 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 }
             }
             currentLength += this.textSpans[i].l/2;
-            currentLength += this.textSpans[i].l/2;
 
         }
+
+        this.pointsElem.setAttribute('d',ptsString);
     }
 };
 
