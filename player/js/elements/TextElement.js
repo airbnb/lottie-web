@@ -2,6 +2,7 @@ function ITextElement(data, animationItem,parentContainer,globalData){
     this.textSpans = [];
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.renderedBeziers = [];
+    this.renderedLetters = [];
 }
 createElement(BaseElement, ITextElement);
 
@@ -17,35 +18,30 @@ ITextElement.prototype.createElements = function(){
     this.textElem.setAttribute('font-size', documentData.s);
     this.textElem.setAttribute('font-family', documentData.f + ', sans-serif');
     this.layerElement.appendChild(this.textElem);
-    var i, len = documentData.t.length,tSpan,tInner;
+    var i, len = documentData.t.length,tSpan;
     for (i = 0;i < len ;i += 1) {
-        tSpan = document.createElementNS(svgNS,'g');
-        tInner = document.createElementNS(svgNS,'text');
+        tSpan = document.createElementNS(svgNS,'text');
         if(documentData.t.charAt(i) === ' '){
-            tInner.textContent = '\u00A0';
+            tSpan.textContent = '\u00A0';
         }else{
-            tInner.textContent = documentData.t.charAt(i);
+            tSpan.textContent = documentData.t.charAt(i);
         }
-        tSpan.appendChild(tInner);
-        tSpan.setAttribute('x',0);
-        tSpan.setAttribute('y',0);
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
         this.textElem.appendChild(tSpan);
-        this.textSpans.push({elem:tSpan,l:tInner.getComputedTextLength(),i:tInner});
+        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength()});
     }
 
     this.pathElem = document.createElementNS(svgNS,'path');
     this.pathElem.setAttribute('stroke', '#ff0000');
     this.pathElem.setAttribute('stroke-width', '1');
     this.pathElem.setAttribute('fill', 'none');
-    this.pathElem.setAttribute('d','M0,0 h100 v100 h-100 v -100');
+    this.pathElem.setAttribute('d','');
     this.layerElement.appendChild(this.pathElem);
 
     this.pointsElem = document.createElementNS(svgNS,'path');
     this.pointsElem.setAttribute('stroke', '#00ff00');
     this.pointsElem.setAttribute('stroke-width', '1');
     this.pointsElem.setAttribute('fill', 'none');
-    this.pointsElem.setAttribute('d','M0,0 h100 v100 h-100 v -100');
     this.layerElement.appendChild(this.pointsElem);
 };
 
@@ -85,12 +81,10 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         }
     }
     if(this.data.t.p.m !== null) {
-        var mask = this.data.masksProperties[this.data.t.p.m];
-        //console.log(mask);
-        var pathInfo, i,len;
-        if(this.renderedBeziers[num]){
-            pathInfo = this.renderedBeziers[num];
-        }else{
+        var  i,len,lettersValue;
+        if(!this.renderedLetters[num]){
+            var mask = this.data.masksProperties[this.data.t.p.m];
+            lettersValue = [];
             var paths = mask.paths[num].pathNodes;
             var pathInfo = {
                 tLength: 0,
@@ -110,9 +104,21 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 pathInfo.tLength += pathData.bezierData.segmentLength;
                 pathInfo.segments.push(pathData);
             }
+            i = len;
+            if(mask.cl){
+                pathData = {
+                    s: paths.v[i],
+                    e: paths.v[0],
+                    to: [paths.o[i][0]-paths.v[i][0],paths.o[i][1]-paths.v[i][1]],
+                    ti: [paths.i[0][0]-paths.v[0][0],paths.i[0][1]-paths.v[0][1]]
+                };
+                bez.buildBezierData(pathData);
+                pathInfo.tLength += pathData.bezierData.segmentLength;
+                pathInfo.segments.push(pathData);
+            }
             this.renderedBeziers[num] = pathInfo;
 
-
+            /*** DEBUG ***/
             var pathString = '';
             pathString += "M"+paths.v[0].join(',');
             len += 1;
@@ -120,73 +126,101 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             for(i=1; i < len; i += 1){
                 pathString += " C"+paths.o[i-1].join(',') + " "+paths.i[i].join(',') + " "+paths.v[i].join(',');
             }
+            i = len - 1;
+            if(mask.cl){
+                pathString += " C"+paths.o[i].join(',') + " "+paths.i[0].join(',') + " "+paths.v[0].join(',');
+            }
             this.pathElem.setAttribute('d',pathString);
+            /*******/
 
-
-            /* var ptsString = 'M0,0';
+            len = this.textSpans.length;
+            //console.log(this.textSpans);
+            var currentLength = this.data.renderedData[num].t.p[0], segmentInd = 0, pointInd = 1, currentSegment, currentPoint, prevPoint, points;
+            var segmentLength = 0, flag = true, contador = 0;
             var segments = pathInfo.segments;
-            for(var s = 0; s < segments.length; s += 1){
-                var points = segments[s].bezierData.points;
-                for(var p = 0; p < points.length; p += 1){
-                    ptsString += ' L' + points[p].point.join(',');
+            if(currentLength < 0 && mask.cl) {
+                //console.log(currentLength);
+                if(pathInfo.tLength < Math.abs(currentLength)){
+                    currentLength = -Math.abs(currentLength)%pathInfo.tLength;
                 }
-            }
-            this.pointsElem.setAttribute('d',ptsString);*/
-        }
-        len = this.textSpans.length;
-        //console.log(this.textSpans);
-        var currentLength = this.data.t.p.f, segmentInd = 0, pointInd = 0, currentSegment, currentPoint, prevPoint, points;
-        var segmentLength = 0, flag = true, contador = 0;
-        var segments = pathInfo.segments;
-        points = segments[segmentInd].bezierData.points;
-        currentPoint = prevPoint = points[pointInd];
-        var ptsString = '';
-        for( i = 0; i < len; i += 1){
-            if(!points){
-                break;
-            }
-            currentLength += this.textSpans[i].l/2;
-            flag = true;
-            while(flag){
-                contador = 0;
-                if(segmentLength + currentPoint.partialLength >= currentLength){
-                    var prevPt = prevPoint.point;
-                    var currPt = currentPoint.point;
-                    ptsString += ' M'+prevPt[0]+','+prevPt[1];
-                    ptsString += ' L'+currPt[0]+','+currPt[1];
-                    var tanAngle = (currPt[1]-prevPt[1])/(currPt[0]-prevPt[0]);
-                   // console.log(Math.atan(tanAngle)*180/Math.PI);
-                    //this.textSpans[i].elem.setAttribute('x',currentPoint.point[0]);
-                    //this.textSpans[i].elem.setAttribute('y',currentPoint.point[1]);
-                    this.textSpans[i].elem.setAttribute('transform','translate('+currentPoint.point[0]+','+currentPoint.point[1]+')');
-                    this.textSpans[i].i.setAttribute('transform','rotate('+Math.atan(tanAngle)*180/Math.PI+') translate(-'+this.textSpans[i].l/2+',0)');
-                    flag = false;
-                }
-                segmentLength += currentPoint.partialLength;
-                pointInd += 1;
-                if(pointInd >= points.length){
-                    pointInd = 0;
-                    segmentInd += 1;
-                    if(!segments[segmentInd]){
-                        points = null;
-                        break;
-                    }else{
+                segmentInd = segments.length - 1;
+                points = segments[segmentInd].bezierData.points;
+                pointInd = points.length - 1;
+                while(currentLength < 0){
+                    currentLength += points[pointInd].partialLength;
+                    pointInd -= 1;
+                    if(pointInd<0){
+                        segmentInd -= 1;
                         points = segments[segmentInd].bezierData.points;
+                        pointInd = points.length - 1;
                     }
                 }
-                prevPoint = currentPoint;
-                currentPoint = points[pointInd];
-                contador += 1;
-                if(contador == 2000){
-                    console.log('breik');
-                    flag = false;
-                }
+
             }
-            currentLength += this.textSpans[i].l/2;
+            points = segments[segmentInd].bezierData.points;
+            prevPoint = points[pointInd - 1];
+            currentPoint = points[pointInd];
+            var partialLength = currentPoint.partialLength;
+            var perc, xPos,yPos, tanAngle, letterTransform;
+            for( i = 0; i < len; i += 1){
+                currentLength += this.textSpans[i].l/2;
+                flag = true;
+                while(flag){
+                    contador = 0;
+                    if(segmentLength + partialLength >= currentLength || !points){
+                        perc = (currentLength - segmentLength)/currentPoint.partialLength;
+                        xPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0])*perc;
+                        yPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1])*perc;
+                        letterTransform = 'translate('+xPos+','+yPos+')';
+                        if(this.data.t.p.p){
+                            tanAngle = (currentPoint.point[1]-prevPoint.point[1])/(currentPoint.point[0]-prevPoint.point[0]);
+                            /*if(currentPoint.point[0] < prevPoint.point[0]){
+                                tanAngle += Math.PI*2;
+                            }*/
+                            var rot = Math.atan(tanAngle)*180/Math.PI;
+                            if(currentPoint.point[0] < prevPoint.point[0]){
+                                rot += 180;
+                            }
+                            letterTransform += ' rotate('+rot+')';
+                        }
+                        letterTransform += ' translate(-'+this.textSpans[i].l/2+',0)';
+                        lettersValue.push(letterTransform);
+                        flag = false;
+                    }else if(points){
+                        segmentLength += currentPoint.partialLength;
+                        pointInd += 1;
+                        if(pointInd >= points.length){
+                            pointInd = 0;
+                            segmentInd += 1;
+                            if(!segments[segmentInd]){
+                                if(mask.cl){
+                                    pointInd = 0;
+                                    segmentInd = 0;
+                                    points = segments[segmentInd].bezierData.points;
+                                }else{
+                                    points = null;
+                                }
+                            }else{
+                                points = segments[segmentInd].bezierData.points;
+                            }
+                        }
+                        if(points){
+                            prevPoint = currentPoint;
+                            currentPoint = points[pointInd];
+                            partialLength = currentPoint.partialLength;
+                        }
+                    }
+                }
+                currentLength += this.textSpans[i].l/2;
+                this.renderedLetters[num] = lettersValue;
 
+            }
         }
-
-        this.pointsElem.setAttribute('d',ptsString);
+        lettersValue = this.renderedLetters[num];
+        len = lettersValue.length;
+        for( i = 0; i < len; i += 1){
+            this.textSpans[i].elem.setAttribute('transform',lettersValue[i]);
+        }
     }
 };
 

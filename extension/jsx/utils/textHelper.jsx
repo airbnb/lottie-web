@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app, ParagraphJustification*/
+/*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app, ParagraphJustification, bm_keyframeHelper*/
 var bm_textHelper = (function () {
     'use strict';
     var ob = {};
@@ -42,12 +42,13 @@ var bm_textHelper = (function () {
         }
     }
     
-    function exportTextPathData(layerInfo, ob, masksProperties) {
+    function exportTextPathData(layerInfo, ob, masksProperties, frameRate) {
         var pathOptions = layerInfo.property("Text").property("Path Options");
         if (pathOptions.property("Path").value !== 0) {
+            bm_eventDispatcher.sendEvent('console:log', pathOptions.property("Path").value);
             masksProperties[pathOptions.property("Path").value - 1].mode = 'n';
             ob.m = pathOptions.property("Path").value - 1;
-            ob.f = pathOptions.property("First Margin").value;
+            ob.f = bm_keyframeHelper.exportKeyframes(pathOptions.property("First Margin"), frameRate);
             ob.l = pathOptions.property("Last Margin").value;
             ob.a = pathOptions.property("Force Alignment").value;
             ob.p = pathOptions.property("Perpendicular To Path").value;
@@ -64,7 +65,7 @@ var bm_textHelper = (function () {
             p: {}
         };
         exportTextDocumentData(layerInfo, layerOb.t.d);
-        exportTextPathData(layerInfo, layerOb.t.p, layerOb.masksProperties);
+        exportTextPathData(layerInfo, layerOb.t.p, layerOb.masksProperties, frameRate);
     }
     
     ob.exportText = exportText;

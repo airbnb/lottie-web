@@ -753,7 +753,18 @@ function dataFunctionManager(){
                 iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.ty == 'ShapeLayer'){
                 iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
+            }else if(item.ty == 'TextLayer'){
+                iterateText(item,offsettedFrameNum);
             }
+        }
+    }
+
+    function iterateText(item,offsettedFrameNum){
+        var renderedData = item.renderedData[offsettedFrameNum];
+        renderedData.t = {};
+        if(item.t.p) {
+            renderedData.t.p = [];
+            getInterpolatedValue(item.t.p.f,offsettedFrameNum, item.startTime,renderedData.t.p,0,1);
         }
     }
 
