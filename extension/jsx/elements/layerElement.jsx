@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper*/
+/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper*/
 
 var bm_layerElement = (function () {
     'use strict';
@@ -168,6 +168,8 @@ var bm_layerElement = (function () {
             layerData.width = layerInfo.source.width;
             layerData.height = layerInfo.source.height;
             layerData.color = bm_generalUtils.arrayRgbToHex(layerInfo.source.mainSource.color);
+        } else if (lType === ob.layerTypes.text) {
+            bm_textHelper.exportText(layerInfo, layerData, frameRate);
         }
         layerData.inPoint = layerInfo.inPoint * frameRate;
         layerData.outPoint = layerInfo.outPoint * frameRate;

@@ -2,6 +2,7 @@
 /*global $*/
 
 var extensionPath = $.fileName.split('/').slice(0, -1).join('/') + '/';
+$.evalFile(extensionPath + 'JSON.jsx');
 $.evalFile(extensionPath + 'eventManager.jsx');
 $.evalFile(extensionPath + 'projectManager.jsx');
 $.evalFile(extensionPath + 'compsManager.jsx');
@@ -15,3 +16,4 @@ $.evalFile(extensionPath + 'utils/keyframeHelper.jsx');
 $.evalFile(extensionPath + 'utils/maskHelper.jsx');
 $.evalFile(extensionPath + 'utils/timeremapHelper.jsx');
 $.evalFile(extensionPath + 'utils/shapeHelper.jsx');
+$.evalFile(extensionPath + 'utils/textHelper.jsx');
