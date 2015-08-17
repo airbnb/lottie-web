@@ -90,41 +90,52 @@ function bezFunction(){
         this.points = new Array(length);
     }
 
-    function buildBezierData(keyData){
-        var pt1 = keyData.s;
-        var pt2 = keyData.e;
-        var pt3 = keyData.to;
-        var pt4 = keyData.ti;
-        var curveSegments = 500;
-        var k;
-        var i, len;
-        var ptCoord,perc,addedLength = 0;
-        var ptDistance;
-        var point,lastPoint = null;
-        if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
-            curveSegments = 2;
-        }
-        var bezierData = new BezierData(curveSegments);
-        len = pt3.length;
-        for(k=0;k<curveSegments;k+=1){
-            point = [];
-            perc = k/(curveSegments-1);
-            ptDistance = 0;
-            for(i=0;i<len;i+=1){
-                ptCoord = math.pow(1-perc,3)*pt1[i]+3*math.pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*math.pow(perc,2)*(pt2[i] + pt4[i])+math.pow(perc,3)*pt2[i];
-                point.push(ptCoord);
-                if(lastPoint !== null){
-                    ptDistance += math.pow(point[i] - lastPoint[i],2);
-                }
+    var buildBezierData = (function(){
+
+        var storedData = {};
+
+        return function (keyData){
+            var pt1 = keyData.s;
+            var pt2 = keyData.e;
+            var pt3 = keyData.to;
+            var pt4 = keyData.ti;
+            var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
+            if(storedData[bezierName]){
+                keyData.bezierData = storedData[bezierName];
+                return;
             }
-            ptDistance = math.sqrt(ptDistance);
-            addedLength += ptDistance;
-            bezierData.points[k] = {partialLength: ptDistance,cumulatedLength:addedLength, point: point};
-            lastPoint = point;
+            var curveSegments = 500;
+            var k;
+            var i, len;
+            var ptCoord,perc,addedLength = 0;
+            var ptDistance;
+            var point,lastPoint = null;
+            if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+                curveSegments = 2;
+            }
+            var bezierData = new BezierData(curveSegments);
+            len = pt3.length;
+            for(k=0;k<curveSegments;k+=1){
+                point = [];
+                perc = k/(curveSegments-1);
+                ptDistance = 0;
+                for(i=0;i<len;i+=1){
+                    ptCoord = math.pow(1-perc,3)*pt1[i]+3*math.pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*math.pow(perc,2)*(pt2[i] + pt4[i])+math.pow(perc,3)*pt2[i];
+                    point.push(ptCoord);
+                    if(lastPoint !== null){
+                        ptDistance += math.pow(point[i] - lastPoint[i],2);
+                    }
+                }
+                ptDistance = math.sqrt(ptDistance);
+                addedLength += ptDistance;
+                bezierData.points[k] = {partialLength: ptDistance,cumulatedLength:addedLength, point: point};
+                lastPoint = point;
+            }
+            bezierData.segmentLength = addedLength;
+            keyData.bezierData = bezierData;
+            storedData[bezierName] = bezierData;
         }
-        bezierData.segmentLength = addedLength;
-        keyData.bezierData = bezierData;
-    }
+    }());
 
     function getDistancePerc(perc,bezierData){
         var segments = bezierData.segments;

@@ -223,11 +223,7 @@ BaseElement.prototype.getType = function(){
 };
 
 BaseElement.prototype.getLayerSize = function(){
-    if(this.data.ty == 'TextLayer'){
-        return {w:this.data.textData.width,h:this.data.textData.height};
-    }else{
-        return {w:this.data.width,h:this.data.height};
-    }
+    return {w:this.data.width,h:this.data.height};
 };
 
 BaseElement.prototype.getHierarchy = function(){
