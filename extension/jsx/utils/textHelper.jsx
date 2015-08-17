@@ -47,7 +47,12 @@ var bm_textHelper = (function () {
         if (pathOptions.property("Path").value !== 0) {
             masksProperties[pathOptions.property("Path").value - 1].mode = 'n';
             ob.m = pathOptions.property("Path").value - 1;
-            bm_generalUtils.iterateProperty(pathOptions);
+            ob.f = pathOptions.property("First Margin").value;
+            ob.l = pathOptions.property("Last Margin").value;
+            ob.a = pathOptions.property("Force Alignment").value;
+            ob.p = pathOptions.property("Perpendicular To Path").value;
+            ob.r = pathOptions.property("Reverse Path").value;
+            //bm_generalUtils.iterateProperty(pathOptions);
         }
         //var pathOptions = layerInfo.property("Path Options");
         //ob.largo = pathOptions.properties.length;

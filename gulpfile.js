@@ -191,3 +191,9 @@ gulp.task('watch-extension', function() {
         .pipe(watch(extensionSource, {base: extensionSource}))
         .pipe(gulp.dest(extensionDestination));
 });
+
+
+gulp.task('copy-extension', function() {
+    gulp.src(extensionSource+'/**/*')
+        .pipe(gulp.dest(extensionDestination));
+});
