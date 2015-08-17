@@ -28,7 +28,7 @@ var mainController = (function () {
     });
         
     csInterface.addEventListener('console:log', function (ev) {
-        console.log(ev.data);
+        console.log(JSON.stringify(ev.data));
     });
     
     function loadJSX(fileName, cb) {
