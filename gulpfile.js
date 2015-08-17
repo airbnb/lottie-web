@@ -182,3 +182,12 @@ gulp.task('concatPlayer', function() {
         .pipe(wrap('\r\n(function(){\r\n\'use strict\';\r\n<%= contents %>\r\n}());'))
         .pipe(gulp.dest('build/player/'))
 });
+
+
+var extensionSource = './extension';
+var extensionDestination = '../../../../Users/Deeandra/AppData/Roaming/Adobe/CEP/extensions/bodymovin';
+gulp.task('watch-extension', function() {
+    gulp.src(extensionSource + '/**/*', {base: extensionSource})
+        .pipe(watch(extensionSource, {base: extensionSource}))
+        .pipe(gulp.dest(extensionDestination));
+});

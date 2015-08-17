@@ -91,7 +91,7 @@ var bm_layerElement = (function () {
     function prepareLayer(layerInfo, ind) {
         var layerData = {};
         var layerType = getLayerType(layerInfo);
-        if (layerType === ob.layerTypes.audio || layerType === ob.layerTypes.camera || layerType === ob.layerTypes.guide || layerType === ob.layerTypes.light || layerType === ob.layerTypes.adjustment || layerType === ob.layerTypes.pholderStill || layerType === ob.layerTypes.pholderVideo) {
+        if (layerType === ob.layerTypes.audio || layerType === ob.layerTypes.camera || layerType === ob.layerTypes.guide || layerType === ob.layerTypes.light || layerType === ob.layerTypes.adjustment || layerType === ob.layerTypes.pholderStill || layerType === ob.layerTypes.pholderVideo || layerType === ob.layerTypes.text) {
             layerData.isValid = false;
             layerData.render = false;
         }
