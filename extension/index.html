@@ -10,6 +10,7 @@
 <link  id="hostStyle" rel="stylesheet" href="css/compsRender.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/message.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/info.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/snapshot.css"/>
 
 <title></title>
 </head>
@@ -19,7 +20,9 @@
     <div id="content">
         <div id='compsSelection'>
             <div class='buttons'>
-                <button class='generalButton settings'>Info</button>
+                <button class='generalButton rightFloat settings'>Info</button>
+                <div class='buttonSeparator rightFloat'></div>
+                <button class='generalButton rightFloat snapshot'>Snapshot</button>
                 <button class='generalButton refresh'>Refresh</button>
                 <div class='buttonSeparator'></div>
                 <button class='generalButton highlightButton render disabled'>Render</button>
@@ -43,6 +46,16 @@
                 <button class='generalButton cancel'>Cancel</button>
                 <button class='generalButton return'>Return</button>
             </div>
+        </div>
+        <div id='snapshot'>
+            <h1>Select animation</h1>
+            <div class='buttons'>
+                <button class='generalButton rightFloat current'>Current renders</button>
+                <div class='buttonSeparator rightFloat'></div>
+                <button class='generalButton rightFloat browse'>Browse</button>
+                <button class='generalButton return'>Back</button>
+            </div>
+            <div class="animContainer"></div>
         </div>
         <div id='info'>
             <div class='buttons'>
@@ -94,6 +107,7 @@
     <script src="js/controllers/CompRenderController.js"></script>
     <script src="js/controllers/messageController.js"></script>
     <script src="js/controllers/InfoController.js"></script>
+    <script src="js/controllers/snapshotController.js"></script>
     <script src="js/main.js"></script>
 
         

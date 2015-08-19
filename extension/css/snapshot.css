@@ -1,0 +1,26 @@
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#snapshot {
+    width: 100%;
+}
+
+#snapshot h1{
+    color: #EAD3A8;
+}
+
+
+#snapshot .animContainer{
+    width: 100%;
+    height: 400px;
+}
