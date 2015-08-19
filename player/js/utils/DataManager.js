@@ -762,7 +762,7 @@ function dataFunctionManager(){
     function iterateText(item,offsettedFrameNum){
         var renderedData = item.renderedData[offsettedFrameNum];
         renderedData.t = {};
-        if(item.t.p) {
+        if(item.t.p && item.t.p.m) {
             renderedData.t.p = [];
             getInterpolatedValue(item.t.p.f,offsettedFrameNum, item.startTime,renderedData.t.p,0,1);
         }

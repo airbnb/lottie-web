@@ -80,7 +80,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             this.textElem.setAttribute('opacity',renderedFrameData.o);
         }
     }
-    if(this.data.t.p.m !== null) {
+    if('m' in this.data.t.p){
         var  i,len,lettersValue;
         if(!this.renderedLetters[num]){
             var mask = this.data.masksProperties[this.data.t.p.m];
