@@ -2,7 +2,7 @@
 /*global $, alertData, successData, bodymovin, mainController */
 var snapshotController = (function () {
     'use strict';
-    var ob = {}, view, csInterface, anim, animContainer;
+    var ob = {}, view, csInterface, anim, animContainer, showing = false;
     
     function showSelection() {
         mainController.showView('selection');
@@ -21,7 +21,6 @@ var snapshotController = (function () {
         var jsonData = JSON.parse(ev.data.substr(7));
         //var result = window.cep.fs.readFile(path);
         if (anim) {
-            console.log('entrotort');
             anim.destroy();
         }
         var params = {
@@ -35,6 +34,14 @@ var snapshotController = (function () {
         anim = bodymovin.loadAnimation(params);
     }
     
+    function handleWindowResize() {
+        if (!showing) {
+            return;
+        }
+        console.log($(window).height());
+        console.log($(window).width());
+    }
+    
     function init(csIntfc) {
         csInterface = csIntfc;
         view = $('#snapshot');
@@ -44,14 +51,21 @@ var snapshotController = (function () {
         view.find('.return').on('click', showSelection);
         animContainer = view.find('.animContainer')[0];
         csInterface.addEventListener('bm:file:path', handleFilePath);
+        $(window).on('resize', handleWindowResize);
     }
     
     function show() {
-        view.show();
+        if (!showing) {
+            showing = true;
+            view.show();
+        }
     }
     
     function hide() {
-        view.hide();
+        if (showing) {
+            showing = false;
+            view.hide();
+        }
     }
     
     ob.show = show;
