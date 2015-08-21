@@ -48,14 +48,33 @@
             </div>
         </div>
         <div id='snapshot'>
-            <h1>Select animation</h1>
-            <div class='buttons'>
-                <button class='generalButton rightFloat current'>Current renders</button>
-                <div class='buttonSeparator rightFloat'></div>
-                <button class='generalButton rightFloat browse'>Browse</button>
-                <button class='generalButton return'>Back</button>
+            <div class='header'>
+                <h1>Select animation</h1>
+                <div class='buttons'>
+                    <button class='generalButton rightFloat current'>Current renders</button>
+                    <div class='buttonSeparator rightFloat'></div>
+                    <button class='generalButton rightFloat browse'>Browse</button>
+                    <button class='generalButton return'>Back</button>
+                </div>
             </div>
             <div class="animContainer"></div>
+            <div class="controls">
+                <div class="slider"></div>
+                <div class="thumb"></div>
+                <button class="snapshotButton generalButton highlightButton">Take Snapshot</button>
+                <div class="frames">
+                    <div class="current" contenteditable="true"></div>
+                    <div class="total" >/<span class='value'></span></div>
+                </div>
+            </div>
+            <div class="rendersSelection">
+                <div class="topSpace"></div>
+                <div class="listContainer">
+                
+                </div>
+                <div>
+                </div>
+            </div>
         </div>
         <div id='info'>
             <div class='buttons'>

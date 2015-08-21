@@ -3,7 +3,7 @@
 var bm_renderManager = (function () {
     'use strict';
     
-    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer;
+    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, currentComp, totalLayers, currentLayer;
     
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -107,7 +107,7 @@ var bm_renderManager = (function () {
         } catch (err) {
             bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
         }
-        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true});
+        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, data: '__PFX__' + string});
         bm_compsManager.renderComplete();
     }
     
