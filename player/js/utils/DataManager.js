@@ -194,7 +194,7 @@ function dataFunctionManager(){
     }
 
     function completeData(animationData){
-        animationData.__renderedFrames = new Array(animationData.animation.totalFrames);
+        animationData.__renderedFrames = new Array(Math.floor(animationData.animation.totalFrames));
         animationData.__renderFinished = false;
         frameRate = animationData.animation.frameRate;
         completeLayers(animationData.animation.layers);
@@ -957,7 +957,7 @@ function dataFunctionManager(){
         var totalFrames = 1;
         while(totalFrames > 0){
             num += 1;
-            if(num >= animationData.animation.totalFrames){
+            if(num >= Math.floor(animationData.animation.totalFrames)){
                 animationData.__renderFinished = true;
                 break;
             }
