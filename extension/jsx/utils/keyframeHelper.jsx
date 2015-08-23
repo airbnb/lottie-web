@@ -218,7 +218,15 @@ var bm_keyframeHelper = (function () {
                 bezierOut.y = bm_generalUtils.roundNumber(bezierOut.y, 3);
                 segmentOb.i = bezierIn;
                 segmentOb.o = bezierOut;
-                segmentOb.n = (bezierIn.x.toString() + '_' + bezierIn.y.toString() + '_' + bezierOut.x.toString() + '_' + bezierOut.y.toString()).replace(/\./g, 'p');
+                if (bezierIn.x.length) {
+                    segmentOb.n = [];
+                    kLen = bezierIn.x.length;
+                    for (k = 0; k < kLen; k += 1) {
+                        segmentOb.n.push((bezierIn.x[k].toString() + '_' + bezierIn.y[k].toString() + '_' + bezierOut.x[k].toString() + '_' + bezierOut.y[k].toString()).replace(/\./g, 'p'));
+                    }
+                } else {
+                    segmentOb.n = (bezierIn.x.toString() + '_' + bezierIn.y.toString() + '_' + bezierOut.x.toString() + '_' + bezierOut.y.toString()).replace(/\./g, 'p');
+                }
                 segmentOb.t = bm_generalUtils.roundNumber(lastKey.time * frameRate, 3);
                 segmentOb.s = getPropertyValue(property.keyValue(j), true);
                 segmentOb.e = getPropertyValue(property.keyValue(j + 1), true);

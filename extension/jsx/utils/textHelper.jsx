@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app, ParagraphJustification, bm_keyframeHelper*/
+/*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app, ParagraphJustification, bm_textAnimatorHelper, bm_keyframeHelper*/
 var bm_textHelper = (function () {
     'use strict';
     var ob = {};
@@ -42,10 +42,8 @@ var bm_textHelper = (function () {
         }
     }
     
-    function exportTextPathData(layerInfo, ob, masksProperties, frameRate) {
-        var pathOptions = layerInfo.property("Text").property("Path Options");
+    function exportTextPathData(pathOptions, ob, masksProperties, frameRate) {
         if (pathOptions.property("Path").value !== 0) {
-            bm_eventDispatcher.sendEvent('console:log', pathOptions.property("Path").value);
             masksProperties[pathOptions.property("Path").value - 1].mode = 'n';
             ob.m = pathOptions.property("Path").value - 1;
             ob.f = bm_keyframeHelper.exportKeyframes(pathOptions.property("First Margin"), frameRate);
@@ -53,19 +51,54 @@ var bm_textHelper = (function () {
             ob.a = pathOptions.property("Force Alignment").value;
             ob.p = pathOptions.property("Perpendicular To Path").value;
             ob.r = pathOptions.property("Reverse Path").value;
-            //bm_generalUtils.iterateProperty(pathOptions);
         }
-        //var pathOptions = layerInfo.property("Path Options");
-        //ob.largo = pathOptions.properties.length;
+    }
+    
+    function exportMoreOptionsData(pathOptions, ob, frameRate) {
+        ob.g = pathOptions.property("Anchor Point Grouping").value;
+        ob.a = bm_keyframeHelper.exportKeyframes(pathOptions.property("Grouping Alignment"), frameRate);
+        
+    }
+    
+    function exportAnimators(layerInfo, animatorArr, frameRate) {
+        var i, len = layerInfo.numProperties;
+        for (i = 0; i < len; i += 1) {
+            bm_eventDispatcher.log('2222pasosos');
+            if (layerInfo.property(i + 1).matchName === "ADBE Text Animator") {
+                var animatorOb = {};
+                bm_textAnimatorHelper.exportAnimator(layerInfo.property(i + 1), animatorOb, frameRate);
+                animatorArr.push(animatorOb);
+            }
+        }
     }
     
     function exportText(layerInfo, layerOb, frameRate) {
         layerOb.t = {
             d: {},
-            p: {}
+            p: {},
+            m: {}
         };
         exportTextDocumentData(layerInfo, layerOb.t.d);
-        exportTextPathData(layerInfo, layerOb.t.p, layerOb.masksProperties, frameRate);
+        var textProperty = layerInfo.property("Text");
+        
+        var i, len = textProperty.numProperties;
+        for (i = 0; i < len; i += 1) {
+            switch (textProperty(i + 1).name) {
+            case "Path Options":
+                exportTextPathData(textProperty(i + 1), layerOb.t.p, layerOb.masksProperties, frameRate);
+                break;
+            case "More Options":
+                exportMoreOptionsData(textProperty(i + 1), layerOb.t.m, frameRate);
+                break;
+            case "Animators":
+                if (!layerOb.t.a) {
+                    layerOb.t.a = [];
+                }
+                exportAnimators(textProperty(i + 1), layerOb.t.a, frameRate);
+                break;
+            }
+        }
+        //exportMoreOptionsData(layerInfo, layerOb.t.m, frameRate);
     }
     
     ob.exportText = exportText;

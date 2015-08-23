@@ -20,8 +20,14 @@ var bm_eventDispatcher = (function () {
             eventObj.dispatch();
         }
     }
+    
+    function log(data) {
+        sendEvent('console:log', data);
+    }
+    
     var ob = {
-        sendEvent : sendEvent
+        sendEvent : sendEvent,
+        log : log
     };
     return ob;
 }());

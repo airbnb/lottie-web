@@ -1,5 +1,6 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
     this.textSpans = [];
+    this.yOffset = 0;
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.renderedBeziers = [];
     this.renderedLetters = [];
@@ -19,17 +20,23 @@ ITextElement.prototype.createElements = function(){
     this.textElem.setAttribute('font-family', documentData.f + ', sans-serif');
     this.layerElement.appendChild(this.textElem);
     var i, len = documentData.t.length,tSpan;
+    var newLineFlag;
     for (i = 0;i < len ;i += 1) {
+        newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
         if(documentData.t.charAt(i) === ' '){
             tSpan.textContent = '\u00A0';
+        }else if(documentData.t.charCodeAt(i) === 13){
+            newLineFlag = true;
         }else{
             tSpan.textContent = documentData.t.charAt(i);
         }
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
         this.textElem.appendChild(tSpan);
-        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength()});
+        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength(),n:newLineFlag});
     }
+    this.yOffset = documentData.s*1.2;
+    this.fontSize = documentData.s;
 
     this.pathElem = document.createElementNS(svgNS,'path');
     this.pathElem.setAttribute('stroke', '#ff0000');
@@ -80,8 +87,10 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             this.textElem.setAttribute('opacity',renderedFrameData.o);
         }
     }
+    var  i,len;
+    var xPos,yPos, letterTransform;
     if('m' in this.data.t.p){
-        var  i,len,lettersValue;
+        var  lettersValue;
         if(!this.renderedLetters[num]){
             var mask = this.data.masksProperties[this.data.t.p.m];
             lettersValue = [];
@@ -161,7 +170,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             prevPoint = points[pointInd - 1];
             currentPoint = points[pointInd];
             var partialLength = currentPoint.partialLength;
-            var perc, xPos,yPos, tanAngle, letterTransform;
+            var perc, tanAngle;
             for( i = 0; i < len; i += 1){
                 currentLength += this.textSpans[i].l/2;
                 flag = true;
@@ -220,6 +229,53 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         len = lettersValue.length;
         for( i = 0; i < len; i += 1){
             this.textSpans[i].elem.setAttribute('transform',lettersValue[i]);
+        }
+    }else{
+        len = this.textSpans.length;
+        xPos = 0;
+        yPos = 0;
+        var yOff = this.yOffset*.714;
+        var firstLine = true;
+        var renderedData = this.data.renderedData[num].t, animators, animatorProps;
+        var j, jLen;
+        for( i = 0; i < len; i += 1) {
+            letterTransform = '';
+            if(this.textSpans[i].n) {
+                xPos = 0;
+                yPos += this.yOffset;
+                yPos += firstLine ? 1 : 0;
+                firstLine = false;
+            }
+
+            xPos += this.textSpans[i].l/2;
+            letterTransform += 'translate('+xPos+','+yPos+')';
+            letterTransform += 'translate('+renderedData.m.a[0]*this.textSpans[i].l/200+','+ renderedData.m.a[1]*yOff/100+')';
+
+            jLen = renderedData.a.length;
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if(animatorProps.r) {
+                    letterTransform += 'rotate('+animatorProps.r+')';
+                }
+            }
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if(animatorProps.s) {
+                    letterTransform += 'scale('+animatorProps.s[0]/100+','+animatorProps.s[1]/100+')';
+                }
+            }
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if(animatorProps.a) {
+                    letterTransform += 'translate('+ -animatorProps.a[0]+','+ -animatorProps.a[1]+')';
+                }
+            }
+
+
+            letterTransform += ' translate(' + -this.textSpans[i].l/2 + ',0)';
+            letterTransform += 'translate(' + -renderedData.m.a[0]*this.textSpans[i].l/200+','+ -renderedData.m.a[1]*yOff/100+')';
+            xPos += this.textSpans[i].l/2;
+            this.textSpans[i].elem.setAttribute('transform',letterTransform);
         }
     }
 };
