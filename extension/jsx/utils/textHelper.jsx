@@ -63,7 +63,6 @@ var bm_textHelper = (function () {
     function exportAnimators(layerInfo, animatorArr, frameRate) {
         var i, len = layerInfo.numProperties;
         for (i = 0; i < len; i += 1) {
-            bm_eventDispatcher.log('2222pasosos');
             if (layerInfo.property(i + 1).matchName === "ADBE Text Animator") {
                 var animatorOb = {};
                 bm_textAnimatorHelper.exportAnimator(layerInfo.property(i + 1), animatorOb, frameRate);

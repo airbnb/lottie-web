@@ -777,16 +777,35 @@ function dataFunctionManager(){
             animatorProps = animators[i];
             renderedData.t.a[i] = {
                 a: {},
-                r: {}
+                s: {}
             };
-            if(animatorProps.a.r) {
+            if('r' in animatorProps.a) {
                 renderedData.t.a[i].a.r = getInterpolatedValue(animatorProps.a.r,offsettedFrameNum, item.startTime);
             }
-            if(animatorProps.a.s) {
+            if('s' in animatorProps.a) {
                 renderedData.t.a[i].a.s = getInterpolatedValue(animatorProps.a.s,offsettedFrameNum, item.startTime);
             }
-            if(animatorProps.a.a) {
+            if('a' in animatorProps.a) {
                 renderedData.t.a[i].a.a = getInterpolatedValue(animatorProps.a.a,offsettedFrameNum, item.startTime);
+            }
+            if('o' in animatorProps.a) {
+                renderedData.t.a[i].a.o = getInterpolatedValue(animatorProps.a.o,offsettedFrameNum, item.startTime);
+            }
+            if('p' in animatorProps.a) {
+                renderedData.t.a[i].a.p = getInterpolatedValue(animatorProps.a.p,offsettedFrameNum, item.startTime);
+            }
+            if('s' in animatorProps.s) {
+                renderedData.t.a[i].s.s = getInterpolatedValue(animatorProps.s.s,offsettedFrameNum, item.startTime);
+            }else{
+                renderedData.t.a[i].s.s = 0;
+            }
+            if('e' in animatorProps.s) {
+                renderedData.t.a[i].s.e = getInterpolatedValue(animatorProps.s.e,offsettedFrameNum, item.startTime);
+            }
+            if('o' in animatorProps.s) {
+                renderedData.t.a[i].s.o = getInterpolatedValue(animatorProps.s.o,offsettedFrameNum, item.startTime);
+            }else{
+                renderedData.t.a[i].s.o = 0;
             }
         }
 

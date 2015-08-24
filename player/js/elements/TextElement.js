@@ -1,6 +1,7 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
     this.textSpans = [];
     this.yOffset = 0;
+    this.totalChars = 0;
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.renderedBeziers = [];
     this.renderedLetters = [];
@@ -20,7 +21,7 @@ ITextElement.prototype.createElements = function(){
     this.textElem.setAttribute('font-family', documentData.f + ', sans-serif');
     this.layerElement.appendChild(this.textElem);
     var i, len = documentData.t.length,tSpan;
-    var newLineFlag;
+    var newLineFlag, index = 0;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
@@ -33,10 +34,14 @@ ITextElement.prototype.createElements = function(){
         }
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
         this.textElem.appendChild(tSpan);
-        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength(),n:newLineFlag});
+        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength(),n:newLineFlag, ind: index});
+        if(!newLineFlag){
+            index += 1;
+        }
     }
     this.yOffset = documentData.s*1.2;
     this.fontSize = documentData.s;
+    this.totalChars = index;
 
     this.pathElem = document.createElementNS(svgNS,'path');
     this.pathElem.setAttribute('stroke', '#ff0000');
@@ -238,6 +243,46 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         var firstLine = true;
         var renderedData = this.data.renderedData[num].t, animators, animatorProps;
         var j, jLen;
+
+        jLen = renderedData.a.length;
+        var ranges = [], totalChars = this.totalChars, divisor;
+        for(j=0;j<jLen;j+=1){
+            divisor = this.data.t.a[j].s.r === 2 ? totalChars : 100;
+            var segments = [];
+            if(!('e' in renderedData.a[j].s)){
+                renderedData.a[j].s.e = divisor;
+            }
+            var o = renderedData.a[j].s.o/divisor;
+            if(o === 0 && renderedData.a[j].s.s === 0 && renderedData.a[j].s.e === divisor){
+
+            }
+            if(o < 0){
+                o += 1;
+            }
+            var s = renderedData.a[j].s.s/divisor + o;
+            var e = (renderedData.a[j].s.e/divisor) + o;
+            if(s == e){
+                /////
+            }else{
+                if(s>e){
+                    var _s = s;
+                    s = e;
+                    e = _s;
+                }
+                if(e <= 1){
+                    segments.push({s:totalChars*s,e:totalChars*e, sf:Math.floor(totalChars*s)});
+                }else if(s >= 1){
+                    segments.push({s:totalChars*s,e:totalChars*e, sf:Math.floor(totalChars*s)});
+                }else{
+                    segments.push({s:totalChars*s,e:totalChars, sf:Math.floor(totalChars*s)});
+                    segments.push({s:0,e:totalChars*(e-1)});
+                }
+            }
+            ranges.push(segments);
+        }
+
+        var k, kLen, mult, ind;
+
         for( i = 0; i < len; i += 1) {
             letterTransform = '';
             if(this.textSpans[i].n) {
@@ -245,37 +290,121 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 yPos += this.yOffset;
                 yPos += firstLine ? 1 : 0;
                 firstLine = false;
-            }
+            }else{
+                ind = this.textSpans[i].ind;
 
-            xPos += this.textSpans[i].l/2;
-            letterTransform += 'translate('+xPos+','+yPos+')';
-            letterTransform += 'translate('+renderedData.m.a[0]*this.textSpans[i].l/200+','+ renderedData.m.a[1]*yOff/100+')';
-
-            jLen = renderedData.a.length;
-            for(j=0;j<jLen;j+=1){
-                animatorProps = renderedData.a[j].a;
-                if(animatorProps.r) {
-                    letterTransform += 'rotate('+animatorProps.r+')';
+                xPos += this.textSpans[i].l/2;
+                letterTransform += ' translate('+xPos+','+yPos+')';
+                letterTransform += ' translate('+renderedData.m.a[0]*this.textSpans[i].l/200+','+ renderedData.m.a[1]*yOff/100+')';
+                for(j=0;j<jLen;j+=1) {
+                    animatorProps = renderedData.a[j].a;
+                    if (animatorProps.r && ranges[j].length) {
+                        kLen = ranges[j].length;
+                        k = 0;
+                        while (k < kLen) {
+                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
+                                mult = 1;
+                                if(ranges[j][k].s - ind > 0){
+                                    mult -= ranges[j][k].s - ind;
+                                }
+                                if(ranges[j][k].e - ind < 1) {
+                                    mult -= 1 - (ranges[j][k].e - ind);
+                                }
+                                letterTransform += ' rotate(' + animatorProps.r*mult + ')';
+                                break;
+                            }
+                            k += 1;
+                        }
+                    }
+                    if ('o' in animatorProps && ranges[j].length) {
+                        kLen = ranges[j].length;
+                        k = 0;
+                        while (k < kLen) {
+                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
+                                mult = 1;
+                                if(ranges[j][k].s - ind > 0){
+                                    mult -= ranges[j][k].s - ind;
+                                }
+                                if(ranges[j][k].e - ind < 1) {
+                                    mult -= 1 - (ranges[j][k].e - ind);
+                                }
+                                this.textSpans[i].elem.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
+                                break;
+                            }
+                            k += 1;
+                        }
+                    }
                 }
-            }
-            for(j=0;j<jLen;j+=1){
-                animatorProps = renderedData.a[j].a;
-                if(animatorProps.s) {
-                    letterTransform += 'scale('+animatorProps.s[0]/100+','+animatorProps.s[1]/100+')';
+                for(j=0;j<jLen;j+=1){
+                    animatorProps = renderedData.a[j].a;
+                    if (animatorProps.s && ranges[j].length) {
+                        kLen = ranges[j].length;
+                        k = 0;
+                        while (k < kLen) {
+                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
+                                mult = 1;
+                                if(ranges[j][k].s - ind > 0){
+                                    mult -= ranges[j][k].s - ind;
+                                }
+                                if(ranges[j][k].e - ind < 1) {
+                                    mult -= 1 - (ranges[j][k].e - ind);
+                                }
+                                letterTransform += ' scale('+(1+((animatorProps.s[0]/100-1)*mult))+','+(1+((animatorProps.s[1]/100-1)*mult))+')';
+                                break;
+                            }
+                            k += 1;
+                        }
+                    }
                 }
-            }
-            for(j=0;j<jLen;j+=1){
-                animatorProps = renderedData.a[j].a;
-                if(animatorProps.a) {
-                    letterTransform += 'translate('+ -animatorProps.a[0]+','+ -animatorProps.a[1]+')';
+                for(j=0;j<jLen;j+=1){
+                    animatorProps = renderedData.a[j].a;
+                    if (animatorProps.p && ranges[j].length) {
+                        kLen = ranges[j].length;
+                        k = 0;
+                        while (k < kLen) {
+                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
+                                mult = 1;
+                                if(ranges[j][k].s - ind > 0){
+                                    mult -= ranges[j][k].s - ind;
+                                }
+                                if(ranges[j][k].e - ind < 1) {
+                                    mult -= 1 - (ranges[j][k].e - ind);
+                                }
+                                letterTransform += ' translate('+ animatorProps.p[0]*mult+','+ animatorProps.p[1]*mult+')';
+                                break;
+                            }
+                            k += 1;
+                        }
+                    }
                 }
-            }
+                for(j=0;j<jLen;j+=1){
+                    animatorProps = renderedData.a[j].a;
+                    if (animatorProps.a && ranges[j].length) {
+                        kLen = ranges[j].length;
+                        k = 0;
+                        while (k < kLen) {
+                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
+                                mult = 1;
+                                if(ranges[j][k].s - ind > 0){
+                                    mult -= ranges[j][k].s - ind;
+                                }
+                                if(ranges[j][k].e - ind < 1) {
+                                    mult -= 1 - (ranges[j][k].e - ind);
+                                }
+                                letterTransform += ' translate('+ -animatorProps.a[0]*mult+','+ -animatorProps.a[1]*mult+')';
+                                break;
+                            }
+                            k += 1;
+                        }
+                    }
+                }
 
 
-            letterTransform += ' translate(' + -this.textSpans[i].l/2 + ',0)';
-            letterTransform += 'translate(' + -renderedData.m.a[0]*this.textSpans[i].l/200+','+ -renderedData.m.a[1]*yOff/100+')';
-            xPos += this.textSpans[i].l/2;
-            this.textSpans[i].elem.setAttribute('transform',letterTransform);
+                letterTransform += ' translate(' + -this.textSpans[i].l/2 + ',0)';
+                letterTransform += ' translate(' + -renderedData.m.a[0]*this.textSpans[i].l/200+','+ -renderedData.m.a[1]*yOff/100+')';
+                xPos += this.textSpans[i].l/2;
+                this.textSpans[i].elem.setAttribute('transform',letterTransform);
+            }
         }
     }
 };
