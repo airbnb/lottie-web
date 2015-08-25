@@ -4,6 +4,12 @@ After Effects plugin for exporting animations to svg + js or canvas + js
 ## Working on CC 2015!
 Finally
 
+## V 2.1.1
+- reverse paths
+- mask fix
+- line join and line cap support
+- trim circles
+
 ## V 2.1
 - for CC 2015 only
 - destroy method to release animation resources
