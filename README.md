@@ -4,6 +4,12 @@ After Effects plugin for exporting animations to svg + js or canvas + js
 ## Working on CC 2015!
 Finally
 
+## V 2.1.1
+- reverse paths
+- mask fix
+- line join and line cap support
+- trim circles
+
 ## V 2.1
 - for CC 2015 only
 - destroy method to release animation resources
@@ -13,7 +19,10 @@ Finally
 - improved performace
 - better AE features support
 
-## Setting up After Effects
+## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
+
+### Option 1:
+
 - Close After Effects
 - Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:
 WINDOWS:
@@ -23,6 +32,17 @@ MAC:
 /Library~/Library/Application Support/Adobe/CEP/extensions
 /Application Support/Adobe/CEP/extensions
 
+- Edit the registry key:
+On Mac, open the file ~/Library/Preferences/com.adobe.CSXS.4.plist and add a row with key PlayerDebugMode, of type String, and value 1.
+On Windows, open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.4 and add a key named PlayerDebugMode, of type String, and value 1.
+
+### Option 2:
+
+Install the zxp manually following the instructions here:
+https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
+
+
+### For both
 - Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
 ## How it works
@@ -153,6 +173,7 @@ http://codepen.io/collection/nVYWZR/ <br/>
 - gzipping the animation jsons and the player have a huge impact on the filesize. I recommend doing it if you use it for a project.
 
 ## Coming up
+- Text
 - Exporting images in a sprite
 - Stroke Effect support
 - Experimenting with the webAnimationAPI export

@@ -1,4 +1,14 @@
 function ShapeItemElement(data,parentElement,globalData){
+    this.lcEnum = {
+        '1': 'butt',
+        '2': 'round',
+        '3': 'butt'
+    };
+    this.ljEnum = {
+        '1': 'miter',
+        '2': 'round',
+        '3': 'bevel'
+    };
     this.stylesList = [];
     this.viewData = [];
     this.shape = parentElement;
@@ -11,8 +21,6 @@ function ShapeItemElement(data,parentElement,globalData){
 ShapeItemElement.prototype.searchShapes = function(arr,data){
     var i, len = arr.length - 1;
     var j, jLen;
-    var k, kLen;
-    var pathNode;
     var ownArrays = [];
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
@@ -25,6 +33,13 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                 }
             };
             var pathElement = document.createElementNS(svgNS, "path");
+            if(arr[i].ty == 'st') {
+                pathElement.setAttribute('stroke-linecap', this.lcEnum[arr[i].lc] || 'round');
+                pathElement.setAttribute('stroke-linejoin',this.ljEnum[arr[i].lj] || 'round');
+                if(arr[i].lj == 1) {
+                    pathElement.setAttribute('stroke-miterlimit',arr[i].ml);
+                }
+            }
             this.shape.appendChild(pathElement);
             this.stylesList.push({
                 pathElement: pathElement,
@@ -62,8 +77,6 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                     data[i].styles.push(this.stylesList[j]);
                     if(this.stylesList[j].type == 'st'){
                         this.stylesList[j].pathElement.setAttribute('fill-opacity',0);
-                        this.stylesList[j].pathElement.setAttribute('stroke-linejoin','round');
-                        this.stylesList[j].pathElement.setAttribute('stroke-linecap','round');
                     }
                 }
             }

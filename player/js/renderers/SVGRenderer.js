@@ -86,6 +86,10 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
+    this.globalData.compSize = {
+        w: animData.animation.compWidth,
+        h: animData.animation.compHeight
+    };
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',animData.animation.compWidth);

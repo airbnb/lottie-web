@@ -176,7 +176,7 @@ function dataFunctionManager(){
                 }else{
                     transformData.r *= degToRads;
                 }
-            }else if(arr[i].ty == 'rc'){
+            }else if(arr[i].ty == 'rc' || arr[i].ty == 'el'){
                 arr[i].trimmed = isTrimmed;
                 arr[i].trimmed = true;
             }
@@ -417,7 +417,6 @@ function dataFunctionManager(){
         pathData.closed = isMask ? shapeData.cl : shapeData.closed;
         var keyframes = isMask ? shapeData.pt : shapeData.ks;
         if(keyframes.v){
-
             if(!isTrimmed){
                 pathData.pathNodes = keyframes;
             }else{
@@ -812,45 +811,82 @@ function dataFunctionManager(){
         //console.log(item.t);
     }
 
-    function convertRectToPath(pos,size,round){
+    function convertRectToPath(pos,size,round, d){
         round = Math.min(size[0],size[1],round/2);
         var nextV = new Array(8);
         var nextI = new Array(8);
         var nextO = new Array(8);
         var cPoint = round/2;
-        round *= 1;
+        //round *= 1;
 
-        nextV[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+round];
-        nextO[0] = nextV[0];
-        nextI[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+cPoint];
+        if(d === 2) {
 
-        nextV[1] = [pos[0]+size[0]/2,pos[1]+size[1]/2-round];
-        nextO[1] = [pos[0]+size[0]/2,pos[1]+size[1]/2-cPoint];
-        nextI[1] = nextV[1];
+            nextV[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+round];
+            nextO[0] = nextV[0];
+            nextI[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+cPoint];
 
-        nextV[2] = [pos[0]+size[0]/2-round,pos[1]+size[1]/2];
-        nextO[2] = nextV[2];
-        nextI[2] = [pos[0]+size[0]/2-cPoint,pos[1]+size[1]/2];
+            nextV[1] = [pos[0]+size[0]/2,pos[1]+size[1]/2-round];
+            nextO[1] = [pos[0]+size[0]/2,pos[1]+size[1]/2-cPoint];
+            nextI[1] = nextV[1];
 
-        nextV[3] = [pos[0]-size[0]/2+round,pos[1]+size[1]/2];
-        nextO[3] = [pos[0]-size[0]/2+cPoint,pos[1]+size[1]/2];
-        nextI[3] = nextV[3];
+            nextV[2] = [pos[0]+size[0]/2-round,pos[1]+size[1]/2];
+            nextO[2] = nextV[2];
+            nextI[2] = [pos[0]+size[0]/2-cPoint,pos[1]+size[1]/2];
 
-        nextV[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-round];
-        nextO[4] = nextV[4];
-        nextI[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-cPoint];
+            nextV[3] = [pos[0]-size[0]/2+round,pos[1]+size[1]/2];
+            nextO[3] = [pos[0]-size[0]/2+cPoint,pos[1]+size[1]/2];
+            nextI[3] = nextV[3];
 
-        nextV[5] = [pos[0]-size[0]/2,pos[1]-size[1]/2+round];
-        nextO[5] = [pos[0]-size[0]/2,pos[1]-size[1]/2+cPoint];
-        nextI[5] = nextV[5];
+            nextV[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-round];
+            nextO[4] = nextV[4];
+            nextI[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-cPoint];
 
-        nextV[6] = [pos[0]-size[0]/2+round,pos[1]-size[1]/2];
-        nextO[6] = nextV[6];
-        nextI[6] = [pos[0]-size[0]/2+cPoint,pos[1]-size[1]/2];
+            nextV[5] = [pos[0]-size[0]/2,pos[1]-size[1]/2+round];
+            nextO[5] = [pos[0]-size[0]/2,pos[1]-size[1]/2+cPoint];
+            nextI[5] = nextV[5];
 
-        nextV[7] = [pos[0]+size[0]/2-round,pos[1]-size[1]/2];
-        nextO[7] = [pos[0]+size[0]/2-cPoint,pos[1]-size[1]/2];
-        nextI[7] = nextV[7];
+            nextV[6] = [pos[0]-size[0]/2+round,pos[1]-size[1]/2];
+            nextO[6] = nextV[6];
+            nextI[6] = [pos[0]-size[0]/2+cPoint,pos[1]-size[1]/2];
+
+            nextV[7] = [pos[0]+size[0]/2-round,pos[1]-size[1]/2];
+            nextO[7] = [pos[0]+size[0]/2-cPoint,pos[1]-size[1]/2];
+            nextI[7] = nextV[7];
+        }else{
+            nextV[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+round];
+            nextO[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+cPoint];
+            nextI[0] = nextV[0];
+
+            nextV[1] = [pos[0]+size[0]/2-round,pos[1]-size[1]/2];
+            nextO[1] = nextV[1];
+            nextI[1] = [pos[0]+size[0]/2-cPoint,pos[1]-size[1]/2];
+
+            nextV[2] = [pos[0]-size[0]/2+round,pos[1]-size[1]/2];
+            nextO[2] = [pos[0]-size[0]/2+cPoint,pos[1]-size[1]/2];
+            nextI[2] = nextV[2];
+
+            nextV[3] = [pos[0]-size[0]/2,pos[1]-size[1]/2+round];
+            nextO[3] = nextV[3];
+            nextI[3] = [pos[0]-size[0]/2,pos[1]-size[1]/2+cPoint];
+
+            nextV[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-round];
+            nextO[4] = [pos[0]-size[0]/2,pos[1]+size[1]/2-cPoint];
+            nextI[4] = nextV[4];
+
+            nextV[5] = [pos[0]-size[0]/2+round,pos[1]+size[1]/2];
+            nextO[5] = nextV[5];
+            nextI[5] = [pos[0]-size[0]/2+cPoint,pos[1]+size[1]/2];
+
+            nextV[6] = [pos[0]+size[0]/2-round,pos[1]+size[1]/2];
+            nextO[6] = [pos[0]+size[0]/2-cPoint,pos[1]+size[1]/2];
+            nextI[6] = nextV[6];
+
+            nextV[7] = [pos[0]+size[0]/2,pos[1]+size[1]/2-round];
+            nextO[7] = nextV[7];
+            nextI[7] = [pos[0]+size[0]/2,pos[1]+size[1]/2-cPoint];
+
+        }
+
 
         return {v:nextV,o:nextO,i:nextI,c:true};
     }
@@ -900,7 +936,7 @@ function dataFunctionManager(){
                             closed: true
                         }
                     };
-                    shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound),true, addedTrim, false);
+                    shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound,shapeItem.d),true, addedTrim, false);
                 }
             }else if(shapeItem.ty == 'el'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime);
@@ -916,21 +952,46 @@ function dataFunctionManager(){
                         i:new Array(4),
                         o:new Array(4)
                     };
-                    pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
-                    pathNodes.o[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
-                    pathNodes.i[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
-                    pathNodes.v[1] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
-                    pathNodes.o[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
-                    pathNodes.i[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
-                    pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
-                    pathNodes.o[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
-                    pathNodes.i[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
-                    pathNodes.v[3] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
-                    pathNodes.o[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
-                    pathNodes.i[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                    if(shapeItem.d !== 2 && shapeItem.d !== 3){
+                        pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
+                        pathNodes.i[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                        pathNodes.o[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                        pathNodes.v[1] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
+                        pathNodes.i[1] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                        pathNodes.o[1] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                        pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
+                        pathNodes.i[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                        pathNodes.o[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                        pathNodes.v[3] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
+                        pathNodes.i[3] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                        pathNodes.o[3] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                    }else{
+                        pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
+                        pathNodes.o[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                        pathNodes.i[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                        pathNodes.v[1] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
+                        pathNodes.o[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                        pathNodes.i[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                        pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
+                        pathNodes.o[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                        pathNodes.i[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                        pathNodes.v[3] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
+                        pathNodes.o[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                        pathNodes.i[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                    }
 
-                    shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
-                    shapeItem.closed = true;
+                    if(!shapeItem.trimmed){
+                        shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
+                        shapeItem.closed = true;
+                    }else{
+                        shapeItem.renderedData[offsettedFrameNum] = {
+                            path: {
+                                closed: true
+                            }
+                        };
+                        shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(pathNodes,true, addedTrim, false);
+                        shapeItem.closed = true;
+                    }
                 }
             }else if(shapeItem.ty == 'st'){
                 strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime);

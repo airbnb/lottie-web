@@ -7,16 +7,14 @@ function MaskElement(data,element,globalData) {
     this.registeredEffects = [];
     this.masksProperties = [];
     this.maskElement = null;
-    this.layerSize = null;
 }
 
 MaskElement.prototype.init = function () {
     this.masksProperties = this.data.masksProperties;
     var maskedElement = this.element.maskedElement;
     var defs = this.globalData.defs;
-    var i=0, len = this.masksProperties.length;
+    var i, len = this.masksProperties.length;
 
-    this.layerSize = this.element.getLayerSize();
 
     var path, properties = this.data.masksProperties;
     var count = 0;
@@ -26,9 +24,6 @@ MaskElement.prototype.init = function () {
     var rect;
     this.maskElement = document.createElementNS(svgNS, 'mask');
     for (i = 0; i < len; i++) {
-        if(properties[i].inv && !this.solidPath){
-            this.solidPath = this.createLayerSolidPath();
-        }
 
         //console.log('properties[i].mode: ',properties[i].mode);
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
@@ -85,6 +80,9 @@ MaskElement.prototype.init = function () {
         }else{
             currentMasks.push(path);
         }
+        if(properties[i].inv && !this.solidPath){
+            this.solidPath = this.createLayerSolidPath();
+        }
     }
 
     len = currentMasks.length;
@@ -129,10 +127,10 @@ MaskElement.prototype.getMaskelement = function () {
 
 MaskElement.prototype.createLayerSolidPath = function(){
     var path = 'M0,0 ';
-    path += 'h' + this.layerSize.w;
-    path += 'v' + this.layerSize.h;
-    path += 'h' + -this.layerSize.w;
-    path += 'v' + -this.layerSize.h;
+    path += ' h' + this.globalData.compSize.w ;
+    path += ' v' + this.globalData.compSize.h ;
+    path += ' h-' + this.globalData.compSize.w ;
+    path += ' v-' + this.globalData.compSize.h + ' ';
     return path;
 };
 
@@ -159,7 +157,7 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
 
     if(storedData.lastPath !== pathString){
         if(pathData.inv){
-            storedData.elem.setAttribute('d',this.solidPath+pathString);
+            storedData.elem.setAttribute('d',this.solidPath + pathString);
         }else{
             storedData.elem.setAttribute('d',pathString);
         }
