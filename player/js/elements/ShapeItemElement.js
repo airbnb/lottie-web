@@ -1,4 +1,14 @@
 function ShapeItemElement(data,parentElement,globalData){
+    this.lcEnum = {
+        '1': 'butt',
+        '2': 'round',
+        '3': 'butt'
+    };
+    this.ljEnum = {
+        '1': 'butt',
+        '2': 'round',
+        '3': 'butt'
+    };
     this.stylesList = [];
     this.viewData = [];
     this.shape = parentElement;
@@ -25,6 +35,11 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                 }
             };
             var pathElement = document.createElementNS(svgNS, "path");
+            if(arr[i].ty == 'st') {
+                //console.log(this.lcEnum[arr[i].lj]);
+                pathElement.setAttribute('stroke-linecap', this.lcEnum[arr[i].lc]);
+                pathElement.setAttribute('stroke-linejoin','mitter');
+            }
             this.shape.appendChild(pathElement);
             this.stylesList.push({
                 pathElement: pathElement,
@@ -62,8 +77,6 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                     data[i].styles.push(this.stylesList[j]);
                     if(this.stylesList[j].type == 'st'){
                         this.stylesList[j].pathElement.setAttribute('fill-opacity',0);
-                        this.stylesList[j].pathElement.setAttribute('stroke-linejoin','round');
-                        this.stylesList[j].pathElement.setAttribute('stroke-linecap','round');
                     }
                 }
             }

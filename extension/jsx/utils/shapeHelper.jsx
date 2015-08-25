@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_keyframeHelper*/
+/*global bm_keyframeHelper, bm_eventDispatcher*/
 var bm_shapeHelper = (function () {
     'use strict';
     var ob = {}, shapeItemTypes = {
@@ -37,6 +37,34 @@ var bm_shapeHelper = (function () {
         }
     }
     
+    function reverseShape(ks) {
+        var newI = [], newO = [], newV = [];
+        var i, len;
+        if (ks.i) {
+            newI[0] = ks.o[0];
+            newO[0] = ks.i[0];
+            newV[0] = ks.v[0];
+            len = ks.i.length;
+            var cnt = len - 1;
+            for (i = 1; i < len; i += 1) {
+                newI.push(ks.o[cnt]);
+                newO.push(ks.i[cnt]);
+                newV.push(ks.v[cnt]);
+                cnt -= 1;
+            }
+            
+            ks.i = newI;
+            ks.o = newO;
+            ks.v = newV;
+        } else {
+            len = ks.length;
+            for (i = 0; i < len - 1; i += 1) {
+                reverseShape(ks[i].s[0]);
+                reverseShape(ks[i].e[0]);
+            }
+        }
+    }
+    
     function iterateProperties(iteratable, array, frameRate) {
         var i, len = iteratable.numProperties, ob, prop, itemType;
         for (i = 0; i < len; i += 1) {
@@ -48,16 +76,21 @@ var bm_shapeHelper = (function () {
                     ob.ty = itemType;
                     ob.closed = prop.property('Path').value.closed;
                     ob.ks = bm_keyframeHelper.exportKeyframes(prop.property('Path'), frameRate);
+                    if (prop.property("Shape Direction").value === 3) {
+                        reverseShape(ob.ks);
+                    }
                     array.push(ob);
                 } else if (itemType === shapeItemTypes.rect) {
                     ob = {};
                     ob.ty = itemType;
+                    ob.d = prop.property("Shape Direction").value;
                     ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Size'), frameRate);
                     ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
                     ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Roundness'), frameRate);
                     array.push(ob);
                 } else if (itemType === shapeItemTypes.ellipse) {
                     ob = {};
+                    ob.d = prop.property("Shape Direction").value;
                     ob.ty = itemType;
                     ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Size'), frameRate);
                     ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
@@ -76,6 +109,8 @@ var bm_shapeHelper = (function () {
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
                     ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);
+                    ob.lc = prop.property('Line Cap').value;
+                    ob.lj = prop.property('Line Join').value;
                     var j, jLen = prop.property('Dashes').numProperties;
                     var dashesData = [];
                     var changed = false;
