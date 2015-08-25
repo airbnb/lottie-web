@@ -5,9 +5,9 @@ function ShapeItemElement(data,parentElement,globalData){
         '3': 'butt'
     };
     this.ljEnum = {
-        '1': 'butt',
+        '1': 'miter',
         '2': 'round',
-        '3': 'butt'
+        '3': 'bevel'
     };
     this.stylesList = [];
     this.viewData = [];
@@ -21,8 +21,6 @@ function ShapeItemElement(data,parentElement,globalData){
 ShapeItemElement.prototype.searchShapes = function(arr,data){
     var i, len = arr.length - 1;
     var j, jLen;
-    var k, kLen;
-    var pathNode;
     var ownArrays = [];
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
@@ -36,9 +34,11 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
             };
             var pathElement = document.createElementNS(svgNS, "path");
             if(arr[i].ty == 'st') {
-                //console.log(this.lcEnum[arr[i].lj]);
-                pathElement.setAttribute('stroke-linecap', this.lcEnum[arr[i].lc]);
-                pathElement.setAttribute('stroke-linejoin','mitter');
+                pathElement.setAttribute('stroke-linecap', this.lcEnum[arr[i].lc] || 'round');
+                pathElement.setAttribute('stroke-linejoin',this.ljEnum[arr[i].lj] || 'round');
+                if(arr[i].lj == 1) {
+                    pathElement.setAttribute('stroke-miterlimit',arr[i].ml);
+                }
             }
             this.shape.appendChild(pathElement);
             this.stylesList.push({

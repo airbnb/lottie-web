@@ -111,6 +111,9 @@ var bm_shapeHelper = (function () {
                     ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);
                     ob.lc = prop.property('Line Cap').value;
                     ob.lj = prop.property('Line Join').value;
+                    if (ob.lj === 1) {
+                        ob.ml = prop.property('Miter Limit').value;
+                    }
                     var j, jLen = prop.property('Dashes').numProperties;
                     var dashesData = [];
                     var changed = false;
