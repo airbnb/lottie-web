@@ -1,7 +1,6 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
     this.textSpans = [];
     this.yOffset = 0;
-    this.totalChars = 0;
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.renderedBeziers = [];
     this.renderedLetters = [];
@@ -21,27 +20,57 @@ ITextElement.prototype.createElements = function(){
     this.textElem.setAttribute('font-family', documentData.f + ', sans-serif');
     this.layerElement.appendChild(this.textElem);
     var i, len = documentData.t.length,tSpan;
-    var newLineFlag, index = 0;
+    var newLineFlag, index = 0, val;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
         if(documentData.t.charAt(i) === ' '){
-            tSpan.textContent = '\u00A0';
+            val = '\u00A0';
         }else if(documentData.t.charCodeAt(i) === 13){
+            val = '';
             newLineFlag = true;
         }else{
-            tSpan.textContent = documentData.t.charAt(i);
+            val = documentData.t.charAt(i);
         }
+        tSpan.textContent = val;
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
         this.textElem.appendChild(tSpan);
-        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength(),n:newLineFlag, ind: index});
+        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength(),n:newLineFlag, ind: index, anIndexes:[], val: val});
         if(!newLineFlag){
             index += 1;
         }
     }
+    var animators = this.data.t.a;
+    var j, jLen = animators.length, based, ind;
+    for(j=0;j<jLen;j+=1){
+        ind = 0;
+        based = animators[j].s.b;
+        based = 3;
+        for(i=0;i<len;i+=1){
+            this.textSpans[i].anIndexes[j] = ind;
+            if(based == 1){
+                if(this.textSpans[i].val != ''){
+                    ind += 1;
+                }
+            }else if(based == 2){
+                if(this.textSpans[i].val != '' && this.textSpans[i].val != '\u00A0'){
+                    ind += 1;
+                }
+            }else if(based == 3){
+                if(this.textSpans[i].n || this.textSpans[i].val == '\u00A0' || i == len - 1){
+                    ind += 1;
+                }
+            }else if(based == 4){
+                if(this.textSpans[i].n || i == len - 1){
+                    ind += 1;
+                }
+            }
+        }
+        this.data.t.a[j].totalChars = ind;
+    }
+
     this.yOffset = documentData.s*1.2;
     this.fontSize = documentData.s;
-    this.totalChars = index;
 
     this.pathElem = document.createElementNS(svgNS,'path');
     this.pathElem.setAttribute('stroke', '#ff0000');
@@ -245,8 +274,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         var j, jLen;
 
         jLen = renderedData.a.length;
-        var ranges = [], totalChars = this.totalChars, divisor;
+        var ranges = [], totalChars, divisor;
         for(j=0;j<jLen;j+=1){
+            totalChars = this.data.t.a[j].totalChars;
             divisor = this.data.t.a[j].s.r === 2 ? totalChars : 100;
             var segments = [];
             if(!('e' in renderedData.a[j].s)){
@@ -255,9 +285,6 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             var o = renderedData.a[j].s.o/divisor;
             if(o === 0 && renderedData.a[j].s.s === 0 && renderedData.a[j].s.e === divisor){
 
-            }
-            if(o < 0){
-                o += 1;
             }
             var s = renderedData.a[j].s.s/divisor + o;
             var e = (renderedData.a[j].s.e/divisor) + o;
@@ -291,7 +318,6 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 yPos += firstLine ? 1 : 0;
                 firstLine = false;
             }else{
-                ind = this.textSpans[i].ind;
 
                 xPos += this.textSpans[i].l/2;
                 letterTransform += ' translate('+xPos+','+yPos+')';
@@ -299,6 +325,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 for(j=0;j<jLen;j+=1) {
                     animatorProps = renderedData.a[j].a;
                     if (animatorProps.r && ranges[j].length) {
+                        ind = this.textSpans[i].anIndexes[j];
                         kLen = ranges[j].length;
                         k = 0;
                         while (k < kLen) {
@@ -317,6 +344,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                         }
                     }
                     if ('o' in animatorProps && ranges[j].length) {
+                        ind = this.textSpans[i].anIndexes[j];
                         kLen = ranges[j].length;
                         k = 0;
                         while (k < kLen) {
@@ -330,6 +358,8 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                                 }
                                 this.textSpans[i].elem.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
                                 break;
+                            }else{
+                                this.textSpans[i].elem.setAttribute('opacity',1);
                             }
                             k += 1;
                         }
@@ -338,6 +368,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
                     if (animatorProps.s && ranges[j].length) {
+                        ind = this.textSpans[i].anIndexes[j];
                         kLen = ranges[j].length;
                         k = 0;
                         while (k < kLen) {
@@ -359,6 +390,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
                     if (animatorProps.p && ranges[j].length) {
+                        ind = this.textSpans[i].anIndexes[j];
                         kLen = ranges[j].length;
                         k = 0;
                         while (k < kLen) {

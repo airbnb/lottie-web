@@ -56,6 +56,7 @@ var bm_textHelper = (function () {
     
     function exportMoreOptionsData(pathOptions, ob, frameRate) {
         ob.g = pathOptions.property("Anchor Point Grouping").value;
+        bm_eventDispatcher.log(ob.g);
         ob.a = bm_keyframeHelper.exportKeyframes(pathOptions.property("Grouping Alignment"), frameRate);
         
     }

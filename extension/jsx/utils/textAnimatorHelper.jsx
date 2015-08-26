@@ -9,6 +9,8 @@ var bm_textAnimatorHelper = (function () {
         var i, len;
         var selectorProperty = layerInfo.property('ADBE Text Selector');
         var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
+        ob.b = advancedProperty.property("ADBE Text Range Type2").value;
+        // 
         var rangeUnits = advancedProperty.property('ADBE Text Range Units').value;
         if (rangeUnits === 1) {
             if (selectorProperty.property('ADBE Text Percent Start').isModified) {
