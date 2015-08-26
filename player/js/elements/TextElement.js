@@ -290,7 +290,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         yPos = 0;
         var yOff = this.yOffset*.714;
         var firstLine = true;
-        var renderedData = this.data.renderedData[num].t, animators, animatorProps;
+        var renderedData = this.data.renderedData[num].t, animatorProps;
         var j, jLen;
 
         jLen = renderedData.a.length;
@@ -308,22 +308,20 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             }
             var s = renderedData.a[j].s.s/divisor + o;
             var e = (renderedData.a[j].s.e/divisor) + o;
-            if(s == e){
-                /////
+            if(s>e){
+                var _s = s;
+                s = e;
+                e = _s;
+            }
+            s *= totalChars;
+            e *= totalChars;
+            if(e <= 1){
+                segments.push({s:s,e:e, sf:Math.floor(s)});
+            }else if(s >= 1){
+                segments.push({s:s,e:e, sf:Math.floor(s)});
             }else{
-                if(s>e){
-                    var _s = s;
-                    s = e;
-                    e = _s;
-                }
-                if(e <= 1){
-                    segments.push({s:totalChars*s,e:totalChars*e, sf:Math.floor(totalChars*s)});
-                }else if(s >= 1){
-                    segments.push({s:totalChars*s,e:totalChars*e, sf:Math.floor(totalChars*s)});
-                }else{
-                    segments.push({s:totalChars*s,e:totalChars, sf:Math.floor(totalChars*s)});
-                    segments.push({s:0,e:totalChars*(e-1)});
-                }
+                segments.push({s:s,e:totalChars, sf:Math.floor(s)});
+                segments.push({s:0,e:e-totalChars});
             }
             ranges.push(segments);
         }
@@ -346,10 +344,26 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                     animatorProps = renderedData.a[j].a;
                     if (animatorProps.r && ranges[j].length) {
                         ind = this.textSpans[i].anIndexes[j];
+                        if(this.data.t.a[j].s.sh == 2){
+                            var fnc = bez.getEasingCurve(0,.53,.49,1);
+                            console.log(ind);
+                            //ind = fnc('',ind,0,totalChars,totalChars);
+                            //console.log(percc);
+                            console.log(ind);
+                            //console.log(totalChars);
+                            //e = fnc('',e,0,totalChars,totalChars);
+                            //console.log(s);
+                            //console.log(e);
+                        }else if(this.data.t.a[j].s.sh == 3){
+                            var fnc = bez.getEasingCurve(0,0.5,0.5,1);
+                            ind = fnc('',ind,0,totalChars,totalChars);
+                        }
                         kLen = ranges[j].length;
                         k = 0;
+                        //console.log('new: ', i);
                         while (k < kLen) {
                             if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
+                                //console.log('paso1');
                                 mult = 1;
                                 if(ranges[j][k].s - ind > 0){
                                     mult -= ranges[j][k].s - ind;
@@ -357,6 +371,21 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                                 if(ranges[j][k].e - ind < 1) {
                                     mult -= 1 - (ranges[j][k].e - ind);
                                 }
+                                if(this.data.t.a[j].s.sh == 2){
+                                    mult *= (0.5/(ranges[j][k].e-ranges[j][k].s))+(ind-ranges[j][k].s)/(ranges[j][k].e-ranges[j][k].s);
+                                }else if(this.data.t.a[j].s.sh == 3){
+                                    mult *= 1 - ((0.5/(ranges[j][k].e-ranges[j][k].s))+(ind-ranges[j][k].s)/(ranges[j][k].e-ranges[j][k].s));
+                                }
+                                letterTransform += ' rotate(' + animatorProps.r*mult + ')';
+                                break;
+                            }else if(ind >= ranges[j][k].e && this.data.t.a[j].s.sh == 2){
+                                //console.log('paso2');
+                                mult = 1;
+                                letterTransform += ' rotate(' + animatorProps.r*mult + ')';
+                                break;
+                            }else if(ind <= ranges[j][k].sf && this.data.t.a[j].s.sh == 3){
+                                //console.log('paso3');
+                                mult = 1;
                                 letterTransform += ' rotate(' + animatorProps.r*mult + ')';
                                 break;
                             }

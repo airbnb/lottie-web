@@ -11,6 +11,9 @@ var bm_textAnimatorHelper = (function () {
         var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
         ob.b = advancedProperty.property("ADBE Text Range Type2").value;
         ob.rn = advancedProperty.property("ADBE Text Randomize Order").value;
+        ob.sh = advancedProperty.property("ADBE Text Range Shape").value;
+        bm_eventDispatcher.log(ob.sh);
+        
         // 
         var rangeUnits = advancedProperty.property('ADBE Text Range Units').value;
         if (rangeUnits === 1) {
