@@ -10,6 +10,7 @@ var bm_textAnimatorHelper = (function () {
         var selectorProperty = layerInfo.property('ADBE Text Selector');
         var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
         ob.b = advancedProperty.property("ADBE Text Range Type2").value;
+        ob.rn = advancedProperty.property("ADBE Text Randomize Order").value;
         // 
         var rangeUnits = advancedProperty.property('ADBE Text Range Units').value;
         if (rangeUnits === 1) {

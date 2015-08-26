@@ -21,6 +21,8 @@ ITextElement.prototype.createElements = function(){
     this.layerElement.appendChild(this.textElem);
     var i, len = documentData.t.length,tSpan;
     var newLineFlag, index = 0, val;
+    var anchorGrouping = this.data.t.m.g;
+    var currentSize = 0, currentPos = 0;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
@@ -35,38 +37,56 @@ ITextElement.prototype.createElements = function(){
         tSpan.textContent = val;
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
         this.textElem.appendChild(tSpan);
-        this.textSpans.push({elem:tSpan,l:tSpan.getComputedTextLength(),n:newLineFlag, ind: index, anIndexes:[], val: val});
+        var cLength = tSpan.getComputedTextLength();
+        this.textSpans.push({elem:tSpan,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
         if(!newLineFlag){
             index += 1;
         }
+        if(anchorGrouping == 2){
+            currentSize += cLength;
+            if(val == '' || val == '\u00A0' || i == len - 1){
+                while(currentPos<=i){
+                    this.textSpans[currentPos].an = currentSize;
+                    currentPos += 1;
+                }
+                currentSize = 0;
+            }
+        }else if(anchorGrouping == 3){
+            currentSize += cLength;
+            if(val == '' || i == len - 1){
+                while(currentPos<=i){
+                    this.textSpans[currentPos].an = currentSize;
+                    currentPos += 1;
+                }
+                currentSize = 0;
+            }
+        }
     }
     var animators = this.data.t.a;
-    var j, jLen = animators.length, based, ind;
+    var j, jLen = animators.length, based, ind, indexes = [];
     for(j=0;j<jLen;j+=1){
         ind = 0;
         based = animators[j].s.b;
-        based = 3;
         for(i=0;i<len;i+=1){
             this.textSpans[i].anIndexes[j] = ind;
-            if(based == 1){
-                if(this.textSpans[i].val != ''){
-                    ind += 1;
+            if((based == 1 && this.textSpans[i].val != '') || (based == 2 && this.textSpans[i].val != '' && this.textSpans[i].val != '\u00A0') || (based == 3 && (this.textSpans[i].n || this.textSpans[i].val == '\u00A0' || i == len - 1)) || (based == 4 && (this.textSpans[i].n || i == len - 1))){
+                if(animators[j].s.rn === 1){
+                    indexes.push(ind);
                 }
-            }else if(based == 2){
-                if(this.textSpans[i].val != '' && this.textSpans[i].val != '\u00A0'){
-                    ind += 1;
-                }
-            }else if(based == 3){
-                if(this.textSpans[i].n || this.textSpans[i].val == '\u00A0' || i == len - 1){
-                    ind += 1;
-                }
-            }else if(based == 4){
-                if(this.textSpans[i].n || i == len - 1){
-                    ind += 1;
-                }
+                ind += 1;
             }
         }
         this.data.t.a[j].totalChars = ind;
+        var currentInd = -1, newInd;
+        if(animators[j].s.rn === 1){
+            for(i = 0; i < len; i += 1){
+                if(currentInd != this.textSpans[i].anIndexes[j]){
+                    currentInd = this.textSpans[i].anIndexes[j];
+                    newInd = indexes.splice(Math.floor(Math.random()*indexes.length),1)[0];
+                }
+                this.textSpans[i].anIndexes[j] = newInd;
+            }
+        }
     }
 
     this.yOffset = documentData.s*1.2;
@@ -308,7 +328,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             ranges.push(segments);
         }
 
-        var k, kLen, mult, ind;
+        var k, kLen, mult, ind, offf;
 
         for( i = 0; i < len; i += 1) {
             letterTransform = '';
@@ -318,9 +338,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 yPos += firstLine ? 1 : 0;
                 firstLine = false;
             }else{
-
-                xPos += this.textSpans[i].l/2;
+                offf = this.textSpans[i].an/2 - this.textSpans[i].add;
                 letterTransform += ' translate('+xPos+','+yPos+')';
+                letterTransform += ' translate('+offf+',0)';
                 letterTransform += ' translate('+renderedData.m.a[0]*this.textSpans[i].l/200+','+ renderedData.m.a[1]*yOff/100+')';
                 for(j=0;j<jLen;j+=1) {
                     animatorProps = renderedData.a[j].a;
@@ -432,9 +452,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 }
 
 
-                letterTransform += ' translate(' + -this.textSpans[i].l/2 + ',0)';
+                letterTransform += ' translate(' + -offf + ',0)';
                 letterTransform += ' translate(' + -renderedData.m.a[0]*this.textSpans[i].l/200+','+ -renderedData.m.a[1]*yOff/100+')';
-                xPos += this.textSpans[i].l/2;
+                xPos += this.textSpans[i].l;
                 this.textSpans[i].elem.setAttribute('transform',letterTransform);
             }
         }
