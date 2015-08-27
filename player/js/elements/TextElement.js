@@ -297,10 +297,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         var ranges = [], totalChars, divisor;
         for(j=0;j<jLen;j+=1){
             totalChars = this.data.t.a[j].totalChars;
-            divisor = this.data.t.a[j].s.r === 2 ? 1 : 100;
-            var segments = [];
+            divisor = this.data.t.a[j].s.r === 2 ? 1 : 100/totalChars;
             if(!('e' in renderedData.a[j].s)){
-                renderedData.a[j].s.e = divisor;
+                renderedData.a[j].s.e = this.data.t.a[j].s.r === 2 ? totalChars : 100;
             }
             var o = renderedData.a[j].s.o/divisor;
             if(o === 0 && renderedData.a[j].s.s === 0 && renderedData.a[j].s.e === divisor){
@@ -313,14 +312,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 s = e;
                 e = _s;
             }
-            segments.push({s:s,e:e, sf:Math.floor(s)});
-            /*if(e <= 1 || s >= 1){
-                segments.push({s:s*totalChars,e:e*totalChars, sf:Math.floor(s*totalChars)});
-            }else{
-                segments.push({s:s*totalChars,e:totalChars, sf:Math.floor(s*totalChars)});
-                segments.push({s:0,e:(e-1)*totalChars});
-            }*/
-            ranges.push(segments);
+            ranges.push({s:s,e:e});
         }
 
         var k, kLen, mult, ind, offf;
@@ -337,130 +329,148 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 letterTransform += ' translate('+xPos+','+yPos+')';
                 letterTransform += ' translate('+offf+',0)';
                 letterTransform += ' translate('+renderedData.m.a[0]*this.textSpans[i].l/200+','+ renderedData.m.a[1]*yOff/100+')';
+
+                for(j=0;j<jLen;j+=1){
+                    animatorProps = renderedData.a[j].a;
+                    if ('p' in animatorProps && 's' in ranges[j]) {
+                        ind = this.textSpans[i].anIndexes[j];
+                        mult = 0;
+                        if(this.data.t.a[j].s.sh == 1){
+                            if(ind >= Math.floor(ranges[j].s)){
+                                if(ind-ranges[j].s < 0){
+                                    mult = 1 - (ranges[j].s - ind);
+                                }else{
+                                    mult = Math.max(0,Math.min(ranges[j].e-ind,1));
+                                }
+                            }
+                        }else if(this.data.t.a[j].s.sh == 2){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 1 : 0;
+                            }else{
+                                mult = Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
+                        }else if(this.data.t.a[j].s.sh == 3){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 0 : 1;
+                            }else{
+                                mult = 1 - Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
+                        }
+                        letterTransform += ' translate('+ animatorProps.p[0]*mult+','+ animatorProps.p[1]*mult+')';
+                    }
+                }
+
                 for(j=0;j<jLen;j+=1) {
                     animatorProps = renderedData.a[j].a;
-                    if (animatorProps.r && ranges[j].length) {
+                    if ('r' in animatorProps && 's' in ranges[j]) {
                         ind = this.textSpans[i].anIndexes[j];
-                        console.log('ind: ',ind);
-                        kLen = ranges[j].length;
-                        k = 0;
-                        //console.log('new: ', i);
-                        while (k < kLen) {
-                            //if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
-                                mult = 1;
-                                if(ranges[j][k].s - ind > 0){
-                                    mult -= ranges[j][k].s - ind;
+                        mult = 0;
+                        if(this.data.t.a[j].s.sh == 1){
+                            if(ind >= Math.floor(ranges[j].s)){
+                                if(ind-ranges[j].s < 0){
+                                    mult = 1 - (ranges[j].s - ind);
+                                }else{
+                                    mult = Math.max(0,Math.min(ranges[j].e-ind,1));
                                 }
-                                if(ranges[j][k].e - ind < 1) {
-                                    mult -= 1 - (ranges[j][k].e - ind);
-                                }
-                                if(this.data.t.a[j].s.sh == 2){
-                                    mult = Math.min(0.5/(ranges[j][k].e-ranges[j][k].s) + ind/(ranges[j][k].e-ranges[j][k].s),1);
-
-                                }else if(this.data.t.a[j].s.sh == 3){
-                                    mult = 1 - Math.min(0.5/(ranges[j][k].e-ranges[j][k].s) + ind/(ranges[j][k].e-ranges[j][k].s),1);
-                                }
-                                letterTransform += ' rotate(' + animatorProps.r*mult + ')';
-                                break;
-                            /*}else if(ind >= ranges[j][k].e && this.data.t.a[j].s.sh == 2){
-                                //console.log('paso2');
-                                mult = 1;
-                                letterTransform += ' rotate(' + animatorProps.r*mult + ')';
-                                break;
-                            }else if(ind <= ranges[j][k].sf && this.data.t.a[j].s.sh == 3){
-                                //console.log('paso3');
-                                mult = 1;
-                                letterTransform += ' rotate(' + animatorProps.r*mult + ')';
-                                break;
-                            }*/
-                            k += 1;
-                        }
-                    }
-                    if ('o' in animatorProps && ranges[j].length) {
-                        ind = this.textSpans[i].anIndexes[j];
-                        kLen = ranges[j].length;
-                        k = 0;
-                        while (k < kLen) {
-                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
-                                mult = 1;
-                                if(ranges[j][k].s - ind > 0){
-                                    mult -= ranges[j][k].s - ind;
-                                }
-                                if(ranges[j][k].e - ind < 1) {
-                                    mult -= 1 - (ranges[j][k].e - ind);
-                                }
-                                this.textSpans[i].elem.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
-                                break;
+                            }
+                        }else if(this.data.t.a[j].s.sh == 2){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 1 : 0;
                             }else{
-                                this.textSpans[i].elem.setAttribute('opacity',1);
+                                mult = Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
                             }
-                            k += 1;
+                        }else if(this.data.t.a[j].s.sh == 3){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 0 : 1;
+                            }else{
+                                mult = 1 - Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
                         }
+                        letterTransform += ' rotate(' + animatorProps.r*mult + ')';
                     }
-                }
-                for(j=0;j<jLen;j+=1){
-                    animatorProps = renderedData.a[j].a;
-                    if (animatorProps.s && ranges[j].length) {
+                    if ('o' in animatorProps && 's' in ranges[j]) {
                         ind = this.textSpans[i].anIndexes[j];
-                        kLen = ranges[j].length;
-                        k = 0;
-                        while (k < kLen) {
-                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
-                                mult = 1;
-                                if(ranges[j][k].s - ind > 0){
-                                    mult -= ranges[j][k].s - ind;
+                        mult = 0;
+                        if(this.data.t.a[j].s.sh == 1){
+                            if(ind >= Math.floor(ranges[j].s)){
+                                if(ind-ranges[j].s < 0){
+                                    mult = 1 - (ranges[j].s - ind);
+                                }else{
+                                    mult = Math.max(0,Math.min(ranges[j].e-ind,1));
                                 }
-                                if(ranges[j][k].e - ind < 1) {
-                                    mult -= 1 - (ranges[j][k].e - ind);
-                                }
-                                letterTransform += ' scale('+(1+((animatorProps.s[0]/100-1)*mult))+','+(1+((animatorProps.s[1]/100-1)*mult))+')';
-                                break;
                             }
-                            k += 1;
+                        }else if(this.data.t.a[j].s.sh == 2){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 1 : 0;
+                            }else{
+                                mult = Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
+                        }else if(this.data.t.a[j].s.sh == 3){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 0 : 1;
+                            }else{
+                                mult = 1 - Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
                         }
+                        this.textSpans[i].elem.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
                     }
                 }
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
-                    if (animatorProps.p && ranges[j].length) {
+                    if ('s' in animatorProps && 's' in ranges[j]) {
                         ind = this.textSpans[i].anIndexes[j];
-                        kLen = ranges[j].length;
-                        k = 0;
-                        while (k < kLen) {
-                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
-                                mult = 1;
-                                if(ranges[j][k].s - ind > 0){
-                                    mult -= ranges[j][k].s - ind;
+                        mult = 0;
+                        if(this.data.t.a[j].s.sh == 1){
+                            if(ind >= Math.floor(ranges[j].s)){
+                                if(ind-ranges[j].s < 0){
+                                    mult = 1 - (ranges[j].s - ind);
+                                }else{
+                                    mult = Math.max(0,Math.min(ranges[j].e-ind,1));
                                 }
-                                if(ranges[j][k].e - ind < 1) {
-                                    mult -= 1 - (ranges[j][k].e - ind);
-                                }
-                                letterTransform += ' translate('+ animatorProps.p[0]*mult+','+ animatorProps.p[1]*mult+')';
-                                break;
                             }
-                            k += 1;
+                        }else if(this.data.t.a[j].s.sh == 2){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 1 : 0;
+                            }else{
+                                mult = Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
+                        }else if(this.data.t.a[j].s.sh == 3){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 0 : 1;
+                            }else{
+                                mult = 1 - Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
                         }
+                        letterTransform += ' scale('+(1+((animatorProps.s[0]/100-1)*mult))+','+(1+((animatorProps.s[1]/100-1)*mult))+')';
                     }
                 }
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
-                    if (animatorProps.a && ranges[j].length) {
-                        kLen = ranges[j].length;
-                        k = 0;
-                        while (k < kLen) {
-                            if (ind >= ranges[j][k].sf && ind < ranges[j][k].e) {
-                                mult = 1;
-                                if(ranges[j][k].s - ind > 0){
-                                    mult -= ranges[j][k].s - ind;
+                    if ('a' in animatorProps && 's' in ranges[j]) {
+                        ind = this.textSpans[i].anIndexes[j];
+                        mult = 0;
+                        if(this.data.t.a[j].s.sh == 1){
+                            if(ind >= Math.floor(ranges[j].s)){
+                                if(ind-ranges[j].s < 0){
+                                    mult = 1 - (ranges[j].s - ind);
+                                }else{
+                                    mult = Math.max(0,Math.min(ranges[j].e-ind,1));
                                 }
-                                if(ranges[j][k].e - ind < 1) {
-                                    mult -= 1 - (ranges[j][k].e - ind);
-                                }
-                                letterTransform += ' translate('+ -animatorProps.a[0]*mult+','+ -animatorProps.a[1]*mult+')';
-                                break;
                             }
-                            k += 1;
+                        }else if(this.data.t.a[j].s.sh == 2){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 1 : 0;
+                            }else{
+                                mult = Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
+                        }else if(this.data.t.a[j].s.sh == 3){
+                            if(ranges[j].e === ranges[j].s){
+                                mult = ind >= ranges[j].e ? 0 : 1;
+                            }else{
+                                mult = 1 - Math.max(0,Math.min(0.5/(ranges[j].e-ranges[j].s) + (ind-ranges[j].s)/(ranges[j].e-ranges[j].s),1));
+                            }
                         }
+                        letterTransform += ' translate('+ -animatorProps.a[0]*mult+','+ -animatorProps.a[1]*mult+')';
                     }
                 }
 
