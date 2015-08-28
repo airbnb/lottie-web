@@ -49,6 +49,7 @@ var bm_textAnimatorHelper = (function () {
             property = layerInfo.property(i + 1);
             if (property.isModified) {
                 propertyName = property.matchName;
+                bm_eventDispatcher.log(propertyName);
                 switch (propertyName) {
                 case 'ADBE Text Anchor Point 3D':
                     ob.a = bm_keyframeHelper.exportKeyframes(property, frameRate);
@@ -58,6 +59,7 @@ var bm_textAnimatorHelper = (function () {
                     break;
                 case 'ADBE Text Scale 3D':
                     ob.s = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    bm_eventDispatcher.log(ob.s);
                     break;
                 case 'ADBE Text Rotation':
                     ob.r = bm_keyframeHelper.exportKeyframes(property, frameRate);
