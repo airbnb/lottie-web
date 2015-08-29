@@ -270,15 +270,24 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         ranges.push({s:s,e:e});
     }
 
-    var mult, ind = -1, offf;
+    var mult, ind = -1, offf, xPathPos, yPathPos;
+    var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd;
 
     for( i = 0; i < len; i += 1) {
         letterTransform = '';
-        if(this.textSpans[i].n && !('m' in this.data.t.p)) {
+        if(this.textSpans[i].n) {
             xPos = 0;
             yPos += this.yOffset;
             yPos += firstLine ? 1 : 0;
+            currentLength = initPathPos ;
             firstLine = false;
+            segmentInd = initSegmentInd;
+            pointInd = initPointInd;
+            points = segments[segmentInd].bezierData.points;
+            prevPoint = points[pointInd - 1];
+            currentPoint = points[pointInd];
+            partialLength = currentPoint.partialLength;
+            segmentLength = 0;
         }else{
             console.log('iii: ',i);
             console.log('ind: ',ind);
@@ -297,9 +306,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 while (flag) {
                     if (segmentLength + partialLength >= currentLength || !points) {
                         perc = (currentLength - segmentLength) / currentPoint.partialLength;
-                        xPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
-                        yPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-                        letterTransform += 'translate(' + xPos + ',' + yPos + ')';
+                        xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
+                        yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
+                        letterTransform += 'translate(' + xPathPos + ',' + yPathPos + ')';
                         if (this.data.t.p.p) {
                             tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
                             var rot = Math.atan(tanAngle) * 180 / Math.PI;
@@ -308,7 +317,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                             }
                             letterTransform += ' rotate(' + rot + ')';
                         }
-                        //letterTransform += ' translate(-' + this.textSpans[i].an / 2 + ',0)';
+                        letterTransform += 'translate(0,' + (renderedData.m.a[1]*yOff/100 + yPos) + ')';
                         lettersValue.push(letterTransform);
                         flag = false;
                     } else if (points) {
