@@ -14,15 +14,15 @@ ITextElement.prototype.createElements = function(){
     var documentData = this.data.t.d;
 
     this.textElem = document.createElementNS(svgNS,'g');
+    //this.textElem.textContent = documentData.t;
     this.textElem.setAttribute('fill', documentData.fc);
     this.textElem.setAttribute('font-size', documentData.s);
     this.textElem.setAttribute('font-family', documentData.f + ', sans-serif');
-    //this.textElem.setAttribute('font-family', 'grafolita-script, sans-serif');
     this.layerElement.appendChild(this.textElem);
     var i, len = documentData.t.length,tSpan;
     var newLineFlag, index = 0, val;
     var anchorGrouping = this.data.t.m.g;
-    var currentSize = 0, currentPos = 0, groupIndex = 0;
+    var currentSize = 0, currentPos = 0;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
@@ -38,35 +38,42 @@ ITextElement.prototype.createElements = function(){
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
         this.textElem.appendChild(tSpan);
         var cLength = tSpan.getComputedTextLength();
+        console.log('cLength: ',cLength);
         this.textSpans.push({elem:tSpan,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
-        if(!newLineFlag){
-            index += 1;
-        }
         if(anchorGrouping == 2){
             currentSize += cLength;
             if(val == '' || val == '\u00A0' || i == len - 1){
+                if(val == '' || val == '\u00A0'){
+                    currentSize -= cLength;
+                }
                 while(currentPos<=i){
                     this.textSpans[currentPos].an = currentSize;
-                    this.textSpans[currentPos].ind = groupIndex;
+                    this.textSpans[currentPos].ind = index;
+                    this.textSpans[currentPos].extra = cLength;
                     currentPos += 1;
                 }
+                index += 1;
                 currentSize = 0;
-                groupIndex += 1;
             }
         }else if(anchorGrouping == 3){
             currentSize += cLength;
             if(val == '' || i == len - 1){
+                if(val == ''){
+                    currentSize -= cLength;
+                }
                 while(currentPos<=i){
                     this.textSpans[currentPos].an = currentSize;
-                    this.textSpans[currentPos].ind = groupIndex;
+                    this.textSpans[currentPos].ind = index;
+                    this.textSpans[currentPos].extra = cLength;
                     currentPos += 1;
                 }
                 currentSize = 0;
-                groupIndex += 1;
+                index += 1;
             }
         }else{
-            this.textSpans[i].ind = groupIndex;
-            groupIndex += 1;
+            this.textSpans[index].ind = index;
+            this.textSpans[index].extra = 0;
+            index += 1;
         }
     }
     var animators = this.data.t.a;
@@ -231,63 +238,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         currentPoint = points[pointInd];
         var partialLength = currentPoint.partialLength;
         var perc, tanAngle;
-        /*for (i = 0; i < len; i += 1) {
-            currentLength += this.textSpans[i].l / 2;
-            flag = true;
-            while (flag) {
-                contador = 0;
-                if (segmentLength + partialLength >= currentLength || !points) {
-                    perc = (currentLength - segmentLength) / currentPoint.partialLength;
-                    xPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
-                    yPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-                    letterTransform = 'translate(' + xPos + ',' + yPos + ')';
-                    if (this.data.t.p.p) {
-                        tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
-                        var rot = Math.atan(tanAngle) * 180 / Math.PI;
-                        if (currentPoint.point[0] < prevPoint.point[0]) {
-                            rot += 180;
-                        }
-                        letterTransform += ' rotate(' + rot + ')';
-                    }
-                    letterTransform += ' translate(-' + this.textSpans[i].l / 2 + ',0)';
-                    lettersValue.push(letterTransform);
-                    flag = false;
-                } else if (points) {
-                    segmentLength += currentPoint.partialLength;
-                    pointInd += 1;
-                    if (pointInd >= points.length) {
-                        pointInd = 0;
-                        segmentInd += 1;
-                        if (!segments[segmentInd]) {
-                            if (mask.cl) {
-                                pointInd = 0;
-                                segmentInd = 0;
-                                points = segments[segmentInd].bezierData.points;
-                            } else {
-                                points = null;
-                            }
-                        } else {
-                            points = segments[segmentInd].bezierData.points;
-                        }
-                    }
-                    if (points) {
-                        prevPoint = currentPoint;
-                        currentPoint = points[pointInd];
-                        partialLength = currentPoint.partialLength;
-                    }
-                }
-            }
-            currentLength += this.textSpans[i].l / 2;
-            this.renderedLetters[num] = lettersValue;
-
-        }*/
     }
-
-
-
-
-
-
 
     len = this.textSpans.length;
     xPos = 0;
@@ -319,7 +270,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         ranges.push({s:s,e:e});
     }
 
-    var k, kLen, mult, ind = -1, offf;
+    var mult, ind = -1, offf;
 
     for( i = 0; i < len; i += 1) {
         letterTransform = '';
@@ -329,11 +280,19 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             yPos += firstLine ? 1 : 0;
             firstLine = false;
         }else{
+            console.log('iii: ',i);
+            console.log('ind: ',ind);
             if('m' in this.data.t.p) {
-                if(this.textSpans[i].ind !== ind){
-                    currentLength += this.textSpans[i].an / 2;
+                if(ind !== this.textSpans[i].ind){
+                    if(this.textSpans[ind]){
+                        currentLength += this.textSpans[ind].extra;
+                    }
+                    currentLength += this.textSpans[i].an/2;
+                    ind = this.textSpans[i].ind;
                 }
-                letterTransform += 'translate(' + -this.textSpans[i].an / 2 + ',' + 0 + ')';
+                currentLength += renderedData.m.a[0]*this.textSpans[i].an/200;
+
+                //letterTransform += 'translate(' + -this.textSpans[i].an / 2 + ',' + 0 + ')';
                 flag = true;
                 while (flag) {
                     if (segmentLength + partialLength >= currentLength || !points) {
@@ -377,20 +336,16 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                         }
                     }
                 }
-                if(this.textSpans[i].ind !== ind){
-                    currentLength += this.textSpans[i].an / 2;
-                    ind = this.textSpans[i].ind;
-                }else{
-                }
                 //this.textSpans[i].elem.setAttribute('transform',letterTransform);
                 //continue;
+                offf = this.textSpans[i].an/2 - this.textSpans[i].add;
             }else{
                 letterTransform += ' translate('+xPos+','+yPos+')';
-            }
-            offf = this.textSpans[i].an/2 - this.textSpans[i].add;
-            letterTransform += ' translate('+offf+',0)';
+                offf = this.textSpans[i].an/2 - this.textSpans[i].add;
+                letterTransform += ' translate('+offf+',0)';
 
-            letterTransform += ' translate('+renderedData.m.a[0]*this.textSpans[i].an/200+','+ renderedData.m.a[1]*yOff/100+')';
+                letterTransform += ' translate('+renderedData.m.a[0]*this.textSpans[i].an/200+','+ renderedData.m.a[1]*yOff/100+')';
+            }
 
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
@@ -426,10 +381,18 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 }
             }
 
-
-            letterTransform += ' translate(' + -offf + ',0)';
-            letterTransform += ' translate(' + -renderedData.m.a[0]*this.textSpans[i].an/200+','+ -renderedData.m.a[1]*yOff/100+')';
-            xPos += this.textSpans[i].l;
+            if('m' in this.data.t.p) {
+                letterTransform += ' translate('+-renderedData.m.a[0]*this.textSpans[i].an/200+','+ -renderedData.m.a[1]*yOff/100+')';
+                currentLength -= renderedData.m.a[0]*this.textSpans[i].an/200;
+                if(this.textSpans[i+1] && ind !== this.textSpans[i+1].ind){
+                    currentLength += this.textSpans[i].an / 2;
+                }
+                letterTransform += ' translate(' + -offf + ',0)';
+            }else{
+                letterTransform += ' translate(' + -offf + ',0)';
+                letterTransform += ' translate(' + -renderedData.m.a[0]*this.textSpans[i].an/200+','+ -renderedData.m.a[1]*yOff/100+')';
+                xPos += this.textSpans[i].l;
+            }
             this.textSpans[i].elem.setAttribute('transform',letterTransform);
         }
     }
@@ -459,7 +422,7 @@ ITextElement.prototype.getMult = function(ind,s,e,type){
         }
     }
     return mult;
-}
+};
 
 ITextElement.prototype.destroy = function(){
     this.parent.destroy.call();
