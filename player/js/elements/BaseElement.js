@@ -243,3 +243,6 @@ BaseElement.prototype.setMatte = function(id){
 BaseElement.prototype.hide = function(){
 
 };
+
+
+BaseElement.prototype.mHelper = new Matrix();
