@@ -80,7 +80,8 @@ var bm_renderManager = (function () {
         var exportData = ob.renderData.exportData;
         exportData.animation = {};
         exportData.assets = [];
-        exportData.v = '2.1.1';
+        exportData.fonts = [];
+        exportData.v = '2.1.2';
         exportData.animation.layers = [];
         exportData.animation.totalFrames = comp.workAreaDuration * comp.frameRate;
         exportData.animation.frameRate = comp.frameRate;
@@ -98,6 +99,12 @@ var bm_renderManager = (function () {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
         var dataFile = new File(destinationPath);
         dataFile.open('w', 'TEXT', '????');
+        if (ob.renderData.exportData.assets.length === 0) {
+            delete ob.renderData.exportData.assets;
+        }
+        if (ob.renderData.exportData.fonts.length === 0) {
+            delete ob.renderData.exportData.fonts;
+        }
         var string = JSON.stringify(ob.renderData.exportData);
         string = string.replace(/\n/g, '');
         try {
@@ -143,12 +150,23 @@ var bm_renderManager = (function () {
         }
     }
     
-    function imagesReady() {
+    function checkFonts() {
+        var fonts = bm_sourceHelper.getFonts();
+        if (fonts.length === 0) {
+            saveData();
+        } else {
+            bm_eventDispatcher.sendEvent('bm:render:fonts', {type: 'save', compId: currentCompID, fonts: fonts});
+        }
+    }
+    
+    function setFontData(fontData) {
+        var exportData = ob.renderData.exportData;
+        exportData.fonts = fontData;
         saveData();
     }
     
-    function imagesSaved() {
-        saveData();
+    function imagesReady() {
+        checkFonts();
     }
     
     function renderLayerComplete() {
@@ -165,6 +183,7 @@ var bm_renderManager = (function () {
     ob.renderLayerComplete = renderLayerComplete;
     ob.renderNextLayer = renderNextLayer;
     ob.imagesReady = imagesReady;
+    ob.setFontData = setFontData;
     
     return ob;
 }());

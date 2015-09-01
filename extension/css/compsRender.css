@@ -84,3 +84,38 @@
     /*display: none;*/
     cursor: pointer;
 }
+
+#compsRender div.fontsContainer {
+    background-color: #FFFFFF;
+    padding: 10px 0;
+    display: none;
+}
+
+#compsRender div.fontsContainer .buttons {
+    padding-top: 5px;
+}
+
+#compsRender div.fontElement {
+    width: 100%;
+    padding: 4px;
+    border-bottom: 1px solid #EAD3A8;
+}
+
+#compsRender div.fontElement div.fontTitle {
+    color: #D23641;
+    font-size: 14px;
+}
+
+#compsRender div.fontElement .fontFormItem{
+    padding: 5px;
+}
+
+#compsRender div.fontElement .fontFormItem span{
+    color: #484043;
+    padding-bottom: 2px;
+}
+
+#compsRender div.fontElement input {
+    width: 100%;
+    font-size: 12px;
+}
