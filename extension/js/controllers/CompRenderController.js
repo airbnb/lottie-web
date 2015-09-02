@@ -1,11 +1,13 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, renderingData, folderData, bodymovin */
+/*global $, renderingData, folderData, bodymovin, LocalStorageManager */
 var compRenderController = (function () {
     'use strict';
     var view, renders, csInterface, compositions, cancelButton, returnButton;
     var ob = {};
     var elementTemplate = "<div class='renderingElement'><div class='header'><div class='compName'></div></div><div class='progressBar'></div><div class='status'><div class='compAnim'></div><div class='statusText'></div><div class='folder'></div><div class='buttonHover'></div></div><div class='fontsContainer'><div class='fontsList'></div><div class='buttons'><button class='generalButton continue'>Continue</button></div></div></div>";
     var fontTemplate = "<div class='fontElement'><div class='fontTitle'>Arial</div><div class='fontFormItem'><span>Font path (optional)</span><input class='fontPath' type='text' /></div><div class='fontFormItem'><span>Font Family (optional)</span><input class='fontFamily' type='text' /></div></div>";
+    
+    var fontsStorage;
     
     function addFolderEvent(elem, data) {
         elem.on('click', function () {
@@ -94,6 +96,23 @@ var compRenderController = (function () {
         }
     }
     
+    function getStoredFontData(name) {
+        var i = 0, len = fontsStorage.length;
+        while (i < len) {
+            if (fontsStorage[i].fName === name) {
+                return fontsStorage[i];
+            }
+            i += 1;
+        }
+        var ob = {
+            fName : name,
+            fFamily : name,
+            fPath : ''
+        };
+        fontsStorage.push(ob);
+        return ob;
+    }
+    
     function saveFontsData(fontsList, fonts) {
         var fontsInfo = [], fontOb;
         var children = fontsList.children();
@@ -102,9 +121,12 @@ var compRenderController = (function () {
             fontOb.fName = fonts[index];
             fontOb.fPath = $(item).find('.fontPath')[0].value;
             fontOb.fFamily = $(item).find('.fontFamily')[0].value;
+            var storedOb = getStoredFontData(fonts[index]);
+            storedOb.fPath = fontOb.fPath;
+            storedOb.fFamily = fontOb.fFamily;
             fontsInfo.push(fontOb);
         });
-        console.log('fontsInfo: ', fontsInfo);
+        LocalStorageManager.setItem('fonts', fontsStorage);
         var fontsInfoString = JSON.stringify(fontsInfo);
         var eScript = 'bm_renderManager.setFontData(' + fontsInfoString + ')';
         csInterface.evalScript(eScript);
@@ -129,11 +151,13 @@ var compRenderController = (function () {
         fontsContainer.show();
         var fontsList = fontsContainer.find('.fontsList');
         len = fonts.length;
-        var fontElem;
+        var fontElem, storedData;
         for (i = 0; i < len; i += 1) {
+            storedData = getStoredFontData(fonts[i]);
             fontElem = $(fontTemplate);
             fontElem.find('.fontTitle').html(fonts[i]);
-            fontElem.find('.fontFamily').val(fonts[i]);
+            fontElem.find('.fontFamily').val(storedData.fFamily);
+            fontElem.find('.fontPath').val(storedData.fPath);
             fontsList.append(fontElem);
         }
         fontsContainer.find('button.continue').on('click', function () {
@@ -148,6 +172,11 @@ var compRenderController = (function () {
     }
     
     function init(csIntfc) {
+        fontsStorage = LocalStorageManager.getItem('fonts');
+        if (fontsStorage === null) {
+            fontsStorage = [];
+            LocalStorageManager.setItem('fonts', fontsStorage);
+        }
         view = $('#compsRender');
         renders = view.find('.renders');
         view.hide();
