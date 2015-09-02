@@ -16,7 +16,7 @@ ITextElement.prototype.createElements = function(){
     //this.textElem.textContent = documentData.t;
     this.textElem.setAttribute('fill', documentData.fc);
     this.textElem.setAttribute('font-size', documentData.s);
-    this.textElem.setAttribute('font-family', FontManager.getFontByName(documentData.f));
+    this.textElem.setAttribute('font-family', this.globalData.fontManager.getFontByName(documentData.f));
     this.layerElement.appendChild(this.textElem);
     var i, len = documentData.t.length,tSpan;
     var newLineFlag, index = 0, val;
