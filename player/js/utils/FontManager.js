@@ -63,11 +63,27 @@ var FontManager = (function(){
         }
     };
 
-    function addFonts(fontArr, defs){
-        if(!fontArr){
+    function waitForTypekit() {
+        if(window.Typekit && window.Typekit.load){
+            try{Typekit.load({ async: false });}catch(e){console.log('errwor',e)}
+        }else{
+            setTimeout(waitForTypekit,50);
+        }
+    }
+
+    function addFonts(fontData, defs){
+        if(!fontData){
             this.loaded = true;
             return;
         }
+        if(fontData.tk){
+            var s = document.createElement('script');
+            s.setAttribute('src',fontData.tk);
+            defs.appendChild(s);
+            waitForTypekit();
+
+        }
+        var fontArr = fontData.list;
         var i, len = fontArr.length;
         for(i=0; i<len; i+= 1){
             fontArr[i].loaded = false;
@@ -81,10 +97,12 @@ var FontManager = (function(){
                 defs.appendChild(l);*/
                 /////
                 //document.getElementsByTagName('head')[0].appendChild(l);
-                var s = document.createElement('style');
-                s.type = "text/css";
-                s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
-                defs.appendChild(s);
+                if(fontArr[i].fPath){
+                    var s = document.createElement('style');
+                    s.type = "text/css";
+                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                    defs.appendChild(s);
+                }
             }
             this.fonts.push(fontArr[i]);
         }

@@ -91,6 +91,33 @@
     display: none;
 }
 
+#compsRender div.fontsContainer .typekitContainer{
+    padding: 4px 0 8px;
+}
+
+#compsRender div.fontsContainer .typekitContainer span{
+    color: #D23641;
+    font-size: 12px;
+}
+
+#compsRender div.fontsContainer .typekitContainer input{
+    width: 100%;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+#compsRender div.fontsContainer .typekitContainer .typekitElem{
+    margin-top: 10px;
+    background-color: #484043;
+    padding: 4px;
+    display: none;
+    margin: 8px 10px;
+}
+
+#compsRender div.fontsContainer .typekitContainer .typekitElem.visible{
+    display: block;
+}
+
 #compsRender div.fontsContainer .buttons {
     padding-top: 5px;
 }

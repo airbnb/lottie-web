@@ -75,6 +75,11 @@
 
     window.bodymovin = bodymovinjs;
 
-    var readyStateCheckInterval = setInterval(checkReady, 100);
+    var standalone = '__STANDALONE__';
+    var animationData = '';
+
+    if(standalone !== true){
+        var readyStateCheckInterval = setInterval(checkReady, 100);
+    }
 
 }(window));
