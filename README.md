@@ -128,8 +128,8 @@ bodymovin has 6 main methods:
 **bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.setSpeed()** -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.searchAnimations()** -- looks for elements with class "bodymovin"
-**bodymovin.loadAnimation()** -- Explained befor
+**bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
+**bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
 **bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url
 
 See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations
