@@ -1,9 +1,10 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, app, File*/
+/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, app, File*/
 var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer;
+    var standalone = false;
     
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -70,8 +71,9 @@ var bm_renderManager = (function () {
         }
     }
     
-    function render(comp, destination) {
+    function render(comp, destination, sAlone) {
         currentCompID = comp.id;
+        standalone = sAlone;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
@@ -107,6 +109,12 @@ var bm_renderManager = (function () {
         }
         var string = JSON.stringify(ob.renderData.exportData);
         string = string.replace(/\n/g, '');
+        if (standalone) {
+            var bodymovinJsStr = bm_downloadManager.getStandaloneData();
+            string = bodymovinJsStr.replace('"__[ANIMATIONDATA]__"', "'" + string + "'");
+            string = string.replace('"__[STANDALONE]__"', 'true');
+        }
+        //__[STANDALONE]__
         try {
             dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
             //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED

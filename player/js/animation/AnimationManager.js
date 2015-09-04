@@ -5,7 +5,7 @@ var animationManager = (function(){
     var isPaused = true;
     var len = 0;
 
-    function registerAnimation(element){
+    function registerAnimation(element, animationData){
         if(!element){
             return null;
         }
@@ -17,7 +17,7 @@ var animationManager = (function(){
             i+=1;
         }
         var animItem = new AnimationItem();
-        animItem.setData(element);
+        animItem.setData(element, animationData);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
         return animItem;
@@ -115,9 +115,12 @@ var animationManager = (function(){
         }
     }
 
-    function searchAnimations(){
+    function searchAnimations(animationData){
         var animElements = document.getElementsByClassName('bodymovin');
-        Array.prototype.forEach.call(animElements,registerAnimation);
+        var i, len = animElements.length;
+        for(i=0;i<len;i+=1){
+            registerAnimation(animElements[i], animationData);
+        }
     }
 
     function resize(){

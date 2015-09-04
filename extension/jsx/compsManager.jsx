@@ -20,7 +20,8 @@ var bm_compsManager = (function () {
                 id: comp.id,
                 destination: '',
                 absoluteURI: '',
-                selected: false
+                selected: false,
+                standalone: false
             };
         }
         
@@ -40,6 +41,27 @@ var bm_compsManager = (function () {
         }
     }
     
+    function setCompositionStandaloneState(id, selectedFlag) {
+        var i = 0, len = compositions.length, compData;
+        while (i < len) {
+            if (compositions[i].id === id) {
+                compData = compositions[i];
+                compData.standalone = selectedFlag;
+                if (compData.destination) {
+                    var lastInd = compData.destination.lastIndexOf('.');
+                    compData.destination = compData.destination.substr(0, lastInd);
+                    compData.destination += compData.standalone ? '.js' : '.json';
+                    lastInd = compData.absoluteURI.lastIndexOf('.');
+                    compData.absoluteURI = compData.absoluteURI.substr(0, lastInd);
+                    compData.absoluteURI += compData.standalone ? '.js' : '.json';
+                    bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
+                }
+                break;
+            }
+            i += 1;
+        }
+    }
+    
     function searchCompositionDestination(id) {
         var i = 0, len = compositions.length, compData;
         while (i < len) {
@@ -49,7 +71,13 @@ var bm_compsManager = (function () {
             }
             i += 1;
         }
-        var uri = compData.absoluteURI || Folder.desktop.absoluteURI + '/data.json';
+        var uri;
+        if (compData.absoluteURI) {
+            uri = compData.absoluteURI;
+        } else {
+            uri = Folder.desktop.absoluteURI + '/data';
+            uri += compData.standalone ? '.js' : '.json';
+        }
         var f = new File(uri);
         var saveFileData = f.saveDlg();
         if (saveFileData !== null) {
@@ -103,12 +131,13 @@ var bm_compsManager = (function () {
             return;
         }
         projectComps = bm_projectManager.getCompositions();
-        var comp, destination;
+        var comp, destination, standalone;
         var i = 0, len = projectComps.length;
         while (i < len) {
             if (projectComps[i].id === renderingCompositions[currentRenderingComposition].id) {
                 comp = projectComps[i];
                 destination = renderingCompositions[currentRenderingComposition].absoluteURI;
+                standalone = renderingCompositions[currentRenderingComposition].standalone;
                 break;
             }
             i += 1;
@@ -118,7 +147,7 @@ var bm_compsManager = (function () {
             renderNextComposition();
             return;
         }
-        bm_renderManager.render(comp, destination);
+        bm_renderManager.render(comp, destination, standalone);
     }
     
     function render() {
@@ -155,6 +184,7 @@ var bm_compsManager = (function () {
     ob = {
         getCompositions : getCompositions,
         setCompositionSelectionState : setCompositionSelectionState,
+        setCompositionStandaloneState : setCompositionStandaloneState,
         setCompositionDestinationFolder : setCompositionDestinationFolder,
         searchCompositionDestination : searchCompositionDestination,
         renderComplete : renderComplete,

@@ -87,9 +87,10 @@ AnimationItem.prototype.setParams = function(params) {
     }
 };
 
-AnimationItem.prototype.setData = function (wrapper) {
+AnimationItem.prototype.setData = function (wrapper, animationData) {
     var params = {
-        wrapper: wrapper
+        wrapper: wrapper,
+        animationData: JSON.parse(animationData)
     };
     var wrapperAttributes = wrapper.attributes;
 

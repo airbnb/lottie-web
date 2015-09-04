@@ -28,7 +28,18 @@ var bm_downloadManager = (function () {
         }
     }
     
+    function getStandaloneData() {
+        var extensionPath = $.fileName.split('/').slice(0, -1).join('/') + '/';
+        var folder = new Folder(extensionPath);
+        folder = folder.parent;
+        var bmFile = new File(folder.absoluteURI + '/assets/player/standalone.js');
+        bmFile.open('r');
+        var str = bmFile.read();
+        return str;
+    }
+    
     ob.getPlayer = getPlayer;
+    ob.getStandaloneData = getStandaloneData;
 
     return ob;
 }());

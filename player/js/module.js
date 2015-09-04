@@ -24,7 +24,11 @@
         animationManager.moveFrame(value);
     }
     function searchAnimations(){
-        animationManager.searchAnimations();
+        if(standalone === true){
+            animationManager.searchAnimations(animationData);
+        }else{
+            animationManager.searchAnimations();
+        }
     }
     function registerAnimation(elem){
         return animationManager.registerAnimation(elem);
@@ -42,6 +46,9 @@
         subframeEnabled = flag;
     }
     function loadAnimation(params){
+        if(standalone === true){
+            params.animationData = JSON.parse(animationData);
+        }
         return animationManager.loadAnimation(params);
     }
     function destroy(animation){
@@ -78,10 +85,6 @@
     var standalone = '__[STANDALONE]__';
     var animationData = '__[ANIMATIONDATA]__';
 
-    if(standalone !== true){
-        var readyStateCheckInterval = setInterval(checkReady, 100);
-    }else{
-
-    }
+    var readyStateCheckInterval = setInterval(checkReady, 100);
 
 }(window));

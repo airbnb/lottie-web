@@ -1,10 +1,10 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, SystemPath, radioData, bodymovin, messageController, mainController */
+/*global $, SystemPath, radioData, checkData, bodymovin, messageController, mainController */
 var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
     var compositions = [];
-    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
+    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td standaloneTd"><div class="hideExtra standalone"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
     
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
@@ -51,7 +51,22 @@ var compSelectionController = (function () {
             var eScript = 'bm_compsManager.searchCompositionDestination(' + comp.id + ')';
             csInterface.evalScript(eScript);
         }
+        
+        function handleStandaloneClick() {
+            if (!comp.selected && !comp.standalone) {
+                handleStateClick();
+            }
+            comp.standalone = !comp.standalone;
+            if (comp.standalone) {
+                comp.animCheck.play();
+            } else {
+                comp.animCheck.goToAndStop(0);
+            }
+            var eScript = 'bm_compsManager.setCompositionStandaloneState(' + comp.id + ',' + comp.standalone + ')';
+            csInterface.evalScript(eScript);
+        }
         elem.find('.stateTd').on('click', handleStateClick);
+        elem.find('.standaloneTd').on('click', handleStandaloneClick);
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
@@ -81,6 +96,20 @@ var compSelectionController = (function () {
             };
             var anim = bodymovin.loadAnimation(params);
             comp.anim = anim;
+            
+            animContainer = comp.elem.find('.standalone')[0];
+            animData = JSON.parse(checkData);
+            params = {
+                animType: 'canvas',
+                wrapper: animContainer,
+                loop: false,
+                autoplay: false,
+                prerender: true,
+                animationData: animData
+            };
+            anim = bodymovin.loadAnimation(params);
+            comp.animCheck = anim;
+            
             comp.resized = false;
             compositions.push(comp);
             addElemListeners(comp);
@@ -88,6 +117,7 @@ var compSelectionController = (function () {
         comp.active = true;
         comp.name = item.name;
         comp.selected = item.selected;
+        comp.standalone = item.standalone;
         comp.destination = item.destination;
         var elem = comp.elem;
         elem.find('.name').html(comp.name);
@@ -100,6 +130,7 @@ var compSelectionController = (function () {
         compsListContainer.append(comp.elem);
         if (!comp.resized) {
             comp.anim.resize();
+            comp.animCheck.resize();
             comp.resized = true;
         }
     }

@@ -55,8 +55,31 @@
     color: #D23641;
 }
 
+#compsSelection .compsTable .th{
+    line-height: 15px;
+}
+
 #compsSelection .compsTable .th.state{
     width: 56px;
+}
+
+#compsSelection .compsTable .th.standalone{
+    width: 90px;
+}
+
+#compsSelection .compsTable .th.standalone span{
+    display: inline-block;
+    margin: 2px;
+}
+
+#compsSelection .compsTable .th.standalone span.question{
+    border-radius: 50%;
+    background-color: #EAD3A8;
+    color: #484043;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    cursor: pointer;
 }
 
 #compsSelection .compsTable .td .state{
@@ -69,6 +92,10 @@
 }
 
 #compsSelection .compsTable .td .hideExtra.state{
+    padding: 0;
+}
+
+#compsSelection .compsTable .td .hideExtra.standalone{
     padding: 0;
 }
 
