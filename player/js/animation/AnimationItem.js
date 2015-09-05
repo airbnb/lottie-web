@@ -131,7 +131,11 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);
     this.updaFrameModifier();
-    this.waitForFontsLoaded();
+    if(this.renderer.globalData.fontManager){
+        this.waitForFontsLoaded();
+    }else{
+        this.checkLoaded();
+    }
 };
 
 AnimationItem.prototype.waitForFontsLoaded = (function(){

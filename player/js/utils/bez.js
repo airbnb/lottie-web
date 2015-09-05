@@ -43,6 +43,11 @@ function bezFunction(){
     var getBezierLength = (function(){
         var storedBezierCurves = {};
 
+        function Segment(l,p){
+            this.l = l;
+            this.p = p;
+        }
+
         return function(pt1,pt2,pt3,pt4){
             var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
             if(storedBezierCurves[bezierName]){
@@ -77,7 +82,7 @@ function bezFunction(){
                     ptDistance = math.sqrt(ptDistance);
                     addedLength += ptDistance;
                 }
-                lengthData.segments.push({l:addedLength,p:perc});
+                lengthData.segments.push(new Segment(addedLength,perc));
             }
             lengthData.addedLength = addedLength;
             storedBezierCurves[bezierName] = lengthData;
