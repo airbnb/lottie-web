@@ -44,7 +44,8 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
             this.stylesList.push({
                 pathElement: pathElement,
                 type: arr[i].ty,
-                d: ''
+                d: '',
+                ld: 'a'
             });
             data[i].style = this.stylesList[this.stylesList.length - 1];
             ownArrays.push(data[i].style);
@@ -96,6 +97,7 @@ ShapeItemElement.prototype.hideShape = function(){
     var i, len = this.stylesList.length;
     for(i=len-1;i>=0;i-=1){
         this.stylesList[i].pathElement.setAttribute('d','M 0,0');
+        this.stylesList[i].ld = 'M 0,0';
     }
 };
 
@@ -155,10 +157,12 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     }
     len = this.stylesList.length;
     for(i=0;i<len;i+=1){
-        if(this.stylesList[i].d == ''){
+        if(this.stylesList[i].d == '' && this.stylesList[i].ld !== ''){
             this.stylesList[i].pathElement.setAttribute('d','M 0,0');
-        }else{
+            this.stylesList[i].ld = this.stylesList[i].d;
+        }else if(this.stylesList[i].ld !== this.stylesList[i].d){
             this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
+            this.stylesList[i].ld = this.stylesList[i].d;
         }
     }
 

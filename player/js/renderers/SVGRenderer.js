@@ -77,6 +77,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.setAttribute('preserveAspectRatio','xMidYMid meet');
     this.animationItem.container.style.width = '100%';
     this.animationItem.container.style.height = '100%';
+    this.animationItem.container.style.transform = 'translate3d(0,0,0)';
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     //Mask animation
