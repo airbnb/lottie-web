@@ -76,7 +76,7 @@ var animationManager = (function(){
             }
         }
         initTime = nowTime;
-        //setTimeout(resume,10);
+        //setTimeout(resume,60);
         requestAnimationFrame(resume);
     }
 

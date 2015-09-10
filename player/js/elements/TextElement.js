@@ -104,7 +104,7 @@ ITextElement.prototype.createElements = function(){
     this.yOffset = documentData.s*1.2;
     this.fontSize = documentData.s;
 
-    this.pathElem = document.createElementNS(svgNS,'path');
+    /*this.pathElem = document.createElementNS(svgNS,'path');
     this.pathElem.setAttribute('stroke', '#ff0000');
     this.pathElem.setAttribute('stroke-width', '1');
     this.pathElem.setAttribute('fill', 'none');
@@ -115,7 +115,7 @@ ITextElement.prototype.createElements = function(){
     this.pointsElem.setAttribute('stroke', '#00ff00');
     this.pointsElem.setAttribute('stroke-width', '1');
     this.pointsElem.setAttribute('fill', 'none');
-    this.layerElement.appendChild(this.pointsElem);
+    this.layerElement.appendChild(this.pointsElem);*/
 };
 
 ITextElement.prototype.hide = function(){
@@ -222,12 +222,10 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         ////*/
 
         len = this.textSpans.length;
-        //console.log(this.textSpans);
         var currentLength = this.data.renderedData[num].t.p[0], segmentInd = 0, pointInd = 1, currentSegment, currentPoint, prevPoint, points;
         var segmentLength = 0, flag = true, contador = 0;
         var segments = pathInfo.segments;
         if (currentLength < 0 && mask.cl) {
-            //console.log(currentLength);
             if (pathInfo.tLength < Math.abs(currentLength)) {
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
