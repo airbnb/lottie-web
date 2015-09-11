@@ -100,7 +100,7 @@ function bezFunction(){
         var pt2 = keyData.e;
         var pt3 = keyData.to;
         var pt4 = keyData.ti;
-        var curveSegments = 500;
+        var curveSegments = 100;
         var k;
         var i, len;
         var ptCoord,perc,addedLength = 0;
