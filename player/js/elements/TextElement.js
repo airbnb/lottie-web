@@ -203,7 +203,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         return;
     }
 
-    var xPos,yPos, letterTransform;
+    var xPos,yPos;
     var lettersValue = [], letterValue;
     if('m' in this.data.t.p) {
         var mask = this.data.masksProperties[this.data.t.p.m];
@@ -320,7 +320,6 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
 
     for( i = 0; i < len; i += 1) {
         matrixHelper.reset();
-        letterTransform = '';
         elemOpacity = 1;
         letterValue = {};
         if(this.textSpans[i].n) {
@@ -346,15 +345,22 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                     ind = this.textSpans[i].ind;
                 }
                 currentLength += renderedData.m.a[0]*this.textSpans[i].an/200;
+                var animatorOffset = 0;
+                for(j=0;j<jLen;j+=1){
+                    animatorProps = renderedData.a[j].a;
+                    if ('p' in animatorProps && 's' in ranges[j]) {
+                        mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
 
-                //letterTransform += 'translate(' + -this.textSpans[i].an / 2 + ',' + 0 + ')';
+                        animatorOffset += animatorProps.p[0] * mult;
+                    }
+                }
+
                 flag = true;
                 while (flag) {
-                    if (segmentLength + partialLength >= currentLength || !points) {
-                        perc = (currentLength - segmentLength) / currentPoint.partialLength;
+                    if (segmentLength + partialLength >= currentLength + animatorOffset || !points) {
+                        perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
                         xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
                         yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-                        letterTransform += 'translate(' + xPathPos + ',' + yPathPos + ')';
                         matrixHelper.translate(xPathPos,yPathPos);
                         if (this.data.t.p.p) {
                             tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
@@ -362,10 +368,8 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                             if (currentPoint.point[0] < prevPoint.point[0]) {
                                 rot += 180;
                             }
-                            letterTransform += ' rotate(' + rot + ')';
                             matrixHelper.rotate(rot*Math.PI/180);
                         }
-                        letterTransform += 'translate(0,' + (renderedData.m.a[1]*yOff/100 + yPos) + ')';
                         matrixHelper.translate(0,(renderedData.m.a[1]*yOff/100 + yPos));
                         flag = false;
                     } else if (points) {
@@ -393,17 +397,12 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                         }
                     }
                 }
-                //this.textSpans[i].elem.setAttribute('transform',letterTransform);
-                //continue;
                 offf = this.textSpans[i].an/2 - this.textSpans[i].add;
             }else{
-                letterTransform += ' translate('+xPos+','+yPos+')';
                 matrixHelper.translate(xPos,yPos);
                 offf = this.textSpans[i].an/2 - this.textSpans[i].add;
-                letterTransform += ' translate('+offf+',0)';
                 matrixHelper.translate(offf,0);
 
-                letterTransform += ' translate('+renderedData.m.a[0]*this.textSpans[i].an/200+','+ renderedData.m.a[1]*yOff/100+')';
                 matrixHelper.translate(renderedData.m.a[0]*this.textSpans[i].an/200, renderedData.m.a[1]*yOff/100);
             }
 
@@ -411,8 +410,12 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 animatorProps = renderedData.a[j].a;
                 if ('p' in animatorProps && 's' in ranges[j]) {
                     mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
-                    letterTransform += ' translate('+ animatorProps.p[0]*mult+','+ animatorProps.p[1]*mult+')';
-                    matrixHelper.translate(animatorProps.p[0]*mult, animatorProps.p[1]*mult);
+
+                    if('m' in this.data.t.p) {
+                        matrixHelper.translate(0, animatorProps.p[1] * mult);
+                    }else{
+                        matrixHelper.translate(animatorProps.p[0] * mult, animatorProps.p[1] * mult);
+                    }
                 }
             }
             if(this.strokeWidthAnim) {
@@ -428,7 +431,6 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 animatorProps = renderedData.a[j].a;
                 mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
                 if ('r' in animatorProps && 's' in ranges[j]) {
-                    letterTransform += ' rotate(' + animatorProps.r*mult + ')';
                     matrixHelper.rotate(animatorProps.r*mult*Math.PI/180);
                 }
                 if ('o' in animatorProps && 's' in ranges[j]) {
@@ -450,11 +452,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 }
                 if ('t' in animatorProps && 's' in ranges[j]) {
                     if('m' in this.data.t.p) {
-                        console.log('antes: ',currentLength);
-                        console.log('animatorProps.t*mult: ',animatorProps.t);
-                        console.log('animatorProps.t*mult: ',animatorProps.t*mult);
                         currentLength += animatorProps.t*mult;
-                        console.log('despues: ',currentLength);
                     }else{
                         xPos += animatorProps.t*mult;
                     }
@@ -476,7 +474,6 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 animatorProps = renderedData.a[j].a;
                 if ('s' in animatorProps && 's' in ranges[j]) {
                     mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
-                    letterTransform += ' scale('+(1+((animatorProps.s[0]/100-1)*mult))+','+(1+((animatorProps.s[1]/100-1)*mult))+')';
                     matrixHelper.scale(1+((animatorProps.s[0]/100-1)*mult),1+((animatorProps.s[1]/100-1)*mult));
                 }
             }
@@ -484,24 +481,19 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 animatorProps = renderedData.a[j].a;
                 if ('a' in animatorProps && 's' in ranges[j]) {
                     mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
-                    letterTransform += ' translate('+ -animatorProps.a[0]*mult+','+ -animatorProps.a[1]*mult+')';
                     matrixHelper.translate(-animatorProps.a[0]*mult, -animatorProps.a[1]*mult);
                 }
             }
 
             if('m' in this.data.t.p) {
-                letterTransform += ' translate('+-renderedData.m.a[0]*this.textSpans[i].an/200+','+ -renderedData.m.a[1]*yOff/100+')';
                 matrixHelper.translate(-renderedData.m.a[0]*this.textSpans[i].an/200, -renderedData.m.a[1]*yOff/100);
                 currentLength -= renderedData.m.a[0]*this.textSpans[i].an/200;
                 if(this.textSpans[i+1] && ind !== this.textSpans[i+1].ind){
                     currentLength += this.textSpans[i].an / 2;
                 }
-                letterTransform += ' translate(' + -offf + ',0)';
                 matrixHelper.translate(-offf,0);
             }else{
-                letterTransform += ' translate(' + -offf + ',0)';
                 matrixHelper.translate(-offf,0);
-                letterTransform += ' translate(' + -renderedData.m.a[0]*this.textSpans[i].an/200+','+ -renderedData.m.a[1]*yOff/100+')';
                 matrixHelper.translate(-renderedData.m.a[0]*this.textSpans[i].an/200,-renderedData.m.a[1]*yOff/100);
                 xPos += this.textSpans[i].l;
             }
