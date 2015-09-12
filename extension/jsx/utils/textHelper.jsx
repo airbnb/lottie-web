@@ -25,6 +25,7 @@ var bm_textHelper = (function () {
     
     function exportTextDocumentData(layerInfo, ob) {
         var textDocument = layerInfo.property("Source Text").value;
+        var i, len;
         ob.s = textDocument.fontSize;
         ob.f = textDocument.font;
         bm_sourceHelper.addFont(textDocument.font);
@@ -33,10 +34,18 @@ var bm_textHelper = (function () {
         ob.j = getJustification(textDocument.justification);
         ob.tr = textDocument.tracking;
         if (textDocument.applyFill) {
-            ob.fc = bm_generalUtils.arrayRgbToHex(textDocument.fillColor);
+            len = textDocument.fillColor.length;
+            ob.fc = [];
+            for (i = 0; i < len; i += 1) {
+                ob.fc[i] = Math.round(textDocument.fillColor[i] * 255);
+            }
         }
         if (textDocument.applyStroke) {
-            ob.sc = bm_generalUtils.arrayRgbToHex(textDocument.strokeColor);
+            len = textDocument.strokeColor.length;
+            ob.sc = [];
+            for (i = 0; i < len; i += 1) {
+                ob.sc[i] = Math.round(textDocument.strokeColor[i] * 255);
+            }
             ob.sw = textDocument.strokeWidth;
             if (textDocument.applyFill) {
                 ob.of = textDocument.strokeOverFill;

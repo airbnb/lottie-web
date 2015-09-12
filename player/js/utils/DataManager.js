@@ -793,6 +793,18 @@ function dataFunctionManager(){
             if('p' in animatorProps.a) {
                 renderedData.t.a[i].a.p = getInterpolatedValue(animatorProps.a.p,offsettedFrameNum, item.startTime);
             }
+            if('sw' in animatorProps.a) {
+                renderedData.t.a[i].a.sw = getInterpolatedValue(animatorProps.a.sw,offsettedFrameNum, item.startTime);
+            }
+            if('sc' in animatorProps.a) {
+                renderedData.t.a[i].a.sc = getInterpolatedValue(animatorProps.a.sc,offsettedFrameNum, item.startTime);
+            }
+            if('fc' in animatorProps.a) {
+                renderedData.t.a[i].a.fc = getInterpolatedValue(animatorProps.a.fc,offsettedFrameNum, item.startTime);
+            }
+            if('t' in animatorProps.a) {
+                renderedData.t.a[i].a.t = getInterpolatedValue(animatorProps.a.t,offsettedFrameNum, item.startTime);
+            }
             if('s' in animatorProps.s) {
                 renderedData.t.a[i].s.s = getInterpolatedValue(animatorProps.s.s,offsettedFrameNum, item.startTime);
             }else{

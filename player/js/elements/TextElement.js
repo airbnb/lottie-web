@@ -1,6 +1,9 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
     this.textSpans = [];
     this.yOffset = 0;
+    this.fillColorAnim = false;
+    this.strokeColorAnim = false;
+    this.strokeWidthAnim = false;
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.renderedLetters = [];
 }
@@ -9,12 +12,24 @@ createElement(BaseElement, ITextElement);
 ITextElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
-
+    console.log('this.data: ',this.data);
     var documentData = this.data.t.d;
 
     this.textElem = document.createElementNS(svgNS,'g');
     //this.textElem.textContent = documentData.t;
-    this.textElem.setAttribute('fill', documentData.fc);
+    var hasFill = false;
+    if(documentData.fc) {
+        hasFill = true;
+        this.textElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
+    }else{
+        this.textElem.setAttribute('fill', 'rgba(0,0,0,0)');
+    }
+    var hasStroke = false;
+    if(documentData.sc){
+        hasStroke = true;
+        this.textElem.setAttribute('stroke', 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')');
+        this.textElem.setAttribute('stroke-width', documentData.sw);
+    }
     this.textElem.setAttribute('font-size', documentData.s);
     this.textElem.setAttribute('font-family', this.globalData.fontManager.getFontByName(documentData.f));
     this.layerElement.appendChild(this.textElem);
@@ -77,6 +92,15 @@ ITextElement.prototype.createElements = function(){
     var animators = this.data.t.a;
     var j, jLen = animators.length, based, ind, indexes = [];
     for(j=0;j<jLen;j+=1){
+        if(animators[j].a.sc && hasStroke){
+            this.strokeColorAnim = true;
+        }
+        if(animators[j].a.sw && hasStroke){
+            this.strokeWidthAnim = true;
+        }
+        if(animators[j].a.fc && hasFill){
+            this.fillColorAnim = true;
+        }
         ind = 0;
         based = animators[j].s.b;
         for(i=0;i<len;i+=1){
@@ -161,17 +185,26 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
 
     if(this.renderedLetters[num]){
         len = this.textSpans.length;
-        var cnt = 0;
+        var renderedLetter;
         for(i=0;i<len;i+=1){
-            this.textSpans[i].elem.setAttribute('transform',this.renderedLetters[num][cnt]);
-            this.textSpans[i].elem.setAttribute('opacity',this.renderedLetters[num][cnt+1]);
-            cnt += 2;
+            renderedLetter = this.renderedLetters[num][i];
+            this.textSpans[i].elem.setAttribute('transform',renderedLetter.m);
+            this.textSpans[i].elem.setAttribute('opacity',renderedLetter.o);
+            if(renderedLetter.sw){
+                this.textSpans[i].elem.setAttribute('stroke-width',renderedLetter.sw);
+            }
+            if(renderedLetter.sc){
+                this.textSpans[i].elem.setAttribute('stroke',renderedLetter.sc);
+            }
+            if(renderedLetter.fc){
+                this.textSpans[i].elem.setAttribute('fill',renderedLetter.fc);
+            }
         }
         return;
     }
 
     var xPos,yPos, letterTransform;
-    var lettersValue = [];
+    var lettersValue = [], letterValue;
     if('m' in this.data.t.p) {
         var mask = this.data.masksProperties[this.data.t.p.m];
         var paths = mask.paths[num].pathNodes;
@@ -283,11 +316,13 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
     var mult, ind = -1, offf, xPathPos, yPathPos;
     var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd;
     var elemOpacity;
+    var sc,sw,fc,k;
 
     for( i = 0; i < len; i += 1) {
         matrixHelper.reset();
         letterTransform = '';
         elemOpacity = 1;
+        letterValue = {};
         if(this.textSpans[i].n) {
             xPos = 0;
             yPos += this.yOffset;
@@ -380,19 +415,62 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                     matrixHelper.translate(animatorProps.p[0]*mult, animatorProps.p[1]*mult);
                 }
             }
-
+            if(this.strokeWidthAnim) {
+                sw = this.data.t.d.sw;
+            }
+            if(this.strokeColorAnim) {
+                sc = [this.data.t.d.sc[0], this.data.t.d.sc[1], this.data.t.d.sc[2]];
+            }
+            if(this.fillColorAnim) {
+                fc = [this.data.t.d.fc[0], this.data.t.d.fc[1], this.data.t.d.fc[2]];
+            }
             for(j=0;j<jLen;j+=1) {
                 animatorProps = renderedData.a[j].a;
+                mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
                 if ('r' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
                     letterTransform += ' rotate(' + animatorProps.r*mult + ')';
                     matrixHelper.rotate(animatorProps.r*mult*Math.PI/180);
                 }
                 if ('o' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
                     this.textSpans[i].elem.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
                     elemOpacity = (1+((animatorProps.o/100-1)*mult));
                 }
+                if (this.strokeWidthAnim && 'sw' in animatorProps && 's' in ranges[j]) {
+                    sw += animatorProps.sw*mult;
+                }
+                if (this.strokeColorAnim && 'sc' in animatorProps && 's' in ranges[j]) {
+                    for(k=0;k<3;k+=1){
+                        sc[k] = Math.round(sc[k] + (animatorProps.sc[k] - sc[k])*mult);
+                    }
+                }
+                if (this.fillColorAnim && 'fc' in animatorProps && 's' in ranges[j]) {
+                    for(k=0;k<3;k+=1){
+                        fc[k] = Math.round(fc[k] + (animatorProps.fc[k] - fc[k])*mult);
+                    }
+                }
+                if ('t' in animatorProps && 's' in ranges[j]) {
+                    if('m' in this.data.t.p) {
+                        console.log('antes: ',currentLength);
+                        console.log('animatorProps.t*mult: ',animatorProps.t);
+                        console.log('animatorProps.t*mult: ',animatorProps.t*mult);
+                        currentLength += animatorProps.t*mult;
+                        console.log('despues: ',currentLength);
+                    }else{
+                        xPos += animatorProps.t*mult;
+                    }
+                }
+            }
+            if(this.strokeWidthAnim){
+                letterValue.sw = sw < 0 ? 0 : sw;
+                this.textSpans[i].elem.setAttribute('stroke-width',letterValue.sw);
+            }
+            if(this.strokeColorAnim){
+                letterValue.sc = 'rgb('+sc[0]+','+sc[1]+','+sc[2]+')';
+                this.textSpans[i].elem.setAttribute('stroke',letterValue.sc);
+            }
+            if(this.fillColorAnim){
+                letterValue.fc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
+                this.textSpans[i].elem.setAttribute('fill',letterValue.fc);
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
@@ -427,9 +505,10 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 matrixHelper.translate(-renderedData.m.a[0]*this.textSpans[i].an/200,-renderedData.m.a[1]*yOff/100);
                 xPos += this.textSpans[i].l;
             }
-            lettersValue.push(matrixHelper.toCSS());
-            lettersValue.push(elemOpacity);
-            this.textSpans[i].elem.setAttribute('transform',matrixHelper.toCSS());
+            letterValue.m = matrixHelper.toCSS();
+            letterValue.o = elemOpacity;
+            lettersValue.push(letterValue);
+            this.textSpans[i].elem.setAttribute('transform',letterValue.m);
         }
     }
     this.renderedLetters[num] = lettersValue;

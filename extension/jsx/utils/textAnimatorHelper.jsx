@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_keyframeHelper, bm_eventDispatcher*/
+/*global bm_keyframeHelper, bm_eventDispatcher, bm_generalUtils*/
 var bm_textAnimatorHelper = (function () {
     'use strict';
     var ob = {};
@@ -46,8 +46,9 @@ var bm_textAnimatorHelper = (function () {
         len = layerInfo.numProperties;
         for (i = 0; i < len; i += 1) {
             property = layerInfo.property(i + 1);
-            if (property.isModified) {
+            if (property.canSetExpression) {
                 propertyName = property.matchName;
+                bm_eventDispatcher.log(propertyName);
                 switch (propertyName) {
                 case 'ADBE Text Anchor Point 3D':
                     ob.a = bm_keyframeHelper.exportKeyframes(property, frameRate);
@@ -70,11 +71,17 @@ var bm_textAnimatorHelper = (function () {
                 case 'ADBE Text Stroke Color':
                     ob.sc = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
+                case 'ADBE Text Stroke Width':
+                    ob.sw = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
                 case 'ADBE Text Fill Opacity':
                     ob.fo = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
                 case 'ADBE Text Stroke Opacity':
                     ob.so = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Tracking Amount':
+                    ob.t = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
                 }
             }
