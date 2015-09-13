@@ -1,11 +1,11 @@
-function CVMaskElement(){}
+function CVMaskElement(){
+    this.registeredEffects = [];
+    this.totalMasks = 0;
+}
 
 CVMaskElement.prototype.init = function () {
-    this.registeredEffects = [];
     this.masksProperties = this.data.masksProperties;
-    this.totalMasks = this.masksProperties.length;
     this.ctx = this.element.canvasContext;
-    this.layerSize = this.element.getLayerSize();
     this.renderedFrames = new Array(this.globalData.totalFrames+1);
 };
 
@@ -21,7 +21,12 @@ CVMaskElement.prototype.draw = function (transform) {
         var tmpPath = new BM_Path2D();
         var i, len = this.data.masksProperties.length;
         path = new BM_Path2D();
+        var maskCount = 0;
         for (i = 0; i < len; i++) {
+            if(this.masksProperties[i].mode == 'n'){
+                continue;
+            }
+            maskCount += 1;
             if (this.masksProperties[i].inv) {
                 this.createInvertedMask(tmpPath, this.data.masksProperties[i].paths[this.frameNum].pathNodes);
             }
@@ -29,8 +34,11 @@ CVMaskElement.prototype.draw = function (transform) {
         }
         path.addPath(tmpPath,transform.mat.props);
         this.renderedFrames[this.globalData.frameNum] = path;
+        this.totalMasks = maskCount;
     }
-    this.globalData.bmCtx.clip(path);
+    if(this.totalMasks > 0){
+        this.globalData.bmCtx.clip(path);
+    }
 };
 
 CVMaskElement.prototype.drawShape = function (path, data) {

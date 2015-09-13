@@ -124,14 +124,6 @@ CVBaseElement.prototype.getHierarchy = function(){
     return this.hierarchy;
 };
 
-CVBaseElement.prototype.getLayerSize = function(){
-    if(this.data.ty == 'TextLayer'){
-        return {w:this.data.textData.width,h:this.data.textData.height};
-    }else{
-        return {w:this.data.width,h:this.data.height};
-    }
-};
-
 
 CVBaseElement.prototype.destroy = function(){
     this.canvasContext = null;
@@ -142,3 +134,4 @@ CVBaseElement.prototype.destroy = function(){
     }
 };
 
+CVBaseElement.prototype.mHelper = new Matrix();

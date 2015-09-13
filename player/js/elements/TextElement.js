@@ -152,8 +152,6 @@ ITextElement.prototype.hide = function(){
 ITextElement.prototype.renderFrame = function(num,parentMatrix){
     var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
 
-    var matrixHelper = this.mHelper;
-
     if(renderParent===false){
         this.hide();
         return;
@@ -203,6 +201,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         return;
     }
 
+    var matrixHelper = this.mHelper;
     var xPos,yPos;
     var lettersValue = [], letterValue;
     if('m' in this.data.t.p) {
