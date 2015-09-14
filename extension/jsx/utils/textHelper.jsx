@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app, ParagraphJustification, bm_textAnimatorHelper, bm_keyframeHelper, bm_sourceHelper*/
+/*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app, ParagraphJustification, bm_textAnimatorHelper, bm_keyframeHelper, bm_sourceHelper, bm_textShapeHelper*/
 var bm_textHelper = (function () {
     'use strict';
     var ob = {};
@@ -29,8 +29,11 @@ var bm_textHelper = (function () {
         ob.s = textDocument.fontSize;
         ob.f = textDocument.font;
         bm_sourceHelper.addFont(textDocument.font);
-        bm_eventDispatcher.log(textDocument.font);
         ob.t = textDocument.text;
+        len = ob.t.length;
+        for (i = 0; i < len; i += 1) {
+            bm_textShapeHelper.addChar(ob.t.substr(i, 1), ob.s, ob.f);
+        }
         ob.j = getJustification(textDocument.justification);
         ob.tr = textDocument.tracking;
         if (textDocument.applyFill) {

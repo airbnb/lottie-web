@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, app, File*/
+/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, app, File*/
 var bm_renderManager = (function () {
     'use strict';
     
@@ -77,6 +77,7 @@ var bm_renderManager = (function () {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
+        bm_textShapeHelper.reset();
         pendingLayers.length = 0;
         pendingComps.length = 0;
         var exportData = ob.renderData.exportData;
@@ -163,13 +164,24 @@ var bm_renderManager = (function () {
         if (fonts.length === 0) {
             saveData();
         } else {
+            var exportData = ob.renderData.exportData;
             bm_eventDispatcher.sendEvent('bm:render:fonts', {type: 'save', compId: currentCompID, fonts: fonts});
         }
+    }
+    
+    function setChars(chars) {
+        bm_eventDispatcher.sendEvent('bm:render:chars', {type: 'save', compId: currentCompID, chars: chars});
     }
     
     function setFontData(fontData) {
         var exportData = ob.renderData.exportData;
         exportData.fonts = fontData;
+        bm_textShapeHelper.exportChars(fontData);
+    }
+    
+    function setCharsData(charData) {
+        var exportData = ob.renderData.exportData;
+        exportData.chars = charData;
         saveData();
     }
     
@@ -190,8 +202,10 @@ var bm_renderManager = (function () {
     ob.render = render;
     ob.renderLayerComplete = renderLayerComplete;
     ob.renderNextLayer = renderNextLayer;
+    ob.setChars = setChars;
     ob.imagesReady = imagesReady;
     ob.setFontData = setFontData;
+    ob.setCharsData = setCharsData;
     
     return ob;
 }());

@@ -12,11 +12,10 @@ createElement(BaseElement, ITextElement);
 ITextElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
-    console.log('this.data: ',this.data);
+    //console.log('this.data: ',this.data);
     var documentData = this.data.t.d;
 
     this.textElem = document.createElementNS(svgNS,'g');
-    //this.textElem.textContent = documentData.t;
     var hasFill = false;
     if(documentData.fc) {
         hasFill = true;
@@ -33,13 +32,15 @@ ITextElement.prototype.createElements = function(){
     this.textElem.setAttribute('font-size', documentData.s);
     this.textElem.setAttribute('font-family', this.globalData.fontManager.getFontByName(documentData.f));
     this.layerElement.appendChild(this.textElem);
-    var i, len = documentData.t.length,tSpan;
+    var i, len = documentData.t.length,tSpan, tShape, j, jLen, k, kLen;
     var newLineFlag, index = 0, val;
     var anchorGrouping = this.data.t.m.g;
     var currentSize = 0, currentPos = 0;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
+        tShape = document.createElementNS(svgNS,'path');
+        //tSpan.setAttribute('visibility', 'hidden');
         if(documentData.t.charAt(i) === ' '){
             val = '\u00A0';
         }else if(documentData.t.charCodeAt(i) === 13){
@@ -49,10 +50,31 @@ ITextElement.prototype.createElements = function(){
             val = documentData.t.charAt(i);
         }
         tSpan.textContent = val;
+        var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), documentData.s, this.globalData.fontManager.getFontByName(documentData.f));
+        var shapeData = charData.data;
+        if(shapeData){
+            var shapes = shapeData.shapes[0].it;
+            var shapeStr = '';
+            jLen = shapes.length;
+            for(j=0;j<jLen;j+=1){
+                kLen = shapes[j].ks.i.length;
+                var pathNodes = shapes[j].ks;
+                for(k=1;k<kLen;k+=1){
+                    if(k==1){
+                        shapeStr += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                    }
+                    shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
+                }
+                shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+            }
+            tShape.setAttribute('d',shapeStr);
+        }
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-        this.textElem.appendChild(tSpan);
-        var cLength = tSpan.getComputedTextLength();
-        this.textSpans.push({elem:tSpan,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
+        //this.textElem.appendChild(tSpan);
+        this.textElem.appendChild(tShape);
+        var cLength = charData.w;
+        //var cLength = tSpan.getComputedTextLength();
+        this.textSpans.push({elem:tSpan,shape:tShape,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
         if(anchorGrouping == 2){
             currentSize += cLength;
             if(val == '' || val == '\u00A0' || i == len - 1){
@@ -188,13 +210,18 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             renderedLetter = this.renderedLetters[num][i];
             this.textSpans[i].elem.setAttribute('transform',renderedLetter.m);
             this.textSpans[i].elem.setAttribute('opacity',renderedLetter.o);
+            this.textSpans[i].shape.setAttribute('transform',renderedLetter.m);
+            this.textSpans[i].shape.setAttribute('opacity',renderedLetter.o);
             if(renderedLetter.sw){
+                this.textSpans[i].shape.setAttribute('stroke-width',renderedLetter.sw);
                 this.textSpans[i].elem.setAttribute('stroke-width',renderedLetter.sw);
             }
             if(renderedLetter.sc){
+                this.textSpans[i].shape.setAttribute('stroke',renderedLetter.sc);
                 this.textSpans[i].elem.setAttribute('stroke',renderedLetter.sc);
             }
             if(renderedLetter.fc){
+                this.textSpans[i].shape.setAttribute('fill',renderedLetter.fc);
                 this.textSpans[i].elem.setAttribute('fill',renderedLetter.fc);
             }
         }
@@ -434,6 +461,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 }
                 if ('o' in animatorProps && 's' in ranges[j]) {
                     this.textSpans[i].elem.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
+                    this.textSpans[i].shape.setAttribute('opacity',(1+((animatorProps.o/100-1)*mult)));
                     elemOpacity = (1+((animatorProps.o/100-1)*mult));
                 }
                 if (this.strokeWidthAnim && 'sw' in animatorProps && 's' in ranges[j]) {
@@ -460,14 +488,17 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             if(this.strokeWidthAnim){
                 letterValue.sw = sw < 0 ? 0 : sw;
                 this.textSpans[i].elem.setAttribute('stroke-width',letterValue.sw);
+                this.textSpans[i].shape.setAttribute('stroke-width',letterValue.sw);
             }
             if(this.strokeColorAnim){
                 letterValue.sc = 'rgb('+sc[0]+','+sc[1]+','+sc[2]+')';
                 this.textSpans[i].elem.setAttribute('stroke',letterValue.sc);
+                this.textSpans[i].shape.setAttribute('stroke',letterValue.sc);
             }
             if(this.fillColorAnim){
                 letterValue.fc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
                 this.textSpans[i].elem.setAttribute('fill',letterValue.fc);
+                this.textSpans[i].shape.setAttribute('fill',letterValue.fc);
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
@@ -500,6 +531,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             letterValue.o = elemOpacity;
             lettersValue.push(letterValue);
             this.textSpans[i].elem.setAttribute('transform',letterValue.m);
+            this.textSpans[i].shape.setAttribute('transform',letterValue.m);
         }
     }
     this.renderedLetters[num] = lettersValue;

@@ -116,6 +116,22 @@ var FontManager = (function(){
          </style>*/
         checkLoadedFonts.bind(this)();
     }
+
+    function addChars(chars){
+        this.chars = chars;
+        console.log(this.chars.length);
+    }
+
+    function getCharData(char, size, font){
+        var i = 0, len = this.chars.length;
+        while( i < len) {
+            if(this.chars[i].ch === char && this.chars[i].size === size && this.chars[i].fFamily === font){
+                return this.chars[i];
+            }
+            i+= 1;
+        }
+    }
+
     function getFontByName(name){
         var i = 0, len = this.fonts.length;
         while(i<len){
@@ -129,10 +145,13 @@ var FontManager = (function(){
 
     var Font = function(){
         this.fonts = [];
+        this.chars = [];
         this.loaded = false;
         this.initTime = Date.now();
     };
+    Font.prototype.addChars = addChars;
     Font.prototype.addFonts = addFonts;
+    Font.prototype.getCharData = getCharData;
     Font.prototype.getFontByName = getFontByName;
 
     return Font;

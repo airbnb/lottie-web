@@ -7,7 +7,7 @@ var compRenderController = (function () {
     var elementTemplate = "<div class='renderingElement'><div class='header'><div class='compName'></div></div><div class='progressBar'></div><div class='status'><div class='compAnim'></div><div class='statusText'></div><div class='folder'></div><div class='buttonHover'></div></div><div class='fontsContainer'><div class='typekitContainer'><button class='generalButton typekitButton'>Include typekit path</button><div class='typekitElem'><span>Typekit path</span><input class='typekitPath' type='text'/></div></div><div class='fontsList'></div><div class='buttons'><button class='generalButton continue'>Continue</button></div></div></div>";
     var fontTemplate = "<div class='fontElement'><div class='fontTitle'></div><div class='fontFormItem'><span>Font path (optional)</span><input class='fontPath' type='text' /></div><div class='fontFormItem'><span>Font Family (optional)</span><input class='fontFamily' type='text' /></div><div class='fontFormItem'><span>Font Weight</span><input class='fontWeight' type='text' /></div><div class='fontFormItem'><span>Font Style</span><input class='fontStyle' type='text' list='browsers'/></div></div>";
     
-    var fontsStorage;
+    var fontsStorage, textHelper;
     
     function addFolderEvent(elem, data) {
         elem.on('click', function () {
@@ -160,7 +160,6 @@ var compRenderController = (function () {
         var compData = compositions[i];
         var elem = compData.elem;
         var fonts = JSON.parse(messageData.fonts);
-        console.log(fonts);
         elem.find('.statusText').html('Select font families and font paths if necessary.');
         var fontsContainer = elem.find('.fontsContainer');
         fontsContainer.show();
@@ -193,6 +192,23 @@ var compRenderController = (function () {
         });
     }
     
+    function renderCharsHandler(ev) {
+        var messageData = ev.data;
+        var chars = JSON.parse(messageData.chars);
+        var i, len = chars.length;
+        for (i = 0; i < len; i += 1) {
+            textHelper.setAttribute('font-family', chars[i].fFamily);
+            textHelper.setAttribute('font-size', chars[i].size);
+            textHelper.textContent = chars[i].ch === ' ' ? '\u00A0' : chars[i].ch;
+            var cLength = textHelper.getComputedTextLength();
+            chars[i].w = cLength;
+            delete chars[i].font;
+        }
+        var charsInfoString = JSON.stringify(chars);
+        var eScript = 'bm_renderManager.setCharsData(' + charsInfoString + ')';
+        csInterface.evalScript(eScript);
+    }
+    
     function renderCompleteHandler() {
         cancelButton.hide();
         returnButton.show();
@@ -212,6 +228,7 @@ var compRenderController = (function () {
         csInterface.addEventListener('bm:render:update', renderUpdateHandler);
         csInterface.addEventListener('bm:render:complete', renderCompleteHandler);
         csInterface.addEventListener('bm:render:fonts', renderFontsHandler);
+        csInterface.addEventListener('bm:render:chars', renderCharsHandler);
         
         cancelButton = view.find('.cancel');
         returnButton = view.find('.return');
@@ -224,6 +241,8 @@ var compRenderController = (function () {
             csInterface.evalScript(eScript);
         });
         returnButton.hide();
+        textHelper = document.getElementById('textHelper');
+        textHelper.setAttributeNS("http://www.w3.org/XML/1998/namespace",  "xml:space", "preserve");
     }
     
     function show() {

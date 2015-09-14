@@ -107,6 +107,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.layers = animData.animation.layers;
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addFonts(animData.fonts,defs);
+    this.globalData.fontManager.addChars(animData.chars);
 };
 
 SVGRenderer.prototype.buildStage = function (container, layers,elements) {

@@ -49,6 +49,7 @@ CVTextElement.prototype.createElements = function(){
     var anchorGrouping = this.data.t.m.g;
     var currentSize = 0, currentPos = 0;
     this.tHelper.font = this.values.fValue;
+    var charData, shapeData, k, kLen, shapes, j, jLen, path2d;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         if(documentData.t.charAt(i) === ' '){
@@ -59,8 +60,29 @@ CVTextElement.prototype.createElements = function(){
         }else{
             val = documentData.t.charAt(i);
         }
-        var cLength = this.tHelper.measureText(val).width;
-        this.textSpans.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
+        charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), documentData.s, this.globalData.fontManager.getFontByName(documentData.f));
+        shapeData = charData.data;
+        if(shapeData){
+            shapes = shapeData.shapes[0].it;
+            path2d = new BM_Path2D();
+            jLen = shapes.length;
+            for(j=0;j<jLen;j+=1){
+                kLen = shapes[j].ks.i.length;
+                var pathNodes = shapes[j].ks;
+                for(k=1;k<kLen;k+=1){
+                    if(k==1){
+                        path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+                    }
+                    path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[k][0],pathNodes.i[k][1],pathNodes.v[k][0],pathNodes.v[k][1]);
+                }
+                path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+            }
+        }else{
+            path2d = new BM_Path2D();
+        }
+        //var cLength = this.tHelper.measureText(val).width;
+        var cLength = charData.w;
+        this.textSpans.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, elem: path2d});
         if(anchorGrouping == 2){
             currentSize += cLength;
             if(val == '' || val == '\u00A0' || i == len - 1){
@@ -98,7 +120,8 @@ CVTextElement.prototype.createElements = function(){
         }
     }
     var animators = this.data.t.a;
-    var j, jLen = animators.length, based, ind, indexes = [];
+    jLen = animators.length;
+    var based, ind, indexes = [];
     for(j=0;j<jLen;j+=1){
         if(animators[j].a.sc && hasStroke){
             this.strokeColorAnim = true;
@@ -204,7 +227,8 @@ CVTextElement.prototype.draw = function(parentMatrix){
                 lastFill = this.values.fill;
                 ctx.fillStyle = this.values.fill;
             }
-            ctx.fillText(this.textSpans[i].val,0,0);
+            this.globalData.bmCtx.fill(this.textSpans[i].elem);
+            ///ctx.fillText(this.textSpans[i].val,0,0);
         }
         if(this.stroke){
             if(renderedLetter.sw && lastStrokeW !== renderedLetter.sw){
@@ -221,7 +245,8 @@ CVTextElement.prototype.draw = function(parentMatrix){
                 lastStroke = this.values.stroke;
                 ctx.strokeStyle = this.values.stroke;
             }
-            ctx.strokeText(this.textSpans[i].val,0,0);
+            this.globalData.bmCtx.stroke(this.textSpans[i].elem);
+            ///ctx.strokeText(this.textSpans[i].val,0,0);
         }
         this.globalData.renderer.restore();
     }
@@ -235,6 +260,7 @@ CVTextElement.prototype.getMeasures = function(num){
     var matrixHelper = this.mHelper;
     var xPos,yPos;
     var lettersValue = [], letterValue;
+    var i, len;
     if('m' in this.data.t.p) {
         var mask = this.data.masksProperties[this.data.t.p.m];
         var paths = mask.paths[num].pathNodes;

@@ -175,6 +175,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.updateContainerSize();
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addFonts(animData.fonts,document);
+    this.globalData.fontManager.addChars(animData.chars);
 };
 
 CanvasRenderer.prototype.updateContainerSize = function () {
