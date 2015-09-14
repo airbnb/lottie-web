@@ -90,13 +90,6 @@ var FontManager = (function(){
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
             if(fontArr[i].fPath){
-                /*var l = document.createElement('link');
-                l.setAttribute('rel','stylesheet');
-                l.setAttribute('type','text/css');
-                l.setAttribute('href',fontArr[i].fPath);
-                defs.appendChild(l);*/
-                /////
-                //document.getElementsByTagName('head')[0].appendChild(l);
                 if(fontArr[i].fPath){
                     var s = document.createElement('style');
                     s.type = "text/css";
@@ -106,14 +99,6 @@ var FontManager = (function(){
             }
             this.fonts.push(fontArr[i]);
         }
-        //s.styleSheet.cssText = "@font-face {" + "font-family: Pacifico;" + "}";
-        //console.log(defs);
-        /*<style type="text/css">
-         @font-face {
-         font-family: Delicious;
-         src: url('../fonts/font.woff');
-         }
-         </style>*/
         checkLoadedFonts.bind(this)();
     }
 

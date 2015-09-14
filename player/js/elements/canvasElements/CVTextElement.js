@@ -76,6 +76,7 @@ CVTextElement.prototype.createElements = function(){
                     path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[k][0],pathNodes.i[k][1],pathNodes.v[k][0],pathNodes.v[k][1]);
                 }
                 path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+                path2d.closePath();
             }
         }else{
             path2d = new BM_Path2D();
@@ -207,6 +208,9 @@ CVTextElement.prototype.draw = function(parentMatrix){
     this.globalData.renderer.ctxTransform(finalMat);
     this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
     ctx.font = this.values.fValue;
+    ctx.lineCap = 'butt';
+    ctx.lineJoin = 'miter';
+    ctx.miterLimit = 4;
 
 
     var  i,len;

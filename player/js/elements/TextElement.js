@@ -40,6 +40,9 @@ ITextElement.prototype.createElements = function(){
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
         tShape = document.createElementNS(svgNS,'path');
+        tShape.setAttribute('stroke-linecap', 'butt');
+        tShape.setAttribute('stroke-linejoin','miter');
+        tShape.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(documentData.t.charAt(i) === ' '){
             val = '\u00A0';
@@ -66,6 +69,7 @@ ITextElement.prototype.createElements = function(){
                     shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
                 }
                 shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                shapeStr += 'z';
             }
             tShape.setAttribute('d',shapeStr);
         }
