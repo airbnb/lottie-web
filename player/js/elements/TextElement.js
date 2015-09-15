@@ -74,8 +74,8 @@ ITextElement.prototype.createElements = function(){
             tShape.setAttribute('d',shapeStr);
         }
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-        //this.textElem.appendChild(tSpan);
-        this.textElem.appendChild(tShape);
+        this.textElem.appendChild(tSpan);
+        //this.textElem.appendChild(tShape);
         var cLength = charData.w;
         //var cLength = tSpan.getComputedTextLength();
         this.textSpans.push({elem:tSpan,shape:tShape,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});

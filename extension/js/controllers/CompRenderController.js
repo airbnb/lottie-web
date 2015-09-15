@@ -125,12 +125,12 @@ var compRenderController = (function () {
         var children = fontsList.children();
         children.each(function (index, item) {
             fontOb = {};
-            fontOb.fName = fonts[index];
+            fontOb.fName = fonts[index].name;
             fontOb.fPath = $(item).find('.fontPath')[0].value;
             fontOb.fFamily = $(item).find('.fontFamily')[0].value;
             fontOb.fWeight = $(item).find('.fontWeight')[0].value;
             fontOb.fStyle = $(item).find('.fontStyle')[0].value;
-            var storedOb = getStoredFontData(fonts[index]);
+            var storedOb = getStoredFontData(fonts[index].name);
             storedOb.fPath = fontOb.fPath;
             storedOb.fFamily = fontOb.fFamily;
             storedOb.fWeight = fontOb.fontWeight;
@@ -168,13 +168,13 @@ var compRenderController = (function () {
         len = fonts.length;
         var fontElem, storedData;
         for (i = 0; i < len; i += 1) {
-            storedData = getStoredFontData(fonts[i]);
+            storedData = getStoredFontData(fonts[i].name);
             fontElem = $(fontTemplate);
-            fontElem.find('.fontTitle').html(fonts[i]);
-            fontElem.find('.fontFamily').val(storedData.fFamily);
+            fontElem.find('.fontTitle').html(fonts[i].name);
+            fontElem.find('.fontFamily').val(fonts[i].family);
             fontElem.find('.fontWeight').val(storedData.fWeight);
             fontElem.find('.fontPath').val(storedData.fPath);
-            fontElem.find('.fontStyle').val(storedData.fStyle);
+            fontElem.find('.fontStyle').val(fonts[i].style);
             fontsList.append(fontElem);
         }
         fontsContainer.find('button.continue').on('click', function () {
@@ -197,6 +197,26 @@ var compRenderController = (function () {
         var chars = JSON.parse(messageData.chars);
         var i, len = chars.length;
         for (i = 0; i < len; i += 1) {
+            var styles = chars[i].style.split(' ');
+            var j, jLen = styles.length;
+            if (styles[0].toLowerCase() === 'italic' || styles[1].toLowerCase() === 'italic') {
+                textHelper.setAttribute('font-style', 'italic');
+            } else {
+                textHelper.setAttribute('font-style', 'normal');
+            }
+            if (styles[0].toLowerCase() === 'bold' || styles[1].toLowerCase() === 'bold') {
+                textHelper.setAttribute('font-weight', '700');
+            } else if (styles[0].toLowerCase() === 'black' || styles[1].toLowerCase() === 'black') {
+                textHelper.setAttribute('font-weight', '900');
+            } else if (styles[0].toLowerCase() === 'medium' || styles[1].toLowerCase() === 'medium') {
+                textHelper.setAttribute('font-weight', '500');
+            } else if (styles[0].toLowerCase() === 'regular' || styles[1].toLowerCase() === 'regular' || styles[0].toLowerCase() === 'normal' || styles[1].toLowerCase() === 'normal') {
+                textHelper.setAttribute('font-weight', '400');
+            } else if (styles[0].toLowerCase() === 'light' || styles[1].toLowerCase() === 'light' || styles[0].toLowerCase() === 'thin' || styles[1].toLowerCase() === 'thin') {
+                textHelper.setAttribute('font-weight', '100');
+            } else {
+                textHelper.setAttribute('font-weight', 'normal');
+            }
             textHelper.setAttribute('font-family', chars[i].fFamily);
             textHelper.setAttribute('font-size', chars[i].size);
             textHelper.textContent = chars[i].ch === ' ' ? '\u00A0' : chars[i].ch;

@@ -76,6 +76,7 @@ var FontManager = (function(){
             this.loaded = true;
             return;
         }
+        console.log(fontData);
         if(fontData.tk){
             var s = document.createElement('script');
             s.setAttribute('src',fontData.tk);

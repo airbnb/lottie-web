@@ -101,15 +101,20 @@ var bm_sourceHelper = (function () {
         }
     }
     
-    function addFont(fontName) {
+    function addFont(fontName, fontFamily, fontStyle) {
         var i = 0, len = fonts.length;
         while (i < len) {
-            i += 1;
-            if (fonts[i] === fontName) {
+            if (fonts[i].name === fontName && fonts[i].family === fontFamily && fonts[i].style === fontStyle) {
                 return;
             }
+            i += 1;
         }
-        fonts.push(fontName);
+        fonts.push({
+            name: fontName,
+            family: fontFamily,
+            style: fontStyle
+        }
+                  );
     }
     
     function getFonts() {

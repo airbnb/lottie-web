@@ -24,16 +24,15 @@ var bm_textHelper = (function () {
     }
     
     function exportTextDocumentData(layerInfo, ob) {
+        
         var textDocument = layerInfo.property("Source Text").value;
         var i, len;
         ob.s = textDocument.fontSize;
         ob.f = textDocument.font;
-        bm_sourceHelper.addFont(textDocument.font);
+        bm_sourceHelper.addFont(textDocument.font, textDocument.fontFamily, textDocument.fontStyle);
         ob.t = textDocument.text;
         len = ob.t.length;
-        for (i = 0; i < len; i += 1) {
-            bm_textShapeHelper.addChar(ob.t.substr(i, 1), ob.s, ob.f);
-        }
+        bm_textShapeHelper.addTextLayer(layerInfo);
         ob.j = getJustification(textDocument.justification);
         ob.tr = textDocument.tracking;
         if (textDocument.applyFill) {
