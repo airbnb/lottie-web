@@ -197,28 +197,38 @@ var compRenderController = (function () {
         var chars = JSON.parse(messageData.chars);
         var i, len = chars.length;
         for (i = 0; i < len; i += 1) {
+            console.log(chars[i].style);
             var styles = chars[i].style.split(' ');
             var j, jLen = styles.length;
-            if (styles[0].toLowerCase() === 'italic' || styles[1].toLowerCase() === 'italic') {
-                textHelper.setAttribute('font-style', 'italic');
-            } else {
-                textHelper.setAttribute('font-style', 'normal');
+            var fStyle = 'normal';
+            var fWeight = 'normal';
+            for (j = 0; j < jLen; j += 1) {
+                if (styles[j].toLowerCase() === 'italic') {
+                    fStyle = 'italic';
+                } else if (styles[j].toLowerCase() === 'black') {
+                    fWeight = '900';
+                } else if (styles[j].toLowerCase() === 'extrabold') {
+                    fWeight = '800';
+                } else if (styles[j].toLowerCase() === 'bold') {
+                    fWeight = '700';
+                } else if (styles[j].toLowerCase() === 'semibold') {
+                    fWeight = '600';
+                } else if (styles[j].toLowerCase() === 'medium') {
+                    fWeight = '500';
+                } else if (styles[j].toLowerCase() === 'regular' || styles[j].toLowerCase() === 'normal') {
+                    fWeight = '400';
+                } else if (styles[j].toLowerCase() === 'extralight') {
+                    fWeight = '300';
+                } else if (styles[j].toLowerCase() === 'light' || styles[j].toLowerCase() === 'thin') {
+                    fWeight = '200';
+                }
             }
-            if (styles[0].toLowerCase() === 'bold' || styles[1].toLowerCase() === 'bold') {
-                textHelper.setAttribute('font-weight', '700');
-            } else if (styles[0].toLowerCase() === 'black' || styles[1].toLowerCase() === 'black') {
-                textHelper.setAttribute('font-weight', '900');
-            } else if (styles[0].toLowerCase() === 'medium' || styles[1].toLowerCase() === 'medium') {
-                textHelper.setAttribute('font-weight', '500');
-            } else if (styles[0].toLowerCase() === 'regular' || styles[1].toLowerCase() === 'regular' || styles[0].toLowerCase() === 'normal' || styles[1].toLowerCase() === 'normal') {
-                textHelper.setAttribute('font-weight', '400');
-            } else if (styles[0].toLowerCase() === 'light' || styles[1].toLowerCase() === 'light' || styles[0].toLowerCase() === 'thin' || styles[1].toLowerCase() === 'thin') {
-                textHelper.setAttribute('font-weight', '100');
-            } else {
-                textHelper.setAttribute('font-weight', 'normal');
-            }
+            
+            textHelper.setAttribute('font-style', fStyle);
+            textHelper.setAttribute('font-weight', fWeight);
             textHelper.setAttribute('font-family', chars[i].fFamily);
             textHelper.setAttribute('font-size', chars[i].size);
+            textHelper.setAttribute('font-size', 100);
             textHelper.textContent = chars[i].ch === ' ' ? '\u00A0' : chars[i].ch;
             var cLength = textHelper.getComputedTextLength();
             chars[i].w = cLength;

@@ -526,8 +526,6 @@ Matrix.prototype = {
      */
     applyToPoint: function(x, y) {
 
-        var me = this;
-
         return {
             x: x * this.props[0] + y * this.props[2] + this.props[4],
             y: x * this.props[1] + y * this.props[3] + this.props[5]
@@ -536,6 +534,12 @@ Matrix.prototype = {
          x: x * me.a + y * me.c + me.e,
          y: x * me.b + y * me.d + me.f
          };*/
+    },
+    applyToX: function(x, y) {
+        return x * this.props[0] + y * this.props[2] + this.props[4];
+    },
+    applyToY: function(x, y) {
+        return x * this.props[1] + y * this.props[3] + this.props[5];
     },
     applyToPointStringified: function(x, y) {
         return (x * this.props[0] + y * this.props[2] + this.props[4])+','+(x * this.props[1] + y * this.props[3] + this.props[5]);

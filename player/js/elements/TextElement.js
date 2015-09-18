@@ -30,18 +30,44 @@ ITextElement.prototype.createElements = function(){
         this.textElem.setAttribute('stroke-width', documentData.sw);
     }
     this.textElem.setAttribute('font-size', documentData.s);
-    this.textElem.setAttribute('font-family', this.globalData.fontManager.getFontByName(documentData.f));
+    var fontData = this.globalData.fontManager.getFontByName(documentData.f);
+    this.textElem.setAttribute('font-family', fontData.fFamily);
+    var styles = fontData.fStyle.split(' ');
+    var i, len = styles.length;
+    var fWeight = 'normal', fStyle = 'normal';
+    for(i=0;i<len;i+=1){
+        if (styles[i].toLowerCase() === 'italic') {
+            fStyle = 'italic';
+        }else if (styles[i].toLowerCase() === 'bold') {
+            fWeight = '700';
+        } else if (styles[i].toLowerCase() === 'black') {
+            fWeight = '900';
+        } else if (styles[i].toLowerCase() === 'medium') {
+            fWeight = '500';
+        } else if (styles[i].toLowerCase() === 'regular' || styles[i].toLowerCase() === 'normal') {
+            fWeight = '400';
+        } else if (styles[i].toLowerCase() === 'light' || styles[i].toLowerCase() === 'thin') {
+            fWeight = '200';
+        }
+    }
+    this.textElem.setAttribute('font-style', fStyle);
+    this.textElem.setAttribute('font-weight', fWeight);
     this.layerElement.appendChild(this.textElem);
-    var i, len = documentData.t.length,tSpan, tShape, j, jLen, k, kLen;
+    len = documentData.t.length;
+    var tSpan, tShape, j, jLen, k, kLen;
     var newLineFlag, index = 0, val;
     var anchorGrouping = this.data.t.m.g;
     var currentSize = 0, currentPos = 0;
+    var matrixHelper = this.mHelper;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
+        tSpan.setAttribute('stroke-linecap', 'butt');
+        tSpan.setAttribute('stroke-linejoin','round');
+        tSpan.setAttribute('stroke-miterlimit','4');
         tShape = document.createElementNS(svgNS,'path');
         tShape.setAttribute('stroke-linecap', 'butt');
-        tShape.setAttribute('stroke-linejoin','miter');
+        tShape.setAttribute('stroke-linejoin','round');
         tShape.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(documentData.t.charAt(i) === ' '){
@@ -53,8 +79,19 @@ ITextElement.prototype.createElements = function(){
             val = documentData.t.charAt(i);
         }
         tSpan.textContent = val;
-        var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), documentData.s, this.globalData.fontManager.getFontByName(documentData.f));
+        var tShapeG = document.createElementNS(svgNS,'g');
+        tShapeG.appendChild(tShape);
+        //tSpan.setAttribute('transform','matrix(10,0,0,10,0,0)');
+        var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        if(!charData){
+            console.log('iii: ',documentData.t.charAt(i));
+            console.log('iii: ',documentData.s);
+            console.log('iii: ',documentData.f);
+            console.log('this.globalData.fontManager.getFontByName(documentData.f).fFamily: ',this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        }
         var shapeData = charData.data;
+        matrixHelper.reset();
+        matrixHelper.scale(documentData.s/100,documentData.s/100);
         if(shapeData){
             var shapes = shapeData.shapes[0].it;
             var shapeStr = '';
@@ -64,21 +101,23 @@ ITextElement.prototype.createElements = function(){
                 var pathNodes = shapes[j].ks;
                 for(k=1;k<kLen;k+=1){
                     if(k==1){
-                        shapeStr += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                        shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                        //shapeStr += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
                     }
-                    shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
+                    shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
+                    //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
                 }
-                shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
                 shapeStr += 'z';
             }
             tShape.setAttribute('d',shapeStr);
         }
         tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-        this.textElem.appendChild(tSpan);
-        //this.textElem.appendChild(tShape);
-        var cLength = charData.w;
-        //var cLength = tSpan.getComputedTextLength();
-        this.textSpans.push({elem:tSpan,shape:tShape,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
+        //this.textElem.appendChild(tSpan);
+        this.textElem.appendChild(tShapeG);
+        var cLength = charData.w*documentData.s/100;
+        this.textSpans.push({elem:tSpan,shape:tShapeG,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
         if(anchorGrouping == 2){
             currentSize += cLength;
             if(val == '' || val == '\u00A0' || i == len - 1){
@@ -116,7 +155,8 @@ ITextElement.prototype.createElements = function(){
         }
     }
     var animators = this.data.t.a;
-    var j, jLen = animators.length, based, ind, indexes = [];
+    jLen = animators.length;
+    var based, ind, indexes = [];
     for(j=0;j<jLen;j+=1){
         if(animators[j].a.sc && hasStroke){
             this.strokeColorAnim = true;
@@ -542,6 +582,8 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
 };
 
 ITextElement.prototype.getMult = function(ind,s,e,type){
+    //var easer = bez.getEasingCurve(1,.02,.02,.99);
+    //console.log(easer('',0.5,0,1,1));
     var mult = 0;
     if(type == 2){
         if(e === s){
@@ -549,11 +591,23 @@ ITextElement.prototype.getMult = function(ind,s,e,type){
         }else{
             mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
         }
+        //mult = easer('',mult,0,1,1);
     }else if(type == 3){
         if(e === s){
             mult = ind >= e ? 0 : 1;
         }else{
             mult = 1 - Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
+        }
+    }else if(type == 4){
+        if(e === s){
+            mult = ind >= e ? 0 : 1;
+        }else{
+            mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
+            if(mult<.5){
+                mult *= 2;
+            }else{
+                mult = 1 - mult;
+            }
         }
     }else {
         if(ind >= Math.floor(s)){

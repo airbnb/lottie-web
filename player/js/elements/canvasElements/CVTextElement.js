@@ -42,9 +42,29 @@ CVTextElement.prototype.createElements = function(){
         this.values.stroke = 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')';
         this.values.sWidth = documentData.sw;
     }
+    var fontData = this.globalData.fontManager.getFontByName(documentData.f);
+    var styles = fontData.fStyle.split(' ');
+    var i, len = styles.length;
+    var fWeight = 'normal', fStyle = 'normal';
+    var matrixHelper = this.mHelper;
+    for(i=0;i<len;i+=1){
+        if (styles[i].toLowerCase() === 'italic') {
+            fStyle = 'italic';
+        }else if (styles[i].toLowerCase() === 'bold') {
+            fWeight = '700';
+        } else if (styles[i].toLowerCase() === 'black') {
+            fWeight = '900';
+        } else if (styles[i].toLowerCase() === 'medium') {
+            fWeight = '500';
+        } else if (styles[i].toLowerCase() === 'regular' || styles[i].toLowerCase() === 'normal') {
+            fWeight = '400';
+        } else if (styles[i].toLowerCase() === 'light' || styles[i].toLowerCase() === 'thin') {
+            fWeight = '200';
+        }
+    }
     this.stroke = hasStroke;
-    this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f);
-    var i, len = documentData.t.length;
+    this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
+    len = documentData.t.length;
     var newLineFlag, index = 0, val;
     var anchorGrouping = this.data.t.m.g;
     var currentSize = 0, currentPos = 0;
@@ -60,29 +80,35 @@ CVTextElement.prototype.createElements = function(){
         }else{
             val = documentData.t.charAt(i);
         }
-        charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), documentData.s, this.globalData.fontManager.getFontByName(documentData.f));
+        charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        matrixHelper.reset();
+        matrixHelper.scale(documentData.s/100,documentData.s/100);
         shapeData = charData.data;
         if(shapeData){
             shapes = shapeData.shapes[0].it;
             path2d = new BM_Path2D();
             jLen = shapes.length;
+            var pt;
             for(j=0;j<jLen;j+=1){
                 kLen = shapes[j].ks.i.length;
                 var pathNodes = shapes[j].ks;
                 for(k=1;k<kLen;k+=1){
                     if(k==1){
-                        path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+                        path2d.moveTo(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
+                        //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
                     }
-                    path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[k][0],pathNodes.i[k][1],pathNodes.v[k][0],pathNodes.v[k][1]);
+                    path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1]),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1]));
+                    //path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[k][0],pathNodes.i[k][1],pathNodes.v[k][0],pathNodes.v[k][1]);
                 }
-                path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+                path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
+                //path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
                 path2d.closePath();
             }
         }else{
             path2d = new BM_Path2D();
         }
         //var cLength = this.tHelper.measureText(val).width;
-        var cLength = charData.w;
+        var cLength = charData.w*documentData.s/100;
         this.textSpans.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, elem: path2d});
         if(anchorGrouping == 2){
             currentSize += cLength;
@@ -174,6 +200,17 @@ CVTextElement.prototype.getMult = function(ind,s,e,type){
             mult = ind >= e ? 0 : 1;
         }else{
             mult = 1 - Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
+        }
+    }else if(type == 4){
+        if(e === s){
+            mult = ind >= e ? 0 : 1;
+        }else{
+            mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
+            if(mult<.5){
+                mult *= 2;
+            }else{
+                mult = 1 - mult;
+            }
         }
     }else {
         if(ind >= Math.floor(s)){

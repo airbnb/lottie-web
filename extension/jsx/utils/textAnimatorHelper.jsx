@@ -8,35 +8,40 @@ var bm_textAnimatorHelper = (function () {
         var ob = {};
         var i, len;
         var selectorProperty = layerInfo.property('ADBE Text Selector');
-        var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
-        ob.b = advancedProperty.property("ADBE Text Range Type2").value;
-        ob.rn = advancedProperty.property("ADBE Text Randomize Order").value;
-        ob.sh = advancedProperty.property("ADBE Text Range Shape").value;
         
-        // 
-        var rangeUnits = advancedProperty.property('ADBE Text Range Units').value;
-        if (rangeUnits === 1) {
-            if (selectorProperty.property('ADBE Text Percent Start').isModified) {
-                ob.s = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Percent Start'), frameRate);
+        
+        if (selectorProperty) {
+            
+            var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
+            ob.b = advancedProperty.property("ADBE Text Range Type2").value;
+            ob.rn = advancedProperty.property("ADBE Text Randomize Order").value;
+            ob.sh = advancedProperty.property("ADBE Text Range Shape").value;
+
+            // 
+            var rangeUnits = advancedProperty.property('ADBE Text Range Units').value;
+            if (rangeUnits === 1) {
+                if (selectorProperty.property('ADBE Text Percent Start').isModified) {
+                    ob.s = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Percent Start'), frameRate);
+                }
+                if (selectorProperty.property('ADBE Text Percent End').isModified) {
+                    ob.e = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Percent End'), frameRate);
+                }
+                if (selectorProperty.property('ADBE Text Percent Offset').isModified) {
+                    ob.o = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Percent Offset'), frameRate);
+                }
+            } else {
+                if (selectorProperty.property('ADBE Text Index Start').isModified) {
+                    ob.s = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Index Start'), frameRate);
+                }
+                if (selectorProperty.property('ADBE Text Index End').isModified) {
+                    ob.e = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Index End'), frameRate);
+                }
+                if (selectorProperty.property('ADBE Text Index Offset').isModified) {
+                    ob.o = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Index Offset'), frameRate);
+                }
             }
-            if (selectorProperty.property('ADBE Text Percent End').isModified) {
-                ob.e = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Percent End'), frameRate);
-            }
-            if (selectorProperty.property('ADBE Text Percent Offset').isModified) {
-                ob.o = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Percent Offset'), frameRate);
-            }
-        } else {
-            if (selectorProperty.property('ADBE Text Index Start').isModified) {
-                ob.s = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Index Start'), frameRate);
-            }
-            if (selectorProperty.property('ADBE Text Index End').isModified) {
-                ob.e = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Index End'), frameRate);
-            }
-            if (selectorProperty.property('ADBE Text Index Offset').isModified) {
-                ob.o = bm_keyframeHelper.exportKeyframes(selectorProperty.property('ADBE Text Index Offset'), frameRate);
-            }
+            ob.r = rangeUnits;
         }
-        ob.r = rangeUnits;
         return ob;
     }
     

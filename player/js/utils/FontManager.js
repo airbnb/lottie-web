@@ -1,6 +1,6 @@
 var FontManager = (function(){
 
-    var maxWaitingTime = 5000;
+    var maxWaitingTime = 10;
 
     function setUpNode(font, family){
         var parentNode = document.createElement('span');
@@ -105,24 +105,26 @@ var FontManager = (function(){
 
     function addChars(chars){
         this.chars = chars;
-        console.log(this.chars.length);
     }
 
-    function getCharData(char, size, font){
+    function getCharData(char, style, font){
         var i = 0, len = this.chars.length;
         while( i < len) {
-            if(this.chars[i].ch === char && this.chars[i].size === size && this.chars[i].fFamily === font){
+            if(this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font){
                 return this.chars[i];
             }
             i+= 1;
         }
+        console.log(char);
+        console.log(size);
+        console.log('font: ',font);
     }
 
     function getFontByName(name){
         var i = 0, len = this.fonts.length;
         while(i<len){
             if(this.fonts[i].fName === name) {
-                return this.fonts[i].fFamily;
+                return this.fonts[i];
             }
             i += 1;
         }
