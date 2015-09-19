@@ -1,6 +1,8 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
     this.textSpans = [];
     this.yOffset = 0;
+    this.boxWidth = 0;
+    this.justifyOffset = 0;
     this.fillColorAnim = false;
     this.strokeColorAnim = false;
     this.strokeWidthAnim = false;
@@ -59,6 +61,8 @@ ITextElement.prototype.createElements = function(){
     var anchorGrouping = this.data.t.m.g;
     var currentSize = 0, currentPos = 0;
     var matrixHelper = this.mHelper;
+    var lineWidth = 0;
+    var maxLineWidth = 0;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         tSpan = document.createElementNS(svgNS,'text');
@@ -73,6 +77,8 @@ ITextElement.prototype.createElements = function(){
         if(documentData.t.charAt(i) === ' '){
             val = '\u00A0';
         }else if(documentData.t.charCodeAt(i) === 13){
+            maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
+            lineWidth = 0;
             val = '';
             newLineFlag = true;
         }else{
@@ -83,12 +89,6 @@ ITextElement.prototype.createElements = function(){
         tShapeG.appendChild(tShape);
         //tSpan.setAttribute('transform','matrix(10,0,0,10,0,0)');
         var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        if(!charData){
-            console.log('iii: ',documentData.t.charAt(i));
-            console.log('iii: ',documentData.s);
-            console.log('iii: ',documentData.f);
-            console.log('this.globalData.fontManager.getFontByName(documentData.f).fFamily: ',this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        }
         var shapeData = charData.data;
         matrixHelper.reset();
         matrixHelper.scale(documentData.s/100,documentData.s/100);
@@ -117,6 +117,7 @@ ITextElement.prototype.createElements = function(){
         //this.textElem.appendChild(tSpan);
         this.textElem.appendChild(tShapeG);
         var cLength = charData.w*documentData.s/100;
+        lineWidth += cLength;
         this.textSpans.push({elem:tSpan,shape:tShapeG,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
         if(anchorGrouping == 2){
             currentSize += cLength;
@@ -153,6 +154,16 @@ ITextElement.prototype.createElements = function(){
             this.textSpans[index].extra = 0;
             index += 1;
         }
+    }
+    maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
+    this.boxWidth = maxLineWidth;
+    switch(documentData.j){
+        case 1:
+            this.justifyOffset = - this.boxWidth;
+            break;
+        case 2:
+            this.justifyOffset = - this.boxWidth/2;
+            break;
     }
     var animators = this.data.t.a;
     jLen = animators.length;
@@ -251,6 +262,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         len = this.textSpans.length;
         var renderedLetter;
         for(i=0;i<len;i+=1){
+            if(this.textSpans[i].n){
+                continue;
+            }
             renderedLetter = this.renderedLetters[num][i];
             this.textSpans[i].elem.setAttribute('transform',renderedLetter.m);
             this.textSpans[i].elem.setAttribute('opacity',renderedLetter.o);
@@ -380,16 +394,18 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             s = e;
             e = _s;
         }
-        ranges.push({s:s,e:e});
+        ranges.push({s:s,e:e,ne:renderedData.a[j].s.ne,xe:renderedData.a[j].s.xe});
     }
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
     var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd;
     var elemOpacity;
     var sc,sw,fc,k;
+    var lineLength = 0;
 
     for( i = 0; i < len; i += 1) {
         matrixHelper.reset();
+        matrixHelper.translate(this.justifyOffset,0);
         elemOpacity = 1;
         letterValue = {};
         if(this.textSpans[i].n) {
@@ -398,13 +414,17 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             yPos += firstLine ? 1 : 0;
             currentLength = initPathPos ;
             firstLine = false;
-            segmentInd = initSegmentInd;
-            pointInd = initPointInd;
-            points = segments[segmentInd].bezierData.points;
-            prevPoint = points[pointInd - 1];
-            currentPoint = points[pointInd];
-            partialLength = currentPoint.partialLength;
-            segmentLength = 0;
+            lineLength = 0;
+            if('m' in this.data.t.p) {
+                segmentInd = initSegmentInd;
+                pointInd = initPointInd;
+                points = segments[segmentInd].bezierData.points;
+                prevPoint = points[pointInd - 1];
+                currentPoint = points[pointInd];
+                partialLength = currentPoint.partialLength;
+                segmentLength = 0;
+            }
+            lettersValue.push(letterValue);
         }else{
             if('m' in this.data.t.p) {
                 if(ind !== this.textSpans[i].ind){
@@ -419,7 +439,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
                     if ('p' in animatorProps && 's' in ranges[j]) {
-                        mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
+                        mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,this.data.t.a[j].s.sh);
 
                         animatorOffset += animatorProps.p[0] * mult;
                     }
@@ -476,11 +496,24 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                 matrixHelper.translate(renderedData.m.a[0]*this.textSpans[i].an/200, renderedData.m.a[1]*yOff/100);
             }
 
+            lineLength += this.textSpans[i].l/2;
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if ('t' in animatorProps && 's' in ranges[j]) {
+                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,this.data.t.a[j].s.sh);
+                    if('m' in this.data.t.p) {
+                        currentLength += animatorProps.t*mult;
+                    }else{
+                        xPos += animatorProps.t*mult;
+                    }
+                }
+            }
+            lineLength += this.textSpans[i].l/2;
+
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
                 if ('p' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
-
+                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,this.data.t.a[j].s.sh);
                     if('m' in this.data.t.p) {
                         matrixHelper.translate(0, animatorProps.p[1] * mult);
                     }else{
@@ -499,7 +532,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             }
             for(j=0;j<jLen;j+=1) {
                 animatorProps = renderedData.a[j].a;
-                mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
+                mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,this.data.t.a[j].s.sh);
                 if ('r' in animatorProps && 's' in ranges[j]) {
                     matrixHelper.rotate(animatorProps.r*mult*Math.PI/180);
                 }
@@ -521,13 +554,6 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
                         fc[k] = Math.round(fc[k] + (animatorProps.fc[k] - fc[k])*mult);
                     }
                 }
-                if ('t' in animatorProps && 's' in ranges[j]) {
-                    if('m' in this.data.t.p) {
-                        currentLength += animatorProps.t*mult;
-                    }else{
-                        xPos += animatorProps.t*mult;
-                    }
-                }
             }
             if(this.strokeWidthAnim){
                 letterValue.sw = sw < 0 ? 0 : sw;
@@ -547,14 +573,14 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
                 if ('s' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
+                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,this.data.t.a[j].s.sh);
                     matrixHelper.scale(1+((animatorProps.s[0]/100-1)*mult),1+((animatorProps.s[1]/100-1)*mult));
                 }
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
                 if ('a' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,this.data.t.a[j].s.sh);
+                    mult = this.getMult(this.textSpans[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,this.data.t.a[j].s.sh);
                     matrixHelper.translate(-animatorProps.a[0]*mult, -animatorProps.a[1]*mult);
                 }
             }
@@ -581,8 +607,8 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
     this.renderedLetters[num] = lettersValue;
 };
 
-ITextElement.prototype.getMult = function(ind,s,e,type){
-    //var easer = bez.getEasingCurve(1,.02,.02,.99);
+ITextElement.prototype.getMult = function(ind,s,e,ne,xe,type){
+    var easer = bez.getEasingCurve(ne/100,0,1-xe/100,1);
     //console.log(easer('',0.5,0,1,1));
     var mult = 0;
     if(type == 2){
@@ -591,13 +617,15 @@ ITextElement.prototype.getMult = function(ind,s,e,type){
         }else{
             mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
         }
-        //mult = easer('',mult,0,1,1);
+        mult = easer('',mult,0,1,1);
     }else if(type == 3){
         if(e === s){
             mult = ind >= e ? 0 : 1;
         }else{
             mult = 1 - Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
         }
+
+        mult = easer('',mult,0,1,1);
     }else if(type == 4){
         if(e === s){
             mult = ind >= e ? 0 : 1;

@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager*/
+/*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification*/
 var bm_textShapeHelper = (function () {
     'use strict';
     var ob = {}, chars = [], comp, layers = [];
@@ -63,7 +63,6 @@ var bm_textShapeHelper = (function () {
             }
         }
         if ((textLayer.mask && textLayer.mask.numProperties > 0)) {
-            bm_eventDispatcher.log('paso');
             textLayer.mask(1).remove();
         }
         resetProp(textLayer.transform.position, [0, 0, 0]);
@@ -71,7 +70,7 @@ var bm_textShapeHelper = (function () {
     }
     
     function createNewChar(layerInfo, ch, charData) {
-        if (ch === ' ') {
+        if (ch === ' ' || ch.charCodeAt(0) === 13) {
             return;
         }
         var shapeLayer;
@@ -84,6 +83,7 @@ var bm_textShapeHelper = (function () {
         var textDocument = textProp.value;
         textDocument.text = ch;
         textDocument.fontSize = 100;
+        textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
         textProp.setValue(textDocument);
         dupl.enabled = true;
         dupl.selected = true;

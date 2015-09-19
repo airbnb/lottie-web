@@ -13,6 +13,14 @@ var bm_textAnimatorHelper = (function () {
         if (selectorProperty) {
             
             var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
+            
+            len = advancedProperty.numProperties;
+            for (i = 0; i < len; i += 1) {
+                bm_eventDispatcher.log(advancedProperty.property(i + 1).matchName);
+            }
+            
+            ob.xe = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Levels Max Ease'), frameRate);
+            ob.ne = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Levels Min Ease'), frameRate);
             ob.b = advancedProperty.property("ADBE Text Range Type2").value;
             ob.rn = advancedProperty.property("ADBE Text Randomize Order").value;
             ob.sh = advancedProperty.property("ADBE Text Range Shape").value;

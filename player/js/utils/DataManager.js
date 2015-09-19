@@ -818,6 +818,16 @@ function dataFunctionManager(){
             }else{
                 renderedData.t.a[i].s.o = 0;
             }
+            if('xe' in animatorProps.s) {
+                renderedData.t.a[i].s.xe = getInterpolatedValue(animatorProps.s.xe,offsettedFrameNum, item.startTime);
+            }else{
+                renderedData.t.a[i].s.xe = 0;
+            }
+            if('ne' in animatorProps.s) {
+                renderedData.t.a[i].s.ne = getInterpolatedValue(animatorProps.s.ne,offsettedFrameNum, item.startTime);
+            }else{
+                renderedData.t.a[i].s.ne = 0;
+            }
         }
 
         //console.log(item.t);

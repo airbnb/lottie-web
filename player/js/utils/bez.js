@@ -24,7 +24,7 @@ function bezFunction(){
             var tt = t/d;
             x = tt;
             var i = 0, z;
-            while (++i < 14) {
+            while (++i < 20) {
                 C0 = 3 * aa;
                 B0 = 3 * (cc - aa) - C0;
                 A0 = 1 - C0 - B0;
