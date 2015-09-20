@@ -437,7 +437,7 @@ function dataFunctionManager(){
                     key = '__maxValue';
                     pos = keyframes.length - 2;
                     stored = keyframes.__maxValue;
-                    ob = keyframes[pos].e;
+                    ob = keyframes[pos].h ? keyframes[pos].s : keyframes[pos].e;
                 }
                 if(!stored){
                     jLen = keyframes[pos].s[0].i.length;
@@ -451,6 +451,11 @@ function dataFunctionManager(){
                         coordsIData = new Array(kLen);
                         coordsOData = new Array(kLen);
                         coordsVData = new Array(kLen);
+                        if(!ob){
+
+                            console.log('pos:',pos);
+                            console.log(keyframes);
+                        }
                         for(k=0;k<kLen;k+=1){
                             coordsIData[k] = ob[0].i[j][k];
                             coordsOData[k] = ob[0].o[j][k];
