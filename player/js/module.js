@@ -25,7 +25,7 @@
     }
     function searchAnimations(){
         if(standalone === true){
-            animationManager.searchAnimations(animationData);
+            animationManager.searchAnimations(animationData,standalone);
         }else{
             animationManager.searchAnimations();
         }

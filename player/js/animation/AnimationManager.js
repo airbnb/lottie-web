@@ -115,11 +115,21 @@ var animationManager = (function(){
         }
     }
 
-    function searchAnimations(animationData){
+    function searchAnimations(animationData, standalone){
         var animElements = document.getElementsByClassName('bodymovin');
         var i, len = animElements.length;
         for(i=0;i<len;i+=1){
             registerAnimation(animElements[i], animationData);
+        }
+        if(standalone && len === 0){
+            var body = document.getElementsByTagName('body')[0];
+            body.innerHTML = ''
+            var div = document.createElement('div');
+            div.style.width = '100%';
+            div.style.height = '100%';
+            div.setAttribute('data-bm-type','svg');
+            body.appendChild(div);
+            registerAnimation(div, animationData);
         }
     }
 
