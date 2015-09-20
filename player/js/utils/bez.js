@@ -95,6 +95,11 @@ function bezFunction(){
         this.points = new Array(length);
     }
 
+    function PointData(partial,point){
+        this.partialLength = partial;
+        this.point = point;
+    }
+
     var buildBezierData = (function(){
 
         var storedData = {};
@@ -133,12 +138,13 @@ function bezFunction(){
                 }
                 ptDistance = math.sqrt(ptDistance);
                 addedLength += ptDistance;
-                bezierData.points[k] = {partialLength: ptDistance,cumulatedLength:addedLength, point: point};
+                bezierData.points[k] = new PointData(ptDistance,point);
                 lastPoint = point;
             }
             bezierData.segmentLength = addedLength;
             keyData.bezierData = bezierData;
             storedData[bezierName] = bezierData;
+
         }
     }());
 

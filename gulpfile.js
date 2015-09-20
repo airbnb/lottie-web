@@ -94,15 +94,6 @@ gulp.task('zipPlayer',['buildPlayer'], function(){
         .pipe(gulp.dest('build/player/'));
 });
 
-gulp.task('buildGreensock', function(){
-    gulp.src('./player/greensock.html')
-        .pipe(usemin({
-            js: [uglify()]
-        }))
-        .pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
-        .pipe(gulp.dest('build/player/greensock'));
-});
-
 gulp.task('buildCanvasPlayer', function(){
     gulp.src([
         'player/js/main.js',

@@ -67,6 +67,7 @@ function fillToRgba(hex,alpha){
 }
 
 var fillColorToString = (function(){
+
     var colorMap = [];
     return function(colorArr,alpha){
         if(!colorMap[colorArr[0]]){

@@ -106,6 +106,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
     }else{
         params.loop = parseInt(loop);
     }
+
     params.name = wrapperAttributes.getNamedItem('data-name') ? wrapperAttributes.getNamedItem('data-name').value :  wrapperAttributes.getNamedItem('data-bm-name') ? wrapperAttributes.getNamedItem('data-bm-name').value : wrapperAttributes.getNamedItem('bm-name') ? wrapperAttributes.getNamedItem('bm-name').value :  '';
     var prerender = wrapperAttributes.getNamedItem('data-anim-prerender') ? wrapperAttributes.getNamedItem('data-anim-prerender').value :  wrapperAttributes.getNamedItem('data-bm-prerender') ? wrapperAttributes.getNamedItem('data-bm-prerender').value :  wrapperAttributes.getNamedItem('bm-prerender') ? wrapperAttributes.getNamedItem('bm-prerender').value : '';
 
@@ -127,7 +128,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = Math.floor(this.animationData.animation.totalFrames);
     this.frameRate = this.animationData.animation.frameRate;
     this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
-    /*this.firstFrame = 19;
+    /*this.firstFrame = 24;
     this.totalFrames = 1;*/
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);

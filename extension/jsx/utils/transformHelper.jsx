@@ -18,8 +18,8 @@ var bm_transformHelper = (function () {
         }
         if (layerInfo.transform.position.dimensionsSeparated) {
             data.ks.p = {s: true};
-            data.ks.x = bm_keyframeHelper.exportKeyframes(layerInfo.transform['X Position'], frameRate);
-            data.ks.y = bm_keyframeHelper.exportKeyframes(layerInfo.transform['Y Position'], frameRate);
+            data.ks.p.x = bm_keyframeHelper.exportKeyframes(layerInfo.transform['X Position'], frameRate);
+            data.ks.p.y = bm_keyframeHelper.exportKeyframes(layerInfo.transform['Y Position'], frameRate);
         } else {
             data.ks.p = bm_keyframeHelper.exportKeyframes(layerInfo.transform.position, frameRate);
         }
