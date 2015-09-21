@@ -117,7 +117,6 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
-    console.log('animData: ',JSON.parse(JSON.stringify(animData)));
     this.renderer.configAnimation(animData);
 
     this.animationData = animData;

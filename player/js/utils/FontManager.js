@@ -76,7 +76,6 @@ var FontManager = (function(){
             this.loaded = true;
             return;
         }
-        console.log(fontData);
         if(fontData.tk){
             var s = document.createElement('script');
             s.setAttribute('src',fontData.tk);
@@ -115,9 +114,6 @@ var FontManager = (function(){
             }
             i+= 1;
         }
-        console.log(char);
-        console.log(size);
-        console.log('font: ',font);
     }
 
     function getFontByName(name){

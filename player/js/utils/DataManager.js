@@ -451,11 +451,6 @@ function dataFunctionManager(){
                         coordsIData = new Array(kLen);
                         coordsOData = new Array(kLen);
                         coordsVData = new Array(kLen);
-                        if(!ob){
-
-                            console.log('pos:',pos);
-                            console.log(keyframes);
-                        }
                         for(k=0;k<kLen;k+=1){
                             coordsIData[k] = ob[0].i[j][k];
                             coordsOData[k] = ob[0].o[j][k];

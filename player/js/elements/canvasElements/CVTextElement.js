@@ -238,11 +238,11 @@ CVTextElement.prototype.draw = function(parentMatrix){
     var renderedLetter;
     var lastFill = null, lastStroke = null, lastStrokeW = null;
     for(i=0;i<len;i+=1){
-        this.globalData.renderer.save();
         renderedLetter = this.currentRender[i];
         if(this.textSpans[i].n){
             continue;
         }
+        this.globalData.renderer.save();
         this.globalData.renderer.ctxTransform(renderedLetter.props);
         this.globalData.renderer.ctxOpacity(renderedLetter.o);
         if(this.fill){

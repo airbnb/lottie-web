@@ -115,19 +115,25 @@ var animationManager = (function(){
         }
     }
 
-    function searchAnimations(animationData, standalone){
+    function searchAnimations(animationData, standalone, renderer){
         var animElements = document.getElementsByClassName('bodymovin');
         var i, len = animElements.length;
         for(i=0;i<len;i+=1){
+            if(renderer){
+                animElements[i].setAttribute('data-bm-type',renderer);
+            }
             registerAnimation(animElements[i], animationData);
         }
         if(standalone && len === 0){
+            if(!renderer){
+                renderer = 'svg';
+            }
             var body = document.getElementsByTagName('body')[0];
             body.innerHTML = ''
             var div = document.createElement('div');
             div.style.width = '100%';
             div.style.height = '100%';
-            div.setAttribute('data-bm-type','svg');
+            div.setAttribute('data-bm-type',renderer);
             body.appendChild(div);
             registerAnimation(div, animationData);
         }
