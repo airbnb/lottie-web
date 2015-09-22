@@ -4,7 +4,7 @@ var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
     var compositions = [];
-    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td standaloneTd"><div class="hideExtra standalone"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
+    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td standaloneTd"><div class="hideExtra standalone"></div></td><td class="td glyphsTd"><div class="hideExtra glyphs">Shape</div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
     
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
@@ -65,8 +65,24 @@ var compSelectionController = (function () {
             var eScript = 'bm_compsManager.setCompositionStandaloneState(' + comp.id + ',' + comp.standalone + ')';
             csInterface.evalScript(eScript);
         }
+        
+        function handleGlyphsClick() {
+            if (!comp.selected && !comp.standalone) {
+                handleStateClick();
+            }
+            console.log('comp.glyphs: ', comp.glyphs);
+            comp.glyphs = !comp.glyphs;
+            if (comp.glyphs) {
+                elem.find('.glyphsTd .glyphs').html('Shape');
+            } else {
+                elem.find('.glyphsTd .glyphs').html('Font');
+            }
+            var eScript = 'bm_compsManager.setCompositionGlyphsState(' + comp.id + ',' + comp.glyphs + ')';
+            csInterface.evalScript(eScript);
+        }
         elem.find('.stateTd').on('click', handleStateClick);
         elem.find('.standaloneTd').on('click', handleStandaloneClick);
+        elem.find('.glyphsTd').on('click', handleGlyphsClick);
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
@@ -118,6 +134,7 @@ var compSelectionController = (function () {
         comp.name = item.name;
         comp.selected = item.selected;
         comp.standalone = item.standalone;
+        comp.glyphs = item.glyphs;
         comp.destination = item.destination;
         var elem = comp.elem;
         elem.find('.name').html(comp.name);

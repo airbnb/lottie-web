@@ -197,7 +197,6 @@ var compRenderController = (function () {
         var chars = JSON.parse(messageData.chars);
         var i, len = chars.length;
         for (i = 0; i < len; i += 1) {
-            console.log(chars[i].style);
             var styles = chars[i].style.split(' ');
             var j, jLen = styles.length;
             var fStyle = 'normal';

@@ -82,6 +82,10 @@
     cursor: pointer;
 }
 
+#compsSelection .compsTable .th.glyphs{
+    width: 50px;
+}
+
 #compsSelection .compsTable .td .state{
     height: 100%;
     width: 100%;
@@ -97,6 +101,11 @@
 
 #compsSelection .compsTable .td .hideExtra.standalone{
     padding: 0;
+}
+
+#compsSelection .compsTable .td .hideExtra.glyphs{
+    padding: 0;
+    text-align: center;
 }
 
 #compsSelection .compsTable .td .destination{

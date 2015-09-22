@@ -1,6 +1,6 @@
 var FontManager = (function(){
 
-    var maxWaitingTime = 10;
+    var maxWaitingTime = 5000;
 
     function setUpNode(font, family){
         var parentNode = document.createElement('span');
@@ -76,6 +76,11 @@ var FontManager = (function(){
             this.loaded = true;
             return;
         }
+        if(this.chars){
+            this.loaded = true;
+            this.fonts = fontData.list;
+            return;
+        }
         if(fontData.tk){
             var s = document.createElement('script');
             s.setAttribute('src',fontData.tk);
@@ -129,7 +134,7 @@ var FontManager = (function(){
 
     var Font = function(){
         this.fonts = [];
-        this.chars = [];
+        this.chars = null;
         this.loaded = false;
         this.initTime = Date.now();
     };

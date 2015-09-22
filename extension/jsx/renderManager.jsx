@@ -4,7 +4,7 @@ var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer;
-    var standalone = false;
+    var settings;
     
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -71,9 +71,9 @@ var bm_renderManager = (function () {
         }
     }
     
-    function render(comp, destination, sAlone) {
+    function render(comp, destination, compSettings) {
         currentCompID = comp.id;
-        standalone = sAlone;
+        settings = compSettings;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
@@ -107,10 +107,15 @@ var bm_renderManager = (function () {
         }
         if (ob.renderData.exportData.fonts.length === 0) {
             delete ob.renderData.exportData.fonts;
+            delete ob.renderData.exportData.chars;
+        } else {
+            if (!settings.glyphs) {
+                delete ob.renderData.exportData.chars;
+            }
         }
         var string = JSON.stringify(ob.renderData.exportData);
         string = string.replace(/\n/g, '');
-        if (standalone) {
+        if (settings.standalone) {
             var bodymovinJsStr = bm_downloadManager.getStandaloneData();
             string = bodymovinJsStr.replace('"__[ANIMATIONDATA]__"', "'" + string + "'");
             string = string.replace('"__[STANDALONE]__"', 'true');

@@ -21,7 +21,8 @@ var bm_compsManager = (function () {
                 destination: '',
                 absoluteURI: '',
                 selected: false,
-                standalone: false
+                standalone: false,
+                glyphs: true
             };
         }
         
@@ -56,6 +57,18 @@ var bm_compsManager = (function () {
                     compData.absoluteURI += compData.standalone ? '.js' : '.json';
                     bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
                 }
+                break;
+            }
+            i += 1;
+        }
+    }
+    
+    function setCompositionGlyphsState(id, selectedFlag) {
+        var i = 0, len = compositions.length, compData;
+        while (i < len) {
+            if (compositions[i].id === id) {
+                compData = compositions[i];
+                compData.glyphs = selectedFlag;
                 break;
             }
             i += 1;
@@ -131,13 +144,18 @@ var bm_compsManager = (function () {
             return;
         }
         projectComps = bm_projectManager.getCompositions();
-        var comp, destination, standalone;
+        var settings = {
+            standalone: null,
+            glyphs: null
+        };
+        var comp, destination, standalone, glyphs;
         var i = 0, len = projectComps.length;
         while (i < len) {
             if (projectComps[i].id === renderingCompositions[currentRenderingComposition].id) {
                 comp = projectComps[i];
                 destination = renderingCompositions[currentRenderingComposition].absoluteURI;
-                standalone = renderingCompositions[currentRenderingComposition].standalone;
+                settings.standalone = renderingCompositions[currentRenderingComposition].standalone;
+                settings.glyphs = renderingCompositions[currentRenderingComposition].glyphs;
                 break;
             }
             i += 1;
@@ -147,7 +165,7 @@ var bm_compsManager = (function () {
             renderNextComposition();
             return;
         }
-        bm_renderManager.render(comp, destination, standalone);
+        bm_renderManager.render(comp, destination, settings);
     }
     
     function render() {
@@ -185,6 +203,7 @@ var bm_compsManager = (function () {
         getCompositions : getCompositions,
         setCompositionSelectionState : setCompositionSelectionState,
         setCompositionStandaloneState : setCompositionStandaloneState,
+        setCompositionGlyphsState : setCompositionGlyphsState,
         setCompositionDestinationFolder : setCompositionDestinationFolder,
         searchCompositionDestination : searchCompositionDestination,
         renderComplete : renderComplete,

@@ -65,14 +65,17 @@ ITextElement.prototype.createElements = function(){
     var maxLineWidth = 0;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
-        tSpan = document.createElementNS(svgNS,'text');
-        tSpan.setAttribute('stroke-linecap', 'butt');
-        tSpan.setAttribute('stroke-linejoin','round');
-        tSpan.setAttribute('stroke-miterlimit','4');
-        tShape = document.createElementNS(svgNS,'path');
-        tShape.setAttribute('stroke-linecap', 'butt');
-        tShape.setAttribute('stroke-linejoin','round');
-        tShape.setAttribute('stroke-miterlimit','4');
+        if(this.globalData.fontManager.chars){
+            tShape = document.createElementNS(svgNS,'path');
+            tShape.setAttribute('stroke-linecap', 'butt');
+            tShape.setAttribute('stroke-linejoin','round');
+            tShape.setAttribute('stroke-miterlimit','4');
+        }else{
+            tSpan = document.createElementNS(svgNS,'text');
+            tSpan.setAttribute('stroke-linecap', 'butt');
+            tSpan.setAttribute('stroke-linejoin','round');
+            tSpan.setAttribute('stroke-miterlimit','4');
+        }
         //tSpan.setAttribute('visibility', 'hidden');
         if(documentData.t.charAt(i) === ' '){
             val = '\u00A0';
@@ -84,41 +87,46 @@ ITextElement.prototype.createElements = function(){
         }else{
             val = documentData.t.charAt(i);
         }
-        tSpan.textContent = val;
-        var tShapeG = document.createElementNS(svgNS,'g');
-        tShapeG.appendChild(tShape);
-        //tSpan.setAttribute('transform','matrix(10,0,0,10,0,0)');
-        var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        var shapeData = charData.data;
-        matrixHelper.reset();
-        matrixHelper.scale(documentData.s/100,documentData.s/100);
-        if(shapeData){
-            var shapes = shapeData.shapes[0].it;
-            var shapeStr = '';
-            jLen = shapes.length;
-            for(j=0;j<jLen;j+=1){
-                kLen = shapes[j].ks.i.length;
-                var pathNodes = shapes[j].ks;
-                for(k=1;k<kLen;k+=1){
-                    if(k==1){
-                        shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
-                        //shapeStr += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+        var cLength;
+        if(this.globalData.fontManager.chars){
+            var tShapeG = document.createElementNS(svgNS,'g');
+            tShapeG.appendChild(tShape);
+            var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+            var shapeData = charData.data;
+            matrixHelper.reset();
+            matrixHelper.scale(documentData.s/100,documentData.s/100);
+            if(shapeData){
+                var shapes = shapeData.shapes[0].it;
+                var shapeStr = '';
+                jLen = shapes.length;
+                for(j=0;j<jLen;j+=1){
+                    kLen = shapes[j].ks.i.length;
+                    var pathNodes = shapes[j].ks;
+                    for(k=1;k<kLen;k+=1){
+                        if(k==1){
+                            shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                            //shapeStr += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                        }
+                        shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
+                        //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
                     }
-                    shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
-                    //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
+                    shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+                    //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+                    shapeStr += 'z';
                 }
-                shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
-                //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-                shapeStr += 'z';
+                tShape.setAttribute('d',shapeStr);
             }
-            tShape.setAttribute('d',shapeStr);
+            this.textElem.appendChild(tShapeG);
+            cLength = charData.w*documentData.s/100;
+        }else{
+            tSpan.textContent = val;
+            tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
+            this.textElem.appendChild(tSpan);
+            cLength = tSpan.getComputedTextLength();
         }
-        tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-        //this.textElem.appendChild(tSpan);
-        this.textElem.appendChild(tShapeG);
-        var cLength = charData.w*documentData.s/100;
+        //
         lineWidth += cLength;
-        this.textSpans.push({elem:tSpan,shape:tShapeG,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
+        this.textSpans.push({elem:tSpan || tShapeG,l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
         if(anchorGrouping == 2){
             currentSize += cLength;
             if(val == '' || val == '\u00A0' || i == len - 1){
@@ -275,18 +283,13 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         renderedLetter = this.renderedLetters[num][i];
         this.textSpans[i].elem.setAttribute('transform',renderedLetter.m);
         this.textSpans[i].elem.setAttribute('opacity',renderedLetter.o);
-        this.textSpans[i].shape.setAttribute('transform',renderedLetter.m);
-        this.textSpans[i].shape.setAttribute('opacity',renderedLetter.o);
         if(renderedLetter.sw){
-            this.textSpans[i].shape.setAttribute('stroke-width',renderedLetter.sw);
             this.textSpans[i].elem.setAttribute('stroke-width',renderedLetter.sw);
         }
         if(renderedLetter.sc){
-            this.textSpans[i].shape.setAttribute('stroke',renderedLetter.sc);
             this.textSpans[i].elem.setAttribute('stroke',renderedLetter.sc);
         }
         if(renderedLetter.fc){
-            this.textSpans[i].shape.setAttribute('fill',renderedLetter.fc);
             this.textSpans[i].elem.setAttribute('fill',renderedLetter.fc);
         }
     }
