@@ -38,6 +38,10 @@ function dataFunctionManager(){
         var j, jLen, k, kLen;
         for(i=0;i<len;i+=1){
             layerData = layers[i];
+            if(layerData.loadId || layerData.completed){
+                continue;
+            }
+            layerData.completed = true;
             layerFrames = layerData.outPoint - layerData.startTime;
             offsetFrame = layerData.startTime;
             //layerData.layerName = convertLayerNameToID(layerData.layerName);
@@ -197,6 +201,7 @@ function dataFunctionManager(){
         animationData.__renderedFrames = new Array(Math.floor(animationData.animation.totalFrames));
         animationData.__renderFinished = false;
         frameRate = animationData.animation.frameRate;
+
         completeLayers(animationData.animation.layers);
     }
 
@@ -708,6 +713,9 @@ function dataFunctionManager(){
         var j, jLen = layers.length, item;
         for(j=0;j<jLen;j+=1){
             item = layers[j];
+            if(layers[j].loadId) {
+                return;
+            }
             offsettedFrameNum = frameNum - item.startTime;
             dataOb = {};
             dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime);

@@ -9,32 +9,38 @@ function SVGRenderer(animationItem){
     this.destroyed = false;
 }
 
+SVGRenderer.prototype.createItem = function(layer,parentContainer){
+    switch(layer.ty){
+        case 'StillLayer':
+            return this.createImage(layer,parentContainer);
+        case 'PreCompLayer':
+            return this.createComp(layer,parentContainer);
+        case 'SolidLayer':
+            return this.createSolid(layer,parentContainer);
+        case 'ShapeLayer':
+            return this.createShape(layer,parentContainer);
+        case 'TextLayer':
+            return this.createText(layer,parentContainer);
+        case 99:
+            return this.createPlaceHolder(layer,parentContainer);
+    }
+    return this.createBase(layer,parentContainer);
+}
+
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
-    var count = 0, i, len = layers.length;
+    var  i, len = layers.length;
     if(!elements){
         elements = this.elements;
     }
     if(!parentContainer){
         parentContainer = this.animationItem.container;
     }
+    var elems;
     for (i = len - 1; i >= 0; i--) {
-        if (layers[i].ty == 'StillLayer') {
-            count++;
-            elements[i] = this.createImage(layers[i],parentContainer);
-        } else if (layers[i].ty == 'PreCompLayer') {
-            elements[i] = this.createComp(layers[i],parentContainer);
-            var elems = [];
+        elements[i] = this.createItem(layers[i],parentContainer);
+        if (layers[i].ty == 'PreCompLayer') {
+            elems = [];
             this.buildItems(layers[i].layers,elements[i].getDomElement(),elems);
-            elements[i].setElements(elems);
-        } else if (layers[i].ty == 'SolidLayer') {
-            elements[i] = this.createSolid(layers[i],parentContainer);
-        } else if (layers[i].ty == 'ShapeLayer') {
-            elements[i] = this.createShape(layers[i],parentContainer);
-        } else if (layers[i].ty == 'TextLayer') {
-            elements[i] = this.createText(layers[i],parentContainer);
-        }else{
-            elements[i] = this.createBase(layers[i],parentContainer);
-            //console.log('NO TYPE: ',layers[i]);
         }
         if(layers[i].td){
             elements[i+1].setMatte(elements[i].layerId);
@@ -43,8 +49,38 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
     }
 };
 
+SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
+    var i, len = layers.length;
+    if(!elements){
+        elements = this.elements;
+    }
+    if(!parentContainer){
+        parentContainer = this.animationItem.container;
+    }
+    var j, jLen = elements.length, elems;
+    for(i=0;i<len;i+=1){
+        j = 0;
+        while(j<jLen){
+            if(elements[j].data.loadId == layers[i].id){
+                elements[j] = this.createItem(layers[i].data,parentContainer);
+                if (layers[i].data.ty == 'PreCompLayer') {
+                    elems = [];
+                    this.buildItems(layers[i].data.layers,elements[j].getDomElement(),elems);
+                    this.buildStage(elements[j].getComposingElement(), layers[i].data.layers, elements[j].getElements());
+                }
+                break;
+            }
+            j += 1;
+        }
+    }
+};
+
 SVGRenderer.prototype.createBase = function (data,parentContainer) {
     return new BaseElement(data, parentContainer,this.globalData);
+};
+
+SVGRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
+    return new PlaceHolderElement(data, parentContainer,this.globalData);
 };
 
 SVGRenderer.prototype.createShape = function (data,parentContainer) {

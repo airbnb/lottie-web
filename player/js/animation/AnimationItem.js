@@ -26,6 +26,8 @@ var AnimationItem = function () {
     this.scaleMode = 'fit';
     this.math = Math;
     this.removed = false;
+    this.timeCompleted = 0;
+    this.pendingSegments = [];
 };
 
 AnimationItem.prototype.setParams = function(params) {
@@ -115,6 +117,62 @@ AnimationItem.prototype.setData = function (wrapper) {
     this.setParams(params);
 };
 
+AnimationItem.prototype.includeLayers = function(data) {
+    var layers = this.animationData.animation.layers;
+    var i, len = layers.length;
+    var newLayers = data.layers;
+    var j, jLen = newLayers.length;
+    for(j=0;j<jLen;j+=1){
+        i = 0;
+        while(i<len){
+            if(layers[i].loadId == newLayers[j].id){
+                layers[i] = newLayers[j].data;
+                break;
+            }
+            i += 1;
+        }
+    }
+    dataManager.completeData(this.animationData);
+    this.renderer.includeLayers(data.layers);
+    this.loadNextSegment();
+}
+
+AnimationItem.prototype.loadNextSegment = function() {
+    var segments = this.animationData.segments;
+    if(segments.length === 0){
+        this.timeCompleted = this.animationData.totalFrames;
+        return;
+    }
+    var segment = segments.shift();
+    this.timeCompleted = segment.time * this.frameRate;
+    var xhr = new XMLHttpRequest();
+    var self = this;
+    var segmentPath = this.path.substr(0,this.path.lastIndexOf('/')+1)+segment.id+'.json';
+    xhr.open('GET', segmentPath, true);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if(xhr.status == 200){
+                self.includeLayers(JSON.parse(xhr.responseText));
+            }else{
+                try{
+                    var response = JSON.parse(xhr.responseText);
+                    self.includeLayers(response);
+                }catch(err){
+                }
+            }
+        }
+    };
+}
+
+AnimationItem.prototype.loadSegments = function() {
+    var segments = this.animationData.segments;
+    if(!segments) {
+        this.timeCompleted = this.animationData.totalFrames;
+    }
+    this.loadNextSegment();
+}
+
 AnimationItem.prototype.configAnimation = function (animData) {
     this.renderer.configAnimation(animData);
 
@@ -129,6 +187,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     /*this.firstFrame = 0;
     this.totalFrames = 1;*/
     this.frameMult = this.animationData.animation.frameRate / 1000;
+    this.loadSegments();
     dataManager.completeData(this.animationData);
     this.renderer.buildItems(this.animationData.animation.layers);
     this.updaFrameModifier();
@@ -189,6 +248,10 @@ AnimationItem.prototype.gotoFrame = function () {
         this.currentFrame = this.math.round(this.currentRawFrame*100)/100;
     }else{
         this.currentFrame = this.math.floor(this.currentRawFrame);
+    }
+
+    if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
+        this.currentFrame = this.timeCompleted;
     }
     this.renderFrame();
 };

@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, app, File*/
+/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_dataManager, app, File*/
 var bm_renderManager = (function () {
     'use strict';
     
@@ -96,17 +96,11 @@ var bm_renderManager = (function () {
     
     function saveData() {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
-        var dataFile = new File(destinationPath);
-        dataFile.open('w', 'TEXT', '????');
-        var string = JSON.stringify(ob.renderData.exportData);
-        string = string.replace(/\n/g, '');
-        try {
-            dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
-            //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
-            dataFile.close();
-        } catch (err) {
-            bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
-        }
+        var config = {
+            split: true,
+            time: 1
+        };
+        bm_dataManager.saveData(ob.renderData.exportData, destinationPath, config);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true});
         bm_compsManager.renderComplete();
     }
