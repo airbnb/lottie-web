@@ -28,10 +28,7 @@ function dataFunctionManager(){
         }
     }
 
-    function completeLayers(layers, mainLayers){
-        if(!mainLayers){
-            mainLayers = layers;
-        }
+    function completeLayers(layers, comps){
         var layerFrames, offsetFrame, layerData;
         var animArray, lastFrame;
         var i, len = layers.length;
@@ -98,37 +95,22 @@ function dataFunctionManager(){
                 }
             }
             if(layerData.ty=='PreCompLayer'){
-                if(layerData.refId && !layerData.layers){
-                    layerData.layers = findCompLayers(layerData.refId,mainLayers);
-                }else{
-                    completeLayers(layerData.layers,mainLayers);
-                }
+                layerData.layers = findCompLayers(layerData.refId, comps);
+                completeLayers(layerData.layers, comps);
             }else if(layerData.ty == 'ShapeLayer'){
                 completeShapes(layerData.shapes);
             }
         }
     }
 
-    function findCompLayers(id,layers,mainLayers){
-        if(!mainLayers){
-            mainLayers = layers;
-        }
-        var i, len = layers.length;
-        for(i=0;i<len;i+=1){
-            if(layers[i].compId == id){
-                if(!layers[i].layers){
-                    layers[i].layers = findCompLayers(layers[i].refId,mainLayers);
-                }
-                return layers[i].layers;
+    function findCompLayers(id,comps){
+        var i = 0, len = comps.length;
+        while(i<len){
+            if(comps[i].id === id){
+                return comps[i].layers;
             }
-            if(layers[i].ty == 'PreCompLayer'){
-                var elem = findCompLayers(id,layers[i].layers,mainLayers);
-                if(elem){
-                    return elem;
-                }
-            }
+            i += 1;
         }
-        return null;
     }
 
     function completeShapes(arr,trimmedFlag){
@@ -202,7 +184,7 @@ function dataFunctionManager(){
         animationData.__renderFinished = false;
         frameRate = animationData.animation.frameRate;
 
-        completeLayers(animationData.animation.layers);
+        completeLayers(animationData.animation.layers, animationData.comps);
     }
 
     function convertLayerNameToID(string){

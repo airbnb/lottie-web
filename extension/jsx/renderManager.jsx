@@ -80,6 +80,7 @@ var bm_renderManager = (function () {
         var exportData = ob.renderData.exportData;
         exportData.animation = {};
         exportData.assets = [];
+        exportData.comps = [];
         exportData.v = '2.1.2';
         exportData.animation.layers = [];
         exportData.animation.totalFrames = comp.workAreaDuration * comp.frameRate;

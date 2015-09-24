@@ -1,5 +1,5 @@
-function ICompElement(data,parentContainer,globalData){
-    this.parent.constructor.call(this,data,parentContainer,globalData);
+function ICompElement(data,parentContainer,globalData, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
     this.layers = data.layers;
 }
 createElement(BaseElement, ICompElement);

@@ -132,14 +132,21 @@ AnimationItem.prototype.includeLayers = function(data) {
             i += 1;
         }
     }
+    if(data.comps){
+        len = data.comps.length;
+        for(i = 0; i < len; i += 1){
+            this.animationData.comps.push(data.comps[i]);
+        }
+    }
     dataManager.completeData(this.animationData);
     this.renderer.includeLayers(data.layers);
+    this.renderer.buildStage(this.container, this.layers);
     this.loadNextSegment();
 }
 
 AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;
-    if(segments.length === 0){
+    if(!segments || segments.length === 0){
         this.timeCompleted = this.animationData.totalFrames;
         return;
     }
@@ -163,7 +170,7 @@ AnimationItem.prototype.loadNextSegment = function() {
             }
         }
     };
-}
+};
 
 AnimationItem.prototype.loadSegments = function() {
     var segments = this.animationData.segments;
@@ -171,10 +178,13 @@ AnimationItem.prototype.loadSegments = function() {
         this.timeCompleted = this.animationData.totalFrames;
     }
     this.loadNextSegment();
-}
+};
 
 AnimationItem.prototype.configAnimation = function (animData) {
     this.renderer.configAnimation(animData);
+    if(!animData.comps){
+        animData.comps = [];
+    }
 
     this.animationData = animData;
     this.animationData._id = this.animationID;

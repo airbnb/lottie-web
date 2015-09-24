@@ -141,6 +141,7 @@ var bm_layerElement = (function () {
                 layerData.refId = sourceId;
             } else {
                 layerData.compId = bm_generalUtils.random(7);
+                layerData.refId = layerData.compId;
                 bm_sourceHelper.setCompSourceId(layerInfo.source, layerData.compId);
             }
         } else if (layerType === ob.layerTypes.still) {

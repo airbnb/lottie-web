@@ -9,25 +9,25 @@ function SVGRenderer(animationItem){
     this.destroyed = false;
 }
 
-SVGRenderer.prototype.createItem = function(layer,parentContainer){
+SVGRenderer.prototype.createItem = function(layer,parentContainer, placeholder){
     switch(layer.ty){
         case 'StillLayer':
-            return this.createImage(layer,parentContainer);
+            return this.createImage(layer,parentContainer, placeholder);
         case 'PreCompLayer':
-            return this.createComp(layer,parentContainer);
+            return this.createComp(layer,parentContainer, placeholder);
         case 'SolidLayer':
-            return this.createSolid(layer,parentContainer);
+            return this.createSolid(layer,parentContainer, placeholder);
         case 'ShapeLayer':
-            return this.createShape(layer,parentContainer);
+            return this.createShape(layer,parentContainer, placeholder);
         case 'TextLayer':
-            return this.createText(layer,parentContainer);
+            return this.createText(layer,parentContainer, placeholder);
         case 99:
             return this.createPlaceHolder(layer,parentContainer);
     }
     return this.createBase(layer,parentContainer);
 }
 
-SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
+SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements, placeholder){
     var  i, len = layers.length;
     if(!elements){
         elements = this.elements;
@@ -37,10 +37,11 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements){
     }
     var elems;
     for (i = len - 1; i >= 0; i--) {
-        elements[i] = this.createItem(layers[i],parentContainer);
+        elements[i] = this.createItem(layers[i],parentContainer, placeholder);
         if (layers[i].ty == 'PreCompLayer') {
             elems = [];
-            this.buildItems(layers[i].layers,elements[i].getDomElement(),elems);
+            this.buildItems(layers[i].layers,elements[i].getDomElement(),elems, placeholder);
+            elements[i].setElements(elems);
         }
         if(layers[i].td){
             elements[i+1].setMatte(elements[i].layerId);
@@ -57,16 +58,17 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     if(!parentContainer){
         parentContainer = this.animationItem.container;
     }
-    var j, jLen = elements.length, elems;
+    var j, jLen = elements.length, elems, placeholder;
     for(i=0;i<len;i+=1){
         j = 0;
         while(j<jLen){
             if(elements[j].data.loadId == layers[i].id){
-                elements[j] = this.createItem(layers[i].data,parentContainer);
+                placeholder = elements[j];
+                elements[j] = this.createItem(layers[i].data,parentContainer, placeholder);
                 if (layers[i].data.ty == 'PreCompLayer') {
                     elems = [];
-                    this.buildItems(layers[i].data.layers,elements[j].getDomElement(),elems);
-                    this.buildStage(elements[j].getComposingElement(), layers[i].data.layers, elements[j].getElements());
+                    this.buildItems(layers[i].data.layers,elements[j].getDomElement(),elems, placeholder);
+                    elements[j].setElements(elems);
                 }
                 break;
             }
@@ -75,33 +77,33 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     }
 };
 
-SVGRenderer.prototype.createBase = function (data,parentContainer) {
-    return new BaseElement(data, parentContainer,this.globalData);
+SVGRenderer.prototype.createBase = function (data,parentContainer, placeholder) {
+    return new BaseElement(data, parentContainer,this.globalData, placeholder);
 };
 
 SVGRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
     return new PlaceHolderElement(data, parentContainer,this.globalData);
 };
 
-SVGRenderer.prototype.createShape = function (data,parentContainer) {
-    return new IShapeElement(data, parentContainer,this.globalData);
+SVGRenderer.prototype.createShape = function (data,parentContainer, placeholder) {
+    return new IShapeElement(data, parentContainer,this.globalData, placeholder);
 };
 
-SVGRenderer.prototype.createText = function (data,parentContainer) {
-    return new ITextElement(data, parentContainer,this.globalData);
+SVGRenderer.prototype.createText = function (data,parentContainer, placeholder) {
+    return new ITextElement(data, parentContainer,this.globalData, placeholder);
 };
 
-SVGRenderer.prototype.createImage = function (data,parentContainer) {
-    return new IImageElement(data, parentContainer,this.globalData);
+SVGRenderer.prototype.createImage = function (data,parentContainer, placeholder) {
+    return new IImageElement(data, parentContainer,this.globalData, placeholder);
 };
 
-SVGRenderer.prototype.createComp = function (data,parentContainer) {
-    return new ICompElement(data, parentContainer,this.globalData);
+SVGRenderer.prototype.createComp = function (data,parentContainer, placeholder) {
+    return new ICompElement(data, parentContainer,this.globalData, placeholder);
 
 };
 
-SVGRenderer.prototype.createSolid = function (data,parentContainer) {
-    return new ISolidElement(data, parentContainer,this.globalData);
+SVGRenderer.prototype.createSolid = function (data,parentContainer, placeholder) {
+    return new ISolidElement(data, parentContainer,this.globalData, placeholder);
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
@@ -152,7 +154,7 @@ SVGRenderer.prototype.buildStage = function (container, layers,elements) {
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
         if (layerData.parent !== undefined) {
-            this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements);
+            this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements, true);
         }
 
         if (layerData.ty == 'PreCompLayer') {
@@ -160,16 +162,19 @@ SVGRenderer.prototype.buildStage = function (container, layers,elements) {
         }
     }
 };
-SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,parentName,elements) {
+SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,parentName,elements, resetHierarchyFlag) {
     if(!layerData.parents){
         layerData.parents = [];
+    }
+    if(resetHierarchyFlag){
+        element.resetHierarchy();
     }
     var i=0, len = layers.length;
     while(i<len){
         if(layers[i].ind == parentName){
             element.getHierarchy().push(elements[i]);
             if(layers[i].parent !== undefined){
-                this.buildItemParenting(layerData,element,layers,layers[i].parent,elements);
+                this.buildItemParenting(layerData,element,layers,layers[i].parent,elements, false);
             }
         }
         i += 1;

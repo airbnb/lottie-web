@@ -1,5 +1,5 @@
-function ISolidElement(data,parentContainer,globalData){
-    this.parent.constructor.call(this,data,parentContainer,globalData);
+function ISolidElement(data,parentContainer,globalData, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
 }
 createElement(BaseElement, ISolidElement);
 
@@ -12,7 +12,11 @@ ISolidElement.prototype.createElements = function(){
     /*rect.setAttribute('width',1);
     rect.setAttribute('height',1);*/
     rect.setAttribute('fill',this.data.color);
-    this.layerElement.appendChild(rect);
+    if(this.layerElement === this.parentContainer){
+        this.appendNodeToParent(rect);
+    }else{
+        this.layerElement.appendChild(rect);
+    }
     this.rectElement = rect;
 };
 
