@@ -27,7 +27,7 @@ var AnimationItem = function () {
     this.math = Math;
     this.removed = false;
     this.timeCompleted = 0;
-    this.pendingSegments = [];
+    this.segmentPos = 0;
 };
 
 AnimationItem.prototype.setParams = function(params) {
@@ -141,6 +141,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     dataManager.completeData(this.animationData);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
+    this.renderer.renderFrame(null);
     this.loadNextSegment();
 }
 
@@ -154,7 +155,8 @@ AnimationItem.prototype.loadNextSegment = function() {
     this.timeCompleted = segment.time * this.frameRate;
     var xhr = new XMLHttpRequest();
     var self = this;
-    var segmentPath = this.path.substr(0,this.path.lastIndexOf('/')+1)+segment.id+'.json';
+    var segmentPath = this.path.substr(0,this.path.lastIndexOf('/')+1)+'data_' + this.segmentPos + '.json';
+    this.segmentPos += 1;
     xhr.open('GET', segmentPath, true);
     xhr.send();
     xhr.onreadystatechange = function () {
@@ -194,8 +196,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = Math.floor(this.animationData.animation.totalFrames);
     this.frameRate = this.animationData.animation.frameRate;
     this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
-    /*this.firstFrame = 0;
-    this.totalFrames = 1;*/
+    this.firstFrame = 131;
+    this.totalFrames = 1;
     this.frameMult = this.animationData.animation.frameRate / 1000;
     this.loadSegments();
     dataManager.completeData(this.animationData);

@@ -1,7 +1,7 @@
-function IImageElement(data,parentContainer,globalData){
+function IImageElement(data,parentContainer,globalData,placeholder){
     this.assetData = globalData.getAssetData(data.id);
     this.path = globalData.getPath();
-    this.parent.constructor.call(this,data,parentContainer,globalData);
+    this.parent.constructor.call(this,data,parentContainer,globalData,placeholder);
 }
 createElement(BaseElement, IImageElement);
 
@@ -25,7 +25,11 @@ IImageElement.prototype.createElements = function(){
     this.image = document.createElementNS(svgNS,'image');
     this.image.setAttribute('width',this.assetData.w+"px");
     this.image.setAttribute('height',this.assetData.h+"px");
-    this.layerElement.appendChild(this.image);
+    if(this.layerElement === this.parentContainer){
+        this.appendNodeToParent(this.image);
+    }else{
+        this.layerElement.appendChild(this.image);
+    }
 
 };
 

@@ -4,7 +4,8 @@
 var bm_dataManager = (function () {
     'use strict';
     var ob = {};
-    var animationSegments = {};
+    var animationSegments;
+    var segmentCount = 0;
     
     function addCompsToSegment(layers, comps, segmentComps) {
         var i, len = layers.length, j, jLen;
@@ -33,15 +34,11 @@ var bm_dataManager = (function () {
         var i, len = layers.length, j, jLen;
         var currentSegment = time * frameRate;
         var segmentLength = time * frameRate;
-        animationSegments = {};
+        animationSegments = [];
         var currentPeriod, segments, segmentComps;
         for (i = 0; i < len; i += 1) {
             if (layers[i].inPoint && layers[i].inPoint < currentSegment) {
                 if (layers[i].ty === bm_layerElement.layerTypes.precomp) {
-                    bm_eventDispatcher.log('passo: ' + currentSegment);
-                    if (currentSegment === 0) {
-                        bm_eventDispatcher.log('pass');
-                    }
                     if (!segmentComps) {
                         segmentComps = [];
                     }
@@ -104,7 +101,7 @@ var bm_dataManager = (function () {
             }
             if (currentPeriod) {
                 currentPeriod.comps = segmentComps;
-                animationSegments[currentPeriod.time] = currentPeriod;
+                animationSegments.push(currentPeriod);
                 segments.push({
                     time: currentPeriod.time,
                     id: currentPeriod.id
@@ -133,24 +130,22 @@ var bm_dataManager = (function () {
     function saveData(data, destinationPath, config) {
         separateComps(data.animation.layers, data.comps);
         var dataFile, segmentPath, s, string;
-        if (config.split) {
-            splitAnimation(data, config.time);
-            for (s in animationSegments) {
-                if (animationSegments.hasOwnProperty(s)) {
-                    segmentPath = destinationPath.substr(0, destinationPath.lastIndexOf('/') + 1);
-                    segmentPath += animationSegments[s].id + '.json';
-                    dataFile = new File(segmentPath);
-                    dataFile.open('w', 'TEXT', '????');
-                    string = JSON.stringify(animationSegments[s]);
-                    try {
-                        dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
-                        //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
-                        dataFile.close();
-                    } catch (err) {
-                        bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
-                    }
+        if (config.segmented) {
+            splitAnimation(data, config.segmentTime);
+            var i, len = animationSegments.length;
+            for (i = 0; i < len; i += 1) {
+                segmentPath = destinationPath.substr(0, destinationPath.lastIndexOf('/') + 1);
+                segmentPath += 'data_' + i + '.json';
+                dataFile = new File(segmentPath);
+                dataFile.open('w', 'TEXT', '????');
+                string = JSON.stringify(animationSegments[i]);
+                try {
+                    dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
+                    //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
+                    dataFile.close();
+                } catch (err) {
+                    bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
                 }
-                //dataFile = new File(segmentPath);
             }
         }
         dataFile = new File(destinationPath);

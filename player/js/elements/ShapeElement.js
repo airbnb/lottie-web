@@ -1,13 +1,13 @@
-function IShapeElement(data,parentContainer,globalData){
+function IShapeElement(data,parentContainer,globalData, placeholder){
     this.shapes = [];
-    this.parent.constructor.call(this,data,parentContainer,globalData);
+    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
 }
 createElement(BaseElement, IShapeElement);
 
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this.parent.createElements.call(this);
-    this.mainShape = new ShapeItemElement(this.data.shapes,this.layerElement,this.globalData);
+    this.mainShape = new ShapeItemElement(this.data.shapes,this.layerElement,this.parentContainer,this.placeholder,this.globalData);
 };
 
 IShapeElement.prototype.renderFrame = function(num,parentMatrix){

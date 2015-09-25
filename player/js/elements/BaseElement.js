@@ -119,7 +119,7 @@ BaseElement.prototype.prepareFrame = function(num){
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(!this.data.renderedData[num]){
-        return;
+        return false;
     }
     if(this.data.ty == 'NullLayer'){
         return;

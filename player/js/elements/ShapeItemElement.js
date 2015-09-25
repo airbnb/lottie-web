@@ -1,4 +1,4 @@
-function ShapeItemElement(data,parentElement,globalData){
+function ShapeItemElement(data,parentElement,parentContainer,placeholder,globalData){
     this.lcEnum = {
         '1': 'butt',
         '2': 'round',
@@ -12,11 +12,15 @@ function ShapeItemElement(data,parentElement,globalData){
     this.stylesList = [];
     this.viewData = [];
     this.shape = parentElement;
+    this.parentContainer = parentContainer;
+    this.placeholder = placeholder;
     this.data = data;
     this.globalData = globalData;
     this.searchShapes(this.data,this.viewData);
     styleUnselectableDiv(this.shape);
 }
+
+ShapeItemElement.prototype.appendNodeToParent = BaseElement.prototype.appendNodeToParent;
 
 ShapeItemElement.prototype.searchShapes = function(arr,data){
     var i, len = arr.length - 1;
@@ -40,7 +44,11 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                     pathElement.setAttribute('stroke-miterlimit',arr[i].ml);
                 }
             }
-            this.shape.appendChild(pathElement);
+            if(this.shape === this.parentContainer){
+                this.appendNodeToParent(pathElement);
+            }else{
+                this.shape.appendChild(pathElement);
+            }
             this.stylesList.push({
                 pathElement: pathElement,
                 type: arr[i].ty,
@@ -306,6 +314,8 @@ ShapeItemElement.prototype.destroy = function(items, data){
     this.shape = null;
     this.data = null;
     this.viewData = null;
+    this.parentContainer = null;
+    this.placeholder = null;
     /*if(!items){
         items = this.data;
     }

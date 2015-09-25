@@ -200,7 +200,11 @@ SVGRenderer.prototype.renderFrame = function(num){
     if(this.lastFrame == num || this.destroyed){
         return;
     }
-    this.lastFrame = num;
+    if(num === null){
+        num = this.lastFrame;
+    }else{
+        this.lastFrame = num;
+    }
     this.globalData.frameNum = num;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {

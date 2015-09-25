@@ -3,7 +3,7 @@
 var bm_renderManager = (function () {
     'use strict';
     
-    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer;
+    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings;
     
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -70,8 +70,9 @@ var bm_renderManager = (function () {
         }
     }
     
-    function render(comp, destination) {
+    function render(comp, destination, settings) {
         currentCompID = comp.id;
+        currentCompSettings = settings;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
@@ -97,11 +98,8 @@ var bm_renderManager = (function () {
     
     function saveData() {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
-        var config = {
-            split: true,
-            time: 1
-        };
-        bm_dataManager.saveData(ob.renderData.exportData, destinationPath, config);
+        bm_eventDispatcher.log(currentCompSettings);
+        bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true});
         bm_compsManager.renderComplete();
     }
