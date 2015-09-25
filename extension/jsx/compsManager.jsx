@@ -22,8 +22,8 @@ var bm_compsManager = (function () {
                 absoluteURI: '',
                 selected: false,
                 settings: {
-                    segmented: true,
-                    segmentTime: 1
+                    segmented: false,
+                    segmentTime: 10
                 }
             };
         }

@@ -29,6 +29,9 @@ function dataFunctionManager(){
     }
 
     function completeLayers(layers, comps){
+        if(!layers){
+            console.log(new Error().stack);
+        }
         var layerFrames, offsetFrame, layerData;
         var animArray, lastFrame;
         var i, len = layers.length;

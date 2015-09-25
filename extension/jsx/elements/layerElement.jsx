@@ -129,6 +129,8 @@ var bm_layerElement = (function () {
         return layerData;
     }
     
+    var compCount = 0;
+    
     function checkLayerSource(layerInfo, layerData) {
         if (layerData.render === false) {
             return;
@@ -140,7 +142,9 @@ var bm_layerElement = (function () {
             if (sourceId !== false) {
                 layerData.refId = sourceId;
             } else {
-                layerData.compId = bm_generalUtils.random(7);
+                //layerData.compId = bm_generalUtils.random(7);
+                layerData.compId = 'comp_'+compCount;
+                compCount += 1;
                 layerData.refId = layerData.compId;
                 bm_sourceHelper.setCompSourceId(layerInfo.source, layerData.compId);
             }
