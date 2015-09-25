@@ -866,6 +866,7 @@ function dataFunctionManager(){
                         roundness : elmRound
                     };
                 }else{
+                    shapeItem.closed = true;
                     shapeItem.renderedData[offsettedFrameNum] = {
                         path: {
                             closed: true
