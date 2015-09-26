@@ -83,8 +83,9 @@ var bm_keyframeHelper = (function () {
         }
     }
     
-    function exportKeyframes(prop, frRate) {
+    function exportKeys(prop, frRate) {
         property = prop;
+        
         frameRate = frRate;
         beziersArray = [];
         if (property.numKeys <= 1) {
@@ -237,6 +238,20 @@ var bm_keyframeHelper = (function () {
         }
         beziersArray.push({t: property.keyTime(j) * frameRate});
         return beziersArray;
+    }
+    
+    function checkExpression(prop, ob) {
+        if (prop.expressionEnabled && !prop.expressionError) {
+            ob.x = prop.expression;
+        }
+    }
+    
+    function exportKeyframes(prop, frRate) {
+        var returnOb = {
+            k: exportKeys(prop, frRate)
+        };
+        checkExpression(prop, returnOb);
+        return returnOb;
     }
     
     ob.exportKeyframes = exportKeyframes;
