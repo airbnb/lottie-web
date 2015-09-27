@@ -4,18 +4,20 @@ var ExpressionManager = (function(){
     var degToRads = Math.PI/180;
     var registeredExpressions = [];
 
+    function clamp(num, min, max) {
+        return Math.min(Math.max(num, min), max);
+    }
+
     function EvalContext(layers, item){
         var ob = {};
 
         var thisComp = ob;
         var effect = getEffects(item.ef);
         var transform = getTransform(item);
-        console.log(item);
         var time = 0;
 
         function evaluate(val){
-            val = 'var retorno = ' + val;
-            val = 'var fn = function(t){time=t;'+val+';return retorno;}';
+            val = 'var fn = function(t){time=t;'+val+';return $bm_rt;}';
             eval(val);
             return fn;
             /*console.log('val: ',val);
@@ -101,6 +103,19 @@ var ExpressionManager = (function(){
                 result = item.ks.s._x(frameNum);
                 mt[1] = result[0]/100;
                 mt[2] = result[1]/100;
+            }
+            if(item.ks.p.s){
+                if(item.ks.p.x.x){
+                    mt[3] = item.ks.s._x(frameNum);
+                }
+                if(item.ks.p.y.x){
+                    mt[4] = item.ks.s._x(frameNum);
+                }
+            }else if(item.ks.p.x){
+                result = item.ks.s._x(frameNum);
+                mt[3] = result[0];
+                mt[4] = result[1];
+
             }
             if(((item.ks.p.s && (item.ks.p.x.x || item.ks.p.y.x)) || item.ks.p.x || item.ks.r.x || item.ks.s.x)){
                 renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mt[0],mt[1],mt[2],mt[3],mt[4]);

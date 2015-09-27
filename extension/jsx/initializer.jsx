@@ -17,3 +17,5 @@ $.evalFile(extensionPath + 'utils/maskHelper.jsx');
 $.evalFile(extensionPath + 'utils/timeremapHelper.jsx');
 $.evalFile(extensionPath + 'utils/shapeHelper.jsx');
 $.evalFile(extensionPath + 'utils/effectsHelper.jsx');
+$.evalFile(extensionPath + 'utils/expressionHelper.jsx');
+$.evalFile(extensionPath + 'esprima.jsx');
