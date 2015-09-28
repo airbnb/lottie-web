@@ -7,25 +7,33 @@ var ExpressionManager = (function(){
     function clamp(num, min, max) {
         return Math.min(Math.max(num, min), max);
     }
+    function random(min,max){
+        if(!max){
+            max = 0;
+        }
+        if(min > max){
+            var _m = max;
+            max = min;
+            min = _m;
+        }
+        return min + (Math.random()*(max-min));
+    }
 
-    function EvalContext(layers, item){
+    function EvalContext(layers, item, fRate){
         var ob = {};
+        var wiggler = [];
+        var frameRate = fRate;
 
         var thisComp = ob;
         var effect = getEffects(item.ef);
         var transform = getTransform(item);
         var time = 0;
+        var value;
 
         function evaluate(val){
-            val = 'var fn = function(t){time=t;'+val+';return $bm_rt;}';
+            val = 'var fn = function(t,v){time=t;value=v;'+val+';return $bm_rt;}';
             eval(val);
             return fn;
-            /*console.log('val: ',val);
-            return function(t){
-                time = t;
-                eval(val);
-                return retorno;
-            }*/
         }
 
         function SliderEffect(data){
@@ -97,22 +105,22 @@ var ExpressionManager = (function(){
             //console.log(renderedData);
             var mt = renderedData.mt;
             if(item.ks.r.x){
-                mt[0] = item.ks.r._x(frameNum)*degToRads;
+                mt[0] = item.ks.r._x(frameNum, mt[0]/degToRads)*degToRads;
             }
             if(item.ks.s.x){
-                result = item.ks.s._x(frameNum);
+                result = item.ks.s._x(frameNum, [mt[1]*100, mt[2]*100]);
                 mt[1] = result[0]/100;
                 mt[2] = result[1]/100;
             }
             if(item.ks.p.s){
                 if(item.ks.p.x.x){
-                    mt[3] = item.ks.s._x(frameNum);
+                    mt[3] = item.ks.s._x(frameNum, mt[3]);
                 }
                 if(item.ks.p.y.x){
-                    mt[4] = item.ks.s._x(frameNum);
+                    mt[4] = item.ks.s._x(frameNum,mt[4]);
                 }
             }else if(item.ks.p.x){
-                result = item.ks.s._x(frameNum);
+                result = item.ks.s._x(frameNum, [mt[3], mt[4]]);
                 mt[3] = result[0];
                 mt[4] = result[1];
 
@@ -123,8 +131,8 @@ var ExpressionManager = (function(){
         }
     }
 
-    function registerExpression(layers,item, keys){
-        keys._x = new EvalContext(layers,item).evaluate(keys.x);
+    function registerExpression(layers,item, keys, fRate){
+        keys._x = new EvalContext(layers,item, fRate).evaluate(keys.x);
         registeredExpressions.push(keys._x);
     }
 

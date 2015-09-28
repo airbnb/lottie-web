@@ -210,7 +210,7 @@ function dataFunctionManager(){
 
     function getInterpolatedValue(layers,item, keys, frameNum, offsetTime,paramArr,arrPos,arrLen){
         if(keys.x && !keys._x){
-            ExpressionManager.registerExpression(layers,item, keys);
+            ExpressionManager.registerExpression(layers,item, keys, frameRate);
         }
         var keyframes = keys.k;
         var keyData, nextKeyData,propertyArray,bezierData;
