@@ -27,6 +27,7 @@ var ExpressionManager = (function(){
         var thisComp = ob;
         var effect = getEffects(item.ef);
         var transform = getTransform(item);
+        var inPoint = item.inPoint;
         var time = 0;
         var value;
 

@@ -19,3 +19,4 @@ $.evalFile(extensionPath + 'utils/shapeHelper.jsx');
 $.evalFile(extensionPath + 'utils/effectsHelper.jsx');
 $.evalFile(extensionPath + 'utils/expressionHelper.jsx');
 $.evalFile(extensionPath + 'esprima.jsx');
+$.evalFile(extensionPath + 'escodegen.jsx');

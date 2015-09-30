@@ -1,8 +1,7 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, bm_eventDispatcher, esprima*/
+/*global $, bm_eventDispatcher, esprima, escodegen*/
 
 var bm_expressionHelper = (function () {
-    'use strict';
     var ob = {};
     var options = {
         tokens: true,
@@ -155,16 +154,147 @@ var bm_expressionHelper = (function () {
         pendingBodies.push({body: body, d: [], u: [], pre: [], pos: 0});
         exportNextBody();
     }
+
+
+
+
+    function searchOperations(body) {
+        var i, len = body.length;
+        for (i = 0; i < len; i += 1) {
+            if (body[i].type === 'ExpressionStatement') {
+                handleExpressionStatement(body[i]);
+            } else if (body[i].type === 'IfStatement') {
+                handleIfStatement(body[i]);
+            } else if (body[i].type === 'FunctionDeclaration') {
+                handleFunctionDeclaration(body[i]);
+            } else if (body[i].type === 'WhileStatement') {
+                handleWhileStatement(body[i]);
+            } else if (body[i].type === 'ForStatement') {
+                handleForStatement(body[i]);
+            } else {
+                console.log(body[i]);
+            }
+        }
+    }
+
+    function getBinaryElement(element) {
+        switch (element.type) {
+        case "Literal":
+        case "Identifier":
+            return element;
+        case "CallExpression":
+            handleCallExpression(element);
+            return element;
+        case "BinaryExpression":
+            return convertBinaryExpression(element);
+        default:
+            bm_eventDispatcher.log('rttp: ', element);
+            return element;
+        }
+    }
+
+    function getOperatorName(operator) {
+        switch (operator) {
+        case '+':
+            return 'sum';
+        case '-':
+            return 'sub';
+
+        }
+    }
+
+    function convertBinaryExpression(expression) {
+        var callStatementOb = {
+            'arguments': [
+                getBinaryElement(expression.left),
+                getBinaryElement(expression.right)
+            ],
+            type: "CallExpression",
+            callee: {
+                name: getOperatorName(expression.operator),
+                type: 'Identifier'
+            }
+        };
+        return callStatementOb;
+    }
+
+    function handleCallExpression(expression) {
+        var args = expression['arguments'];
+        var i, len = args.length;
+        for (i = 0; i < len; i += 1) {
+            if (args[i].type === 'BinaryExpression') {
+                args[i] = convertBinaryExpression(args[i]);
+            }
+        }
+    }
+
+    function handleIfStatement(ifStatement) {
+        if (ifStatement.consequent) {
+            if (ifStatement.consequent.type === 'BlockStatement') {
+                searchOperations(ifStatement.consequent.body);
+            } else if (ifStatement.consequent.type === 'ExpressionStatement') {
+                handleExpressionStatement(ifStatement.consequent);
+            }
+            if (ifStatement.alternate.type === 'IfStatement') {
+                handleIfStatement(ifStatement.alternate);
+            } else if (ifStatement.alternate.type === 'BlockStatement') {
+                searchOperations(ifStatement.alternate.body);
+            } else if (ifStatement.alternate.type === 'ExpressionStatement') {
+                handleExpressionStatement(ifStatement.alternate);
+            }
+        }
+    }
+
+    function handleWhileStatement(whileStatement) {
+        if (whileStatement.body) {
+            if (whileStatement.body.type === 'BlockStatement') {
+                searchOperations(whileStatement.body.body);
+            } else if (whileStatement.body.type === 'ExpressionStatement') {
+                handleExpressionStatement(whileStatement.body);
+            }
+        }
+    }
+
+    function handleForStatement(forStatement) {
+        if (forStatement.body) {
+            if (forStatement.body.type === 'BlockStatement') {
+                searchOperations(forStatement.body.body);
+            } else if (forStatement.body.type === 'ExpressionStatement') {
+                handleExpressionStatement(forStatement.body);
+            }
+        }
+    }
+
+    function handleExpressionStatement(expressionStatement) {
+        if (expressionStatement.expression.type === 'CallExpression') {
+            handleCallExpression(expressionStatement.expression);
+        }
+    }
+
+    function handleFunctionDeclaration(functionDeclaration) {
+        if (functionDeclaration.body && functionDeclaration.body.type === 'BlockStatement') {
+            searchOperations(functionDeclaration.body.body);
+        }
+    }
+
+    function replaceOperations() {
+        var parsed = esprima.parse(expressionStr, options);
+        var body = parsed.body;
+        searchOperations(body);
+        expressionStr = escodegen.generate(parsed);
+    }
     
     function checkExpression(prop, returnOb) {
         if (prop.expressionEnabled && !prop.expressionError) {
             pendingBodies.length = 0;
             doneBodies.length = 0;
-            expressionStr = '';
-            expressionStr = addReturnStatement(prop.expression);
+            expressionStr = prop.expression;
             searchUndeclaredVariables();
+            replaceOperations();
+
+            expressionStr = addReturnStatement(expressionStr);
             returnOb.x = expressionStr;
-            bm_eventDispatcher.log(expressionStr);
+            console.log(expressionStr);
         }
     }
     
