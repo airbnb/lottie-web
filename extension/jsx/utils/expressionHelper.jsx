@@ -12,7 +12,7 @@ var bm_expressionHelper = (function () {
     function spliceSlice(str, index, count, add) {
         return str.slice(0, index) + (add || "") + str.slice(index + count);
     }
-    
+
     function addReturnStatement(expression) {
         var parsed = esprima.parse(expression, options);
         var body = parsed.body;
@@ -46,7 +46,7 @@ var bm_expressionHelper = (function () {
             findUndeclaredVariables(next.body, next.pos, preDeclared);
         }
     }
-    
+
     function findUndeclaredVariables(body, pos, predeclared, declared, undeclared, isContinuation) {
 
         function addAssignment(expression) {
@@ -58,7 +58,7 @@ var bm_expressionHelper = (function () {
                 }
             }
         }
-        
+
         function addSequenceExpressions(expressions) {
             var i, len = expressions.length;
             for (i = 0; i < len; i += 1) {
@@ -147,7 +147,7 @@ var bm_expressionHelper = (function () {
             exportNextBody();
         }
     }
-    
+
     function searchUndeclaredVariables() {
         var parsed = esprima.parse(expressionStr, options);
         var body = parsed.body;
@@ -171,8 +171,6 @@ var bm_expressionHelper = (function () {
                 handleWhileStatement(body[i]);
             } else if (body[i].type === 'ForStatement') {
                 handleForStatement(body[i]);
-            } else {
-                console.log(body[i]);
             }
         }
     }
@@ -235,6 +233,8 @@ var bm_expressionHelper = (function () {
             } else if (ifStatement.consequent.type === 'ExpressionStatement') {
                 handleExpressionStatement(ifStatement.consequent);
             }
+        }
+        if (ifStatement.alternate) {
             if (ifStatement.alternate.type === 'IfStatement') {
                 handleIfStatement(ifStatement.alternate);
             } else if (ifStatement.alternate.type === 'BlockStatement') {
@@ -281,11 +281,13 @@ var bm_expressionHelper = (function () {
         var parsed = esprima.parse(expressionStr, options);
         var body = parsed.body;
         searchOperations(body);
+        var escodegen = ob.escodegen;
         expressionStr = escodegen.generate(parsed);
     }
-    
+
     function checkExpression(prop, returnOb) {
         if (prop.expressionEnabled && !prop.expressionError) {
+            bm_eventDispatcher.log(prop.expression);
             pendingBodies.length = 0;
             doneBodies.length = 0;
             expressionStr = prop.expression;
@@ -294,11 +296,10 @@ var bm_expressionHelper = (function () {
 
             expressionStr = addReturnStatement(expressionStr);
             returnOb.x = expressionStr;
-            console.log(expressionStr);
         }
     }
-    
+
     ob.checkExpression = checkExpression;
-    
+
     return ob;
 }());

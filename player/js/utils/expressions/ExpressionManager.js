@@ -2,7 +2,20 @@ var ExpressionManager = (function(){
    var ob = {};
     var matrixInstance =  new MatrixManager();
     var degToRads = Math.PI/180;
+    var frameRate;
     var registeredExpressions = [];
+
+
+
+
+    function ExpressionObject(fn){
+        this.pending = false;
+        this.fn = fn;
+    }
+
+
+
+
 
     function clamp(num, min, max) {
         return Math.min(Math.max(num, min), max);
@@ -19,22 +32,29 @@ var ExpressionManager = (function(){
         return min + (Math.random()*(max-min));
     }
 
-    function EvalContext(layers, item, fRate){
+    function Composition(compData){
         var ob = {};
-        var wiggler = [];
-        var frameRate = fRate;
-
-        var thisComp = ob;
-        var effect = getEffects(item.ef);
-        var transform = getTransform(item);
-        var inPoint = item.inPoint;
+        var compExpressions = [];
+        console.log(compData);
         var time = 0;
-        var value;
 
-        function evaluate(val){
-            val = 'var fn = function(t,v){time=t;value=v;'+val+';return $bm_rt;}';
-            eval(val);
-            return fn;
+        ob.layer = layer;
+
+        function EvalContext(item){
+            var ob = {};
+            var wiggler = [];
+            var effect = getEffects(item.ef);
+            var transform = getTransform(item);
+            var inPoint = item.inPoint;
+            var value;
+
+            function evaluate(val){
+                val = 'var fn = function(t,v){time=t;value=v;'+val+';return $bm_rt;}';
+                eval(val);
+                return new ExpressionObject(fn);
+            }
+            ob.evaluate = evaluate;
+            return ob;
         }
 
         function SliderEffect(data){
@@ -46,6 +66,9 @@ var ExpressionManager = (function(){
         }
 
         function getEffects(ef){
+            if(!ef){
+                return;
+            }
             var i,len = ef.length;
             return function(name){
                 i = 0;
@@ -90,8 +113,38 @@ var ExpressionManager = (function(){
             }
         }
 
-        ob.layer = layer;
-        ob.evaluate = evaluate;
+        var width = compData.compWidth || compData.width;
+        var height = compData.compHeight || compData.height;
+        ob.frameDuration = 1/compData.frameRate;
+        var thisComp = ob;
+        var layers = compData.layers;
+        var i, len = layers.length, item;
+        for(i=0;i<len;i+=1){
+            item = layers[i];
+            if(item.ks.r.x){
+                item.ks.r.x = new EvalContext(item).evaluate(item.ks.r.x);
+                registeredExpressions.push(item.ks.r.x);
+            }
+            if(item.ks.s.x){
+                item.ks.s.x = new EvalContext(item).evaluate(item.ks.s.x);
+                registeredExpressions.push(item.ks.s.x);
+            }
+            if(item.ks.p.s){
+                if(item.ks.p.x.x){
+                    item.ks.p.x.x = new EvalContext(item).evaluate(item.ks.p.x.x);
+                    registeredExpressions.push(item.ks.p.x.x);
+                }
+                if(item.ks.p.y.x){
+                    item.ks.p.y.x = new EvalContext(item).evaluate(item.ks.p.y.x);
+                    registeredExpressions.push(item.ks.p.y.x);
+                }
+            }else if(item.ks.p.x){
+                item.ks.p.x = new EvalContext(item).evaluate(item.ks.p.x);
+                registeredExpressions.push(item.ks.p.x);
+            }
+        }
+
+        ob.registerExpression = registerExpression;
         return ob;
     }
 
@@ -106,22 +159,22 @@ var ExpressionManager = (function(){
             //console.log(renderedData);
             var mt = renderedData.mt;
             if(item.ks.r.x){
-                mt[0] = item.ks.r._x(frameNum, mt[0]/degToRads)*degToRads;
+                mt[0] = item.ks.r.x.fn(frameNum, mt[0]/degToRads)*degToRads;
             }
             if(item.ks.s.x){
-                result = item.ks.s._x(frameNum, [mt[1]*100, mt[2]*100]);
+                result = item.ks.s.x.fn(frameNum, [mt[1]*100, mt[2]*100]);
                 mt[1] = result[0]/100;
                 mt[2] = result[1]/100;
             }
             if(item.ks.p.s){
                 if(item.ks.p.x.x){
-                    mt[3] = item.ks.s._x(frameNum, mt[3]);
+                    mt[3] = item.ks.s.x.fn(frameNum, mt[3]);
                 }
                 if(item.ks.p.y.x){
-                    mt[4] = item.ks.s._x(frameNum,mt[4]);
+                    mt[4] = item.ks.s.x.fn(frameNum,mt[4]);
                 }
             }else if(item.ks.p.x){
-                result = item.ks.s._x(frameNum, [mt[3], mt[4]]);
+                result = item.ks.s.x.fn(frameNum, [mt[3], mt[4]]);
                 mt[3] = result[0];
                 mt[4] = result[1];
 
@@ -133,11 +186,20 @@ var ExpressionManager = (function(){
     }
 
     function registerExpression(layers,item, keys, fRate){
-        keys._x = new EvalContext(layers,item, fRate).evaluate(keys.x);
-        registeredExpressions.push(keys._x);
+        //keys._x = new EvalContext(layers,item, fRate).evaluate(keys.x);
+        //registeredExpressions.push(keys._x);
+    }
+
+    function searchExpressions(compData){
+        if(compData.frameRate){
+            frameRate = compData.frameRate;
+        }
+        var comp = new Composition(compData);
+        comp.registerExpression();
     }
 
     ob.iterateExpressions = iterateExpressions;
     ob.registerExpression = registerExpression;
+    ob.searchExpressions = searchExpressions;
     return ob;
 }());
