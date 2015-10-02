@@ -156,8 +156,6 @@ var bm_expressionHelper = (function () {
     }
 
 
-
-
     function searchOperations(body) {
         var i, len = body.length;
         for (i = 0; i < len; i += 1) {
@@ -171,6 +169,8 @@ var bm_expressionHelper = (function () {
                 handleWhileStatement(body[i]);
             } else if (body[i].type === 'ForStatement') {
                 handleForStatement(body[i]);
+            } else if (body[i].type === 'VariableDeclaration') {
+                handleVariableDeclaration(body[i]);
             }
         }
     }
@@ -197,11 +197,18 @@ var bm_expressionHelper = (function () {
             return 'sum';
         case '-':
             return 'sub';
+        case '*':
+            return 'mul';
+        case '/':
+            return 'div';
 
         }
     }
 
     function convertBinaryExpression(expression) {
+        if (expression.left.type === 'Literal' && expression.right.type === 'Literal') {
+            return expression;
+        }
         var callStatementOb = {
             'arguments': [
                 getBinaryElement(expression.left),
@@ -265,6 +272,18 @@ var bm_expressionHelper = (function () {
         }
     }
 
+    function handleVariableDeclaration(variableDeclaration) {
+        var declarations = variableDeclaration.declarations;
+        var i, len = declarations.length;
+        for (i = 0; i < len; i += 1) {
+            if (declarations[i].init) {
+                if(declarations[i].init.type === 'BinaryExpression') {
+                    declarations[i].init = convertBinaryExpression(declarations[i].init);
+                }
+            }
+        }
+    }
+
     function handleExpressionStatement(expressionStatement) {
         if (expressionStatement.expression.type === 'CallExpression') {
             handleCallExpression(expressionStatement.expression);
@@ -287,7 +306,6 @@ var bm_expressionHelper = (function () {
 
     function checkExpression(prop, returnOb) {
         if (prop.expressionEnabled && !prop.expressionError) {
-            bm_eventDispatcher.log(prop.expression);
             pendingBodies.length = 0;
             doneBodies.length = 0;
             expressionStr = prop.expression;

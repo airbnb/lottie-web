@@ -79,8 +79,8 @@ function dataFunctionManager(){
                 var maskProps = layerData.masksProperties;
                 jLen = maskProps.length;
                 for(j=0;j<jLen;j+=1){
-                    if(maskProps[j].pt.i){
-                        convertPathsToAbsoluteValues(maskProps[j].pt);
+                    if(maskProps[j].pt.k.i){
+                        convertPathsToAbsoluteValues(maskProps[j].pt.k);
                     }else{
                         kLen = maskProps[j].pt.length;
                         for(k=0;k<kLen;k+=1){
