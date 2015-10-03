@@ -73,6 +73,7 @@ var bm_shapeHelper = (function () {
                 itemType = getItemType(prop.matchName);
                 if (itemType === shapeItemTypes.shape) {
                     ob = {};
+                    ob.ind = i;
                     ob.ty = itemType;
                     ob.closed = prop.property('Path').value.closed;
                     ob.ks = bm_keyframeHelper.exportKeyframes(prop.property('Path'), frameRate);
@@ -154,7 +155,8 @@ var bm_shapeHelper = (function () {
                 } else if (itemType === shapeItemTypes.group) {
                     ob = {
                         ty : itemType,
-                        it: []
+                        it: [],
+                        nm: prop.name
                     };
                     iterateProperties(prop.property('Contents'), ob.it, frameRate);
                     var trOb = {};

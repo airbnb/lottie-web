@@ -135,6 +135,7 @@ var ExpressionManager = (function(){
         var compExpressions = [];
         //console.log(compData);
         var time = 0;
+        var frameN = 0;
 
         ob.layer = layer;
 
@@ -147,7 +148,7 @@ var ExpressionManager = (function(){
             var value;
 
             function evaluate(val){
-                val = 'var fn = function(t,v){time=t;value=v;'+val+';return $bm_rt;}';
+                val = 'var fn = function(t,v){time=t;value=v;frameN = Math.round(time*frameRate);'+val+';return $bm_rt;}';
                 console.log(val);
                 eval(val);
                 return new ExpressionObject(fn);
@@ -158,8 +159,8 @@ var ExpressionManager = (function(){
 
         function SliderEffect(data){
             return function(value){
-                var n = new Number(data.renderedData[time][0]);
-                n.value = data.renderedData[time][0];
+                var n = new Number(data.renderedData[frameN][0]);
+                n.value = data.renderedData[frameN][0];
                 return n;
             }
         }
@@ -181,10 +182,20 @@ var ExpressionManager = (function(){
             }
         }
 
-        function TransformConstructor(item){
+        function TransformConstructor(item,ty){
+            var renderedData = item.renderedData;
             var ob = {
                 get position (){
-                    return [item.renderedData[time].mt[3],item.renderedData[time].mt[4]];
+                    if(ty === 0){
+                        return [renderedData[frameN].mt[4],renderedData[frameN].mt[5]];
+                    }
+                    return [renderedData[frameN].mtArr[4],renderedData[frameN].mtArr[5]];
+                },
+                get scale (){
+                    if(ty === 0){
+                        return [renderedData[frameN].mt[0],renderedData[frameN].mt[3]];
+                    }
+                    return [renderedData[frameN].mtArr[0],renderedData[frameN].mtArr[3]];
                 }
             };
 
@@ -195,10 +206,30 @@ var ExpressionManager = (function(){
             return new TransformConstructor(item);
         }
 
+        function getContent(data){
+            return function(name){
+                var i = 0, len = data.shapes.length;
+                while(i<len){
+                    if(data.shapes[i].nm === name){
+                        return getShapeProperties(data.shapes[i]);
+                    }
+                    i += 1;
+                }
+            }
+        }
+
         function getProperties(data){
             var ob = {};
             ob.effect = getEffects(data.ef);
-            ob.transform = getTransform(data);
+            ob.transform = getTransform(data,0);
+            ob.content = getContent(data);
+            return ob;
+        }
+
+        function getShapeProperties(data){
+            var ob = {};
+            ob.transform = getTransform(data.it[data.it.length - 1],1);
+            ob.content = getContent(data);
             return ob;
         }
 
