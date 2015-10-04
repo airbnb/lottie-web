@@ -28,7 +28,7 @@ function dataFunctionManager(){
         }
     }
 
-    function completeLayers(layers, mainLayers){
+    function completeLayers(layers, mainLayers, fontManager){
         if(!mainLayers){
             mainLayers = layers;
         }
@@ -97,10 +97,12 @@ function dataFunctionManager(){
                 if(layerData.refId && !layerData.layers){
                     layerData.layers = findCompLayers(layerData.refId,mainLayers);
                 }else{
-                    completeLayers(layerData.layers,mainLayers);
+                    completeLayers(layerData.layers,mainLayers, fontManager);
                 }
             }else if(layerData.ty == 'ShapeLayer'){
                 completeShapes(layerData.shapes);
+            }else if(layerData.ty == 'TextLayer'){
+                TextData_Helper.completeText(layerData, fontManager);
             }
         }
     }
@@ -193,11 +195,11 @@ function dataFunctionManager(){
         }
     }
 
-    function completeData(animationData){
+    function completeData(animationData, fontManager){
         animationData.__renderedFrames = new Array(Math.floor(animationData.animation.totalFrames));
         animationData.__renderFinished = false;
         frameRate = animationData.animation.frameRate;
-        completeLayers(animationData.animation.layers);
+        completeLayers(animationData.animation.layers, null, fontManager);
     }
 
     function convertLayerNameToID(string){
@@ -753,14 +755,15 @@ function dataFunctionManager(){
             }else if(item.ty == 'ShapeLayer'){
                 iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
             }else if(item.ty == 'TextLayer'){
-                iterateText(item,offsettedFrameNum);
+                iterateText(item,offsettedFrameNum,renderType);
             }
         }
     }
 
-    function iterateText(item,offsettedFrameNum){
+    function iterateText(item,offsettedFrameNum,renderType){
         var renderedData = item.renderedData[offsettedFrameNum];
-        renderedData.t = {};
+        renderedData.t = {
+        };
         if(item.t.p && 'm' in item.t.p) {
             renderedData.t.p = [];
             getInterpolatedValue(item.t.p.f,offsettedFrameNum, item.startTime,renderedData.t.p,0,1);
@@ -829,6 +832,7 @@ function dataFunctionManager(){
                 renderedData.t.a[i].s.ne = 0;
             }
         }
+        TextData_Helper.getMeasures(item, offsettedFrameNum,renderType);
 
         //console.log(item.t);
     }

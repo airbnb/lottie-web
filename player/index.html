@@ -11,12 +11,12 @@
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
+    <script src="js/utils/text_helper.js"></script>
     <script src="js/utils/FontManager.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="js/mask.js"></script>
     <script src="js/elements/BaseElement.js"></script>
-    <script src="js/elements/BaseTextElement.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/ShapeElement.js"></script>
@@ -40,7 +40,7 @@
 <body style="background-color:#333; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
 
 <!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
-<div style="width:100%;height:100%;background-color:#faf5d3;display:inline-block;" id="bodymovin"></div>
+<div style="width:600px;height:1000px;background-color:#ffffff;display:inline-block;" id="bodymovin"></div>
 
 <script>
     var animData = {
@@ -48,8 +48,8 @@
         animType: 'svg',
         loop: true,
         prerender: false,
-        autoplay: false,
-        path: 'exports/render'
+        autoplay: true,
+        path: 'exports/render/data2.json'
 
     };
     var anim = bodymovin.loadAnimation(animData);

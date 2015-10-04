@@ -128,10 +128,10 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = Math.floor(this.animationData.animation.totalFrames);
     this.frameRate = this.animationData.animation.frameRate;
     this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
-    /*this.firstFrame = 211;
+    /*this.firstFrame = 18;
     this.totalFrames = 1;*/
     this.frameMult = this.animationData.animation.frameRate / 1000;
-    dataManager.completeData(this.animationData);
+    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.updaFrameModifier();
     if(this.renderer.globalData.fontManager){
         this.waitForFontsLoaded();
