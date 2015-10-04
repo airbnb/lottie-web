@@ -5,8 +5,6 @@ var bm_markerHelper = (function () {
     var ob = {};
     
     function searchMarkers(comp, ob) {
-        bm_eventDispatcher.log('searching');
-        bm_eventDispatcher.log(comp.marker);
         if (!(comp.marker && comp.marker.numProperties > 0)) {
             return;
         }
@@ -14,7 +12,6 @@ var bm_markerHelper = (function () {
         for (i = 0; i < len; i += 1) {
             markerData = {};
             markerElement = markers(i + 1);
-            bm_eventDispatcher.log(markerElement.duration);
             markersData.push(markerData);
         }
     }
