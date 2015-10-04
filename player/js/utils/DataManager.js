@@ -53,9 +53,9 @@ function dataFunctionManager(){
             lastFrame = -1;
             if(layerData.tm){
                 layerData.trmp = layerData.tm;
-                var timeValues = new Array(layerFrames);
+                var timeValues = new Array(Math.round(layerFrames));
                 for(j=0 ; j<layerFrames; j+=1){
-                    timeValues.push(Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate));
+                    timeValues[j] = Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate);
                 }
                 layerData.tm = timeValues;
             }
@@ -953,6 +953,7 @@ function dataFunctionManager(){
                         roundness : elmRound
                     };
                 }else{
+                    shapeItem.closed = true;
                     shapeItem.renderedData[offsettedFrameNum] = {
                         path: {
                             closed: true

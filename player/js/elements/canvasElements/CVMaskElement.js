@@ -43,11 +43,14 @@ CVMaskElement.prototype.draw = function (transform) {
 
 CVMaskElement.prototype.drawShape = function (path, data) {
     var j, jLen = data.v.length;
-    path.moveTo(data.v[0][0], data.v[0][1]);
+    path.moveTo(bm_rnd(data.v[0][0]), bm_rnd(data.v[0][1]));
+    //path.moveTo(data.v[0][0], data.v[0][1]);
     for (j = 1; j < jLen; j++) {
-        path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[j][0], data.i[j][1], data.v[j][0], data.v[j][1]);
+        //path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[j][0], data.i[j][1], data.v[j][0], data.v[j][1]);
+        path.bezierCurveTo(bm_rnd(data.o[j - 1][0]), bm_rnd(data.o[j - 1][1]), bm_rnd(data.i[j][0]), bm_rnd(data.i[j][1]), bm_rnd(data.v[j][0]), bm_rnd(data.v[j][1]));
     }
-    path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[0][0], data.i[0][1], data.v[0][0], data.v[0][1]);
+    //path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[0][0], data.i[0][1], data.v[0][0], data.v[0][1]);
+    path.bezierCurveTo(bm_rnd(data.o[j - 1][0]), bm_rnd(data.o[j - 1][1]), bm_rnd(data.i[0][0]), bm_rnd(data.i[0][1]), bm_rnd(data.v[0][0]), bm_rnd(data.v[0][1]));
 };
 
 CVMaskElement.prototype.createInvertedMask = function(path){

@@ -19,3 +19,4 @@ $.evalFile(extensionPath + 'utils/shapeHelper.jsx');
 $.evalFile(extensionPath + 'utils/textHelper.jsx');
 $.evalFile(extensionPath + 'utils/textAnimatorHelper.jsx');
 $.evalFile(extensionPath + 'utils/textShapeHelper.jsx');
+$.evalFile(extensionPath + 'utils/markerHelper.jsx');

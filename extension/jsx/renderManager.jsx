@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, app, File*/
+/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, bm_markerHelper, app, File*/
 var bm_renderManager = (function () {
     'use strict';
     
@@ -84,7 +84,7 @@ var bm_renderManager = (function () {
         exportData.animation = {};
         exportData.assets = [];
         exportData.fonts = [];
-        exportData.v = '2.1.2';
+        exportData.v = '2.1.3';
         exportData.animation.layers = [];
         exportData.animation.totalFrames = comp.workAreaDuration * comp.frameRate;
         exportData.animation.frameRate = comp.frameRate;
@@ -92,6 +92,7 @@ var bm_renderManager = (function () {
         exportData.animation.compWidth = comp.width;
         exportData.animation.compHeight = comp.height;
         ob.renderData.firstFrame = exportData.animation.ff * comp.frameRate;
+        bm_markerHelper.searchMarkers(comp, exportData);
         createLayers(comp, exportData.animation.layers, exportData.animation.frameRate);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
