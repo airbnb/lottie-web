@@ -280,9 +280,13 @@ AnimationItem.prototype.adjustSegment = function(arr){
 };
 
 AnimationItem.prototype.playSegments = function (arr,forceFlag) {
-    var i, len = arr.length;
-    for(i=0;i<len;i+=1){
-        this.segments.push(arr[i]);
+    if(typeof arr[0] === 'object'){
+        var i, len = arr.length;
+        for(i=0;i<len;i+=1){
+            this.segments.push(arr[i]);
+        }
+    }else{
+        this.segments.push(arr);
     }
     if(forceFlag){
         this.adjustSegment(this.segments.shift());

@@ -34,6 +34,7 @@
     <script src="js/animation/AnimationItem.js"></script>
      <script src="js/module.js"></script>
     <!-- endbuild -->
+    <!-- <script src="bodymovin.js"></script> -->
 </head>
 <body style="background-color:#ccc; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
 
@@ -46,7 +47,8 @@
         animType: 'svg',
         loop: true,
         prerender: false,
-        path: 'exports/letters/full'
+        autoplay: false,
+        path: 'exports/render'
 
     };
     var anim = bodymovin.loadAnimation(animData);
