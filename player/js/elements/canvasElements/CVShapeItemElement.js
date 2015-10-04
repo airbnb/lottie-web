@@ -1,4 +1,14 @@
 function CVShapeItemElement(data,mainFlag,globalData){
+    this.lcEnum = {
+        '1': 'butt',
+        '2': 'round',
+        '3': 'butt'
+    };
+    this.ljEnum = {
+        '1': 'miter',
+        '2': 'round',
+        '3': 'bevel'
+    };
     this.data = data;
     this.globalData = globalData;
     this.canvasContext = globalData.canvasContext;
@@ -34,6 +44,11 @@ function CVShapeItemElement(data,mainFlag,globalData){
             }else{
                 styleData.type = 'stroke';
                 styleData.width = 0;
+                styleData.lc = this.lcEnum[this.data[i].lc] || 'round';
+                styleData.lj = this.ljEnum[this.data[i].lj] || 'round';
+                if(this.data[i].lj == 1) {
+                    styleData.ml = this.data[i].ml;
+                }
             }
             this.stylesPool.push(styleData);
         }
@@ -51,8 +66,6 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
     var i, len = stylesList.length;
     var ctx = this.canvasContext;
     this.globalData.renderer.save();
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
     for(i=0;i<len;i+=1){
         if(stylesList[i].type == 'stroke'){
             if(stylesList[i].opacity != 1){
@@ -60,6 +73,9 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
                 this.globalData.renderer.ctxOpacity(stylesList[i].opacity);
                 ///ctx.globalAlpha *= stylesList[i].opacity;
             }
+            ctx.lineCap = stylesList[i].lc;
+            ctx.lineJoin = stylesList[i].lj;
+            ctx.miterLimit = stylesList[i].ml;
             ctx.strokeStyle = stylesList[i].value;
             ctx.lineWidth = stylesList[i].width;
             if(stylesList[i].dasharray){
@@ -209,21 +225,27 @@ CVShapeItemElement.prototype.renderPath = function(data){
     var stops = pathNodes.s ? pathNodes.s : [];
     for(i=1;i<len;i+=1){
         if(stops[i-1]){
-            path2d.moveTo(stops[i-1][0],stops[i-1][1]);
+            path2d.moveTo(bm_rnd(stops[i-1][0]),bm_rnd(stops[i-1][1]));
+            //path2d.moveTo(stops[i-1][0],stops[i-1][1]);
         }else if(i==1){
-            path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+            path2d.moveTo(bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
+            //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
         }
-        path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
+        path2d.bezierCurveTo(bm_rnd(pathNodes.o[i-1][0]),bm_rnd(pathNodes.o[i-1][1]),bm_rnd(pathNodes.i[i][0]),bm_rnd(pathNodes.i[i][1]),bm_rnd(pathNodes.v[i][0]),bm_rnd(pathNodes.v[i][1]));
+        //path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
     }
     if(len == 1){
         if(stops[0]){
-            path2d.moveTo(stops[0][0],stops[0][1]);
+            path2d.moveTo(bm_rnd(stops[0][0]),bm_rnd(stops[0][1]));
+            //path2d.moveTo(stops[0][0],stops[0][1]);
         }else{
-            path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+            path2d.moveTo(bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
+            //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
         }
     }
     if(data.closed && !(data.trimmed && !pathNodes.c)){
-        path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+        path2d.bezierCurveTo(bm_rnd(pathNodes.o[i-1][0]),bm_rnd(pathNodes.o[i-1][1]),bm_rnd(pathNodes.i[0][0]),bm_rnd(pathNodes.i[0][1]),bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
+        //path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
     }
     this.addPathToStyles(path2d);
 };

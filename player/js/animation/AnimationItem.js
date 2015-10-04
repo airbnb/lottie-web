@@ -26,6 +26,7 @@ var AnimationItem = function () {
     this.scaleMode = 'fit';
     this.math = Math;
     this.removed = false;
+    this.segments = [];
 };
 
 AnimationItem.prototype.setParams = function(params) {
@@ -126,7 +127,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = Math.floor(this.animationData.animation.totalFrames);
     this.frameRate = this.animationData.animation.frameRate;
     this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
-    /*this.firstFrame = 114;
+    /*this.firstFrame = 211;
     this.totalFrames = 1;*/
     this.frameMult = this.animationData.animation.frameRate / 1000;
     dataManager.completeData(this.animationData);
@@ -272,6 +273,29 @@ AnimationItem.prototype.moveFrame = function (value, name) {
     this.setCurrentRawFrameValue(this.currentRawFrame+value);
 };
 
+AnimationItem.prototype.adjustSegment = function(arr){
+    this.totalFrames = arr[1] - arr[0];
+    this.firstFrame = arr[0];
+    this.currentRawFrame = this.firstFrame;
+};
+
+AnimationItem.prototype.playSegments = function (arr,forceFlag) {
+    var i, len = arr.length;
+    for(i=0;i<len;i+=1){
+        this.segments.push(arr[i]);
+    }
+    if(forceFlag){
+        this.adjustSegment(this.segments.shift());
+    }
+};
+
+AnimationItem.prototype.resetSegments = function (forceFlag) {
+    this.segments.push([Math.round(this.animationData.animation.ff*this.frameRate),Math.floor(this.animationData.animation.totalFrames+this.animationData.animation.ff*this.frameRate)]);
+    if(forceFlag){
+        this.adjustSegment(this.segments.shift());
+    }
+};
+
 AnimationItem.prototype.remove = function (name) {
     if(name && this.name != name){
         return;
@@ -289,6 +313,9 @@ AnimationItem.prototype.destroy = function (name) {
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
     if (this.currentRawFrame >= this.totalFrames) {
+        if(this.segments.length){
+            this.adjustSegment(this.segments.shift());
+        }
         if(this.loop === false){
             this.currentRawFrame = this.totalFrames - 1;
             this.gotoFrame();

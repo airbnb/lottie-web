@@ -1,5 +1,6 @@
 var subframeEnabled = false;
 var cachedColors = {};
+var bm_rnd = Math.round;
 
 function styleDiv(element){
     element.style.position = 'absolute';
