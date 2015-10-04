@@ -40,6 +40,7 @@ var TextData_Helper = (function(){
         documentData.fStyle = fStyle;
         len = documentData.t.length;
         for (i = 0;i < len ;i += 1) {
+            newLineFlag = false;
             if(documentData.t.charAt(i) === ' '){
                 val = '\u00A0';
             }else if(documentData.t.charCodeAt(i) === 13){
@@ -238,9 +239,8 @@ var TextData_Helper = (function(){
                 pathInfo.segments.push(pathData);
             }
 
-            len = letters.length;
-            var currentLength = data.renderedData[num].t.p[0], segmentInd = 0, pointInd = 1, currentSegment, currentPoint, prevPoint, points;
-            var segmentLength = 0, flag = true, contador = 0;
+            var currentLength = data.renderedData[num].t.p[0], segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
+            var segmentLength = 0, flag = true;
             var segments = pathInfo.segments;
             if (currentLength < 0 && mask.cl) {
                 if (pathInfo.tLength < Math.abs(currentLength)) {
@@ -268,7 +268,7 @@ var TextData_Helper = (function(){
         }
 
 
-        len = data.t.d.t.length;
+        len = letters.length;
         xPos = 0;
         yPos = 0;
         var yOff = data.t.d.s*1.2*.714;
@@ -487,12 +487,13 @@ var TextData_Helper = (function(){
                     currentLength -= renderedData.m.a[0]*letters[i].an/200;
                     if(letters[i+1] && ind !== letters[i+1].ind){
                         currentLength += letters[i].an / 2;
+                        currentLength += documentData.tr/1000*data.t.d.s;
                     }
                     matrixHelper.translate(-offf,0);
                 }else{
                     matrixHelper.translate(-offf,0);
                     matrixHelper.translate(-renderedData.m.a[0]*letters[i].an/200,-renderedData.m.a[1]*yOff/100);
-                    xPos += letters[i].l;
+                    xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
                 }
                 if(renderType === 'svg'){
                     letterValue.m = matrixHelper.toCSS();
