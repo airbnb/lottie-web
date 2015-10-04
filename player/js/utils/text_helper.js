@@ -14,7 +14,6 @@ var TextData_Helper = (function(){
         var lineWidth = 0;
         var maxLineWidth = 0;
         var j, jLen;
-        var shapeStr = '';
         var fontData = fontManager.getFontByName(documentData.f);
         var charData, cLength;
         var styles = fontData.fStyle.split(' ');
@@ -51,7 +50,6 @@ var TextData_Helper = (function(){
             }else{
                 val = documentData.t.charAt(i);
             }
-            shapeStr = '';
             if(fontManager.chars){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
                 cLength = charData.w*documentData.s/100;
@@ -67,7 +65,7 @@ var TextData_Helper = (function(){
             }
             //
             lineWidth += cLength;
-            letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, str:shapeStr});
+            letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
             if(anchorGrouping == 2){
                 currentSize += cLength;
                 if(val == '' || val == '\u00A0' || i == len - 1){
@@ -199,9 +197,17 @@ var TextData_Helper = (function(){
         return mult;
     }
 
+    function LetterProps(o,sw,sc,fc,m,p){
+        this.o = o;
+        this.sw = sw;
+        this.sc = sc;
+        this.fc = fc;
+        this.m = m;
+        this.props = p;
+    }
+
     function getMeasures(data, num, renderType){
         var xPos,yPos;
-        var lettersValue = [], letterValue;
         var i, len;
         var documentData = data.t.d;
         var letters = documentData.l;
@@ -275,9 +281,11 @@ var TextData_Helper = (function(){
         var firstLine = true;
         var renderedData = data.renderedData[num].t, animatorProps;
         var j, jLen;
+        var lettersValue = new Array(len), letterValue, lettersChangedFlag = false;
 
         jLen = renderedData.a.length;
         var ranges = [], totalChars, divisor;
+        var lastLetters = data._letters, lastLetter;
         for(j=0;j<jLen;j+=1){
             totalChars = data.t.a[j].totalChars;
             divisor = data.t.a[j].s.r === 2 ? 1 : 100/totalChars;
@@ -303,12 +311,12 @@ var TextData_Helper = (function(){
         var elemOpacity;
         var sc,sw,fc,k;
         var lineLength = 0;
+        var letterSw,letterSc,letterFc,letterM,letterP,letterO;
 
         for( i = 0; i < len; i += 1) {
             matrixHelper.reset();
             matrixHelper.translate(documentData.justifyOffset,0);
             elemOpacity = 1;
-            letterValue = {};
             if(letters[i].n) {
                 xPos = 0;
                 yPos += documentData.yOffset;
@@ -325,7 +333,7 @@ var TextData_Helper = (function(){
                     partialLength = currentPoint.partialLength;
                     segmentLength = 0;
                 }
-                lettersValue.push(letterValue);
+                lettersValue[i] = emptyProp;
             }else{
                 if('m' in data.t.p) {
                     if(ind !== letters[i].ind){
@@ -459,13 +467,13 @@ var TextData_Helper = (function(){
                     }
                 }
                 if(documentData.strokeWidthAnim){
-                    letterValue.sw = sw < 0 ? 0 : sw;
+                    letterSw = sw < 0 ? 0 : sw;
                 }
                 if(documentData.strokeColorAnim){
-                    letterValue.sc = 'rgb('+sc[0]+','+sc[1]+','+sc[2]+')';
+                    letterSc = 'rgb('+sc[0]+','+sc[1]+','+sc[2]+')';
                 }
                 if(documentData.fillColorAnim){
-                    letterValue.fc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
+                    letterFc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
                 }
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
@@ -496,16 +504,44 @@ var TextData_Helper = (function(){
                     xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
                 }
                 if(renderType === 'svg'){
-                    letterValue.m = matrixHelper.toCSS();
+                    letterM = matrixHelper.toCSS();
                 }else{
-                    letterValue.props = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
+                    letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
                 }
-                letterValue.o = elemOpacity;
-                lettersValue.push(letterValue);
+                letterO = elemOpacity;
+                if(lastLetters){
+                    lastLetter = lastLetters[i];
+                    if(lastLetter.o !== letterO || lastLetter.sw !== letterSw || lastLetter.sc !== letterSc || lastLetter.fc !== letterFc){
+                        lettersChangedFlag = true;
+                        letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM,letterP);
+                    }else{
+                        if(renderType === 'svg' && lastLetter.m !== letterM){
+                            lettersChangedFlag = true;
+                            letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM);
+                        }else if(renderType !== 'svg' && (lastLetter.props[1] !== matrixHelper.props[1] || lastLetter.props[2] !== matrixHelper.props[2] || lastLetter.props[3] !== matrixHelper.props[3] || lastLetter.props[4] !== matrixHelper.props[4] || lastLetter.props[5] !== matrixHelper.props[5])){
+                            lettersChangedFlag = true;
+                            letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,null,[matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]]);
+                        }else{
+                            letterValue = lastLetter;
+                        }
+                    }
+
+                }else{
+                    lettersChangedFlag = true;
+                    letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM,letterP);
+                }
+                lettersValue[i] = letterValue;
             }
         }
-        data.renderedData[num].t.l = lettersValue;
+        if(lettersChangedFlag){
+            data.renderedData[num].t.l = lettersValue;
+            data._letters = lettersValue;
+        }else{
+            data.renderedData[num].t.l = lastLetters;
+        }
     }
+
+    var emptyProp = new LetterProps();
 
     ob.getMeasures = getMeasures;
     ob.completeText = completeText;
