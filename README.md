@@ -39,6 +39,7 @@ On Windows, open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and ad
 
 Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
+Jump directly to "Install third-party extensions"
 
 
 ### For both
