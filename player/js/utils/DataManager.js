@@ -384,7 +384,11 @@ function dataFunctionManager(){
                         arrLen -= 1;
                     }
                 }else{
-                    propertyArray.push(keyValue);
+                    if(len === 1){
+                        propertyArray = keyValue;
+                    }else{
+                        propertyArray.push(keyValue);
+                    }
                 }
             }
         }
@@ -466,6 +470,13 @@ function dataFunctionManager(){
                 pathData.pathNodes = isTrimmed ? trimPath(stored,pathData.closed, trimData, false) : stored;
                 return pathData;
             }else{
+                var lastNodes;
+                var newNodes = false;
+                if(keyframes.__lastData){
+                    lastNodes = keyframes.__lastData.pathNodes;
+                }else{
+                    newNodes = true;
+                }
                 var i = 0;
                 var len = keyframes.length- 1;
                 var dir = 1;
@@ -526,6 +537,11 @@ function dataFunctionManager(){
                                 coordsOData[k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
                                 coordsVData[k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
                             }
+                            if(lastNodes){
+                                if(!lastNodes.i[j] || !lastNodes.o[j] || !lastNodes.v[j] || (lastNodes.i[j][k] !== coordsIData[k] || lastNodes.o[j][k] !== coordsOData[k] || lastNodes.v[j][k] !== coordsVData[k])){
+                                    newNodes = true;
+                                }
+                            }
                         }
                         shapeData.i[j] = coordsIData;
                         shapeData.o[j] = coordsOData;
@@ -535,7 +551,17 @@ function dataFunctionManager(){
                         }
                     }
                 }
-                pathData.pathNodes = isTrimmed ? trimPath(shapeData,pathData.closed, trimData, false) : shapeData;
+                if(isTrimmed){
+                    pathData.pathNodes = trimPath(shapeData,pathData.closed, trimData, false);
+                }else{
+                    if(!newNodes){
+                        pathData.pathNodes = keyframes.__lastData;
+                    }else{
+                        pathData.pathNodes = shapeData;
+                        keyframes.__lastData = pathData;
+                    }
+                    pathData.pathNodes = shapeData;
+                }
                 return pathData;
             }
         }
@@ -705,7 +731,7 @@ function dataFunctionManager(){
         var timeRemapped;
 
         var offsettedFrameNum, i, len, renderedData;
-        var j, jLen = layers.length, item;
+        var j, jLen = layers.length, item, matArr, newData;
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             offsettedFrameNum = frameNum - item.startTime;
@@ -721,10 +747,18 @@ function dataFunctionManager(){
             getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime,mtParams,0,1);
             getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime,mtParams,1,2);
             renderedData = {};
-            renderedData.an = {
-                tr: dataOb
-            };
-            renderedData.an.matrixArray = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
+            matArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
+            newData = false;
+
+            if(!item.__lastRenderAn || dataOb.o !== item.__lastRenderAn.tr.o || dataOb.a[0] !== item.__lastRenderAn.tr.a[0] || dataOb.a[1] !== item.__lastRenderAn.tr.a[1] || matArr[1] !== item.__lastRenderAn.matrixArray[1] || matArr[2] !== item.__lastRenderAn.matrixArray[2] || matArr[3] !== item.__lastRenderAn.matrixArray[3] || matArr[4] !== item.__lastRenderAn.matrixArray[4] || matArr[5] !== item.__lastRenderAn.matrixArray[5]){
+                renderedData.an = {
+                    tr: dataOb
+                };
+                renderedData.an.matrixArray = matArr;
+                item.__lastRenderAn = renderedData.an;
+            }else{
+                renderedData.an = item.__lastRenderAn;
+            }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
                 maskProps = item.masksProperties;
