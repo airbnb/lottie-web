@@ -45,7 +45,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                 pathElement: pathElement,
                 type: arr[i].ty,
                 d: '',
-                ld: 'a'
+                ld: ''
             });
             data[i].style = this.stylesList[this.stylesList.length - 1];
             ownArrays.push(data[i].style);
@@ -101,7 +101,7 @@ ShapeItemElement.prototype.hideShape = function(){
     }
 };
 
-ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data){
+ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data,isMain){
     var i, len;
     if(!items){
         items = this.data;
@@ -154,6 +154,9 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
         }else if(items[i].ty == 'tm'){
             //
         }
+    }
+    if(!isMain){
+        return;
     }
     len = this.stylesList.length;
     for(i=0;i<len;i+=1){
