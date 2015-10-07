@@ -149,7 +149,7 @@ var ExpressionManager = (function(){
 
             function evaluate(val){
                 val = 'var fn = function(t,v){time=t;value=v;frameN = Math.round(time*frameRate);'+val+';return $bm_rt;}';
-                console.log(val);
+                //console.log(val);
                 eval(val);
                 return new ExpressionObject(fn);
             }
@@ -218,11 +218,36 @@ var ExpressionManager = (function(){
             }
         }
 
+        function MaskData(data){
+            var ob = {
+                get maskPath (){
+                    return data.paths[frameN];
+                }
+            };
+
+            return ob;
+        }
+
+        function getMask(masksProperties){
+            return function(name){
+                var i = 0, len = masksProperties.length;
+                while(i<len){
+                    if(masksProperties[i].nm === name){
+                        return new MaskData(masksProperties[i]);
+                    }
+                    i += 1;
+                }
+            }
+        }
+
         function getProperties(data){
             var ob = {};
             ob.effect = getEffects(data.ef);
             ob.transform = getTransform(data,0);
             ob.content = getContent(data);
+            if(data.hasMask){
+                ob.mask = getMask(data.masksProperties);
+            }
             return ob;
         }
 
@@ -276,6 +301,17 @@ var ExpressionManager = (function(){
             if(item.ks.o.x){
                 item.ks.o.x = new EvalContext(item).evaluate(item.ks.o.x);
             }
+
+            if(item.hasMask){
+                var j, jLen;
+                var maskProps = item.masksProperties;
+                jLen = maskProps.length;
+                for(j=0;j<jLen;j+=1){
+                    if(maskProps[j].pt.x){
+                        maskProps[j].pt.x = new EvalContext(item).evaluate(maskProps[j].pt.x);
+                    }
+                }
+            }
         }
         return ob;
     }
@@ -320,6 +356,17 @@ var ExpressionManager = (function(){
             if(item.ty === 'PreCompLayer'){
                 timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= item.tm.length ? item.tm[item.tm.length - 1] :  item.tm[offsettedFrameNum] : offsettedFrameNum;
                 iterateExpressions(item.layers,timeRemapped,renderType);
+            }
+
+            if(item.hasMask){
+                var maskProps = item.masksProperties;
+                len = maskProps.length;
+                for(i=0;i<len;i+=1){
+                    if(maskProps[i].pt.x){
+                        result = maskProps[i].pt.x.fn(frameNum/frameRate);
+                        maskProps[i].paths[frameNum] = result;
+                    }
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_keyframeHelper, MaskMode, bm_eventDispatcher*/
+/*global bm_keyframeHelper, MaskMode*/
 var bm_maskHelper = (function () {
     'use strict';
     var ob = {};
@@ -40,8 +40,9 @@ var bm_maskHelper = (function () {
                 mode: getMaskMode(maskElement.maskMode)
             };
             shapeData.pt = bm_keyframeHelper.exportKeyframes(maskElement.property('maskShape'), frameRate);
-            bm_eventDispatcher.log('paso');
             shapeData.o = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Opacity'), frameRate);
+            shapeData.x = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Expansion'), frameRate);
+            shapeData.nm = maskElement.name;
             layerData.masksProperties.push(shapeData);
         }
     }

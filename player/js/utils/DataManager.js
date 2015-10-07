@@ -739,11 +739,13 @@ function dataFunctionManager(){
                     if(!maskProps[i].paths){
                         maskProps[i].paths = [];
                         maskProps[i].opacity = [];
+                        maskProps[i].expansion = [];
                     }
 
                     maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.startTime,renderType,true);
                     maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.startTime);
                     maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
+                    maskProps[i].expansion[offsettedFrameNum] = getInterpolatedValue(maskProps[i].x,offsettedFrameNum, item.startTime);
                 }
             }
             if(item.ef){
