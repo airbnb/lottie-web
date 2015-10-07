@@ -89,3 +89,8 @@ var fillColorToString = (function(){
         return colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]];
     };
 }());
+
+function RenderedFrame(tr,o) {
+    this.tr = tr;
+    this.o = o;
+}

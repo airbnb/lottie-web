@@ -1,9 +1,6 @@
 function IShapeElement(data,parentContainer,globalData){
     this.shapes = [];
     this.parent.constructor.call(this,data,parentContainer,globalData);
-    if(this.data.hasMask){
-        this.transformHelper
-    }
 }
 createElement(BaseElement, IShapeElement);
 

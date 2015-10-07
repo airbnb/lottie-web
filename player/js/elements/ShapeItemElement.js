@@ -223,11 +223,18 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num,groupTra
     var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
-        viewData.renderedFrames[this.globalData.frameNum] = {
-            c: fillData.color,
-            o: fillData.opacity*groupTransform.opacity,
-            t: 'matrix('+groupTransform.mat.props.join(',')+')'
-        };
+        var t = 'matrix('+groupTransform.mat.props.join(',')+')';
+        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity && viewData._ld.t === t){
+            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
+            return;
+        }else{
+            viewData._ld = {
+                c: fillData.color,
+                o: fillData.opacity*groupTransform.opacity,
+                t: t
+            };
+            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
+        }
     }
 
     var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
@@ -249,12 +256,19 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupT
     var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
-        viewData.renderedFrames[this.globalData.frameNum] = {
-            c: fillData.color,
-            o: fillData.opacity*groupTransform.opacity,
-            w: fillData.width,
-            t: 'matrix('+groupTransform.mat.props.join(',')+')'
-        };
+        var t = 'matrix('+groupTransform.mat.props.join(',')+')';
+        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity && viewData._ld.w === fillData.width && viewData._ld.t === t){
+            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
+            return;
+        }else{
+            viewData._ld = {
+                c: fillData.color,
+                o: fillData.opacity*groupTransform.opacity,
+                w: fillData.width,
+                t: t
+            };
+            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
+        }
         if(fillData.dashes){
             viewData.renderedFrames[this.globalData.frameNum].d = fillData.dashes;
         }

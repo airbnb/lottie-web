@@ -7,8 +7,8 @@ var BaseElement = function (data,parentContainer,globalData){
         op: 1
     };
     this.matteElement = null;
-    this.renderedFrames = [];
     this.lastData = {};
+    this.renderedFrames = [];
     this.parentContainer = parentContainer;
     this.layerId = randomString(10);
     this.hidden = false;
@@ -156,12 +156,12 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }else{
         if(this.isVisible){
             if(!parentTransform){
-                this.finalTransform.mat.props[0] = this.ownMatrix.props[0];
-                this.finalTransform.mat.props[1] = this.ownMatrix.props[1];
-                this.finalTransform.mat.props[2] = this.ownMatrix.props[2];
-                this.finalTransform.mat.props[3] = this.ownMatrix.props[3];
-                this.finalTransform.mat.props[4] = this.ownMatrix.props[4];
-                this.finalTransform.mat.props[5] = this.ownMatrix.props[5];
+                finalMat.props[0] = this.ownMatrix.props[0];
+                finalMat.props[1] = this.ownMatrix.props[1];
+                finalMat.props[2] = this.ownMatrix.props[2];
+                finalMat.props[3] = this.ownMatrix.props[3];
+                finalMat.props[4] = this.ownMatrix.props[4];
+                finalMat.props[5] = this.ownMatrix.props[5];
             }else{
                 mat = this.ownMatrix.props;
                 finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
@@ -170,20 +170,21 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }
     if(this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){
-            this.renderedFrames[this.globalData.frameNum] = {
-                tr:'matrix('+finalMat.props.join(',')+')',
-                o:this.finalTransform.opacity
-            };
+            var tr = 'matrix('+finalMat.props.join(',')+')';
+            if(this.lastData && this.lastData.tr === tr && this.lastData.o === this.finalTransform.opacity){
+                this.renderedFrames[this.globalData.frameNum] = this.lastData;
+            }else{
+                this.renderedFrames[this.globalData.frameNum] = new RenderedFrame(tr,this.finalTransform.opacity);
+            }
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
-            this.lastData.tr = renderedFrameData.tr;
             this.layerElement.setAttribute('transform',renderedFrameData.tr);
         }
         if(this.lastData.o !== renderedFrameData.o){
-            this.lastData.o = renderedFrameData.o;
             this.layerElement.setAttribute('opacity',renderedFrameData.o);
         }
+        this.lastData = renderedFrameData;
     }
 
     return this.isVisible;
