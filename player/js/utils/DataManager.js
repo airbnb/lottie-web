@@ -71,7 +71,7 @@ function dataFunctionManager(){
                 layerData.ks.s.k /= 100;
             }
             if(layerData.ks.r.k instanceof Array){
-                convertNumericValue(layerData.ks.k.r.k,degToRads);
+                convertNumericValue(layerData.ks.r.k,degToRads);
             }else{
                 layerData.ks.r.k *= degToRads;
             }
@@ -82,13 +82,13 @@ function dataFunctionManager(){
                     if(maskProps[j].pt.k.i){
                         convertPathsToAbsoluteValues(maskProps[j].pt.k);
                     }else{
-                        kLen = maskProps[j].pt.length;
+                        kLen = maskProps[j].pt.k.length;
                         for(k=0;k<kLen;k+=1){
-                            if(maskProps[j].pt[k].s){
-                                convertPathsToAbsoluteValues(maskProps[j].pt[k].s[0]);
+                            if(maskProps[j].pt.k[k].s){
+                                convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
                             }
-                            if(maskProps[j].pt[k].e){
-                                convertPathsToAbsoluteValues(maskProps[j].pt[k].e[0]);
+                            if(maskProps[j].pt.k[k].e){
+                                convertPathsToAbsoluteValues(maskProps[j].pt.k[k].e[0]);
                             }
                         }
                     }
@@ -146,6 +146,7 @@ function dataFunctionManager(){
                 }
             }else if(arr[i].ty == 'sh'){
                 arr[i].trimmed = isTrimmed;
+                console.log(arr[i].ks);
                 if(arr[i].ks.k.i){
                     convertPathsToAbsoluteValues(arr[i].ks.k);
                 }else{
