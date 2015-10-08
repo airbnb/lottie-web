@@ -89,12 +89,10 @@ var bm_dataManager = (function () {
                         };
                     }
                     var randomId = bm_generalUtils.random(10);
-                    currentPeriod.layers.push({
-                        id: randomId,
-                        data: layers[i]
-                    });
+                    layers[i].id = randomId;
+                    currentPeriod.layers.push(layers[i]);
                     layers[i] = {
-                        loadId: randomId,
+                        id: randomId,
                         ty: 99
                     };
                 }
