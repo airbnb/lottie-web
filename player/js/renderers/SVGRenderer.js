@@ -62,12 +62,12 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     for(i=0;i<len;i+=1){
         j = 0;
         while(j<jLen){
-            if(elements[j].data.loadId == layers[i].id){
+            if(elements[j].data.id == layers[i].id){
                 placeholder = elements[j];
-                elements[j] = this.createItem(layers[i].data,parentContainer, placeholder);
-                if (layers[i].data.ty == 'PreCompLayer') {
+                elements[j] = this.createItem(layers[i],parentContainer, placeholder);
+                if (layers[i].ty == 'PreCompLayer') {
                     elems = [];
-                    this.buildItems(layers[i].data.layers,elements[j].getDomElement(),elems, placeholder);
+                    this.buildItems(layers[i].layers,elements[j].getDomElement(),elems, placeholder);
                     elements[j].setElements(elems);
                 }
                 break;

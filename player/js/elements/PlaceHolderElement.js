@@ -3,7 +3,7 @@ var PlaceHolderElement = function (data,parentContainer,globalData){
     this.parentContainer = parentContainer;
     this.globalData = globalData;
     var g = document.createElementNS(svgNS,'g');
-    g.setAttribute('id',this.data.loadId);
+    g.setAttribute('id',this.data.id);
     parentContainer.appendChild(g);
     this.phElement = g;
 };

@@ -76,6 +76,7 @@ AnimationItem.prototype.setParams = function(params) {
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if(xhr.status == 200){
+                    console.log(JSON.parse(xhr.responseText));
                     self.configAnimation(JSON.parse(xhr.responseText));
                 }else{
                     try{
@@ -125,8 +126,8 @@ AnimationItem.prototype.includeLayers = function(data) {
     for(j=0;j<jLen;j+=1){
         i = 0;
         while(i<len){
-            if(layers[i].loadId == newLayers[j].id){
-                layers[i] = newLayers[j].data;
+            if(layers[i].id == newLayers[j].id){
+                layers[i] = newLayers[j];
                 break;
             }
             i += 1;
@@ -162,6 +163,7 @@ AnimationItem.prototype.loadNextSegment = function() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if(xhr.status == 200){
+                console.log(JSON.parse(xhr.responseText));
                 self.includeLayers(JSON.parse(xhr.responseText));
             }else{
                 try{

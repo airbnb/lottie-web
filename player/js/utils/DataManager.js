@@ -29,16 +29,13 @@ function dataFunctionManager(){
     }
 
     function completeLayers(layers, comps){
-        if(!layers){
-            console.log(new Error().stack);
-        }
         var layerFrames, offsetFrame, layerData;
         var animArray, lastFrame;
         var i, len = layers.length;
         var j, jLen, k, kLen;
         for(i=0;i<len;i+=1){
             layerData = layers[i];
-            if(layerData.loadId || layerData.completed){
+            if(!('ks' in layerData) || layerData.completed){
                 continue;
             }
             layerData.completed = true;
@@ -698,7 +695,7 @@ function dataFunctionManager(){
         var j, jLen = layers.length, item;
         for(j=0;j<jLen;j+=1){
             item = layers[j];
-            if(layers[j].loadId) {
+            if(!('ks' in layers[j])) {
                 return;
             }
             offsettedFrameNum = frameNum - item.startTime;
