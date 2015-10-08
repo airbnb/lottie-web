@@ -21,7 +21,6 @@ var bm_effectsHelper = (function () {
         ob.ty = effectTypes.sliderControl;
         ob.nm = effect.name;
         ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Slider'), frameRate);
-        bm_generalUtils.iterateProperty(effect);
         return ob;
     }
     
@@ -36,7 +35,7 @@ var bm_effectsHelper = (function () {
             effectElement = effects(i + 1);
             var effectType = getEffectType(effectElement.matchName);
             switch (effectType) {
-            case 0:
+            case effectTypes.sliderControl:
                 effectsArray.push(exportSliderControl(effectElement, frameRate));
                 break;
             }

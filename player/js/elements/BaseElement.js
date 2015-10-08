@@ -95,6 +95,54 @@ BaseElement.prototype.createElements = function(){
     }else{
         this.layerElement = this.parentContainer;
     }
+    return;
+    if(this.data.st){
+        var filterID = 'fi_'+randomString(10);
+        var c = this.data.st[0].c.k;
+        var r = this.data.st[0].s.k;
+        var expansor = document.createElementNS(svgNS,'filter');
+        expansor.setAttribute('id',filterID);
+        var feFlood = document.createElementNS(svgNS,'feFlood');
+        if(!c[0].e){
+            feFlood.setAttribute('flood-color','rgb('+c[0]+','+c[1]+','+c[2]+')');
+        }
+        feFlood.setAttribute('result','base');
+        expansor.appendChild(feFlood);
+        var feMorph = document.createElementNS(svgNS,'feMorphology');
+        feMorph.setAttribute('operator','dilate');
+        feMorph.setAttribute('in','SourceGraphic');
+        feMorph.setAttribute('result','bigger');
+        if(!r.length){
+            feMorph.setAttribute('radius',this.data.st[0].s.k);
+        }
+        expansor.appendChild(feMorph);
+        var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+        feColorMatrix.setAttribute('result','mask');
+        feColorMatrix.setAttribute('in','bigger');
+        feColorMatrix.setAttribute('type','matrix');
+        feColorMatrix.setAttribute('values','0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0');
+        expansor.appendChild(feColorMatrix);
+        var feComposite = document.createElementNS(svgNS,'feComposite');
+        feComposite.setAttribute('result','drop');
+        feComposite.setAttribute('in','base');
+        feComposite.setAttribute('in2','mask');
+        feComposite.setAttribute('operator','in');
+        expansor.appendChild(feComposite);
+        var feBlend = document.createElementNS(svgNS,'feBlend');
+        feBlend.setAttribute('in','SourceGraphic');
+        feBlend.setAttribute('in2','drop');
+        feBlend.setAttribute('mode','normal');
+        expansor.appendChild(feBlend);
+        this.globalData.defs.appendChild(expansor);
+        var cont = document.createElementNS(svgNS,'g');
+        if(this.layerElement === this.parentContainer){
+            this.layerElement = cont;
+        }else{
+            cont.appendChild(this.layerElement);
+        }
+        cont.setAttribute('filter','url(#'+filterID+')');
+        this.parentContainer.appendChild(cont);
+    }
 };
 
 BaseElement.prototype.prepareFrame = function(num){

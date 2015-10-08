@@ -63,24 +63,29 @@ MaskElement.prototype.init = function () {
             var filterID = 'fi_'+randomString(10);
             expansor = document.createElementNS(svgNS,'filter');
             expansor.setAttribute('id',filterID);
-            path.setAttribute('filter','url(#'+filterID+')');
             feMorph = document.createElementNS(svgNS,'feMorphology');
             feMorph.setAttribute('operator','dilate');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
             expansor.appendChild(feMorph);
             defs.appendChild(expansor);
+            if(properties[i].mode == 's'){
+                path.setAttribute('stroke', '#000000');
+            }else{
+                path.setAttribute('stroke', '#ffffff');
+            }
         }else{
             feMorph = null;
         }
 
 
         this.storedData[i] = {
-         elem: path,
-         expan: feMorph,
-        lastPath: '',
-        lastOperator:'dilate',
-        lastRadius:0
+             elem: path,
+             expan: feMorph,
+            lastPath: '',
+            lastOperator:'',
+            filterId:filterID,
+            lastRadius:0
         };
         if(properties[i].mode == 'i'){
             jLen = currentMasks.length;
@@ -131,22 +136,23 @@ MaskElement.prototype.renderFrame = function (num) {
             feMorph = this.storedData[i].expan;
             if(this.data.masksProperties[i].expansion[num] < 0){
                 if(this.storedData[i].lastOperator !== 'erode'){
-                    feMorph.setAttribute('operator','erode');
                     this.storedData[i].lastOperator = 'erode';
+                    this.storedData[i].elem.setAttribute('filter','url(#'+this.storedData[i].filterId+')');
                 }
-                if(this.storedData[i].lastRadius !== -this.data.masksProperties[i].expansion[num]){
+                if(this.storedData[i].lastRadius !== this.data.masksProperties[i].expansion[num]){
                     feMorph.setAttribute('radius',-this.data.masksProperties[i].expansion[num]);
-                    this.storedData[i].lastOperator = -this.data.masksProperties[i].expansion[num];
+                    this.storedData[i].lastRadius = this.data.masksProperties[i].expansion[num];
                 }
             }else{
                 if(this.storedData[i].lastOperator !== 'dilate'){
-                    feMorph.setAttribute('operator','dilate');
                     this.storedData[i].lastOperator = 'dilate';
+                    this.storedData[i].elem.setAttribute('filter',null);;
                 }
                 if(this.storedData[i].lastRadius !== this.data.masksProperties[i].expansion[num]){
-                    feMorph.setAttribute('radius',this.data.masksProperties[i].expansion[num]);
-                    this.storedData[i].lastOperator = this.data.masksProperties[i].expansion[num];
+                    this.storedData[i].elem.setAttribute('stroke-width', this.data.masksProperties[i].expansion[num]*2)
+                    this.storedData[i].lastRadius = this.data.masksProperties[i].expansion[num];
                 }
+
             }
         }
     }

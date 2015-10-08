@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper, bm_effectsHelper*/
+/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper, bm_effectsHelper, bm_layerStylesHelper*/
 
 var bm_layerElement = (function () {
     'use strict';
@@ -162,6 +162,7 @@ var bm_layerElement = (function () {
         bm_transformHelper.exportTransform(layerInfo, layerData, frameRate);
         bm_maskHelper.exportMasks(layerInfo, layerData, frameRate);
         bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);
+        bm_layerStylesHelper.exportStyles(layerInfo, layerData, frameRate);
         bm_timeremapHelper.exportTimeremap(layerInfo, layerData, frameRate);
         
         if (lType === ob.layerTypes.shape) {

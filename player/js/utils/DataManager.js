@@ -761,6 +761,19 @@ function dataFunctionManager(){
                     item.ef[i].renderedData[offsettedFrameNum] = efData[i];
                 }
             }
+            if(item.st){
+                len = item.st.length;
+                var stData = new Array(len);
+                for(i = 0; i < len; i += 1){
+                    if(!item.st[i].renderedData){
+                        item.st[i].renderedData = [];
+                    }
+                    if(item.st[i].ty === 0){
+                        stData[i] = getInterpolatedValue(item.st[i].c,offsettedFrameNum, item.startTime);
+                    }
+                    item.st[i].renderedData[offsettedFrameNum] = stData[i];
+                }
+            }
             if((frameNum < item.inPoint || frameNum > item.outPoint)){
                continue;
             }
