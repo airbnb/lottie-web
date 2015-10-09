@@ -95,9 +95,10 @@ BaseElement.prototype.createElements = function(){
     }else{
         this.layerElement = this.parentContainer;
     }
-    return;
+    this.layerElement.setAttribute('data-nombre',this.data.nm);
+    //return;
     if(this.data.st){
-        var filterID = 'fi_'+randomString(10);
+        var filterID = 'st_'+randomString(10);
         var c = this.data.st[0].c.k;
         var r = this.data.st[0].s.k;
         var expansor = document.createElementNS(svgNS,'filter');
@@ -141,7 +142,16 @@ BaseElement.prototype.createElements = function(){
             cont.appendChild(this.layerElement);
         }
         cont.setAttribute('filter','url(#'+filterID+')');
-        this.parentContainer.appendChild(cont);
+        if(this.data.td){
+            cont.setAttribute('data-td',this.data.td);
+        }
+        if(this.data.td == 3){
+            this.globalData.defs.appendChild(cont);
+        }else if(this.data.td == 2){
+            maskGrouper.appendChild(cont);
+        }else{
+            this.parentContainer.appendChild(cont);
+        }
     }
 };
 
