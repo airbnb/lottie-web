@@ -1,5 +1,6 @@
 var subframeEnabled = false;
 var cachedColors = {};
+var bm_rnd = Math.round;
 
 function styleDiv(element){
     element.style.position = 'absolute';
@@ -70,18 +71,26 @@ var fillColorToString = (function(){
 
     var colorMap = [];
     return function(colorArr,alpha){
+        if(alpha !== undefined){
+            colorArr[3] = alpha;
+        }
         if(!colorMap[colorArr[0]]){
-            colorMap[colorArr[0]] = [];
+            colorMap[colorArr[0]] = {};
         }
         if(!colorMap[colorArr[0]][colorArr[1]]){
-            colorMap[colorArr[0]][colorArr[1]] = [];
+            colorMap[colorArr[0]][colorArr[1]] = {};
         }
         if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]]){
-            if(alpha !== undefined){
-                colorArr[3] = alpha;
-            }
-            colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = 'rgba('+colorArr.join(',')+')';
+            colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = {};
         }
-        return colorMap[colorArr[0]][colorArr[1]][colorArr[2]];
+        if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]]){
+            colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]] = 'rgba(' + colorArr.join(',')+')';
+        }
+        return colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]];
     };
 }());
+
+function RenderedFrame(tr,o) {
+    this.tr = tr;
+    this.o = o;
+}

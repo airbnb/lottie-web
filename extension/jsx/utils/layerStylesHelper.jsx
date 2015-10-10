@@ -44,7 +44,7 @@ var bm_layerStylesHelper = (function () {
             }
         }
         if (stylesArray.length) {
-            layerData.st = stylesArray;
+            layerData.sy = stylesArray;
         }
     }
     

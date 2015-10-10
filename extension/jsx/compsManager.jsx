@@ -20,13 +20,28 @@ var bm_compsManager = (function () {
                 id: comp.id,
                 destination: '',
                 absoluteURI: '',
-                selected: false
+                selected: false,
+                settings: {
+                    segmented: false,
+                    segmentTime: 10
+                }
             };
         }
         
         compData.name = comp.name;
         
         return compData;
+    }
+    
+    function setCompositionSettings(id, data) {
+        var i = 0, len = compositions.length, compData;
+        while (i < len) {
+            if (compositions[i].id === id) {
+                compositions[i].settings = data;
+                break;
+            }
+            i += 1;
+        }
     }
     
     function setCompositionSelectionState(id, selectedFlag) {
@@ -118,7 +133,7 @@ var bm_compsManager = (function () {
             renderNextComposition();
             return;
         }
-        bm_renderManager.render(comp, destination);
+        bm_renderManager.render(comp, destination, renderingCompositions[currentRenderingComposition].settings);
     }
     
     function render() {
@@ -156,6 +171,7 @@ var bm_compsManager = (function () {
         getCompositions : getCompositions,
         setCompositionSelectionState : setCompositionSelectionState,
         setCompositionDestinationFolder : setCompositionDestinationFolder,
+        setCompositionSettings : setCompositionSettings,
         searchCompositionDestination : searchCompositionDestination,
         renderComplete : renderComplete,
         browseFolder : browseFolder,

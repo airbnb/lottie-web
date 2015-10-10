@@ -1,9 +1,9 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, app, File*/
+/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_dataManager, app, File*/
 var bm_renderManager = (function () {
     'use strict';
     
-    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer;
+    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings;
     
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -70,25 +70,26 @@ var bm_renderManager = (function () {
         }
     }
     
-    function render(comp, destination) {
+    function render(comp, destination, settings) {
         currentCompID = comp.id;
+        currentCompSettings = settings;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
         pendingLayers.length = 0;
         pendingComps.length = 0;
         var exportData = ob.renderData.exportData;
-        exportData.animation = {};
         exportData.assets = [];
-        exportData.v = '2.1.2';
-        exportData.animation.layers = [];
-        exportData.animation.totalFrames = comp.workAreaDuration * comp.frameRate;
-        exportData.animation.frameRate = comp.frameRate;
-        exportData.animation.ff = comp.workAreaStart;
-        exportData.animation.compWidth = comp.width;
-        exportData.animation.compHeight = comp.height;
-        ob.renderData.firstFrame = exportData.animation.ff * comp.frameRate;
-        createLayers(comp, exportData.animation.layers, exportData.animation.frameRate);
+        exportData.comps = [];
+        exportData.v = '2.1.3';
+        exportData.layers = [];
+        exportData.ip = comp.workAreaStart * comp.frameRate;
+        exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
+        exportData.fr = comp.frameRate;
+        exportData.w = comp.width;
+        exportData.h = comp.height;
+        ob.renderData.firstFrame = exportData.ip * comp.frameRate;
+        createLayers(comp, exportData.layers, exportData.fr);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
         app.scheduleTask('bm_renderManager.renderNextLayer();', 20, false);
@@ -96,17 +97,7 @@ var bm_renderManager = (function () {
     
     function saveData() {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
-        var dataFile = new File(destinationPath);
-        dataFile.open('w', 'TEXT', '????');
-        var string = JSON.stringify(ob.renderData.exportData);
-        string = string.replace(/\n/g, '');
-        try {
-            dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
-            //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
-            dataFile.close();
-        } catch (err) {
-            bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
-        }
+        bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true});
         bm_compsManager.renderComplete();
     }
@@ -125,7 +116,7 @@ var bm_renderManager = (function () {
     }
     
     function removeExtraData() {
-        clearUnrenderedLayers(ob.renderData.exportData.animation.layers);
+        clearUnrenderedLayers(ob.renderData.exportData.layers);
     }
     
     function renderNextLayer() {

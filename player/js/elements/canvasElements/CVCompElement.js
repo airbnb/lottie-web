@@ -12,7 +12,7 @@ CVCompElement.prototype.prepareFrame = function(num){
     var i,len = this.elements.length;
     var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : num >= this.data.tm.length ? this.data.tm[this.data.tm.length - 1] : this.data.tm[num] : num;
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].prepareFrame(timeRemapped - this.layers[i].startTime);
+        this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
     }
 };
 

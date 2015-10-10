@@ -131,7 +131,7 @@ var ExpressionManager = (function(){
     }
 
     function Composition(compData){
-        var ob = {};
+        var ob = {};i
         var compExpressions = [];
         //console.log(compData);
         var time = 0;
@@ -144,7 +144,7 @@ var ExpressionManager = (function(){
             var wiggler = [];
             var effect = getEffects(item.ef);
             var transform = getTransform(item);
-            var inPoint = item.inPoint;
+            var inPoint = item.ip;
             var value;
 
             function evaluate(val){
@@ -322,9 +322,8 @@ var ExpressionManager = (function(){
         var mt, result, timeRemapped;
         for(j=0;j<jLen;j+=1) {
             item = layers[j];
-            offsettedFrameNum = frameNum - item.startTime;
+            offsettedFrameNum = frameNum - item.st;
             renderedData = item.renderedData[offsettedFrameNum];
-            //console.log(renderedData);
             var mt = renderedData.mt;
             if(item.ks.r.x){
                 mt[0] = item.ks.r.x.fn(frameNum/frameRate, mt[0]/degToRads)*degToRads;
