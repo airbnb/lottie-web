@@ -39,12 +39,8 @@ function dataFunctionManager(){
                 continue;
             }
             layerData.completed = true;
-            layerFrames = layerData.op - layerData.st;
+            layerFrames = Math.round(layerData.op - layerData.st);
             offsetFrame = layerData.st;
-            //layerData.layerName = convertLayerNameToID(layerData.layerName);
-            /*if(layerData.parent){
-                layerData.parent = convertLayerNameToID(layerData.parent);
-            }*/
             if(layerData.tt){
                 layers[i-1].td = layerData.tt;
             }
@@ -53,6 +49,7 @@ function dataFunctionManager(){
             animArray = [];
             lastFrame = -1;
             if(layerData.tm){
+                console.log(JSON.parse(JSON.stringify(layerData.tm)));
                 layerData.trmp = layerData.tm;
                 var timeValues = new Array(layerFrames);
                 for(j=0 ; j<layerFrames; j+=1){

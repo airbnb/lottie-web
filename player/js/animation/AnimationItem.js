@@ -199,8 +199,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.animationData.tf = this.totalFrames;
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip*this.frameRate);
-    /*this.firstFrame = 131;
-    this.totalFrames = 1;*/
+    this.firstFrame = 303;
+    this.totalFrames = 1;
     this.frameMult = this.animationData.fr / 1000;
     this.loadSegments();
     dataManager.completeData(this.animationData);

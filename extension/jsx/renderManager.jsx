@@ -88,7 +88,7 @@ var bm_renderManager = (function () {
         exportData.fr = comp.frameRate;
         exportData.w = comp.width;
         exportData.h = comp.height;
-        ob.renderData.firstFrame = exportData.ff * comp.frameRate;
+        ob.renderData.firstFrame = exportData.ip * comp.frameRate;
         createLayers(comp, exportData.layers, exportData.fr);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
