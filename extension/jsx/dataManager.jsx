@@ -130,7 +130,7 @@ var bm_dataManager = (function () {
             delete layers[i].isValid;
             delete layers[i].render;
             delete layers[i].enabled;
-            if (layers[i].ty === bm_layerElement.layerTypes.precomp) {
+            if (layers[i].ty === bm_layerElement.layerTypes.precomp && layers[i].layers) {
                 deleteExtraParams(layers[i].layers);
             }
         }
