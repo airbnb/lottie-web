@@ -124,7 +124,20 @@ var bm_dataManager = (function () {
         }
     }
     
+    function deleteExtraParams(layers) {
+        var i, len = layers.length;
+        for (i = 0; i < len; i += 1) {
+            delete layers[i].isValid;
+            delete layers[i].render;
+            delete layers[i].enabled;
+            if (layers[i].ty === bm_layerElement.layerTypes.precomp) {
+                deleteExtraParams(layers[i].layers);
+            }
+        }
+    }
+    
     function saveData(data, destinationPath, config) {
+        deleteExtraParams(data.layers);
         separateComps(data.layers, data.comps);
         var dataFile, segmentPath, s, string;
         if (config.segmented) {
