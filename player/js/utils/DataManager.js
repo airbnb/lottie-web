@@ -49,11 +49,10 @@ function dataFunctionManager(){
             animArray = [];
             lastFrame = -1;
             if(layerData.tm){
-                console.log(JSON.parse(JSON.stringify(layerData.tm)));
                 layerData.trmp = layerData.tm;
                 var timeValues = new Array(layerFrames);
                 for(j=0 ; j<layerFrames; j+=1){
-                    timeValues.push(Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate));
+                    timeValues[j] = Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate);
                 }
                 layerData.tm = timeValues;
             }
