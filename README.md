@@ -1,8 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
-## Working on CC 2015!
-Finally
+## V 2.1.3
+- rounding path and mask coords. should give a perf boost and fixes sime glitches.
+- fixed closing rects.
+- new methods playSegments and resetSegments to play a part of the animation.
+- fix for canvas shapes fill opacity
 
 ## V 2.1.1
 - reverse paths
@@ -14,10 +17,6 @@ Finally
 - for CC 2015 only
 - destroy method to release animation resources
 - minor improvements
-
-##Version 2.0 is out!
-- improved performace
-- better AE features support
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
 
@@ -64,13 +63,14 @@ https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
-- path: the relative path to the animation object. (animationData and path are exclu
+- path: the relative path to the animation object. (animationData and path are exclusive)
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
 - animType: 'svg' / 'canvas' to set the renderer
 - prerender: true / false to prerender all animation before starting (true recommended)
-Returns the animation object
+<br />
+Returns the animation object you can control with play, pause, setSpeed, etc.
 ```
 bodymovin.loadAnimation({
   wrapper: element, // the dom element

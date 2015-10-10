@@ -50,7 +50,7 @@ function dataFunctionManager(){
             lastFrame = -1;
             if(layerData.tm){
                 layerData.trmp = layerData.tm;
-                var timeValues = new Array(layerFrames);
+                var timeValues = new Array(Math.round(layerFrames));
                 for(j=0 ; j<layerFrames; j+=1){
                     timeValues[j] = Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate);
                 }
