@@ -88,7 +88,6 @@ var bm_renderManager = (function () {
         exportData.animation.compWidth = comp.width;
         exportData.animation.compHeight = comp.height;
         ob.renderData.firstFrame = exportData.animation.ff * comp.frameRate;
-        bm_markerHelper.searchMarkers(comp, exportData);
         createLayers(comp, exportData.animation.layers, exportData.animation.frameRate);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
