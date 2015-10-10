@@ -27,6 +27,9 @@ CVBaseElement.prototype.createElements = function(){
 };
 
 CVBaseElement.prototype.prepareFrame = function(num){
+    if(!this.data.renderedData[num]){
+        return false;
+    }
     this.currentAnimData = this.data.renderedData[num].an;
     var mat = this.currentAnimData.matrixArray;
     this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
@@ -115,6 +118,14 @@ CVBaseElement.prototype.createEffectsManager = function(data){
 };
 CVBaseElement.prototype.getType = function(){
     return this.type;
+};
+
+CVBaseElement.prototype.resetHierarchy = function(){
+    if(!this.hierarchy){
+        this.hierarchy = [];
+    }else{
+        this.hierarchy.length = 0;
+    }
 };
 
 CVBaseElement.prototype.getHierarchy = function(){

@@ -36,7 +36,7 @@ var bm_dataManager = (function () {
         animationSegments = [];
         var currentPeriod, segments, segmentComps;
         for (i = 0; i < len; i += 1) {
-            if (layers[i].inPoint < currentSegment) {
+            if (layers[i].ip < currentSegment) {
                 if (layers[i].ty === bm_layerElement.layerTypes.precomp) {
                     if (!segmentComps) {
                         segmentComps = [];
@@ -60,7 +60,7 @@ var bm_dataManager = (function () {
             currentPeriod = null;
             segmentComps = null;
             for (i = 0; i < len; i += 1) {
-                if (layers[i].inPoint >= currentSegment && layers[i].inPoint < currentSegment + segmentLength) {
+                if (layers[i].ip >= currentSegment && layers[i].ip < currentSegment + segmentLength) {
                     if (!segments) {
                         segments = [];
                     }

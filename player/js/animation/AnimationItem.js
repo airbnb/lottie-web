@@ -148,7 +148,7 @@ AnimationItem.prototype.includeLayers = function(data) {
 AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;
     if(!segments || segments.length === 0){
-        this.timeCompleted = this.animationData.totalFrames;
+        this.timeCompleted = this.animationData.tf;
         return;
     }
     var segment = segments.shift();
@@ -178,24 +178,24 @@ AnimationItem.prototype.loadNextSegment = function() {
 AnimationItem.prototype.loadSegments = function() {
     var segments = this.animationData.segments;
     if(!segments) {
-        this.timeCompleted = this.animationData.totalFrames;
+        this.timeCompleted = this.animationData.tf;
     }
     this.loadNextSegment();
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
+    this.animationData = animData;
+    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+    this.animationData.tf = this.totalFrames;
     this.renderer.configAnimation(animData);
     if(!animData.comps){
         animData.comps = [];
     }
 
-    this.animationData = animData;
     this.animationData._id = this.animationID;
     this.animationData._animType = this.animType;
     this.layers = this.animationData.layers;
     this.assets = this.animationData.assets;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-    this.animationData.tf = this.totalFrames;
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip*this.frameRate);
     /*this.firstFrame = 303;

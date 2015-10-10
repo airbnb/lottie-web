@@ -25,7 +25,7 @@ SVGRenderer.prototype.createItem = function(layer,parentContainer, placeholder){
             return this.createPlaceHolder(layer,parentContainer);
     }
     return this.createBase(layer,parentContainer);
-}
+};
 
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements, placeholder){
     var  i, len = layers.length;

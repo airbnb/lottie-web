@@ -23,29 +23,60 @@ function CanvasRenderer(animationItem, config){
     this.elements = [];
 }
 
+CanvasRenderer.prototype.createItem = function(layer){
+    switch(layer.ty){
+        case 0:
+            return this.createComp(layer);
+        case 1:
+            return this.createSolid(layer);
+        case 2:
+            return this.createImage(layer);
+        case 4:
+            return this.createShape(layer);
+        case 5:
+            return this.createText(layer);
+        case 99:
+            return this.createPlaceHolder(layer);
+        default:
+            return this.createBase(layer);
+    }
+    return this.createBase(layer,parentContainer);
+};
+
 CanvasRenderer.prototype.buildItems = function(layers,elements){
     if(!elements){
         elements = this.elements;
     }
-    var count = 0, i, len = layers.length;
+    var i, len = layers.length;
     for (i = 0; i < len; i++) {
-        if (layers[i].ty === 2) {
-            count++;
-            elements.push(this.createImage(layers[i]));
-        } else if (layers[i].ty === 0) {
-            elements.push(this.createComp(layers[i]));
+        elements[i] = this.createItem(layers[i]);
+        if (layers[i].ty === 0) {
             var elems = [];
             this.buildItems(layers[i].layers,elems);
             elements[elements.length - 1].setElements(elems);
-        } else if (layers[i].ty === 1) {
-            elements.push(this.createSolid(layers[i]));
-        } else if (layers[i].ty === 4) {
-            elements.push(this.createShape(layers[i]));
-        } else if (layers[i].ty == 5) {
-            elements.push(this.createText(layers[i]));
-        }else{
-            elements.push(this.createBase(layers[i]));
-            //console.log('NO TYPE: ',layers[i]);
+        }
+    }
+};
+
+CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
+    var i, len = layers.length;
+    if(!elements){
+        elements = this.elements;
+    }
+    var j, jLen = elements.length, elems, placeholder;
+    for(i=0;i<len;i+=1){
+        j = 0;
+        while(j<jLen){
+            if(elements[j].data.id == layers[i].id){
+                elements[j] = this.createItem(layers[i],parentContainer);
+                if (layers[i].ty === 0) {
+                    elems = [];
+                    this.buildItems(layers[i].layers,elems);
+                    elements[j].setElements(elems);
+                }
+                break;
+            }
+            j += 1;
         }
     }
 };
@@ -60,6 +91,10 @@ CanvasRenderer.prototype.createShape = function (data) {
 
 CanvasRenderer.prototype.createText = function (data) {
     return new CVTextElement(data, this.globalData);
+};
+
+CanvasRenderer.prototype.createPlaceHolder = function (data) {
+    return new PlaceHolderElement(data, null,this.globalData);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
@@ -213,7 +248,7 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
         if (layerData.parent !== undefined) {
-            this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements);
+            this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements, true);
         }
         if (layerData.ty == 0) {
             this.buildStage(null, layerData.layers, elements[i].getElements());
@@ -221,13 +256,16 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
     }
 };
 
-CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements) {
+CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements,resetHierarchyFlag) {
     var i=0, len = layers.length;
+    if(resetHierarchyFlag){
+        element.resetHierarchy();
+    }
     while(i<len){
         if(layers[i].ind === parentName){
             element.getHierarchy().push(elements[i]);
             if (layers[i].parent !== undefined) {
-                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements);
+                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements, false);
             }
         }
         i += 1;
