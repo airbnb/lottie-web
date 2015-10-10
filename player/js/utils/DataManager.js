@@ -39,8 +39,8 @@ function dataFunctionManager(){
                 continue;
             }
             layerData.completed = true;
-            layerFrames = layerData.outPoint - layerData.startTime;
-            offsetFrame = layerData.startTime;
+            layerFrames = layerData.op - layerData.st;
+            offsetFrame = layerData.st;
             //layerData.layerName = convertLayerNameToID(layerData.layerName);
             /*if(layerData.parent){
                 layerData.parent = convertLayerNameToID(layerData.parent);
@@ -180,11 +180,10 @@ function dataFunctionManager(){
     }
 
     function completeData(animationData){
-        animationData.__renderedFrames = new Array(Math.floor(animationData.animation.totalFrames));
+        animationData.__renderedFrames = new Array(Math.floor(animationData.tf));
         animationData.__renderFinished = false;
-        frameRate = animationData.animation.frameRate;
-
-        completeLayers(animationData.animation.layers, animationData.comps);
+        frameRate = animationData.fr;
+        completeLayers(animationData.layers, animationData.comps);
     }
 
     function convertLayerNameToID(string){
@@ -698,18 +697,18 @@ function dataFunctionManager(){
             if(!('ks' in layers[j])) {
                 return;
             }
-            offsettedFrameNum = frameNum - item.startTime;
+            offsettedFrameNum = frameNum - item.st;
             dataOb = {};
-            dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.startTime);
-            dataOb.o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.startTime);
+            dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.st);
+            dataOb.o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.st);
             if(item.ks.p.s){
-                getInterpolatedValue(item.ks.p.x,offsettedFrameNum, item.startTime,mtParams,3,1);
-                getInterpolatedValue(item.ks.p.y,offsettedFrameNum, item.startTime,mtParams,4,1);
+                getInterpolatedValue(item.ks.p.x,offsettedFrameNum, item.st,mtParams,3,1);
+                getInterpolatedValue(item.ks.p.y,offsettedFrameNum, item.st,mtParams,4,1);
             }else{
-                getInterpolatedValue(item.ks.p,offsettedFrameNum, item.startTime,mtParams,3,2);
+                getInterpolatedValue(item.ks.p,offsettedFrameNum, item.st,mtParams,3,2);
             }
-            getInterpolatedValue(item.ks.r,offsettedFrameNum, item.startTime,mtParams,0,1);
-            getInterpolatedValue(item.ks.s,offsettedFrameNum, item.startTime,mtParams,1,2);
+            getInterpolatedValue(item.ks.r,offsettedFrameNum, item.st,mtParams,0,1);
+            getInterpolatedValue(item.ks.s,offsettedFrameNum, item.st,mtParams,1,2);
             renderedData = {};
             renderedData.an = {
                 tr: dataOb
@@ -725,12 +724,12 @@ function dataFunctionManager(){
                         maskProps[i].opacity = [];
                     }
 
-                    maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.startTime,renderType,true);
-                    maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.startTime);
+                    maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.st,renderType,true);
+                    maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.st);
                     maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
                 }
             }
-            if((frameNum < item.inPoint || frameNum > item.outPoint)){
+            if((frameNum < item.ip || frameNum > item.op)){
                continue;
             }
             if(item.ty == 'PreCompLayer'){
@@ -741,7 +740,7 @@ function dataFunctionManager(){
                 }
                 iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.ty == 'ShapeLayer'){
-                iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType);
+                iterateShape(item.shapes,offsettedFrameNum,item.st,renderType);
             }
         }
     }
@@ -998,7 +997,7 @@ function dataFunctionManager(){
         var totalFrames = 1;
         while(totalFrames > 0){
             num += 1;
-            if(num >= Math.floor(animationData.animation.totalFrames)){
+            if(num >= Math.floor(animationData.tf)){
                 animationData.__renderFinished = true;
                 break;
             }
@@ -1016,9 +1015,9 @@ function dataFunctionManager(){
             }
             return;
         }
-        frameRate = animationData.animation.frameRate;
+        frameRate = animationData.fr;
         animationData.__renderedFrames[num] = 2;
-        iterateLayers(animationData.animation.layers, num, animationData._animType);
+        iterateLayers(animationData.layers, num, animationData._animType);
     }
 
     function populateLayers(layers, num, rendered){
@@ -1029,7 +1028,7 @@ function dataFunctionManager(){
             if(rendered[i] === ''){
                 continue;
             }
-            offsettedFrameNum = num - layers[i].startTime;
+            offsettedFrameNum = num - layers[i].st;
             layers[i].renderedData[offsettedFrameNum] = rendered[i];
             if(layers[i].ty == 'PreCompLayer'){
                 timeRemapped = layers[i].tm ? layers[i].tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= layers[i].tm.length ? layers[i].tm[layers[i].tm.length - 1] : layers[i].tm[offsettedFrameNum] : offsettedFrameNum;

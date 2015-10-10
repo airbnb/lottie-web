@@ -26,11 +26,10 @@ var bm_dataManager = (function () {
     }
     
     function splitAnimation(data, time) {
-        var animation = data.animation;
         var comps = data.comps;
-        var layers = animation.layers;
-        var frameRate = animation.frameRate;
-        var totalFrames = animation.totalFrames;
+        var layers = data.layers;
+        var frameRate = data.fr;
+        var totalFrames = data.op - data.ip;
         var i, len = layers.length, j, jLen;
         var currentSegment = time * frameRate;
         var segmentLength = time * frameRate;
@@ -126,7 +125,7 @@ var bm_dataManager = (function () {
     }
     
     function saveData(data, destinationPath, config) {
-        separateComps(data.animation.layers, data.comps);
+        separateComps(data.layers, data.comps);
         var dataFile, segmentPath, s, string;
         if (config.segmented) {
             splitAnimation(data, config.segmentTime);

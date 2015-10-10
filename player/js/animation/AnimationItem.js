@@ -119,7 +119,7 @@ AnimationItem.prototype.setData = function (wrapper) {
 };
 
 AnimationItem.prototype.includeLayers = function(data) {
-    var layers = this.animationData.animation.layers;
+    var layers = this.animationData.layers;
     var i, len = layers.length;
     var newLayers = data.layers;
     var j, jLen = newLayers.length;
@@ -193,17 +193,18 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.animationData = animData;
     this.animationData._id = this.animationID;
     this.animationData._animType = this.animType;
-    this.layers = this.animationData.animation.layers;
+    this.layers = this.animationData.layers;
     this.assets = this.animationData.assets;
-    this.totalFrames = Math.floor(this.animationData.animation.totalFrames);
-    this.frameRate = this.animationData.animation.frameRate;
-    this.firstFrame = Math.round(this.animationData.animation.ff*this.frameRate);
+    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+    this.animationData.tf = this.totalFrames;
+    this.frameRate = this.animationData.fr;
+    this.firstFrame = Math.round(this.animationData.ip*this.frameRate);
     /*this.firstFrame = 131;
     this.totalFrames = 1;*/
-    this.frameMult = this.animationData.animation.frameRate / 1000;
+    this.frameMult = this.animationData.fr / 1000;
     this.loadSegments();
     dataManager.completeData(this.animationData);
-    this.renderer.buildItems(this.animationData.animation.layers);
+    this.renderer.buildItems(this.animationData.layers);
     this.updaFrameModifier();
     this.checkLoaded();
 };

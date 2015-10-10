@@ -159,13 +159,13 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.bmCtx = new BM_CanvasRenderingContext2D(this);
     this.globalData.renderer = this;
-    this.globalData.totalFrames = Math.floor(animData.animation.totalFrames);
-    this.globalData.compWidth = animData.animation.compWidth;
-    this.globalData.compHeight = animData.animation.compHeight;
-    this.layers = animData.animation.layers;
+    this.globalData.totalFrames = Math.floor(animData.tf);
+    this.globalData.compWidth = animData.w;
+    this.globalData.compHeight = animData.h;
+    this.layers = animData.layers;
     this.transformCanvas = {};
-    this.transformCanvas.w = animData.animation.compWidth;
-    this.transformCanvas.h = animData.animation.compHeight;
+    this.transformCanvas.w = animData.w;
+    this.transformCanvas.h = animData.h;
     this.updateContainerSize();
 };
 
@@ -240,7 +240,7 @@ CanvasRenderer.prototype.prepareFrame = function(num){
     }
     var i, len = this.elements.length;
     for (i = 0; i < len; i++) {
-        this.elements[i].prepareFrame(num - this.layers[i].startTime);
+        this.elements[i].prepareFrame(num - this.layers[i].st);
     }
 };
 

@@ -124,7 +124,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.ty == 'NullLayer'){
         return;
     }
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){
             this.isVisible = true;

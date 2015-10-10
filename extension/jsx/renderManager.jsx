@@ -79,18 +79,17 @@ var bm_renderManager = (function () {
         pendingLayers.length = 0;
         pendingComps.length = 0;
         var exportData = ob.renderData.exportData;
-        exportData.animation = {};
         exportData.assets = [];
         exportData.comps = [];
         exportData.v = '2.1.2';
-        exportData.animation.layers = [];
-        exportData.animation.totalFrames = comp.workAreaDuration * comp.frameRate;
-        exportData.animation.frameRate = comp.frameRate;
-        exportData.animation.ff = comp.workAreaStart;
-        exportData.animation.compWidth = comp.width;
-        exportData.animation.compHeight = comp.height;
-        ob.renderData.firstFrame = exportData.animation.ff * comp.frameRate;
-        createLayers(comp, exportData.animation.layers, exportData.animation.frameRate);
+        exportData.layers = [];
+        exportData.ip = comp.workAreaStart * comp.frameRate;
+        exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
+        exportData.fr = comp.frameRate;
+        exportData.w = comp.width;
+        exportData.h = comp.height;
+        ob.renderData.firstFrame = exportData.ff * comp.frameRate;
+        createLayers(comp, exportData.layers, exportData.fr);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
         app.scheduleTask('bm_renderManager.renderNextLayer();', 20, false);
@@ -98,7 +97,6 @@ var bm_renderManager = (function () {
     
     function saveData() {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
-        bm_eventDispatcher.log(currentCompSettings);
         bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true});
         bm_compsManager.renderComplete();
@@ -118,7 +116,7 @@ var bm_renderManager = (function () {
     }
     
     function removeExtraData() {
-        clearUnrenderedLayers(ob.renderData.exportData.animation.layers);
+        clearUnrenderedLayers(ob.renderData.exportData.layers);
     }
     
     function renderNextLayer() {

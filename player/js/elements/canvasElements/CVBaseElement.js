@@ -30,7 +30,7 @@ CVBaseElement.prototype.prepareFrame = function(num){
     this.currentAnimData = this.data.renderedData[num].an;
     var mat = this.currentAnimData.matrixArray;
     this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st >= num)
     {
         this.renderFrame = true;
         this.finalTransform.opacity = 1;
