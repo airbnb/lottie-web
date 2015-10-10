@@ -29,19 +29,19 @@ CanvasRenderer.prototype.buildItems = function(layers,elements){
     }
     var count = 0, i, len = layers.length;
     for (i = 0; i < len; i++) {
-        if (layers[i].ty == 'StillLayer') {
+        if (layers[i].ty === 2) {
             count++;
             elements.push(this.createImage(layers[i]));
-        } else if (layers[i].ty == 'PreCompLayer') {
+        } else if (layers[i].ty === 0) {
             elements.push(this.createComp(layers[i]));
             var elems = [];
             this.buildItems(layers[i].layers,elems);
             elements[elements.length - 1].setElements(elems);
-        } else if (layers[i].ty == 'SolidLayer') {
+        } else if (layers[i].ty === 1) {
             elements.push(this.createSolid(layers[i]));
-        } else if (layers[i].ty == 'ShapeLayer') {
+        } else if (layers[i].ty === 4) {
             elements.push(this.createShape(layers[i]));
-        } else if (layers[i].ty == 'TextLayer') {
+        } else if (layers[i].ty == 5) {
             elements.push(this.createText(layers[i]));
         }else{
             elements.push(this.createBase(layers[i]));
@@ -215,7 +215,7 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
         if (layerData.parent !== undefined) {
             this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements);
         }
-        if (layerData.ty == 'PreCompLayer') {
+        if (layerData.ty == 0) {
             this.buildStage(null, layerData.layers, elements[i].getElements());
         }
     }

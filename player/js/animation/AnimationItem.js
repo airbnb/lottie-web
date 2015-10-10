@@ -143,7 +143,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     this.renderer.buildStage(this.container, this.layers);
     this.renderer.renderFrame(null);
     this.loadNextSegment();
-}
+};
 
 AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;

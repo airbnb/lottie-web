@@ -5,21 +5,21 @@ var bm_layerElement = (function () {
     'use strict';
     var ob = {};
     ob.layerTypes = {
-        precomp : 'PreCompLayer',
-        audio : 'AudioLayer',
-        pholderVideo : 'PlaceholderVideoLayer',
-        imageSeq : 'ImageSequenceLayer',
-        video : 'VideoLayer',
-        pholderStill : 'PlaceholderStillLayer',
-        solid : 'SolidLayer',
-        still : 'StillLayer',
-        guide : 'GuideLayer',
-        adjustment : 'AdjustmentLayer',
-        nullLayer : 'NullLayer',
-        camera : 'CameraLayer',
-        light : 'LightLayer',
-        shape : 'ShapeLayer',
-        text : 'TextLayer'
+        precomp : 0,
+        solid : 1,
+        still : 2,
+        nullLayer : 3,
+        shape : 4,
+        text : 5,
+        audio : 6,
+        pholderVideo : 7,
+        imageSeq : 8,
+        video : 9,
+        pholderStill : 10,
+        guide : 11,
+        adjustment : 12,
+        camera : 13,
+        light : 14
     };
     
     var getLayerType = (function () {

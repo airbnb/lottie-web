@@ -34,7 +34,7 @@ BaseElement.prototype.appendNodeToParent = function(node) {
     }else{
         this.parentContainer.appendChild(node);
     }
-}
+};
 
 BaseElement.prototype.createElements = function(){
     if(this.data.td){
@@ -121,7 +121,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(!this.data.renderedData[num]){
         return false;
     }
-    if(this.data.ty == 'NullLayer'){
+    if(this.data.ty === 3){
         return;
     }
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
@@ -240,7 +240,7 @@ BaseElement.prototype.getType = function(){
 };
 
 BaseElement.prototype.getLayerSize = function(){
-    if(this.data.ty == 'TextLayer'){
+    if(this.data.ty === 5){
         return {w:this.data.textData.width,h:this.data.textData.height};
     }else{
         return {w:this.data.width,h:this.data.height};

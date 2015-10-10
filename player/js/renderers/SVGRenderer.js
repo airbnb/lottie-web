@@ -11,15 +11,15 @@ function SVGRenderer(animationItem){
 
 SVGRenderer.prototype.createItem = function(layer,parentContainer, placeholder){
     switch(layer.ty){
-        case 'StillLayer':
+        case 2:
             return this.createImage(layer,parentContainer, placeholder);
-        case 'PreCompLayer':
+        case 0:
             return this.createComp(layer,parentContainer, placeholder);
-        case 'SolidLayer':
+        case 1:
             return this.createSolid(layer,parentContainer, placeholder);
-        case 'ShapeLayer':
+        case 4:
             return this.createShape(layer,parentContainer, placeholder);
-        case 'TextLayer':
+        case 5:
             return this.createText(layer,parentContainer, placeholder);
         case 99:
             return this.createPlaceHolder(layer,parentContainer);
@@ -38,7 +38,7 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements, pla
     var elems;
     for (i = len - 1; i >= 0; i--) {
         elements[i] = this.createItem(layers[i],parentContainer, placeholder);
-        if (layers[i].ty == 'PreCompLayer') {
+        if (layers[i].ty === 0) {
             elems = [];
             this.buildItems(layers[i].layers,elements[i].getDomElement(),elems, placeholder);
             elements[i].setElements(elems);
@@ -65,7 +65,7 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
             if(elements[j].data.id == layers[i].id){
                 placeholder = elements[j];
                 elements[j] = this.createItem(layers[i],parentContainer, placeholder);
-                if (layers[i].ty == 'PreCompLayer') {
+                if (layers[i].ty === 0) {
                     elems = [];
                     this.buildItems(layers[i].layers,elements[j].getDomElement(),elems, placeholder);
                     elements[j].setElements(elems);
@@ -157,7 +157,7 @@ SVGRenderer.prototype.buildStage = function (container, layers,elements) {
             this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements, true);
         }
 
-        if (layerData.ty == 'PreCompLayer') {
+        if (layerData.ty === 0) {
             this.buildStage(elements[i].getComposingElement(), layerData.layers, elements[i].getElements());
         }
     }

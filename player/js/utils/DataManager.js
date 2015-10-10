@@ -90,10 +90,10 @@ function dataFunctionManager(){
                     }
                 }
             }
-            if(layerData.ty=='PreCompLayer'){
+            if(layerData.ty===0){
                 layerData.layers = findCompLayers(layerData.refId, comps);
                 completeLayers(layerData.layers, comps);
-            }else if(layerData.ty == 'ShapeLayer'){
+            }else if(layerData.ty === 4){
                 completeShapes(layerData.shapes);
             }
         }
@@ -728,14 +728,14 @@ function dataFunctionManager(){
             if((frameNum < item.ip || frameNum > item.op)){
                continue;
             }
-            if(item.ty == 'PreCompLayer'){
+            if(item.ty === 0){
                 timeRemapped = item.tm ? item.tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= item.tm.length ? item.tm[item.tm.length - 1] :  item.tm[offsettedFrameNum] : offsettedFrameNum;
                 if(timeRemapped === undefined){
                     timeRemapped = getInterpolatedValue(item.trmp,offsettedFrameNum, 0)[0]*frameRate;
                     item.tm[offsettedFrameNum] = timeRemapped;
                 }
                 iterateLayers(item.layers,timeRemapped,renderType);
-            }else if(item.ty == 'ShapeLayer'){
+            }else if(item.ty === 4){
                 iterateShape(item.shapes,offsettedFrameNum,item.st,renderType);
             }
         }
@@ -1026,10 +1026,10 @@ function dataFunctionManager(){
             }
             offsettedFrameNum = num - layers[i].st;
             layers[i].renderedData[offsettedFrameNum] = rendered[i];
-            if(layers[i].ty == 'PreCompLayer'){
+            if(layers[i].ty === 0){
                 timeRemapped = layers[i].tm ? layers[i].tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= layers[i].tm.length ? layers[i].tm[layers[i].tm.length - 1] : layers[i].tm[offsettedFrameNum] : offsettedFrameNum;
                 populateLayers(layers[i].layers,timeRemapped,rendered.renderedArray);
-            }else if(layers[i].ty == 'ShapeLayer'){
+            }else if(layers[i].ty === 4){
                 shapes = layers[i].shapes;
                 jLen = shapes.length;
                 for(j=0;j<jLen;j+=1){

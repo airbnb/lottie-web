@@ -46,7 +46,7 @@ CVBaseElement.prototype.prepareFrame = function(num){
 };
 
 CVBaseElement.prototype.draw = function(parentTransform){
-    if(this.data.ty == 'NullLayer'){
+    if(this.data.ty === 3){
         return;
     }
     if(!this.renderFrame){
@@ -125,7 +125,7 @@ CVBaseElement.prototype.getHierarchy = function(){
 };
 
 CVBaseElement.prototype.getLayerSize = function(){
-    if(this.data.ty == 'TextLayer'){
+    if(this.data.ty === 5){
         return {w:this.data.textData.width,h:this.data.textData.height};
     }else{
         return {w:this.data.width,h:this.data.height};
