@@ -10,7 +10,7 @@ var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.lastData = {};
     this.renderedFrames = [];
     this.parentContainer = parentContainer;
-    this.layerId = randomString(10);
+    this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.hidden = false;
     this.placeholder = placeholder;
     this.init();
