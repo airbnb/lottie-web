@@ -35,9 +35,7 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
     }
     if(this.hidden){
         this.hidden = false;
-        if(this.data.hasMask) {
-            this.rectElement.setAttribute('visibility', 'visible');
-        }
+        this.rectElement.setAttribute('visibility', 'visible');
     }
     if(!this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){

@@ -717,7 +717,7 @@ function dataFunctionManager(){
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             if(!('ks' in layers[j])) {
-                return;
+                continue;
             }
             offsettedFrameNum = frameNum - item.st;
             dataOb = {};

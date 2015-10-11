@@ -118,11 +118,8 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
-    if(!this.data.renderedData[num]){
+    if(!this.data.renderedData[num] || this.data.ty === 3){
         return false;
-    }
-    if(this.data.ty === 3){
-        return;
     }
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {

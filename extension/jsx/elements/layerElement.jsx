@@ -149,7 +149,7 @@ var bm_layerElement = (function () {
                 bm_sourceHelper.setCompSourceId(layerInfo.source, layerData.compId);
             }
         } else if (layerType === ob.layerTypes.still) {
-            layerData.id = bm_sourceHelper.checkImageSource(layerInfo);
+            layerData.ll = bm_sourceHelper.checkImageSource(layerInfo);
         }
     }
     
