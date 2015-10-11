@@ -27,10 +27,13 @@ CVBaseElement.prototype.createElements = function(){
 };
 
 CVBaseElement.prototype.prepareFrame = function(num){
+    if(!this.data.renderedData[num]){
+        return false;
+    }
     this.currentAnimData = this.data.renderedData[num].an;
     var mat = this.currentAnimData.matrixArray;
     this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime >= num)
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st >= num)
     {
         this.renderFrame = true;
         this.finalTransform.opacity = 1;
@@ -46,7 +49,7 @@ CVBaseElement.prototype.prepareFrame = function(num){
 };
 
 CVBaseElement.prototype.draw = function(parentTransform){
-    if(this.data.ty == 'NullLayer'){
+    if(this.data.ty === 3){
         return;
     }
     if(!this.renderFrame){
@@ -117,6 +120,14 @@ CVBaseElement.prototype.getType = function(){
     return this.type;
 };
 
+CVBaseElement.prototype.resetHierarchy = function(){
+    if(!this.hierarchy){
+        this.hierarchy = [];
+    }else{
+        this.hierarchy.length = 0;
+    }
+};
+
 CVBaseElement.prototype.getHierarchy = function(){
     if(!this.hierarchy){
         this.hierarchy = [];
@@ -125,7 +136,7 @@ CVBaseElement.prototype.getHierarchy = function(){
 };
 
 CVBaseElement.prototype.getLayerSize = function(){
-    if(this.data.ty == 'TextLayer'){
+    if(this.data.ty === 5){
         return {w:this.data.textData.width,h:this.data.textData.height};
     }else{
         return {w:this.data.width,h:this.data.height};

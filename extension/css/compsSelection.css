@@ -55,6 +55,10 @@
     width: 56px;
 }
 
+#compsSelection .compsTable .th.settings{
+    width: 50px;
+}
+
 #compsSelection .compsTable .td .state{
     height: 100%;
     width: 100%;
@@ -68,6 +72,15 @@
     padding: 0;
 }
 
+#compsSelection .compsTable .td .hideExtra.settings{
+    padding: 0;
+    background-image: url('../assets/img/gear_icon.svg');
+    height: 43px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 40%;
+}
+
 #compsSelection .compsTable .td .destination{
     cursor: pointer;
 }
@@ -75,3 +88,43 @@
 #compsSelection .compsTable tr .td .destination:hover{
     text-decoration: underline;
 }
+
+#compsSelection .settingsView{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,.8);
+    padding-top: 10%;
+}
+
+#compsSelection .settingsBox{
+    width: 400px;
+    padding: 4px 8px 10px 8px;
+    border-radius: 2px;
+    background-color: #EAD3A8;
+    color: #484043;
+    margin: auto;
+    font-size: 12px;
+}
+
+#compsSelection .settingsBox h3{
+    margin: 7px 0;
+}
+
+#compsSelection div.segmentsTime{
+    opacity: .35;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+#compsSelection .segments.active div.segmentsTime{
+    opacity: 1;   
+}
+
+#compsSelection .settingsSeparator{
+    border-bottom: 1px solid red;
+    padding: 4px;
+}
+    

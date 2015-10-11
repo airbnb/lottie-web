@@ -4,7 +4,7 @@ var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
     var compositions = [];
-    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
+    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td settingsTd"><div class="hideExtra settings"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
     
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
@@ -26,6 +26,65 @@ var compSelectionController = (function () {
             renderButton.addClass('disabled');
         }
     }
+    
+    var settingsManager = (function () {
+        
+        var ob = {}, settingsView, compData, tempData = {}, callback;
+        var segments, segmentsCheckbox, segmentsTextBox;
+        
+        function updateSegmentsData() {
+            if (tempData.segmented) {
+                segments.addClass('active');
+                segmentsCheckbox.addClass('selected');
+                segmentsTextBox.prop('disabled', '');
+            } else {
+                segments.removeClass('active');
+                segmentsCheckbox.removeClass('selected');
+                segmentsTextBox.prop('disabled', 'disabled');
+            }
+            segmentsTextBox.val(tempData.segmentTime);
+        }
+        
+        function handleSegmentCheckboxClick() {
+            tempData.segmented = !tempData.segmented;
+            updateSegmentsData();
+        }
+        
+        function cancelSettings() {
+            settingsView.hide();
+        }
+        
+        function saveSettings() {
+            tempData.segmentTime = segmentsTextBox.val();
+            compData = JSON.parse(JSON.stringify(tempData));
+            callback.apply(null, [compData]);
+            settingsView.hide();
+        }
+        
+        function init() {
+            settingsView = view.find('.settingsView');
+            settingsView.hide();
+            segments = settingsView.find('.segments');
+            segments.find('.checkboxCombo').on('click', handleSegmentCheckboxClick);
+            segmentsCheckbox = segments.find('.checkbox');
+            segmentsTextBox = segments.find('.inputText');
+            settingsView.find('.buttons .cancel').on('click', cancelSettings);
+            settingsView.find('.buttons .return').on('click', saveSettings);
+            updateSegmentsData();
+        }
+        
+        function show(data, cb) {
+            settingsView.show();
+            compData = data;
+            tempData = JSON.parse(JSON.stringify(compData));
+            callback = cb;
+            updateSegmentsData();
+        }
+        
+        ob.init = init;
+        ob.show = show;
+        return ob;
+    }());
     
     function addElemListeners(comp) {
         var elem = comp.elem;
@@ -51,7 +110,19 @@ var compSelectionController = (function () {
             var eScript = 'bm_compsManager.searchCompositionDestination(' + comp.id + ')';
             csInterface.evalScript(eScript);
         }
+        
+        function saveSettings(data) {
+            comp.settings = data;
+            var eScript = 'bm_compsManager.setCompositionSettings(' + comp.id + ',' + JSON.stringify(comp.settings) + ')';
+            csInterface.evalScript(eScript);
+        }
+        
+        function showElemSetings() {
+            settingsManager.show(comp.settings, saveSettings);
+        }
+        
         elem.find('.stateTd').on('click', handleStateClick);
+        elem.find('.settingsTd').on('click', showElemSetings);
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
@@ -67,7 +138,8 @@ var compSelectionController = (function () {
         if (!comp) {
             comp = {
                 id: item.id,
-                elem: $(elementTemplate)
+                elem: $(elementTemplate),
+                settings: {}
             };
             var animContainer = comp.elem.find('.state')[0];
             var animData = JSON.parse(radioData);
@@ -89,6 +161,7 @@ var compSelectionController = (function () {
         comp.name = item.name;
         comp.selected = item.selected;
         comp.destination = item.destination;
+        comp.settings = item.settings;
         var elem = comp.elem;
         elem.find('.name').html(comp.name);
         elem.find('.destination').html(comp.destination ? comp.destination.replace(/\\/g, '/')  : '...');
@@ -166,6 +239,7 @@ var compSelectionController = (function () {
         renderButton.on('click', renderCompositions);
         view.find('.settings').on('click', showSettings);
         view.hide();
+        settingsManager.init();
     }
     
     function show() {

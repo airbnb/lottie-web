@@ -1,7 +1,7 @@
-function IImageElement(data,parentContainer,globalData){
-    this.assetData = globalData.getAssetData(data.id);
+function IImageElement(data,parentContainer,globalData,placeholder){
+    this.assetData = globalData.getAssetData(data.ll);
     this.path = globalData.getPath();
-    this.parent.constructor.call(this,data,parentContainer,globalData);
+    this.parent.constructor.call(this,data,parentContainer,globalData,placeholder);
 }
 createElement(BaseElement, IImageElement);
 
@@ -25,13 +25,17 @@ IImageElement.prototype.createElements = function(){
     this.image = document.createElementNS(svgNS,'image');
     this.image.setAttribute('width',this.assetData.w+"px");
     this.image.setAttribute('height',this.assetData.h+"px");
-    this.layerElement.appendChild(this.image);
+    if(this.layerElement === this.parentContainer){
+        this.appendNodeToParent(this.image);
+    }else{
+        this.layerElement.appendChild(this.image);
+    }
 
 };
 
 IImageElement.prototype.hide = function(){
     if(!this.hidden){
-        this.image.setAttribute('opacity','0');
+        this.image.setAttribute('visibility','hidden');
         this.hidden = true;
     }
 };
@@ -45,24 +49,25 @@ IImageElement.prototype.renderFrame = function(num,parentMatrix){
     if(this.hidden){
         this.lastData.o = -1;
         this.hidden = false;
-        this.image.setAttribute('opacity', '1');
+        this.image.setAttribute('visibility', 'visible');
     }
     if(!this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){
-            this.renderedFrames[this.globalData.frameNum] = {
-                tr: 'matrix('+this.finalTransform.mat.props.join(',')+')',
-                o: this.finalTransform.opacity
-            };
+            var tr = 'matrix('+this.finalTransform.mat.props.join(',')+')';
+            if(this.lastData && this.lastData.tr === tr && this.lastData.o === this.finalTransform.opacity){
+                this.renderedFrames[this.globalData.frameNum] = this.lastData;
+            }else{
+                this.renderedFrames[this.globalData.frameNum] = new RenderedFrame(tr,this.finalTransform.opacity);
+            }
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
-            this.lastData.tr = renderedFrameData.tr;
             this.image.setAttribute('transform',renderedFrameData.tr);
         }
         if(this.lastData.o !== renderedFrameData.o){
-            this.lastData.o = renderedFrameData.o;
             this.image.setAttribute('opacity',renderedFrameData.o);
         }
+        this.lastData = renderedFrameData;
     }
 };
 

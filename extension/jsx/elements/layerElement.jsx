@@ -5,21 +5,21 @@ var bm_layerElement = (function () {
     'use strict';
     var ob = {};
     ob.layerTypes = {
-        precomp : 'PreCompLayer',
-        audio : 'AudioLayer',
-        pholderVideo : 'PlaceholderVideoLayer',
-        imageSeq : 'ImageSequenceLayer',
-        video : 'VideoLayer',
-        pholderStill : 'PlaceholderStillLayer',
-        solid : 'SolidLayer',
-        still : 'StillLayer',
-        guide : 'GuideLayer',
-        adjustment : 'AdjustmentLayer',
-        nullLayer : 'NullLayer',
-        camera : 'CameraLayer',
-        light : 'LightLayer',
-        shape : 'ShapeLayer',
-        text : 'TextLayer'
+        precomp : 0,
+        solid : 1,
+        still : 2,
+        nullLayer : 3,
+        shape : 4,
+        text : 5,
+        audio : 6,
+        pholderVideo : 7,
+        imageSeq : 8,
+        video : 9,
+        pholderStill : 10,
+        guide : 11,
+        adjustment : 12,
+        camera : 13,
+        light : 14
     };
     
     var getLayerType = (function () {
@@ -129,6 +129,8 @@ var bm_layerElement = (function () {
         return layerData;
     }
     
+    var compCount = 0;
+    
     function checkLayerSource(layerInfo, layerData) {
         if (layerData.render === false) {
             return;
@@ -140,11 +142,14 @@ var bm_layerElement = (function () {
             if (sourceId !== false) {
                 layerData.refId = sourceId;
             } else {
-                layerData.compId = bm_generalUtils.random(7);
+                //layerData.compId = bm_generalUtils.random(7);
+                layerData.compId = 'comp_' + compCount;
+                compCount += 1;
+                layerData.refId = layerData.compId;
                 bm_sourceHelper.setCompSourceId(layerInfo.source, layerData.compId);
             }
         } else if (layerType === ob.layerTypes.still) {
-            layerData.id = bm_sourceHelper.checkImageSource(layerInfo);
+            layerData.ll = bm_sourceHelper.checkImageSource(layerInfo);
         }
     }
     
@@ -165,15 +170,15 @@ var bm_layerElement = (function () {
             bm_shapeHelper.exportShape(layerInfo, layerData, frameRate);
             //layerData.rectData = {l: 0, t: 0, b: 0, r: 0, w: 0, h: 0};
         } else if (lType === ob.layerTypes.solid) {
-            layerData.width = layerInfo.source.width;
-            layerData.height = layerInfo.source.height;
-            layerData.color = bm_generalUtils.arrayRgbToHex(layerInfo.source.mainSource.color);
+            layerData.sw = layerInfo.source.width;
+            layerData.sh = layerInfo.source.height;
+            layerData.sc = bm_generalUtils.arrayRgbToHex(layerInfo.source.mainSource.color);
         } else if (lType === ob.layerTypes.text) {
             bm_textHelper.exportText(layerInfo, layerData, frameRate);
         }
-        layerData.inPoint = layerInfo.inPoint * frameRate;
-        layerData.outPoint = layerInfo.outPoint * frameRate;
-        layerData.startTime = layerInfo.startTime * frameRate;
+        layerData.ip = layerInfo.inPoint * frameRate;
+        layerData.op = layerInfo.outPoint * frameRate;
+        layerData.st = layerInfo.startTime * frameRate;
         
         bm_renderManager.renderLayerComplete();
     }
