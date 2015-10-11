@@ -459,7 +459,6 @@ AnimationItem.prototype.getAssetData = function (id) {
         }
         i += 1;
     }
-    return this.assets;
 };
 
 AnimationItem.prototype.getAssets = function () {
