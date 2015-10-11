@@ -267,9 +267,6 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         this.lastData = renderedFrameData;
     }
     if(this.data.sy){
-        if(this.data.nm == 'caparazon'){
-            console.log(this.data.sy);
-        }
         if(this.data.sy[0].renderedData[num]){
             if(this.data.sy[0].renderedData[num].c){
                 this.feFlood.setAttribute('flood-color','rgb('+Math.round(this.data.sy[0].renderedData[num].c[0])+','+Math.round(this.data.sy[0].renderedData[num].c[1])+','+Math.round(this.data.sy[0].renderedData[num].c[2])+')');

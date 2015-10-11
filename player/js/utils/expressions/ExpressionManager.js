@@ -269,9 +269,6 @@ var ExpressionManager = (function(){
 
         var width = compData.w;
         var height = compData.h;
-        console.log(compData);
-        console.log('width: ',width);
-        console.log('height: ',height);
         ob.frameDuration = 1/frameRate;
         var thisComp = ob;
         var layers = compData.layers;
