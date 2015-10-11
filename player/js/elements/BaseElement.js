@@ -10,7 +10,7 @@ var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.lastData = {};
     this.renderedFrames = [];
     this.parentContainer = parentContainer;
-    this.layerId = placeholder ? placeholder.layerId : randomString(10);
+    this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.hidden = false;
     this.placeholder = placeholder;
     this.init();
@@ -184,11 +184,8 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
-    if(!this.data.renderedData[num]){
+    if(!this.data.renderedData[num] || this.data.ty === 3){
         return false;
-    }
-    if(this.data.ty === 3){
-        return;
     }
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {

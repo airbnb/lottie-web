@@ -1,5 +1,5 @@
 function IImageElement(data,parentContainer,globalData,placeholder){
-    this.assetData = globalData.getAssetData(data.id);
+    this.assetData = globalData.getAssetData(data.ll);
     this.path = globalData.getPath();
     this.parent.constructor.call(this,data,parentContainer,globalData,placeholder);
 }
@@ -62,10 +62,10 @@ IImageElement.prototype.renderFrame = function(num,parentMatrix){
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
-            this.rectElement.setAttribute('transform',renderedFrameData.tr);
+            this.image.setAttribute('transform',renderedFrameData.tr);
         }
         if(this.lastData.o !== renderedFrameData.o){
-            this.rectElement.setAttribute('opacity',renderedFrameData.o);
+            this.image.setAttribute('opacity',renderedFrameData.o);
         }
         this.lastData = renderedFrameData;
     }

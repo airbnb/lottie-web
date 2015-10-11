@@ -1,6 +1,6 @@
 function CVImageElement(data,globalData){
     this.animationItem = globalData.renderer.animationItem;
-    this.assetData = this.animationItem.getAssetData(data.id);
+    this.assetData = this.animationItem.getAssetData(data.ll);
     this.path = this.animationItem.getPath();
     this.parent.constructor.call(this,data,globalData);
     this.animationItem.pendingElements += 1;

@@ -198,8 +198,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.assets = this.animationData.assets;
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip*this.frameRate);
-    this.firstFrame = 213;
-    this.totalFrames = 1;
+    /*this.firstFrame = 0;
+    this.totalFrames = 1;*/
     this.frameMult = this.animationData.fr / 1000;
     this.loadSegments();
     dataManager.completeData(this.animationData);
@@ -459,7 +459,6 @@ AnimationItem.prototype.getAssetData = function (id) {
         }
         i += 1;
     }
-    return this.assets;
 };
 
 AnimationItem.prototype.getAssets = function () {
