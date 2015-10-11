@@ -131,7 +131,7 @@ var ExpressionManager = (function(){
     }
 
     function Composition(compData){
-        var ob = {};i
+        var ob = {};
         var compExpressions = [];
         //console.log(compData);
         var time = 0;
@@ -149,7 +149,6 @@ var ExpressionManager = (function(){
 
             function evaluate(val){
                 val = 'var fn = function(t,v){time=t;value=v;frameN = Math.round(time*frameRate);'+val+';return $bm_rt;}';
-                //console.log(val);
                 eval(val);
                 return new ExpressionObject(fn);
             }
@@ -268,37 +267,42 @@ var ExpressionManager = (function(){
             }
         }
 
-        var width = compData.compWidth || compData.width;
-        var height = compData.compHeight || compData.height;
+        var width = compData.w;
+        var height = compData.h;
+        console.log(compData);
+        console.log('width: ',width);
+        console.log('height: ',height);
         ob.frameDuration = 1/frameRate;
         var thisComp = ob;
         var layers = compData.layers;
         var i, len = layers.length, item;
         for(i=0;i<len;i+=1){
             item = layers[i];
-            if(item.ks.r.x){
+            if(!item.ks){
+                continue;
+            }
+            if(typeof item.ks.r.x === 'string'){
                 item.ks.r.x = new EvalContext(item).evaluate(item.ks.r.x);
                 registeredExpressions.push(item.ks.r.x);
             }
-            if(item.ks.s.x){
+            if(typeof item.ks.s.x === 'string'){
                 item.ks.s.x = new EvalContext(item).evaluate(item.ks.s.x);
                 registeredExpressions.push(item.ks.s.x);
             }
             if(item.ks.p.s){
-                if(item.ks.p.x.x){
+                if(typeof item.ks.p.x.x === 'string'){
                     item.ks.p.x.x = new EvalContext(item).evaluate(item.ks.p.x.x);
                     registeredExpressions.push(item.ks.p.x.x);
                 }
-                if(item.ks.p.y.x){
+                if(typeof item.ks.p.y.x === 'string'){
                     item.ks.p.y.x = new EvalContext(item).evaluate(item.ks.p.y.x);
                     registeredExpressions.push(item.ks.p.y.x);
                 }
-            }else if(item.ks.p.x){
+            }else if(typeof item.ks.p.x === 'string'){
                 item.ks.p.x = new EvalContext(item).evaluate(item.ks.p.x);
-                //item.ks.p.x = null;
                 registeredExpressions.push(item.ks.p.x);
             }
-            if(item.ks.o.x){
+            if(typeof item.ks.o.x === 'string'){
                 item.ks.o.x = new EvalContext(item).evaluate(item.ks.o.x);
             }
 
@@ -307,7 +311,7 @@ var ExpressionManager = (function(){
                 var maskProps = item.masksProperties;
                 jLen = maskProps.length;
                 for(j=0;j<jLen;j+=1){
-                    if(maskProps[j].pt.x){
+                    if(typeof maskProps[j].pt.x === 'string'){
                         maskProps[j].pt.x = new EvalContext(item).evaluate(maskProps[j].pt.x);
                     }
                 }
@@ -322,9 +326,12 @@ var ExpressionManager = (function(){
         var mt, result, timeRemapped;
         for(j=0;j<jLen;j+=1) {
             item = layers[j];
+            if(!item.ks){
+                continue;
+            }
             offsettedFrameNum = frameNum - item.st;
             renderedData = item.renderedData[offsettedFrameNum];
-            var mt = renderedData.mt;
+            renderedData.mt;
             if(item.ks.r.x){
                 mt[0] = item.ks.r.x.fn(frameNum/frameRate, mt[0]/degToRads)*degToRads;
             }
@@ -371,8 +378,8 @@ var ExpressionManager = (function(){
     }
 
     function searchExpressions(compData){
-        if(compData.frameRate){
-            frameRate = compData.frameRate;
+        if(compData.fr){
+            frameRate = compData.fr;
         }
         var comp = new Composition(compData);
     }

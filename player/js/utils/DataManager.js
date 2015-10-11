@@ -131,9 +131,9 @@ function dataFunctionManager(){
                 if(arr[i].ks.k.i){
                     convertPathsToAbsoluteValues(arr[i].ks.k);
                 }else{
-                    jLen = arr[i].ks.length;
+                    jLen = arr[i].ks.k.length;
                     for(j=0;j<jLen;j+=1){
-                        if(arr[i].ks[j].s){
+                        if(arr[i].ks.k[j].s){
                             convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
                             convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
                         }
@@ -711,7 +711,7 @@ function dataFunctionManager(){
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             if(!('ks' in layers[j])) {
-                return;
+                continue;
             }
             offsettedFrameNum = frameNum - item.st;
             dataOb = {};
@@ -741,6 +741,9 @@ function dataFunctionManager(){
             }else{
                 renderedData.an = item.__lastRenderAn;
             }
+            if(!item.renderedData){
+                console.log(item);
+            }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
                 maskProps = item.masksProperties;
@@ -751,11 +754,10 @@ function dataFunctionManager(){
                         maskProps[i].opacity = [];
                         maskProps[i].expansion = [];
                     }
-
                     maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.st,renderType,true);
                     maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.st);
                     maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
-                    maskProps[i].expansion[offsettedFrameNum] = getInterpolatedValue(maskProps[i].x,offsettedFrameNum, item.startTime);
+                    maskProps[i].expansion[offsettedFrameNum] = getInterpolatedValue(maskProps[i].x,offsettedFrameNum, item.st);
                 }
             }
             if(item.ef){
@@ -766,22 +768,37 @@ function dataFunctionManager(){
                         item.ef[i].renderedData = [];
                     }
                     if(item.ef[i].ty === 0){
-                        efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.startTime);
+                        efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.st);
                     }
                     item.ef[i].renderedData[offsettedFrameNum] = efData[i];
                 }
             }
-            if(item.st){
-                len = item.st.length;
+            if(item.sy){
+                len = item.sy.length;
                 var stData = new Array(len);
+                var interpolatedFlag = false;
                 for(i = 0; i < len; i += 1){
-                    if(!item.st[i].renderedData){
-                        item.st[i].renderedData = [];
+                    if(!item.sy[i].renderedData){
+                        item.sy[i].renderedData = [];
                     }
-                    if(item.st[i].ty === 0){
-                        stData[i] = getInterpolatedValue(item.st[i].c,offsettedFrameNum, item.startTime);
+                    if(item.sy[i].ty === 0){
+                        if(item.sy[i].c.k[0].t){
+                            interpolatedFlag = true;
+                            stData[i] = {
+                                c: getInterpolatedValue(item.sy[i].c,offsettedFrameNum, item.st)
+                            };
+                        }
+                        if(item.sy[i].s.k.length){
+                            if(!stData[i]){
+                                stData[i] = {};
+                            }
+                            interpolatedFlag = true;
+                            stData[i].s = getInterpolatedValue(item.sy[i].s,offsettedFrameNum, item.st);
+                        }
                     }
-                    item.st[i].renderedData[offsettedFrameNum] = stData[i];
+                    if(interpolatedFlag){
+                        item.sy[i].renderedData[offsettedFrameNum] = stData[i];
+                    }
                 }
             }
             if((frameNum < item.ip || frameNum > item.op)){
@@ -795,7 +812,7 @@ function dataFunctionManager(){
                 }
                 iterateLayers(item.layers,timeRemapped,renderType);
             }else if(item.ty === 4){
-                iterateShape(item.shapes,offsettedFrameNum,item.startTime,renderType, null);
+                iterateShape(item.shapes,offsettedFrameNum,item.st,renderType, null);
             }
         }
     }
@@ -1074,29 +1091,6 @@ function dataFunctionManager(){
         animationData.__renderedFrames[num] = 2;
         iterateLayers(animationData.layers, num, animationData._animType);
         ExpressionManager.iterateExpressions(animationData.layers, num, animationData._animType);
-    }
-
-    function populateLayers(layers, num, rendered){
-        var i, len = layers.length, j, jLen;
-        var offsettedFrameNum, timeRemapped;
-        var shapes;
-        for(i=0;i<len;i+=1){
-            if(rendered[i] === ''){
-                continue;
-            }
-            offsettedFrameNum = num - layers[i].st;
-            layers[i].renderedData[offsettedFrameNum] = rendered[i];
-            if(layers[i].ty === 0){
-                timeRemapped = layers[i].tm ? layers[i].tm[offsettedFrameNum] < 0 ? 0 : offsettedFrameNum >= layers[i].tm.length ? layers[i].tm[layers[i].tm.length - 1] : layers[i].tm[offsettedFrameNum] : offsettedFrameNum;
-                populateLayers(layers[i].layers,timeRemapped,rendered.renderedArray);
-            }else if(layers[i].ty === 4){
-                shapes = layers[i].shapes;
-                jLen = shapes.length;
-                for(j=0;j<jLen;j+=1){
-                    shapes[j].renderedData[offsettedFrameNum] = rendered[i].shapes[j];
-                }
-            }
-        }
     }
 
     var moduleOb = {};

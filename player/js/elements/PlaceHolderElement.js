@@ -8,6 +8,7 @@ var PlaceHolderElement = function (data,parentContainer,globalData){
         parentContainer.appendChild(g);
         this.phElement = g;
     }
+    this.layerId = randomString(10);
 };
 PlaceHolderElement.prototype.prepareFrame = function(){};
 PlaceHolderElement.prototype.renderFrame = function(){};

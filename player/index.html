@@ -41,16 +41,16 @@
 <body style="background-color:#ccc; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
 
 <!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
-<div style="width:100%;height:100%;background-color:#333;display:inline-block;" id="bodymovin"></div>
+<div style="width:100%;height:100%;background-color:#fff;display:inline-block;" id="bodymovin"></div>
 
 <script>
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
-        loop: false,
+        loop: true,
         prerender: false,
         autoplay: true,
-        path: 'exports/navidad'
+        path: 'exports/monster/data_.json'
 
     };
     var anim = bodymovin.loadAnimation(animData);
