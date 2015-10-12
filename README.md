@@ -37,13 +37,14 @@ MAC:
 /Application Support/Adobe/CEP/extensions
 
 - Edit the registry key:
-On Mac, open the file ~/Library/Preferences/com.adobe.CSXS.4.plist and add a row with key PlayerDebugMode, of type String, and value 1.
-On Windows, open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.4 and add a key named PlayerDebugMode, of type String, and value 1.
+On Mac, open the file ~/Library/Preferences/com.adobe.CSXS.4.plist and add a row with key PlayerDebugMode, of type String, and value 1.  
+On Windows, open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.
 
 ### Option 2:
 
 Install the zxp manually following the instructions here:
-https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
+https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
+Jump directly to "Install third-party extensions"
 
 
 ### For both
