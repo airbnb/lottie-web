@@ -102,10 +102,9 @@ var bm_renderManager = (function () {
     }
     
     function saveData() {
-        var string = JSON.stringify(ob.renderData.exportData);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
         bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
-        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, data: '__PFX__' + string});
+        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, fsPath: currentCompSettings.fsName});
         reset();
         bm_compsManager.renderComplete();
     }

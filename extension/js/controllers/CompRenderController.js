@@ -90,7 +90,7 @@ var compRenderController = (function () {
         }
         if (messageData.isFinished) {
             elem.addClass('rendered');
-            compData.renderData = messageData.data.substr(7);
+            compData.fsPath = messageData.fsPath;
         }
     }
     

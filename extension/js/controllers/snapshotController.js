@@ -37,31 +37,47 @@ var snapshotController = (function () {
         thumb.css('left', x - 5 + 'px');
     }
     
-    function loadAnimation(data) {
-        var jsonData = JSON.parse(data);
-        totalFrames = Math.floor(jsonData.op - jsonData.ip);
+    function handleWindowResize() {
+        if (!showing) {
+            return;
+        }
+        animContainer.css('height', $window.height() - 2 - header.outerHeight() - controls.outerHeight() + 'px');
+        sliderWidth = slider.width();
+        updateControls();
+        
+    }
+    
+    function setTotalFrames() {
+        if (!anim) {
+            return;
+        }
+        totalFrames = anim.totalFrames;
         controls.find('.frames .total .value').html(totalFrames);
-        currentFrame = 1;
+        showControls();
+        handleWindowResize();
+    }
+    
+    function loadAnimation(uri) {
+        currentFrame = 0;
         if (anim) {
             anim.destroy();
         }
-        updateControls();
         var params = {
                 animType: 'svg',
                 wrapper: animContainer[0],
                 loop: false,
                 autoplay: false,
                 prerender: true,
-                animationData: jsonData
+                path: uri
             };
         anim = bodymovin.loadAnimation(params);
-        showControls();
+        anim.addEventListener('bm:config_ready', setTotalFrames);
     }
     
     function addSelectionListener(elem, data) {
         elem.on('click', function () {
             rendersSelection.hide();
-            loadAnimation(data.renderData);
+            loadAnimation(data.fsPath);
         });
     }
     
@@ -70,7 +86,7 @@ var snapshotController = (function () {
         if (!compositions || compositions.length === 0) {
             messageController.showMessage({type: 'alert', message: 'You have no recent renders.\n Try browsing your files'});
         } else if (compositions.length === 1) {
-            loadAnimation(compositions[0].renderData);
+            loadAnimation(compositions[0].fsPath);
         } else {
             rendersSelection.show();
             listContainer.empty();
@@ -85,17 +101,8 @@ var snapshotController = (function () {
         }
     }
     
-    function handleFilePath(ev) {
-        loadAnimation(ev.data.substr(7));
-    }
-    
-    function handleWindowResize() {
-        if (!showing) {
-            return;
-        }
-        animContainer.css('height', $window.height() - 2 - header.outerHeight() - controls.outerHeight() + 'px');
-        sliderWidth = slider.width();
-        
+    function handleFileUri(ev) {
+        loadAnimation(ev.data);
     }
     
     function frameChangeHandler() {
@@ -173,7 +180,7 @@ var snapshotController = (function () {
         listContainer = rendersSelection.find('.listContainer');
         rendersSelection.hide();
         $window = $(window);
-        csInterface.addEventListener('bm:file:path', handleFilePath);
+        csInterface.addEventListener('bm:file:uri', handleFileUri);
         $(window).on('resize', handleWindowResize);
         addSliderListeners();
         hideControls();

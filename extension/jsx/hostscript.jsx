@@ -9,13 +9,7 @@ var bm_main = (function () {
         var f = new File(Folder.desktop.absoluteURI);
         var openFileData = f.openDlg();
         if (openFileData !== null) {
-            var file = new File(openFileData.absoluteURI);
-            if (file.open('r')) {
-                var reading = file.read();
-                reading = '__PFX__' + reading;
-                bm_eventDispatcher.sendEvent('bm:file:path', reading);
-            }
-            
+            bm_eventDispatcher.sendEvent('bm:file:uri', openFileData.fsName);
         }
 
     }

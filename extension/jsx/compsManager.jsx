@@ -69,6 +69,7 @@ var bm_compsManager = (function () {
         var saveFileData = f.saveDlg();
         if (saveFileData !== null) {
             compData.absoluteURI = saveFileData.absoluteURI;
+            compData.settings.fsName = saveFileData.fsName;
             compData.destination = saveFileData.fsName;
         }
         bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
