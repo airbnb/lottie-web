@@ -4,7 +4,7 @@ var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings;
-    
+
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
         if (nextLayerInfo.isTrackMatte) {
@@ -81,7 +81,7 @@ var bm_renderManager = (function () {
         var exportData = ob.renderData.exportData;
         exportData.assets = [];
         exportData.comps = [];
-        exportData.v = '2.1.3';
+        exportData.v = '3.0.1';
         exportData.layers = [];
         exportData.ip = comp.workAreaStart * comp.frameRate;
         exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
@@ -104,7 +104,7 @@ var bm_renderManager = (function () {
     function saveData() {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
         bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
-        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true});
+        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, fsPath: currentCompSettings.fsName});
         reset();
         bm_compsManager.renderComplete();
     }

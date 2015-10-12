@@ -1,6 +1,12 @@
 var subframeEnabled = false;
 var cachedColors = {};
 var bm_rnd = Math.round;
+var bm_pow = Math.pow;
+var bm_sqrt = Math.sqrt;
+var bm_abs = Math.abs;
+var bm_floor = Math.floor;
+var bm_min = Math.min;
+var defaultCurveSegments = 2;
 
 function styleDiv(element){
     element.style.position = 'absolute';
@@ -19,6 +25,45 @@ function styleUnselectableDiv(element){
     element.style.webkitUserSelect = 'none';
     element.style.oUserSelect = 'none';
 
+}
+
+function addEventListener(eventName, callback){
+
+    if (!this._cbs){
+        this._cbs = [];
+    }
+
+    if (!this._cbs[eventName]){
+        this._cbs[eventName] = [];
+    }
+
+    this._cbs[eventName].push(callback);
+
+}
+
+function triggerEvent(eventName, args){
+
+    if (!this._cbs){
+        this._cbs = [];
+    }
+
+    var delay = this._cbs.length === 0;
+    var that = this;
+
+    if (this._cbs[eventName]) {
+        if (delay){
+            setTimeout(function(){
+                for (var i = 0; i < that._cbs[eventName].length; i++){
+                    that._cbs[eventName][i](args);
+                }
+            }, 0);
+        }
+        else {
+            for (var i = 0; i < this._cbs[eventName].length; i++){
+                this._cbs[eventName][i](args);
+            }
+        }
+    }
 }
 
 function randomString(length, chars){

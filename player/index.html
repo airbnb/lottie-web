@@ -44,15 +44,27 @@
 <div style="width:640px;height:512px;background-color:#fff;display:inline-block;" id="bodymovin"></div>
 
 <script>
+
+    function configReady(){
+        console.log('config ready');
+    }
+
+    function dataReady(){
+        console.log('data ready');
+    }
+
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/navidad'
+        path: 'exports/render'
     };
+    bodymovin.setQuality(2);
     var anim = bodymovin.loadAnimation(animData);
+    anim.addEventListener('bm:config_ready', configReady);
+    anim.addEventListener('bm:data_ready', dataReady);
 </script>
 </body>
 </html>

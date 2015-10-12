@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, SystemPath, radioData, bodymovin, messageController, mainController */
+/*global $, SystemPath, radioData, gearData, bodymovin, messageController, mainController */
 var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
@@ -121,8 +121,19 @@ var compSelectionController = (function () {
             settingsManager.show(comp.settings, saveSettings);
         }
         
+        function overElemSetings() {
+            comp.gearAnim.play();
+        }
+        
+        function outElemSetings() {
+            comp.gearAnim.goToAndStop(0);
+        }
+        
         elem.find('.stateTd').on('click', handleStateClick);
         elem.find('.settingsTd').on('click', showElemSetings);
+        elem.find('.settingsTd').hover(overElemSetings, outElemSetings);
+        /*elem.find('.settingsTd').on('rollover', overElemSetings);
+        elem.find('.settingsTd').on('rollout', outElemSetings);*/
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
@@ -153,6 +164,21 @@ var compSelectionController = (function () {
             };
             var anim = bodymovin.loadAnimation(params);
             comp.anim = anim;
+            
+            
+            animContainer = comp.elem.find('.settings')[0];
+            animData = JSON.parse(gearData);
+            params = {
+                animType: 'svg',
+                wrapper: animContainer,
+                loop: false,
+                autoplay: false,
+                prerender: true,
+                animationData: animData
+            };
+            anim = bodymovin.loadAnimation(params);
+            comp.gearAnim = anim;
+            
             comp.resized = false;
             compositions.push(comp);
             addElemListeners(comp);
@@ -224,12 +250,17 @@ var compSelectionController = (function () {
         mainController.showView('settings');
     }
     
+    function showSnapshotView() {
+        mainController.showView('snapshot');
+    }
+    
     function init(csIntfc) {
         view = $('#compsSelection');
         compsListContainer = view.find('.compsList');
         csInterface = csIntfc;
         csInterface.addEventListener('bm:compositions:list', updateCompositionsList);
         view.find('.refresh').on('click', getCompositionsList);
+        view.find('.snapshot').on('click', showSnapshotView);
         renderButton = view.find('.render');
         renderButton.on('click', renderCompositions);
         view.find('.settings').on('click', showSettings);
