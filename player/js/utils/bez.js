@@ -4,11 +4,7 @@ function bezFunction(){
     var math = Math;
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
-        return math.abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
-    }
-
-    function getEasingCurveByIndex(index){
-        return easingFunctions[index].fnc;
+        return bm_abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
     }
 
     function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
@@ -29,7 +25,7 @@ function bezFunction(){
                 B0 = 3 * (cc - aa) - C0;
                 A0 = 1 - C0 - B0;
                 z = (x * (C0 + x * (B0 + x * A0))) - tt;
-                if (math.abs(z) < 1e-3) break;
+                if (bm_abs(z) < 1e-3) break;
                 x -= z / (C0 + x * (2 * B0 + 3 * A0 * x));
             }
             C1 = 3 * bb;
@@ -48,7 +44,7 @@ function bezFunction(){
             if(storedBezierCurves[bezierName]){
                 return storedBezierCurves[bezierName];
             }
-            var curveSegments = 100;
+            var curveSegments = defaultCurveSegments;
             var k;
             var i, len;
             var ptCoord,perc,addedLength = 0;
@@ -66,15 +62,15 @@ function bezFunction(){
                 perc = k/(curveSegments-1);
                 ptDistance = 0;
                 for(i=0;i<len;i+=1){
-                    ptCoord = math.pow(1-perc,3)*pt1[i]+3*math.pow(1-perc,2)*perc*pt3[i]+3*(1-perc)*math.pow(perc,2)*pt4[i]+math.pow(perc,3)*pt2[i];
+                    ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*pt3[i]+3*(1-perc)*bm_pow(perc,2)*pt4[i]+bm_pow(perc,3)*pt2[i];
                     point[i] = ptCoord;
                     if(lastPoint[i] !== null){
-                        ptDistance += math.pow(point[i] - lastPoint[i],2);
+                        ptDistance += bm_pow(point[i] - lastPoint[i],2);
                     }
                     lastPoint[i] = point[i];
                 }
                 if(ptDistance){
-                    ptDistance = math.sqrt(ptDistance);
+                    ptDistance = bm_sqrt(ptDistance);
                     addedLength += ptDistance;
                 }
                 lengthData.segments.push({l:addedLength,p:perc});
@@ -100,9 +96,8 @@ function bezFunction(){
         var pt2 = keyData.e;
         var pt3 = keyData.to;
         var pt4 = keyData.ti;
-        var curveSegments = 100;
-        var k;
-        var i, len;
+        var curveSegments = defaultCurveSegments;
+        var k, i, len;
         var ptCoord,perc,addedLength = 0;
         var ptDistance;
         var point,lastPoint = null;
@@ -112,17 +107,17 @@ function bezFunction(){
         var bezierData = new BezierData(curveSegments);
         len = pt3.length;
         for(k=0;k<curveSegments;k+=1){
-            point = [];
+            point = new Array(len);
             perc = k/(curveSegments-1);
             ptDistance = 0;
             for(i=0;i<len;i+=1){
-                ptCoord = math.pow(1-perc,3)*pt1[i]+3*math.pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*math.pow(perc,2)*(pt2[i] + pt4[i])+math.pow(perc,3)*pt2[i];
-                point.push(ptCoord);
+                ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
+                point[i] = ptCoord;
                 if(lastPoint !== null){
-                    ptDistance += math.pow(point[i] - lastPoint[i],2);
+                    ptDistance += bm_pow(point[i] - lastPoint[i],2);
                 }
             }
-            ptDistance = math.sqrt(ptDistance);
+            ptDistance = bm_sqrt(ptDistance);
             addedLength += ptDistance;
             bezierData.points[k] = new PointData(ptDistance,point);
             lastPoint = point;
@@ -134,7 +129,7 @@ function bezFunction(){
     function getDistancePerc(perc,bezierData){
         var segments = bezierData.segments;
         var len = segments.length;
-        var initPos = math.floor((len-1)*perc);
+        var initPos = bm_floor((len-1)*perc);
         var lengthPos = perc*bezierData.addedLength;
         var lPerc = 0;
         if(lengthPos == segments[initPos].l){
@@ -184,7 +179,6 @@ function bezFunction(){
 
     return {
         getEasingCurve : getEasingCurve,
-        getEasingCurveByIndex : getEasingCurveByIndex,
         getBezierLength : getBezierLength,
         getNewSegment : getNewSegment,
         buildBezierData : buildBezierData

@@ -39,7 +39,7 @@ function dataFunctionManager(){
                 continue;
             }
             layerData.completed = true;
-            layerFrames = Math.round(layerData.op - layerData.st);
+            layerFrames = bm_rnd(layerData.op - layerData.st);
             offsetFrame = layerData.st;
             if(layerData.tt){
                 layers[i-1].td = layerData.tt;
@@ -50,9 +50,9 @@ function dataFunctionManager(){
             lastFrame = -1;
             if(layerData.tm){
                 layerData.trmp = layerData.tm;
-                var timeValues = new Array(Math.round(layerFrames));
+                var timeValues = new Array(bm_rnd(layerFrames));
                 for(j=0 ; j<layerFrames; j+=1){
-                    timeValues[j] = Math.floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate);
+                    timeValues[j] = bm_floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate);
                 }
                 layerData.tm = timeValues;
             }
@@ -176,7 +176,7 @@ function dataFunctionManager(){
     }
 
     function completeData(animationData){
-        animationData.__renderedFrames = new Array(Math.floor(animationData.tf));
+        animationData.__renderedFrames = new Array(bm_floor(animationData.tf));
         animationData.__renderFinished = false;
         frameRate = animationData.fr;
         completeLayers(animationData.layers, animationData.comps);
@@ -776,7 +776,7 @@ function dataFunctionManager(){
     }
 
     function convertRectToPath(pos,size,round, d){
-        round = Math.min(size[0],size[1],round/2);
+        round = bm_min(size[0],size[1],round/2);
         var nextV = new Array(8);
         var nextI = new Array(8);
         var nextO = new Array(8);
@@ -882,7 +882,7 @@ function dataFunctionManager(){
                     roundColor(fillColor);
                     shapeItem.renderedData[offsettedFrameNum].color = fillColor;
                 }else{
-                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(Math.round(fillColor[0]),Math.round(fillColor[1]),Math.round(fillColor[2]));
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rnd(fillColor[0]),bm_rnd(fillColor[1]),bm_rnd(fillColor[2]));
                 }
             }else if(shapeItem.ty == 'rc'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime);
@@ -983,7 +983,7 @@ function dataFunctionManager(){
                     roundColor(strokeColor);
                     shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
                 }else{
-                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(Math.round(strokeColor[0]),Math.round(strokeColor[1]),Math.round(strokeColor[2]));
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rnd(strokeColor[0]),bm_rnd(strokeColor[1]),bm_rnd(strokeColor[2]));
                 }
             }else if(shapeItem.ty == 'tr'){
                 shapeItem.renderedData[offsettedFrameNum] = {
@@ -1019,7 +1019,7 @@ function dataFunctionManager(){
     function roundColor(arr){
         var i, len = arr.length;
         for(i=0;i<len ;i+=1){
-            arr[i] = Math.round(arr[i]);
+            arr[i] = bm_rnd(arr[i]);
         }
     }
 
@@ -1027,7 +1027,7 @@ function dataFunctionManager(){
         var totalFrames = 1;
         while(totalFrames > 0){
             num += 1;
-            if(num >= Math.floor(animationData.tf)){
+            if(num >= bm_floor(animationData.tf)){
                 animationData.__renderFinished = true;
                 break;
             }

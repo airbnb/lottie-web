@@ -47,6 +47,24 @@
     function destroy(animation){
         return animationManager.destroy(animation);
     }
+    function setQuality(value){
+        if(typeof value === 'string'){
+            switch(value){
+                case 'high':
+                    defaultCurveSegments = 200;
+                    break;
+                case 'medium':
+                    defaultCurveSegments = 50;
+                    break;
+                case 'low':
+                    defaultCurveSegments = 10;
+                    break;
+            }
+        }else if(!isNaN(value) && value > 1){
+            defaultCurveSegments = value;
+        }
+
+    }
 
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
@@ -63,6 +81,7 @@
     bodymovinjs.start = start;
     bodymovinjs.goToAndStop = goToAndStop;
     bodymovinjs.destroy = destroy;
+    bodymovinjs.setQuality = setQuality;
 
     function checkReady(){
         if (document.readyState === "complete") {

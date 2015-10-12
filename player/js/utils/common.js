@@ -1,6 +1,12 @@
 var subframeEnabled = false;
 var cachedColors = {};
 var bm_rnd = Math.round;
+var bm_pow = Math.pow;
+var bm_sqrt = Math.sqrt;
+var bm_abs = Math.abs;
+var bm_floor = Math.floor;
+var bm_min = Math.min;
+var defaultCurveSegments = 2;
 
 function styleDiv(element){
     element.style.position = 'absolute';
