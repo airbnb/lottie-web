@@ -62,6 +62,7 @@
 #compsSelection .compsTable .td .state{
     height: 100%;
     width: 100%;
+    cursor: pointer;
 }
 
 #compsSelection .compsTable .td .hideExtra{
@@ -74,11 +75,8 @@
 
 #compsSelection .compsTable .td .hideExtra.settings{
     padding: 0;
-    background-image: url('../assets/img/gear_icon.svg');
-    height: 43px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 40%;
+    height: 20px;
+    cursor: pointer;
 }
 
 #compsSelection .compsTable .td .destination{
