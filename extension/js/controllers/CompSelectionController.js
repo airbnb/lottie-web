@@ -224,12 +224,17 @@ var compSelectionController = (function () {
         mainController.showView('settings');
     }
     
+    function showSnapshotView() {
+        mainController.showView('snapshot');
+    }
+    
     function init(csIntfc) {
         view = $('#compsSelection');
         compsListContainer = view.find('.compsList');
         csInterface = csIntfc;
         csInterface.addEventListener('bm:compositions:list', updateCompositionsList);
         view.find('.refresh').on('click', getCompositionsList);
+        view.find('.snapshot').on('click', showSnapshotView);
         renderButton = view.find('.render');
         renderButton.on('click', renderCompositions);
         view.find('.settings').on('click', showSettings);

@@ -21,6 +21,45 @@ function styleUnselectableDiv(element){
 
 }
 
+function addEventListener(eventName, callback){
+
+    if (!this._cbs){
+        this._cbs = [];
+    }
+
+    if (!this._cbs[eventName]){
+        this._cbs[eventName] = [];
+    }
+
+    this._cbs[eventName].push(callback);
+
+}
+
+function triggerEvent(eventName, args){
+
+    if (!this._cbs){
+        this._cbs = [];
+    }
+
+    var delay = this._cbs.length === 0;
+    var that = this;
+
+    if (this._cbs[eventName]) {
+        if (delay){
+            setTimeout(function(){
+                for (var i = 0; i < that._cbs[eventName].length; i++){
+                    that._cbs[eventName][i](args);
+                }
+            }, 0);
+        }
+        else {
+            for (var i = 0; i < this._cbs[eventName].length; i++){
+                this._cbs[eventName][i](args);
+            }
+        }
+    }
+}
+
 function randomString(length, chars){
     if(chars === undefined){
         chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';

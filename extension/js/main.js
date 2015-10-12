@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, window, location, CSInterface, SystemPath, themeManager, compSelectionController, compRenderController, messageController, infoController*/
+/*global $, window, location, CSInterface, SystemPath, themeManager, compSelectionController, compRenderController, messageController, infoController, snapshotController*/
 
 var mainController = (function () {
     'use strict';
@@ -45,6 +45,8 @@ var mainController = (function () {
         messageController.init(csInterface);
         mainViews.push({id: 'settings', controller: infoController});
         infoController.init(csInterface);
+        mainViews.push({id: 'snapshot', controller: snapshotController});
+        snapshotController.init(csInterface);
         loadJSX('initializer.jsx');
         
         showView('selection');

@@ -10,6 +10,7 @@
 <link  id="hostStyle" rel="stylesheet" href="css/compsRender.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/message.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/info.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/snapshot.css"/>
 
 <title></title>
 </head>
@@ -19,7 +20,9 @@
     <div id="content">
         <div id='compsSelection'>
             <div class='buttons'>
-                <button class='generalButton settings'>Info</button>
+                <button class='generalButton rightFloat settings'>Info</button>
+                <div class='buttonSeparator rightFloat'></div>
+                <button class='generalButton rightFloat snapshot'>Snapshot</button>
                 <button class='generalButton refresh'>Refresh</button>
                 <div class='buttonSeparator'></div>
                 <button class='generalButton highlightButton render disabled'>Render</button>
@@ -65,6 +68,35 @@
             <div class='buttons'>
                 <button class='generalButton cancel'>Cancel</button>
                 <button class='generalButton return'>Return</button>
+            </div>
+        </div>
+        <div id='snapshot'>
+            <div class='header'>
+                <h1>Select animation</h1>
+                <div class='buttons'>
+                    <button class='generalButton rightFloat current'>Current renders</button>
+                    <div class='buttonSeparator rightFloat'></div>
+                    <button class='generalButton rightFloat browse'>Browse</button>
+                    <button class='generalButton return'>Back</button>
+                </div>
+            </div>
+            <div class="animContainer"></div>
+            <div class="controls">
+                <div class="slider"></div>
+                <div class="thumb"></div>
+                <button class="snapshotButton generalButton highlightButton">Take Snapshot</button>
+                <div class="frames">
+                    <div class="current" contenteditable="true"></div>
+                    <div class="total" >/<span class='value'></span></div>
+                </div>
+            </div>
+            <div class="rendersSelection">
+                <div class="topSpace"></div>
+                <div class="listContainer">
+                
+                </div>
+                <div>
+                </div>
             </div>
         </div>
         <div id='info'>
@@ -117,6 +149,7 @@
     <script src="js/controllers/CompRenderController.js"></script>
     <script src="js/controllers/messageController.js"></script>
     <script src="js/controllers/InfoController.js"></script>
+    <script src="js/controllers/snapshotController.js"></script>
     <script src="js/main.js"></script>
 
         

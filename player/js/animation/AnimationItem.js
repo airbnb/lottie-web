@@ -71,7 +71,11 @@ AnimationItem.prototype.setParams = function(params) {
         }
 
         var xhr = new XMLHttpRequest();
-        this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
+        if(params.path.lastIndexOf('\\') != -1){
+            this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
+        }else{
+            this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
+        }
         xhr.open('GET', params.path, true);
         xhr.send();
         xhr.onreadystatechange = function () {
@@ -149,6 +153,7 @@ AnimationItem.prototype.includeLayers = function(data) {
 AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;
     if(!segments || segments.length === 0){
+        this.trigger('bm:data_ready');
         this.timeCompleted = this.animationData.tf;
         return;
     }
@@ -156,7 +161,7 @@ AnimationItem.prototype.loadNextSegment = function() {
     this.timeCompleted = segment.time * this.frameRate;
     var xhr = new XMLHttpRequest();
     var self = this;
-    var segmentPath = this.path.substr(0,this.path.lastIndexOf('/')+1)+'data_' + this.segmentPos + '.json';
+    var segmentPath = this.path+'data_' + this.segmentPos + '.json';
     this.segmentPos += 1;
     xhr.open('GET', segmentPath, true);
     xhr.send();
@@ -201,6 +206,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     /*this.firstFrame = 0;
     this.totalFrames = 1;*/
     this.frameMult = this.animationData.fr / 1000;
+    this.trigger('bm:config_ready');
     this.loadSegments();
     dataManager.completeData(this.animationData);
     this.renderer.buildItems(this.animationData.layers);
@@ -464,3 +470,6 @@ AnimationItem.prototype.getAssetData = function (id) {
 AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };
+
+AnimationItem.prototype.addEventListener = addEventListener;
+AnimationItem.prototype.trigger = triggerEvent;

@@ -1,0 +1,115 @@
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#snapshot {
+    width: 100%;
+}
+
+#snapshot .header{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#snapshot .header .buttons{
+    margin-top: 10px;
+}
+
+#snapshot h1{
+    color: #EAD3A8;
+    margin: 0;
+}
+
+
+#snapshot .animContainer{
+    width: 100%;
+    background-color: #6E6568;
+}
+
+#snapshot .controls{
+    height: 40px;
+    width: 100%;
+    background-color: #EAD3A8;
+    border-top: 1px solid #484043;
+    position: relative;
+}
+
+#snapshot .controls .snapshotButton{
+    float: left;
+    margin-top: 5px;
+    margin-left: 4px;
+}
+
+#snapshot .controls .slider{
+    width: 100%;
+    height: 2px;
+    background-color: #D23641;
+    cursor: pointer;
+}
+
+#snapshot .controls .thumb{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #D23641;
+    border: 1px solid #FFFFFF;
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+#snapshot .controls .frames{
+    float: right;
+    padding: 10px;
+    color: #D23641;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+#snapshot .controls .frames .current{
+    background-color: #484043;
+    display: inline-block;
+    vertical-align: top;
+    min-width: 20px;
+    height: 20px;
+    padding: 0px 2px;
+    text-align: right;
+}
+
+#snapshot .controls .frames .total{
+    display: inline-block;
+    vertical-align: top;
+}
+
+#snapshot .rendersSelection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,.8);
+}
+
+#snapshot .rendersSelection .listContainer{
+    text-align: center;
+}
+
+#snapshot .rendersSelection .topSpace{
+    height: 10%;
+}
+
+#snapshot  .rendersSelection .listContainer .generalButton{
+    display: block;
+    margin: auto;
+}
