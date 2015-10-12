@@ -39,7 +39,7 @@ var snapshotController = (function () {
     
     function loadAnimation(data) {
         var jsonData = JSON.parse(data);
-        totalFrames = jsonData.animation.totalFrames;
+        totalFrames = Math.floor(jsonData.op - jsonData.ip);
         controls.find('.frames .total .value').html(totalFrames);
         currentFrame = 1;
         if (anim) {
