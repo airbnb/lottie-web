@@ -1,10 +1,14 @@
 function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
-    this.renderConfig = config ? config : {
-        clearCanvas: true,
-        context: null,
-        scaleMode: 'fit'
+    this.renderConfig = {
+        clearCanvas: config.clearCanvas || true,
+        context: config.context || null,
+        scaleMode: config.scaleMode || 'fit'
     };
+    this.renderConfig.dpr = (config && config.dpr) || 1;
+    if (this.animationItem.wrapper) {
+        this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
+    }
     this.lastFrame = -1;
     this.globalData = {
         frameNum: -1
@@ -209,29 +213,29 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     if(this.animationItem.wrapper && this.animationItem.container){
         elementWidth = this.animationItem.wrapper.offsetWidth;
         elementHeight = this.animationItem.wrapper.offsetHeight;
-        this.animationItem.container.setAttribute('width',elementWidth);
-        this.animationItem.container.setAttribute('height',elementHeight);
+        this.animationItem.container.setAttribute('width',elementWidth * this.renderConfig.dpr );
+        this.animationItem.container.setAttribute('height',elementHeight * this.renderConfig.dpr);
     }else{
-        elementWidth = this.canvasContext.canvas.width;
-        elementHeight = this.canvasContext.canvas.height;
+        elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
+        elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
     }
     if(this.renderConfig.scaleMode == 'fit'){
         var elementRel = elementWidth/elementHeight;
         var animationRel = this.transformCanvas.w/this.transformCanvas.h;
         if(animationRel>elementRel){
-            this.transformCanvas.sx = elementWidth/this.transformCanvas.w;
-            this.transformCanvas.sy = elementWidth/this.transformCanvas.w;
+            this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
+            this.transformCanvas.sy = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
             this.transformCanvas.tx = 0;
-            this.transformCanvas.ty = (elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2;
+            this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2)*this.renderConfig.dpr;
         }else{
-            this.transformCanvas.sx = elementHeight/this.transformCanvas.h;
-            this.transformCanvas.sy = elementHeight/this.transformCanvas.h;
-            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2;
+            this.transformCanvas.sx = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
+            this.transformCanvas.sy = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
+            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
             this.transformCanvas.ty = 0;
         }
     }else{
-        this.transformCanvas.sx = 1;
-        this.transformCanvas.sy = 1;
+        this.transformCanvas.sx = this.renderConfig.dpr;
+        this.transformCanvas.sy = this.renderConfig.dpr;
         this.transformCanvas.tx = 0;
         this.transformCanvas.ty = 0;
     }
