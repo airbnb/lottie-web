@@ -4,14 +4,27 @@ var bm_effectsHelper = (function () {
     'use strict';
     var ob = {};
     var effectTypes = {
-        sliderControl: 0
+        sliderControl: 0,
+        angleControl: 1,
+        colorControl: 2,
+        pointControl: 3,
+        checkboxControl: 4
     };
     
     function getEffectType(name) {
         switch (name) {
         case 'ADBE Slider Control':
             return effectTypes.sliderControl;
+        case 'ADBE Angle Control':
+            return effectTypes.angleControl;
+        case 'ADBE Color Control':
+            return effectTypes.colorControl;
+        case 'ADBE Point Control':
+            return effectTypes.pointControl;
+        case 'ADBE Checkbox Control':
+            return effectTypes.checkboxControl;
         default:
+            bm_eventDispatcher.log(name);
             return '';
         }
     }
@@ -21,6 +34,38 @@ var bm_effectsHelper = (function () {
         ob.ty = effectTypes.sliderControl;
         ob.nm = effect.name;
         ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Slider'), frameRate);
+        return ob;
+    }
+    
+    function exportAngleControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.angleControl;
+        ob.nm = effect.name;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Angle'), frameRate);
+        return ob;
+    }
+    
+    function exportColorControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.colorControl;
+        ob.nm = effect.name;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Color'), frameRate);
+        return ob;
+    }
+    
+    function exportPointControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.pointControl;
+        ob.nm = effect.name;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Point'), frameRate);
+        return ob;
+    }
+    
+    function exportCheckboxControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.checkboxControl;
+        ob.nm = effect.name;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Checkbox'), frameRate);
         return ob;
     }
     
@@ -37,6 +82,18 @@ var bm_effectsHelper = (function () {
             switch (effectType) {
             case effectTypes.sliderControl:
                 effectsArray.push(exportSliderControl(effectElement, frameRate));
+                break;
+            case effectTypes.angleControl:
+                effectsArray.push(exportAngleControl(effectElement, frameRate));
+                break;
+            case effectTypes.colorControl:
+                effectsArray.push(exportColorControl(effectElement, frameRate));
+                break;
+            case effectTypes.pointControl:
+                effectsArray.push(exportPointControl(effectElement, frameRate));
+                break;
+            case effectTypes.checkboxControl:
+                effectsArray.push(exportCheckboxControl(effectElement, frameRate));
                 break;
             }
         }

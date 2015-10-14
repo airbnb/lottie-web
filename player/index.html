@@ -61,7 +61,6 @@
         autoplay: true,
         path: 'exports/render'
     };
-    bodymovin.setQuality(2);
     var anim = bodymovin.loadAnimation(animData);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);

@@ -216,6 +216,9 @@ function dataFunctionManager(){
             keyData = keyframes[i];
             nextKeyData = keyframes[i+1];
             if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
+                if(keyData.h){
+                    keyData = nextKeyData;
+                }
                 break;
             }
             if((nextKeyData.t - offsetTime) > frameNum && dir == 1){
@@ -740,9 +743,7 @@ function dataFunctionManager(){
                 item.__lastRenderAn = renderedData.an;
             }else{
                 renderedData.an = item.__lastRenderAn;
-            }
-            if(!item.renderedData){
-                console.log(item);
+                renderedData.mt = [mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]];
             }
             item.renderedData[offsettedFrameNum] = renderedData;
             if(item.hasMask){
@@ -768,6 +769,14 @@ function dataFunctionManager(){
                         item.ef[i].renderedData = [];
                     }
                     if(item.ef[i].ty === 0){
+                        efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.st);
+                    }else if(item.ef[i].ty === 1){
+                        efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.st);
+                    }else if(item.ef[i].ty === 2){
+                        efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.st);
+                    }else if(item.ef[i].ty === 3){
+                        efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.st);
+                    }else if(item.ef[i].ty === 4){
                         efData[i] = getInterpolatedValue(item.ef[i].v,offsettedFrameNum, item.st);
                     }
                     item.ef[i].renderedData[offsettedFrameNum] = efData[i];

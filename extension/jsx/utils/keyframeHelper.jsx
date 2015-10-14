@@ -237,6 +237,14 @@ var bm_keyframeHelper = (function () {
             beziersArray.push(segmentOb);
         }
         beziersArray.push({t: property.keyTime(j) * frameRate});
+        if (property.keyOutInterpolationType(j) === KeyframeInterpolationType.HOLD) {
+            var value = getPropertyValue(property.keyValue(j), true);
+            if (!(value instanceof Array)) {
+                value = [value];
+            }
+            beziersArray[beziersArray.length - 1].s = value;
+            beziersArray[beziersArray.length - 1].h = 1;
+        }
         return beziersArray;
     }
     

@@ -149,6 +149,7 @@ var ExpressionManager = (function(){
 
             function evaluate(val){
                 val = 'var fn = function(t,v){time=t;value=v;frameN = Math.round(time*frameRate);'+val+';return $bm_rt;}';
+                console.log(val);
                 eval(val);
                 return new ExpressionObject(fn);
             }
@@ -158,8 +159,41 @@ var ExpressionManager = (function(){
 
         function SliderEffect(data){
             return function(value){
+                var n = new Number(data.renderedData[frameN]);
+                n.value = data.renderedData[frameN];
+                return n;
+            }
+        }
+
+        function AngleEffect(data){
+            return function(value){
+                var n = new Number(data.renderedData[frameN]);
+                n.value = data.renderedData[frameN];
+                return n;
+            }
+        }
+
+        function ColorEffect(data){
+            return function(value){
                 var n = new Number(data.renderedData[frameN][0]);
                 n.value = data.renderedData[frameN][0];
+                return n;
+            }
+        }
+
+        function PointEffect(data){
+            return function(value){
+                var n = [data.renderedData[frameN][0],data.renderedData[frameN][1]];
+                n.value = [data.renderedData[frameN][0],data.renderedData[frameN][1]];
+                return n;
+            }
+        }
+
+        function CheckboxEffect(data){
+            return function(value){
+                var n = new Number(data.renderedData[frameN]);
+                n.value = data.renderedData[frameN];
+                //console.log(n);
                 return n;
             }
         }
@@ -175,8 +209,17 @@ var ExpressionManager = (function(){
                     if(ef[i].nm == name){
                         if(ef[i].ty === 0){
                             return new SliderEffect(ef[i]);
+                        }else if(ef[i].ty === 1){
+                            return new AngleEffect(ef[i]);
+                        }else if(ef[i].ty === 2){
+                            return new ColorEffect(ef[i]);
+                        }else if(ef[i].ty === 3){
+                            return new PointEffect(ef[i]);
+                        }else if(ef[i].ty === 4){
+                            return new CheckboxEffect(ef[i]);
                         }
                     }
+                    i += 1;
                 }
             }
         }
@@ -195,6 +238,13 @@ var ExpressionManager = (function(){
                         return [renderedData[frameN].mt[0],renderedData[frameN].mt[3]];
                     }
                     return [renderedData[frameN].mtArr[0],renderedData[frameN].mtArr[3]];
+                },
+                get anchorPoint (){
+                    if(ty === 0){
+                        console.log(renderedData[frameN].an.tr.a);
+                        return [renderedData[frameN].an.tr.a[0],renderedData[frameN].an.tr.a[1]];
+                    }
+                    return [item.renderedData[frameN].an.tr.a[0],item.renderedData[frameN].an.tr.a[1]];
                 }
             };
 
@@ -278,6 +328,10 @@ var ExpressionManager = (function(){
             if(!item.ks){
                 continue;
             }
+            if(typeof item.ks.a.x === 'string'){
+                item.ks.a.x = new EvalContext(item).evaluate(item.ks.a.x);
+                registeredExpressions.push(item.ks.a.x);
+            }
             if(typeof item.ks.r.x === 'string'){
                 item.ks.r.x = new EvalContext(item).evaluate(item.ks.r.x);
                 registeredExpressions.push(item.ks.r.x);
@@ -328,7 +382,10 @@ var ExpressionManager = (function(){
             }
             offsettedFrameNum = frameNum - item.st;
             renderedData = item.renderedData[offsettedFrameNum];
-            renderedData.mt;
+            mt = renderedData.mt;
+            if(item.ks.a.x){
+                renderedData.an.tr.a = item.ks.a.x.fn(frameNum/frameRate, renderedData.an.tr.a);
+            }
             if(item.ks.r.x){
                 mt[0] = item.ks.r.x.fn(frameNum/frameRate, mt[0]/degToRads)*degToRads;
             }
