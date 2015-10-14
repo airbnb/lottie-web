@@ -299,6 +299,7 @@ CVShapeItemElement.prototype.addPathToStyles = function(path2d){
             if(this.stylesList[i].type == 'stroke'){
                 if(this.stylesList[i].width > strokeWidth){
                     this.stylesList[i].path.addPath(path2d, this.transform.mat.props);
+                    console.log( this.transform.mat.props);
                 }
                 if(this.stylesList[i].styleOpacity == 1 && this.stylesList[i].opacity == 1){
                     strokeWidth = this.stylesList[i].width;

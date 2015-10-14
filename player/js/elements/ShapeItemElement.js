@@ -67,8 +67,15 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                 transform : {
                     mat: new Matrix(),
                     opacity: 1
-                }
+                },
+                styles: []
             };
+            jLen = this.stylesList.length;
+            for(j=0;j<jLen;j+=1){
+                if(!this.stylesList[j].closed){
+                    data[i].styles.push(this.stylesList[j]);
+                }
+            }
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el'){
             data[i] = {
                 elements : [],
@@ -142,6 +149,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
                 groupTransform.opacity = items[i].renderedData[num].o;
             }
             groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]).translate(-items[i].renderedData[num].a[0],-items[i].renderedData[num].a[1]);
+            this.renderTransform(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'sh'){
             this.renderPath(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'el'){
@@ -175,6 +183,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
             this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
             this.stylesList[i].ld = this.stylesList[i].d;
         }
+        this.stylesList[i].pathElement.setAttribute('transform',this.stylesList[i].t);
     }
 
 };
@@ -259,6 +268,14 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num,groupTra
         viewData.lastData.t = renderedFrameData.t;
     }
 };
+
+ShapeItemElement.prototype.renderTransform = function(styleData,viewData,num,groupTransform){
+    var t = 'matrix('+groupTransform.mat.props.join(',')+')';
+    var i, len = viewData.styles.length;
+    for(i=0;i<len;i+=1){
+        viewData.styles[i].t = t;
+    }
+}
 
 ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num,groupTransform){
     var fillData = styleData.renderedData[num];
