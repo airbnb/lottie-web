@@ -776,7 +776,7 @@ function dataFunctionManager(){
     }
 
     function convertRectToPath(pos,size,round, d){
-        round = bm_min(size[0],size[1],round/2);
+        round = bm_min(size[0]/2,size[1]/2,round/2);
         var nextV = new Array(8);
         var nextI = new Array(8);
         var nextO = new Array(8);
