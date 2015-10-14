@@ -1,12 +1,24 @@
 var subframeEnabled = false;
 var cachedColors = {};
-var bm_rnd = Math.round;
+var bm_rounder = Math.round;
+var bm_rnd;
 var bm_pow = Math.pow;
 var bm_sqrt = Math.sqrt;
 var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_min = Math.min;
 var defaultCurveSegments = 2;
+
+function roundValues(flag){
+    if(flag){
+        bm_rnd = Math.round;
+    }else{
+        bm_rnd = function(val){
+            return val;
+        };
+    }
+}
+roundValues(false);
 
 function styleDiv(element){
     element.style.position = 'absolute';

@@ -39,7 +39,7 @@ function dataFunctionManager(){
                 continue;
             }
             layerData.completed = true;
-            layerFrames = bm_rnd(layerData.op - layerData.st);
+            layerFrames = bm_rounder(layerData.op - layerData.st);
             offsetFrame = layerData.st;
             if(layerData.tt){
                 layers[i-1].td = layerData.tt;
@@ -50,7 +50,7 @@ function dataFunctionManager(){
             lastFrame = -1;
             if(layerData.tm){
                 layerData.trmp = layerData.tm;
-                var timeValues = new Array(bm_rnd(layerFrames));
+                var timeValues = new Array(bm_rounder(layerFrames));
                 for(j=0 ; j<layerFrames; j+=1){
                     timeValues[j] = bm_floor(getInterpolatedValue(layerData.tm,j,offsetFrame)*frameRate);
                 }
@@ -882,7 +882,7 @@ function dataFunctionManager(){
                     roundColor(fillColor);
                     shapeItem.renderedData[offsettedFrameNum].color = fillColor;
                 }else{
-                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rnd(fillColor[0]),bm_rnd(fillColor[1]),bm_rnd(fillColor[2]));
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rounder(fillColor[0]),bm_rounder(fillColor[1]),bm_rounder(fillColor[2]));
                 }
             }else if(shapeItem.ty == 'rc'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime);
@@ -983,7 +983,7 @@ function dataFunctionManager(){
                     roundColor(strokeColor);
                     shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
                 }else{
-                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rnd(strokeColor[0]),bm_rnd(strokeColor[1]),bm_rnd(strokeColor[2]));
+                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rounder(strokeColor[0]),bm_rounder(strokeColor[1]),bm_rounder(strokeColor[2]));
                 }
             }else if(shapeItem.ty == 'tr'){
                 shapeItem.renderedData[offsettedFrameNum] = {
@@ -1019,7 +1019,7 @@ function dataFunctionManager(){
     function roundColor(arr){
         var i, len = arr.length;
         for(i=0;i<len ;i+=1){
-            arr[i] = bm_rnd(arr[i]);
+            arr[i] = bm_rounder(arr[i]);
         }
     }
 
