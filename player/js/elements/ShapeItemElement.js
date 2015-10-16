@@ -180,7 +180,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],num);
+            this.renderStroke(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'gr'){
             this.renderShape(num,groupTransform,items[i].it,data[i].it);
         }else if(items[i].ty == 'tm'){
@@ -213,77 +213,75 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
     if(!viewData.renderedFrames[this.globalData.frameNum]){
 
         var pathNodes = pathData.renderedData[num].path.pathNodes;
-        if(!pathNodes.v){
-            return;
-        }
-        len = pathNodes.v.length;
-        var stops = pathNodes.s ? pathNodes.s : [];
+        var t = '';
         var pathStringTransformed = '';
         var pathStringNonTransformed = '';
-        for(i=1;i<len;i+=1){
-            if(stops[i-1]){
-                if(viewData.st){
-                    pathStringNonTransformed += " M"+bm_rnd(stops[i-1][0])+','+bm_rnd(stops[i-1][1]);
+        if(pathNodes.v){
+            len = pathNodes.v.length;
+            var stops = pathNodes.s ? pathNodes.s : [];
+            for(i=1;i<len;i+=1){
+                if(stops[i-1]){
+                    if(viewData.st){
+                        pathStringNonTransformed += " M"+bm_rnd(stops[i-1][0])+','+bm_rnd(stops[i-1][1]);
+                    }
+                    if(viewData.fl) {
+                        pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[i - 1][0], stops[i - 1][1]);
+                    }
+                }else if(i==1){
+                    if(viewData.st) {
+                        pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                    }
+
+                    if(viewData.fl) {
+                        pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                    }
                 }
-                if(viewData.fl) {
-                    pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[i - 1][0], stops[i - 1][1]);
-                }
-            }else if(i==1){
                 if(viewData.st) {
-                    pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                    pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[i][0]) + ',' + bm_rnd(pathNodes.i[i][1]) + " " + bm_rnd(pathNodes.v[i][0]) + ',' + bm_rnd(pathNodes.v[i][1]);
                 }
 
                 if(viewData.fl) {
-                    pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                    pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+                }
+            }
+            if(len == 1){
+                if(stops[0]){
+                    if(viewData.st) {
+                        pathStringNonTransformed += " M" + bm_rnd(stops[0][0]) + ',' + bm_rnd(stops[0][1]);
+                    }
+
+                    if(viewData.fl) {
+                        pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[0][0], stops[0][1]);
+                    }
+                }else{
+
+                    if(viewData.st) {
+                        pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                    }
+
+                    if(viewData.fl) {
+                        pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                    }
+                }
+            }
+            if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
+                if(viewData.st) {
+                    pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[0][0]) + ',' + bm_rnd(pathNodes.i[0][1]) + " " + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                }
+
+                if(viewData.fl) {
+                    pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                 }
             }
             if(viewData.st) {
-                pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[i][0]) + ',' + bm_rnd(pathNodes.i[i][1]) + " " + bm_rnd(pathNodes.v[i][0]) + ',' + bm_rnd(pathNodes.v[i][1]);
+                t = 'matrix(' + groupTransform.mat.props.join(',') + ')';
             }
-
-            if(viewData.fl) {
-                pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
-            }
-        }
-        if(len == 1){
-            if(stops[0]){
-                if(viewData.st) {
-                    pathStringNonTransformed += " M" + bm_rnd(stops[0][0]) + ',' + bm_rnd(stops[0][1]);
-                }
-
-                if(viewData.fl) {
-                    pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[0][0], stops[0][1]);
-                }
-            }else{
-
-                if(viewData.st) {
-                    pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
-                }
-
-                if(viewData.fl) {
-                    pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                }
-            }
-        }
-        if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
-            if(viewData.st) {
-                pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[0][0]) + ',' + bm_rnd(pathNodes.i[0][1]) + " " + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
-            }
-
-            if(viewData.fl) {
-                pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-            }
-        }
-        var t;
-        if(viewData.st) {
-            t = 'matrix(' + groupTransform.mat.props.join(',') + ')';
         }
 
         viewData.renderedFrames[this.globalData.frameNum] = {
             dTr: pathStringTransformed,
             dNTr: pathStringNonTransformed,
-            t: t,
-            o: groupTransform.opacity
+            t: t
         };
     }
     var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
@@ -298,14 +296,8 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
                 viewData.elements[i].el.setAttribute('transform',renderedFrameData.t);
                 viewData.lt = renderedFrameData.t;
             }
-            if(viewData.lo != renderedFrameData.o) {
-                viewData.elements[i].el.setAttribute('opacity',renderedFrameData.o);
-                viewData.lo = renderedFrameData.o;
-            }
         }else{
-            if(renderedFrameData.o !== 0){
-                viewData.elements[i].st.d += renderedFrameData.dTr;
-            }
+            viewData.elements[i].st.d += renderedFrameData.dTr;
         }
     }
 };
@@ -337,17 +329,17 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num, groupTr
     }
 };
 
-ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num){
+ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, groupTransform){
     var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
-        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity && viewData._ld.w === fillData.width){
+        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity && viewData._ld.w === fillData.width){
             viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
             return;
         }else{
             viewData._ld = {
                 c: fillData.color,
-                o: fillData.opacity,
+                o: fillData.opacity*groupTransform.opacity,
                 w: fillData.width
             };
             viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
