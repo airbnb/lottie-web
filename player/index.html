@@ -40,7 +40,7 @@
 <body style="background-color:#ccc; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
 
 <!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
-<div style="width:500px;height:500px;background-color:#333;display:inline-block;" id="bodymovin"></div>
+<div style="width:1500px;height:700px;background-color:#333;display:inline-block;" id="bodymovin"></div>
 
 <script>
 
@@ -55,13 +55,13 @@
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
-        loop: false,
+        loop: 1,
         prerender: false,
         autoplay: true,
-        path: 'exports/bm'
+        path: 'exports/render'
 
     };
-    bodymovin.setQuality(2);
+    bodymovin.setQuality(100);
     var anim = bodymovin.loadAnimation(animData);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
