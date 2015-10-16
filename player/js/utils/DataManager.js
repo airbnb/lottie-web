@@ -783,7 +783,7 @@ function dataFunctionManager(){
         var cPoint = round/2;
         //round *= 1;
 
-        if(d === 2) {
+        if(d === 2 || d === 1) {
 
             nextV[0] = [pos[0]+size[0]/2,pos[1]-size[1]/2+round];
             nextO[0] = nextV[0];
