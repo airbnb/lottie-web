@@ -63,6 +63,11 @@
         }else if(!isNaN(value) && value > 1){
             defaultCurveSegments = value;
         }
+        if(defaultCurveSegments >= 50){
+            roundValues(false);
+        }else{
+            roundValues(true);
+        }
 
     }
 

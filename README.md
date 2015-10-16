@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.0.2
+- bug fix for rounded rectangles
+- default quality settings modified
+
 ## V 3.0.0
 - bodymovin.setQuality to optimize player performance. explained below.
 - segments: export animation in segments. more below.
