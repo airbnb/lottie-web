@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.0.3
+- nested strokes and shapes fix
+- reverse rectangles fix
+- mask fix
+- reversed non closed shapes fix
+
 ## V 3.0.2
 - bug fix for rounded rectangles
 - default quality settings modified
