@@ -203,7 +203,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.assets = this.animationData.assets;
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip*this.frameRate);
-    /*this.firstFrame = 0;
+    /*this.firstFrame = 25;
     this.totalFrames = 1;*/
     this.frameMult = this.animationData.fr / 1000;
     this.trigger('bm:config_ready');

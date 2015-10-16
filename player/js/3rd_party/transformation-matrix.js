@@ -547,7 +547,7 @@ Matrix.prototype = {
          };*/
     },
     applyToPointStringified: function(x, y) {
-        return (x * this.props[0] + y * this.props[2] + this.props[4])+','+(x * this.props[1] + y * this.props[3] + this.props[5]);
+        return (bm_rnd(x * this.props[0] + y * this.props[2] + this.props[4]))+','+(bm_rnd(x * this.props[1] + y * this.props[3] + this.props[5]));
     },
 
     /**

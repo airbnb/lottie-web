@@ -36,7 +36,7 @@ MaskElement.prototype.init = function () {
             currentMasks.push(rect);
         }
 
-        if((properties[i].mode == 'f' && count > 0) || properties[i].mode == 'n') {
+        if(properties[i].mode == 'n') {
             continue;
         }
         count += 1;
@@ -102,7 +102,7 @@ MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
     var count = 0;
     for (i = 0; i < len; i++) {
-        if((this.data.masksProperties[i].mode == 'f' && count > 0)  || this.data.masksProperties[i].mode == 'n'){
+        if(this.data.masksProperties[i].mode == 'n'){
             continue;
         }
         count += 1;
