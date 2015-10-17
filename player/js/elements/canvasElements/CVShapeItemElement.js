@@ -125,7 +125,7 @@ CVShapeItemElement.prototype.drawPaths = function(cacheFlag){
     }
     this.globalData.renderer.restore();
     if(cacheFlag){
-        this.renderedPaths[this.globalData.frameNum] = cache;
+        //this.renderedPaths[this.globalData.frameNum] = cache;
     }
 };
 
@@ -213,39 +213,45 @@ CVShapeItemElement.prototype.renderPath = function(data){
         ctx.lineJoin = 'round';
     }
     var path = data.renderedData[this.frameNum].path;
-    var path2d = new BM_Path2D();
     var pathNodes = path.pathNodes;
-    if(pathNodes instanceof Array){
-        pathNodes = pathNodes[0];
-    }
     if(!pathNodes.v){
         return;
     }
-    var i,len = pathNodes.v.length;
-    var stops = pathNodes.s ? pathNodes.s : [];
-    for(i=1;i<len;i+=1){
-        if(stops[i-1]){
-            path2d.moveTo(bm_rnd(stops[i-1][0]),bm_rnd(stops[i-1][1]));
-            //path2d.moveTo(stops[i-1][0],stops[i-1][1]);
-        }else if(i==1){
-            path2d.moveTo(bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
-            //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+    var path2d;
+    if(data.lastData && data.lastData.nodes == pathNodes){
+        path2d = data.lastData.path;
+    }else{
+        path2d = new BM_Path2D();
+        var i,len = pathNodes.v.length;
+        var stops = pathNodes.s ? pathNodes.s : [];
+        for(i=1;i<len;i+=1){
+            if(stops[i-1]){
+                path2d.moveTo(bm_rnd(stops[i-1][0]),bm_rnd(stops[i-1][1]));
+                //path2d.moveTo(stops[i-1][0],stops[i-1][1]);
+            }else if(i==1){
+                path2d.moveTo(bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
+                //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+            }
+            path2d.bezierCurveTo(bm_rnd(pathNodes.o[i-1][0]),bm_rnd(pathNodes.o[i-1][1]),bm_rnd(pathNodes.i[i][0]),bm_rnd(pathNodes.i[i][1]),bm_rnd(pathNodes.v[i][0]),bm_rnd(pathNodes.v[i][1]));
+            //path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
         }
-        path2d.bezierCurveTo(bm_rnd(pathNodes.o[i-1][0]),bm_rnd(pathNodes.o[i-1][1]),bm_rnd(pathNodes.i[i][0]),bm_rnd(pathNodes.i[i][1]),bm_rnd(pathNodes.v[i][0]),bm_rnd(pathNodes.v[i][1]));
-        //path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[i][0],pathNodes.i[i][1],pathNodes.v[i][0],pathNodes.v[i][1]);
-    }
-    if(len == 1){
-        if(stops[0]){
-            path2d.moveTo(bm_rnd(stops[0][0]),bm_rnd(stops[0][1]));
-            //path2d.moveTo(stops[0][0],stops[0][1]);
-        }else{
-            path2d.moveTo(bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
-            //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+        if(len == 1){
+            if(stops[0]){
+                path2d.moveTo(bm_rnd(stops[0][0]),bm_rnd(stops[0][1]));
+                //path2d.moveTo(stops[0][0],stops[0][1]);
+            }else{
+                path2d.moveTo(bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
+                //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+            }
         }
-    }
-    if(data.closed && !(data.trimmed && !pathNodes.c)){
-        path2d.bezierCurveTo(bm_rnd(pathNodes.o[i-1][0]),bm_rnd(pathNodes.o[i-1][1]),bm_rnd(pathNodes.i[0][0]),bm_rnd(pathNodes.i[0][1]),bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
-        //path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+        if(data.closed && !(data.trimmed && !pathNodes.c)){
+            path2d.bezierCurveTo(bm_rnd(pathNodes.o[i-1][0]),bm_rnd(pathNodes.o[i-1][1]),bm_rnd(pathNodes.i[0][0]),bm_rnd(pathNodes.i[0][1]),bm_rnd(pathNodes.v[0][0]),bm_rnd(pathNodes.v[0][1]));
+            //path2d.bezierCurveTo(pathNodes.o[i-1][0],pathNodes.o[i-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+        }
+        data.lastData = {
+            nodes: pathNodes,
+            path: path2d
+        };
     }
     this.addPathToStyles(path2d);
 };

@@ -1,6 +1,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta charset="UTF-8">
 <head>
+    <style>
+        body{
+            background-color:#ccc;
+            margin: 0px;
+            height: 100%;
+            font-family: sans-serif;
+            font-size: 10px
+            overflow: hidden;
+        }
+        #bodymovin{
+            width:800px;
+            height:800px;
+            background-color:#333;
+            display:block;
+            overflow: hidden;
+            transform: translate3d(0,0,0);
+        }
+    </style>
     <!-- build:js bodymovin.js -->
     <script src="js/main.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
@@ -36,11 +54,12 @@
     <script src="js/module.js"></script>
     <!-- endbuild -->
     <!-- <script src="bodymovin.js"></script> -->
+    <script src="exports/blue/data.js"></script>
 </head>
-<body style="background-color:#ccc; margin: 0px;height: 100%; font-family: sans-serif;font-size: 10px">
+<body>
 
 <!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
-<div style="width:800px;height:800px;background-color:#333;display:inline-block;" id="bodymovin"></div>
+<div id="bodymovin"></div>
 
 <script>
 
@@ -58,7 +77,8 @@
         loop: true,
         prerender: false,
         autoplay: true,
-        path: 'exports/adrock'
+        animationData: bmsmd
+        //path: 'exports/bm'
 
     };
     bodymovin.setQuality(50);

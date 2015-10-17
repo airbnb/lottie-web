@@ -18,6 +18,12 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,globalD
     this.globalData = globalData;
     this.searchShapes(this.data,this.viewData);
     styleUnselectableDiv(this.shape);
+    if(!window.namer){
+        window.namer = 1;
+    }else{
+        window.namer +=1;
+    }
+    this.testId = 'id_' + window.namer;
 }
 
 ShapeItemElement.prototype.appendNodeToParent = BaseElement.prototype.appendNodeToParent;
@@ -83,6 +89,13 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                     d: '',
                     o:'',
                     tr:''
+                },
+                lastDrawn : {
+                    dTr: '',
+                    dNTr: '',
+                    t: '',
+                    mat:[0,0,0,0,0,0],
+                    nodes: null
                 }
             };
             jLen = this.stylesList.length;
@@ -123,13 +136,21 @@ ShapeItemElement.prototype.getElement = function(){
 ShapeItemElement.prototype.hideShape = function(){
     var i, len = this.stylesList.length;
     for(i=len-1;i>=0;i-=1){
-        if(this.stylesList[i].type === 'st'){
-            this.stylesList[i].pathElement.setAttribute('visibility','hidden');
+        if(this.stylesList[i].ld !== 0){
             this.stylesList[i].ld = 0;
-        }else{
-            this.stylesList[i].pathElement.setAttribute('d','M 0,0');
-            this.stylesList[i].ld = 'M 0,0';
+            this.stylesList[i].pathElement.style.display = 'none';
+            if(this.stylesList[i].pathElement.parentNode){
+                this.stylesList[i].parent = this.stylesList[i].pathElement.parentNode;
+                //this.stylesList[i].pathElement.parentNode.removeChild(this.stylesList[i].pathElement);
+            }
         }
+        /*if(this.stylesList[i].type === 'st'){
+         this.stylesList[i].pathElement.setAttribute('visibility','hidden');
+         this.stylesList[i].ld = 0;
+         }else{
+         this.stylesList[i].pathElement.setAttribute('d','M 0,0');
+         this.stylesList[i].ld = 'M 0,0';
+         }*/
     }
 };
 
@@ -192,99 +213,137 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     }
     len = this.stylesList.length;
     for(i=0;i<len;i+=1){
+        if(this.stylesList[i].ld === 0) {
+            this.stylesList[i].ld = 1;
+            this.stylesList[i].pathElement.style.display = 'block';
+            //this.stylesList[i].parent.appendChild(this.stylesList[i].pathElement);
+        }
         if(this.stylesList[i].type === 'fl'){
-            if(this.stylesList[i].d == '' && this.stylesList[i].ld !== ''){
-                this.stylesList[i].pathElement.setAttribute('d','M 0,0');
-                this.stylesList[i].ld = this.stylesList[i].d;
-            }else if(this.stylesList[i].ld !== this.stylesList[i].d){
+            /*if(this.stylesList[i].d == '' && this.stylesList[i].ld !== ''){
+             this.stylesList[i].pathElement.setAttribute('d','M 0,0');
+             this.stylesList[i].ld = this.stylesList[i].d;
+             }else*/ if(this.stylesList[i].ld !== this.stylesList[i].d){
                 this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
                 this.stylesList[i].ld = this.stylesList[i].d;
             }
-        }else if(this.stylesList[i].ld === 0){
-            this.stylesList[i].ld = 1;
-            this.stylesList[i].pathElement.setAttribute('visibility','visible');
-        }
+        }/*else if(this.stylesList[i].ld === 0){
+         this.stylesList[i].ld = 1;
+         this.stylesList[i].pathElement.setAttribute('visibility','visible');
+         }*/
     }
 
 };
 
 ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTransform){
-    var len,i;
-    if(!viewData.renderedFrames[this.globalData.frameNum]){
-
-        var pathNodes = pathData.renderedData[num].path.pathNodes;
-        var t = '';
-        var pathStringTransformed = '';
-        var pathStringNonTransformed = '';
-        if(pathNodes.v){
-            len = pathNodes.v.length;
-            var stops = pathNodes.s ? pathNodes.s : [];
-            for(i=1;i<len;i+=1){
-                if(stops[i-1]){
-                    if(viewData.st){
-                        pathStringNonTransformed += " M"+bm_rnd(stops[i-1][0])+','+bm_rnd(stops[i-1][1]);
+    var len, i,j;
+    var pathNodes = pathData.renderedData[num].path.pathNodes;
+    var t = '';
+    var pathStringTransformed = '';
+    var pathStringNonTransformed = '';
+    if(pathNodes.v){
+        len = pathNodes.v.length;
+        var redraw = true;
+        if(viewData.lastDrawn.nodes){
+            redraw = false;
+            if(groupTransform.mat.props[0] !== viewData.lastDrawn.mat[0] || groupTransform.mat.props[1] !== viewData.lastDrawn.mat[1]
+                || groupTransform.mat.props[2] !== viewData.lastDrawn.mat[2] || groupTransform.mat.props[3] !== viewData.lastDrawn.mat[3]
+                || groupTransform.mat.props[4] !== viewData.lastDrawn.mat[4] || groupTransform.mat.props[5] !== viewData.lastDrawn.mat[5]){
+                redraw = true;
+            }
+            redraw = redraw ? redraw : viewData.lastDrawn.nodes !== pathNodes;
+            /** Todo decide if doing this extra validations makes sense
+             if(!redraw){
+                var lNodes = viewData.lastDrawn.nodes;
+                i = 0;
+                while(i<len){
+                    if(pathNodes.v[i][0] !== lNodes.v[i][0] || pathNodes.v[i][1] !== lNodes.v[i][1]
+                    || pathNodes.i[i][0] !== lNodes.i[i][0] || pathNodes.i[i][1] !== lNodes.i[i][1]
+                    || pathNodes.o[i][0] !== lNodes.o[i][0] || pathNodes.o[i][1] !== lNodes.o[i][1]){
+                        redraw = true;
+                        break;
                     }
-                    if(viewData.fl) {
+                    i+=1;
+                }
+            }*/
+        }
+        if(redraw) {
+            var stops = pathNodes.s ? pathNodes.s : [];
+            for (i = 1; i < len; i += 1) {
+                if (stops[i - 1]) {
+                    if (viewData.st) {
+                        pathStringNonTransformed += " M" + bm_rnd(stops[i - 1][0]) + ',' + bm_rnd(stops[i - 1][1]);
+                    }
+                    if (viewData.fl) {
                         pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[i - 1][0], stops[i - 1][1]);
                     }
-                }else if(i==1){
-                    if(viewData.st) {
+                } else if (i == 1) {
+                    if (viewData.st) {
                         pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
                     }
 
-                    if(viewData.fl) {
+                    if (viewData.fl) {
                         pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                     }
                 }
-                if(viewData.st) {
+                if (viewData.st) {
                     pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[i][0]) + ',' + bm_rnd(pathNodes.i[i][1]) + " " + bm_rnd(pathNodes.v[i][0]) + ',' + bm_rnd(pathNodes.v[i][1]);
                 }
 
-                if(viewData.fl) {
+                if (viewData.fl) {
                     pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
                 }
             }
-            if(len == 1){
-                if(stops[0]){
-                    if(viewData.st) {
+            if (len == 1) {
+                if (stops[0]) {
+                    if (viewData.st) {
                         pathStringNonTransformed += " M" + bm_rnd(stops[0][0]) + ',' + bm_rnd(stops[0][1]);
                     }
 
-                    if(viewData.fl) {
+                    if (viewData.fl) {
                         pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[0][0], stops[0][1]);
                     }
-                }else{
+                } else {
 
-                    if(viewData.st) {
+                    if (viewData.st) {
                         pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
                     }
 
-                    if(viewData.fl) {
+                    if (viewData.fl) {
                         pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                     }
                 }
             }
-            if(pathData.closed && !(pathData.trimmed && !pathNodes.c)){
-                if(viewData.st) {
+            if (pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
+                if (viewData.st) {
                     pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[0][0]) + ',' + bm_rnd(pathNodes.i[0][1]) + " " + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
                 }
 
-                if(viewData.fl) {
+                if (viewData.fl) {
                     pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                 }
             }
-            if(viewData.st) {
+            if (viewData.st) {
                 t = 'matrix(' + groupTransform.mat.props.join(',') + ')';
             }
+            viewData.lastDrawn.dTr = pathStringTransformed;
+            viewData.lastDrawn.dNTr = pathStringNonTransformed;
+            viewData.lastDrawn.t = t;
+            for(j=0;j<6;j+=1){
+                viewData.lastDrawn.mat[j] = groupTransform.mat.props[j];
+            }
+            viewData.lastDrawn.nodes = pathNodes;
         }
-
-        viewData.renderedFrames[this.globalData.frameNum] = {
-            dTr: pathStringTransformed,
-            dNTr: pathStringNonTransformed,
-            t: t
-        };
+    }else{
+        viewData.lastDrawn.dTr = '';
+        viewData.lastDrawn.dNTr = '';
+        viewData.lastDrawn.t = '';
+        for(j=0;j<6;j+=1){
+            viewData.lastDrawn.mat[j] = 0;
+        }
+        viewData.lastDrawn.nodes = null;
     }
-    var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
+    var renderedFrameData = viewData.lastDrawn;
+    viewData.renderedFrames[this.globalData.frameNum] = null;
     len = viewData.elements.length;
     for(i=0;i<len;i+=1){
         if(viewData.elements[i].ty === 'st'){
@@ -293,7 +352,8 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
                 viewData.ld = renderedFrameData.dNTr;
             }
             if(viewData.lt != renderedFrameData.t) {
-                viewData.elements[i].el.setAttribute('transform',renderedFrameData.t);
+                ////viewData.elements[i].el.setAttribute('transform',renderedFrameData.t);
+                viewData.elements[i].el.style.transform = renderedFrameData.t;
                 viewData.lt = renderedFrameData.t;
             }
         }else{
@@ -396,35 +456,35 @@ ShapeItemElement.prototype.destroy = function(items, data){
     this.parentContainer = null;
     this.placeholder = null;
     /*if(!items){
-        items = this.data;
-    }
-    if(!data){
-        data = this.viewData;
-    }
-    var i, len = items.length;
-    var groupTransform,groupMatrix;
-    groupTransform = parentTransform;
-    for(i = 0; i < len; i += 1){
-        if(items[i].ty == 'tr'){
-        }else if(items[i].ty == 'sh'){
-            this.renderPath(items[i],data[i],num,groupTransform);
-        }else if(items[i].ty == 'el'){
-            this.renderPath(items[i],data[i],num,groupTransform);
-            //this.renderEllipse(items[i],data[i],num,groupTransform);
-        }else if(items[i].ty == 'rc'){
-            if(items[i].trimmed){
-                this.renderPath(items[i],data[i],num,groupTransform);
-            }else{
-                this.renderRect(items[i],data[i],num,groupTransform);
-            }
-        }else if(items[i].ty == 'fl'){
-            this.renderFill(items[i],data[i],num,groupTransform);
-        }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],num,groupTransform);
-        }else if(items[i].ty == 'gr'){
-            this.renderShape(num,groupTransform,items[i].it,data[i].it);
-        }else if(items[i].ty == 'tm'){
-            //
-        }
-    }*/
+     items = this.data;
+     }
+     if(!data){
+     data = this.viewData;
+     }
+     var i, len = items.length;
+     var groupTransform,groupMatrix;
+     groupTransform = parentTransform;
+     for(i = 0; i < len; i += 1){
+     if(items[i].ty == 'tr'){
+     }else if(items[i].ty == 'sh'){
+     this.renderPath(items[i],data[i],num,groupTransform);
+     }else if(items[i].ty == 'el'){
+     this.renderPath(items[i],data[i],num,groupTransform);
+     //this.renderEllipse(items[i],data[i],num,groupTransform);
+     }else if(items[i].ty == 'rc'){
+     if(items[i].trimmed){
+     this.renderPath(items[i],data[i],num,groupTransform);
+     }else{
+     this.renderRect(items[i],data[i],num,groupTransform);
+     }
+     }else if(items[i].ty == 'fl'){
+     this.renderFill(items[i],data[i],num,groupTransform);
+     }else if(items[i].ty == 'st'){
+     this.renderStroke(items[i],data[i],num,groupTransform);
+     }else if(items[i].ty == 'gr'){
+     this.renderShape(num,groupTransform,items[i].it,data[i].it);
+     }else if(items[i].ty == 'tm'){
+     //
+     }
+     }*/
 };
