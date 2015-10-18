@@ -174,7 +174,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     groupTransform = parentTransform;
     for(i=len;i>=0;i-=1){
         if(items[i].ty == 'tr'){
-            var mtArr = items[i].renderedData[num].mtArr;
+            var mtArr = items[i].renderedData[num].m;
             groupTransform = data[i].transform;
             groupMatrix = groupTransform.mat;
             groupMatrix.reset();
@@ -352,8 +352,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
                 viewData.ld = renderedFrameData.dNTr;
             }
             if(viewData.lt != renderedFrameData.t) {
-                ////viewData.elements[i].el.setAttribute('transform',renderedFrameData.t);
-                viewData.elements[i].el.style.transform = renderedFrameData.t;
+                viewData.elements[i].el.setAttribute('transform',renderedFrameData.t);
                 viewData.lt = renderedFrameData.t;
             }
         }else{

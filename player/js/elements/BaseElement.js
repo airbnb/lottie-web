@@ -113,8 +113,8 @@ BaseElement.prototype.prepareFrame = function(num){
         return;
     }
     this.currentAnimData = this.data.renderedData[num].an;
-    var mat = this.currentAnimData.matrixArray;
-    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
+    var mat = this.currentAnimData.m;
+    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.a[0],-this.currentAnimData.a[1]);
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
@@ -145,7 +145,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
-    this.finalTransform.opacity *= this.currentAnimData.tr.o;
+    this.finalTransform.opacity *= this.currentAnimData.o;
 
     var mat;
     var finalMat = this.finalTransform.mat;

@@ -46,6 +46,7 @@ function dataFunctionManager(){
             }
             layerData.renderedFrame = {};
             layerData.renderedData = {};
+            layerData.__lastMatrix = [0,0,0,0,0];
             animArray = [];
             lastFrame = -1;
             if(layerData.tm){
@@ -158,6 +159,7 @@ function dataFunctionManager(){
                 }else{
                     transformData.r *= degToRads;
                 }
+                transformData.lastMat = [0,0,0,0,0];
             }else if(arr[i].ty == 'rc' || arr[i].ty == 'el'){
                 arr[i].trimmed = isTrimmed;
                 arr[i].trimmed = true;
@@ -706,23 +708,27 @@ function dataFunctionManager(){
         };
     }());
 
+    function RenderedTransform(a,o,m){
+        this.a = a;
+        this.o = o;
+        this.m = m;
+    }
+
     var mtParams = [0,1,1,0,0];
     function iterateLayers(layers, frameNum,renderType){
-        var dataOb;
         var maskProps;
         var timeRemapped;
 
         var offsettedFrameNum, i, len, renderedData;
-        var j, jLen = layers.length, item, matArr, newData;
+        var j, jLen = layers.length, item, newData;
         for(j=0;j<jLen;j+=1){
             item = layers[j];
             if(!('ks' in layers[j])) {
                 continue;
             }
             offsettedFrameNum = frameNum - item.st;
-            dataOb = {};
-            dataOb.a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.st);
-            dataOb.o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.st);
+            var a = getInterpolatedValue(item.ks.a,offsettedFrameNum, item.st);
+           var o = getInterpolatedValue(item.ks.o,offsettedFrameNum, item.st);
             if(item.ks.p.s){
                 getInterpolatedValue(item.ks.p.x,offsettedFrameNum, item.st,mtParams,3,1);
                 getInterpolatedValue(item.ks.p.y,offsettedFrameNum, item.st,mtParams,4,1);
@@ -732,15 +738,15 @@ function dataFunctionManager(){
             getInterpolatedValue(item.ks.r,offsettedFrameNum, item.st,mtParams,0,1);
             getInterpolatedValue(item.ks.s,offsettedFrameNum, item.st,mtParams,1,2);
             renderedData = {};
-            matArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
             newData = false;
 
-            if(!item.__lastRenderAn || dataOb.o !== item.__lastRenderAn.tr.o || dataOb.a[0] !== item.__lastRenderAn.tr.a[0] || dataOb.a[1] !== item.__lastRenderAn.tr.a[1] || matArr[1] !== item.__lastRenderAn.matrixArray[1] || matArr[2] !== item.__lastRenderAn.matrixArray[2] || matArr[3] !== item.__lastRenderAn.matrixArray[3] || matArr[4] !== item.__lastRenderAn.matrixArray[4] || matArr[5] !== item.__lastRenderAn.matrixArray[5]){
-                renderedData.an = {
-                    tr: dataOb
-                };
-                renderedData.an.matrixArray = matArr;
+            if(!item.__lastRenderAn || o !== item.__lastRenderAn.o || a !== item.__lastRenderAn.a || mtParams[0] !== item.__lastMatrix[0]
+                || mtParams[1] !== item.__lastMatrix[1] || mtParams[2] !== item.__lastMatrix[2] || mtParams[3] !== item.__lastMatrix[3] || mtParams[4] !== item.__lastMatrix[4] ){
+                renderedData.an = new RenderedTransform(a,o,matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]))
                 item.__lastRenderAn = renderedData.an;
+                for(i=0;i<5;i+=1){
+                    item.__lastMatrix[i] = mtParams[i];
+                }
             }else{
                 renderedData.an = item.__lastRenderAn;
             }
@@ -986,14 +992,21 @@ function dataFunctionManager(){
                     shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rounder(strokeColor[0]),bm_rounder(strokeColor[1]),bm_rounder(strokeColor[2]));
                 }
             }else if(shapeItem.ty == 'tr'){
-                shapeItem.renderedData[offsettedFrameNum] = {
-                    a : getInterpolatedValue(shapeItem.a,offsettedFrameNum, startTime),
-                    o : getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime)
-                };
+                var a = getInterpolatedValue(shapeItem.a,offsettedFrameNum, startTime);
+                var o = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime);
                 getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime,mtParams,1,2);
                 getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime,mtParams,0,1);
                 getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime,mtParams,3,2);
-                shapeItem.renderedData[offsettedFrameNum].mtArr = matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]);
+                if(shapeItem.lastData && shapeItem.lastData.a == a && shapeItem.lastData.o == o && shapeItem.lastMat[0] == mtParams[0]
+                    && shapeItem.lastMat[1] == mtParams[1] && shapeItem.lastMat[2] == mtParams[2] && shapeItem.lastMat[3] == mtParams[3] && shapeItem.lastMat[4] == mtParams[4]){
+                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastData;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum] = new RenderedTransform(a,o,matrixInstance.getMatrixArrayFromParams(mtParams[0],mtParams[1],mtParams[2],mtParams[3],mtParams[4]));
+                    for(j=0;j<5;j+=1){
+                        shapeItem.lastMat[j] = mtParams[j];
+                    }
+                    shapeItem.lastData = shapeItem.renderedData[offsettedFrameNum];
+                }
             }else if(shapeItem.ty == 'tm'){
                 trimS = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime);
                 trimE = getInterpolatedValue(shapeItem.e,offsettedFrameNum, startTime);

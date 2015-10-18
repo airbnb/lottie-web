@@ -200,7 +200,6 @@ SVGRenderer.prototype.renderFrame = function(num){
     if(this.lastFrame == num || this.destroyed){
         return;
     }
-    window.contador = 0;
     if(num === null){
         num = this.lastFrame;
     }else{
@@ -214,5 +213,4 @@ SVGRenderer.prototype.renderFrame = function(num){
     for (i = 0; i < len; i++) {
         this.elements[i].renderFrame(num - this.layers[i].st);
     }
-    //console.log('window.contador: ',window.contador);
 };

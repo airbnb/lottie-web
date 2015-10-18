@@ -201,7 +201,7 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,parentStyles
 
 CVShapeItemElement.prototype.renderTransform = function(animData){
     var tr = animData.renderedData[this.frameNum];
-    var matrixValue = tr.mtArr;
+    var matrixValue = tr.m;
     this.transform.mat.transform(matrixValue[0],matrixValue[1],matrixValue[2],matrixValue[3],matrixValue[4],matrixValue[5]).translate(-tr.a[0],-tr.a[1]);
     this.transform.opacity *= tr.o;
 };
