@@ -378,7 +378,7 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
 };
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
-    this.segments.push([Math.round(this.animationData.animation.ff*this.frameRate),Math.floor(this.animationData.animation.totalFrames+this.animationData.animation.ff*this.frameRate)]);
+    this.segments.push([Math.round(this.firstFrame),Math.floor(this.totalFrames+this.firstFrame)]);
     if(forceFlag){
         this.adjustSegment(this.segments.shift());
     }

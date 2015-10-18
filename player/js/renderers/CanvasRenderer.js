@@ -316,8 +316,8 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.globalData.frameNum = num - this.animationItem.firstFrame;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
-        //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-        this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
+        this.canvasContext.canvas.width = this.canvasContext.canvas.width;
+        //this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
     }else{
         this.save();
     }
