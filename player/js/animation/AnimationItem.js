@@ -212,7 +212,6 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.trigger('bm:config_ready');
     this.loadSegments();
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-    this.renderer.buildItems(this.animationData.layers);
     this.updaFrameModifier();
     if(this.renderer.globalData.fontManager){
         this.waitForFontsLoaded();

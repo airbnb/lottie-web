@@ -131,10 +131,19 @@ var bm_dataManager = (function () {
         }
     }
     
+    function deleteLayerParams(layers) {
+        var i, len = layers.length;
+        for (i = 0; i < len; i += 1) {
+            delete layers[i].isValid;
+            delete layers[i].render;
+            delete layers[i].enabled;
+            if (layers[i].ty === bm_layerElement.layerTypes.precomp && layers[i].layers) {
+                deleteLayerParams(layers[i].layers);
+            }
+        }
+    }
+    
     function deleteExtraParams(data, settings) {
-        
-        
-        
         if (data.fonts.length === 0) {
             delete data.fonts;
             delete data.chars;
@@ -143,16 +152,7 @@ var bm_dataManager = (function () {
                 delete data.chars;
             }
         }
-        var layers = data.layers;
-        var i, len = layers.length;
-        for (i = 0; i < len; i += 1) {
-            delete layers[i].isValid;
-            delete layers[i].render;
-            delete layers[i].enabled;
-            if (layers[i].ty === bm_layerElement.layerTypes.precomp && layers[i].layers) {
-                deleteExtraParams(layers[i].layers);
-            }
-        }
+        deleteLayerParams(data.layers);
     }
     
     function saveData(data, destinationPath, config) {

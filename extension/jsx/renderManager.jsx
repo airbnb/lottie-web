@@ -82,6 +82,7 @@ var bm_renderManager = (function () {
         pendingComps.length = 0;
         var exportData = ob.renderData.exportData;
         exportData.assets = [];
+        exportData.comps = [];
         exportData.fonts = [];
         exportData.v = '3.0.4';
         exportData.layers = [];
