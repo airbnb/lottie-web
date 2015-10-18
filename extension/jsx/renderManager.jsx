@@ -81,7 +81,7 @@ var bm_renderManager = (function () {
         var exportData = ob.renderData.exportData;
         exportData.assets = [];
         exportData.comps = [];
-        exportData.v = '3.0.3';
+        exportData.v = '3.0.4';
         exportData.layers = [];
         exportData.ip = comp.workAreaStart * comp.frameRate;
         exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
@@ -155,7 +155,6 @@ var bm_renderManager = (function () {
     
     ob.renderData = {
         exportData : {
-            animation : {},
             assets : []
         }
     };

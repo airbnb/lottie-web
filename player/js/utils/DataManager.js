@@ -194,7 +194,7 @@ function dataFunctionManager(){
         animationData.__renderedFrames = new Array(bm_floor(animationData.tf));
         animationData.__renderFinished = false;
         frameRate = animationData.fr;
-        completeLayers(animationData.layers, animationData.comps);
+        completeLayers(animationData.layers, animationData.assets);
     }
 
     function convertLayerNameToID(string){
