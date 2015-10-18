@@ -1,4 +1,4 @@
-var BaseElement = function (data,parentContainer,globalData){
+var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.globalData = globalData;
     this.data = data;
     this.ownMatrix = new Matrix();
@@ -7,11 +7,12 @@ var BaseElement = function (data,parentContainer,globalData){
         op: 1
     };
     this.matteElement = null;
-    this.renderedFrames = [];
     this.lastData = {};
+    this.renderedFrames = [];
     this.parentContainer = parentContainer;
-    this.layerId = randomString(10);
+    this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.hidden = false;
+    this.placeholder = placeholder;
     this.init();
 };
 
@@ -22,6 +23,16 @@ BaseElement.prototype.init = function(){
     }
     if(this.data.eff){
         //this.createEffectsManager(this.data);
+    }
+};
+
+BaseElement.prototype.appendNodeToParent = function(node) {
+    if(this.placeholder){
+        var g = this.placeholder.phElement;
+        g.parentNode.insertBefore(node, g);
+        //g.parentNode.removeChild(g);
+    }else{
+        this.parentContainer.appendChild(node);
     }
 };
 
@@ -82,15 +93,15 @@ BaseElement.prototype.createElements = function(){
         if(this.data.tt){
             this.matteElement = document.createElementNS(svgNS,'g');
             this.matteElement.appendChild(this.layerElement);
-            this.parentContainer.appendChild(this.matteElement);
+            this.appendNodeToParent(this.matteElement);
         }else{
-            this.parentContainer.appendChild(this.layerElement);
+            this.appendNodeToParent(this.layerElement);
         }
         this.maskedElement = this.layerElement;
     }else if(this.data.tt){
         this.matteElement = document.createElementNS(svgNS,'g');
         this.matteElement.setAttribute('id',this.layerId);
-        this.parentContainer.appendChild(this.matteElement);
+        this.appendNodeToParent(this.matteElement);
         this.layerElement = this.matteElement;
     }else{
         this.layerElement = this.parentContainer;
@@ -98,16 +109,19 @@ BaseElement.prototype.createElements = function(){
 };
 
 BaseElement.prototype.prepareFrame = function(num){
+    if(!this.data.renderedData[num]){
+        return;
+    }
     this.currentAnimData = this.data.renderedData[num].an;
-    var mat = this.currentAnimData.matrixArray;
-    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.tr.a[0],-this.currentAnimData.tr.a[1]);
+    var mat = this.currentAnimData.m;
+    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.a[0],-this.currentAnimData.a[1]);
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
-    if(this.data.ty == 'NullLayer'){
-        return;
+    if(!this.data.renderedData[num] || this.data.ty === 3){
+        return false;
     }
-    if(this.data.inPoint - this.data.startTime <= num && this.data.outPoint - this.data.startTime > num)
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){
             this.isVisible = true;
@@ -131,7 +145,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
-    this.finalTransform.opacity *= this.currentAnimData.tr.o;
+    this.finalTransform.opacity *= this.currentAnimData.o;
 
     var mat;
     var finalMat = this.finalTransform.mat;
@@ -156,12 +170,12 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }else{
         if(this.isVisible){
             if(!parentTransform){
-                this.finalTransform.mat.props[0] = this.ownMatrix.props[0];
-                this.finalTransform.mat.props[1] = this.ownMatrix.props[1];
-                this.finalTransform.mat.props[2] = this.ownMatrix.props[2];
-                this.finalTransform.mat.props[3] = this.ownMatrix.props[3];
-                this.finalTransform.mat.props[4] = this.ownMatrix.props[4];
-                this.finalTransform.mat.props[5] = this.ownMatrix.props[5];
+                finalMat.props[0] = this.ownMatrix.props[0];
+                finalMat.props[1] = this.ownMatrix.props[1];
+                finalMat.props[2] = this.ownMatrix.props[2];
+                finalMat.props[3] = this.ownMatrix.props[3];
+                finalMat.props[4] = this.ownMatrix.props[4];
+                finalMat.props[5] = this.ownMatrix.props[5];
             }else{
                 mat = this.ownMatrix.props;
                 finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
@@ -170,20 +184,21 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     }
     if(this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){
-            this.renderedFrames[this.globalData.frameNum] = {
-                tr:'matrix('+finalMat.props.join(',')+')',
-                o:this.finalTransform.opacity
-            };
+            var tr = 'matrix('+finalMat.props.join(',')+')';
+            if(this.lastData && this.lastData.tr === tr && this.lastData.o === this.finalTransform.opacity){
+                this.renderedFrames[this.globalData.frameNum] = this.lastData;
+            }else{
+                this.renderedFrames[this.globalData.frameNum] = new RenderedFrame(tr,this.finalTransform.opacity);
+            }
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
-            this.lastData.tr = renderedFrameData.tr;
             this.layerElement.setAttribute('transform',renderedFrameData.tr);
         }
         if(this.lastData.o !== renderedFrameData.o){
-            this.lastData.o = renderedFrameData.o;
             this.layerElement.setAttribute('opacity',renderedFrameData.o);
         }
+        this.lastData = renderedFrameData;
     }
 
     return this.isVisible;
@@ -224,6 +239,14 @@ BaseElement.prototype.getType = function(){
 
 BaseElement.prototype.getLayerSize = function(){
     return {w:this.data.width,h:this.data.height};
+};
+
+BaseElement.prototype.resetHierarchy = function(){
+    if(!this.hierarchy){
+        this.hierarchy = [];
+    }else{
+        this.hierarchy.length = 0;
+    }
 };
 
 BaseElement.prototype.getHierarchy = function(){

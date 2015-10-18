@@ -6,11 +6,8 @@
 	</ExtensionList>
 	<ExecutionEnvironment>
 		<HostList>
-            <!-- Uncomment Host tags according to the apps you want your panel to support -->
-            <!-- Photoshop -->
-
             <Host Name="AEFT" Version="[13.0,13.9]" />
-            <Host Name="PHSP" Version="[15.0,15.9]" />
+            <Host Name="PPRO" Version="[8.0,8.9]" />
 
             <!-- Illustrator -->
             <!-- <Host Name="ILST" Version="[18.0,18.9]" />-->

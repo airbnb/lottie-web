@@ -4,6 +4,17 @@ var bm_main = (function () {
     'use strict';
     var ob = {};
     
+    function browseFile() {
+        //openDlg()
+        var f = new File(Folder.desktop.absoluteURI);
+        var openFileData = f.openDlg();
+        if (openFileData !== null) {
+            bm_eventDispatcher.sendEvent('bm:file:uri', openFileData.fsName);
+        }
+
+    }
+    
+    ob.browseFile = browseFile;
 
     return ob;
 }());

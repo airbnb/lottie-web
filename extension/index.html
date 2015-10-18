@@ -10,6 +10,7 @@
 <link  id="hostStyle" rel="stylesheet" href="css/compsRender.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/message.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/info.css"/>
+<link  id="hostStyle" rel="stylesheet" href="css/snapshot.css"/>
 
 <title></title>
 </head>
@@ -19,7 +20,9 @@
     <div id="content">
         <div id='compsSelection'>
             <div class='buttons'>
-                <button class='generalButton settings'>Info</button>
+                <button class='generalButton rightFloat settings'>Player</button>
+                <div class='buttonSeparator rightFloat'></div>
+                <button class='generalButton rightFloat snapshot'>Snapshot</button>
                 <button class='generalButton refresh'>Refresh</button>
                 <div class='buttonSeparator'></div>
                 <button class='generalButton highlightButton render disabled'>Render</button>
@@ -30,6 +33,7 @@
                     <th class='th state'>Selected</th>
                     <th class='th standalone'><span>Standalone</span><span class='question'>?</span></th>
                     <th class='th glyphs'>Glyphs</th>
+                    <th class='th settings'>Settings</th>
                     <th class='th name'>Name</th>
                     <th class='th destination'>Destination Folder</th>
                 </tr>
@@ -37,6 +41,28 @@
             <tbody class='compsList'>
             </tbody>
             </table>
+            <div class='settingsView'>
+                <div class='settingsBox'>
+                    <div class='segments'>
+                        <h3>Segments</h3>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Split animation in segments</div>
+                        </div>
+                        <div class='segmentsTime'>
+                            <div>Time for each segment (in seconds)</div>
+                            <input class='inputText' type="text" />
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
+                    <div class='buttons'>
+                        <button class='generalButton cancel'>Cancel</button>
+                        <button class='generalButton return'>Save</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id='compsRender'>
             <div class='renders'>
@@ -44,6 +70,35 @@
             <div class='buttons'>
                 <button class='generalButton highlightButton cancel'>Cancel</button>
                 <button class='generalButton highlightButton return'>Return</button>
+            </div>
+        </div>
+        <div id='snapshot'>
+            <div class='header'>
+                <h1>Select animation</h1>
+                <div class='buttons'>
+                    <button class='generalButton rightFloat current'>Current renders</button>
+                    <div class='buttonSeparator rightFloat'></div>
+                    <button class='generalButton rightFloat browse'>Browse</button>
+                    <button class='generalButton return'>Back</button>
+                </div>
+            </div>
+            <div class="animContainer"></div>
+            <div class="controls">
+                <div class="slider"></div>
+                <div class="thumb"></div>
+                <button class="snapshotButton generalButton highlightButton">Take Snapshot</button>
+                <div class="frames">
+                    <div class="current" contenteditable="true"></div>
+                    <div class="total" >/<span class='value'></span></div>
+                </div>
+            </div>
+            <div class="rendersSelection">
+                <div class="topSpace"></div>
+                <div class="listContainer">
+                
+                </div>
+                <div>
+                </div>
             </div>
         </div>
         <div id='info'>
@@ -95,6 +150,7 @@
     <script src="js/animations/sucess.js"></script>
     <script src="js/animations/folder.js"></script>
     <script src="js/animations/check.js"></script>
+    <script src="js/animations/gear.js"></script>
 
     <script src="js/themeManager.js"></script>
     <script src="js/controllers/CompSelectionController.js"></script>
@@ -102,6 +158,7 @@
     <script src="js/controllers/messageController.js"></script>
     <script src="js/controllers/InfoController.js"></script>
     <script src="js/utils/storage.js"></script>
+    <script src="js/controllers/snapshotController.js"></script>
     <script src="js/main.js"></script>
 
         

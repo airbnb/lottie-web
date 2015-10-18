@@ -1,6 +1,24 @@
 var subframeEnabled = false;
 var cachedColors = {};
-var bm_rnd = Math.round;
+var bm_rounder = Math.round;
+var bm_rnd;
+var bm_pow = Math.pow;
+var bm_sqrt = Math.sqrt;
+var bm_abs = Math.abs;
+var bm_floor = Math.floor;
+var bm_min = Math.min;
+var defaultCurveSegments = 2;
+
+function roundValues(flag){
+    if(flag){
+        bm_rnd = Math.round;
+    }else{
+        bm_rnd = function(val){
+            return val;
+        };
+    }
+}
+roundValues(false);
 
 function styleDiv(element){
     element.style.position = 'absolute';
@@ -19,6 +37,45 @@ function styleUnselectableDiv(element){
     element.style.webkitUserSelect = 'none';
     element.style.oUserSelect = 'none';
 
+}
+
+function addEventListener(eventName, callback){
+
+    if (!this._cbs){
+        this._cbs = [];
+    }
+
+    if (!this._cbs[eventName]){
+        this._cbs[eventName] = [];
+    }
+
+    this._cbs[eventName].push(callback);
+
+}
+
+function triggerEvent(eventName, args){
+
+    if (!this._cbs){
+        this._cbs = [];
+    }
+
+    var delay = this._cbs.length === 0;
+    var that = this;
+
+    if (this._cbs[eventName]) {
+        if (delay){
+            setTimeout(function(){
+                for (var i = 0; i < that._cbs[eventName].length; i++){
+                    that._cbs[eventName][i](args);
+                }
+            }, 0);
+        }
+        else {
+            for (var i = 0; i < this._cbs[eventName].length; i++){
+                this._cbs[eventName][i](args);
+            }
+        }
+    }
 }
 
 function randomString(length, chars){
@@ -89,3 +146,8 @@ var fillColorToString = (function(){
         return colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]];
     };
 }());
+
+function RenderedFrame(tr,o) {
+    this.tr = tr;
+    this.o = o;
+}

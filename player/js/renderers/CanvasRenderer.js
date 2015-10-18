@@ -23,29 +23,60 @@ function CanvasRenderer(animationItem, config){
     this.elements = [];
 }
 
+CanvasRenderer.prototype.createItem = function(layer){
+    switch(layer.ty){
+        case 0:
+            return this.createComp(layer);
+        case 1:
+            return this.createSolid(layer);
+        case 2:
+            return this.createImage(layer);
+        case 4:
+            return this.createShape(layer);
+        case 5:
+            return this.createText(layer);
+        case 99:
+            return this.createPlaceHolder(layer);
+        default:
+            return this.createBase(layer);
+    }
+    return this.createBase(layer,parentContainer);
+};
+
 CanvasRenderer.prototype.buildItems = function(layers,elements){
     if(!elements){
         elements = this.elements;
     }
-    var count = 0, i, len = layers.length;
+    var i, len = layers.length;
     for (i = 0; i < len; i++) {
-        if (layers[i].ty == 'StillLayer') {
-            count++;
-            elements.push(this.createImage(layers[i]));
-        } else if (layers[i].ty == 'PreCompLayer') {
-            elements.push(this.createComp(layers[i]));
+        elements[i] = this.createItem(layers[i]);
+        if (layers[i].ty === 0) {
             var elems = [];
             this.buildItems(layers[i].layers,elems);
             elements[elements.length - 1].setElements(elems);
-        } else if (layers[i].ty == 'SolidLayer') {
-            elements.push(this.createSolid(layers[i]));
-        } else if (layers[i].ty == 'ShapeLayer') {
-            elements.push(this.createShape(layers[i]));
-        } else if (layers[i].ty == 'TextLayer') {
-            elements.push(this.createText(layers[i]));
-        }else{
-            elements.push(this.createBase(layers[i]));
-            //console.log('NO TYPE: ',layers[i]);
+        }
+    }
+};
+
+CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
+    var i, len = layers.length;
+    if(!elements){
+        elements = this.elements;
+    }
+    var j, jLen = elements.length, elems, placeholder;
+    for(i=0;i<len;i+=1){
+        j = 0;
+        while(j<jLen){
+            if(elements[j].data.id == layers[i].id){
+                elements[j] = this.createItem(layers[i],parentContainer);
+                if (layers[i].ty === 0) {
+                    elems = [];
+                    this.buildItems(layers[i].layers,elems);
+                    elements[j].setElements(elems);
+                }
+                break;
+            }
+            j += 1;
         }
     }
 };
@@ -60,6 +91,10 @@ CanvasRenderer.prototype.createShape = function (data) {
 
 CanvasRenderer.prototype.createText = function (data) {
     return new CVTextElement(data, this.globalData);
+};
+
+CanvasRenderer.prototype.createPlaceHolder = function (data) {
+    return new PlaceHolderElement(data, null,this.globalData);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
@@ -156,6 +191,8 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.animationItem.container = document.createElement('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';
+        this.animationItem.container.style.transform = 'translate3d(0,0,0)';
+        this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
         this.canvasContext = this.animationItem.container.getContext('2d');
@@ -165,13 +202,13 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.bmCtx = new BM_CanvasRenderingContext2D(this);
     this.globalData.renderer = this;
-    this.globalData.totalFrames = Math.floor(animData.animation.totalFrames);
-    this.globalData.compWidth = animData.animation.compWidth;
-    this.globalData.compHeight = animData.animation.compHeight;
-    this.layers = animData.animation.layers;
+    this.globalData.totalFrames = Math.floor(animData.tf);
+    this.globalData.compWidth = animData.w;
+    this.globalData.compHeight = animData.h;
+    this.layers = animData.layers;
     this.transformCanvas = {};
-    this.transformCanvas.w = animData.animation.compWidth;
-    this.transformCanvas.h = animData.animation.compHeight;
+    this.transformCanvas.w = animData.w;
+    this.transformCanvas.h = animData.h;
     this.updateContainerSize();
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
@@ -212,6 +249,8 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty];
     this.clipper = new BM_Path2D();
     this.clipper.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.globalData.cWidth = elementWidth;
+    this.globalData.cHeight = elementHeight;
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
@@ -222,21 +261,24 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
     for (i = len - 1; i >= 0; i--) {
         layerData = layers[i];
         if (layerData.parent !== undefined) {
-            this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements);
+            this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements, true);
         }
-        if (layerData.ty == 'PreCompLayer') {
+        if (layerData.ty == 0) {
             this.buildStage(null, layerData.layers, elements[i].getElements());
         }
     }
 };
 
-CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements) {
+CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements,resetHierarchyFlag) {
     var i=0, len = layers.length;
+    if(resetHierarchyFlag){
+        element.resetHierarchy();
+    }
     while(i<len){
         if(layers[i].ind === parentName){
             element.getHierarchy().push(elements[i]);
             if (layers[i].parent !== undefined) {
-                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements);
+                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements, false);
             }
         }
         i += 1;
@@ -249,7 +291,7 @@ CanvasRenderer.prototype.prepareFrame = function(num){
     }
     var i, len = this.elements.length;
     for (i = 0; i < len; i++) {
-        this.elements[i].prepareFrame(num - this.layers[i].startTime);
+        this.elements[i].prepareFrame(num - this.layers[i].st);
     }
 };
 
@@ -283,7 +325,8 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.globalData.frameNum = num - this.animationItem.firstFrame;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
-        this.canvasContext.canvas.width = this.canvasContext.canvas.width;
+        //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
+        this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
     }else{
         this.save();
     }

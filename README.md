@@ -1,6 +1,21 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.0.3
+- nested strokes and shapes fix
+- reverse rectangles fix
+- mask fix
+- reversed non closed shapes fix
+
+## V 3.0.2
+- bug fix for rounded rectangles
+- default quality settings modified
+
+## V 3.0.0
+- bodymovin.setQuality to optimize player performance. explained below.
+- segments: export animation in segments. more below.
+- snapshot: take an svg snapshot of the animation to use as poster. more below.
+
 ## V 2.1.3
 - rounding path and mask coords. should give a perf boost and fixes sime glitches.
 - fixed closing rects.
@@ -22,23 +37,30 @@ After Effects plugin for exporting animations to svg + js or canvas + js
 
 ### Option 1:
 
-- Close After Effects
-- Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:
-WINDOWS:
-C:\Program Files (x86)\Common Files\Adobe\CEP\extensions
-C:\<username>\AppData\Roaming\Adobe\CEP\extensions
-MAC:
-/Library~/Library/Application Support/Adobe/CEP/extensions
-/Application Support/Adobe/CEP/extensions
+- Close After Effects<br/>
+- Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:<br/>
+WINDOWS:<br/>
+C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or<br/>
+C:\<username>\AppData\Roaming\Adobe\CEP\extensions<br/>
+MAC:<br/>
+/Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+(you can open the terminal and type:<br/>
+cp -R YOURUNZIPEDFOLDERPATH/extension /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+then type:<br/>
+ls /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+to make sure it was copied correctly type)<br/>
 
-- Edit the registry key:
-On Mac, open the file ~/Library/Preferences/com.adobe.CSXS.4.plist and add a row with key PlayerDebugMode, of type String, and value 1.
-On Windows, open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.4 and add a key named PlayerDebugMode, of type String, and value 1.
+- Edit the registry key:<br/>
+WINDOWS:<br/>
+open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.<br/>
+MAC:<br/>
+open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
 
 ### Option 2:
 
 Install the zxp manually following the instructions here:
-https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
+https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
+Jump directly to "Install third-party extensions"
 
 
 ### For both
@@ -53,6 +75,10 @@ https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
 - Select Destination Folder
 - Click Render
 - look for the exported json file (if you had images or AI layers on your animation, there will be an images folder with the exported files)
+
+#### Settings:
+**segments:** export animation in segments. If you have a main comp with more than one layer you can export the animation in parts so you won't load all at once. The exporter will segment your main comp considering where a layer starts in time.<br/>
+**snapshot:** take an svg snapshot of the animation to use as poster. After you render your animation, you can take a snapshot of any frame in the animation and save it to your disk. I recommend to pass the svg through an svg optimizer like https://jakearchibald.github.io/svgomg/ and play aroud with their settings.<br/>
 
 ### HTML
 - get the bodymovin.js file from the build/player/ folder for the latest build
@@ -123,14 +149,16 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
 <br/>
 
 ## Usage
-bodymovin has 6 main methods:
+bodymovin has 8 main methods:
 **bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.setSpeed()** -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
 **bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url
+**bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
+**bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+
 
 See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations
 
@@ -160,7 +188,7 @@ http://codepen.io/collection/nVYWZR/ <br/>
 ## Support
 - The script supports precomps, shapes, solids, images, null objects,
 - Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
-- It supports masks and inverted masks but only in "Add" mode. Maybe other modes will come but it has a huge performance hit.
+- It supports masks and inverted masks. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping (yeah!)
 - The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
 - No effects whatsoever. (stroke is on it's way)

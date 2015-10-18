@@ -22,13 +22,28 @@ var bm_compsManager = (function () {
                 absoluteURI: '',
                 selected: false,
                 standalone: false,
-                glyphs: true
+                glyphs: true,
+                settings: {
+                    segmented: false,
+                    segmentTime: 10
+                }
             };
         }
         
         compData.name = comp.name;
         
         return compData;
+    }
+    
+    function setCompositionSettings(id, data) {
+        var i = 0, len = compositions.length, compData;
+        while (i < len) {
+            if (compositions[i].id === id) {
+                compositions[i].settings = data;
+                break;
+            }
+            i += 1;
+        }
     }
     
     function setCompositionSelectionState(id, selectedFlag) {
@@ -95,6 +110,7 @@ var bm_compsManager = (function () {
         var saveFileData = f.saveDlg();
         if (saveFileData !== null) {
             compData.absoluteURI = saveFileData.absoluteURI;
+            compData.settings.fsName = saveFileData.fsName;
             compData.destination = saveFileData.fsName;
         }
         bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
@@ -165,7 +181,7 @@ var bm_compsManager = (function () {
             renderNextComposition();
             return;
         }
-        bm_renderManager.render(comp, destination, settings);
+        bm_renderManager.render(comp, destination, settings, renderingCompositions[currentRenderingComposition].settings);
     }
     
     function render() {
@@ -205,6 +221,7 @@ var bm_compsManager = (function () {
         setCompositionStandaloneState : setCompositionStandaloneState,
         setCompositionGlyphsState : setCompositionGlyphsState,
         setCompositionDestinationFolder : setCompositionDestinationFolder,
+        setCompositionSettings : setCompositionSettings,
         searchCompositionDestination : searchCompositionDestination,
         renderComplete : renderComplete,
         browseFolder : browseFolder,

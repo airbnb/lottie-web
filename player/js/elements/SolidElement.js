@@ -1,5 +1,5 @@
-function ISolidElement(data,parentContainer,globalData){
-    this.parent.constructor.call(this,data,parentContainer,globalData);
+function ISolidElement(data,parentContainer,globalData, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
 }
 createElement(BaseElement, ISolidElement);
 
@@ -7,18 +7,21 @@ ISolidElement.prototype.createElements = function(){
     this.parent.createElements.call(this);
 
     var rect = document.createElementNS(svgNS,'rect');
-    rect.setAttribute('width',this.data.width);
-    rect.setAttribute('height',this.data.height);
+    rect.setAttribute('width',this.data.sw);
+    rect.setAttribute('height',this.data.sh);
     /*rect.setAttribute('width',1);
     rect.setAttribute('height',1);*/
-    rect.setAttribute('fill',this.data.color);
+    rect.setAttribute('fill',this.data.sc);
+    if(this.layerElement === this.parentContainer){
+        this.appendNodeToParent(rect);
+    }else{
     this.layerElement.appendChild(rect);
+    }
     this.rectElement = rect;
 };
 
 ISolidElement.prototype.hide = function(){
     if(!this.hidden){
-        //this.rectElement.setAttribute('opacity','0');
         this.rectElement.setAttribute('visibility','hidden');
         this.hidden = true;
     }
@@ -31,27 +34,26 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
         return;
     }
     if(this.hidden){
-        this.lastData.o = -1;
         this.hidden = false;
-        //this.rectElement.setAttribute('opacity', '1');
-        this.rectElement.setAttribute('visibility','visible');
+        this.rectElement.setAttribute('visibility', 'visible');
     }
     if(!this.data.hasMask){
         if(!this.renderedFrames[this.globalData.frameNum]){
-            this.renderedFrames[this.globalData.frameNum] = {
-                tr: 'matrix('+this.finalTransform.mat.props.join(',')+')',
-                o: this.finalTransform.opacity
-            };
+            var tr = 'matrix('+this.finalTransform.mat.props.join(',')+')';
+            if(this.lastData && this.lastData.tr === tr && this.lastData.o === this.finalTransform.opacity){
+                this.renderedFrames[this.globalData.frameNum] = this.lastData;
+            }else{
+                this.renderedFrames[this.globalData.frameNum] = new RenderedFrame(tr,this.finalTransform.opacity);
+            }
         }
         var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
         if(this.lastData.tr != renderedFrameData.tr){
-            this.lastData.tr = renderedFrameData.tr;
             this.rectElement.setAttribute('transform',renderedFrameData.tr);
         }
         if(this.lastData.o !== renderedFrameData.o){
-            this.lastData.o = renderedFrameData.o;
             this.rectElement.setAttribute('opacity',renderedFrameData.o);
         }
+        this.lastData = renderedFrameData;
     }
 };
 

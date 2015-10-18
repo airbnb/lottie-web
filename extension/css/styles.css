@@ -34,6 +34,10 @@ body::-webkit-scrollbar-thumb {
     border-radius: .4em;
 }
 
+.rightFloat{
+    float: right;
+}
+
 #content {
     margin-right:auto;
     margin-left:auto;
@@ -87,8 +91,41 @@ button.disabled, button.disabled:hover{
     cursor: default;
 }
 
+div.checkboxCombo {
+    padding-top: 10px;
+}
+
+div.checkboxCombo div.checkbox{
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    padding: 3px;
+    background-color: #484043;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+div.checkboxCombo div.checkbox .circle{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #D23641;
+    display: none;
+}
+
+div.checkboxCombo div.checkbox.selected .circle{
+    display: inherit;
+    vertical-align: top;
+}
+
+div.checkboxCombo div.checkboxLabel{
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .buttonSeparator{
     width: 10px;
+    height: 1px;
     display: inline-block;
 }
 
