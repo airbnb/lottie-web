@@ -160,9 +160,22 @@ function dataFunctionManager(){
                     transformData.r *= degToRads;
                 }
                 transformData.lastMat = [0,0,0,0,0];
-            }else if(arr[i].ty == 'rc' || arr[i].ty == 'el'){
+            }else if(arr[i].ty == 'rc'){
                 arr[i].trimmed = isTrimmed;
                 arr[i].trimmed = true;
+                arr[i].lastData = {
+                    pos:null,
+                    size:null,
+                    round:0
+                }
+            }else if(arr[i].ty == 'el'){
+                arr[i].trimmed = isTrimmed;
+                arr[i].trimmed = true;
+                arr[i].lastData = {
+                    pos:null,
+                    size:null
+                }
+
             }
         }
     }
@@ -761,8 +774,7 @@ function dataFunctionManager(){
                     }
 
                     maskProps[i].paths[offsettedFrameNum] = interpolateShape(maskProps[i],offsettedFrameNum, item.st,renderType,true);
-                    maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.st);
-                    maskProps[i].opacity[offsettedFrameNum] = maskProps[i].opacity[offsettedFrameNum] instanceof Array ? maskProps[i].opacity[offsettedFrameNum][0]/100 : maskProps[i].opacity[offsettedFrameNum]/100;
+                    maskProps[i].opacity[offsettedFrameNum] = getInterpolatedValue(maskProps[i].o,offsettedFrameNum, item.st)/100;
                 }
             }
             if((frameNum < item.ip || frameNum > item.op)){
@@ -881,25 +893,30 @@ function dataFunctionManager(){
             }else if(shapeItem.ty == 'fl'){
                 fillColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime);
                 fillOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime);
-                shapeItem.renderedData[offsettedFrameNum] = {
-                    opacity:  fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
-                };
-                if(renderType == 'canvas'){
-                    roundColor(fillColor);
-                    shapeItem.renderedData[offsettedFrameNum].color = fillColor;
+                if(shapeItem.lastData && shapeItem.lastData.opacity == fillOpacity && shapeItem.lastColor == fillColor){
+                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastData;
                 }else{
-                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rounder(fillColor[0]),bm_rounder(fillColor[1]),bm_rounder(fillColor[2]));
+                    shapeItem.renderedData[offsettedFrameNum] = {
+                        opacity:  fillOpacity instanceof Array ? fillOpacity[0] : fillOpacity
+                    };
+                    fillColor[0] = bm_rounder(fillColor[0]);
+                    fillColor[1] = bm_rounder(fillColor[1]);
+                    fillColor[2] = bm_rounder(fillColor[2]);
+                    if(renderType == 'canvas'){
+                        shapeItem.renderedData[offsettedFrameNum].color = fillColor;
+                    }else{
+                        shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(fillColor[0],fillColor[1],fillColor[2]);
+                    }
+                    shapeItem.lastData = shapeItem.renderedData[offsettedFrameNum];
+                    shapeItem.lastColor = fillColor;
                 }
             }else if(shapeItem.ty == 'rc'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime);
                 elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime);
                 elmRound = getInterpolatedValue(shapeItem.r,offsettedFrameNum, startTime);
-                if(!shapeItem.trimmed){
-                    shapeItem.renderedData[offsettedFrameNum] = {
-                        position : elmPos,
-                        size : elmSize,
-                        roundness : elmRound
-                    };
+                if(!addedTrim.length && shapeItem.lastData.pos && shapeItem.lastData.pos[0] == elmPos[0] && shapeItem.lastData.pos[1] == elmPos[1]
+                    && shapeItem.lastData.size[0] == elmSize[0] && shapeItem.lastData.size[1] == elmSize[1] && elmRound == shapeItem.lastData.round){
+                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastRender;
                 }else{
                     shapeItem.closed = true;
                     shapeItem.renderedData[offsettedFrameNum] = {
@@ -908,53 +925,63 @@ function dataFunctionManager(){
                         }
                     };
                     shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound,shapeItem.d),true, addedTrim, false);
+                    shapeItem.lastData.pos = elmPos;
+                    shapeItem.lastData.size = elmSize;
+                    shapeItem.lastData.round = elmRound;
+                    shapeItem.lastData = {
+                        pos: elmPos,
+                        size: elmSize,
+                        round: elmRound
+                    };
+                    shapeItem.lastRender = shapeItem.renderedData[offsettedFrameNum];
                 }
             }else if(shapeItem.ty == 'el'){
                 elmPos = getInterpolatedValue(shapeItem.p,offsettedFrameNum, startTime);
                 elmSize = getInterpolatedValue(shapeItem.s,offsettedFrameNum, startTime);
-                shapeItem.renderedData[offsettedFrameNum] = {
-                    p : elmPos,
-                    size : elmSize
-                };
-                if(renderType == 'svg'){
-
-                    var pathNodes = {
-                        v: new Array(4),
-                        i:new Array(4),
-                        o:new Array(4)
+                if(!addedTrim.length && shapeItem.renderData && shapeItem.lastData.p[0] == elmPos[0] && shapeItem.lastData.p[1] == elmPos[1] && shapeItem.lastData.size[0] == elmSize[0] && shapeItem.lastData.size[1] == elmSize[1]){
+                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.renderData;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum] = {
+                        p : elmPos,
+                        size : elmSize
                     };
-                    if(shapeItem.d !== 2 && shapeItem.d !== 3){
-                        pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
-                        pathNodes.i[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
-                        pathNodes.o[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
-                        pathNodes.v[1] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
-                        pathNodes.i[1] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
-                        pathNodes.o[1] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
-                        pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
-                        pathNodes.i[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
-                        pathNodes.o[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
-                        pathNodes.v[3] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
-                        pathNodes.i[3] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
-                        pathNodes.o[3] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
-                    }else{
-                        pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
-                        pathNodes.o[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
-                        pathNodes.i[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
-                        pathNodes.v[1] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
-                        pathNodes.o[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
-                        pathNodes.i[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
-                        pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
-                        pathNodes.o[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
-                        pathNodes.i[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
-                        pathNodes.v[3] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
-                        pathNodes.o[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
-                        pathNodes.i[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
-                    }
+                    shapeItem.lastData.p = elmPos;
+                    shapeItem.lastData.size = elmSize;
+                    if(renderType == 'svg'){
 
-                    if(!shapeItem.trimmed){
-                        shapeItem.renderedData[offsettedFrameNum].path = {pathNodes:pathNodes};
-                        shapeItem.closed = true;
-                    }else{
+                        var pathNodes = {
+                            v: new Array(4),
+                            i:new Array(4),
+                            o:new Array(4)
+                        };
+                        if(shapeItem.d !== 2 && shapeItem.d !== 3){
+                            pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
+                            pathNodes.i[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                            pathNodes.o[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                            pathNodes.v[1] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
+                            pathNodes.i[1] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                            pathNodes.o[1] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                            pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
+                            pathNodes.i[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                            pathNodes.o[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                            pathNodes.v[3] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
+                            pathNodes.i[3] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                            pathNodes.o[3] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                        }else{
+                            pathNodes.v[0] = [elmPos[0],elmPos[1]-elmSize[1]/2];
+                            pathNodes.o[0] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                            pathNodes.i[0] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] - elmSize[1]/2];
+                            pathNodes.v[1] = [elmPos[0] - elmSize[0]/2,elmPos[1]];
+                            pathNodes.o[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                            pathNodes.i[1] = [elmPos[0] - (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                            pathNodes.v[2] = [elmPos[0],elmPos[1]+elmSize[1]/2];
+                            pathNodes.o[2] = [elmPos[0] + (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                            pathNodes.i[2] = [elmPos[0] - (elmSize[0]/2)*0.55,elmPos[1] + (elmSize[1]/2)];
+                            pathNodes.v[3] = [elmPos[0] + elmSize[0]/2,elmPos[1]];
+                            pathNodes.o[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] - (elmSize[1]/2)*0.55];
+                            pathNodes.i[3] = [elmPos[0] + (elmSize[0]/2),elmPos[1] + (elmSize[1]/2)*0.55];
+                        }
+
                         shapeItem.renderedData[offsettedFrameNum] = {
                             path: {
                                 closed: true
@@ -963,33 +990,41 @@ function dataFunctionManager(){
                         shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(pathNodes,true, addedTrim, false);
                         shapeItem.closed = true;
                     }
+                    shapeItem.renderData = shapeItem.renderedData[offsettedFrameNum];
                 }
+
             }else if(shapeItem.ty == 'st'){
                 strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime);
                 strokeOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime);
                 strokeWidth = getInterpolatedValue(shapeItem.w,offsettedFrameNum, startTime);
-                shapeItem.renderedData[offsettedFrameNum] = {
-                    opacity : strokeOpacity instanceof Array ? strokeOpacity[0] : strokeOpacity,
-                    width : strokeWidth instanceof Array ? strokeWidth[0] : strokeWidth
-                };
-                if(shapeItem.d){
-                    var dashes = [];
-                    jLen = shapeItem.d.length;
-                    var val;
-                    for(j=0;j<jLen;j+=1){
-                        val = getInterpolatedValue(shapeItem.d[j].v,offsettedFrameNum, startTime);
-                        dashes.push({
-                            v : val instanceof Array ? val[0] : val,
-                            n : shapeItem.d[j].n
-                        });
-                    }
-                    shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
-                }
-                if(renderType == 'canvas'){
-                    roundColor(strokeColor);
-                    shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
+                if(!shapeItem.d && shapeItem.lastData && shapeItem.lastData.opacity === strokeOpacity && shapeItem.lastData.width === strokeWidth && shapeItem.lastColor === strokeColor){
+                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastData;
                 }else{
-                    shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(bm_rounder(strokeColor[0]),bm_rounder(strokeColor[1]),bm_rounder(strokeColor[2]));
+                    shapeItem.renderedData[offsettedFrameNum] = {
+                        opacity : strokeOpacity,
+                        width : strokeWidth
+                    };
+                    if(shapeItem.d){
+                        var dashes = [];
+                        jLen = shapeItem.d.length;
+                        var val;
+                        for(j=0;j<jLen;j+=1){
+                            val = getInterpolatedValue(shapeItem.d[j].v,offsettedFrameNum, startTime);
+                            dashes.push({
+                                v : val,
+                                n : shapeItem.d[j].n
+                            });
+                        }
+                        shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
+                    }
+                    roundColor(strokeColor);
+                    if(renderType == 'canvas'){
+                        shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
+                    }else{
+                        shapeItem.renderedData[offsettedFrameNum].color = rgbToHex(strokeColor[0],strokeColor[1],strokeColor[2]);
+                    }
+                    shapeItem.lastData = shapeItem.renderedData[offsettedFrameNum];
+                    shapeItem.lastColor = strokeColor;
                 }
             }else if(shapeItem.ty == 'tr'){
                 var a = getInterpolatedValue(shapeItem.a,offsettedFrameNum, startTime);
