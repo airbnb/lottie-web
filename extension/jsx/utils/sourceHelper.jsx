@@ -2,7 +2,7 @@
 /*global layerElement, bm_generalUtils, bm_eventDispatcher, bm_renderManager, bm_compsManager, File, app*/
 var bm_sourceHelper = (function () {
     'use strict';
-    var compSources = [], imageSources = [], currentExportingImage, destinationPath, assetsArray, folder, helperComp, currentCompID;
+    var compSources = [], imageSources = [], currentExportingImage, destinationPath, assetsArray, folder, helperComp, currentCompID, imageCount = 0;
     
     function checkCompSource(item) {
         var arr = compSources;
@@ -37,8 +37,9 @@ var bm_sourceHelper = (function () {
             width: item.source.width,
             height: item.source.height,
             name: item.name,
-            id: bm_generalUtils.random(7)
+            id: 'image_' + imageCount
         });
+        imageCount += 1;
         return arr[arr.length - 1].id;
     }
     
@@ -106,6 +107,7 @@ var bm_sourceHelper = (function () {
     function reset() {
         compSources.length = 0;
         imageSources.length = 0;
+        imageCount = 0;
     }
     
     return {

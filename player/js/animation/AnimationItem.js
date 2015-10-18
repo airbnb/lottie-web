@@ -76,6 +76,8 @@ AnimationItem.prototype.setParams = function(params) {
         }else{
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
+        this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
+        this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
         xhr.open('GET', params.path, true);
         xhr.send();
         xhr.onreadystatechange = function () {
@@ -137,10 +139,10 @@ AnimationItem.prototype.includeLayers = function(data) {
             i += 1;
         }
     }
-    if(data.comps){
-        len = data.comps.length;
+    if(data.assets){
+        len = data.assets.length;
         for(i = 0; i < len; i += 1){
-            this.animationData.comps.push(data.comps[i]);
+            this.animationData.assets.push(data.assets[i]);
         }
     }
     dataManager.completeData(this.animationData);
@@ -161,7 +163,7 @@ AnimationItem.prototype.loadNextSegment = function() {
     this.timeCompleted = segment.time * this.frameRate;
     var xhr = new XMLHttpRequest();
     var self = this;
-    var segmentPath = this.path+'data_' + this.segmentPos + '.json';
+    var segmentPath = this.path+this.fileName+'_' + this.segmentPos + '.json';
     this.segmentPos += 1;
     xhr.open('GET', segmentPath, true);
     xhr.send();
@@ -193,8 +195,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
     this.renderer.configAnimation(animData);
-    if(!animData.comps){
-        animData.comps = [];
+    if(!animData.assets){
+        animData.assets = [];
     }
 
     this.animationData._id = this.animationID;

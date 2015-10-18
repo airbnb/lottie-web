@@ -54,7 +54,16 @@ var bm_dataManager = (function () {
                 }
             }
         }
-        data.comps = segmentComps;
+        if (data.assets) {
+            data.assets = data.assets.concat(segmentComps);
+            if (data.comps) {
+                delete data.comps;
+            }
+        } else {
+            data.assets = segmentComps;
+        }
+        
+        var timeData;
         
         while (currentSegment < totalFrames) {
             currentPeriod = null;
@@ -80,12 +89,11 @@ var bm_dataManager = (function () {
                         }
                     }
                     if (!currentPeriod) {
+                        timeData = currentSegment / frameRate;
                         currentPeriod = {
-                            time: currentSegment / frameRate,
-                            id: bm_generalUtils.random(5),
-                            layers: [],
-                            comps: []
+                            layers: []
                         };
+                        segmentCount += 1;
                     }
                     var randomId = bm_generalUtils.random(10);
                     layers[i].id = randomId;
@@ -97,11 +105,10 @@ var bm_dataManager = (function () {
                 }
             }
             if (currentPeriod) {
-                currentPeriod.comps = segmentComps;
+                currentPeriod.assets = segmentComps;
                 animationSegments.push(currentPeriod);
                 segments.push({
-                    time: currentPeriod.time,
-                    id: currentPeriod.id
+                    time: timeData
                 });
             }
             currentSegment += segmentLength;
@@ -143,9 +150,11 @@ var bm_dataManager = (function () {
         if (config.segmented) {
             splitAnimation(data, config.segmentTime);
             var i, len = animationSegments.length;
+            var filePathName = destinationPath.substr(destinationPath.lastIndexOf('/') + 1);
+            filePathName = filePathName.substr(0, filePathName.lastIndexOf('.'));
             for (i = 0; i < len; i += 1) {
                 segmentPath = destinationPath.substr(0, destinationPath.lastIndexOf('/') + 1);
-                segmentPath += 'data_' + i + '.json';
+                segmentPath += filePathName + '_' + i + '.json';
                 dataFile = new File(segmentPath);
                 dataFile.open('w', 'TEXT', '????');
                 string = JSON.stringify(animationSegments[i]);
@@ -157,6 +166,14 @@ var bm_dataManager = (function () {
                     bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
                 }
             }
+        } else if (data.comps) {
+            if (data.assets) {
+                data.assets = data.assets.concat(data.comps);
+            } else {
+                data.assets = data.comps;
+            }
+            data.comps = null;
+            delete data.comps;
         }
         dataFile = new File(destinationPath);
         dataFile.open('w', 'TEXT', '????');
