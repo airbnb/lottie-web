@@ -21,11 +21,11 @@ var bm_compsManager = (function () {
                 destination: '',
                 absoluteURI: '',
                 selected: false,
-                standalone: false,
-                glyphs: true,
                 settings: {
                     segmented: false,
-                    segmentTime: 10
+                    segmentTime: 10,
+                    standalone: false,
+                    glyphs: true
                 }
             };
         }
@@ -38,8 +38,18 @@ var bm_compsManager = (function () {
     function setCompositionSettings(id, data) {
         var i = 0, len = compositions.length, compData;
         while (i < len) {
-            if (compositions[i].id === id) {
-                compositions[i].settings = data;
+            compData = compositions[i];
+            if (compData.id === id) {
+                compData.settings = data;
+                if (compData.destination) {
+                    var lastInd = compData.destination.lastIndexOf('.');
+                    compData.destination = compData.destination.substr(0, lastInd);
+                    compData.destination += compData.settings.standalone ? '.js' : '.json';
+                    lastInd = compData.absoluteURI.lastIndexOf('.');
+                    compData.absoluteURI = compData.absoluteURI.substr(0, lastInd);
+                    compData.absoluteURI += compData.settings.standalone ? '.js' : '.json';
+                    bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
+                }
                 break;
             }
             i += 1;
@@ -51,39 +61,6 @@ var bm_compsManager = (function () {
         while (i < len) {
             if (compositions[i].id === id) {
                 compositions[i].selected = selectedFlag;
-                break;
-            }
-            i += 1;
-        }
-    }
-    
-    function setCompositionStandaloneState(id, selectedFlag) {
-        var i = 0, len = compositions.length, compData;
-        while (i < len) {
-            if (compositions[i].id === id) {
-                compData = compositions[i];
-                compData.standalone = selectedFlag;
-                if (compData.destination) {
-                    var lastInd = compData.destination.lastIndexOf('.');
-                    compData.destination = compData.destination.substr(0, lastInd);
-                    compData.destination += compData.standalone ? '.js' : '.json';
-                    lastInd = compData.absoluteURI.lastIndexOf('.');
-                    compData.absoluteURI = compData.absoluteURI.substr(0, lastInd);
-                    compData.absoluteURI += compData.standalone ? '.js' : '.json';
-                    bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
-                }
-                break;
-            }
-            i += 1;
-        }
-    }
-    
-    function setCompositionGlyphsState(id, selectedFlag) {
-        var i = 0, len = compositions.length, compData;
-        while (i < len) {
-            if (compositions[i].id === id) {
-                compData = compositions[i];
-                compData.glyphs = selectedFlag;
                 break;
             }
             i += 1;
@@ -104,7 +81,7 @@ var bm_compsManager = (function () {
             uri = compData.absoluteURI;
         } else {
             uri = Folder.desktop.absoluteURI + '/data';
-            uri += compData.standalone ? '.js' : '.json';
+            uri += compData.settings.standalone ? '.js' : '.json';
         }
         var f = new File(uri);
         var saveFileData = f.saveDlg();
@@ -160,18 +137,12 @@ var bm_compsManager = (function () {
             return;
         }
         projectComps = bm_projectManager.getCompositions();
-        var settings = {
-            standalone: null,
-            glyphs: null
-        };
-        var comp, destination, standalone, glyphs;
+        var comp, destination;
         var i = 0, len = projectComps.length;
         while (i < len) {
             if (projectComps[i].id === renderingCompositions[currentRenderingComposition].id) {
                 comp = projectComps[i];
                 destination = renderingCompositions[currentRenderingComposition].absoluteURI;
-                settings.standalone = renderingCompositions[currentRenderingComposition].standalone;
-                settings.glyphs = renderingCompositions[currentRenderingComposition].glyphs;
                 break;
             }
             i += 1;
@@ -181,7 +152,7 @@ var bm_compsManager = (function () {
             renderNextComposition();
             return;
         }
-        bm_renderManager.render(comp, destination, settings, renderingCompositions[currentRenderingComposition].settings);
+        bm_renderManager.render(comp, destination, renderingCompositions[currentRenderingComposition].settings);
     }
     
     function render() {
@@ -218,8 +189,6 @@ var bm_compsManager = (function () {
     ob = {
         getCompositions : getCompositions,
         setCompositionSelectionState : setCompositionSelectionState,
-        setCompositionStandaloneState : setCompositionStandaloneState,
-        setCompositionGlyphsState : setCompositionGlyphsState,
         setCompositionDestinationFolder : setCompositionDestinationFolder,
         setCompositionSettings : setCompositionSettings,
         searchCompositionDestination : searchCompositionDestination,

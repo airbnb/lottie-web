@@ -4,7 +4,7 @@ var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
     var compositions = [];
-    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td standaloneTd"><div class="hideExtra standalone"></div></td><td class="td glyphsTd"><div class="hideExtra glyphs">Shape</div></td><td class="td settingsTd"><div class="hideExtra settings"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
+    var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td settingsTd"><div class="hideExtra settings"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
 
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
@@ -31,6 +31,8 @@ var compSelectionController = (function () {
         
         var ob = {}, settingsView, compData, tempData = {}, callback;
         var segments, segmentsCheckbox, segmentsTextBox;
+        var standalone, standaloneCheckbox;
+        var glyphs, glyphsCheckbox;
         
         function updateSegmentsData() {
             if (tempData.segmented) {
@@ -45,9 +47,36 @@ var compSelectionController = (function () {
             segmentsTextBox.val(tempData.segmentTime);
         }
         
+        function updateStandaloneData() {
+            if (tempData.standalone) {
+                standaloneCheckbox.addClass('selected');
+            } else {
+                standaloneCheckbox.removeClass('selected');
+            }
+        }
+        
+        function updateGlyphsData() {
+            if (tempData.glyphs) {
+                glyphsCheckbox.addClass('selected');
+            } else {
+                glyphsCheckbox.removeClass('selected');
+            }
+        }
+        
         function handleSegmentCheckboxClick() {
             tempData.segmented = !tempData.segmented;
             updateSegmentsData();
+        }
+        
+        function handleStandaloneCheckboxClick() {
+            console.log('handleStandaloneCheckboxClick');
+            tempData.standalone = !tempData.standalone;
+            updateStandaloneData();
+        }
+        
+        function handleGlyphsCheckboxClick() {
+            tempData.glyphs = !tempData.glyphs;
+            updateGlyphsData();
         }
         
         function cancelSettings() {
@@ -68,9 +97,17 @@ var compSelectionController = (function () {
             segments.find('.checkboxCombo').on('click', handleSegmentCheckboxClick);
             segmentsCheckbox = segments.find('.checkbox');
             segmentsTextBox = segments.find('.inputText');
+            standalone = settingsView.find('.standalone');
+            standalone.find('.checkboxCombo').on('click', handleStandaloneCheckboxClick);
+            standaloneCheckbox = standalone.find('.checkbox');
+            glyphs = settingsView.find('.glyphs');
+            glyphs.find('.checkboxCombo').on('click', handleGlyphsCheckboxClick);
+            glyphsCheckbox = glyphs.find('.checkbox');
             settingsView.find('.buttons .cancel').on('click', cancelSettings);
             settingsView.find('.buttons .return').on('click', saveSettings);
             updateSegmentsData();
+            updateStandaloneData();
+            updateGlyphsData();
         }
         
         function show(data, cb) {
@@ -79,6 +116,8 @@ var compSelectionController = (function () {
             tempData = JSON.parse(JSON.stringify(compData));
             callback = cb;
             updateSegmentsData();
+            updateStandaloneData();
+            updateGlyphsData();
         }
         
         ob.init = init;
@@ -110,35 +149,7 @@ var compSelectionController = (function () {
             var eScript = 'bm_compsManager.searchCompositionDestination(' + comp.id + ')';
             csInterface.evalScript(eScript);
         }
-        
-        function handleStandaloneClick() {
-            if (!comp.selected && !comp.standalone) {
-                handleStateClick();
-            }
-            comp.standalone = !comp.standalone;
-            if (comp.standalone) {
-                comp.animCheck.play();
-            } else {
-                comp.animCheck.goToAndStop(0);
-            }
-            var eScript = 'bm_compsManager.setCompositionStandaloneState(' + comp.id + ',' + comp.standalone + ')';
-            csInterface.evalScript(eScript);
-        }
-        
-        function handleGlyphsClick() {
-            if (!comp.selected && !comp.standalone) {
-                handleStateClick();
-            }
-            console.log('comp.glyphs: ', comp.glyphs);
-            comp.glyphs = !comp.glyphs;
-            if (comp.glyphs) {
-                elem.find('.glyphsTd .glyphs').html('Shape');
-            } else {
-                elem.find('.glyphsTd .glyphs').html('Font');
-            }
-            var eScript = 'bm_compsManager.setCompositionGlyphsState(' + comp.id + ',' + comp.glyphs + ')';
-            csInterface.evalScript(eScript);
-        }
+    
         function saveSettings(data) {
             comp.settings = data;
             var eScript = 'bm_compsManager.setCompositionSettings(' + comp.id + ',' + JSON.stringify(comp.settings) + ')';
@@ -160,8 +171,6 @@ var compSelectionController = (function () {
         elem.find('.stateTd').on('click', handleStateClick);
         elem.find('.settingsTd').on('click', showElemSetings);
         elem.find('.settingsTd').hover(overElemSetings, outElemSetings);
-        elem.find('.standaloneTd').on('click', handleStandaloneClick);
-        elem.find('.glyphsTd').on('click', handleGlyphsClick);
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
@@ -192,19 +201,6 @@ var compSelectionController = (function () {
             };
             var anim = bodymovin.loadAnimation(params);
             comp.anim = anim;
-            
-            animContainer = comp.elem.find('.standalone')[0];
-            animData = JSON.parse(checkData);
-            params = {
-                animType: 'canvas',
-                wrapper: animContainer,
-                loop: false,
-                autoplay: false,
-                prerender: true,
-                animationData: animData
-            };
-            anim = bodymovin.loadAnimation(params);
-            comp.animCheck = anim;
 
             animContainer = comp.elem.find('.settings')[0];
             animData = JSON.parse(gearData);
@@ -226,8 +222,6 @@ var compSelectionController = (function () {
         comp.active = true;
         comp.name = item.name;
         comp.selected = item.selected;
-        comp.standalone = item.standalone;
-        comp.glyphs = item.glyphs;
         comp.destination = item.destination;
         comp.settings = item.settings;
         var elem = comp.elem;
@@ -241,7 +235,6 @@ var compSelectionController = (function () {
         compsListContainer.append(comp.elem);
         if (!comp.resized) {
             comp.anim.resize();
-            comp.animCheck.resize();
             comp.resized = true;
         }
     }

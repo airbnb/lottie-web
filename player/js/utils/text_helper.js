@@ -210,6 +210,7 @@ var TextData_Helper = (function(){
         var xPos,yPos;
         var i, len;
         var documentData = data.t.d;
+        console.log('documentData: ',documentData);
         var letters = documentData.l;
         if('m' in data.t.p) {
             var mask = data.masksProperties[data.t.p.m];

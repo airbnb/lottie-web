@@ -224,7 +224,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
 AnimationItem.prototype.waitForFontsLoaded = (function(){
     function checkFontsLoaded(){
         if(this.renderer.globalData.fontManager.loaded){
-            this.renderer.buildItems(this.animationData.animation.layers);
+            this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
             setTimeout(checkFontsLoaded.bind(this),20);
@@ -398,7 +398,7 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
 };
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
-    this.segments.push([Math.round(this.animationData.animation.ff*this.frameRate),Math.floor(this.animationData.animation.totalFrames+this.animationData.animation.ff*this.frameRate)]);
+    this.segments.push([Math.round(this.firstFrame),Math.floor(this.totalFrames+this.firstFrame)]);
     if(forceFlag){
         this.adjustSegment(this.segments.shift());
     }
