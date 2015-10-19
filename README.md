@@ -2,7 +2,7 @@
 After Effects plugin for exporting animations to svg + js or canvas + js
 
 ## V 3.0.5
-- major memory management optimizations
+- major memory management optimizations. and more to come.
 - big performance improvements for svg animations
 - segments fixes
 
