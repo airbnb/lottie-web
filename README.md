@@ -1,6 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.0.5
+- major memory management optimizations
+- big performance improvements for svg animations
+- segments fixes
+
 ## V 3.0.3
 - nested strokes and shapes fix
 - reverse rectangles fix
