@@ -198,6 +198,10 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(!animData.assets){
         animData.assets = [];
     }
+    if(animData.comps) {
+        animData.assets = animData.assets.concat(animData.comps);
+        animData.comps = null;
+    }
 
     this.animationData._id = this.animationID;
     this.animationData._animType = this.animType;
@@ -378,7 +382,8 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
 };
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
-    this.segments.push([Math.round(this.firstFrame),Math.floor(this.totalFrames+this.firstFrame)]);
+    this.segments.length = 0;
+    this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
     if(forceFlag){
         this.adjustSegment(this.segments.shift());
     }
