@@ -1,8 +1,9 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global app */
+/*global app, bm_eventDispatcher */
 
 var bm_projectManager = (function () {
     'use strict';
+    var commands = {};
     var project;
     function getItemType(item) {
         var getType = {};
@@ -26,7 +27,17 @@ var bm_projectManager = (function () {
         return itemType;
     }
     
+    function searchCommands() {
+        commands.shapesFromText = app.findMenuCommandId("Create Shapes from Text");
+        commands.duplicate = app.findMenuCommandId("Duplicate");
+    }
+    
+    function getCommandID(key) {
+        return commands[key];
+    }
+    
     function getCompositions() {
+    
         project = app.project;
         var arr = [];
         if (!project) {
@@ -42,7 +53,9 @@ var bm_projectManager = (function () {
     }
     
     var ob = {
-        getCompositions: getCompositions
+        getCompositions: getCompositions,
+        searchCommands: searchCommands,
+        getCommandID: getCommandID
     };
     return ob;
 }());

@@ -31,6 +31,11 @@ var mainController = (function () {
         console.log(JSON.stringify(ev.data));
     });
     
+    function loadCommands() {
+        var eScript = 'bm_projectManager.searchCommands()';
+        csInterface.evalScript(eScript);
+    }
+    
     function loadJSX(fileName, cb) {
         var extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION) + "/jsx/";
         csInterface.evalScript('$.evalFile("' + extensionRoot + fileName + '")', cb);
@@ -48,6 +53,8 @@ var mainController = (function () {
         mainViews.push({id: 'snapshot', controller: snapshotController});
         snapshotController.init(csInterface);
         loadJSX('initializer.jsx');
+        
+        loadCommands();
         
         showView('selection');
         

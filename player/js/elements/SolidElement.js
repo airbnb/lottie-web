@@ -15,7 +15,7 @@ ISolidElement.prototype.createElements = function(){
     if(this.layerElement === this.parentContainer){
         this.appendNodeToParent(rect);
     }else{
-        this.layerElement.appendChild(rect);
+    this.layerElement.appendChild(rect);
     }
     this.rectElement = rect;
 };

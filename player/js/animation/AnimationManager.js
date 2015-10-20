@@ -5,7 +5,7 @@ var animationManager = (function(){
     var isPaused = true;
     var len = 0;
 
-    function registerAnimation(element){
+    function registerAnimation(element, animationData){
         if(!element){
             return null;
         }
@@ -17,7 +17,7 @@ var animationManager = (function(){
             i+=1;
         }
         var animItem = new AnimationItem();
-        animItem.setData(element);
+        animItem.setData(element, animationData);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
         return animItem;
@@ -76,7 +76,7 @@ var animationManager = (function(){
             }
         }
         initTime = nowTime;
-        //setTimeout(resume,10);
+        //setTimeout(resume,60);
         requestAnimationFrame(resume);
     }
 
@@ -115,9 +115,28 @@ var animationManager = (function(){
         }
     }
 
-    function searchAnimations(){
+    function searchAnimations(animationData, standalone, renderer){
         var animElements = document.getElementsByClassName('bodymovin');
-        Array.prototype.forEach.call(animElements,registerAnimation);
+        var i, len = animElements.length;
+        for(i=0;i<len;i+=1){
+            if(renderer){
+                animElements[i].setAttribute('data-bm-type',renderer);
+            }
+            registerAnimation(animElements[i], animationData);
+        }
+        if(standalone && len === 0){
+            if(!renderer){
+                renderer = 'svg';
+            }
+            var body = document.getElementsByTagName('body')[0];
+            body.innerHTML = ''
+            var div = document.createElement('div');
+            div.style.width = '100%';
+            div.style.height = '100%';
+            div.setAttribute('data-bm-type',renderer);
+            body.appendChild(div);
+            registerAnimation(div, animationData);
+        }
     }
 
     function resize(){

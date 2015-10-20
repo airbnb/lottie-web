@@ -55,6 +55,24 @@
                         </div>
                         <div class='settingsSeparator'></div>
                     </div>
+                    <div class='standalone'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Standalone</div>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
+                    <div class='glyphs'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Glyphs (unchecked uses Fonts)</div>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
                     <div class='buttons'>
                         <button class='generalButton cancel'>Cancel</button>
                         <button class='generalButton return'>Save</button>
@@ -66,8 +84,8 @@
             <div class='renders'>
             </div>
             <div class='buttons'>
-                <button class='generalButton cancel'>Cancel</button>
-                <button class='generalButton return'>Return</button>
+                <button class='generalButton highlightButton cancel'>Cancel</button>
+                <button class='generalButton highlightButton return'>Return</button>
             </div>
         </div>
         <div id='snapshot'>
@@ -133,6 +151,10 @@
         </div>
     </div>
     
+    <svg width='10000' height='10000' style='position:absolute;bottom:0;left:-10000px' preserveAspectRatio='meet xMidYMid' viewBox='0 0 10000 10000'>
+        <text id='textHelper' x='5000' y='5000' font-size='20' font-family='Grafolita Script' fill='#00ff00'>holala</text>
+    </svg>
+    
     <script src="js/libs/CSInterface.js"></script>
     <script src="js/libs/jquery-2.0.2.min.js"></script>
     <script src="js/libs/bodymovin.js"></script>
@@ -143,6 +165,7 @@
     <script src="js/animations/rendering.js"></script>
     <script src="js/animations/sucess.js"></script>
     <script src="js/animations/folder.js"></script>
+    <script src="js/animations/check.js"></script>
     <script src="js/animations/gear.js"></script>
 
     <script src="js/themeManager.js"></script>
@@ -150,6 +173,7 @@
     <script src="js/controllers/CompRenderController.js"></script>
     <script src="js/controllers/messageController.js"></script>
     <script src="js/controllers/InfoController.js"></script>
+    <script src="js/utils/storage.js"></script>
     <script src="js/controllers/snapshotController.js"></script>
     <script src="js/main.js"></script>
 

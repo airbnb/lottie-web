@@ -1,4 +1,4 @@
-/*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
+/*jslint vars: true , plusplus: true, continue:true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global bm_keyframeHelper, bm_eventDispatcher*/
 var bm_shapeHelper = (function () {
     'use strict';
@@ -43,9 +43,9 @@ var bm_shapeHelper = (function () {
         if (ks.i) {
             var init = 0;
             if (isClosed) {
-                newI[0] = ks.o[0];
-                newO[0] = ks.i[0];
-                newV[0] = ks.v[0];
+            newI[0] = ks.o[0];
+            newO[0] = ks.i[0];
+            newV[0] = ks.v[0];
                 init = 1;
             }
             len = ks.i.length;
@@ -70,12 +70,15 @@ var bm_shapeHelper = (function () {
         }
     }
     
-    function iterateProperties(iteratable, array, frameRate) {
+    function iterateProperties(iteratable, array, frameRate, isText) {
         var i, len = iteratable.numProperties, ob, prop, itemType;
         for (i = 0; i < len; i += 1) {
             prop = iteratable.property(i + 1);
             if (prop.enabled) {
                 itemType = getItemType(prop.matchName);
+                if (isText && itemType !== shapeItemTypes.shape && itemType !== shapeItemTypes.group && itemType !== shapeItemTypes.merge) {
+                    continue;
+                }
                 if (itemType === shapeItemTypes.shape) {
                     ob = {};
                     ob.ty = itemType;
@@ -85,7 +88,7 @@ var bm_shapeHelper = (function () {
                         reverseShape(ob.ks, ob.closed);
                     }
                     array.push(ob);
-                } else if (itemType === shapeItemTypes.rect) {
+                } else if (itemType === shapeItemTypes.rect && !isText) {
                     ob = {};
                     ob.ty = itemType;
                     ob.d = prop.property("Shape Direction").value;
@@ -161,16 +164,18 @@ var bm_shapeHelper = (function () {
                         ty : itemType,
                         it: []
                     };
-                    iterateProperties(prop.property('Contents'), ob.it, frameRate);
-                    var trOb = {};
-                    var transformProperty = prop.property('Transform');
-                    trOb.ty = 'tr';
-                    trOb.p = bm_keyframeHelper.exportKeyframes(transformProperty.property('Position'), frameRate);
-                    trOb.a = bm_keyframeHelper.exportKeyframes(transformProperty.property('Anchor Point'), frameRate);
-                    trOb.s = bm_keyframeHelper.exportKeyframes(transformProperty.property('Scale'), frameRate);
-                    trOb.r = bm_keyframeHelper.exportKeyframes(transformProperty.property('Rotation'), frameRate);
-                    trOb.o = bm_keyframeHelper.exportKeyframes(transformProperty.property('Opacity'), frameRate);
-                    ob.it.push(trOb);
+                    iterateProperties(prop.property('Contents'), ob.it, frameRate, isText);
+                    if (!isText) {
+                        var trOb = {};
+                        var transformProperty = prop.property('Transform');
+                        trOb.ty = 'tr';
+                        trOb.p = bm_keyframeHelper.exportKeyframes(transformProperty.property('Position'), frameRate);
+                        trOb.a = bm_keyframeHelper.exportKeyframes(transformProperty.property('Anchor Point'), frameRate);
+                        trOb.s = bm_keyframeHelper.exportKeyframes(transformProperty.property('Scale'), frameRate);
+                        trOb.r = bm_keyframeHelper.exportKeyframes(transformProperty.property('Rotation'), frameRate);
+                        trOb.o = bm_keyframeHelper.exportKeyframes(transformProperty.property('Opacity'), frameRate);
+                        ob.it.push(trOb);
+                    }
                     array.push(ob);
                 }
             }
@@ -178,10 +183,10 @@ var bm_shapeHelper = (function () {
         }
     }
     
-    function exportShape(layerInfo, layerOb, frameRate) {
+    function exportShape(layerInfo, layerOb, frameRate, isText) {
         var shapes = [], contents = layerInfo.property('Contents');
         layerOb.shapes = shapes;
-        iterateProperties(contents, shapes, frameRate);
+        iterateProperties(contents, shapes, frameRate, isText);
     }
     
     ob.exportShape = exportShape;
