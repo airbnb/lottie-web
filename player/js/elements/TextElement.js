@@ -40,12 +40,14 @@ ITextElement.prototype.createElements = function(){
 
     var letters = documentData.l;
     len = letters.length;
-    var tSpan;
+    var tSpan, tShapeG;
     var matrixHelper = this.mHelper;
-    var shapes, shapeStr, j, jLen, k, kLen, pathNodes;
+    var shapes, shapeStr = '', j, jLen, k, kLen, pathNodes;
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
-            tSpan = document.createElementNS(svgNS,'path');
+            if(this.data.t.a.length || i === 0 || 1 === 1){
+                tSpan = document.createElementNS(svgNS,'path');
+            }
         }else{
             tSpan = document.createElementNS(svgNS,'text');
         }
@@ -54,15 +56,19 @@ ITextElement.prototype.createElements = function(){
         tSpan.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
-            var tShapeG = document.createElementNS(svgNS,'g');
-            tShapeG.appendChild(tSpan);
+            if(this.data.t.a.length || i === 0 || 1 === 1) {
+                //tShapeG = document.createElementNS(svgNS, 'g');
+                //tShapeG.appendChild(tSpan);
+            }
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData = charData.data;
             matrixHelper.reset();
             matrixHelper.scale(documentData.s/100,documentData.s/100);
             if(shapeData){
                 shapes = shapeData.shapes[0].it;
-                shapeStr = '';
+                if(this.data.t.a.length || 1 === 1){
+                    shapeStr = '';
+                }
                 jLen = shapes.length;
                 for(j=0;j<jLen;j+=1){
                     kLen = shapes[j].ks.i.length;
@@ -81,7 +87,7 @@ ITextElement.prototype.createElements = function(){
                 }
                 tSpan.setAttribute('d',shapeStr);
             }
-            this.textElem.appendChild(tShapeG);
+            this.textElem.appendChild(tSpan);
         }else{
             tSpan.textContent = letters[i].val;
             tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
