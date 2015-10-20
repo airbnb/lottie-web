@@ -67,20 +67,30 @@ CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,element
     if(!elements){
         elements = this.elements;
     }
-    var j, jLen = elements.length, elems, placeholder;
+    var j, jLen = elements.length, elems;
     for(i=0;i<len;i+=1){
-        j = 0;
-        while(j<jLen){
-            if(elements[j].data.id == layers[i].id){
-                elements[j] = this.createItem(layers[i],parentContainer);
-                if (layers[i].ty === 0) {
-                    elems = [];
-                    this.buildItems(layers[i].layers,elems);
-                    elements[j].setElements(elems);
-                }
-                break;
+        if(!layers[i].id){
+            var elem = this.createItem(layers[i],parentContainer);
+            elements.unshift(elem);
+            if (layers[i].ty === 0) {
+                elems = [];
+                this.buildItems(layers[i].layers,elems);
+                elem.setElements(elems);
             }
-            j += 1;
+        }else{
+            j = 0;
+            while(j<jLen){
+                if(elements[j].data.id == layers[i].id){
+                    elements[j] = this.createItem(layers[i],parentContainer);
+                    if (layers[i].ty === 0) {
+                        elems = [];
+                        this.buildItems(layers[i].layers,elems);
+                        elements[j].setElements(elems);
+                    }
+                    break;
+                }
+                j += 1;
+            }
         }
     }
 };

@@ -54,6 +54,10 @@
     <script src="js/module.js"></script>
     <!-- endbuild -->
     <!-- <script src="bodymovin.js"></script> -->
+    <script src="exports/blue/data.js"></script>
+    <script src="exports/blue/anim1Data.js"></script>
+    <script src="exports/blue/time_0.js"></script>
+    <script src="exports/blue/anim2Data.js"></script>
 </head>
 <body>
 
@@ -72,14 +76,18 @@
 
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'svg',
+        animType: 'canvas',
         loop: true,
         prerender: false,
         autoplay: true,
-        path: 'exports/bm'
+        animationData: anim1Data
+        //path: 'exports/bm'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
+    setTimeout(function(){
+        anim.includeLayers(anim2Data);
+    },500);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
 </script>

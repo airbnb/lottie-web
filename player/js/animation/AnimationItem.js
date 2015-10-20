@@ -130,13 +130,21 @@ AnimationItem.prototype.includeLayers = function(data) {
     var newLayers = data.layers;
     var j, jLen = newLayers.length;
     for(j=0;j<jLen;j+=1){
-        i = 0;
-        while(i<len){
-            if(layers[i].id == newLayers[j].id){
-                layers[i] = newLayers[j];
-                break;
+        if(!newLayers[j].id){
+            if(this.animType == 'svg'){
+                layers.push(newLayers[j]);
+            }else{
+                layers.unshift(newLayers[j]);
             }
-            i += 1;
+        }else{
+            i = 0;
+            while(i<len){
+                if(layers[i].id == newLayers[j].id){
+                    layers[i] = newLayers[j];
+                    break;
+                }
+                i += 1;
+            }
         }
     }
     if(data.assets){
