@@ -78,16 +78,16 @@
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
-        loop: true,
+        loop: false,
         prerender: false,
         autoplay: true,
-        animationData: bmsmd
-        //path: 'exports/render'
+        //animationData: bmsmd
+        path: 'exports/blue/text.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
-        anim.includeLayers(anim2Data);
+        //anim.includeLayers(anim2Data);
     },100);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
