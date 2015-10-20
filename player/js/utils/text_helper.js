@@ -10,7 +10,7 @@ var TextData_Helper = (function(){
         var i, len;
         var newLineFlag, index = 0, val;
         var anchorGrouping = data.t.m.g;
-        var currentSize = 0, currentPos = 0;
+        var currentSize = 0, currentPos = 0, currentLine = 0, lineWidths = [];
         var lineWidth = 0;
         var maxLineWidth = 0;
         var j, jLen;
@@ -43,16 +43,18 @@ var TextData_Helper = (function(){
             if(documentData.t.charAt(i) === ' '){
                 val = '\u00A0';
             }else if(documentData.t.charCodeAt(i) === 13){
+                lineWidths.push(lineWidth);
                 maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
                 lineWidth = 0;
                 val = '';
                 newLineFlag = true;
+                currentLine += 1;
             }else{
                 val = documentData.t.charAt(i);
             }
             if(fontManager.chars){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
-                cLength = charData.w*documentData.s/100;
+                cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
             }else{
                 /*tSpanHelper.setAttribute('font-size', documentData.s);
                 tSpanHelper.setAttribute('font-family', fontData.fFamily);
@@ -65,7 +67,7 @@ var TextData_Helper = (function(){
             }
             //
             lineWidth += cLength;
-            letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val});
+            letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
             if(anchorGrouping == 2){
                 currentSize += cLength;
                 if(val == '' || val == '\u00A0' || i == len - 1){
@@ -104,7 +106,9 @@ var TextData_Helper = (function(){
         }
         documentData.l = letters;
         maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
+        lineWidths.push(lineWidth);
         documentData.boxWidth = maxLineWidth;
+        documentData.lineWidths = lineWidths;
         switch(documentData.j){
             case 1:
                 data.t.d.justifyOffset = - documentData.boxWidth;
@@ -315,7 +319,14 @@ var TextData_Helper = (function(){
 
         for( i = 0; i < len; i += 1) {
             matrixHelper.reset();
-            matrixHelper.translate(documentData.justifyOffset,0);
+            switch(documentData.j){
+                case 1:
+                    matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0);
+                    break;
+                case 2:
+                    matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0);
+                    break;
+            }
             elemOpacity = 1;
             if(letters[i].n) {
                 xPos = 0;
