@@ -392,7 +392,7 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, group
     var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
     if(!viewData.renderedFrames[this.globalData.frameNum]){
-        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity && viewData._ld.w === fillData.width){
+        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity && viewData._ld.w === fillData.width && viewData._ld.d === fillData.dashes){
             viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
             return;
         }else{
@@ -401,14 +401,13 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, group
                 o: fillData.opacity*groupTransform.opacity,
                 w: fillData.width
             };
-            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
         }
         if(fillData.dashes){
-            viewData.renderedFrames[this.globalData.frameNum].d = fillData.dashes;
+            viewData._ld.d = fillData.dashes;
         }
     }
 
-    var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
+    var renderedFrameData = viewData._ld;
     var c = renderedFrameData.c;
     var o = renderedFrameData.o;
     var w = renderedFrameData.w;

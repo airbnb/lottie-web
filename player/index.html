@@ -73,10 +73,10 @@
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
-        loop: true,
+        loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/bm'
+        path: 'exports/render/data.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);

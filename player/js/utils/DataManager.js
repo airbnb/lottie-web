@@ -997,24 +997,32 @@ function dataFunctionManager(){
                 strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime);
                 strokeOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime);
                 strokeWidth = getInterpolatedValue(shapeItem.w,offsettedFrameNum, startTime);
-                if(!shapeItem.d && shapeItem.lastData && shapeItem.lastData.opacity === strokeOpacity && shapeItem.lastData.width === strokeWidth && shapeItem.lastColor === strokeColor){
+                var sameDashes = true;
+                if(shapeItem.d){
+                    var dashes = [];
+                    jLen = shapeItem.d.length;
+                    var val;
+                    for(j=0;j<jLen;j+=1){
+                        val = getInterpolatedValue(shapeItem.d[j].v,offsettedFrameNum, startTime);
+                        dashes.push({
+                            v : val,
+                            n : shapeItem.d[j].n
+                        });
+                        if(shapeItem.lastData && shapeItem.lastData.dashes && shapeItem.lastData.dashes[j].v !== dashes[j].v){
+                            sameDashes = false;
+                        }
+                    }
+
+                }
+
+                if(sameDashes && shapeItem.lastData && shapeItem.lastData.opacity === strokeOpacity && shapeItem.lastData.width === strokeWidth && shapeItem.lastColor === strokeColor){
                     shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastData;
                 }else{
                     shapeItem.renderedData[offsettedFrameNum] = {
                         opacity : strokeOpacity,
                         width : strokeWidth
                     };
-                    if(shapeItem.d){
-                        var dashes = [];
-                        jLen = shapeItem.d.length;
-                        var val;
-                        for(j=0;j<jLen;j+=1){
-                            val = getInterpolatedValue(shapeItem.d[j].v,offsettedFrameNum, startTime);
-                            dashes.push({
-                                v : val,
-                                n : shapeItem.d[j].n
-                            });
-                        }
+                    if(shapeItem.d) {
                         shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
                     }
                     roundColor(strokeColor);
