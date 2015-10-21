@@ -1,11 +1,12 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_eventDispatcher, bm_generalUtils, bm_layerElement, File*/
+/*global bm_eventDispatcher, bm_generalUtils, bm_layerElement, File, require*/
 
 var bm_dataManager = (function () {
     'use strict';
     var ob = {};
     var animationSegments;
-    var segmentCount = 0;
+    var segmentCount = 0, currentDestinationPath;
+    
     
     function addCompsToSegment(layers, comps, segmentComps) {
         var i, len = layers.length, j, jLen;
@@ -144,6 +145,7 @@ var bm_dataManager = (function () {
     }
     
     function saveData(data, destinationPath, config) {
+        currentDestinationPath = destinationPath;
         deleteExtraParams(data.layers);
         separateComps(data.layers, data.comps);
         var dataFile, segmentPath, s, string;
@@ -174,22 +176,27 @@ var bm_dataManager = (function () {
             }
             data.comps = null;
             delete data.comps;
-        }
-        dataFile = new File(destinationPath);
-        dataFile.open('w', 'TEXT', '????');
-        string = JSON.stringify(data);
-        string = string.replace(/\n/g, '');
-        try {
-            dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
-            //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
-            dataFile.close();
-        } catch (errr) {
-            bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
+            string = JSON.stringify(data);
+            string = string.replace(/\n/g, '');
+            bm_eventDispatcher.sendEvent('bm:zip:data', {jsonString: '_' + string});
         }
         animationSegments = '';
         segmentCount = 0;
     }
     
+    function writeZippedData(str) {
+        var dataFile = new File(currentDestinationPath);
+        dataFile.open('w', 'TEXT', '????');
+        try {
+            dataFile.write(str); //DO NOT ERASE, JSON UNFORMATTED
+            //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
+            dataFile.close();
+        } catch (errr) {
+            bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
+        }
+    }
+    
+    ob.writeZippedData = writeZippedData;
     ob.saveData = saveData;
     
     return ob;

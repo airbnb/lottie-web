@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, window, location, CSInterface, SystemPath, themeManager, compSelectionController, compRenderController, messageController, infoController, snapshotController*/
+/*global $, window, location, CSInterface, SystemPath, themeManager, compSelectionController, compRenderController, messageController, infoController, snapshotController, require*/
 
 var mainController = (function () {
     'use strict';
@@ -7,6 +7,10 @@ var mainController = (function () {
 
     var csInterface = new CSInterface();
     var mainViews = [];
+    
+    
+    var gulp = require('gulp');
+    var gzip = require('gulp-gzip');
     
     function showView(view) {
         var i, len = mainViews.length;
@@ -25,6 +29,17 @@ var mainController = (function () {
         
     csInterface.addEventListener('bm:render:cancel', function (ev) {
         showView('selection');
+    });
+        
+    csInterface.addEventListener('bm:zip:data', function (ev) {
+        var jsonString = ev.data.jsonString;
+        var zippingStr = jsonString.substr(1);
+        var outStr;
+        gulp.src('tmp', { read: false })
+        .pipe(gzip({ append: false }))
+        .pipe(gulp.dest('outStr'));
+        //csInterface.evalScript('bm_dataManager.writeZippedData(' + outStr + ')');
+        console.log(outStr);
     });
         
     csInterface.addEventListener('console:log', function (ev) {
