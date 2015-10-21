@@ -156,7 +156,9 @@ var TextData_Helper = (function(){
                 }
             }
         }
-
+        if(jLen === 0 && !('m' in data.t.p)){
+            data.singleShape = true;
+        }
         documentData.yOffset = documentData.s*1.2;
     }
 
