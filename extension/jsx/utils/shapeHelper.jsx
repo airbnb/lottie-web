@@ -123,7 +123,7 @@ var bm_shapeHelper = (function () {
                     var dashesData = [];
                     var changed = false;
                     for (j = 0; j < jLen; j += 1) {
-                        if (prop.property('Dashes').property(j + 1).numKeys > 0 || (prop.property('Dashes').property(j + 1).name === 'Offset' && changed)) {
+                        if (prop.property('Dashes').property(j + 1).isModified) {
                             changed = true;
                             var dashData = {};
                             var name = '';
