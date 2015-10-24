@@ -1,10 +1,13 @@
 var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.globalData = globalData;
     this.data = data;
-    this.ownMatrix = new Matrix();
+    this.dynamicProperties = [];
+    this.data.ks._o = PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties);
+
     this.finalTransform = {
         mat: new Matrix(),
-        op: 1
+        op: 1,
+        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties)
     };
     this.matteElement = null;
     this.lastData = {};
@@ -112,9 +115,14 @@ BaseElement.prototype.prepareFrame = function(num){
     if(!this.data.renderedData[num]){
         return;
     }
+    var i, len = this.dynamicProperties.length;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getInterpolatedValue(num);
+    }
     this.currentAnimData = this.data.renderedData[num].an;
-    var mat = this.currentAnimData.m;
-    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.a[0],-this.currentAnimData.a[1]);
+    if(this.data.hasMask){
+        this.maskManager.prepareFrame(num);
+    }
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
@@ -145,7 +153,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
-    this.finalTransform.opacity *= this.currentAnimData.o;
+    this.finalTransform.opacity *= this.data.ks._o.v;
 
     var mat;
     var finalMat = this.finalTransform.mat;
@@ -162,22 +170,22 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
             finalMat.reset();
         }
         for(i=len-1;i>=0;i-=1){
-            mat = this.hierarchy[i].ownMatrix.props;
+            mat = this.hierarchy[i].finalTransform.mProp.props;
             finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
         }
-        mat = this.ownMatrix.props;
+        mat = this.finalTransform.mProp.v.props;
         finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
     }else{
         if(this.isVisible){
             if(!parentTransform){
-                finalMat.props[0] = this.ownMatrix.props[0];
-                finalMat.props[1] = this.ownMatrix.props[1];
-                finalMat.props[2] = this.ownMatrix.props[2];
-                finalMat.props[3] = this.ownMatrix.props[3];
-                finalMat.props[4] = this.ownMatrix.props[4];
-                finalMat.props[5] = this.ownMatrix.props[5];
+                finalMat.props[0] = this.finalTransform.mProp.v.props[0];
+                finalMat.props[1] = this.finalTransform.mProp.v.props[1];
+                finalMat.props[2] = this.finalTransform.mProp.v.props[2];
+                finalMat.props[3] = this.finalTransform.mProp.v.props[3];
+                finalMat.props[4] = this.finalTransform.mProp.v.props[4];
+                finalMat.props[5] = this.finalTransform.mProp.v.props[5];
             }else{
-                mat = this.ownMatrix.props;
+                mat = this.finalTransform.mProp.v.props;
                 finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
             }
         }

@@ -1,16 +1,17 @@
 function MaskElement(data,element,globalData) {
+    this.dynamicProperties = [];
     this.data = data;
     this.storedData = [];
     this.element = element;
     this.globalData = globalData;
     this.paths = [];
     this.registeredEffects = [];
-    this.masksProperties = [];
+    this.masksProperties = this.data.masksProperties;
+    this.masksProps = new Array(this.masksProperties.length);
     this.maskElement = null;
 }
 
 MaskElement.prototype.init = function () {
-    this.masksProperties = this.data.masksProperties;
     var maskedElement = this.element.maskedElement;
     var defs = this.globalData.defs;
     var i, len = this.masksProperties.length;
@@ -83,6 +84,8 @@ MaskElement.prototype.init = function () {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
         }
+        console.log(this.data);
+        this.masksProps[i] = PropertyFactory.getProp(this.data,properties[i],3,null,this.dynamicProperties);
     }
 
     len = currentMasks.length;
@@ -97,6 +100,13 @@ MaskElement.prototype.init = function () {
 
     defs.appendChild(this.maskElement);
 };
+
+MaskElement.prototype.prepareFrame = function(num){
+    var i, len = this.dynamicProperties.length;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getInterpolatedValue(num);
+    }
+}
 
 MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;

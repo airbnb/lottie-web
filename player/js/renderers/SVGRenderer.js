@@ -200,6 +200,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     if(this.lastFrame == num || this.destroyed){
         return;
     }
+    console.log('-------');
     if(num === null){
         num = this.lastFrame;
     }else{

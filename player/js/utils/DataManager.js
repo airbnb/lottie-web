@@ -57,12 +57,12 @@ function dataFunctionManager(){
                 }
                 layerData.tm = timeValues;
             }
-            if(layerData.ks.o instanceof Array){
+            /*if(layerData.ks.o instanceof Array){
                 convertNumericValue(layerData.ks.o,1/100);
             }else{
                 layerData.ks.o /= 100;
-            }
-            if(layerData.ks.s instanceof Array){
+            }*/
+            /*if(layerData.ks.s instanceof Array){
                 convertNumericValue(layerData.ks.s,1/100);
             }else{
                 layerData.ks.s /= 100;
@@ -71,7 +71,7 @@ function dataFunctionManager(){
                 convertNumericValue(layerData.ks.r,degToRads);
             }else{
                 layerData.ks.r *= degToRads;
-            }
+            }*/
             if(layerData.hasMask){
                 var maskProps = layerData.masksProperties;
                 jLen = maskProps.length;
@@ -421,7 +421,7 @@ function dataFunctionManager(){
             if(!isTrimmed){
                 pathData.pathNodes = keyframes;
             }else{
-                pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData, false);
+                pathData.pathNodes = trimPath(keyframes,pathData.closed, trimData);
             }
             return pathData;
         }else{
@@ -464,7 +464,7 @@ function dataFunctionManager(){
                     keyframes[key] = shapeData;
                     stored = shapeData;
                 }
-                pathData.pathNodes = isTrimmed ? trimPath(stored,pathData.closed, trimData, false) : stored;
+                pathData.pathNodes = isTrimmed ? trimPath(stored,pathData.closed, trimData) : stored;
                 return pathData;
             }else{
                 var lastNodes;
@@ -549,7 +549,7 @@ function dataFunctionManager(){
                     }
                 }
                 if(isTrimmed){
-                    pathData.pathNodes = trimPath(shapeData,pathData.closed, trimData, false);
+                    pathData.pathNodes = trimPath(shapeData,pathData.closed, trimData);
                 }else{
                     if(!newNodes){
                         pathData.pathNodes = keyframes.__lastData;
@@ -589,7 +589,7 @@ function dataFunctionManager(){
             //nextTotalLength += lengthData.addedLength;
         }
 
-        return function trimPath_(paths,closed, trimData, stringifyFlag){
+        return function trimPath_(paths,closed, trimData){
             getSegmentsLength(paths,closed);
             var j, jLen = trimData.length;
             var finalPaths = paths;
@@ -616,11 +616,7 @@ function dataFunctionManager(){
                 var s = trimData[j].s/100 + o;
                 var e = (trimData[j].e/100) + o;
                 if(s == e){
-                    if(stringifyFlag){
-                        return '';
-                    }else{
-                        return {};
-                    }
+                    return {};
                 }
                 if(s>e){
                     var _s = s;
@@ -694,30 +690,13 @@ function dataFunctionManager(){
                 pathO = nextO;
                 pathI = nextI;
             }
-            kLen = pathV.length;
-            if(stringifyFlag){
-                pathString = '';
-                for(k=1;k<kLen;k++){
-                    if(stops[k-1]){
-                        pathString += "M"+stops[k-1].join(',');
-                    }else if(k == 1){
-                        pathString += "M"+pathV[0].join(',');
-                    }
-                    pathString += " C"+pathO[k-1].join(',') + " "+pathI[k].join(',') + " "+pathV[k].join(',');
-                }
-                if(closed !== false){
-                    pathString += " C"+pathO[k-1].join(',') + " "+pathI[0].join(',') + " "+pathV[0].join(',');
-                }
-                return pathString;
-            }else{
-                return {
-                    i: pathI,
-                    o: pathO,
-                    v: pathV,
-                    s: stops,
-                    c: closed
-                };
-            }
+            return {
+                i: pathI,
+                o: pathO,
+                v: pathV,
+                s: stops,
+                c: closed
+            };
         };
     }());
 
@@ -924,7 +903,7 @@ function dataFunctionManager(){
                             closed: true
                         }
                     };
-                    shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound,shapeItem.d),true, addedTrim, false);
+                    shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(convertRectToPath(elmPos,elmSize,elmRound,shapeItem.d),true, addedTrim);
                     shapeItem.lastData.pos = elmPos;
                     shapeItem.lastData.size = elmSize;
                     shapeItem.lastData.round = elmRound;
@@ -987,7 +966,7 @@ function dataFunctionManager(){
                                 closed: true
                             }
                         };
-                        shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(pathNodes,true, addedTrim, false);
+                        shapeItem.renderedData[offsettedFrameNum].path.pathNodes = trimPath(pathNodes,true, addedTrim);
                         shapeItem.closed = true;
                     }
                     shapeItem.renderData = shapeItem.renderedData[offsettedFrameNum];
