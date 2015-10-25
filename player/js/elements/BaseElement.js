@@ -2,12 +2,14 @@ var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.globalData = globalData;
     this.data = data;
     this.dynamicProperties = [];
-    this.data.ks._o = PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties);
 
     this.finalTransform = {
+        op: PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties),
+        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties),
+        matMdf: false,
+        opMdf: false,
         mat: new Matrix(),
-        op: 1,
-        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties)
+        opacity: 1
     };
     this.matteElement = null;
     this.lastData = {};
@@ -15,6 +17,7 @@ var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.parentContainer = parentContainer;
     this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.hidden = false;
+    this.firstFrame = true;
     this.placeholder = placeholder;
     this.init();
 };
@@ -134,12 +137,10 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         if(this.isVisible !== true){
             this.isVisible = true;
         }
-        this.finalTransform.opacity = 1;
     }else{
         if(this.isVisible !== false){
             this.isVisible = false;
         }
-        this.finalTransform.opacity = 0;
     }
 
     if(this.data.eff){
@@ -153,7 +154,14 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);
     }
-    this.finalTransform.opacity *= this.data.ks._o.v;
+    this.finalTransform.opMdf = this.finalTransform.op.mdf;
+    this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
+    this.finalTransform.opacity = this.finalTransform.op.v;
+    if(this.firstFrame){
+        this.finalTransform.opMdf = true;
+        this.finalTransform.matMdf = true;
+        this.firstFrame = false;
+    }
 
     var mat;
     var finalMat = this.finalTransform.mat;
@@ -162,6 +170,8 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         mat = parentTransform.mat.props;
         finalMat.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
         this.finalTransform.opacity *= parentTransform.opacity;
+        this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
+        this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
     }
 
     if(this.hierarchy){
@@ -170,6 +180,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
             finalMat.reset();
         }
         for(i=len-1;i>=0;i-=1){
+            this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
             mat = this.hierarchy[i].finalTransform.mProp.v.props;
             finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
         }
@@ -191,22 +202,12 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
         }
     }
     if(this.data.hasMask){
-        if(!this.renderedFrames[this.globalData.frameNum]){
-            var tr = 'matrix('+finalMat.props.join(',')+')';
-            if(this.lastData && this.lastData.tr === tr && this.lastData.o === this.finalTransform.opacity){
-                this.renderedFrames[this.globalData.frameNum] = this.lastData;
-            }else{
-                this.renderedFrames[this.globalData.frameNum] = new RenderedFrame(tr,this.finalTransform.opacity);
-            }
+        if(this.finalTransform.matMdf){
+            this.layerElement.setAttribute('transform','matrix('+finalMat.props.join(',')+')');
         }
-        var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
-        if(this.lastData.tr != renderedFrameData.tr){
-            this.layerElement.setAttribute('transform',renderedFrameData.tr);
+        if(this.finalTransform.opMdf){
+            this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
         }
-        if(this.lastData.o !== renderedFrameData.o){
-            this.layerElement.setAttribute('opacity',renderedFrameData.o);
-        }
-        this.lastData = renderedFrameData;
     }
 
     return this.isVisible;

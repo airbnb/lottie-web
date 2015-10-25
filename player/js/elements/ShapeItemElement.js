@@ -36,7 +36,6 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     var ownArrays = [];
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-            console.log(arr[i]);
             data[i] = {
                 renderedFrames : [],
                 lastData : {
@@ -58,7 +57,6 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                     pathElement.setAttribute('stroke','rgb('+data[i].c.v[0]+','+data[i].c.v[1]+','+data[i].c.v[2]+')');
                 }
                 if(!data[i].o.k) {
-                    console.log(data[i].o.v);
                     pathElement.setAttribute('stroke-opacity',data[i].o.v);
                 }
                 data[i].w = PropertyFactory.getProp(this.elemData,arr[i].w,0,null,dynamicProperties);
@@ -96,7 +94,11 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             data[i] = {
                 transform : {
                     mat: new Matrix(),
-                    opacity: 1
+                    opacity: 1,
+                    matMdf:false,
+                    opMdf:false,
+                    op: PropertyFactory.getProp(this.elemData,arr[i].o,0,0.01,dynamicProperties),
+                    mProps: PropertyFactory.getProp(this.elemData,arr[i],2,null,dynamicProperties)
                 },
                 elements: []
             };
@@ -194,19 +196,23 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     groupTransform = parentTransform;
     for(i=len;i>=0;i-=1){
         if(items[i].ty == 'tr'){
-            var mtArr = items[i].renderedData[num].m;
             groupTransform = data[i].transform;
+            var mtArr = data[i].transform.mProps.v.props;
+            groupTransform.matMdf = groupTransform.mProps.mdf;
+            groupTransform.opMdf = groupTransform.op.mdf;
             groupMatrix = groupTransform.mat;
             groupMatrix.reset();
             if(parentTransform){
                 var props = parentTransform.mat.props;
                 groupTransform.opacity = parentTransform.opacity;
-                groupTransform.opacity *= items[i].renderedData[num].o;
+                groupTransform.opacity *= data[i].transform.op.v;
+                groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
+                groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
                 groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
             }else{
-                groupTransform.opacity = items[i].renderedData[num].o;
+                groupTransform.opacity = groupTransform.op.o;
             }
-            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]).translate(-items[i].renderedData[num].a[0],-items[i].renderedData[num].a[1]);
+            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
         }else if(items[i].ty == 'sh'){
             this.renderPath(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'el'){
@@ -387,10 +393,8 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num, groupTr
     if(viewData.c.mdf){
         styleElem.pathElement.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
-    var o = viewData.o.v*groupTransform.opacity;
-    if(viewData.lastData.o != o){
-        styleElem.pathElement.setAttribute('fill-opacity',o);
-        viewData.lastData.o = o;
+    if(viewData.o.mdf || groupTransform.opMdf){
+        styleElem.pathElement.setAttribute('fill-opacity',viewData.o.v*groupTransform.opacity);
     }
 };
 
@@ -422,10 +426,10 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, group
     if(viewData.c.mdf){
         styleElem.pathElement.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
-    var o = viewData.o.v*groupTransform.opacity;
-    if(viewData.lastData.o != o){
-        styleElem.pathElement.setAttribute('stroke-opacity',o);
-        viewData.lastData.o = o;
+    if(viewData.o.mdf || groupTransform.opMdf){
+        console.log(viewData.o.v);
+        console.log(groupTransform.opacity);
+        styleElem.pathElement.setAttribute('stroke-opacity',viewData.o.v*groupTransform.opacity);
     }
     if(viewData.w.mdf){
         styleElem.pathElement.setAttribute('stroke-width',viewData.w.v);

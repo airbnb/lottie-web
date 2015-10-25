@@ -4,7 +4,7 @@ function IShapeElement(data,parentContainer,globalData, placeholder){
 }
 createElement(BaseElement, IShapeElement);
 
-IShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix()};
+IShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
 
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox

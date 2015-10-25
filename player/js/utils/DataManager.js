@@ -144,12 +144,12 @@ function dataFunctionManager(){
             }else if(arr[i].ty == 'tr'){
                 transformData = arr[i];
                 transformData.renderedData = [];
-                if(transformData.o instanceof Array){
+                /*if(transformData.o instanceof Array){
                     convertNumericValue(transformData.o,1/100);
                 }else{
                     transformData.o /= 100;
-                }
-                if(transformData.s instanceof Array){
+                }*/
+                /*if(transformData.s instanceof Array){
                     convertNumericValue(transformData.s,1/100);
                 }else{
                     transformData.s /= 100;
@@ -158,7 +158,7 @@ function dataFunctionManager(){
                     convertNumericValue(transformData.r,degToRads);
                 }else{
                     transformData.r *= degToRads;
-                }
+                }*/
                 transformData.lastMat = [0,0,0,0,0];
             }else if(arr[i].ty == 'rc'){
                 arr[i].trimmed = isTrimmed;
