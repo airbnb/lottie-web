@@ -427,8 +427,6 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, group
         styleElem.pathElement.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
     if(viewData.o.mdf || groupTransform.opMdf){
-        console.log(viewData.o.v);
-        console.log(groupTransform.opacity);
         styleElem.pathElement.setAttribute('stroke-opacity',viewData.o.v*groupTransform.opacity);
     }
     if(viewData.w.mdf){

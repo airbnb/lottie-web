@@ -118,6 +118,17 @@ BaseElement.prototype.prepareFrame = function(num){
     if(!this.data.renderedData[num]){
         return;
     }
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
+    {
+        if(this.isVisible !== true){
+            this.isVisible = true;
+        }
+    }else{
+        if(this.isVisible !== false){
+            this.isVisible = false;
+        }
+        return;
+    }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getInterpolatedValue(num);
@@ -131,16 +142,6 @@ BaseElement.prototype.prepareFrame = function(num){
 BaseElement.prototype.renderFrame = function(num,parentTransform){
     if(!this.data.renderedData[num] || this.data.ty === 3){
         return false;
-    }
-    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
-    {
-        if(this.isVisible !== true){
-            this.isVisible = true;
-        }
-    }else{
-        if(this.isVisible !== false){
-            this.isVisible = false;
-        }
     }
 
     if(this.data.eff){
