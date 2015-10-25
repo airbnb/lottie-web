@@ -1,4 +1,4 @@
-function ShapeItemElement(data,parentElement,parentContainer,placeholder,globalData){
+function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamicProperties,globalData){
     this.lcEnum = {
         '1': 'butt',
         '2': 'round',
@@ -14,9 +14,10 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,globalD
     this.shape = parentElement;
     this.parentContainer = parentContainer;
     this.placeholder = placeholder;
-    this.data = data;
+    this.elemData = data;
+    this.data = data.shapes;
     this.globalData = globalData;
-    this.searchShapes(this.data,this.viewData);
+    this.searchShapes(this.data,this.viewData,dynamicProperties);
     styleUnselectableDiv(this.shape);
     if(!window.namer){
         window.namer = 1;
@@ -28,21 +29,23 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,globalD
 
 ShapeItemElement.prototype.appendNodeToParent = BaseElement.prototype.appendNodeToParent;
 
-ShapeItemElement.prototype.searchShapes = function(arr,data){
+ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     var i, len = arr.length - 1;
     var j, jLen;
+    //c: PropertyFactory.getProp()
     var ownArrays = [];
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+            console.log(arr[i]);
             data[i] = {
                 renderedFrames : [],
                 lastData : {
-                    c: '',
-                    o:-1,
-                    w: ''
+                    o:-1
                 }
             };
             var pathElement;
+            data[i].c = PropertyFactory.getProp(this.elemData,arr[i].c,1,null,dynamicProperties);
+            data[i].o = PropertyFactory.getProp(this.elemData,arr[i].o,0,0.01,dynamicProperties);
             if(arr[i].ty == 'st') {
                 pathElement = document.createElementNS(svgNS, "g");
                 pathElement.setAttribute('stroke-linecap', this.lcEnum[arr[i].lc] || 'round');
@@ -51,8 +54,25 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
                 if(arr[i].lj == 1) {
                     pathElement.setAttribute('stroke-miterlimit',arr[i].ml);
                 }
+                if(!data[i].c.k) {
+                    pathElement.setAttribute('stroke','rgb('+data[i].c.v[0]+','+data[i].c.v[1]+','+data[i].c.v[2]+')');
+                }
+                if(!data[i].o.k) {
+                    console.log(data[i].o.v);
+                    pathElement.setAttribute('stroke-opacity',data[i].o.v);
+                }
+                data[i].w = PropertyFactory.getProp(this.elemData,arr[i].w,0,null,dynamicProperties);
+                if(!data[i].w.k) {
+                    pathElement.setAttribute('stroke-width',data[i].w.v);
+                }
             }else{
                 pathElement = document.createElementNS(svgNS, "path");
+                if(!data[i].c.k) {
+                    pathElement.setAttribute('fill','rgb('+data[i].c.v[0]+','+data[i].c.v[1]+','+data[i].c.v[2]+')');
+                }
+                if(!data[i].o.k) {
+                    pathElement.setAttribute('fill-opacity',data[i].o.v);
+                }
             }
             if(this.shape === this.parentContainer){
                 this.appendNodeToParent(pathElement);
@@ -71,7 +91,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data){
             data[i] = {
                 it: []
             };
-            this.searchShapes(arr[i].it,data[i].it);
+            this.searchShapes(arr[i].it,data[i].it,dynamicProperties);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
@@ -362,56 +382,22 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
 };
 
 ShapeItemElement.prototype.renderFill = function(styleData,viewData,num, groupTransform){
-    var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
-    if(!viewData.renderedFrames[this.globalData.frameNum]){
-        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity){
-            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
-            return;
-        }else{
-            viewData._ld = {
-                c: fillData.color,
-                o: fillData.opacity*groupTransform.opacity
-            };
-            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
-        }
-    }
 
-    var renderedFrameData = viewData.renderedFrames[this.globalData.frameNum];
-    if(viewData.lastData.c != renderedFrameData.c){
-        styleElem.pathElement.setAttribute('fill',renderedFrameData.c);
-        viewData.lastData.c = renderedFrameData.c;
+    if(viewData.c.mdf){
+        styleElem.pathElement.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
-    if(viewData.lastData.o != renderedFrameData.o){
-        styleElem.pathElement.setAttribute('fill-opacity',renderedFrameData.o);
-        viewData.lastData.o = renderedFrameData.o;
+    var o = viewData.o.v*groupTransform.opacity;
+    if(viewData.lastData.o != o){
+        styleElem.pathElement.setAttribute('fill-opacity',o);
+        viewData.lastData.o = o;
     }
 };
 
 ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, groupTransform){
-    var fillData = styleData.renderedData[num];
     var styleElem = viewData.style;
-    if(!viewData.renderedFrames[this.globalData.frameNum]){
-        if(viewData._ld && viewData._ld.c === fillData.color && viewData._ld.o === fillData.opacity*groupTransform.opacity && viewData._ld.w === fillData.width && viewData._ld.d === fillData.dashes){
-            viewData.renderedFrames[this.globalData.frameNum] = viewData._ld;
-            return;
-        }else{
-            viewData._ld = {
-                c: fillData.color,
-                o: fillData.opacity*groupTransform.opacity,
-                w: fillData.width
-            };
-        }
-        if(fillData.dashes){
-            viewData._ld.d = fillData.dashes;
-        }
-    }
-
-    var renderedFrameData = viewData._ld;
-    var c = renderedFrameData.c;
-    var o = renderedFrameData.o;
-    var w = renderedFrameData.w;
-    var d = renderedFrameData.d;
+    //TODO fix dashes
+    var d = viewData.d;
     var dasharray,dashoffset;
     if(d){
         var j, jLen = d.length;
@@ -433,17 +419,16 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, group
             viewData.lastData.do = dashoffset;
         }
     }
-    if(viewData.lastData.c != c){
-        styleElem.pathElement.setAttribute('stroke',c);
-        viewData.lastData.c = c;
+    if(viewData.c.mdf){
+        styleElem.pathElement.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
+    var o = viewData.o.v*groupTransform.opacity;
     if(viewData.lastData.o != o){
         styleElem.pathElement.setAttribute('stroke-opacity',o);
         viewData.lastData.o = o;
     }
-    if(viewData.lastData.w !== w){
-        styleElem.pathElement.setAttribute('stroke-width',w);
-        viewData.lastData.w = w;
+    if(viewData.w.mdf){
+        styleElem.pathElement.setAttribute('stroke-width',viewData.w.v);
     }
 };
 

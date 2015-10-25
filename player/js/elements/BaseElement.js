@@ -170,7 +170,7 @@ BaseElement.prototype.renderFrame = function(num,parentTransform){
             finalMat.reset();
         }
         for(i=len-1;i>=0;i-=1){
-            mat = this.hierarchy[i].finalTransform.mProp.props;
+            mat = this.hierarchy[i].finalTransform.mProp.v.props;
             finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
         }
         mat = this.finalTransform.mProp.v.props;

@@ -9,7 +9,7 @@ IShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix()};
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this.parent.createElements.call(this);
-    this.mainShape = new ShapeItemElement(this.data.shapes,this.layerElement,this.parentContainer,this.placeholder,this.globalData);
+    this.mainShape = new ShapeItemElement(this.data,this.layerElement,this.parentContainer,this.placeholder,this.dynamicProperties,this.globalData);
 };
 
 IShapeElement.prototype.renderFrame = function(num,parentMatrix){

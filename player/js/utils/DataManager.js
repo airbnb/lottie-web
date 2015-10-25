@@ -104,7 +104,7 @@ function dataFunctionManager(){
         var i = 0, len = comps.length;
         while(i<len){
             if(comps[i].id === id){
-                return comps[i].layers;
+                return JSON.parse(JSON.stringify(comps[i].layers));
             }
             i += 1;
         }
@@ -121,11 +121,11 @@ function dataFunctionManager(){
                 isTrimmed = true;
             }
             if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-                if(arr[i].o instanceof Array){
+                /*if(arr[i].o instanceof Array){
                     convertNumericValue(arr[i].o,1/100);
                 }else{
                     arr[i].o *= 1/100;
-                }
+                }*/
             }else if(arr[i].ty == 'sh'){
                 arr[i].trimmed = isTrimmed;
                 if(arr[i].ks.i){
