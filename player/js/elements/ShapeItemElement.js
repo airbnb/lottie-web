@@ -17,6 +17,7 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamic
     this.elemData = data;
     this.data = data.shapes;
     this.globalData = globalData;
+    this.firstFrame = true;
     this.searchShapes(this.data,this.viewData,dynamicProperties);
     styleUnselectableDiv(this.shape);
     if(!window.namer){
@@ -36,12 +37,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     var ownArrays = [];
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-            data[i] = {
-                renderedFrames : [],
-                lastData : {
-                    o:-1
-                }
-            };
+            data[i] = {};
             var pathElement;
             data[i].c = PropertyFactory.getProp(this.elemData,arr[i].c,1,null,dynamicProperties);
             data[i].o = PropertyFactory.getProp(this.elemData,arr[i].o,0,0.01,dynamicProperties);
@@ -81,7 +77,8 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 pathElement: pathElement,
                 type: arr[i].ty,
                 d: '',
-                ld: ''
+                ld: '',
+                mdf: false
             });
             data[i].style = this.stylesList[this.stylesList.length - 1];
             ownArrays.push(data[i].style);
@@ -105,21 +102,14 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el'){
             data[i] = {
                 elements : [],
-                renderedFrames : [],
                 styles : [],
-                lastData : {
-                    d: '',
-                    o:'',
-                    tr:''
-                },
-                lastDrawn : {
-                    dTr: '',
-                    dNTr: '',
-                    t: '',
-                    mat:[0,0,0,0,0,0],
-                    nodes: null
-                }
+                lStr: ''
             };
+            var ty = 4;
+            if(arr[i].ty == 'rc'){
+                ty = 5;
+            }
+            data[i].sh = PropertyFactory.getProp(this.elemData,arr[i],ty,null,dynamicProperties);
             jLen = this.stylesList.length;
             var element, hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){
@@ -158,21 +148,14 @@ ShapeItemElement.prototype.getElement = function(){
 ShapeItemElement.prototype.hideShape = function(){
     var i, len = this.stylesList.length;
     for(i=len-1;i>=0;i-=1){
-        if(this.stylesList[i].ld !== 0){
-            this.stylesList[i].ld = 0;
+        if(this.stylesList[i].ld !== '0'){
+            this.stylesList[i].ld = '0';
             this.stylesList[i].pathElement.style.display = 'none';
             if(this.stylesList[i].pathElement.parentNode){
                 this.stylesList[i].parent = this.stylesList[i].pathElement.parentNode;
                 //this.stylesList[i].pathElement.parentNode.removeChild(this.stylesList[i].pathElement);
             }
         }
-        /*if(this.stylesList[i].type === 'st'){
-         this.stylesList[i].pathElement.setAttribute('visibility','hidden');
-         this.stylesList[i].ld = 0;
-         }else{
-         this.stylesList[i].pathElement.setAttribute('d','M 0,0');
-         this.stylesList[i].ld = 'M 0,0';
-         }*/
     }
 };
 
@@ -183,6 +166,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
         len = this.stylesList.length;
         for(i=0;i<len;i+=1){
             this.stylesList[i].d = '';
+            this.stylesList[i].mdf = false;
         }
     }
     if(!data){
@@ -219,11 +203,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
             this.renderPath(items[i],data[i],num,groupTransform);
             //this.renderEllipse(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'rc'){
-            if(items[i].trimmed){
-                this.renderPath(items[i],data[i],num,groupTransform);
-            }else{
-                this.renderRect(items[i],data[i],num,groupTransform);
-            }
+            this.renderPath(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'st'){
@@ -239,59 +219,32 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     }
     len = this.stylesList.length;
     for(i=0;i<len;i+=1){
-        if(this.stylesList[i].ld === 0) {
-            this.stylesList[i].ld = 1;
+        if(this.stylesList[i].ld === '0') {
+            this.stylesList[i].ld = '1';
             this.stylesList[i].pathElement.style.display = 'block';
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pathElement);
         }
         if(this.stylesList[i].type === 'fl'){
-            /*if(this.stylesList[i].d == '' && this.stylesList[i].ld !== ''){
-             this.stylesList[i].pathElement.setAttribute('d','M 0,0');
-             this.stylesList[i].ld = this.stylesList[i].d;
-             }else*/ if(this.stylesList[i].ld !== this.stylesList[i].d){
+            if(this.stylesList[i].mdf){
                 this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
-                this.stylesList[i].ld = this.stylesList[i].d;
             }
-        }/*else if(this.stylesList[i].ld === 0){
-         this.stylesList[i].ld = 1;
-         this.stylesList[i].pathElement.setAttribute('visibility','visible');
-         }*/
+        }
+    }
+    if(this.firstFrame){
+        this.firstFrame = false;
     }
 
 };
 
 ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTransform){
-    var len, i,j;
-    var pathNodes = pathData.renderedData[num].path.pathNodes;
+    var len, i;
+    var pathNodes = viewData.sh.v;
     var t = '';
     var pathStringTransformed = '';
     var pathStringNonTransformed = '';
     if(pathNodes.v){
         len = pathNodes.v.length;
-        var redraw = true;
-        if(viewData.lastDrawn.nodes){
-            redraw = false;
-            if(groupTransform.mat.props[0] !== viewData.lastDrawn.mat[0] || groupTransform.mat.props[1] !== viewData.lastDrawn.mat[1]
-                || groupTransform.mat.props[2] !== viewData.lastDrawn.mat[2] || groupTransform.mat.props[3] !== viewData.lastDrawn.mat[3]
-                || groupTransform.mat.props[4] !== viewData.lastDrawn.mat[4] || groupTransform.mat.props[5] !== viewData.lastDrawn.mat[5]){
-                redraw = true;
-            }
-            redraw = redraw ? redraw : viewData.lastDrawn.nodes !== pathNodes;
-            /** Todo decide if doing this extra validations makes sense
-             if(!redraw){
-                var lNodes = viewData.lastDrawn.nodes;
-                i = 0;
-                while(i<len){
-                    if(pathNodes.v[i][0] !== lNodes.v[i][0] || pathNodes.v[i][1] !== lNodes.v[i][1]
-                    || pathNodes.i[i][0] !== lNodes.i[i][0] || pathNodes.i[i][1] !== lNodes.i[i][1]
-                    || pathNodes.o[i][0] !== lNodes.o[i][0] || pathNodes.o[i][1] !== lNodes.o[i][1]){
-                        redraw = true;
-                        break;
-                    }
-                    i+=1;
-                }
-            }*/
-        }
+        var redraw = groupTransform.matMdf || viewData.sh.mdf;
         if(redraw) {
             var stops = pathNodes.s ? pathNodes.s : [];
             for (i = 1; i < len; i += 1) {
@@ -351,38 +304,23 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
             if (viewData.st) {
                 t = 'matrix(' + groupTransform.mat.props.join(',') + ')';
             }
-            viewData.lastDrawn.dTr = pathStringTransformed;
-            viewData.lastDrawn.dNTr = pathStringNonTransformed;
-            viewData.lastDrawn.t = t;
-            for(j=0;j<6;j+=1){
-                viewData.lastDrawn.mat[j] = groupTransform.mat.props[j];
-            }
-            viewData.lastDrawn.nodes = pathNodes;
-        }
-    }else{
-        viewData.lastDrawn.dTr = '';
-        viewData.lastDrawn.dNTr = '';
-        viewData.lastDrawn.t = '';
-        for(j=0;j<6;j+=1){
-            viewData.lastDrawn.mat[j] = 0;
-        }
-        viewData.lastDrawn.nodes = null;
-    }
-    var renderedFrameData = viewData.lastDrawn;
-    viewData.renderedFrames[this.globalData.frameNum] = null;
-    len = viewData.elements.length;
-    for(i=0;i<len;i+=1){
-        if(viewData.elements[i].ty === 'st'){
-            if(viewData.ld != renderedFrameData.dNTr) {
-                viewData.elements[i].el.setAttribute('d', renderedFrameData.dNTr);
-                viewData.ld = renderedFrameData.dNTr;
-            }
-            if(viewData.lt != renderedFrameData.t) {
-                viewData.elements[i].el.setAttribute('transform',renderedFrameData.t);
-                viewData.lt = renderedFrameData.t;
-            }
+            viewData.lStr = pathStringTransformed;
         }else{
-            viewData.elements[i].st.d += renderedFrameData.dTr;
+            pathStringTransformed = viewData.lStr;
+        }
+        len = viewData.elements.length;
+        for(i=0;i<len;i+=1){
+            if(viewData.elements[i].ty === 'st'){
+                if(viewData.sh.mdf || this.firstFrame){
+                    viewData.elements[i].el.setAttribute('d', pathStringNonTransformed);
+                }
+                if(groupTransform.matMdf) {
+                    viewData.elements[i].el.setAttribute('transform',t);
+                }
+            }else{
+                viewData.elements[i].st.mdf = redraw ? true : viewData.elements[i].st.mdf;
+                viewData.elements[i].st.d += pathStringTransformed;
+            }
         }
     }
 };
