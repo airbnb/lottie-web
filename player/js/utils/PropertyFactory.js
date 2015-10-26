@@ -284,6 +284,89 @@ var PropertyFactory = (function(){
         arr.push(this);
     }
 
+    var EllShapeProperty = (function(){
+
+        var cPoint = 0.5519;
+
+        function convertEllToPath(){
+            var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
+            if(this.d !== 2 && this.d !== 3){
+                this.v.v[0] = [p0,p1-s1];
+                this.v.i[0] = [p0 - s0*cPoint,p1 - s1];
+                this.v.o[0] = [p0 + s0*cPoint,p1 - s1];
+                this.v.v[1] = [p0 + s0,p1];
+                this.v.i[1] = [p0 + s0,p1 - s1*cPoint];
+                this.v.o[1] = [p0 + s0,p1 + s1*cPoint];
+                this.v.v[2] = [p0,p1+s1];
+                this.v.i[2] = [p0 + s0*cPoint,p1 + s1];
+                this.v.o[2] = [p0 - s0*cPoint,p1 + s1];
+                this.v.v[3] = [p0 - s0,p1];
+                this.v.i[3] = [p0 - s0,p1 + s1*cPoint];
+                this.v.o[3] = [p0 - s0,p1 - s1*cPoint];
+            }else{
+                this.v.v[0] = [p0,p1-s1];
+                this.v.o[0] = [p0 - s0*cPoint,p1 - s1];
+                this.v.i[0] = [p0 + s0*cPoint,p1 - s1];
+                this.v.v[1] = [p0 - s0,p1];
+                this.v.o[1] = [p0 - s0,p1 + s1*cPoint];
+                this.v.i[1] = [p0 - s0,p1 - s1*cPoint];
+                this.v.v[2] = [p0,p1+s1];
+                this.v.o[2] = [p0 + s0*cPoint,p1 + s1];
+                this.v.i[2] = [p0 - s0*cPoint,p1 + s1];
+                this.v.v[3] = [p0 + s0,p1];
+                this.v.o[3] = [p0 + s0,p1 - s1*cPoint];
+                this.v.i[3] = [p0 + s0,p1 + s1*cPoint];
+            }
+        }
+
+        function processKeys(frameNum){
+            var i, len = this.dynamicProperties.length;
+            this.mdf = false;
+
+            for(i=0;i<len;i+=1){
+                this.dynamicProperties[i].getInterpolatedValue(frameNum);
+                if(this.dynamicProperties[i].mdf){
+                    this.mdf = true;
+                }
+            }
+            if(this.mdf){
+                this.convertEllToPath();
+            }
+        }
+
+        return function(elemData,data,arr) {
+            this.v = {
+                v: new Array(4),
+                i: new Array(4),
+                o: new Array(4),
+                c: true
+            }
+            console.log(data);
+            this.d = data.d;
+            this.dynamicProperties = [];
+            this.mdf = false;
+            this.getInterpolatedValue = processKeys;
+            this.convertEllToPath = convertEllToPath;
+            if(typeof(data.p[0]) === 'number'){
+                this.p = new MultiDimensionalProperty(data.p);
+            }else{
+                this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
+                this.dynamicProperties.push(this.p);
+            }
+            if(typeof(data.s[0]) === 'number'){
+                this.s = new MultiDimensionalProperty(data.s);
+            }else{
+                this.s = new KeyframedMultidimensionalProperty(elemData,data.s,0);
+                this.dynamicProperties.push(this.s);
+            }
+            if(this.dynamicProperties.length){
+                arr.push(this);
+            }else{
+                this.convertEllToPath();
+            }
+        }
+    }());
+
     var RectShapeProperty = (function() {
         function processKeys(frameNum){
             var i, len = this.dynamicProperties.length;
@@ -298,6 +381,7 @@ var PropertyFactory = (function(){
             if(this.mdf){
                 this.convertRectToPath();
             }
+
         }
 
         function convertRectToPath(){
@@ -477,6 +561,8 @@ var PropertyFactory = (function(){
             }
         }else if(type === 5){
             return new RectShapeProperty(elemData, data, arr);
+        }else if(type === 6){
+            return new EllShapeProperty(elemData, data, arr);
         }else if(!data.length){
             return new ValueProperty(data, mult);
         }else if(typeof(data[0]) === 'number'){

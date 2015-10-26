@@ -108,6 +108,8 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             var ty = 4;
             if(arr[i].ty == 'rc'){
                 ty = 5;
+            }else if(arr[i].ty == 'el'){
+                ty = 6;
             }
             data[i].sh = PropertyFactory.getProp(this.elemData,arr[i],ty,null,dynamicProperties);
             jLen = this.stylesList.length;
