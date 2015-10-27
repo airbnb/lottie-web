@@ -309,7 +309,7 @@ var PropertyFactory = (function(){
     }());
 
     var TrimProperty = (function(){
-        function processKeys(frameNum){
+        function processKeys(frameNum, forceRender){
             var i, len = this.dynamicProperties.length;
             this.mdf = false;
 
@@ -319,33 +319,75 @@ var PropertyFactory = (function(){
                     this.mdf = true;
                 }
             }
+            if(this.mdf || forceRender){
+                var o = (this.o.v%360)/360;
+                if(o === 0 && this.s.v === 0 && this.e.v == 100){
+                    this.isTrimming = false;
+                    return;
+                }
+                this.isTrimming = true;
+                if(o < 0){
+                    o += 1;
+                }
+                var s = this.s.v + o;
+                var e = this.e.v + o;
+                if(s == e){
+
+                }
+                if(s>e){
+                    var _s = s;
+                    s = e;
+                    e = _s;
+                }
+                if(e <= 1){
+                    segments[0].s = finalPaths.__totalLength*s;
+                    segments[0].e = finalPaths.__totalLength*e;
+                    segments[1].vl = false;
+                }else if(s >= 1){
+                    segments[0].s = finalPaths.__totalLength*(s-1);
+                    segments[0].e = finalPaths.__totalLength*(e-1);
+                    segments[1].vl = false;
+                }else{
+                    segments[0].s = finalPaths.__totalLength*s;
+                    segments[0].e = finalPaths.__totalLength;
+                    segments[1].s = 0;
+                    segments[1].e = finalPaths.__totalLength*(e-1);
+                    segments[1].vl = true;
+                }
+            }
         }
         return function(elemData,data, arr){
             this.dynamicProperties = [];
+            this.segments = [
+                {s:0,e:0,vl:true},{s:0,e:0,vl:false}
+            ];
             this.mdf = false;
             this.getInterpolatedValue = processKeys;
             this.k = false;
+            this.isTrimming = false;
             if(data.s.length){
-                this.s = new KeyframedValueProperty(elemData,data.s,degToRads);
+                this.s = new KeyframedValueProperty(elemData,data.s,0.01);
                 this.dynamicProperties.push(this.s);
             }else{
-                this.s = new ValueProperty(data.s,degToRads);
+                this.s = new ValueProperty(data.s,0.01);
             }
             if(data.e.length){
-                this.e = new KeyframedValueProperty(elemData,data.e,degToRads);
+                this.e = new KeyframedValueProperty(elemData,data.e,0.01);
                 this.dynamicProperties.push(this.e);
             }else{
-                this.e = new ValueProperty(data.e,degToRads);
+                this.e = new ValueProperty(data.e,0.01);
             }
             if(data.o.length){
-                this.o = new KeyframedValueProperty(elemData,data.e,degToRads);
+                this.o = new KeyframedValueProperty(elemData,data.o,0);
                 this.dynamicProperties.push(this.o);
             }else{
-                this.o = new ValueProperty(data.o,degToRads);
+                this.o = new ValueProperty(data.o,0);
             }
             if(this.dynamicProperties.length){
                 arr.push(this);
                 this.k = true;
+            }else{
+                this.getInterpolatedValue(0,true);
             }
         }
     }());
@@ -613,6 +655,11 @@ var PropertyFactory = (function(){
     }());
 
     var TrimTransformerProperty = (function(){
+
+        function trimPath(){
+
+        }
+
         return function(prop,trims,arr) {
             this.trims  = [];
             this.k = false;
@@ -624,7 +671,11 @@ var PropertyFactory = (function(){
                 }
             }
             this.k = prop.k ? true : this.k;
-            console.log(this.k);
+            if(this.k){
+                arr.push(this);
+            }else{
+
+            }
         }
     }());
 
