@@ -587,7 +587,7 @@ var PropertyFactory = (function(){
             }
             if(this.mdf || forceRender){
                 var o = (this.o.v%360)/360;
-                if(o === 0 && this.s.v === 0 && this.e.v == 100){
+                if(o === 0 && this.s.v === 0 && this.e.v == 1){
                     this.isTrimming = false;
                     return;
                 }
@@ -705,9 +705,21 @@ var PropertyFactory = (function(){
                 var finalPaths = this.prop.v;
                 var j, jLen = this.trims.length, e, s, o, k, kLen;
                 for(j=0;j<jLen;j+=1){
+                    if(!this.trims[j].isTrimming){
+                        this.v.v = finalPaths.v;
+                        this.v.o = finalPaths.o;
+                        this.v.i = finalPaths.i;
+                        continue;
+                    }
                     e = this.trims[j].eValue;
                     s = this.trims[j].sValue;
                     o = this.trims[j].oValue;
+                    if(e === s){
+                        this.v.v = this.nextV;
+                        this.v.o = this.nextO;
+                        this.v.i = this.nextI;
+                        return;
+                    }
                     if(e <= 1){
                         this.segments[0].s = finalPaths.__totalLength*s;
                         this.segments[0].e = finalPaths.__totalLength*e;
