@@ -18,7 +18,7 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamic
     this.data = data.shapes;
     this.globalData = globalData;
     this.firstFrame = true;
-    this.searchShapes(this.data,this.viewData,dynamicProperties);
+    this.searchShapes(this.data,this.viewData,dynamicProperties,[]);
     styleUnselectableDiv(this.shape);
     if(!window.namer){
         window.namer = 1;
@@ -30,11 +30,11 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamic
 
 ShapeItemElement.prototype.appendNodeToParent = BaseElement.prototype.appendNodeToParent;
 
-ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
+ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
     var i, len = arr.length - 1;
     var j, jLen;
     //c: PropertyFactory.getProp()
-    var ownArrays = [];
+    var ownArrays = [], ownTrims = [];
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
             data[i] = {};
@@ -86,7 +86,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             data[i] = {
                 it: []
             };
-            this.searchShapes(arr[i].it,data[i].it,dynamicProperties);
+            this.searchShapes(arr[i].it,data[i].it,dynamicProperties,addedTrims);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
@@ -111,7 +111,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }else if(arr[i].ty == 'el'){
                 ty = 6;
             }
-            data[i].sh = PropertyFactory.getProp(this.elemData,arr[i],ty,null,dynamicProperties);
+            data[i].sh = PropertyFactory.getShapeProp(this.elemData,arr[i],ty,dynamicProperties, addedTrims);
             jLen = this.stylesList.length;
             var element, hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){
@@ -135,11 +135,22 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             data[i].st = hasStrokes;
             data[i].fl = hasFills;
+        }else if(arr[i].ty == 'tm'){
+            var trimOb = {
+                closed: false,
+                trimProp: PropertyFactory.getProp(this.elemData,arr[i],7,null,dynamicProperties)
+            };
+            addedTrims.push(trimOb);
+            ownTrims.push(trimOb);
         }
     }
     len = ownArrays.length;
     for(i=0;i<len;i+=1){
         ownArrays[i].closed = true;
+    }
+    len = ownTrims.length;
+    for(i=0;i<len;i+=1){
+        ownTrims[i].closed = true;
     }
 };
 
@@ -199,12 +210,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
                 groupTransform.opacity = groupTransform.op.o;
             }
             groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
-        }else if(items[i].ty == 'sh'){
-            this.renderPath(items[i],data[i],num,groupTransform);
-        }else if(items[i].ty == 'el'){
-            this.renderPath(items[i],data[i],num,groupTransform);
-            //this.renderEllipse(items[i],data[i],num,groupTransform);
-        }else if(items[i].ty == 'rc'){
+        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
             this.renderPath(items[i],data[i],num,groupTransform);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],num,groupTransform);

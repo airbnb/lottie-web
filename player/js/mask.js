@@ -84,7 +84,7 @@ MaskElement.prototype.init = function () {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
         }
-        this.masksProps[i] = PropertyFactory.getProp(this.data,properties[i],3,null,this.dynamicProperties);
+        this.masksProps[i] = PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties);
         if(!this.masksProps[i].k){
             this.drawPath(properties[i],this.masksProps[i].v,this.storedData[i]);
         }
