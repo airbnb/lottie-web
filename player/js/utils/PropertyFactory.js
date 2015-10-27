@@ -308,90 +308,6 @@ var PropertyFactory = (function(){
         }
     }());
 
-    var TrimProperty = (function(){
-        function processKeys(frameNum, forceRender){
-            var i, len = this.dynamicProperties.length;
-            this.mdf = false;
-
-            for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getInterpolatedValue(frameNum);
-                if(this.dynamicProperties[i].mdf){
-                    this.mdf = true;
-                }
-            }
-            if(this.mdf || forceRender){
-                var o = (this.o.v%360)/360;
-                if(o === 0 && this.s.v === 0 && this.e.v == 100){
-                    this.isTrimming = false;
-                    return;
-                }
-                this.isTrimming = true;
-                if(o < 0){
-                    o += 1;
-                }
-                var s = this.s.v + o;
-                var e = this.e.v + o;
-                if(s == e){
-
-                }
-                if(s>e){
-                    var _s = s;
-                    s = e;
-                    e = _s;
-                }
-                if(e <= 1){
-                    segments[0].s = finalPaths.__totalLength*s;
-                    segments[0].e = finalPaths.__totalLength*e;
-                    segments[1].vl = false;
-                }else if(s >= 1){
-                    segments[0].s = finalPaths.__totalLength*(s-1);
-                    segments[0].e = finalPaths.__totalLength*(e-1);
-                    segments[1].vl = false;
-                }else{
-                    segments[0].s = finalPaths.__totalLength*s;
-                    segments[0].e = finalPaths.__totalLength;
-                    segments[1].s = 0;
-                    segments[1].e = finalPaths.__totalLength*(e-1);
-                    segments[1].vl = true;
-                }
-            }
-        }
-        return function(elemData,data, arr){
-            this.dynamicProperties = [];
-            this.segments = [
-                {s:0,e:0,vl:true},{s:0,e:0,vl:false}
-            ];
-            this.mdf = false;
-            this.getInterpolatedValue = processKeys;
-            this.k = false;
-            this.isTrimming = false;
-            if(data.s.length){
-                this.s = new KeyframedValueProperty(elemData,data.s,0.01);
-                this.dynamicProperties.push(this.s);
-            }else{
-                this.s = new ValueProperty(data.s,0.01);
-            }
-            if(data.e.length){
-                this.e = new KeyframedValueProperty(elemData,data.e,0.01);
-                this.dynamicProperties.push(this.e);
-            }else{
-                this.e = new ValueProperty(data.e,0.01);
-            }
-            if(data.o.length){
-                this.o = new KeyframedValueProperty(elemData,data.o,0);
-                this.dynamicProperties.push(this.o);
-            }else{
-                this.o = new ValueProperty(data.o,0);
-            }
-            if(this.dynamicProperties.length){
-                arr.push(this);
-                this.k = true;
-            }else{
-                this.getInterpolatedValue(0,true);
-            }
-        }
-    }());
-
     function getProp(elemData,data,type, mult, arr) {
 
         if(type === 2){
@@ -418,6 +334,7 @@ var PropertyFactory = (function(){
     function ShapeProperty(data, type){
         this.k = false;
         this.mdf = false;
+        this.closed = data.closed;
         this.v = type === 3 ? data.pt : data.ks;
     }
 
@@ -427,6 +344,7 @@ var PropertyFactory = (function(){
         this.getInterpolatedValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt : data.ks;
         this.k = true;
+        this.closed = data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
         this.shapeData = {
@@ -502,6 +420,7 @@ var PropertyFactory = (function(){
             };
             this.d = data.d;
             this.dynamicProperties = [];
+            this.closed = true;
             this.mdf = false;
             this.getInterpolatedValue = processKeys;
             this.convertEllToPath = convertEllToPath;
@@ -626,6 +545,7 @@ var PropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
+            this.closed = true;
             this.getInterpolatedValue = processKeys;
             this.convertRectToPath = convertRectToPath;
             if(typeof(data.p[0]) === 'number'){
@@ -654,15 +574,229 @@ var PropertyFactory = (function(){
         }
     }());
 
+    var TrimProperty = (function(){
+        function processKeys(frameNum, forceRender){
+            var i, len = this.dynamicProperties.length;
+            this.mdf = false;
+
+            for(i=0;i<len;i+=1){
+                this.dynamicProperties[i].getInterpolatedValue(frameNum);
+                if(this.dynamicProperties[i].mdf){
+                    this.mdf = true;
+                }
+            }
+            if(this.mdf || forceRender){
+                var o = (this.o.v%360)/360;
+                if(o === 0 && this.s.v === 0 && this.e.v == 100){
+                    this.isTrimming = false;
+                    return;
+                }
+                this.isTrimming = true;
+                if(o < 0){
+                    o += 1;
+                }
+                var s = this.s.v + o;
+                var e = this.e.v + o;
+                if(s == e){
+
+                }
+                if(s>e){
+                    var _s = s;
+                    s = e;
+                    e = _s;
+                }
+                this.sValue = s;
+                this.eValue = e;
+                this.oValue = o;
+            }
+        }
+        return function(elemData,data, arr){
+            this.dynamicProperties = [];
+            this.sValue = 0;
+            this.eValue = 0;
+            this.oValue = 0;
+            this.mdf = false;
+            this.getInterpolatedValue = processKeys;
+            this.k = false;
+            this.isTrimming = false;
+            if(data.s.length){
+                this.s = new KeyframedValueProperty(elemData,data.s,0.01);
+                this.dynamicProperties.push(this.s);
+            }else{
+                this.s = new ValueProperty(data.s,0.01);
+            }
+            if(data.e.length){
+                this.e = new KeyframedValueProperty(elemData,data.e,0.01);
+                this.dynamicProperties.push(this.e);
+            }else{
+                this.e = new ValueProperty(data.e,0.01);
+            }
+            if(data.o.length){
+                this.o = new KeyframedValueProperty(elemData,data.o,0);
+                this.dynamicProperties.push(this.o);
+            }else{
+                this.o = new ValueProperty(data.o,0);
+            }
+            if(this.dynamicProperties.length){
+                arr.push(this);
+                this.k = true;
+            }else{
+                this.getInterpolatedValue(0,true);
+            }
+        }
+    }());
+
     var TrimTransformerProperty = (function(){
 
-        function trimPath(){
 
+        function getSegmentsLength(keyframes,closed){
+            if(keyframes.__lengths){
+                return;
+            }
+            keyframes.__lengths = [];
+            keyframes.__totalLength = 0;
+            var pathV = keyframes.v;
+            var pathO = keyframes.o;
+            var pathI = keyframes.i;
+            var i, len = pathV.length;
+            for(i=0;i<len-1;i+=1){
+                keyframes.__lengths.push(bez.getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]));
+                keyframes.__totalLength += keyframes.__lengths[i].addedLength;
+            }
+            if(closed){
+                keyframes.__lengths.push(bez.getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]));
+                keyframes.__totalLength += keyframes.__lengths[i].addedLength;
+            }
+        }
+
+        function addSegment(pt1,pt2,pt3,pt4, lengthData){
+            this.nextO[this.segmentCount] = pt2;
+            this.nextI[this.segmentCount+1] = pt3;
+            this.nextV[this.segmentCount+1] = pt4;
+            if(!this.pathStarted){
+                this.pathStarted = true;
+                this.v.s[this.segmentCount] = pt1;
+            }else{
+                this.nextV[this.segmentCount] = pt1;
+            }
+            this.segmentCount+=1;
+        }
+
+        function processKeys(frameNum, forceRender){
+            this.mdf = forceRender ? true : false;
+            var i = 0, len = this.trims.length;
+            this.pathStarted = false;
+            while(i<len) {
+                if(this.trims[i].mdf){
+                    this.mdf = true;
+                    break;
+                }
+                i += 1;
+            }
+            this.mdf = this.prop.mdf ? true : this.mdf;
+            if(this.mdf) {
+                this.nextO.length = 0;
+                this.nextI.length = 0;
+                this.nextV.length = 0;
+                this.v.s.length = 0;
+                var closed = this.prop.closed;
+                getSegmentsLength(this.prop.v,closed);
+
+                var finalPaths = this.prop.v;
+                var j, jLen = this.trims.length, e, s, o, k, kLen;
+                for(j=0;j<jLen;j+=1){
+                    e = this.trims[j].eValue;
+                    s = this.trims[j].sValue;
+                    o = this.trims[j].oValue;
+                    if(e <= 1){
+                        this.segments[0].s = finalPaths.__totalLength*s;
+                        this.segments[0].e = finalPaths.__totalLength*e;
+                        this.segments[1].vl = false;
+                    }else if(s >= 1){
+                        this.segments[0].s = finalPaths.__totalLength*(s-1);
+                        this.segments[0].e = finalPaths.__totalLength*(e-1);
+                        this.segments[1].vl = false;
+                    }else{
+                        this.segments[0].s = finalPaths.__totalLength*s;
+                        this.segments[0].e = finalPaths.__totalLength;
+                        this.segments[1].s = 0;
+                        this.segments[1].e = finalPaths.__totalLength*(e-1);
+                        this.segments[1].vl = true;
+                    }
+
+                    var lengths;
+                    this.v.v = finalPaths.v;
+                    this.v.o = finalPaths.o;
+                    this.v.i = finalPaths.i;
+                    lengths = finalPaths.__lengths;
+                    kLen = this.v.v.length;
+                    var addedLength = 0, segmentLength = 0;
+                    len = this.segments[1].vl ? 2 : 1;
+                    var segment;
+                    this.segmentCount = 0;
+                    for(i=0;i<len;i+=1){
+                        addedLength = 0;
+                        for(k=1;k<kLen;k++){
+                            segmentLength = lengths[k-1].addedLength;
+                            if(addedLength + segmentLength < this.segments[i].s){
+                                addedLength += segmentLength;
+                                continue;
+                            }else if(addedLength > this.segments[i].e){
+                                break;
+                            }
+                            if(this.segments[i].s <= addedLength && this.segments[i].e >= addedLength + segmentLength){
+                                this.addSegment(this.v.v[k-1],this.v.o[k-1],this.v.i[k],this.v.v[k],lengths[k-1]);
+                            }else{
+                                segment = bez.getNewSegment(this.v.v[k-1],this.v.v[k],this.v.o[k-1],this.v.i[k], (this.segments[i].s - addedLength)/segmentLength,(this.segments[i].e - addedLength)/segmentLength, lengths[k-1]);
+                                this.addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
+                            }
+                            addedLength += segmentLength;
+                        }
+                        if(closed !== false){
+                            if(addedLength <= this.segments[i].e){
+                                segmentLength = lengths[k-1].addedLength;
+                                if(this.segments[i].s <= addedLength && this.segments[i].e >= addedLength + segmentLength){
+                                    this.addSegment(this.v.v[k-1],this.v.o[k-1],this.v.i[0],this.v.v[0],lengths[k-1]);
+                                }else{
+                                    segment = bez.getNewSegment(this.v.v[k-1],this.v.v[0],this.v.o[k-1],this.v.i[0], (this.segments[i].s - addedLength)/segmentLength,(this.segments[i].e - addedLength)/segmentLength, lengths[k-1]);
+                                    this.addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
+                                }
+                            }
+                        }else{
+                            this.pathStarted = false;
+                        }
+                    }
+                    closed = false;
+                }
+                if(!this.nextV.length){
+                    this.v.s.length = 0;
+                }else{
+                    this.v.v = this.nextV;
+                    this.v.o = this.nextO;
+                    this.v.i = this.nextI;
+                }
+                this.v.c = closed;
+            }
         }
 
         return function(prop,trims,arr) {
             this.trims  = [];
             this.k = false;
+            this.mdf = false;
+            this.pathStarted = false;
+            this.segments = [
+                {s:0,e:0,vl:true},{s:0,e:0,vl:false}
+            ];
+            this.nextO = [];
+            this.nextV = [];
+            this.nextI = [];
+            this.v = {
+                i: null,
+                o: null,
+                v: null,
+                s: [],
+                c: false
+            };
             var i, len = trims.length;
             for(i=0;i<len;i+=1){
                 if(!trims[i].closed){
@@ -670,11 +804,14 @@ var PropertyFactory = (function(){
                     this.trims.push(trims[i].trimProp);
                 }
             }
+            this.prop = prop;
             this.k = prop.k ? true : this.k;
+            this.getInterpolatedValue = processKeys;
+            this.addSegment = addSegment;
             if(this.k){
                 arr.push(this);
             }else{
-
+                this.getInterpolatedValue(0,true);
             }
         }
     }());
@@ -693,16 +830,19 @@ var PropertyFactory = (function(){
         }else if(type === 6){
             prop = new EllShapeProperty(elemData, data, arr);
         }
-        var i = 0, len = trims.length, hasTrims = false;
-        while(i<len){
-            if(!trims[i].closed){
-                hasTrims = true;
-                break;
+        var hasTrims = false;
+        if(trims){
+            var i = 0, len = trims.length;
+            while(i<len){
+                if(!trims[i].closed){
+                    hasTrims = true;
+                    break;
+                }
+                i += 1;
             }
-            i += 1;
         }
         if(hasTrims){
-            return new TrimTransformerProperty(prop,trims);
+            return new TrimTransformerProperty(prop,trims, arr);
         }else{
             return prop;
         }
