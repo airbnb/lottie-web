@@ -875,11 +875,11 @@ function dataFunctionManager(){
     }
 
     function convertRectToPath(pos,size,round, d){
-        round = bm_min(size[0]/2,size[1]/2,round/2);
+        round = bm_min(size[0]/2,size[1]/2,round);
         var nextV = new Array(8);
         var nextI = new Array(8);
         var nextO = new Array(8);
-        var cPoint = round/2;
+        var cPoint = round*(1-0.5519);
         //round *= 1;
 
         if(d === 2 || d === 1) {
@@ -1078,13 +1078,7 @@ function dataFunctionManager(){
                 strokeColor = getInterpolatedValue(shapeItem.c,offsettedFrameNum, startTime);
                 strokeOpacity = getInterpolatedValue(shapeItem.o,offsettedFrameNum, startTime);
                 strokeWidth = getInterpolatedValue(shapeItem.w,offsettedFrameNum, startTime);
-                if(!shapeItem.d && shapeItem.lastData && shapeItem.lastData.opacity === strokeOpacity && shapeItem.lastData.width === strokeWidth && shapeItem.lastColor === strokeColor){
-                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastData;
-                }else{
-                shapeItem.renderedData[offsettedFrameNum] = {
-                        opacity : strokeOpacity,
-                        width : strokeWidth
-                };
+                var sameDashes = true;
                 if(shapeItem.d){
                     var dashes = [];
                     jLen = shapeItem.d.length;
@@ -1092,12 +1086,26 @@ function dataFunctionManager(){
                     for(j=0;j<jLen;j+=1){
                         val = getInterpolatedValue(shapeItem.d[j].v,offsettedFrameNum, startTime);
                         dashes.push({
-                                v : val,
+                            v : val,
                             n : shapeItem.d[j].n
                         });
+                        if(shapeItem.lastData && shapeItem.lastData.dashes && shapeItem.lastData.dashes[j].v !== dashes[j].v){
+                            sameDashes = false;
+                        }
                     }
-                    shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
+
                 }
+
+                if(sameDashes && shapeItem.lastData && shapeItem.lastData.opacity === strokeOpacity && shapeItem.lastData.width === strokeWidth && shapeItem.lastColor === strokeColor){
+                    shapeItem.renderedData[offsettedFrameNum] = shapeItem.lastData;
+                }else{
+                    shapeItem.renderedData[offsettedFrameNum] = {
+                        opacity : strokeOpacity,
+                        width : strokeWidth
+                    };
+                    if(shapeItem.d){
+                        shapeItem.renderedData[offsettedFrameNum].dashes = dashes;
+                    }
                     roundColor(strokeColor);
                     if(renderType == 'canvas'){
                     shapeItem.renderedData[offsettedFrameNum].color = strokeColor;
