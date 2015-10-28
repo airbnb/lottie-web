@@ -1,8 +1,42 @@
-var BaseElement = function (){
+function BaseElement(){
+};
 
+BaseElement.prototype.prepareFrame = function(num){
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
+    {
+        if(this.isVisible !== true){
+            this.isVisible = true;
+        }
+    }else{
+        if(this.isVisible !== false){
+            this.isVisible = false;
+        }
+        return;
+    }
+    var i, len = this.dynamicProperties.length;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getInterpolatedValue(num);
+    }
+    if(this.data.hasMask){
+        this.maskManager.prepareFrame(num);
+    }
 };
 
 BaseElement.prototype.init = function(){
+    this.hidden = false;
+    this.firstFrame = true;
+    this.isVisible = false;
+    this.dynamicProperties = [];
+    this.lastNum = -99999;
+
+    this.finalTransform = {
+        op: PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties),
+        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties),
+        matMdf: false,
+        opMdf: false,
+        mat: new Matrix(),
+        opacity: 1
+    };
     this.createElements();
     if(this.data.hasMask){
         this.addMasks(this.data);

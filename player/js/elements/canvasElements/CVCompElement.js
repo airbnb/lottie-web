@@ -16,13 +16,13 @@ CVCompElement.prototype.prepareFrame = function(num){
     }
 };
 
-CVCompElement.prototype.draw = function(parentMatrix){
-    if(this.parent.draw.call(this,parentMatrix)===false){
+CVCompElement.prototype.renderFrame = function(parentMatrix){
+    if(this.parent.renderFrame.call(this,parentMatrix)===false){
         return;
     }
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
-        this.elements[i].draw(this.finalTransform);
+        this.elements[i].renderFrame(this.finalTransform);
     }
     if(this.data.hasMask){
         this.globalData.renderer.restore(true);

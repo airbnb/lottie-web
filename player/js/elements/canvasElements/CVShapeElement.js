@@ -18,8 +18,8 @@ CVShapeElement.prototype.prepareFrame = function(num){
     this.mainShape.prepareFrame(num);
 };
 
-CVShapeElement.prototype.draw = function(parentMatrix){
-    if(this.parent.draw.call(this, parentMatrix)===false){
+CVShapeElement.prototype.renderFrame = function(parentMatrix){
+    if(this.parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     this.drawShapes(this.finalTransform);

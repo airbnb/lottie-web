@@ -9,9 +9,6 @@ function MaskElement(data,element,globalData) {
     this.masksProperties = this.data.masksProperties;
     this.masksProps = new Array(this.masksProperties.length);
     this.maskElement = null;
-}
-
-MaskElement.prototype.init = function () {
     var maskedElement = this.element.maskedElement;
     var defs = this.globalData.defs;
     var i, len = this.masksProperties.length;

@@ -47,7 +47,6 @@ IImageElement.prototype.renderFrame = function(num,parentMatrix){
         return;
     }
     if(this.hidden){
-        this.lastData.o = -1;
         this.hidden = false;
         this.innerElem.setAttribute('visibility', 'visible');
     }
