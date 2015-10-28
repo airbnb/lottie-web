@@ -7,7 +7,7 @@ createElement(CVBaseElement, CVShapeElement);
 CVShapeElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
-    this.mainShape = new CVShapeItemElement(this.data.shapes,true,this.globalData);
+    this.mainShape = new CVShapeItemElement(this.data.shapes,true,this.dynamicProperties,this.globalData);
 };
 
 CVShapeElement.prototype.prepareFrame = function(num){

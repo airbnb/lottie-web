@@ -1,4 +1,4 @@
-function CVShapeItemElement(data,mainFlag,globalData){
+function CVShapeItemElement(data,mainFlag,dynamicProperties,globalData){
     this.lcEnum = {
         '1': 'butt',
         '2': 'round',
@@ -10,12 +10,14 @@ function CVShapeItemElement(data,mainFlag,globalData){
         '3': 'bevel'
     };
     this.data = data;
+    this.dynamicProperties = dynamicProperties;
     this.globalData = globalData;
     this.canvasContext = globalData.canvasContext;
     this.frameNum = -1;
     this.dataLength = this.data.length;
     this.mainFlag = mainFlag;
     this.stylesList = [];
+    this.viewData = [];
     this.ownStylesList = [];
     this.stylesPool = [];
     this.currentStylePoolPos = 0;
@@ -29,7 +31,7 @@ function CVShapeItemElement(data,mainFlag,globalData){
     var styleData;
     for(i=len;i>=0;i-=1){
         if(this.data[i].ty == 'gr'){
-            this.data[i].item = new CVShapeItemElement(this.data[i].it,false,this.globalData);
+            this.data[i].item = new CVShapeItemElement(this.data[i].it,false,this.dynamicProperties,this.globalData);
         }else if(this.data[i].ty == 'st' || this.data[i].ty == 'fl'){
             styleData = {
                 type:'fill',
