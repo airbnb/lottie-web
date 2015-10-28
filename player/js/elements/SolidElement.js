@@ -1,7 +1,7 @@
 function ISolidElement(data,parentContainer,globalData, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
 }
-createElement(BaseElement, ISolidElement);
+createElement(SVGBaseElement, ISolidElement);
 
 ISolidElement.prototype.createElements = function(){
     this.parent.createElements.call(this);

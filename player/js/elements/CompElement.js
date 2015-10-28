@@ -5,7 +5,7 @@ function ICompElement(data,parentContainer,globalData, placeholder){
         this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
 }
-createElement(BaseElement, ICompElement);
+createElement(SVGBaseElement, ICompElement);
 
 ICompElement.prototype.getComposingElement = function(){
     return this.layerElement;

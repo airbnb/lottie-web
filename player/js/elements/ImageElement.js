@@ -3,7 +3,7 @@ function IImageElement(data,parentContainer,globalData,placeholder){
     this.path = globalData.getPath();
     this.parent.constructor.call(this,data,parentContainer,globalData,placeholder);
 }
-createElement(BaseElement, IImageElement);
+createElement(SVGBaseElement, IImageElement);
 
 IImageElement.prototype.createElements = function(){
 

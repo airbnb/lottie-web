@@ -28,7 +28,7 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamic
     this.testId = 'id_' + window.namer;
 }
 
-ShapeItemElement.prototype.appendNodeToParent = BaseElement.prototype.appendNodeToParent;
+ShapeItemElement.prototype.appendNodeToParent = SVGBaseElement.prototype.appendNodeToParent;
 
 ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
     var i, len = arr.length - 1;

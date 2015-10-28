@@ -2,7 +2,7 @@ function IShapeElement(data,parentContainer,globalData, placeholder){
     this.shapes = [];
     this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
 }
-createElement(BaseElement, IShapeElement);
+createElement(SVGBaseElement, IShapeElement);
 
 IShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
 
