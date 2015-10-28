@@ -210,9 +210,12 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
-    /*this.firstFrame = 34;
+    //*
+    this.firstFrame = 0;
     this.totalFrames = 1;
-    this.animationData.tf = 1;*/
+    this.animationData.tf = 1;
+    this.frameMult = 1/1000;
+    //*/////
     this.trigger('bm:config_ready');
     this.loadSegments();
     dataManager.completeData(this.animationData);
@@ -229,39 +232,10 @@ AnimationItem.prototype.elementLoaded = function () {
 AnimationItem.prototype.checkLoaded = function () {
     if (this.pendingElements === 0) {
         this.renderer.buildStage(this.container, this.layers);
-        if(this.prerenderFramesFlag){
-            this.prerenderFrames(0);
-            dataManager.renderFrame(this.animationData,this.currentFrame + this.firstFrame);
-            this.renderer.renderFrame(this.currentFrame + this.firstFrame);
-        }else{
-            this.isLoaded = true;
-            this.gotoFrame();
-            if(this.autoplay){
-                this.play();
-            }
-        }
-    }
-};
-
-AnimationItem.prototype.prerenderFrames = function(count){
-    if(!count){
-        count = 0;
-    }
-    if(this.renderedFrameCount === Math.floor(this.totalFrames)){
-        //TODO Need polyfill for ios 5.1
         this.isLoaded = true;
         this.gotoFrame();
         if(this.autoplay){
             this.play();
-        }
-    }else{
-        dataManager.renderFrame(this.animationData,this.renderedFrameCount + this.firstFrame);
-        this.renderedFrameCount+=1;
-        if(count > 10){
-            setTimeout(this.prerenderFrames.bind(this),0);
-        }else{
-            count += 1;
-            this.prerenderFrames(count);
         }
     }
 };
@@ -287,7 +261,6 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    dataManager.renderFrame(this.animationData,this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 

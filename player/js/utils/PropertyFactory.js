@@ -60,13 +60,21 @@ var PropertyFactory = (function(){
                     while(flag){
                         addedLength +=bezierData.points[j].partialLength*dir;
                         if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
-                            this.v = bezierData.points[j].point;
+                            kLen = bezierData.points[j].point.length;
+                            for(k=0;k<kLen;k+=1){
+                                this.v[k] = this.mult ? bezierData.points[j].point[k]*this.mult : bezierData.points[j].point[k];
+                                if(this.lastValue[k] !== this.v[k]) {
+                                    this.mdf = true;
+                                    this.lastValue[k] = this.v[k];
+                                }
+                            }
                             break;
                         }else if(distanceInLine > addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
                             segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
                                 this.v[k] = this.mult ? (bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc)*this.mult : bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
+
                                 if(this.lastValue[k] !== this.v[k]) {
                                     this.mdf = true;
                                     this.lastValue[k] = this.v[k];
@@ -146,7 +154,6 @@ var PropertyFactory = (function(){
                 }
             }
         }
-
         this.lastFrame = frameNum;
     }
 
@@ -335,11 +342,11 @@ var PropertyFactory = (function(){
         this.k = false;
         this.mdf = false;
         this.closed = data.closed;
+        this.shapeData = data.ks;
         this.v = type === 3 ? data.pt : data.ks;
     }
 
     function KeyframedShapeProperty(elemData,data,arr,type){
-        //console.log(data);
         this.offsetTime = elemData.st;
         this.getInterpolatedValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt : data.ks;
@@ -420,6 +427,7 @@ var PropertyFactory = (function(){
             };
             this.d = data.d;
             this.dynamicProperties = [];
+            data.closed = true;
             this.closed = true;
             this.mdf = false;
             this.getInterpolatedValue = processKeys;
@@ -545,6 +553,7 @@ var PropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
+            data.closed = true;
             this.closed = true;
             this.getInterpolatedValue = processKeys;
             this.convertRectToPath = convertRectToPath;
@@ -650,22 +659,18 @@ var PropertyFactory = (function(){
 
 
         function getSegmentsLength(keyframes,closed){
-            if(keyframes.__lengths){
-                return;
-            }
-            keyframes.__lengths = [];
-            keyframes.__totalLength = 0;
+            this.totalLength = 0;
             var pathV = keyframes.v;
             var pathO = keyframes.o;
             var pathI = keyframes.i;
             var i, len = pathV.length;
             for(i=0;i<len-1;i+=1){
-                keyframes.__lengths.push(bez.getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]));
-                keyframes.__totalLength += keyframes.__lengths[i].addedLength;
+                this.lengths[i] = bez.getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]);
+                this.totalLength += this.lengths[i].addedLength;
             }
             if(closed){
-                keyframes.__lengths.push(bez.getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]));
-                keyframes.__totalLength += keyframes.__lengths[i].addedLength;
+                this.lengths[i] = bez.getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]);
+                this.totalLength += this.lengths[i].addedLength;
             }
         }
 
@@ -700,7 +705,7 @@ var PropertyFactory = (function(){
                 this.nextV.length = 0;
                 this.v.s.length = 0;
                 var closed = this.prop.closed;
-                getSegmentsLength(this.prop.v,closed);
+                this.getSegmentsLength(this.prop.v,closed);
 
                 var finalPaths = this.prop.v;
                 var j, jLen = this.trims.length, e, s, o, k, kLen;
@@ -721,26 +726,24 @@ var PropertyFactory = (function(){
                         return;
                     }
                     if(e <= 1){
-                        this.segments[0].s = finalPaths.__totalLength*s;
-                        this.segments[0].e = finalPaths.__totalLength*e;
+                        this.segments[0].s = this.totalLength*s;
+                        this.segments[0].e = this.totalLength*e;
                         this.segments[1].vl = false;
                     }else if(s >= 1){
-                        this.segments[0].s = finalPaths.__totalLength*(s-1);
-                        this.segments[0].e = finalPaths.__totalLength*(e-1);
+                        this.segments[0].s = this.totalLength*(s-1);
+                        this.segments[0].e = this.totalLength*(e-1);
                         this.segments[1].vl = false;
                     }else{
-                        this.segments[0].s = finalPaths.__totalLength*s;
-                        this.segments[0].e = finalPaths.__totalLength;
+                        this.segments[0].s = this.totalLength*s;
+                        this.segments[0].e = this.totalLength;
                         this.segments[1].s = 0;
-                        this.segments[1].e = finalPaths.__totalLength*(e-1);
+                        this.segments[1].e = this.totalLength*(e-1);
                         this.segments[1].vl = true;
                     }
 
-                    var lengths;
                     this.v.v = finalPaths.v;
                     this.v.o = finalPaths.o;
                     this.v.i = finalPaths.i;
-                    lengths = finalPaths.__lengths;
                     kLen = this.v.v.length;
                     var addedLength = 0, segmentLength = 0;
                     len = this.segments[1].vl ? 2 : 1;
@@ -749,7 +752,7 @@ var PropertyFactory = (function(){
                     for(i=0;i<len;i+=1){
                         addedLength = 0;
                         for(k=1;k<kLen;k++){
-                            segmentLength = lengths[k-1].addedLength;
+                            segmentLength = this.lengths[k-1].addedLength;
                             if(addedLength + segmentLength < this.segments[i].s){
                                 addedLength += segmentLength;
                                 continue;
@@ -757,20 +760,20 @@ var PropertyFactory = (function(){
                                 break;
                             }
                             if(this.segments[i].s <= addedLength && this.segments[i].e >= addedLength + segmentLength){
-                                this.addSegment(this.v.v[k-1],this.v.o[k-1],this.v.i[k],this.v.v[k],lengths[k-1]);
+                                this.addSegment(this.v.v[k-1],this.v.o[k-1],this.v.i[k],this.v.v[k],this.lengths[k-1]);
                             }else{
-                                segment = bez.getNewSegment(this.v.v[k-1],this.v.v[k],this.v.o[k-1],this.v.i[k], (this.segments[i].s - addedLength)/segmentLength,(this.segments[i].e - addedLength)/segmentLength, lengths[k-1]);
+                                segment = bez.getNewSegment(this.v.v[k-1],this.v.v[k],this.v.o[k-1],this.v.i[k], (this.segments[i].s - addedLength)/segmentLength,(this.segments[i].e - addedLength)/segmentLength, this.lengths[k-1]);
                                 this.addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
                             }
                             addedLength += segmentLength;
                         }
                         if(closed !== false){
                             if(addedLength <= this.segments[i].e){
-                                segmentLength = lengths[k-1].addedLength;
+                                segmentLength = this.lengths[k-1].addedLength;
                                 if(this.segments[i].s <= addedLength && this.segments[i].e >= addedLength + segmentLength){
-                                    this.addSegment(this.v.v[k-1],this.v.o[k-1],this.v.i[0],this.v.v[0],lengths[k-1]);
+                                    this.addSegment(this.v.v[k-1],this.v.o[k-1],this.v.i[0],this.v.v[0],this.lengths[k-1]);
                                 }else{
-                                    segment = bez.getNewSegment(this.v.v[k-1],this.v.v[0],this.v.o[k-1],this.v.i[0], (this.segments[i].s - addedLength)/segmentLength,(this.segments[i].e - addedLength)/segmentLength, lengths[k-1]);
+                                    segment = bez.getNewSegment(this.v.v[k-1],this.v.v[0],this.v.o[k-1],this.v.i[0], (this.segments[i].s - addedLength)/segmentLength,(this.segments[i].e - addedLength)/segmentLength, this.lengths[k-1]);
                                     this.addSegment(segment.pt1,segment.pt3,segment.pt4,segment.pt2/*,bez.getBezierLength(segment.pt1,segment.pt4,segment.pt2,segment.pt3)*/);
                                 }
                             }
@@ -817,9 +820,14 @@ var PropertyFactory = (function(){
                 }
             }
             this.prop = prop;
+            len = this.prop.shapeData.v.length - 1;
+            len += this.prop.closed ? 1:0;
+            this.lengths = new Array(len);
             this.k = prop.k ? true : this.k;
+            this.totalLength = 0;
             this.getInterpolatedValue = processKeys;
             this.addSegment = addSegment;
+            this.getSegmentsLength = getSegmentsLength;
             if(this.k){
                 arr.push(this);
             }else{
@@ -860,8 +868,60 @@ var PropertyFactory = (function(){
         }
     }
 
+    var DashProperty = (function(){
+
+        function processKeys(frameNum, forceFlag){
+            var i = 0, len = this.dataProps.length;
+            this.mdf = forceFlag ? true : false;
+            while(i<len){
+                if(this.dataProps[i].p.mdf){
+                    this.mdf = true;
+                    break;
+                }
+                i+=1;
+            }
+            if(this.mdf){
+                this.dasharray = '';
+                this.dashoffset = '';
+                for(i=0;i<len;i+=1){
+                    if(this.dataProps[i].n != 'o'){
+                        this.dasharray += ' ' + this.dataProps[i].p.v;
+                    }else{
+                        this.dashoffset += this.dataProps[i].p.v;
+                    }
+                }
+            }
+        }
+
+        return function(elemData, data, dynamicProperties){
+            this.dataProps = new Array(data.length);
+            this.mdf = false;
+            this.k = false;
+            this.dasharray = '';
+            this.dashoffset = '';
+            var i, len = data.length, prop;
+            for(i=0;i<len;i+=1){
+                prop = getProp(elemData,data[i].v,0, 0, dynamicProperties);
+                this.k = prop.k ? true : this.k;
+                this.dataProps[i] = {n:data[i].n,p:prop};
+            }
+            this.getInterpolatedValue = processKeys;
+            if(this.k){
+                dynamicProperties.push(this);
+            }else{
+                this.getInterpolatedValue(0,true);
+            }
+
+        }
+    }());
+
+    function getDashProp(elemData, data, dynamicProperties) {
+        return new DashProperty(elemData, data, dynamicProperties);
+    };
+
     var ob = {};
     ob.getProp = getProp;
     ob.getShapeProp = getShapeProp;
+    ob.getDashProp = getDashProp;
     return ob;
 }());

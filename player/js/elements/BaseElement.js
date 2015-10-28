@@ -19,6 +19,7 @@ var BaseElement = function (data,parentContainer,globalData, placeholder){
     this.hidden = false;
     this.firstFrame = true;
     this.placeholder = placeholder;
+    this.lastNum = -99999;
     this.init();
 };
 
@@ -115,9 +116,6 @@ BaseElement.prototype.createElements = function(){
 };
 
 BaseElement.prototype.prepareFrame = function(num){
-    if(!this.data.renderedData[num]){
-        return;
-    }
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){
@@ -133,24 +131,20 @@ BaseElement.prototype.prepareFrame = function(num){
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getInterpolatedValue(num);
     }
-    this.currentAnimData = this.data.renderedData[num].an;
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);
     }
 };
 
 BaseElement.prototype.renderFrame = function(num,parentTransform){
-    if(!this.data.renderedData[num] || this.data.ty === 3){
+    if(this.data.ty === 3){
         return false;
     }
 
-    if(this.data.eff){
-       // this.effectsManager.renderFrame(num,this.currentAnimData.mk);
-    }
-
-    if(num === this.data.renderedFrame.num){
+    if(num === this.lastNum){
         return this.isVisible;
     }
+    this.lastNum = num;
 
     if(this.data.hasMask){
         this.maskManager.renderFrame(num);

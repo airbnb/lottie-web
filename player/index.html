@@ -64,11 +64,11 @@
 <script>
 
     function configReady(){
-        console.log('config ready');
+        //console.log('config ready');
     }
 
     function dataReady(){
-        console.log('data ready');
+        //console.log('data ready');
     }
 
     var animData = {
@@ -77,7 +77,7 @@
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/catrim/data.json'
+        path: 'exports/render/data.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);

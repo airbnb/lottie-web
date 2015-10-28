@@ -1,6 +1,9 @@
 function ICompElement(data,parentContainer,globalData, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
     this.layers = data.layers;
+    if(this.data.tm){
+        this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+    }
 }
 createElement(BaseElement, ICompElement);
 
@@ -27,7 +30,11 @@ ICompElement.prototype.renderFrame = function(num,parentMatrix){
 
     this.hidden = false;
     var i,len = this.layers.length;
-    var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : num >= this.data.tm.length ? this.data.tm[this.data.tm.length - 1] : this.data.tm[num] : num;
+
+    var timeRemapped = num;
+    if(this.tm){
+        timeRemapped = Math.round(this.tm.v);
+    }
     for( i = 0; i < len; i+=1 ){
         this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
     }

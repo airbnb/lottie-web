@@ -129,6 +129,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
         w: animData.w,
         h: animData.h
     };
+    this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',animData.w);
@@ -200,12 +201,13 @@ SVGRenderer.prototype.renderFrame = function(num){
     if(this.lastFrame == num || this.destroyed){
         return;
     }
-    console.log('-------');
     if(num === null){
         num = this.lastFrame;
     }else{
         this.lastFrame = num;
     }
+    /*console.log('-------');
+    console.log('FRAME ',num);*/
     this.globalData.frameNum = num;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {

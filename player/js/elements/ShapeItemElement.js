@@ -59,6 +59,16 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,ad
                 if(!data[i].w.k) {
                     pathElement.setAttribute('stroke-width',data[i].w.v);
                 }
+                if(arr[i].d){
+                    var d = PropertyFactory.getDashProp(this.elemData,arr[i].d,dynamicProperties);
+                    if(!d.k){
+                        pathElement.setAttribute('stroke-dasharray', d.dasharray);
+                        pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
+                    }else{
+                        data[i].d = d;
+                    }
+                }
+
             }else{
                 pathElement = document.createElementNS(svgNS, "path");
                 if(!data[i].c.k) {
@@ -320,6 +330,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
         for(i=0;i<len;i+=1){
             if(viewData.elements[i].ty === 'st'){
                 if(viewData.sh.mdf || this.firstFrame){
+                    //console.log(pathStringNonTransformed);
                     viewData.elements[i].el.setAttribute('d', pathStringNonTransformed);
                 }
                 if(groupTransform.matMdf) {
@@ -350,23 +361,9 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, group
     var d = viewData.d;
     var dasharray,dashoffset;
     if(d){
-        var j, jLen = d.length;
-        dasharray = '';
-        dashoffset = '';
-        for(j=0;j<jLen;j+=1){
-            if(d[j].n != 'o'){
-                dasharray += ' ' + d[j].v;
-            }else{
-                dashoffset += d[j].v;
-            }
-        }
-        if(viewData.lastData.da != dasharray){
-            styleElem.pathElement.setAttribute('stroke-dasharray',dasharray);
-            viewData.lastData.da = dasharray;
-        }
-        if(viewData.lastData.do != dashoffset){
-            styleElem.pathElement.setAttribute('stroke-dashoffset',dashoffset);
-            viewData.lastData.do = dashoffset;
+        if(d.mdf){
+            styleElem.pathElement.setAttribute('stroke-dasharray', d.dasharray);
+            styleElem.pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
         }
     }
     if(viewData.c.mdf){
