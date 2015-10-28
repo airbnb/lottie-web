@@ -40,12 +40,17 @@ ITextElement.prototype.createElements = function(){
 
     var letters = documentData.l;
     len = letters.length;
-    var tSpan, tShapeG;
+    var tSpan;
     var matrixHelper = this.mHelper;
-    var shapes, shapeStr = '', j, jLen, k, kLen, pathNodes;
+    var shapes, shapeStr = '', j, jLen, k, kLen, pathNodes, singleShape = this.data.singleShape;
+    if(this.globalData.fontManager.chars) {
+        if (singleShape) {
+            var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
+        }
+    }
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
-            if(this.data.t.a.length || i === 0 || 1 === 1){
+            if(!singleShape || i === 0){
                 tSpan = document.createElementNS(svgNS,'path');
             }
         }else{
@@ -56,20 +61,32 @@ ITextElement.prototype.createElements = function(){
         tSpan.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
-            if(this.data.t.a.length || i === 0 || 1 === 1) {
-                //tShapeG = document.createElementNS(svgNS, 'g');
-                //tShapeG.appendChild(tSpan);
-            }
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData = charData.data;
             matrixHelper.reset();
-            matrixHelper.scale(documentData.s/100,documentData.s/100);
+            if(singleShape && letters[i].n) {
+                xPos = 0;
+                yPos += documentData.yOffset;
+                yPos += firstLine ? 1 : 0;
+                firstLine = false;
+            }
             if(shapeData){
                 shapes = shapeData.shapes[0].it;
-                if(this.data.t.a.length || 1 === 1){
+                if(!singleShape){
                     shapeStr = '';
+                }else{
+                    switch(documentData.j){
+                        case 1:
+                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0);
+                            break;
+                        case 2:
+                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0);
+                            break;
+                    }
+                    matrixHelper.translate(xPos,yPos);
                 }
                 jLen = shapes.length;
+                matrixHelper.scale(documentData.s/100,documentData.s/100);
                 for(j=0;j<jLen;j+=1){
                     kLen = shapes[j].ks.i.length;
                     pathNodes = shapes[j].ks;
@@ -85,9 +102,16 @@ ITextElement.prototype.createElements = function(){
                     //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
                     shapeStr += 'z';
                 }
-                tSpan.setAttribute('d',shapeStr);
+                if(!singleShape){
+
+                    tSpan.setAttribute('d',shapeStr);
+                }
             }
-            this.textElem.appendChild(tSpan);
+            if(singleShape){
+                xPos += letters[i].l;
+            }else{
+                this.textElem.appendChild(tSpan);
+            }
         }else{
             tSpan.textContent = letters[i].val;
             tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
@@ -95,6 +119,10 @@ ITextElement.prototype.createElements = function(){
         }
         //
         this.textSpans.push(tSpan);
+    }
+    if(singleShape){
+        tSpan.setAttribute('d',shapeStr);
+        this.textElem.appendChild(tSpan);
     }
 };
 
@@ -134,6 +162,9 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
             this.lastData.o = renderedFrameData.o;
             this.textElem.setAttribute('opacity',renderedFrameData.o);
         }
+    }
+    if(this.data.singleShape){
+        return;
     }
 
     var  i,len;

@@ -28,8 +28,10 @@ var bm_projectManager = (function () {
     }
     
     function searchCommands() {
-        commands.shapesFromText = app.findMenuCommandId("Create Shapes from Text");
-        commands.duplicate = app.findMenuCommandId("Duplicate");
+        //commands.shapesFromText = app.findMenuCommandId("Create Shapes from Text");
+        //commands.duplicate = app.findMenuCommandId("Duplicate");
+        commands.shapesFromText = 3781;
+        commands.duplicate = 2080;
     }
     
     function getCommandID(key) {
