@@ -57,7 +57,7 @@ ISolidElement.prototype.renderFrame = function(num,parentMatrix){
     }
 };
 
-ICompElement.prototype.destroy = function(){
+ISolidElement.prototype.destroy = function(){
     this.parent.destroy.call();
     this.rectElement = null;
 };

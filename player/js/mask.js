@@ -22,8 +22,13 @@ MaskElement.prototype.init = function () {
     var j, jLen;
     var layerId = randomString(10);
     var rect;
-    this.maskElement = document.createElementNS(svgNS, 'mask');
+    var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
+
+        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv){
+            maskType = 'mask';
+            maskRef = 'mask';
+        }
 
         //console.log('properties[i].mode: ',properties[i].mode);
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
@@ -85,6 +90,8 @@ MaskElement.prototype.init = function () {
         }
     }
 
+    this.maskElement = document.createElementNS(svgNS, maskType);
+
     len = currentMasks.length;
     for(i=0;i<len;i+=1){
         this.maskElement.appendChild(currentMasks[i]);
@@ -92,7 +99,7 @@ MaskElement.prototype.init = function () {
 
     this.maskElement.setAttribute('id', layerId);
     if(count > 0){
-        maskedElement.setAttribute("mask", "url(#" + layerId + ")");
+        maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
     }
 
     defs.appendChild(this.maskElement);
