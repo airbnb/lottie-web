@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.0.8
+- changed masks to clipping paths when only using AE additive masks. Performance improvement and fixes issue with strokes.
+
 ## V 3.0.7
 - rounded rects fix
 - stroke dash export fix
