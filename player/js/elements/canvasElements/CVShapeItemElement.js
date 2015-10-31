@@ -232,7 +232,6 @@ CVShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransf
     if(pathNodes.v){
         len = pathNodes.v.length;
         var redraw = groupTransform.matMdf || viewData.sh.mdf;
-        console.log('redraw: ',redraw);
         if(redraw) {
             var pathStringTransformed = viewData.trNodes;
             var pathStringNonTransformed = viewData.nodes;

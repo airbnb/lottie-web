@@ -41,10 +41,6 @@ CVBaseElement.prototype.renderFrame = function(parentTransform){
     if(!this.isVisible){
         return this.isVisible;
     }
-
-    if(this.data.hasMask){
-        this.maskManager.renderFrame();
-    }
     this.finalTransform.opMdf = this.finalTransform.op.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;
@@ -92,7 +88,7 @@ CVBaseElement.prototype.renderFrame = function(parentTransform){
     }
     if(this.data.hasMask){
         this.globalData.renderer.save(true);
-        this.maskManager.renderFrame(this.finalTransform);
+        this.maskManager.renderFrame(finalMat);
     }
     return this.isVisible;
 

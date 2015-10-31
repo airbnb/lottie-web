@@ -4,7 +4,6 @@ function MaskElement(data,element,globalData) {
     this.element = element;
     this.globalData = globalData;
     this.paths = [];
-    this.registeredEffects = [];
     this.masksProperties = this.data.masksProperties;
     this.viewData = new Array(this.masksProperties.length);
     this.maskElement = null;
@@ -171,6 +170,5 @@ MaskElement.prototype.destroy = function(){
     this.maskElement = null;
     this.data = null;
     this.paths = null;
-    this.registeredEffects = null;
     this.masksProperties = null;
 };
