@@ -5,7 +5,11 @@ function CVMaskElement(data,element,globalData){
     this.masksProperties = this.data.masksProperties;
     this.totalMasks = this.masksProperties.length;
     this.ctx = this.element.canvasContext;
-    this.viewData = [];
+    this.viewData = new Array(this.masksProperties.length);
+    var i, len = this.masksProperties.length;
+    for (i = 0; i < len; i++) {
+        this.viewData[i] = PropertyFactory.getShapeProp(this.data,this.masksProperties[i],3,this.dynamicProperties)
+    }
 };
 
 CVMaskElement.prototype.prepareFrame = function (num) {
@@ -13,39 +17,33 @@ CVMaskElement.prototype.prepareFrame = function (num) {
 };
 
 CVMaskElement.prototype.renderFrame = function (transform) {
-    var path;
-    var tmpPath = new BM_Path2D();
+    var ctx = this.ctx;
+    ctx.beginPath();
     var i, len = this.data.masksProperties.length;
-    path = new BM_Path2D();
+    var pt,pt2,pt3;
     for (i = 0; i < len; i++) {
         if (this.masksProperties[i].inv) {
-            this.createInvertedMask(tmpPath, this.data.masksProperties[i].paths[this.frameNum].pathNodes);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(this.globalData.compWidth, 0);
+            ctx.lineTo(this.globalData.compWidth, this.globalData.compHeight);
+            ctx.lineTo(0, this.globalData.compHeight);
+            ctx.lineTo(0, 0);
         }
-        this.drawShape(tmpPath, this.data.masksProperties[i].paths[this.frameNum].pathNodes);
+        pt = transform.applyToPointArray(data.v[0][0],data.v[0][1]);
+        ctx.moveTo(pt[0], pt[1]);
+        var j, jLen = data.v.length;
+        for (j = 1; j < jLen; j++) {
+            pt = transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1]);
+            pt2 = transform.applyToPointArray(data.i[j][0],data.i[j][1]);
+            pt3 = transform.applyToPointArray(data.v[j][0],data.v[j][1]);
+            ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
+        }
+        pt = transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1]);
+        pt2 = transform.applyToPointArray(data.i[0][0],data.i[0][1]);
+        pt3 = transform.applyToPointArray(data.v[0][0],data.v[0][1]);
+        ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
     }
-    path.addPath(tmpPath,transform.mat.props);
-    this.renderedFrames[this.globalData.frameNum] = path;
-    this.ctx.clip(path);
-};
-
-CVMaskElement.prototype.drawShape = function (path, data) {
-    var j, jLen = data.v.length;
-    path.moveTo(bm_rnd(data.v[0][0]), bm_rnd(data.v[0][1]));
-    //path.moveTo(data.v[0][0], data.v[0][1]);
-    for (j = 1; j < jLen; j++) {
-        //path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[j][0], data.i[j][1], data.v[j][0], data.v[j][1]);
-        path.bezierCurveTo(bm_rnd(data.o[j - 1][0]), bm_rnd(data.o[j - 1][1]), bm_rnd(data.i[j][0]), bm_rnd(data.i[j][1]), bm_rnd(data.v[j][0]), bm_rnd(data.v[j][1]));
-    }
-    //path.bezierCurveTo(data.o[j - 1][0], data.o[j - 1][1], data.i[0][0], data.i[0][1], data.v[0][0], data.v[0][1]);
-    path.bezierCurveTo(bm_rnd(data.o[j - 1][0]), bm_rnd(data.o[j - 1][1]), bm_rnd(data.i[0][0]), bm_rnd(data.i[0][1]), bm_rnd(data.v[0][0]), bm_rnd(data.v[0][1]));
-};
-
-CVMaskElement.prototype.createInvertedMask = function(path){
-    path.moveTo(0, 0);
-    path.lineTo(this.globalData.compWidth, 0);
-    path.lineTo(this.globalData.compWidth, this.globalData.compHeight);
-    path.lineTo(0, this.globalData.compHeight);
-    path.lineTo(0, 0);
+    ctx.clip();
 };
 
 CVMaskElement.prototype.destroy = function(){

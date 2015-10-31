@@ -75,11 +75,11 @@
 
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'svg',
+        animType: 'canvas',
         loop: true,
         prerender: false,
         autoplay: true,
-        path: 'exports/navidad/data.json'
+        path: 'exports/render/data.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
