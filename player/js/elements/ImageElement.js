@@ -40,8 +40,8 @@ IImageElement.prototype.hide = function(){
     }
 };
 
-IImageElement.prototype.renderFrame = function(num,parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
+IImageElement.prototype.renderFrame = function(parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;

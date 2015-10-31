@@ -20,6 +20,7 @@ BaseElement.prototype.prepareFrame = function(num){
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);
     }
+    this.currentFrameNum = num;
 };
 
 BaseElement.prototype.init = function(){
@@ -27,6 +28,7 @@ BaseElement.prototype.init = function(){
     this.firstFrame = true;
     this.isVisible = false;
     this.dynamicProperties = [];
+    this.currentFrameNum = -99999;
     this.lastNum = -99999;
 
     this.finalTransform = {

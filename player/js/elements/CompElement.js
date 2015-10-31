@@ -21,8 +21,8 @@ ICompElement.prototype.hide = function(){
     }
 };
 
-ICompElement.prototype.renderFrame = function(num,parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
+ICompElement.prototype.renderFrame = function(parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -31,7 +31,7 @@ ICompElement.prototype.renderFrame = function(num,parentMatrix){
     this.hidden = false;
     var i,len = this.layers.length;
 
-    var timeRemapped = num;
+    var timeRemapped = this.currentFrameNum;
     if(this.tm){
         timeRemapped = Math.round(this.tm.v);
     }
@@ -40,9 +40,9 @@ ICompElement.prototype.renderFrame = function(num,parentMatrix){
     }
     for( i = 0; i < len; i+=1 ){
         if(this.data.hasMask){
-            this.elements[i].renderFrame(timeRemapped - this.layers[i].st);
+            this.elements[i].renderFrame();
         }else{
-            this.elements[i].renderFrame(timeRemapped - this.layers[i].st,this.finalTransform);
+            this.elements[i].renderFrame(this.finalTransform);
         }
     }
 };

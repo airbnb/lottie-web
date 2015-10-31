@@ -11,12 +11,13 @@
             overflow: hidden;
         }
         #bodymovin{
-            width:800px;
-            height:800px;
+            width:700px;
+            height:700px;
             background-color:#333;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
+            margin: auto;
         }
     </style>
     <!-- build:js bodymovin.js -->
@@ -78,7 +79,7 @@
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/render/data.json'
+        path: 'exports/navidad/data.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);

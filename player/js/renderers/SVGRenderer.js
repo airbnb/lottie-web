@@ -214,6 +214,6 @@ SVGRenderer.prototype.renderFrame = function(num){
         this.elements[i].prepareFrame(num - this.layers[i].st);
     }
     for (i = 0; i < len; i++) {
-        this.elements[i].renderFrame(num - this.layers[i].st);
+        this.elements[i].renderFrame();
     }
 };

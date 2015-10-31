@@ -1,13 +1,12 @@
 function MaskElement(data,element,globalData) {
     this.dynamicProperties = [];
     this.data = data;
-    this.storedData = [];
     this.element = element;
     this.globalData = globalData;
     this.paths = [];
     this.registeredEffects = [];
     this.masksProperties = this.data.masksProperties;
-    this.masksProps = new Array(this.masksProperties.length);
+    this.viewData = new Array(this.masksProperties.length);
     this.maskElement = null;
     var maskedElement = this.element.maskedElement;
     var defs = this.globalData.defs;
@@ -56,10 +55,6 @@ function MaskElement(data,element,globalData) {
             path.setAttribute('stroke-miterlimit', '10');
         }
         path.setAttribute('clip-rule','nonzero');
-        this.storedData[i] = {
-         elem: path,
-            lastPath: ''
-        };
         if(properties[i].mode == 'i'){
             jLen = currentMasks.length;
             var g = document.createElementNS(svgNS,'g');
@@ -81,9 +76,13 @@ function MaskElement(data,element,globalData) {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
         }
-        this.masksProps[i] = PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties);
-        if(!this.masksProps[i].k){
-            this.drawPath(properties[i],this.masksProps[i].v,this.storedData[i]);
+        this.viewData[i] = {
+            elem: path,
+            lastPath: '',
+            prop:PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties)
+        };
+        if(!this.viewData[i].prop.k){
+            this.drawPath(properties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
     }
 
@@ -110,22 +109,10 @@ MaskElement.prototype.prepareFrame = function(num){
 MaskElement.prototype.renderFrame = function (num) {
     var i, len = this.data.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.data.masksProperties[i].mode == 'n' || !this.masksProps[i].mdf){
-            continue;
+        if(!(this.data.masksProperties[i].mode == 'n' || !this.viewData[i].prop.mdf)){
+            this.drawPath(this.data.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
-        this.drawPath(this.data.masksProperties[i],this.masksProps[i].v,this.storedData[i]);
     }
-};
-
-MaskElement.prototype.processMaskFromEffects = function (num, masks) {
-    var i, len = this.registeredEffects.length;
-    for (i = 0; i < len; i++) {
-        this.registeredEffects[i].renderMask(num, masks);
-    }
-};
-
-MaskElement.prototype.registerEffect = function (effect) {
-    this.registeredEffects.push(effect);
 };
 
 MaskElement.prototype.getMaskelement = function () {
@@ -141,7 +128,7 @@ MaskElement.prototype.createLayerSolidPath = function(){
     return path;
 };
 
-MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
+MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     var pathString = '';
     var i, len;
     len = pathNodes.v.length;
@@ -161,13 +148,13 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,storedData){
 
 
 
-    if(storedData.lastPath !== pathString){
+    if(viewData.lastPath !== pathString){
         if(pathData.inv){
-            storedData.elem.setAttribute('d',this.solidPath + pathString);
+            viewData.elem.setAttribute('d',this.solidPath + pathString);
         }else{
-            storedData.elem.setAttribute('d',pathString);
+            viewData.elem.setAttribute('d',pathString);
         }
-        storedData.lastPath = pathString;
+        viewData.lastPath = pathString;
     }
 };
 

@@ -1,4 +1,8 @@
 function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamicProperties,globalData){
+    this.shape = parentElement;
+    this.parentContainer = parentContainer;
+    this.placeholder = placeholder;
+
     this.lcEnum = {
         '1': 'butt',
         '2': 'round',
@@ -11,9 +15,6 @@ function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamic
     };
     this.stylesList = [];
     this.viewData = [];
-    this.shape = parentElement;
-    this.parentContainer = parentContainer;
-    this.placeholder = placeholder;
     this.elemData = data;
     this.data = data.shapes;
     this.globalData = globalData;
@@ -176,7 +177,7 @@ ShapeItemElement.prototype.hideShape = function(){
     }
 };
 
-ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data,isMain){
+ShapeItemElement.prototype.renderShape = function(parentTransform,items,data,isMain){
     var i, len;
     if(!items){
         items = this.data;
@@ -189,7 +190,6 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
     if(!data){
         data = this.viewData;
     }
-    this.frameNum = num;
     ///
     ///
     len = items.length - 1;
@@ -215,13 +215,13 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
             }
             groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
         }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
-            this.renderPath(items[i],data[i],num,groupTransform);
+            this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
-            this.renderFill(items[i],data[i],num,groupTransform);
+            this.renderFill(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],num,groupTransform);
+            this.renderStroke(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'gr'){
-            this.renderShape(num,groupTransform,items[i].it,data[i].it);
+            this.renderShape(groupTransform,items[i].it,data[i].it);
         }else if(items[i].ty == 'tm'){
             //
         }
@@ -248,7 +248,7 @@ ShapeItemElement.prototype.renderShape = function(num,parentTransform,items,data
 
 };
 
-ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTransform){
+ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransform){
     var len, i;
     var pathNodes = viewData.sh.v;
     var t = '';
@@ -338,7 +338,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,num,groupTran
     }
 };
 
-ShapeItemElement.prototype.renderFill = function(styleData,viewData,num, groupTransform){
+ShapeItemElement.prototype.renderFill = function(styleData,viewData, groupTransform){
     var styleElem = viewData.style;
 
     if(viewData.c.mdf){
@@ -349,7 +349,7 @@ ShapeItemElement.prototype.renderFill = function(styleData,viewData,num, groupTr
     }
 };
 
-ShapeItemElement.prototype.renderStroke = function(styleData,viewData,num, groupTransform){
+ShapeItemElement.prototype.renderStroke = function(styleData,viewData, groupTransform){
     var styleElem = viewData.style;
     //TODO fix dashes
     var d = viewData.d;
