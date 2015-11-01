@@ -22,10 +22,16 @@ CVMaskElement.prototype.prepareFrame = function(num){
 
 CVMaskElement.prototype.renderFrame = function (transform) {
     var ctx = this.ctx;
-    ctx.beginPath();
     var i, len = this.data.masksProperties.length;
-    var pt,pt2,pt3,data;
+    var pt,pt2,pt3,data, hasMasks = false;
     for (i = 0; i < len; i++) {
+        if(this.masksProperties[i].mode === 'n'){
+            continue;
+        }
+        if(hasMasks === false){
+            ctx.beginPath();
+            hasMasks = true;
+        }
         if (this.masksProperties[i].inv) {
             ctx.moveTo(0, 0);
             ctx.lineTo(this.globalData.compWidth, 0);
@@ -48,7 +54,9 @@ CVMaskElement.prototype.renderFrame = function (transform) {
         pt3 = transform.applyToPointArray(data.v[0][0],data.v[0][1]);
         ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
     }
-    ctx.clip();
+    if(hasMasks){
+        ctx.clip();
+    }
 };
 
 CVMaskElement.prototype.destroy = function(){
