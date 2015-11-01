@@ -341,7 +341,7 @@ var PropertyFactory = (function(){
     function ShapeProperty(data, type){
         this.k = false;
         this.mdf = false;
-        this.closed = data.closed;
+        this.closed = type === 3 ? data.cl : data.closed;
         this.shapeData = data.ks;
         this.v = type === 3 ? data.pt : data.ks;
     }
@@ -351,7 +351,7 @@ var PropertyFactory = (function(){
         this.getInterpolatedValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt : data.ks;
         this.k = true;
-        this.closed = data.closed;
+        this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
         this.shapeData = {
