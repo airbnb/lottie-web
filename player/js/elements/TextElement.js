@@ -72,6 +72,8 @@ ITextElement.prototype.init = function(){
             }
             this.viewData.a[i] = animatorData;
         }
+    }else{
+        this.viewData.a = [];
     }
     if(textData.p && 'm' in textData.p){
         this.viewData.p = {
@@ -116,7 +118,7 @@ ITextElement.prototype.getMeasures = function(){
                 pathInfo.segments.push(pathData);
             }
             i = len;
-            if (mask.cl) {
+            if (mask.closed) {
                 pathData = {
                     s: paths.v[i],
                     e: paths.v[0],
@@ -134,7 +136,7 @@ ITextElement.prototype.getMeasures = function(){
         var currentLength = this.viewData.p.f.v, segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
         var segmentLength = 0, flag = true;
         var segments = pathInfo.segments;
-        if (currentLength < 0 && mask.cl) {
+        if (currentLength < 0 && mask.closed) {
             if (pathInfo.tLength < Math.abs(currentLength)) {
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
@@ -270,7 +272,7 @@ ITextElement.prototype.getMeasures = function(){
                             pointInd = 0;
                             segmentInd += 1;
                             if (!segments[segmentInd]) {
-                                if (mask.cl) {
+                                if (mask.closed) {
                                     pointInd = 0;
                                     segmentInd = 0;
                                     points = segments[segmentInd].bezierData.points;
