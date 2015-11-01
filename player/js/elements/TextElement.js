@@ -150,6 +150,7 @@ ITextElement.prototype.renderFrame = function(num,parentMatrix){
         this.hidden = false;
         this.innerElem.setAttribute('visibility', 'visible');
     }
+    console.log(this.layerElement);
     if(!this.data.hasMask){
         if(this.finalTransform.matMdf){
             this.layerElement.setAttribute('transform','matrix('+this.finalTransform.mat.props.join(',')+')');
