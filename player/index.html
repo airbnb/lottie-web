@@ -30,12 +30,9 @@
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
-<<<<<<< HEAD
     <script src="js/utils/text_helper.js"></script>
     <script src="js/utils/FontManager.js"></script>
-=======
     <script src="js/utils/PropertyFactory.js"></script>
->>>>>>> keyframeController
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="js/mask.js"></script>
@@ -79,12 +76,12 @@
 
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'canvas',
+        animType: 'svg',
         loop: true,
         prerender: false,
         autoplay: true,
         //animationData: bmsmd
-        path: 'exports/blue/data.json'
+        path: 'exports/render/data.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);

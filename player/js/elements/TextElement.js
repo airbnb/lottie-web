@@ -8,6 +8,12 @@ function ITextElement(data, animationItem,parentContainer,globalData){
     this.strokeWidthAnim = false;
     this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
     this.renderedLetters = [];
+    this.viewData = {
+        m:{
+            a: PropertyFactory.getProp(data,data.t.m.a,1,0,this.dynamicProperties)
+        }
+    };
+    console.log(data);
 }
 createElement(SVGBaseElement, ITextElement);
 
@@ -135,34 +141,24 @@ ITextElement.prototype.hide = function(){
 
 
 ITextElement.prototype.renderFrame = function(num,parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
-
+    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
     }
     if(this.hidden){
-        this.lastData.o = -1;
         this.hidden = false;
-        this.textElem.setAttribute('visibility', 'visible');
+        this.innerElem.setAttribute('visibility', 'visible');
     }
     if(!this.data.hasMask){
-        if(!this.renderedFrames[this.globalData.frameNum]){
-            this.renderedFrames[this.globalData.frameNum] = {
-                tr: 'matrix('+this.finalTransform.mat.props.join(',')+')',
-                o: this.finalTransform.opacity
-            };
+        if(this.finalTransform.matMdf){
+            this.layerElement.setAttribute('transform','matrix('+this.finalTransform.mat.props.join(',')+')');
         }
-        var renderedFrameData = this.renderedFrames[this.globalData.frameNum];
-        if(this.lastData.tr != renderedFrameData.tr){
-            this.lastData.tr = renderedFrameData.tr;
-            this.textElem.setAttribute('transform',renderedFrameData.tr);
-        }
-        if(this.lastData.o !== renderedFrameData.o){
-            this.lastData.o = renderedFrameData.o;
-            this.textElem.setAttribute('opacity',renderedFrameData.o);
+        if(this.finalTransform.opMdf){
+            this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
         }
     }
+
     if(this.data.singleShape){
         return;
     }
