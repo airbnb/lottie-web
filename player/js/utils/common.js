@@ -153,6 +153,15 @@ function RenderedFrame(tr,o) {
     this.o = o;
 }
 
+function LetterProps(o,sw,sc,fc,m,p){
+    this.o = o;
+    this.sw = sw;
+    this.sc = sc;
+    this.fc = fc;
+    this.m = m;
+    this.props = p;
+}
+
 function iterateDynamicProperties(num){
     var i, len = this.dynamicProperties;
     for(i=0;i<len;i+=1){

@@ -90,7 +90,7 @@ SVGRenderer.prototype.createShape = function (data,parentContainer, placeholder)
 };
 
 SVGRenderer.prototype.createText = function (data,parentContainer, placeholder) {
-    return new ITextElement(data, parentContainer,this.globalData, placeholder);
+    return new SVGTextElement(data, parentContainer,this.globalData, placeholder);
 };
 
 SVGRenderer.prototype.createImage = function (data,parentContainer, placeholder) {

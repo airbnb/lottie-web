@@ -13,6 +13,10 @@ function CVMaskElement(data,element,globalData){
     }
 };
 
+CVMaskElement.prototype.getMaskProperty = function(pos){
+    return this.viewData[pos];
+};
+
 CVMaskElement.prototype.prepareFrame = function(num){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){

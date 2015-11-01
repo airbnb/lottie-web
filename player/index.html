@@ -30,7 +30,7 @@
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
-    <script src="js/utils/text_helper.js"></script>
+    <!-- <script src="js/utils/text_helper.js"></script> -->
     <script src="js/utils/FontManager.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
@@ -38,13 +38,14 @@
     <script src="js/mask.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
+    <script src="js/elements/TextElement.js"></script>
+    <script src="js/elements/svgElements/SVGTextElement.js"></script>
     <script src="js/elements/PlaceHolderElement.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/ShapeItemElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
-    <script src="js/elements/TextElement.js"></script>
     <script src="js/elements/canvasElements/CVBaseElement.js"></script>
     <script src="js/elements/canvasElements/CVCompElement.js"></script>
     <script src="js/elements/canvasElements/CVImageElement.js"></script>
@@ -77,11 +78,11 @@
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
-        loop: true,
+        loop: false,
         prerender: false,
         autoplay: true,
         //animationData: bmsmd
-        path: 'exports/render/data.json'
+        path: 'exports/render/data2.json'
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
