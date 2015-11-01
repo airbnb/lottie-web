@@ -207,7 +207,6 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
                     ctx.setLineDash(this.dashResetter);
                     this.globalData.isDashed = false;
                 }
-                console.log(elems[j].tr);
                 renderer.ctxTransform(elems[j].tr);
                 nodes = elems[j].nodes;
             }else{
