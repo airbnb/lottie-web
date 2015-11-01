@@ -181,6 +181,9 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
             this.stylesList[i].ld = '1';
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pathElement);
         }
+        if(this.stylesList[i].type === 'st' && this.stylesList[i].wi === 0){
+            continue;
+        }
         renderer.save();
         elems = this.stylesList[i].elements;
         jLen = elems.length;
@@ -207,7 +210,6 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
                     ctx.setLineDash(this.dashResetter);
                     this.globalData.isDashed = false;
                 }
-                console.log(elems[j].tr);
                 renderer.ctxTransform(elems[j].tr);
                 nodes = elems[j].nodes;
             }else{

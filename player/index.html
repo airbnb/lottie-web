@@ -23,11 +23,9 @@
     <!-- build:js bodymovin.js -->
     <script src="js/main.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
-    <script src="js/3rd_party/canvasPoly.js"></script>
     <script src="js/utils/MatrixManager.js"></script>
     <script src="js/utils/animationFramePolyFill.js"></script>
     <script src="js/utils/common.js"></script>
-    <script src="js/utils/canvasPolyFill.js"></script>
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
@@ -75,8 +73,8 @@
 
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'canvas',
-        loop: true,
+        animType: 'svg',
+        loop: false,
         prerender: false,
         autoplay: true,
         path: 'exports/render/data.json'

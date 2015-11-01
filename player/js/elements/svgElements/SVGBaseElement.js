@@ -160,7 +160,6 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
             this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
         }
     }
-
     return this.isVisible;
 };
 

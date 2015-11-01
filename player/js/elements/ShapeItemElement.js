@@ -237,7 +237,7 @@ ShapeItemElement.prototype.renderShape = function(parentTransform,items,data,isM
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pathElement);
         }
         if(this.stylesList[i].type === 'fl'){
-            if(this.stylesList[i].mdf){
+            if(this.stylesList[i].mdf || this.firstFrame){
                 this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
             }
         }
@@ -256,7 +256,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
     var pathStringNonTransformed = '';
     if(pathNodes.v){
         len = pathNodes.v.length;
-        var redraw = groupTransform.matMdf || viewData.sh.mdf;
+        var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
         if(redraw) {
             var stops = pathNodes.s ? pathNodes.s : [];
             for (i = 1; i < len; i += 1) {
