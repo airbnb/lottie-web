@@ -55,7 +55,7 @@ ShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,ad
                     pathElement.setAttribute('stroke-width',data[i].w.v);
                 }
                 if(arr[i].d){
-                    var d = PropertyFactory.getDashProp(this.elemData,arr[i].d,dynamicProperties);
+                    var d = PropertyFactory.getDashProp(this.elemData,arr[i].d,'svg',dynamicProperties);
                     if(!d.k){
                         pathElement.setAttribute('stroke-dasharray', d.dasharray);
                         pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
@@ -304,7 +304,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
                     }
                 }
             }
-            if (pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
+            if (len && pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
                 if (viewData.st) {
                     pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[0][0]) + ',' + bm_rnd(pathNodes.i[0][1]) + " " + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
                 }

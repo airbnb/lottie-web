@@ -1,5 +1,4 @@
 function dataFunctionManager(){
-    var frameRate = 0;
 
     function completeLayers(layers, comps){
         var layerData;
@@ -60,7 +59,6 @@ function dataFunctionManager(){
         var j, jLen;
         var isTrimmed = trimmedFlag ? trimmedFlag : false;
         for(i=len-1;i>=0;i-=1){
-            arr[i].renderedData = [];
             if(arr[i].ty == 'tm'){
                 isTrimmed = true;
             }

@@ -18,6 +18,8 @@ function CVShapeItemElement(data,dynamicProperties,globalData){
     this.searchShapes(this.data,this.viewData,dynamicProperties,[]);
 }
 
+CVShapeItemElement.prototype.dashResetter = [];
+
 CVShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
     var i, len = arr.length - 1;
     var j, jLen;
@@ -35,18 +37,22 @@ CVShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,
             }
             data[i].o = PropertyFactory.getProp(this.elemData,arr[i].o,0,0.01,dynamicProperties);
             if(arr[i].ty == 'st') {
-                data[i].lc = this.lcEnum[arr[i].lc] || 'round';
-                data[i].lj = this.lcEnum[arr[i].lc] || 'round';
+                styleElem.lc = this.lcEnum[arr[i].lc] || 'round';
+                styleElem.lj = this.ljEnum[arr[i].lj] || 'round';
                 if(arr[i].lj == 1) {
-                    data[i].ml = arr[i].ml;
+                    styleElem.ml = arr[i].ml;
                 }
                 data[i].w = PropertyFactory.getProp(this.elemData,arr[i].w,0,null,dynamicProperties);
                 if(!data[i].w.k){
                     styleElem.wi = data[i].w.v;
                 }
                 if(arr[i].d){
-                    var d = PropertyFactory.getDashProp(this.elemData,arr[i].d,dynamicProperties);
+                    var d = PropertyFactory.getDashProp(this.elemData,arr[i].d,'canvas',dynamicProperties);
                     data[i].d = d;
+                    if(!data[i].d.k){
+                        styleElem.da = data[i].d.dasharray;
+                        styleElem.do = data[i].d.dashoffset;
+                    }
                 }
 
             }
@@ -181,6 +187,9 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
         if(this.stylesList[i].type === 'st'){
             ctx.strokeStyle = this.stylesList[i].co;
             ctx.lineWidth = this.stylesList[i].wi;
+            ctx.lineCap = this.stylesList[i].lc;
+            ctx.lineJoin = this.stylesList[i].lj;
+            ctx.miterLimit = this.stylesList[i].ml;
         }else{
             ctx.fillStyle = this.stylesList[i].co;
         }
@@ -189,6 +198,14 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
         for(j=0;j<jLen;j+=1){
             if(this.stylesList[i].type === 'st'){
                 renderer.save();
+                if(this.stylesList[i].da){
+                    ctx.setLineDash(this.stylesList[i].da);
+                    ctx.lineDashOffset = this.stylesList[i].do;
+                    this.globalData.isDashed = true;
+                }else if(this.globalData.isDashed){
+                    ctx.setLineDash(this.dashResetter);
+                    this.globalData.isDashed = false;
+                }
                 renderer.ctxTransform(elems[j].tr);
                 nodes = elems[j].nodes;
             }else{
@@ -217,13 +234,6 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
     if(this.firstFrame){
         this.firstFrame = false;
     }
-};
-
-CVShapeItemElement.prototype.renderTransform = function(animData){
-    var tr = animData.renderedData[this.frameNum];
-    var matrixValue = tr.m;
-    this.transform.mat.transform(matrixValue[0],matrixValue[1],matrixValue[2],matrixValue[3],matrixValue[4],matrixValue[5]).translate(-tr.a[0],-tr.a[1]);
-    this.transform.opacity *= tr.o;
 };
 
 CVShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransform){
@@ -314,7 +324,7 @@ CVShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransf
                     }
                 }
             }
-            if (pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
+            if (len && pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
                 if (viewData.st) {
                     pathStringNonTransformed.push({
                         t:'c',
@@ -364,11 +374,9 @@ CVShapeItemElement.prototype.renderStroke = function(styleData,viewData, groupTr
     //TODO fix dashes
     var d = viewData.d;
     var dasharray,dashoffset;
-    if(d){
-        if(d.mdf){
-            styleElem.pathElement.setAttribute('stroke-dasharray', d.dasharray);
-            styleElem.pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
-        }
+    if(d && d.mdf){
+        styleElem.da = d.dasharray;
+        styleElem.do = d.dashoffset;
     }
     if(viewData.c.mdf){
         styleElem.co = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
@@ -378,7 +386,6 @@ CVShapeItemElement.prototype.renderStroke = function(styleData,viewData, groupTr
     }
     if(viewData.w.mdf){
         styleElem.wi = viewData.w.v;
-        styleElem.pathElement.setAttribute('stroke-width',viewData.w.v);
     }
 };
 

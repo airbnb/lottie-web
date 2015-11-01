@@ -189,8 +189,8 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.animationItem.container = document.createElement('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';
-        this.animationItem.container.style.transform = 'translate3d(0,0,0)';
-        this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
+        //this.animationItem.container.style.transform = 'translate3d(0,0,0)';
+        //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
         this.canvasContext = this.animationItem.container.getContext('2d');
@@ -200,6 +200,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.bmCtx = new BM_CanvasRenderingContext2D(this);
     this.globalData.renderer = this;
+    this.globalData.isDashed = false;
     this.globalData.totalFrames = Math.floor(animData.tf);
     this.globalData.compWidth = animData.w;
     this.globalData.compHeight = animData.h;

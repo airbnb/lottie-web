@@ -881,24 +881,35 @@ var PropertyFactory = (function(){
                 i+=1;
             }
             if(this.mdf){
-                this.dasharray = '';
-                this.dashoffset = '';
+                if(this.renderer === 'svg') {
+                    this.dasharray = '';
+                }
                 for(i=0;i<len;i+=1){
                     if(this.dataProps[i].n != 'o'){
-                        this.dasharray += ' ' + this.dataProps[i].p.v;
+                        if(this.renderer === 'svg') {
+                            this.dasharray += ' ' + this.dataProps[i].p.v;
+                        }else{
+                            this.dasharray[i] = this.dataProps[i].p.v;
+                        }
                     }else{
-                        this.dashoffset += this.dataProps[i].p.v;
+                        this.dashoffset = this.dataProps[i].p.v;
                     }
                 }
             }
         }
 
-        return function(elemData, data, dynamicProperties){
+        return function(elemData, data,renderer, dynamicProperties){
             this.dataProps = new Array(data.length);
+            this.renderer = renderer;
             this.mdf = false;
             this.k = false;
-            this.dasharray = '';
-            this.dashoffset = '';
+            if(this.renderer === 'svg'){
+                this.dasharray = '';
+            }else{
+
+                this.dasharray = new Array(data.length - 1);
+            }
+            this.dashoffset = 0;
             var i, len = data.length, prop;
             for(i=0;i<len;i+=1){
                 prop = getProp(elemData,data[i].v,0, 0, dynamicProperties);
