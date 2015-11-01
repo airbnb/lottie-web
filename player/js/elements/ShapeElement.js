@@ -13,6 +13,7 @@ IShapeElement.prototype.createElements = function(){
 };
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
+
     var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
