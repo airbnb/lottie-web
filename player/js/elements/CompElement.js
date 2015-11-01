@@ -1,8 +1,11 @@
 function ICompElement(data,parentContainer,globalData, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
     this.layers = data.layers;
+    if(this.data.tm){
+        this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+    }
 }
-createElement(BaseElement, ICompElement);
+createElement(SVGBaseElement, ICompElement);
 
 ICompElement.prototype.getComposingElement = function(){
     return this.layerElement;
@@ -18,8 +21,8 @@ ICompElement.prototype.hide = function(){
     }
 };
 
-ICompElement.prototype.renderFrame = function(num,parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,num,parentMatrix);
+ICompElement.prototype.renderFrame = function(parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -27,15 +30,19 @@ ICompElement.prototype.renderFrame = function(num,parentMatrix){
 
     this.hidden = false;
     var i,len = this.layers.length;
-    var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : num >= this.data.tm.length ? this.data.tm[this.data.tm.length - 1] : this.data.tm[num] : num;
+
+    var timeRemapped = this.currentFrameNum;
+    if(this.tm){
+        timeRemapped = Math.round(this.tm.v);
+    }
     for( i = 0; i < len; i+=1 ){
         this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
     }
     for( i = 0; i < len; i+=1 ){
         if(this.data.hasMask){
-            this.elements[i].renderFrame(timeRemapped - this.layers[i].st);
+            this.elements[i].renderFrame();
         }else{
-            this.elements[i].renderFrame(timeRemapped - this.layers[i].st,this.finalTransform);
+            this.elements[i].renderFrame(this.finalTransform);
         }
     }
 };

@@ -78,7 +78,7 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
 };
 
 SVGRenderer.prototype.createBase = function (data,parentContainer, placeholder) {
-    return new BaseElement(data, parentContainer,this.globalData, placeholder);
+    return new SVGBaseElement(data, parentContainer,this.globalData, placeholder);
 };
 
 SVGRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
@@ -129,6 +129,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
         w: animData.w,
         h: animData.h
     };
+    this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',animData.w);
@@ -208,12 +209,14 @@ SVGRenderer.prototype.renderFrame = function(num){
     }else{
     this.lastFrame = num;
     }
+    /*console.log('-------');
+    console.log('FRAME ',num);*/
     this.globalData.frameNum = num;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
         this.elements[i].prepareFrame(num - this.layers[i].st);
     }
     for (i = 0; i < len; i++) {
-        this.elements[i].renderFrame(num - this.layers[i].st);
+        this.elements[i].renderFrame();
     }
 };

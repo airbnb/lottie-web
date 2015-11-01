@@ -21,7 +21,3 @@ EffectsManager.prototype.addStrokeEffect = function(effectData){
 EffectsManager.prototype.renderFrame = function(num){
 
 };
-
-defineDescriptor(EffectsManager,'data', null);
-defineDescriptor(EffectsManager,'element', null);
-defineDescriptor(EffectsManager,'maskManager', null);
