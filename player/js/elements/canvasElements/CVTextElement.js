@@ -19,6 +19,10 @@ function CVTextElement(data, globalData){
 }
 createElement(CVBaseElement, CVTextElement);
 
+CVTextElement.prototype.init = ITextElement.prototype.init;
+CVTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
+CVTextElement.prototype.getMult = ITextElement.prototype.getMult;
+
 CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2d');
 
 CVTextElement.prototype.createElements = function(){
@@ -81,16 +85,8 @@ CVTextElement.prototype.createElements = function(){
     }
 };
 
-CVTextElement.prototype.prepareFrame = function(num){
-    var renderParent = this.parent.prepareFrame.call(this,num);
-    if(renderParent===false){
-        return;
-    }
-    this.currentRender = this.data.renderedData[num].t.l;
-};
-
-CVTextElement.prototype.draw = function(parentMatrix){
-    if(this.parent.draw.call(this, parentMatrix)===false){
+CVTextElement.prototype.renderFrame = function(parentMatrix){
+    if(this.parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;
@@ -104,8 +100,10 @@ CVTextElement.prototype.draw = function(parentMatrix){
     ctx.miterLimit = 4;
 
 
+    this.getMeasures();
+
     var  i,len;
-    var renderedLetters = this.currentRender;
+    var renderedLetters = this.renderedLetters;
 
     var letters = this.data.t.d.l;
 
@@ -158,7 +156,7 @@ CVTextElement.prototype.draw = function(parentMatrix){
         this.globalData.renderer.restore();
     }
     /*if(this.data.hasMask){
-        this.globalData.renderer.restore(true);
-    }*/
+     this.globalData.renderer.restore(true);
+     }*/
     this.globalData.renderer.restore(this.data.hasMask);
 };

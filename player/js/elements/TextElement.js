@@ -307,7 +307,7 @@ ITextElement.prototype.getMeasures = function(){
                     if('m' in data.t.p) {
                         currentLength += animatorProps.t*mult;
                     }else{
-                        xPos += animatorProps.t*mult;
+                        xPos += animatorProps.t.v*mult;
                     }
                 }
             }
