@@ -166,7 +166,7 @@ var PropertyFactory = (function(){
             this.v = this.keyframes[0].s[0];
         }else if(frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
             this.mdf = true;
-            this.v = this.keyframes[this.keyframes.length - 2].e[0];
+            this.v = this.keyframes[this.keyframes.length - 2].h === 1 ? this.keyframes[this.keyframes.length - 2].s[0] : this.keyframes[this.keyframes.length - 2].e[0];
         }else{
             this.mdf = true;
             var i = 0,len = this.keyframes.length- 1, dir = 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
