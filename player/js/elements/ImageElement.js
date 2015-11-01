@@ -52,10 +52,10 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
     }
     if(!this.data.hasMask){
         if(this.finalTransform.matMdf){
-            this.layerElement.setAttribute('transform','matrix('+this.finalTransform.mat.props.join(',')+')');
+            this.innerElem.setAttribute('transform','matrix('+this.finalTransform.mat.props.join(',')+')');
         }
         if(this.finalTransform.opMdf){
-            this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
+            this.innerElem.setAttribute('opacity',this.finalTransform.opacity);
         }
     }
 };
