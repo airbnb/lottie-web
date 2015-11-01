@@ -38,7 +38,6 @@ function MaskElement(data,element,globalData) {
         }
 
         if(properties[i].mode == 'n') {
-            console.log(properties[i]);
             this.viewData[i] = {
                 prop: PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties)
             };

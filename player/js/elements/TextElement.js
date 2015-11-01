@@ -95,40 +95,43 @@ ITextElement.prototype.getMeasures = function(){
     var letters = documentData.l;
     if('m' in data.t.p) {
         var mask = this.viewData.p.m;
-        console.log(mask);
-        var paths = mask.paths[num].pathNodes;
-        var pathInfo = {
-            tLength: 0,
-            segments: []
-        };
-        len = paths.v.length - 1;
-        var pathData;
-
-        for (i = 0; i < len; i += 1) {
-            pathData = {
-                s: paths.v[i],
-                e: paths.v[i + 1],
-                to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                ti: [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]
+        if(!this.viewData.p.n || this.viewData.p.mdf){
+            var paths = mask.v;
+            var pathInfo = {
+                tLength: 0,
+                segments: []
             };
-            bez.buildBezierData(pathData);
-            pathInfo.tLength += pathData.bezierData.segmentLength;
-            pathInfo.segments.push(pathData);
-        }
-        i = len;
-        if (mask.cl) {
-            pathData = {
-                s: paths.v[i],
-                e: paths.v[0],
-                to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                ti: [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]
-            };
-            bez.buildBezierData(pathData);
-            pathInfo.tLength += pathData.bezierData.segmentLength;
-            pathInfo.segments.push(pathData);
-        }
+            len = paths.v.length - 1;
+            var pathData;
 
-        var currentLength = data.renderedData[num].t.p[0], segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
+            for (i = 0; i < len; i += 1) {
+                pathData = {
+                    s: paths.v[i],
+                    e: paths.v[i + 1],
+                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
+                    ti: [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]
+                };
+                bez.buildBezierData(pathData);
+                pathInfo.tLength += pathData.bezierData.segmentLength;
+                pathInfo.segments.push(pathData);
+            }
+            i = len;
+            if (mask.cl) {
+                pathData = {
+                    s: paths.v[i],
+                    e: paths.v[0],
+                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
+                    ti: [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]
+                };
+                bez.buildBezierData(pathData);
+                pathInfo.tLength += pathData.bezierData.segmentLength;
+                pathInfo.segments.push(pathData);
+            }
+            this.viewData.p.pi = pathInfo;
+        }
+        var pathInfo = this.viewData.p.pi;
+
+        var currentLength = this.viewData.p.f.v, segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
         var segmentLength = 0, flag = true;
         var segments = pathInfo.segments;
         if (currentLength < 0 && mask.cl) {
@@ -233,17 +236,16 @@ ITextElement.prototype.getMeasures = function(){
                     currentLength += letters[i].an/2;
                     ind = letters[i].ind;
                 }
-                currentLength += renderedData.m.a[0]*letters[i].an/200;
+                currentLength += renderedData.m.a.v[0]*letters[i].an/200;
                 var animatorOffset = 0;
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
                     if ('p' in animatorProps && 's' in ranges[j]) {
                         mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
 
-                        animatorOffset += animatorProps.p[0] * mult;
+                        animatorOffset += animatorProps.p.v[0] * mult;
                     }
                 }
-
                 flag = true;
                 while (flag) {
                     if (segmentLength + partialLength >= currentLength + animatorOffset || !points) {
@@ -259,7 +261,7 @@ ITextElement.prototype.getMeasures = function(){
                             }
                             matrixHelper.rotate(rot*Math.PI/180);
                         }
-                        matrixHelper.translate(0,(renderedData.m.a[1]*yOff/100 + yPos));
+                        matrixHelper.translate(0,(renderedData.m.a.v[1]*yOff/100 + yPos));
                         flag = false;
                     } else if (points) {
                         segmentLength += currentPoint.partialLength;
@@ -314,7 +316,7 @@ ITextElement.prototype.getMeasures = function(){
                 if ('p' in animatorProps && 's' in ranges[j]) {
                     mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
                     if('m' in data.t.p) {
-                        matrixHelper.translate(0, animatorProps.p[1] * mult);
+                        matrixHelper.translate(0, animatorProps.p.v[1] * mult);
                     }else{
                         matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult);
                     }
