@@ -198,6 +198,7 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
         for(j=0;j<jLen;j+=1){
             if(this.stylesList[i].type === 'st'){
                 renderer.save();
+                ctx.beginPath();
                 if(this.stylesList[i].da){
                     ctx.setLineDash(this.stylesList[i].da);
                     ctx.lineDashOffset = this.stylesList[i].do;
@@ -206,6 +207,7 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
                     ctx.setLineDash(this.dashResetter);
                     this.globalData.isDashed = false;
                 }
+                console.log(elems[j].tr);
                 renderer.ctxTransform(elems[j].tr);
                 nodes = elems[j].nodes;
             }else{
@@ -221,12 +223,11 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
                 }
             }
             if(this.stylesList[i].type === 'st'){
+                ctx.stroke();
                 renderer.restore();
             }
         }
-        if(this.stylesList[i].type === 'st'){
-            ctx.stroke();
-        }else{
+        if(this.stylesList[i].type !== 'st'){
             ctx.fill();
         }
         renderer.restore();
