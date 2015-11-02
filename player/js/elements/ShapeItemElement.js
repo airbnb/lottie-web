@@ -262,14 +262,14 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
             for (i = 1; i < len; i += 1) {
                 if (stops[i - 1]) {
                     if (viewData.st) {
-                        pathStringNonTransformed += " M" + bm_rnd(stops[i - 1][0]) + ',' + bm_rnd(stops[i - 1][1]);
+                        pathStringNonTransformed += " M" + stops[i - 1][0] + ',' + stops[i - 1][1];
                     }
                     if (viewData.fl) {
                         pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(stops[i - 1][0], stops[i - 1][1]);
                     }
                 } else if (i == 1) {
                     if (viewData.st) {
-                        pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                        pathStringNonTransformed += " M" + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
                     }
 
                     if (viewData.fl) {
@@ -277,7 +277,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
                     }
                 }
                 if (viewData.st) {
-                    pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[i][0]) + ',' + bm_rnd(pathNodes.i[i][1]) + " " + bm_rnd(pathNodes.v[i][0]) + ',' + bm_rnd(pathNodes.v[i][1]);
+                    pathStringNonTransformed += " C" + pathNodes.o[i - 1][0] + ',' + pathNodes.o[i - 1][1] + " " + pathNodes.i[i][0] + ',' + pathNodes.i[i][1] + " " + pathNodes.v[i][0] + ',' + pathNodes.v[i][1];
                 }
 
                 if (viewData.fl) {
@@ -287,7 +287,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
             if (len == 1) {
                 if (stops[0]) {
                     if (viewData.st) {
-                        pathStringNonTransformed += " M" + bm_rnd(stops[0][0]) + ',' + bm_rnd(stops[0][1]);
+                        pathStringNonTransformed += " M" + stops[0][0] + ',' + stops[0][1];
                     }
 
                     if (viewData.fl) {
@@ -296,7 +296,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
                 } else {
 
                     if (viewData.st) {
-                        pathStringNonTransformed += " M" + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                        pathStringNonTransformed += " M" + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
                     }
 
                     if (viewData.fl) {
@@ -306,7 +306,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
             }
             if (len && pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
                 if (viewData.st) {
-                    pathStringNonTransformed += " C" + bm_rnd(pathNodes.o[i - 1][0]) + ',' + bm_rnd(pathNodes.o[i - 1][1]) + " " + bm_rnd(pathNodes.i[0][0]) + ',' + bm_rnd(pathNodes.i[0][1]) + " " + bm_rnd(pathNodes.v[0][0]) + ',' + bm_rnd(pathNodes.v[0][1]);
+                    pathStringNonTransformed += " C" + pathNodes.o[i - 1][0] + ',' + pathNodes.o[i - 1][1] + " " + pathNodes.i[0][0] + ',' + pathNodes.i[0][1] + " " + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
                 }
 
                 if (viewData.fl) {
