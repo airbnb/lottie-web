@@ -6,6 +6,7 @@ BaseElement.prototype.prepareFrame = function(num){
     {
         if(this.isVisible !== true){
             this.isVisible = true;
+            this.firstFrame = true;
         }
     }else{
         if(this.isVisible !== false){
