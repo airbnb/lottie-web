@@ -1,16 +1,22 @@
 function CVCompElement(data,globalData){
     this.parent.constructor.call(this,data,globalData);
     this.layers = data.layers;
+    if(this.data.tm){
+        this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+    }
 }
 createElement(CVBaseElement, CVCompElement);
 
 CVCompElement.prototype.prepareFrame = function(num){
-    var renderParent = this.parent.prepareFrame.call(this,num);
-    if(renderParent===false){
+    this.parent.prepareFrame.call(this,num);
+    if(this.isVisible===false){
         return;
     }
+    var timeRemapped = num;
+    if(this.tm){
+        timeRemapped = this.tm.v;
+    }
     var i,len = this.elements.length;
-    var timeRemapped = this.data.tm ? this.data.tm[num] < 0 ? 0 : num >= this.data.tm.length ? this.data.tm[this.data.tm.length - 1] : this.data.tm[num] : num;
     for( i = 0; i < len; i+=1 ){
         this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
     }

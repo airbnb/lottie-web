@@ -21,23 +21,31 @@ ICompElement.prototype.hide = function(){
     }
 };
 
+ICompElement.prototype.prepareFrame = function(num){
+    this.parent.prepareFrame.call(this,num);
+    if(this.isVisible===false){
+        return;
+    }
+    var timeRemapped = num;
+    if(this.tm){
+        timeRemapped = this.tm.v;
+    }
+    var i,len = this.elements.length;
+    for( i = 0; i < len; i+=1 ){
+        this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
+    }
+};
+
 ICompElement.prototype.renderFrame = function(parentMatrix){
     var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var i,len = this.layers.length;
     if(renderParent===false){
         this.hide();
         return;
     }
 
     this.hidden = false;
-    var i,len = this.layers.length;
 
-    var timeRemapped = this.currentFrameNum;
-    if(this.tm){
-        timeRemapped = Math.round(this.tm.v);
-    }
-    for( i = 0; i < len; i+=1 ){
-        this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
-    }
     for( i = 0; i < len; i+=1 ){
         if(this.data.hasMask){
             this.elements[i].renderFrame();

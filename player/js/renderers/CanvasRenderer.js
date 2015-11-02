@@ -203,6 +203,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.totalFrames = Math.floor(animData.tf);
     this.globalData.compWidth = animData.w;
     this.globalData.compHeight = animData.h;
+    this.globalData.frameRate = animData.fr;
     this.layers = animData.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.w;
