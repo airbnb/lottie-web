@@ -68,6 +68,14 @@ var bm_renderManager = (function () {
                 layerData.layers = [];
                 createLayers(layerInfo.source, layerData.layers, framerate);
             }
+            /* TODO : This add the layerName to be used for export paths */
+            var layerName = layerInfo.name;
+            var tyValue = layerData.ty;
+            if ( undefined !== tyValue && layerName.lastIndexOf("indi_",0) === 0 )
+            {
+                layerData.name = layerName;
+            }
+            /* --------------------------------------------------------- */
         }
     }
     

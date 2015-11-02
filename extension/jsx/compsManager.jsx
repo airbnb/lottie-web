@@ -81,7 +81,7 @@ var bm_compsManager = (function () {
             uri = compData.absoluteURI;
         } else {
             uri = Folder.desktop.absoluteURI + '/data';
-            uri += compData.settings.standalone ? '.js' : '.json';
+            uri += compData.settings.standalone ? '.js' : '.js';
         }
         var f = new File(uri);
         var saveFileData = f.saveDlg();

@@ -166,10 +166,13 @@ var bm_dataManager = (function () {
             filePathName = filePathName.substr(0, filePathName.lastIndexOf('.'));
             for (i = 0; i < len; i += 1) {
                 segmentPath = destinationPath.substr(0, destinationPath.lastIndexOf('/') + 1);
-                segmentPath += filePathName + '_' + i + '.json';
+                segmentPath += filePathName + '_' + i + '.js';
                 dataFile = new File(segmentPath);
                 dataFile.open('w', 'TEXT', '????');
                 string = JSON.stringify(animationSegments[i]);
+                /* TODO : To add Export Paths */
+                string = getIndiShapes( animationSegments[i], string);
+                /* --- */
                 try {
                     dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
                     //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
@@ -190,6 +193,9 @@ var bm_dataManager = (function () {
         dataFile = new File(destinationPath);
         dataFile.open('w', 'TEXT', '????');
         string = JSON.stringify(data);
+        /* TODO : To add Export Paths */
+        string = getIndiShapes( data, string);
+        /* --- */
         string = string.replace(/\n/g, '');
         ////
         if (config.standalone) {
