@@ -52,7 +52,7 @@ CVTextElement.prototype.createElements = function(){
     this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
     len = documentData.t.length;
     this.tHelper.font = this.values.fValue;
-    var charData, shapeData, k, kLen, shapes, j, jLen, path2d, pathNodes;
+    var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr;
     for (i = 0;i < len ;i += 1) {
         charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
         matrixHelper.reset();
@@ -60,28 +60,32 @@ CVTextElement.prototype.createElements = function(){
         shapeData = charData.data;
         if(shapeData){
             shapes = shapeData.shapes[0].it;
-            path2d = new BM_Path2D();
             jLen = shapes.length;
+            commands = new Array(jLen);
             for(j=0;j<jLen;j+=1){
                 kLen = shapes[j].ks.i.length;
                 pathNodes = shapes[j].ks;
+                pathArr = [];
                 for(k=1;k<kLen;k+=1){
                     if(k==1){
-                        path2d.moveTo(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
+                        pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
+                        //path2d.moveTo(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
                         //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
                     }
-                    path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1]),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1]));
+                    pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1]),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1]));
+                    //path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1]),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1]));
                     //path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[k][0],pathNodes.i[k][1],pathNodes.v[k][0],pathNodes.v[k][1]);
                 }
-                path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
+                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
+                //path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
                 //path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
-                path2d.closePath();
+                commands[j] = pathArr;
             }
         }else{
-            path2d = new BM_Path2D();
+            commands = [];
         }
         //var cLength = this.tHelper.measureText(val).width;
-        this.textSpans.push({elem: path2d});
+        this.textSpans.push({elem: commands});
     }
 };
 
@@ -102,14 +106,14 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
 
     this.getMeasures();
 
-    var  i,len;
+    var  i,len, j, jLen, k, kLen;
     var renderedLetters = this.renderedLetters;
 
     var letters = this.data.t.d.l;
 
     len = letters.length;
     var renderedLetter;
-    var lastFill = null, lastStroke = null, lastStrokeW = null;
+    var lastFill = null, lastStroke = null, lastStrokeW = null, commands, pathArr;
     for(i=0;i<len;i+=1){
         if(letters[i].n){
             continue;
@@ -128,7 +132,19 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
                 lastFill = this.values.fill;
                 ctx.fillStyle = this.values.fill;
             }
-            this.globalData.bmCtx.fill(this.textSpans[i].elem);
+            commands = this.textSpans[i].elem;
+            jLen = commands.length;
+            this.globalData.canvasContext.beginPath();
+            for(j=0;j<jLen;j+=1) {
+                pathArr = commands[j];
+                kLen = pathArr.length;
+                this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
+                for (k = 2; k < kLen; k += 6) {
+                    this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
+                }
+            }
+            this.globalData.canvasContext.closePath();
+            this.globalData.canvasContext.fill();
             ///ctx.fillText(this.textSpans[i].val,0,0);
         }
         if(this.stroke){
@@ -150,7 +166,19 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
                 lastStroke = this.values.stroke;
                 ctx.strokeStyle = this.values.stroke;
             }
-            this.globalData.bmCtx.stroke(this.textSpans[i].elem);
+            commands = this.textSpans[i].elem;
+            jLen = commands.length;
+            this.globalData.canvasContext.beginPath();
+            for(j=0;j<jLen;j+=1) {
+                pathArr = commands[j];
+                kLen = pathArr.length;
+                this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
+                for (k = 2; k < kLen; k += 6) {
+                    this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
+                }
+            }
+            this.globalData.canvasContext.closePath();
+            this.globalData.canvasContext.stroke();
             ///ctx.strokeText(letters[i].val,0,0);
         }
         this.globalData.renderer.restore();
