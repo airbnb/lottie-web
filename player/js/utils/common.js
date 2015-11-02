@@ -1,4 +1,4 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -8,6 +8,7 @@ var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_min = Math.min;
 var defaultCurveSegments = 2;
+var degToRads = Math.PI/180;
 
 function roundValues(flag){
     if(flag){
@@ -150,4 +151,20 @@ var fillColorToString = (function(){
 function RenderedFrame(tr,o) {
     this.tr = tr;
     this.o = o;
+}
+
+function LetterProps(o,sw,sc,fc,m,p){
+    this.o = o;
+    this.sw = sw;
+    this.sc = sc;
+    this.fc = fc;
+    this.m = m;
+    this.props = p;
+}
+
+function iterateDynamicProperties(num){
+    var i, len = this.dynamicProperties;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getInterpolatedValue(num);
+    }
 }

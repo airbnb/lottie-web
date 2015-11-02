@@ -3,8 +3,8 @@ function CVSolidElement(data,globalData){
 }
 createElement(CVBaseElement, CVSolidElement);
 
-CVSolidElement.prototype.draw = function(parentMatrix){
-    if(this.parent.draw.call(this, parentMatrix)===false){
+CVSolidElement.prototype.renderFrame = function(parentMatrix){
+    if(this.parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;
