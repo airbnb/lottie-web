@@ -215,7 +215,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = 2026;
     this.totalFrames = 1;
     this.animationData.tf = 1;
-    //this.frameMult = 1/1000;
+    this.frameMult = 1/1000;
     //*/////
     this.trigger('bm:config_ready');
     this.loadSegments();
@@ -403,7 +403,7 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             this.adjustSegment(this.segments.shift());
         }
         if(this.loop === false){
-            this.currentRawFrame = this.totalFrames - 1;
+            this.currentRawFrame = this.totalFrames;
             this.gotoFrame();
             this.pause();
             return;
@@ -411,7 +411,7 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             this.playCount += 1;
             if(this.loop !== true){
                 if(this.playCount == this.loop){
-                    this.currentRawFrame = this.totalFrames - 1;
+                    this.currentRawFrame = this.totalFrames;
                     this.gotoFrame();
                     this.pause();
                     return;
