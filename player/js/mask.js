@@ -7,6 +7,7 @@ function MaskElement(data,element,globalData) {
     this.masksProperties = this.data.masksProperties;
     this.viewData = new Array(this.masksProperties.length);
     this.maskElement = null;
+    this.firstFrame = true;
     var maskedElement = this.element.maskedElement;
     var defs = this.globalData.defs;
     var i, len = this.masksProperties.length;
@@ -112,13 +113,14 @@ MaskElement.prototype.prepareFrame = function(num){
     }
 }
 
-MaskElement.prototype.renderFrame = function (num) {
+MaskElement.prototype.renderFrame = function () {
     var i, len = this.data.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(!(this.data.masksProperties[i].mode == 'n' || !this.viewData[i].prop.mdf)){
+        if(this.data.masksProperties[i].mode !== 'n' && (this.viewData[i].prop.mdf || this.firstFrame)){
             this.drawPath(this.data.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
     }
+    this.firstFrame = false;
 };
 
 MaskElement.prototype.getMaskelement = function () {
