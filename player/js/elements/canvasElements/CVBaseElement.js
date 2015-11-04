@@ -11,28 +11,6 @@ CVBaseElement.prototype.createElements = function(){
 
 };
 
-/*CVBaseElement.prototype.prepareFrame = function(num){
-    if(!this.data.renderedData[num]){
-        return false;
-    }
-    this.currentAnimData = this.data.renderedData[num].an;
-    var mat = this.currentAnimData.m;
-    this.ownMatrix.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]).translate(-this.currentAnimData.a[0],-this.currentAnimData.a[1]);
-    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st >= num)
-    {
-        this.renderFrame = true;
-        this.finalTransform.opacity = 1;
-    }else{
-        this.renderFrame = false;
-        this.finalTransform.opacity = 0;
-        return false;
-    }
-
-    if(this.data.hasMask){
-        this.maskManager.prepareFrame(num);
-    }
-};*/
-
 CVBaseElement.prototype.renderFrame = function(parentTransform){
     if(this.data.ty === 3){
         return false;
@@ -44,11 +22,6 @@ CVBaseElement.prototype.renderFrame = function(parentTransform){
     this.finalTransform.opMdf = this.finalTransform.op.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;
-    if(this.firstFrame && this.isVisible){
-        this.finalTransform.opMdf = true;
-        this.finalTransform.matMdf = true;
-        this.firstFrame = false;
-    }
 
     var mat;
     var finalMat = this.finalTransform.mat;

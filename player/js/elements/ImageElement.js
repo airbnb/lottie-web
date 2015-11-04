@@ -51,12 +51,15 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
         this.innerElem.setAttribute('visibility', 'visible');
     }
     if(!this.data.hasMask){
-        if(this.finalTransform.matMdf){
+        if(this.finalTransform.matMdf || this.firstFrame){
             this.innerElem.setAttribute('transform','matrix('+this.finalTransform.mat.props.join(',')+')');
         }
-        if(this.finalTransform.opMdf){
+        if(this.finalTransform.opMdf || this.firstFrame){
             this.innerElem.setAttribute('opacity',this.finalTransform.opacity);
         }
+    }
+    if(this.firstFrame){
+        this.firstFrame = false;
     }
 };
 

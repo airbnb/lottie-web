@@ -33,6 +33,9 @@ CVCompElement.prototype.renderFrame = function(parentMatrix){
     if(this.data.hasMask){
         this.globalData.renderer.restore(true);
     }
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
 };
 
 CVCompElement.prototype.setElements = function(elems){

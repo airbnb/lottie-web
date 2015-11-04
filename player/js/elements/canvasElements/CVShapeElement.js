@@ -14,6 +14,10 @@ CVShapeElement.prototype.renderFrame = function(parentMatrix){
     if(this.parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
+    if(this.firstFrame){
+        this.mainShape.firstFrame = true;
+        this.firstFrame = false;
+    }
     this.mainShape.renderShape(this.finalTransform,null,null,true);
     if(this.data.hasMask){
         this.globalData.renderer.restore(true);

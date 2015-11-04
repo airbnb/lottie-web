@@ -42,6 +42,9 @@ CVImageElement.prototype.renderFrame = function(parentMatrix){
     this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
     ctx.drawImage(this.img,0,0);
     this.globalData.renderer.restore(this.data.hasMask);
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
 };
 
 CVImageElement.prototype.destroy = function(){

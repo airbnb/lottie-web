@@ -53,6 +53,9 @@ ICompElement.prototype.renderFrame = function(parentMatrix){
             this.elements[i].renderFrame(this.finalTransform);
         }
     }
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
 };
 
 ICompElement.prototype.setElements = function(elems){

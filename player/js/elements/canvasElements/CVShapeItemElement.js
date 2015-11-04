@@ -244,7 +244,7 @@ CVShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransf
     var pathNodes = viewData.sh.v;
     if(pathNodes.v){
         len = pathNodes.v.length;
-        var redraw = groupTransform.matMdf || viewData.sh.mdf;
+        var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
         if(redraw) {
             var pathStringTransformed = viewData.trNodes;
             var pathStringNonTransformed = viewData.nodes;
@@ -364,10 +364,10 @@ CVShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransf
 CVShapeItemElement.prototype.renderFill = function(styleData,viewData, groupTransform){
     var styleElem = viewData.style;
 
-    if(viewData.c.mdf){
+    if(viewData.c.mdf || this.firstFrame){
         styleElem.co = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
     }
-    if(viewData.o.mdf || groupTransform.opMdf){
+    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
         styleElem.coOp = viewData.o.v*groupTransform.opacity;
     }
 };
@@ -377,17 +377,17 @@ CVShapeItemElement.prototype.renderStroke = function(styleData,viewData, groupTr
     //TODO fix dashes
     var d = viewData.d;
     var dasharray,dashoffset;
-    if(d && d.mdf){
+    if(d && (d.mdf  || this.firstFrame)){
         styleElem.da = d.dasharray;
         styleElem.do = d.dashoffset;
     }
-    if(viewData.c.mdf){
+    if(viewData.c.mdf || this.firstFrame){
         styleElem.co = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
     }
-    if(viewData.o.mdf || groupTransform.opMdf){
+    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
         styleElem.coOp = viewData.o.v*groupTransform.opacity;
     }
-    if(viewData.w.mdf){
+    if(viewData.w.mdf || this.firstFrame){
         styleElem.wi = viewData.w.v;
     }
 };
