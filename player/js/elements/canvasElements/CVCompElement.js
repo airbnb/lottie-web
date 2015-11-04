@@ -15,6 +15,9 @@ CVCompElement.prototype.prepareFrame = function(num){
     var timeRemapped = num;
     if(this.tm){
         timeRemapped = this.tm.v;
+        if(timeRemapped === this.data.op){
+            timeRemapped = this.data.op - 1;
+        }
     }
     var i,len = this.elements.length;
     for( i = 0; i < len; i+=1 ){

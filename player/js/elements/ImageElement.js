@@ -10,8 +10,8 @@ IImageElement.prototype.createElements = function(){
     var self = this;
 
     var imageLoaded = function(){
-        self.image.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
-        self.maskedElement = self.image;
+        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
+        self.maskedElement = self.innerElem;
     };
 
     var img = new Image();
