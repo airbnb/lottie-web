@@ -16,4 +16,7 @@ CVSolidElement.prototype.renderFrame = function(parentMatrix){
     ctx.fillStyle=this.data.sc;
     ctx.fillRect(0,0,this.data.sw,this.data.sh);
     this.globalData.renderer.restore(this.data.hasMask);
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
 };

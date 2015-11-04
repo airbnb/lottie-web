@@ -21,6 +21,10 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     }
 
     this.hidden = false;
+    if(this.firstFrame){
+        this.mainShape.firstFrame = true;
+        this.firstFrame = false;
+    }
     if(this.data.hasMask){
         this.mainShape.renderShape(this.transformHelper,null,null,true);
     }else{
