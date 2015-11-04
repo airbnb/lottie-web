@@ -327,7 +327,7 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
                     //console.log(pathStringNonTransformed);
                     viewData.elements[i].el.setAttribute('d', pathStringNonTransformed);
                 }
-                if(groupTransform.matMdf) {
+                if(groupTransform.matMdf || this.firstFrame) {
                     viewData.elements[i].el.setAttribute('transform',t);
                 }
             }else{
@@ -341,10 +341,10 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
 ShapeItemElement.prototype.renderFill = function(styleData,viewData, groupTransform){
     var styleElem = viewData.style;
 
-    if(viewData.c.mdf){
+    if(viewData.c.mdf || this.firstFrame){
         styleElem.pathElement.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
-    if(viewData.o.mdf || groupTransform.opMdf){
+    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
         styleElem.pathElement.setAttribute('fill-opacity',viewData.o.v*groupTransform.opacity);
     }
 };
@@ -355,18 +355,18 @@ ShapeItemElement.prototype.renderStroke = function(styleData,viewData, groupTran
     var d = viewData.d;
     var dasharray,dashoffset;
     if(d){
-        if(d.mdf){
+        if(d.mdf || this.firstFrame){
             styleElem.pathElement.setAttribute('stroke-dasharray', d.dasharray);
             styleElem.pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
         }
     }
-    if(viewData.c.mdf){
+    if(viewData.c.mdf || this.firstFrame){
         styleElem.pathElement.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
     }
-    if(viewData.o.mdf || groupTransform.opMdf){
+    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
         styleElem.pathElement.setAttribute('stroke-opacity',viewData.o.v*groupTransform.opacity);
     }
-    if(viewData.w.mdf){
+    if(viewData.w.mdf || this.firstFrame){
         styleElem.pathElement.setAttribute('stroke-width',viewData.w.v);
     }
 };

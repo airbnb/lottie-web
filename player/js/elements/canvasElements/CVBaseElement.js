@@ -22,11 +22,6 @@ CVBaseElement.prototype.renderFrame = function(parentTransform){
     this.finalTransform.opMdf = this.finalTransform.op.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;
-    if(this.firstFrame && this.isVisible){
-        this.finalTransform.opMdf = true;
-        this.finalTransform.matMdf = true;
-        this.firstFrame = false;
-    }
 
     var mat;
     var finalMat = this.finalTransform.mat;
