@@ -58,7 +58,8 @@
      <script src="js/module.js"></script>
     <!-- endbuild -->
     <!-- <script src="bodymovin.js"></script> -->
-    <script src="exports/render/data.js"></script>
+    <script src="exports/splitted/data.js"></script>
+    <script src="exports/splitted/data_0.js"></script>
 </head>
 <body>
 
@@ -87,7 +88,7 @@
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
-        //anim.includeLayers(anim2Data);
+        anim.includeLayers(bmsmd1);
     },100);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);

@@ -44,10 +44,10 @@ var bm_compsManager = (function () {
                 if (compData.destination) {
                     var lastInd = compData.destination.lastIndexOf('.');
                     compData.destination = compData.destination.substr(0, lastInd);
-                    compData.destination += compData.settings.standalone ? '.js' : '.json';
+                    compData.destination += compData.settings.standalone ? '.js' : '.js';
                     lastInd = compData.absoluteURI.lastIndexOf('.');
                     compData.absoluteURI = compData.absoluteURI.substr(0, lastInd);
-                    compData.absoluteURI += compData.settings.standalone ? '.js' : '.json';
+                    compData.absoluteURI += compData.settings.standalone ? '.js' : '.js';
                     bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
                 }
                 break;
