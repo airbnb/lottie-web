@@ -133,45 +133,6 @@ var Matrix = (function(){
         return (bm_rnd(x * this.props[0] + y * this.props[2] + this.props[4]))+','+(bm_rnd(x * this.props[1] + y * this.props[3] + this.props[5]));
     }
 
-    function applyToArray(points) {
-
-        var i = 0, p, l,
-            mxPoints = [];
-
-        if (typeof points[0] === 'number') {
-
-            l = points.length;
-
-            while(i < l) {
-                p = this.applyToPoint(points[i++], points[i++]);
-                mxPoints.push(p.x, p.y);
-            }
-        }
-        else {
-            l = points.length;
-            for(i = 0; i<l; i++) {
-                mxPoints.push(this.applyToPoint(points[i].x, points[i].y));
-            }
-        }
-
-        return mxPoints;
-    }
-
-    function applyToTypedArray(points, use64) {
-
-        var i = 0, p,
-            l = points.length,
-            mxPoints = use64 ? new Float64Array(l) : new Float32Array(l);
-
-        while(i < l) {
-            p = this.applyToPoint(points[i], points[i+1]);
-            mxPoints[i++] = p.x;
-            mxPoints[i++] = p.y;
-        }
-
-        return mxPoints;
-    }
-
     function toArray() {
         return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
     }
@@ -200,8 +161,6 @@ var Matrix = (function(){
         this.applyToPoint = applyToPoint;
         this.applyToPointArray = applyToPointArray;
         this.applyToPointStringified = applyToPointStringified;
-        this.applyToArray = applyToArray;
-        this.applyToTypedArray = applyToTypedArray;
         this.toArray = toArray;
         this.toCSS = toCSS;
         this.toString = toString;
