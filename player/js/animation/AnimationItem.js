@@ -156,7 +156,7 @@ AnimationItem.prototype.includeLayers = function(data) {
 AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;
     if(!segments || segments.length === 0){
-        this.trigger('bm:data_ready');
+        this.trigger('data_ready');
         this.timeCompleted = this.animationData.tf;
         return;
     }
@@ -217,7 +217,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.animationData.tf = 1;
     //this.frameMult = 10/1000;
     //*/////
-    this.trigger('bm:config_ready');
+    this.trigger('config_ready');
     this.loadSegments();
     dataManager.completeData(this.animationData);
     this.renderer.buildItems(this.animationData.layers);
@@ -255,7 +255,7 @@ AnimationItem.prototype.gotoFrame = function () {
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
     }
-    this.trigger('bm:enterFrame');
+    this.trigger('enterFrame');
     this.renderFrame();
 };
 
@@ -340,6 +340,7 @@ AnimationItem.prototype.moveFrame = function (value, name) {
 AnimationItem.prototype.adjustSegment = function(arr){
     this.totalFrames = arr[1] - arr[0];
     this.firstFrame = arr[0];
+    this.trigger('segmentStart');
 };
 
 AnimationItem.prototype.playSegments = function (arr,forceFlag) {
@@ -390,17 +391,17 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             this.currentRawFrame = this.totalFrames;
             this.gotoFrame();
             this.pause();
-            this.trigger('bm:complete');
+            this.trigger('complete');
             return;
         }else{
-            this.trigger('bm:loopComplete');
+            this.trigger('loopComplete');
             this.playCount += 1;
             if(this.loop !== true){
                 if(this.playCount == this.loop){
                     this.currentRawFrame = this.totalFrames;
                     this.gotoFrame();
                     this.pause();
-                    this.trigger('bm:complete');
+                    this.trigger('complete');
                     return;
                 }
             }
@@ -414,10 +415,10 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             this.currentRawFrame = 0;
             this.gotoFrame();
             this.pause();
-            this.trigger('bm:complete');
+            this.trigger('complete');
             return;
         }else{
-            this.trigger('bm:loopComplete');
+            this.trigger('loopComplete');
             this.currentRawFrame = this.totalFrames + this.currentRawFrame;
             this.gotoFrame();
             return;
@@ -470,27 +471,33 @@ AnimationItem.prototype.getAssets = function () {
 AnimationItem.prototype.trigger = function(name){
     if(this._cbs[name]){
         switch(name){
-            case 'bm:enterFrame':
-                this.triggerEvent(name,new BMEnterFrameEvent(this.currentFrame,this.totalFrames,this.frameMult));
+            case 'enterFrame':
+                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
                 break;
-            case 'bm:loopComplete':
-                this.triggerEvent(name,new BMCompleteLoopEvent(this.loop,this.playCount,this.frameMult));
+            case 'loopComplete':
+                this.triggerEvent(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
                 break;
-            case 'bm:complete':
-                this.triggerEvent(name,new BMCompleteEvent(this.frameMult));
+            case 'complete':
+                this.triggerEvent(name,new BMCompleteEvent(name,this.frameMult));
+                break;
+            case 'segmentStart':
+                this.triggerEvent(name,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
                 break;
             default:
                 this.triggerEvent(name);
         }
     }
-    if(name === 'bm:enterFrame' && this.onEnterFrame){
-        this.onEnterFrame.call(this,new BMEnterFrameEvent(this.currentFrame,this.totalFrames,this.frameMult));
+    if(name === 'enterFrame' && this.onEnterFrame){
+        this.onEnterFrame.call(this,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
     }
-    if(name === 'bm:loopComplete' && this.onLoopComplete){
-        this.onLoopComplete.call(this,new BMCompleteLoopEvent(this.loop,this.playCount,this.frameMult));
+    if(name === 'loopComplete' && this.onLoopComplete){
+        this.onLoopComplete.call(this,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
     }
-    if(name === 'bm:complete' && this.onComplete){
-        this.onComplete.call(this,new BMCompleteEvent(this.frameMult));
+    if(name === 'complete' && this.onComplete){
+        this.onComplete.call(this,new BMCompleteEvent(name,this.frameMult));
+    }
+    if(name === 'segmentStart' && this.onSegmentStart){
+        this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
     }
 };
 

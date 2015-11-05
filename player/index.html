@@ -86,11 +86,13 @@
 
     function segmentStart(ev){
         console.log('segmentStart');
+        anim.loop = false;
+        anim.removeEventListener('segmentStart', segmentStart);
     }
 
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'canvas',
+        animType: 'svg',
         loop: true,
         prerender: false,
         autoplay: false,
@@ -99,12 +101,6 @@
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
-    /*anim.addEventListener('bm:config_ready', configReady);
-    anim.addEventListener('bm:data_ready', dataReady);
-    //anim.addEventListener('bm:enterFrame', enterFrame);
-    anim.addEventListener('bm:complete', completeAnimation);
-    anim.addEventListener('bm:loopComplete', loopCompleteAnimation);
-    anim.addEventListener('bm:segmentStart', segmentStart);*/
 
     anim.onEnterFrame = enterFrame;
     anim.onLoopComplete = loopCompleteAnimation;
@@ -113,6 +109,7 @@
     anim.play();
     setTimeout(function(){
         anim.playSegments([[76,170]], false);
+        anim.addEventListener('segmentStart', segmentStart);
     },5000);
 </script>
 </body>

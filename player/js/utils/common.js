@@ -40,23 +40,29 @@ function styleUnselectableDiv(element){
 
 }
 
-function BMEnterFrameEvent(c,t,d){
+function BMEnterFrameEvent(n,c,t,d){
+    this.type = n;
     this.currentTime = c;
     this.totalTime = t;
     this.direction = d < 0 ? -1:1;
-    this.type = 'bm:enterFrame';
 }
 
-function BMCompleteEvent(d){
-    this.type = 'bm:complete';
+function BMCompleteEvent(n,d){
+    this.type = n;
     this.direction = d < 0 ? -1:1;
 }
 
-function BMCompleteLoopEvent(c,t,d){
+function BMCompleteLoopEvent(n,c,t,d){
+    this.type = n;
     this.currentLoop = c;
     this.totalLoops = t;
     this.direction = d < 0 ? -1:1;
-    this.type = 'bm:loop:complete';
+}
+
+function BMSegmentStartEvent(n,f,t){
+    this.type = n;
+    this.firstFrame = f;
+    this.totalFrames = t;
 }
 
 function addEventListener(eventName, callback){
