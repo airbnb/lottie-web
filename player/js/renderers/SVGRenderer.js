@@ -85,6 +85,11 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
             }
         }
     }
+    for(i=0;i<len;i+=1){
+        if(layers[i].td){
+            elements[i+1].setMatte(elements[i].layerId);
+        }
+    }
 };
 
 SVGRenderer.prototype.createBase = function (data,parentContainer, placeholder) {

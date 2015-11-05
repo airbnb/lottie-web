@@ -76,6 +76,10 @@
         //console.log('data ready');
     }
 
+    function enterFrame(ev){
+        //console.log('ev: ',ev);
+    }
+
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'canvas',
@@ -92,6 +96,7 @@
     },100);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
+    anim.addEventListener('bm:enterFrame', enterFrame);
 </script>
 </body>
 </html>
