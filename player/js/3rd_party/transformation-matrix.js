@@ -57,20 +57,6 @@ var Matrix = (function(){
         return this._t(sx, 0, 0, sy, 0, 0);
     }
 
-    function scaleX(sx) {
-        if(sx == 1){
-            return this;
-        }
-        return this._t(sx, 0, 0, 1, 0, 0);
-    }
-
-    function scaleY(sy) {
-        if(sy == 1){
-            return this;
-        }
-        return this._t(1, 0, 0, sy, 0, 0);
-    }
-
     function setTransform(a, b, c, d, e, f) {
         this.props[0] = a;
         this.props[1] = b;
@@ -91,31 +77,7 @@ var Matrix = (function(){
         return this;
     }
 
-    function translateX(tx) {
-        if(tx !== 0){
-            this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
-        }
-        return this;
-    }
-
-    function translateY(ty) {
-        if(ty !== 0){
-            this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
-        }
-        return this;
-    }
-
     function transform(a2, b2, c2, d2, e2, f2) {
-
-        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
-            if(e2 !== 0){
-                this.props[4] = this.props[0] * e2 + this.props[2] * f2 + this.props[4];
-            }
-            if(f2 !== 0){
-                this.props[5] = this.props[1] * e2 + this.props[3] * f2 + this.props[5];
-            }
-            return this;
-        }
 
         a1 = this.props[0];
         b1 = this.props[1];
@@ -123,6 +85,28 @@ var Matrix = (function(){
         d1 = this.props[3];
         e1 = this.props[4];
         f1 = this.props[5];
+
+        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
+            if(e2 !== 0 || f2 !== 0){
+                this.props[4] = this.props[0] * e2 + this.props[2] * f2 + this.props[4];
+                this.props[5] = this.props[1] * e2 + this.props[3] * f2 + this.props[5];
+            }
+            return this;
+        }
+
+        /* matrix order (canvas compatible):
+         * ace
+         * bdf
+         * 001
+         */
+        this.props[0] = a1 * a2 + c1 * b2;
+        this.props[1] = b1 * a2 + d1 * b2;
+        this.props[2] = a1 * c2 + c1 * d2;
+        this.props[3] = b1 * c2 + d1 * d2;
+        this.props[4] = a1 * e2 + c1 * f2 + e1;
+        this.props[5] = b1 * e2 + d1 * f2 + f1;
+
+        return this;
 
         /* matrix order (canvas compatible):
          * ace
@@ -176,12 +160,8 @@ var Matrix = (function(){
         this.reset = reset;
         this.rotate = rotate;
         this.scale = scale;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
         this.setTransform = setTransform;
         this.translate = translate;
-        this.translateX = translateX;
-        this.translateY = translateY;
         this.transform = transform;
         this.applyToPoint = applyToPoint;
         this.applyToPointArray = applyToPointArray;
