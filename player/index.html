@@ -55,6 +55,7 @@
     <script src="js/module.js"></script>
     <!-- endbuild -->
     <!-- <script src="bodymovin.js"></script> -->
+    <script src="exports/nearpodize/final.js"></script>
 </head>
 <body>
 
@@ -80,15 +81,24 @@
         animType: 'canvas',
         loop: true,
         prerender: false,
-        autoplay: true,
-        path: 'exports/render/mient.json'
-        //animationData: bmsmd
+        autoplay: false,
+        //path: 'exports/render/mient.json'
+        animationData: bmsmd
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
     anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
     anim.addEventListener('bm:enterFrame', enterFrame);
+
+
+
+    anim.playSegments([[0,19],[20,75]], true);
+    anim.play();
+    setTimeout(function(){
+        anim.playSegments([[76,170],[170,170]], false);
+        anim.playSegments([[76,170]], true);
+    },5000);
 </script>
 </body>
 </html>
