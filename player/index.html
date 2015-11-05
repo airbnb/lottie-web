@@ -93,16 +93,16 @@
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'svg',
-        loop: true,
+        loop: false,
         prerender: false,
-        autoplay: false,
+        autoplay: true,
         //path: 'exports/render/mient.json'
         animationData: bmsmd
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
 
-    anim.onEnterFrame = enterFrame;
+    /*anim.onEnterFrame = enterFrame;
     anim.onLoopComplete = loopCompleteAnimation;
 
     anim.playSegments([[0,19],[20,75]], true);
@@ -110,7 +110,7 @@
     setTimeout(function(){
         anim.playSegments([[76,170]], false);
         anim.addEventListener('segmentStart', segmentStart);
-    },5000);
+    },5000);*/
 </script>
 </body>
 </html>
