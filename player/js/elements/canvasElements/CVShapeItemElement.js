@@ -177,10 +177,6 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
     len = this.stylesList.length;
     var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext;
     for(i=0;i<len;i+=1){
-        if(this.stylesList[i].ld === '0') {
-            this.stylesList[i].ld = '1';
-            //this.stylesList[i].parent.appendChild(this.stylesList[i].pathElement);
-        }
         if(this.stylesList[i].type === 'st' && this.stylesList[i].wi === 0){
             continue;
         }

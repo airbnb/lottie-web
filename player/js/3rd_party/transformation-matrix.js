@@ -29,8 +29,6 @@
 
 var Matrix = (function(){
 
-    var a1,b1,c1,d1,e1,f1;
-
     function reset(){
         this.props[0] = 1;
         this.props[1] = 0;
@@ -79,12 +77,12 @@ var Matrix = (function(){
 
     function transform(a2, b2, c2, d2, e2, f2) {
 
-        a1 = this.props[0];
-        b1 = this.props[1];
-        c1 = this.props[2];
-        d1 = this.props[3];
-        e1 = this.props[4];
-        f1 = this.props[5];
+        var a1 = this.props[0];
+        var b1 = this.props[1];
+        var c1 = this.props[2];
+        var d1 = this.props[3];
+        var e1 = this.props[4];
+        var f1 = this.props[5];
 
         if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
             if(e2 !== 0 || f2 !== 0){
@@ -93,20 +91,6 @@ var Matrix = (function(){
             }
             return this;
         }
-
-        /* matrix order (canvas compatible):
-         * ace
-         * bdf
-         * 001
-         */
-        this.props[0] = a1 * a2 + c1 * b2;
-        this.props[1] = b1 * a2 + d1 * b2;
-        this.props[2] = a1 * c2 + c1 * d2;
-        this.props[3] = b1 * c2 + d1 * d2;
-        this.props[4] = a1 * e2 + c1 * f2 + e1;
-        this.props[5] = b1 * e2 + d1 * f2 + f1;
-
-        return this;
 
         /* matrix order (canvas compatible):
          * ace
