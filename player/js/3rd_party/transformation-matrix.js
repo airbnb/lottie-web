@@ -29,18 +29,24 @@
 
 var Matrix = (function(){
 
-    var mCos,mSin,a1,b1,c1,d1,e1,f1;
+    var a1,b1,c1,d1,e1,f1;
 
     function reset(){
-        return this.setTransform(1, 0, 0, 1, 0, 0);
+        this.props[0] = 1;
+        this.props[1] = 0;
+        this.props[2] = 0;
+        this.props[3] = 1;
+        this.props[4] = 0;
+        this.props[5] = 0;
+        return this;
     }
 
     function rotate(angle) {
         if(angle === 0){
             return this;
         }
-        mCos = Math.cos(angle);
-        mSin = Math.sin(angle);
+        var mCos = Math.cos(angle);
+        var mSin = Math.sin(angle);
         return this._t(mCos, mSin, -mSin, mCos, 0, 0);
     }
 
