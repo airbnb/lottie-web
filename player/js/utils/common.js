@@ -1,4 +1,4 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -40,41 +40,37 @@ function styleUnselectableDiv(element){
 
 }
 
-function addEventListener(eventName, callback){
+function EnterFrameEventData(c,t){
+    this.currentTime = c;
+    this.totalTime = t;
+    this.type = 'bm:enterFrame';
+}
 
-    if (!this._cbs){
-        this._cbs = [];
-    }
+function CompleteEventData(){
+    this.type = 'bm:complete';
+}
+
+function CompleteLoopEventData(c,t){
+    this.currentLoop = c;
+    this.totalLoops = t;
+    this.type = 'bm:loop:complete';
+}
+
+function addEventListener(eventName, callback){
 
     if (!this._cbs[eventName]){
         this._cbs[eventName] = [];
     }
-
     this._cbs[eventName].push(callback);
 
 }
 
 function triggerEvent(eventName, args){
 
-    if (!this._cbs){
-        this._cbs = [];
-    }
-
-    var delay = this._cbs.length === 0;
-    var that = this;
-
     if (this._cbs[eventName]) {
-        if (delay){
-            setTimeout(function(){
-                for (var i = 0; i < that._cbs[eventName].length; i++){
-                    that._cbs[eventName][i](args);
-                }
-            }, 0);
-        }
-        else {
-            for (var i = 0; i < this._cbs[eventName].length; i++){
-                this._cbs[eventName][i](args);
-            }
+        var len = this._cbs[eventName].length;
+        for (var i = 0; i < len; i++){
+            this._cbs[eventName][i](args);
         }
     }
 }
