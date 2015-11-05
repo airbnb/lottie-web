@@ -76,21 +76,40 @@ var Matrix = (function(){
     }
 
     function translate(tx, ty) {
-        if(tx === 0 && ty === 0){
-            return this;
+        if(tx !== 0){
+            this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
         }
-        return this._t(1, 0, 0, 1, tx, ty);
+        if(ty !== 0){
+            this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
+        }
+        return this;
     }
 
     function translateX(tx) {
-        return this._t(1, 0, 0, 1, tx, 0);
+        if(tx !== 0){
+            this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
+        }
+        return this;
     }
 
     function translateY(ty) {
-        return this._t(1, 0, 0, 1, 0, ty);
+        if(ty !== 0){
+            this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
+        }
+        return this;
     }
 
     function transform(a2, b2, c2, d2, e2, f2) {
+
+        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
+            if(e2 !== 0){
+                this.props[4] = this.props[0] * e2 + this.props[2] * f2 + this.props[4];
+            }
+            if(f2 !== 0){
+                this.props[5] = this.props[1] * e2 + this.props[3] * f2 + this.props[5];
+            }
+            return this;
+        }
 
         a1 = this.props[0];
         b1 = this.props[1];
