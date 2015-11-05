@@ -76,6 +76,18 @@
         //console.log('ev: ',ev);
     }
 
+    function completeAnimation(ev){
+        console.log('completeAnimation');
+    }
+
+    function loopCompleteAnimation(ev){
+        console.log('loopCompleteAnimation');
+    }
+
+    function segmentStart(ev){
+        console.log('segmentStart');
+    }
+
     var animData = {
         wrapper: document.getElementById('bodymovin'),
         animType: 'canvas',
@@ -87,17 +99,20 @@
     };
     bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
-    anim.addEventListener('bm:config_ready', configReady);
+    /*anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
-    anim.addEventListener('bm:enterFrame', enterFrame);
+    //anim.addEventListener('bm:enterFrame', enterFrame);
+    anim.addEventListener('bm:complete', completeAnimation);
+    anim.addEventListener('bm:loopComplete', loopCompleteAnimation);
+    anim.addEventListener('bm:segmentStart', segmentStart);*/
 
-
+    anim.onEnterFrame = enterFrame;
+    anim.onLoopComplete = loopCompleteAnimation;
 
     anim.playSegments([[0,19],[20,75]], true);
     anim.play();
     setTimeout(function(){
-        anim.playSegments([[76,170],[170,170]], false);
-        anim.playSegments([[76,170]], true);
+        anim.playSegments([[76,170]], false);
     },5000);
 </script>
 </body>

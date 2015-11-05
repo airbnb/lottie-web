@@ -40,19 +40,22 @@ function styleUnselectableDiv(element){
 
 }
 
-function EnterFrameEventData(c,t){
+function BMEnterFrameEvent(c,t,d){
     this.currentTime = c;
     this.totalTime = t;
+    this.direction = d < 0 ? -1:1;
     this.type = 'bm:enterFrame';
 }
 
-function CompleteEventData(){
+function BMCompleteEvent(d){
     this.type = 'bm:complete';
+    this.direction = d < 0 ? -1:1;
 }
 
-function CompleteLoopEventData(c,t){
+function BMCompleteLoopEvent(c,t,d){
     this.currentLoop = c;
     this.totalLoops = t;
+    this.direction = d < 0 ? -1:1;
     this.type = 'bm:loop:complete';
 }
 
@@ -62,6 +65,27 @@ function addEventListener(eventName, callback){
         this._cbs[eventName] = [];
     }
     this._cbs[eventName].push(callback);
+
+}
+
+function removeEventListener(eventName,callback){
+
+    if (!callback){
+        this._cbs[eventName] = null;
+    }else if(this._cbs[eventName]){
+        var i = 0, len = this._cbs[eventName].length;
+        while(i<len){
+            if(this._cbs[eventName][i] === callback){
+                this._cbs[eventName].splice(i,1);
+                i -=1;
+                len -= 1;
+            }
+            i += 1;
+        }
+        if(!this._cbs[eventName].length){
+            this._cbs[eventName] = null;
+        }
+    }
 
 }
 
