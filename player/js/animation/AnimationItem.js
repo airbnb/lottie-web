@@ -1,4 +1,5 @@
 var AnimationItem = function () {
+    this._cbs = [];
     this.name = '';
     this.path = '';
     this.isLoaded = false;
@@ -246,7 +247,7 @@ AnimationItem.prototype.resize = function () {
 
 AnimationItem.prototype.gotoFrame = function () {
     if(subframeEnabled){
-        this.currentFrame = this.math.round(this.currentRawFrame*100)/100;
+        this.currentFrame = this.currentRawFrame;
     }else{
         this.currentFrame = this.math.floor(this.currentRawFrame);
     }
@@ -254,6 +255,7 @@ AnimationItem.prototype.gotoFrame = function () {
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
     }
+    //this.trigger('bm:enterFrame',new EnterFrameEventData(this.currentFrame,this.totalFrames));
     this.renderFrame();
 };
 
@@ -387,6 +389,7 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             this.currentRawFrame = this.totalFrames;
             this.gotoFrame();
             this.pause();
+            this.trigger()
             return;
         }else{
             this.playCount += 1;
