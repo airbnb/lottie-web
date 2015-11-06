@@ -175,15 +175,16 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
         return;
     }
     len = this.stylesList.length;
-    var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext;
+    var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type;
     for(i=0;i<len;i+=1){
-        if(this.stylesList[i].type === 'st' && this.stylesList[i].wi === 0){
+        type = this.stylesList[i].type;
+        if(type === 'st' && this.stylesList[i].wi === 0){
             continue;
         }
         renderer.save();
         elems = this.stylesList[i].elements;
         jLen = elems.length;
-        if(this.stylesList[i].type === 'st'){
+        if(type === 'st'){
             ctx.strokeStyle = this.stylesList[i].co;
             ctx.lineWidth = this.stylesList[i].wi;
             ctx.lineCap = this.stylesList[i].lc;
@@ -195,7 +196,7 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
         renderer.ctxOpacity(this.stylesList[i].coOp);
         ctx.beginPath();
         for(j=0;j<jLen;j+=1){
-            if(this.stylesList[i].type === 'st'){
+            if(type === 'st'){
                 renderer.save();
                 ctx.beginPath();
                 if(this.stylesList[i].da){
@@ -220,12 +221,12 @@ CVShapeItemElement.prototype.renderShape = function(parentTransform,items,data,i
                     ctx.bezierCurveTo(nodes[k].p1[0],nodes[k].p1[1],nodes[k].p2[0],nodes[k].p2[1],nodes[k].p3[0],nodes[k].p3[1]);
                 }
             }
-            if(this.stylesList[i].type === 'st'){
+            if(type === 'st'){
                 ctx.stroke();
                 renderer.restore();
             }
         }
-        if(this.stylesList[i].type !== 'st'){
+        if(type !== 'st'){
             ctx.fill();
         }
         renderer.restore();

@@ -37,10 +37,10 @@ AnimationItem.prototype.setParams = function(params) {
     if(params.context){
         this.context = params.context;
     }
-    if(params.wrapper){
-        this.wrapper = params.wrapper;
+    if(params.wrapper || params.container){
+        this.wrapper = params.wrapper || params.container;
     }
-    var animType = params.animType ? params.animType : 'canvas';
+    var animType = params.animType ? params.animType : params.renderer ? params.renderer : 'canvas';
     switch(animType){
         case 'canvas':
             this.renderer = new CanvasRenderer(this, params.renderer);

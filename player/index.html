@@ -63,12 +63,12 @@
 <script>
 
     var animData = {
-        wrapper: document.getElementById('bodymovin'),
-        animType: 'canvas',
+        container: document.getElementById('bodymovin'),
+        renderer: 'svg',
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/catrim'
+        path: 'exports/render'
     };
     var anim = bodymovin.loadAnimation(animData);
 </script>
