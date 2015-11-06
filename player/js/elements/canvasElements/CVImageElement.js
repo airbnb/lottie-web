@@ -28,11 +28,11 @@ CVImageElement.prototype.createElements = function(){
 
 };
 
-CVImageElement.prototype.draw = function(parentMatrix){
+CVImageElement.prototype.renderFrame = function(parentMatrix){
     if(this.failed){
         return;
     }
-    if(this.parent.draw.call(this,parentMatrix)===false){
+    if(this.parent.renderFrame.call(this,parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;
@@ -42,6 +42,9 @@ CVImageElement.prototype.draw = function(parentMatrix){
     this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
     ctx.drawImage(this.img,0,0);
     this.globalData.renderer.restore(this.data.hasMask);
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
 };
 
 CVImageElement.prototype.destroy = function(){

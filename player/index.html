@@ -11,9 +11,9 @@
             overflow: hidden;
         }
         #bodymovin{
-            width:500px;
-            height:500px;
-            background-color:#333;
+            width:100%;
+            height:100%;
+            background-color:#ccc;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -23,18 +23,18 @@
     <!-- build:js bodymovin.js -->
     <script src="js/main.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
-    <script src="js/3rd_party/canvasPoly.js"></script>
     <script src="js/utils/MatrixManager.js"></script>
     <script src="js/utils/animationFramePolyFill.js"></script>
     <script src="js/utils/common.js"></script>
-    <script src="js/utils/canvasPolyFill.js"></script>
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
+    <script src="js/utils/PropertyFactory.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="js/mask.js"></script>
     <script src="js/elements/BaseElement.js"></script>
+    <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/PlaceHolderElement.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
@@ -58,31 +58,19 @@
 </head>
 <body>
 
-<!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
 <div id="bodymovin"></div>
 
 <script>
 
-    function configReady(){
-        console.log('config ready');
-    }
-
-    function dataReady(){
-        console.log('data ready');
-    }
-
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'svg',
-        loop: true,
+        animType: 'canvas',
+        loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/bm'
+        path: 'exports/catrim'
     };
-    bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
-    anim.addEventListener('bm:config_ready', configReady);
-    anim.addEventListener('bm:data_ready', dataReady);
 </script>
 </body>
 </html>
