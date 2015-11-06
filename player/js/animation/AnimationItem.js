@@ -214,8 +214,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     /*
     this.firstFrame = 62;
     this.totalFrames = 1;
-    this.animationData.tf = 1;
-    //this.frameMult = 10/1000;
+    this.animationData.tf = 1;*/
+    //this.frameMult = 10000/1000;
     //*/////
     this.trigger('config_ready');
     this.loadSegments();
@@ -388,7 +388,7 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             newSegment = true;
         }
         if(this.loop === false){
-            this.currentRawFrame = this.totalFrames;
+            this.currentRawFrame = this.totalFrames - 0.01;
             this.gotoFrame();
             this.pause();
             this.trigger('complete');
@@ -398,7 +398,7 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
             this.playCount += 1;
             if(this.loop !== true){
                 if(this.playCount == this.loop){
-                    this.currentRawFrame = this.totalFrames;
+                    this.currentRawFrame = this.totalFrames - 0.01;
                     this.gotoFrame();
                     this.pause();
                     this.trigger('complete');

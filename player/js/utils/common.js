@@ -7,7 +7,7 @@ var bm_sqrt = Math.sqrt;
 var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_min = Math.min;
-var defaultCurveSegments = 2;
+var defaultCurveSegments = 50;
 var degToRads = Math.PI/180;
 
 function roundValues(flag){

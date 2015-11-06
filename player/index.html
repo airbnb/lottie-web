@@ -58,58 +58,19 @@
 </head>
 <body>
 
-<!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
 <div id="bodymovin"></div>
 
 <script>
 
-    function configReady(){
-        //console.log('config ready');
-    }
-
-    function dataReady(){
-        //console.log('data ready');
-    }
-
-    function enterFrame(ev){
-        //console.log('ev: ',ev);
-    }
-
-    function completeAnimation(ev){
-        console.log('completeAnimation');
-    }
-
-    function loopCompleteAnimation(ev){
-        console.log('loopCompleteAnimation');
-    }
-
-    function segmentStart(ev){
-        console.log('segmentStart');
-        anim.loop = false;
-        anim.removeEventListener('segmentStart', segmentStart);
-    }
-
     var animData = {
         wrapper: document.getElementById('bodymovin'),
-        animType: 'svg',
+        animType: 'canvas',
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/render'
-        //animationData: bmsmd
+        path: 'exports/catrim'
     };
-    bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
-
-    /*anim.onEnterFrame = enterFrame;
-    anim.onLoopComplete = loopCompleteAnimation;
-
-    anim.playSegments([[0,19],[20,75]], true);
-    anim.play();
-    setTimeout(function(){
-        anim.playSegments([[76,170]], false);
-        anim.addEventListener('segmentStart', segmentStart);
-    },5000);*/
 </script>
 </body>
 </html>
