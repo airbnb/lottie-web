@@ -66,10 +66,8 @@ var Matrix = (function(){
     }
 
     function translate(tx, ty) {
-        if(tx !== 0){
+        if(tx !== 0 || ty !== 0){
             this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
-        }
-        if(ty !== 0){
             this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
         }
         return this;
