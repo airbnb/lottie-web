@@ -61,37 +61,19 @@
 </head>
 <body>
 
-<!-- <div style="width:1350px;height:650px;background-color:#faf5d3;display:inline-block;" class="bodymovin" data-bm-path="exports/render/" data-bm-type="svg" data-bm-loop="true" data-bm-prerender="false"></div> -->
 <div id="bodymovin"></div>
 
 <script>
 
-    function configReady(){
-        //console.log('config ready');
-    }
-
-    function dataReady(){
-        //console.log('data ready');
-    }
-
-    function enterFrame(ev){
-        //console.log('ev: ',ev);
-    }
-
     var animData = {
-        wrapper: document.getElementById('bodymovin'),
-        animType: 'canvas',
-        loop: true,
+        container: document.getElementById('bodymovin'),
+        renderer: 'svg',
+        loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/render/mient.json'
-        //animationData: bmsmd
+        path: 'exports/render'
     };
-    bodymovin.setQuality(50);
     var anim = bodymovin.loadAnimation(animData);
-    anim.addEventListener('bm:config_ready', configReady);
-    anim.addEventListener('bm:data_ready', dataReady);
-    anim.addEventListener('bm:enterFrame', enterFrame);
 </script>
 </body>
 </html>

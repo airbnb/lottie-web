@@ -192,7 +192,7 @@ var compSelectionController = (function () {
             var animContainer = comp.elem.find('.state')[0];
             var animData = JSON.parse(radioData);
             var params = {
-                animType: 'canvas',
+                animType: 'svg',
                 wrapper: animContainer,
                 loop: false,
                 autoplay: false,
@@ -233,10 +233,10 @@ var compSelectionController = (function () {
             elem.removeClass('selected');
         }
         compsListContainer.append(comp.elem);
-        if (!comp.resized) {
-            comp.anim.resize();
-            comp.resized = true;
-        }
+        /*if (!comp.resized) {
+            //comp.anim.resize();
+            //comp.resized = true;
+        }*/
     }
     
     function markCompsForRemoval() {

@@ -7,7 +7,7 @@ var bm_sqrt = Math.sqrt;
 var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_min = Math.min;
-var defaultCurveSegments = 2;
+var defaultCurveSegments = 50;
 var degToRads = Math.PI/180;
 
 function roundValues(flag){
@@ -40,20 +40,29 @@ function styleUnselectableDiv(element){
 
 }
 
-function EnterFrameEventData(c,t){
+function BMEnterFrameEvent(n,c,t,d){
+    this.type = n;
     this.currentTime = c;
     this.totalTime = t;
-    this.type = 'bm:enterFrame';
+    this.direction = d < 0 ? -1:1;
 }
 
-function CompleteEventData(){
-    this.type = 'bm:complete';
+function BMCompleteEvent(n,d){
+    this.type = n;
+    this.direction = d < 0 ? -1:1;
 }
 
-function CompleteLoopEventData(c,t){
+function BMCompleteLoopEvent(n,c,t,d){
+    this.type = n;
     this.currentLoop = c;
     this.totalLoops = t;
-    this.type = 'bm:loop:complete';
+    this.direction = d < 0 ? -1:1;
+}
+
+function BMSegmentStartEvent(n,f,t){
+    this.type = n;
+    this.firstFrame = f;
+    this.totalFrames = t;
 }
 
 function addEventListener(eventName, callback){
@@ -62,6 +71,27 @@ function addEventListener(eventName, callback){
         this._cbs[eventName] = [];
     }
     this._cbs[eventName].push(callback);
+
+}
+
+function removeEventListener(eventName,callback){
+
+    if (!callback){
+        this._cbs[eventName] = null;
+    }else if(this._cbs[eventName]){
+        var i = 0, len = this._cbs[eventName].length;
+        while(i<len){
+            if(this._cbs[eventName][i] === callback){
+                this._cbs[eventName].splice(i,1);
+                i -=1;
+                len -= 1;
+            }
+            i += 1;
+        }
+        if(!this._cbs[eventName].length){
+            this._cbs[eventName] = null;
+        }
+    }
 
 }
 
