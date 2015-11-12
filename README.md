@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.1.2:
+- shape hold keyframe fix
+- snapshot feature fix
+
 ## V 3.1.1:
 - translation bug fix
 
