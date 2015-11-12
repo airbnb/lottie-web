@@ -76,6 +76,8 @@ function dataFunctionManager(){
                     for(j=0;j<jLen;j+=1){
                         if(arr[i].ks[j].s){
                             convertPathsToAbsoluteValues(arr[i].ks[j].s[0]);
+                        }
+                        if(arr[i].ks[j].e){
                             convertPathsToAbsoluteValues(arr[i].ks[j].e[0]);
                         }
                     }
