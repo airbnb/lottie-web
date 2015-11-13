@@ -101,6 +101,9 @@ var bm_layerElement = (function () {
         }
         layerData.ind = ind;
         layerData.ty = layerType;
+        if(layerInfo.name.substring(0,1) === '#'){
+            layerData.ln = layerInfo.name.substr(1);
+        }
         if (layerInfo.parent !== null) {
             layerData.parent = layerInfo.parent.index - 1;
         }

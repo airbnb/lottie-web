@@ -30,6 +30,9 @@ IImageElement.prototype.createElements = function(){
     }else{
         this.layerElement.appendChild(this.innerElem);
     }
+    if(this.data.ln){
+        this.innerElem.setAttribute('id',this.data.ln);
+    }
 
 };
 

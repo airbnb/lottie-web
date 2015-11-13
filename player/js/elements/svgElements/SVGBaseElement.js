@@ -90,6 +90,13 @@ SVGBaseElement.prototype.createElements = function(){
     }else{
         this.layerElement = this.parentContainer;
     }
+    if(this.data.ln && (this.data.ty === 4 || this.data.ty === 0)){
+        if(this.layerElement === this.parentContainer){
+            this.layerElement = document.createElementNS(svgNS,'g');
+            this.appendNodeToParent(this.layerElement);
+        }
+        this.layerElement.setAttribute('id',this.data.ln);
+    }
 };
 
 SVGBaseElement.prototype.renderFrame = function(parentTransform){
