@@ -102,6 +102,9 @@ var bm_layerElement = (function () {
         layerData.ind = ind;
         layerData.ty = layerType;
         layerData.nm = layerInfo.name;
+        if(layerInfo.name.substring(0,1) === '#'){
+            layerData.ln = layerInfo.name.substr(1);
+        }
         if (layerInfo.parent !== null) {
             layerData.parent = layerInfo.parent.index - 1;
         }
@@ -150,7 +153,7 @@ var bm_layerElement = (function () {
                 bm_sourceHelper.setCompSourceId(layerInfo.source, layerData.compId);
             }
         } else if (layerType === ob.layerTypes.still) {
-            layerData.ll = bm_sourceHelper.checkImageSource(layerInfo);
+            layerData.refId = bm_sourceHelper.checkImageSource(layerInfo);
         }
     }
     

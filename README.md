@@ -1,6 +1,49 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.1.4:
+- svg transform bug fix
+
+## V 3.1.3: Naming convention
+- if you name your AE layers with a '#' in front, they will get their id attribute set to that name on the svg renderer. You can use it to add interaction to specific shapes or add additional styles.
+
+## V 3.1.2:
+- shape hold keyframe fix
+- snapshot feature fix
+
+## V 3.1.1:
+- translation bug fix
+
+## V 3.1.0: the big refactor
+- reduced filesize
+- increased performance
+- improved memory management
+- fixed scaled strokes on canvas
+- events
+
+## V 3.0.8
+- changed masks to clipping paths when only using AE additive masks. Performance improvement and fixes issue with strokes.
+
+## V 3.0.7
+- rounded rects fix
+- stroke dash export fix
+
+## V 3.0.5
+- major memory management optimizations. and more to come.
+- big performance improvements for svg animations
+- segments fixes
+- devicePixelRatio support. contribution from @snorpey
+
+## V 3.0.3
+- nested strokes and shapes fix
+- reverse rectangles fix
+- mask fix
+- reversed non closed shapes fix
+
+## V 3.0.2
+- bug fix for rounded rectangles
+- default quality settings modified
+
 ## V 3.0.0
 - bodymovin.setQuality to optimize player performance. explained below.
 - segments: export animation in segments. more below.
@@ -27,18 +70,24 @@ After Effects plugin for exporting animations to svg + js or canvas + js
 
 ### Option 1:
 
-- Close After Effects
-- Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:
-WINDOWS:
-C:\Program Files (x86)\Common Files\Adobe\CEP\extensions
-C:\<username>\AppData\Roaming\Adobe\CEP\extensions
-MAC:
-/Library~/Library/Application Support/Adobe/CEP/extensions
-/Application Support/Adobe/CEP/extensions
+- Close After Effects<br/>
+- Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:<br/>
+WINDOWS:<br/>
+C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or<br/>
+C:\<username>\AppData\Roaming\Adobe\CEP\extensions<br/>
+MAC:<br/>
+/Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+(you can open the terminal and type:<br/>
+cp -R YOURUNZIPEDFOLDERPATH/extension /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+then type:<br/>
+ls /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+to make sure it was copied correctly type)<br/>
 
-- Edit the registry key:
-On Mac, open the file ~/Library/Preferences/com.adobe.CSXS.4.plist and add a row with key PlayerDebugMode, of type String, and value 1.  
-On Windows, open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.
+- Edit the registry key:<br/>
+WINDOWS:<br/>
+open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.<br/>
+MAC:<br/>
+open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
 
 ### Option 2:
 
@@ -142,6 +191,18 @@ bodymovin has 8 main methods:
 **bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
 **bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
 **bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+
+## Events
+- onComplete
+- onLoopComplete
+- onEnterFrame
+- onSegmentStart
+
+you can also use addEventListener with the following events:
+- complete
+- loopComplete
+- enterFrame
+- segmentStart
 
 
 See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations

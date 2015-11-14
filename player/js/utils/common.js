@@ -1,12 +1,25 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
 var cachedColors = {};
-var bm_rnd = Math.round;
+var bm_rounder = Math.round;
+var bm_rnd;
 var bm_pow = Math.pow;
 var bm_sqrt = Math.sqrt;
 var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_min = Math.min;
-var defaultCurveSegments = 2;
+var defaultCurveSegments = 50;
+var degToRads = Math.PI/180;
+
+function roundValues(flag){
+    if(flag){
+        bm_rnd = Math.round;
+    }else{
+        bm_rnd = function(val){
+            return val;
+        };
+    }
+}
+roundValues(false);
 
 function styleDiv(element){
     element.style.position = 'absolute';
@@ -27,41 +40,67 @@ function styleUnselectableDiv(element){
 
 }
 
-function addEventListener(eventName, callback){
+function BMEnterFrameEvent(n,c,t,d){
+    this.type = n;
+    this.currentTime = c;
+    this.totalTime = t;
+    this.direction = d < 0 ? -1:1;
+}
 
-    if (!this._cbs){
-        this._cbs = [];
-    }
+function BMCompleteEvent(n,d){
+    this.type = n;
+    this.direction = d < 0 ? -1:1;
+}
+
+function BMCompleteLoopEvent(n,c,t,d){
+    this.type = n;
+    this.currentLoop = c;
+    this.totalLoops = t;
+    this.direction = d < 0 ? -1:1;
+}
+
+function BMSegmentStartEvent(n,f,t){
+    this.type = n;
+    this.firstFrame = f;
+    this.totalFrames = t;
+}
+
+function addEventListener(eventName, callback){
 
     if (!this._cbs[eventName]){
         this._cbs[eventName] = [];
     }
-
     this._cbs[eventName].push(callback);
+
+}
+
+function removeEventListener(eventName,callback){
+
+    if (!callback){
+        this._cbs[eventName] = null;
+    }else if(this._cbs[eventName]){
+        var i = 0, len = this._cbs[eventName].length;
+        while(i<len){
+            if(this._cbs[eventName][i] === callback){
+                this._cbs[eventName].splice(i,1);
+                i -=1;
+                len -= 1;
+            }
+            i += 1;
+        }
+        if(!this._cbs[eventName].length){
+            this._cbs[eventName] = null;
+        }
+    }
 
 }
 
 function triggerEvent(eventName, args){
 
-    if (!this._cbs){
-        this._cbs = [];
-    }
-
-    var delay = this._cbs.length === 0;
-    var that = this;
-
     if (this._cbs[eventName]) {
-        if (delay){
-            setTimeout(function(){
-                for (var i = 0; i < that._cbs[eventName].length; i++){
-                    that._cbs[eventName][i](args);
-                }
-            }, 0);
-        }
-        else {
-            for (var i = 0; i < this._cbs[eventName].length; i++){
-                this._cbs[eventName][i](args);
-            }
+        var len = this._cbs[eventName].length;
+        for (var i = 0; i < len; i++){
+            this._cbs[eventName][i](args);
         }
     }
 }
@@ -138,4 +177,11 @@ var fillColorToString = (function(){
 function RenderedFrame(tr,o) {
     this.tr = tr;
     this.o = o;
+}
+
+function iterateDynamicProperties(num){
+    var i, len = this.dynamicProperties;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getInterpolatedValue(num);
+    }
 }

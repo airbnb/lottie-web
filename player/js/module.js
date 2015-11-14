@@ -63,6 +63,11 @@
         }else if(!isNaN(value) && value > 1){
             defaultCurveSegments = value;
         }
+        if(defaultCurveSegments >= 50){
+            roundValues(false);
+        }else{
+            roundValues(true);
+        }
 
     }
 
@@ -82,6 +87,7 @@
     bodymovinjs.goToAndStop = goToAndStop;
     bodymovinjs.destroy = destroy;
     bodymovinjs.setQuality = setQuality;
+    bodymovinjs.version = '3.1.4';
 
     function checkReady(){
         if (document.readyState === "complete") {

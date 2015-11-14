@@ -1,10 +1,14 @@
 function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
-    this.renderConfig = config ? config : {
-        clearCanvas: true,
-        context: null,
-        scaleMode: 'fit'
+    this.renderConfig = {
+        clearCanvas: (config && config.clearCanvas) || true,
+        context: (config && config.context) || null,
+        scaleMode: (config && config.scaleMode) || 'fit'
     };
+    this.renderConfig.dpr = (config && config.dpr) || 1;
+    if (this.animationItem.wrapper) {
+        this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
+    }
     this.lastFrame = -1;
     this.globalData = {
         frameNum: -1
@@ -185,6 +189,8 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.animationItem.container = document.createElement('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';
+        //this.animationItem.container.style.transform = 'translate3d(0,0,0)';
+        //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
         this.canvasContext = this.animationItem.container.getContext('2d');
@@ -192,11 +198,12 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.canvasContext = this.renderConfig.context;
     }
     this.globalData.canvasContext = this.canvasContext;
-    this.globalData.bmCtx = new BM_CanvasRenderingContext2D(this);
     this.globalData.renderer = this;
+    this.globalData.isDashed = false;
     this.globalData.totalFrames = Math.floor(animData.tf);
     this.globalData.compWidth = animData.w;
     this.globalData.compHeight = animData.h;
+    this.globalData.frameRate = animData.fr;
     this.layers = animData.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.w;
@@ -209,35 +216,35 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     if(this.animationItem.wrapper && this.animationItem.container){
         elementWidth = this.animationItem.wrapper.offsetWidth;
         elementHeight = this.animationItem.wrapper.offsetHeight;
-        this.animationItem.container.setAttribute('width',elementWidth);
-        this.animationItem.container.setAttribute('height',elementHeight);
+        this.animationItem.container.setAttribute('width',elementWidth * this.renderConfig.dpr );
+        this.animationItem.container.setAttribute('height',elementHeight * this.renderConfig.dpr);
     }else{
-        elementWidth = this.canvasContext.canvas.width;
-        elementHeight = this.canvasContext.canvas.height;
+        elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
+        elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
     }
     if(this.renderConfig.scaleMode == 'fit'){
         var elementRel = elementWidth/elementHeight;
         var animationRel = this.transformCanvas.w/this.transformCanvas.h;
         if(animationRel>elementRel){
-            this.transformCanvas.sx = elementWidth/this.transformCanvas.w;
-            this.transformCanvas.sy = elementWidth/this.transformCanvas.w;
+            this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
+            this.transformCanvas.sy = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
             this.transformCanvas.tx = 0;
-            this.transformCanvas.ty = (elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2;
+            this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2)*this.renderConfig.dpr;
         }else{
-            this.transformCanvas.sx = elementHeight/this.transformCanvas.h;
-            this.transformCanvas.sy = elementHeight/this.transformCanvas.h;
-            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2;
+            this.transformCanvas.sx = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
+            this.transformCanvas.sy = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
+            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
             this.transformCanvas.ty = 0;
         }
     }else{
-        this.transformCanvas.sx = 1;
-        this.transformCanvas.sy = 1;
+        this.transformCanvas.sx = this.renderConfig.dpr;
+        this.transformCanvas.sy = this.renderConfig.dpr;
         this.transformCanvas.tx = 0;
         this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty];
-    this.clipper = new BM_Path2D();
-    this.clipper.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.globalData.cWidth = elementWidth;
+    this.globalData.cHeight = elementHeight;
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
@@ -272,23 +279,6 @@ CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, pa
     }
 };
 
-CanvasRenderer.prototype.prepareFrame = function(num){
-    if(this.destroyed) {
-        return;
-    }
-    var i, len = this.elements.length;
-    for (i = 0; i < len; i++) {
-        this.elements[i].prepareFrame(num - this.layers[i].st);
-    }
-};
-
-CanvasRenderer.prototype.draw = function(){
-    var i, len = this.layers.length;
-    for (i = len - 1; i >= 0; i-=1) {
-        this.elements[i].draw();
-    }
-};
-
 CanvasRenderer.prototype.destroy = function () {
     if(this.renderConfig.clearCanvas) {
         this.animationItem.wrapper.innerHTML = '';
@@ -298,7 +288,6 @@ CanvasRenderer.prototype.destroy = function () {
         this.elements[i].destroy();
     }
     this.elements.length = 0;
-    this.globalData.bmCtx = null;
     this.globalData.canvasContext = null;
     this.animationItem.container = null;
     this.destroyed = true;
@@ -313,13 +302,23 @@ CanvasRenderer.prototype.renderFrame = function(num){
     if(this.renderConfig.clearCanvas === true){
         this.reset();
         this.canvasContext.canvas.width = this.canvasContext.canvas.width;
+        //this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
     }else{
         this.save();
     }
     this.ctxTransform(this.transformCanvas.props);
-    this.globalData.bmCtx.clip(this.clipper);
-    this.prepareFrame(num);
-    this.draw();
+    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.canvasContext.clip();
+
+    ////this.globalData.bmCtx.clip(this.clipper);
+
+    var i, len = this.layers.length;
+    for (i = 0; i < len; i++) {
+        this.elements[i].prepareFrame(num - this.layers[i].st);
+    }
+    for (i = len - 1; i >= 0; i-=1) {
+        this.elements[i].renderFrame();
+    }
     if(this.renderConfig.clearCanvas !== true){
         this.restore();
     }
