@@ -339,8 +339,8 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
                     viewData.elements[i].el.setAttribute('d', pathStringNonTransformed);
                 }
                 if(groupTransform.matMdf || this.firstFrame) {
-                    ////viewData.elements[i].el.setAttribute('transform',t);
-                    viewData.elements[i].el.style.transform = t;
+                    viewData.elements[i].el.setAttribute('transform',t);
+                    ////viewData.elements[i].el.style.transform = t;
                 }
             }else{
                 viewData.elements[i].st.mdf = redraw ? true : viewData.elements[i].st.mdf;
