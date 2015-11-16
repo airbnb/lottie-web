@@ -23,6 +23,7 @@ BaseElement.prototype.prepareFrame = function(num){
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);
     }
+    /* TODO check this
     if(this.data.sy){
         if(this.data.sy[0].renderedData[num]){
             if(this.data.sy[0].renderedData[num].c){
@@ -33,6 +34,7 @@ BaseElement.prototype.prepareFrame = function(num){
             }
         }
     }
+    */
 
     this.currentFrameNum = num;
     return this.isVisible;

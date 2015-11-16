@@ -37,7 +37,7 @@ function dataFunctionManager(){
             }
             if(layerData.ty===0){
                 layerData.layers = findCompLayers(layerData.refId, comps);
-                completeLayers(layerData, layerData.layers,comps);
+                completeLayers(layerData.layers,comps);
             }else if(layerData.ty === 4){
                 completeShapes(layerData.shapes);
             }
@@ -69,11 +69,11 @@ function dataFunctionManager(){
                 }else{
                     jLen = arr[i].ks.k.length;
                     for(j=0;j<jLen;j+=1){
-                        if(arr[i].ks[j].s){
-                            convertPathsToAbsoluteValues(arr[i].ks[j].s[0]);
+                        if(arr[i].ks.k[j].s){
+                            convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
                         }
-                        if(arr[i].ks[j].e){
-                            convertPathsToAbsoluteValues(arr[i].ks[j].e[0]);
+                        if(arr[i].ks.k[j].e){
+                            convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
                         }
                     }
                 }

@@ -4,6 +4,7 @@ function MaskElement(data,element,globalData) {
     this.element = element;
     this.globalData = globalData;
     this.paths = [];
+    this.storedData = [];
     this.masksProperties = this.data.masksProperties;
     this.viewData = new Array(this.masksProperties.length);
     this.maskElement = null;

@@ -97,7 +97,7 @@ SVGBaseElement.prototype.createElements = function(){
         }
         this.layerElement.setAttribute('id',this.data.ln);
     }
-    ////////
+    /* Todo performance killer
     if(this.data.sy){
         var filterID = 'st_'+randomString(10);
         var c = this.data.sy[0].c.k;
@@ -161,7 +161,7 @@ SVGBaseElement.prototype.createElements = function(){
                 this.appendNodeToParent(cont);
             }
         }
-    }
+    }*/
 };
 
 SVGBaseElement.prototype.renderFrame = function(parentTransform){

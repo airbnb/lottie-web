@@ -223,25 +223,25 @@ var PropertyFactory = (function(){
 
     function ValueProperty(data, mult){
         mult = mult ? mult : 1;
-        this.v = data * mult;
+        this.v = data.k * mult;
         this.mdf = false;
         this.k = false;
     }
 
     function MultiDimensionalProperty(data, mult){
         if(mult){
-            var i, len = data.length;
+            var i, len = data.k.length;
             for(i = 0;i<len;i+=1){
-                data[i] *= mult;
+                data.k[i] *= mult;
             }
         }
-        this.v = data;
+        this.v = data.k;
         this.mdf = false;
         this.k = false;
     }
 
     function KeyframedValueProperty(elemData, data, mult){
-        this.keyframes = data;
+        this.keyframes = data.k;
         this.offsetTime = elemData.st;
         this.lastValue = -99999;
         this.k = true;
@@ -253,13 +253,13 @@ var PropertyFactory = (function(){
     }
 
     function KeyframedMultidimensionalProperty(elemData, data, mult){
-        this.keyframes = data;
+        this.keyframes = data.k;
         this.offsetTime = elemData.st;
         this.k = true;
         this.mult = mult;
         this.getInterpolatedValue = getInterpolatedValue;
-        this.v = new Array(data[0].s.length);
-        this.lastValue = new Array(data[0].s.length);
+        this.v = new Array(data.k[0].s.length);
+        this.lastValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;
     }
 
@@ -282,25 +282,26 @@ var PropertyFactory = (function(){
             this.dynamicProperties = [];
             this.mdf = false;
             this.getInterpolatedValue = processKeys;
-            if(typeof(data.a[0]) === 'number'){
+            this.v = new Matrix();
+            if(typeof(data.a.k[0]) === 'number'){
                 this.a = new MultiDimensionalProperty(data.a);
             }else{
                 this.a = new KeyframedMultidimensionalProperty(elemData,data.a,0);
                 this.dynamicProperties.push(this.a);
             }
-            if(typeof(data.p[0]) === 'number'){
+            if(typeof(data.p.k[0]) === 'number'){
                 this.p = new MultiDimensionalProperty(data.p);
             }else{
                 this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
                 this.dynamicProperties.push(this.p);
             }
-            if(typeof(data.s[0]) === 'number'){
+            if(typeof(data.s.k[0]) === 'number'){
                 this.s = new MultiDimensionalProperty(data.s,0.01);
             }else{
                 this.s = new KeyframedMultidimensionalProperty(elemData,data.s, 0.01);
                 this.dynamicProperties.push(this.s);
             }
-            if(data.r.length){
+            if(data.r.k.length){
                 this.r = new KeyframedValueProperty(elemData,data.r,degToRads);
                 this.dynamicProperties.push(this.r);
             }else{
@@ -308,22 +309,20 @@ var PropertyFactory = (function(){
             }
             if(this.dynamicProperties.length){
                 arr.push(this);
-                this.v = new Matrix();
             }else{
-                this.v = new Matrix().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                this.v = this.v.translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
             }
         }
     }());
 
     function getProp(elemData,data,type, mult, arr) {
-
         if(type === 2){
             return new TransformProperty(elemData, data, arr);
         }else if(type === 7){
             return new TrimProperty(elemData, data, arr);
-        }else if(!data.length){
+        }else if(!data.k.length){
             return new ValueProperty(data, mult);
-        }else if(typeof(data[0]) === 'number'){
+        }else if(typeof(data.k[0]) === 'number'){
             return new MultiDimensionalProperty(data, mult);
         }else{
             switch(type){
@@ -343,13 +342,13 @@ var PropertyFactory = (function(){
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
         this.shapeData = data.ks;
-        this.v = type === 3 ? data.pt : data.ks;
+        this.v = type === 3 ? data.pt.k : data.ks.k;
     }
 
     function KeyframedShapeProperty(elemData,data,arr,type){
         this.offsetTime = elemData.st;
         this.getInterpolatedValue = interpolateShape;
-        this.keyframes = type === 3 ? data.pt : data.ks;
+        this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
         this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
@@ -432,13 +431,13 @@ var PropertyFactory = (function(){
             this.mdf = false;
             this.getInterpolatedValue = processKeys;
             this.convertEllToPath = convertEllToPath;
-            if(typeof(data.p[0]) === 'number'){
+            if(typeof(data.p.k[0]) === 'number'){
                 this.p = new MultiDimensionalProperty(data.p);
             }else{
                 this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
                 this.dynamicProperties.push(this.p);
             }
-            if(typeof(data.s[0]) === 'number'){
+            if(typeof(data.s.k[0]) === 'number'){
                 this.s = new MultiDimensionalProperty(data.s);
             }else{
                 this.s = new KeyframedMultidimensionalProperty(elemData,data.s,0);
@@ -628,19 +627,19 @@ var PropertyFactory = (function(){
             this.getInterpolatedValue = processKeys;
             this.k = false;
             this.isTrimming = false;
-            if(data.s.length){
+            if(data.s.k.length){
                 this.s = new KeyframedValueProperty(elemData,data.s,0.01);
                 this.dynamicProperties.push(this.s);
             }else{
                 this.s = new ValueProperty(data.s,0.01);
             }
-            if(data.e.length){
+            if(data.e.k.length){
                 this.e = new KeyframedValueProperty(elemData,data.e,0.01);
                 this.dynamicProperties.push(this.e);
             }else{
                 this.e = new ValueProperty(data.e,0.01);
             }
-            if(data.o.length){
+            if(data.o.k.length){
                 this.o = new KeyframedValueProperty(elemData,data.o,0);
                 this.dynamicProperties.push(this.o);
             }else{
@@ -820,7 +819,7 @@ var PropertyFactory = (function(){
                 }
             }
             this.prop = prop;
-            len = this.prop.shapeData.v.length - 1;
+            len = this.prop.shapeData.k.v.length - 1;
             len += this.prop.closed ? 1:0;
             this.lengths = new Array(len);
             this.k = prop.k ? true : this.k;
@@ -839,7 +838,7 @@ var PropertyFactory = (function(){
     function getShapeProp(elemData,data,type, arr, trims){
         var prop;
         if(type === 3 || type === 4){
-            var keys = type === 3 ? data.pt : data.ks;
+            var keys = type === 3 ? data.pt.k : data.ks.k;
             if(keys.length){
                 prop = new KeyframedShapeProperty(elemData, data, arr, type);
             }else{
