@@ -139,7 +139,7 @@ function MaskElement(data,element,globalData) {
 MaskElement.prototype.prepareFrame = function(num){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getInterpolatedValue(num);
+        this.dynamicProperties[i].getValue(num);
 
     }
 };

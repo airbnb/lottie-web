@@ -2,9 +2,10 @@ var PropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function getInterpolatedValue(frameNum){
+    function getValue(){
         this.mdf = false;
-        if(this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))){
+        var frameNum = this.comp.renderedFrame;
+        if(frameNum === this.lastFrame || this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))){
         }else{
             var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
             var keyData, nextKeyData;
@@ -154,7 +155,7 @@ var PropertyFactory = (function(){
                 }
             }
         }
-        this.lastFrame = frameNum;
+        this.lastFrame = this.comp.renderedFrame;
     }
 
     function interpolateShape(frameNum) {
@@ -221,14 +222,26 @@ var PropertyFactory = (function(){
         this.lastFrame = frameNum;
     }
 
-    function ValueProperty(data, mult){
+    function checkExpressions(data){
+        this.getExpression = ExpressionManager.registerExpression;
+        if(data.x){
+            this.k = true;
+            if(!this.getValue){
+                this.getValue = this.getExpression;
+            }
+        }
+    }
+
+    function ValueProperty(data, mult, comp){
         mult = mult ? mult : 1;
         this.v = data.k * mult;
         this.mdf = false;
+        this.comp = comp;
         this.k = false;
+        checkExpressions.bind(this)(data);
     }
 
-    function MultiDimensionalProperty(data, mult){
+    function MultiDimensionalProperty(data, mult, comp){
         if(mult){
             var i, len = data.k.length;
             for(i = 0;i<len;i+=1){
@@ -237,39 +250,45 @@ var PropertyFactory = (function(){
         }
         this.v = data.k;
         this.mdf = false;
+        this.comp = comp;
         this.k = false;
+        checkExpressions.bind(this)(data);
     }
 
-    function KeyframedValueProperty(elemData, data, mult){
+    function KeyframedValueProperty(elemData, data, mult, comp){
         this.keyframes = data.k;
         this.offsetTime = elemData.st;
         this.lastValue = -99999;
         this.k = true;
         this.mult = mult;
+        this.comp = comp;
         this.lastFrame = initFrame;
         //this.lastFrame = data[data.length - 1].t;
         //this.v = mult ?  data[0].s[0]*mult : data[0].s[0];
-        this.getInterpolatedValue = getInterpolatedValue;
+        this.getValue = getValue;
+        checkExpressions.bind(this)(data);
     }
 
-    function KeyframedMultidimensionalProperty(elemData, data, mult){
+    function KeyframedMultidimensionalProperty(elemData, data, mult, comp){
         this.keyframes = data.k;
         this.offsetTime = elemData.st;
         this.k = true;
         this.mult = mult;
-        this.getInterpolatedValue = getInterpolatedValue;
+        this.comp = comp;
+        this.getValue = getValue;
         this.v = new Array(data.k[0].s.length);
         this.lastValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;
+        checkExpressions.bind(this)(data);
     }
 
     var TransformProperty = (function(){
-        function processKeys(frameNum){
+        function processKeys(){
             var i, len = this.dynamicProperties.length;
             this.mdf = false;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getInterpolatedValue(frameNum);
+                this.dynamicProperties[i].getValue();
                 if(this.dynamicProperties[i].mdf){
                     this.mdf = true;
                 }
@@ -278,35 +297,15 @@ var PropertyFactory = (function(){
                 this.v.reset().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
             }
         }
-        return function(elemData,data,arr){
+        return function(elemData,data,arr, comp){
             this.dynamicProperties = [];
             this.mdf = false;
-            this.getInterpolatedValue = processKeys;
+            this.getValue = processKeys;
             this.v = new Matrix();
-            if(typeof(data.a.k[0]) === 'number'){
-                this.a = new MultiDimensionalProperty(data.a);
-            }else{
-                this.a = new KeyframedMultidimensionalProperty(elemData,data.a,0);
-                this.dynamicProperties.push(this.a);
-            }
-            if(typeof(data.p.k[0]) === 'number'){
-                this.p = new MultiDimensionalProperty(data.p);
-            }else{
-                this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
-                this.dynamicProperties.push(this.p);
-            }
-            if(typeof(data.s.k[0]) === 'number'){
-                this.s = new MultiDimensionalProperty(data.s,0.01);
-            }else{
-                this.s = new KeyframedMultidimensionalProperty(elemData,data.s, 0.01);
-                this.dynamicProperties.push(this.s);
-            }
-            if(data.r.k.length){
-                this.r = new KeyframedValueProperty(elemData,data.r,degToRads);
-                this.dynamicProperties.push(this.r);
-            }else{
-                this.r = new ValueProperty(data.r,degToRads);
-            }
+            this.a = getProp(elemData,data.a,1,0,this.dynamicProperties,comp);
+            this.p = getProp(elemData,data.p,1,0,this.dynamicProperties,comp);
+            this.s = getProp(elemData,data.s,1,0.01,this.dynamicProperties,comp);
+            this.r = getProp(elemData,data.r,0,degToRads,this.dynamicProperties,comp);
             if(this.dynamicProperties.length){
                 arr.push(this);
             }else{
@@ -315,26 +314,30 @@ var PropertyFactory = (function(){
         }
     }());
 
-    function getProp(elemData,data,type, mult, arr) {
+    function getProp(elemData,data,type, mult, arr, comp) {
+        var p;
         if(type === 2){
-            return new TransformProperty(elemData, data, arr);
+            p = new TransformProperty(elemData, data, arr, comp);
         }else if(type === 7){
-            return new TrimProperty(elemData, data, arr);
+            p = new TrimProperty(elemData, data, arr);
         }else if(!data.k.length){
-            return new ValueProperty(data, mult);
+            p = new ValueProperty(data, mult, comp);
         }else if(typeof(data.k[0]) === 'number'){
-            return new MultiDimensionalProperty(data, mult);
+            p = new MultiDimensionalProperty(data, mult, comp);
         }else{
             switch(type){
                 case 0:
-                    arr.push(new KeyframedValueProperty(elemData,data,mult));
+                    p = new KeyframedValueProperty(elemData,data,mult, comp);
                     break;
                 case 1:
-                    arr.push(new KeyframedMultidimensionalProperty(elemData,data,mult));
+                    p = new KeyframedMultidimensionalProperty(elemData,data,mult, comp);
                     break;
             }
-            return arr[arr.length - 1];
         }
+        if(p.k || p.x){
+            arr.push(p);
+        }
+        return p;
     }
 
     function ShapeProperty(data, type){
@@ -347,7 +350,7 @@ var PropertyFactory = (function(){
 
     function KeyframedShapeProperty(elemData,data,arr,type){
         this.offsetTime = elemData.st;
-        this.getInterpolatedValue = interpolateShape;
+        this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
         this.closed = type === 3 ? data.cl : data.closed;
@@ -407,7 +410,7 @@ var PropertyFactory = (function(){
             this.mdf = false;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getInterpolatedValue(frameNum);
+                this.dynamicProperties[i].getValue(frameNum);
                 if(this.dynamicProperties[i].mdf){
                     this.mdf = true;
                 }
@@ -417,7 +420,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(elemData,data,arr) {
+        return function(elemData,data,arr,comp) {
             this.v = {
                 v: new Array(4),
                 i: new Array(4),
@@ -429,20 +432,10 @@ var PropertyFactory = (function(){
             data.closed = true;
             this.closed = true;
             this.mdf = false;
-            this.getInterpolatedValue = processKeys;
+            this.getValue = processKeys;
             this.convertEllToPath = convertEllToPath;
-            if(typeof(data.p.k[0]) === 'number'){
-                this.p = new MultiDimensionalProperty(data.p);
-            }else{
-                this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
-                this.dynamicProperties.push(this.p);
-            }
-            if(typeof(data.s.k[0]) === 'number'){
-                this.s = new MultiDimensionalProperty(data.s);
-            }else{
-                this.s = new KeyframedMultidimensionalProperty(elemData,data.s,0);
-                this.dynamicProperties.push(this.s);
-            }
+            this.p = getProp(elemData,data.p,1,0,this.dynamicProperties,comp);
+            this.s = getProp(elemData,data.s,1,0,this.dynamicProperties,comp);
             if(this.dynamicProperties.length){
                 arr.push(this);
             }else{
@@ -457,7 +450,7 @@ var PropertyFactory = (function(){
             this.mdf = false;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getInterpolatedValue(frameNum);
+                this.dynamicProperties[i].getValue(frameNum);
                 if(this.dynamicProperties[i].mdf){
                     this.mdf = true;
                 }
@@ -542,7 +535,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(elemData,data,arr) {
+        return function(elemData,data,arr, comp) {
             this.v = {
                 v: new Array(8),
                 i: new Array(8),
@@ -554,26 +547,11 @@ var PropertyFactory = (function(){
             this.mdf = false;
             data.closed = true;
             this.closed = true;
-            this.getInterpolatedValue = processKeys;
+            this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
-            if(typeof(data.p[0]) === 'number'){
-                this.p = new MultiDimensionalProperty(data.p);
-            }else{
-                this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
-                this.dynamicProperties.push(this.p);
-            }
-            if(typeof(data.s[0]) === 'number'){
-                this.s = new MultiDimensionalProperty(data.s);
-            }else{
-                this.s = new KeyframedMultidimensionalProperty(elemData,data.s,0);
-                this.dynamicProperties.push(this.s);
-            }
-            if(data.r.length){
-                this.r = new KeyframedValueProperty(elemData,data.r,0);
-                this.dynamicProperties.push(this.r);
-            }else{
-                this.r = new ValueProperty(data.r,degToRads);
-            }
+            this.p = getProp(elemData,data.p,1,0,this.dynamicProperties,comp);
+            this.s = getProp(elemData,data.s,1,0,this.dynamicProperties,comp);
+            this.r = getProp(elemData,data.r,0,0,this.dynamicProperties,comp);
             if(this.dynamicProperties.length){
                 arr.push(this);
             }else{
@@ -588,7 +566,7 @@ var PropertyFactory = (function(){
             this.mdf = false;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getInterpolatedValue(frameNum);
+                this.dynamicProperties[i].getValue(frameNum);
                 if(this.dynamicProperties[i].mdf){
                     this.mdf = true;
                 }
@@ -618,38 +596,23 @@ var PropertyFactory = (function(){
                 this.oValue = o;
             }
         }
-        return function(elemData,data, arr){
+        return function(elemData,data, arr,comp){
             this.dynamicProperties = [];
             this.sValue = 0;
             this.eValue = 0;
             this.oValue = 0;
             this.mdf = false;
-            this.getInterpolatedValue = processKeys;
+            this.getValue = processKeys;
             this.k = false;
             this.isTrimming = false;
-            if(data.s.k.length){
-                this.s = new KeyframedValueProperty(elemData,data.s,0.01);
-                this.dynamicProperties.push(this.s);
-            }else{
-                this.s = new ValueProperty(data.s,0.01);
-            }
-            if(data.e.k.length){
-                this.e = new KeyframedValueProperty(elemData,data.e,0.01);
-                this.dynamicProperties.push(this.e);
-            }else{
-                this.e = new ValueProperty(data.e,0.01);
-            }
-            if(data.o.k.length){
-                this.o = new KeyframedValueProperty(elemData,data.o,0);
-                this.dynamicProperties.push(this.o);
-            }else{
-                this.o = new ValueProperty(data.o,0);
-            }
+            this.s = getProp(elemData,data.s,0,0.01,this.dynamicProperties,comp);
+            this.e = getProp(elemData,data.e,0,0.01,this.dynamicProperties,comp);
+            this.e = getProp(elemData,data.o,0,0,this.dynamicProperties,comp);
             if(this.dynamicProperties.length){
                 arr.push(this);
                 this.k = true;
             }else{
-                this.getInterpolatedValue(0,true);
+                this.getValue(0,true);
             }
         }
     }());
@@ -824,13 +787,13 @@ var PropertyFactory = (function(){
             this.lengths = new Array(len);
             this.k = prop.k ? true : this.k;
             this.totalLength = 0;
-            this.getInterpolatedValue = processKeys;
+            this.getValue = processKeys;
             this.addSegment = addSegment;
             this.getSegmentsLength = getSegmentsLength;
             if(this.k){
                 arr.push(this);
             }else{
-                this.getInterpolatedValue(0,true);
+                this.getValue(0,true);
             }
         }
     }());
@@ -915,11 +878,11 @@ var PropertyFactory = (function(){
                 this.k = prop.k ? true : this.k;
                 this.dataProps[i] = {n:data[i].n,p:prop};
             }
-            this.getInterpolatedValue = processKeys;
+            this.getValue = processKeys;
             if(this.k){
                 dynamicProperties.push(this);
             }else{
-                this.getInterpolatedValue(0,true);
+                this.getValue(0,true);
             }
 
         }

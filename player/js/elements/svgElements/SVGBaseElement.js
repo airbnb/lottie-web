@@ -1,5 +1,6 @@
-function SVGBaseElement(data,parentContainer,globalData, placeholder){
+function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.globalData = globalData;
+    this.comp = comp;
     this.data = data;
     this.matteElement = null;
     this.parentContainer = parentContainer;

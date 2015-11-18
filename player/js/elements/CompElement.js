@@ -1,5 +1,5 @@
-function ICompElement(data,parentContainer,globalData, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
+function ICompElement(data,parentContainer,globalData,comp, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -22,6 +22,7 @@ ICompElement.prototype.hide = function(){
 };
 
 ICompElement.prototype.prepareFrame = function(num){
+    this.renderedFrame = num;
     this.parent.prepareFrame.call(this,num);
     if(this.isVisible===false){
         return;
@@ -76,3 +77,6 @@ ICompElement.prototype.destroy = function(){
         this.elements[i].destroy();
     }
 };
+for (var attr in ExpressionComp.prototype) {
+    if (ExpressionComp.prototype.hasOwnProperty(attr)) ICompElement.prototype[attr] = ExpressionComp.prototype[attr];
+}

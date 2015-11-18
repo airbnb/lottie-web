@@ -18,7 +18,7 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getInterpolatedValue(num);
+        this.dynamicProperties[i].getValue(num);
     }
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);
@@ -49,8 +49,8 @@ BaseElement.prototype.init = function(){
     this.lastNum = -99999;
 
     this.finalTransform = {
-        op: PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties),
-        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties),
+        op: PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties,this.comp),
+        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties,this.comp),
         matMdf: false,
         opMdf: false,
         mat: new Matrix(),

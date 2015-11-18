@@ -1,6 +1,6 @@
-function IShapeElement(data,parentContainer,globalData, placeholder){
+function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.shapes = [];
-    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, IShapeElement);
 
