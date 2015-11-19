@@ -448,8 +448,9 @@ var ExpressionManager = (function(){
 
     function initiateExpression(data,comp,elem){
         var val = data.x;
+        console.log(val);
         var thisComp = this.comp;
-        var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
+        var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';console.log($bm_rt);this.v = $bm_rt;this.mdf=true;}';
         eval(fnStr);
         var numKeys = data.k.length;
         function nearestKey(time){
