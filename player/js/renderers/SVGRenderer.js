@@ -229,4 +229,3 @@ SVGRenderer.prototype.renderFrame = function(num){
 for (var attr in ExpressionComp.prototype) {
     if (ExpressionComp.prototype.hasOwnProperty(attr)) SVGRenderer.prototype[attr] = ExpressionComp.prototype[attr];
 }
-console.log(SVGRenderer.prototype);

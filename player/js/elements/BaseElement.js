@@ -60,6 +60,7 @@ BaseElement.prototype.init = function(){
     if(this.data.hasMask){
         this.addMasks(this.data);
     }
+    this.transform = this.finalTransform.mProp;
 };
 BaseElement.prototype.getType = function(){
     return this.type;

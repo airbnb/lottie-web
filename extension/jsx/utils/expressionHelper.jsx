@@ -2,6 +2,7 @@
 /*global $, bm_eventDispatcher, esprima, escodegen*/
 
 var bm_expressionHelper = (function () {
+    'use strict';
     var ob = {};
     var options = {
         tokens: true,
@@ -53,9 +54,22 @@ var bm_expressionHelper = (function () {
             var variableName;
             if (expression.left && expression.left.name) {
                 variableName = expression.left.name;
-                if (declared.indexOf(variableName) === -1 && undeclared.indexOf(variableName) === -1) {
-                    undeclared.push(variableName);
+                var i = 0, len = declared.length;
+                while (i < len) {
+                    if (declared[i] === variableName) {
+                        return;
+                    }
+                    i += 1;
                 }
+                i = 0;
+                len = declared.length;
+                while (i < len) {
+                    if (undeclared[i] === variableName) {
+                        return;
+                    }
+                    i += 1;
+                }
+                undeclared.push(variableName);
             }
         }
 
@@ -69,9 +83,15 @@ var bm_expressionHelper = (function () {
         }
 
         function addDeclaredVariable(variableName) {
-            if (declared.indexOf(variableName) === -1) {
-                declared.push(variableName);
+            bm_eventDispatcher.log(declared.length);
+            var i = 0, len = declared.length;
+            while (i < len) {
+                if (declared[i] === variableName) {
+                    return;
+                }
+                i += 1;
             }
+            declared.push(variableName);
         }
 
         if (!declared) {
@@ -277,7 +297,7 @@ var bm_expressionHelper = (function () {
         var i, len = declarations.length;
         for (i = 0; i < len; i += 1) {
             if (declarations[i].init) {
-                if(declarations[i].init.type === 'BinaryExpression') {
+                if (declarations[i].init.type === 'BinaryExpression') {
                     declarations[i].init = convertBinaryExpression(declarations[i].init);
                 }
             }

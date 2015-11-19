@@ -438,7 +438,63 @@ var ExpressionManager = (function(){
         var comp = new Composition(compData);
     }
 
+    function evaluate(val){
+        val = 'var fn = function(t,v){time=t;value=v;frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
+        console.log(val);
+        eval(val);
+        return fn;
+    }
+
+
+    function initiateExpression(data,comp,elem){
+        var val = data.x;
+        var thisComp = this.comp;
+        var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
+        eval(fnStr);
+        var numKeys = data.k.length;
+        function nearestKey(time){
+            var i = 0, len = data.k.length, ob = {};
+            for(i=0;i<len;i+=1){
+                if(time === data.k[i].t){
+                    ob.index = i;
+                    break;
+                }else if(time<data.k[i].t){
+                    ob.index = i;
+                    break;
+                }else if(time>data.k[i].t && i === len - 1){
+                    ob.index = len - 1;
+                    break;
+                }
+            }
+            return ob;
+        }
+        function key(ind){
+            var ob = {
+                time: data.k[ind].t
+            }
+            var arr;
+            if(ind === data.k.length - 1){
+                arr = data.k[ind-1].e;
+            }else{
+                arr = data.k[ind].s;
+            }
+            var i, len = arr.length;
+            for(i=0;i<len;i+=1){
+                ob[i] = arr[i];
+            }
+            return ob;
+        }
+        var time, value;
+        function execute(){
+            value = this.v;
+            time = this.comp.renderedFrame;
+            fn.bind(this)();
+        }
+        return execute;
+    }
+
     ob.iterateExpressions = iterateExpressions;
     ob.searchExpressions = searchExpressions;
+    ob.initiateExpression = initiateExpression;
     return ob;
 }());

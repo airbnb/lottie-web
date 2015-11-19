@@ -223,12 +223,13 @@ var PropertyFactory = (function(){
     }
 
     function checkExpressions(data){
-        this.getExpression = ExpressionManager.registerExpression;
+        this.getExpression = ExpressionManager.initiateExpression;
         if(data.x){
             this.k = true;
-            if(!this.getValue){
-                this.getValue = this.getExpression;
+            if(this.getValue) {
+                this.getPreValue = this.getValue;
             }
+            this.getValue = this.getExpression(data);
         }
     }
 
@@ -283,6 +284,12 @@ var PropertyFactory = (function(){
     }
 
     var TransformProperty = (function(){
+        function positionGetter(){
+            if(this.p.k){
+                this.p.getValue();
+            }
+            return this.p.v;
+        };
         function processKeys(){
             var i, len = this.dynamicProperties.length;
             this.mdf = false;
@@ -297,6 +304,7 @@ var PropertyFactory = (function(){
                 this.v.reset().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
             }
         }
+
         return function(elemData,data,arr, comp){
             this.dynamicProperties = [];
             this.mdf = false;
@@ -311,6 +319,7 @@ var PropertyFactory = (function(){
             }else{
                 this.v = this.v.translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
             }
+            Object.defineProperty(this, "position", { get: positionGetter});
         }
     }());
 
