@@ -155,6 +155,13 @@ var PropertyFactory = (function(){
                 }
             }
         }
+        if(this.x){
+            if(typeof this.v === 'number'){
+                this.pv = this.v;
+            }else{
+                this.pv = this.v;
+            }
+        }
         this.lastFrame = this.comp.renderedFrame;
     }
 
@@ -226,6 +233,7 @@ var PropertyFactory = (function(){
         this.getExpression = ExpressionManager.initiateExpression;
         if(data.x){
             this.k = true;
+            this.x = true;
             if(this.getValue) {
                 this.getPreValue = this.getValue;
             }
@@ -240,20 +248,27 @@ var PropertyFactory = (function(){
         this.comp = comp;
         this.k = false;
         checkExpressions.bind(this)(data);
+        if(this.x){
+            this.pv = data.k;
+        }
     }
 
     function MultiDimensionalProperty(data, mult, comp){
-        if(mult){
-            var i, len = data.k.length;
-            for(i = 0;i<len;i+=1){
-                data.k[i] *= mult;
-            }
-        }
-        this.v = data.k;
         this.mdf = false;
         this.comp = comp;
         this.k = false;
         checkExpressions.bind(this)(data);
+        this.v = new Array(data.k.length);
+        if(this.x){
+            this.pv = new Array(data.k.length);
+        }
+        var i, len = data.k.length;
+        for(i = 0;i<len;i+=1){
+            this.v[i] = mult ? data.k[i] * mult : data.k[i];
+            if(this.pv){
+                this.pv[i] = data.k[i];
+            }
+        }
     }
 
     function KeyframedValueProperty(elemData, data, mult, comp){
@@ -264,10 +279,12 @@ var PropertyFactory = (function(){
         this.mult = mult;
         this.comp = comp;
         this.lastFrame = initFrame;
-        //this.lastFrame = data[data.length - 1].t;
-        //this.v = mult ?  data[0].s[0]*mult : data[0].s[0];
+        this.v = data[0].s[0];
         this.getValue = getValue;
         checkExpressions.bind(this)(data);
+        if(this.x){
+            this.pv = data[0].s[0];
+        }
     }
 
     function KeyframedMultidimensionalProperty(elemData, data, mult, comp){
@@ -281,6 +298,9 @@ var PropertyFactory = (function(){
         this.lastValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;
         checkExpressions.bind(this)(data);
+        if(this.x){
+            this.pv = new Array(data.k[0].s.length);
+        }
     }
 
     var TransformProperty = (function(){

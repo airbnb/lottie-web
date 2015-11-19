@@ -438,19 +438,12 @@ var ExpressionManager = (function(){
         var comp = new Composition(compData);
     }
 
-    function evaluate(val){
-        val = 'var fn = function(t,v){time=t;value=v;frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
-        console.log(val);
-        eval(val);
-        return fn;
-    }
-
 
     function initiateExpression(data,comp,elem){
         var val = data.x;
         console.log(val);
         var thisComp = this.comp;
-        var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';console.log($bm_rt);this.v = $bm_rt;this.mdf=true;}';
+        var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
         eval(fnStr);
         var numKeys = data.k.length;
         function nearestKey(time){
@@ -470,6 +463,7 @@ var ExpressionManager = (function(){
             return ob;
         }
         function key(ind){
+            ind -= 1;
             var ob = {
                 time: data.k[ind].t
             }
@@ -487,6 +481,9 @@ var ExpressionManager = (function(){
         }
         var time, value;
         function execute(){
+            if(this.getPreValue){
+                this.getPreValue();
+            }
             value = this.v;
             time = this.comp.renderedFrame;
             fn.bind(this)();
