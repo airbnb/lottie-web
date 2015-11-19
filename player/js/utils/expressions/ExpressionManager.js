@@ -445,6 +445,7 @@ var ExpressionManager = (function(){
         var thisComp = this.comp;
         var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
         eval(fnStr);
+        var bindedFn = fn.bind(this);
         var numKeys = data.k.length;
         function nearestKey(time){
             var i = 0, len = data.k.length, ob = {};
@@ -486,7 +487,7 @@ var ExpressionManager = (function(){
             }
             value = this.v;
             time = this.comp.renderedFrame;
-            fn.bind(this)();
+            bindedFn();
         }
         return execute;
     }
