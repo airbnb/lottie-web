@@ -165,8 +165,9 @@ var PropertyFactory = (function(){
         this.lastFrame = this.comp.renderedFrame;
     }
 
-    function interpolateShape(frameNum) {
+    function interpolateShape() {
         this.mdf = false;
+        var frameNum = this.comp.renderedFrame;
         if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
 
         }else if(frameNum < this.keyframes[0].t-this.offsetTime){
@@ -279,11 +280,11 @@ var PropertyFactory = (function(){
         this.mult = mult;
         this.comp = comp;
         this.lastFrame = initFrame;
-        this.v = data[0].s[0];
+        this.v = data.k[0].s[0];
         this.getValue = getValue;
         checkExpressions.bind(this)(elemData,data);
         if(this.x){
-            this.pv = data[0].s[0];
+            this.pv = data.k[0].s[0];
         }
     }
 
@@ -344,11 +345,15 @@ var PropertyFactory = (function(){
     }());
 
     function getProp(elemData,data,type, mult, arr, comp) {
+        if(!comp){
+            //console.log(new Error().stack);
+            //console.log(comp);
+        }
         var p;
         if(type === 2){
             p = new TransformProperty(elemData, data, arr, comp);
         }else if(type === 7){
-            p = new TrimProperty(elemData, data, arr);
+            p = new TrimProperty(elemData, data, arr, comp);
         }else if(!data.k.length){
             p = new ValueProperty(elemData,data, mult, comp);
         }else if(typeof(data.k[0]) === 'number'){
@@ -369,7 +374,8 @@ var PropertyFactory = (function(){
         return p;
     }
 
-    function ShapeProperty(data, type){
+    function ShapeProperty(data, type, comp){
+        this.comp = comp;
         this.k = false;
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
@@ -377,7 +383,8 @@ var PropertyFactory = (function(){
         this.v = type === 3 ? data.pt.k : data.ks.k;
     }
 
-    function KeyframedShapeProperty(elemData,data,arr,type){
+    function KeyframedShapeProperty(elemData,data,arr,type, comp){
+        this.comp = comp;
         this.offsetTime = elemData.st;
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
@@ -460,6 +467,7 @@ var PropertyFactory = (function(){
             this.dynamicProperties = [];
             data.closed = true;
             this.closed = true;
+            this.comp = comp;
             this.mdf = false;
             this.getValue = processKeys;
             this.convertEllToPath = convertEllToPath;
@@ -571,6 +579,7 @@ var PropertyFactory = (function(){
                 o: new Array(8),
                 c: true
             };
+            this.comp = comp;
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
@@ -634,9 +643,10 @@ var PropertyFactory = (function(){
             this.getValue = processKeys;
             this.k = false;
             this.isTrimming = false;
+            this.comp = comp;
             this.s = getProp(elemData,data.s,0,0.01,this.dynamicProperties,comp);
             this.e = getProp(elemData,data.e,0,0.01,this.dynamicProperties,comp);
-            this.e = getProp(elemData,data.o,0,0,this.dynamicProperties,comp);
+            this.o = getProp(elemData,data.o,0,0,this.dynamicProperties,comp);
             if(this.dynamicProperties.length){
                 arr.push(this);
                 this.k = true;
@@ -785,10 +795,11 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(prop,trims,arr) {
+        return function(prop,trims,arr, comp) {
             this.trims  = [];
             this.k = false;
             this.mdf = false;
+            this.comp = comp;
             this.pathStarted = false;
             this.segments = [
                 {s:0,e:0,vl:true},{s:0,e:0,vl:false}
@@ -827,19 +838,19 @@ var PropertyFactory = (function(){
         }
     }());
 
-    function getShapeProp(elemData,data,type, arr, trims){
+    function getShapeProp(elemData,data,type, arr, trims, comp){
         var prop;
         if(type === 3 || type === 4){
             var keys = type === 3 ? data.pt.k : data.ks.k;
             if(keys.length){
-                prop = new KeyframedShapeProperty(elemData, data, arr, type);
+                prop = new KeyframedShapeProperty(elemData, data, arr, type, comp);
             }else{
-                prop = new ShapeProperty(data, type, arr);
+                prop = new ShapeProperty(data, type, arr, comp);
             }
         }else if(type === 5){
-            prop = new RectShapeProperty(elemData, data, arr);
+            prop = new RectShapeProperty(elemData, data, arr, comp);
         }else if(type === 6){
-            prop = new EllShapeProperty(elemData, data, arr);
+            prop = new EllShapeProperty(elemData, data, arr, comp);
         }
         var hasTrims = false;
         if(trims){
@@ -889,7 +900,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(elemData, data,renderer, dynamicProperties){
+        return function(elemData, data,renderer, dynamicProperties, comp){
             this.dataProps = new Array(data.length);
             this.renderer = renderer;
             this.mdf = false;
@@ -903,7 +914,7 @@ var PropertyFactory = (function(){
             this.dashoffset = 0;
             var i, len = data.length, prop;
             for(i=0;i<len;i+=1){
-                prop = getProp(elemData,data[i].v,0, 0, dynamicProperties);
+                prop = getProp(elemData,data[i].v,0, 0, dynamicProperties, comp);
                 this.k = prop.k ? true : this.k;
                 this.dataProps[i] = {n:data[i].n,p:prop};
             }

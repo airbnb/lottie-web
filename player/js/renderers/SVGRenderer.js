@@ -24,7 +24,7 @@ SVGRenderer.prototype.createItem = function(layer,parentContainer,comp, placehol
         case 99:
             return this.createPlaceHolder(layer,parentContainer);
     }
-    return this.createBase(layer,parentContainer);
+    return this.createBase(layer,parentContainer,comp);
 };
 
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
@@ -85,8 +85,8 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     }
 };
 
-SVGRenderer.prototype.createBase = function (data,parentContainer, placeholder) {
-    return new SVGBaseElement(data, parentContainer,this.globalData, placeholder);
+SVGRenderer.prototype.createBase = function (data,parentContainer,comp, placeholder) {
+    return new SVGBaseElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
 SVGRenderer.prototype.createPlaceHolder = function (data,parentContainer) {

@@ -47,7 +47,6 @@ BaseElement.prototype.init = function(){
     this.dynamicProperties = [];
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
-
     this.finalTransform = {
         op: PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties,this.comp),
         mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties,this.comp),
