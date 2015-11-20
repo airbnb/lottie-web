@@ -83,7 +83,6 @@ var bm_expressionHelper = (function () {
         }
 
         function addDeclaredVariable(variableName) {
-            bm_eventDispatcher.log(declared.length);
             var i = 0, len = declared.length;
             while (i < len) {
                 if (declared[i] === variableName) {
@@ -191,6 +190,11 @@ var bm_expressionHelper = (function () {
                 handleForStatement(body[i]);
             } else if (body[i].type === 'VariableDeclaration') {
                 handleVariableDeclaration(body[i]);
+            } else if (body[i].type === 'ReturnStatement') {
+                handleReturnStatement(body[i]);
+            } else {
+                bm_eventDispatcher.log(body[i].type);
+                bm_eventDispatcher.log(body[i]);
             }
         }
     }
@@ -206,7 +210,7 @@ var bm_expressionHelper = (function () {
         case "BinaryExpression":
             return convertBinaryExpression(element);
         default:
-            bm_eventDispatcher.log('rttp: ', element);
+            bm_eventDispatcher.log('es: ', element);
             return element;
         }
     }
@@ -289,6 +293,12 @@ var bm_expressionHelper = (function () {
             } else if (forStatement.body.type === 'ExpressionStatement') {
                 handleExpressionStatement(forStatement.body);
             }
+        }
+    }
+
+    function handleReturnStatement(returnStatement) {
+        if (returnStatement.argument) {
+            returnStatement.argument = getBinaryElement(returnStatement.argument);
         }
     }
 

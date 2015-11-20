@@ -229,7 +229,7 @@ var PropertyFactory = (function(){
         this.lastFrame = frameNum;
     }
 
-    function checkExpressions(data){
+    function checkExpressions(elemData,data){
         this.getExpression = ExpressionManager.initiateExpression;
         if(data.x){
             this.k = true;
@@ -237,27 +237,27 @@ var PropertyFactory = (function(){
             if(this.getValue) {
                 this.getPreValue = this.getValue;
             }
-            this.getValue = this.getExpression(data);
+            this.getValue = this.getExpression(elemData,data);
         }
     }
 
-    function ValueProperty(data, mult, comp){
+    function ValueProperty(elemData,data, mult, comp){
         mult = mult ? mult : 1;
         this.v = data.k * mult;
         this.mdf = false;
         this.comp = comp;
         this.k = false;
-        checkExpressions.bind(this)(data);
+        checkExpressions.bind(this)(elemData,data);
         if(this.x){
             this.pv = data.k;
         }
     }
 
-    function MultiDimensionalProperty(data, mult, comp){
+    function MultiDimensionalProperty(elemData,data, mult, comp){
         this.mdf = false;
         this.comp = comp;
         this.k = false;
-        checkExpressions.bind(this)(data);
+        checkExpressions.bind(this)(elemData,data);
         this.v = new Array(data.k.length);
         if(this.x){
             this.pv = new Array(data.k.length);
@@ -281,7 +281,7 @@ var PropertyFactory = (function(){
         this.lastFrame = initFrame;
         this.v = data[0].s[0];
         this.getValue = getValue;
-        checkExpressions.bind(this)(data);
+        checkExpressions.bind(this)(elemData,data);
         if(this.x){
             this.pv = data[0].s[0];
         }
@@ -297,7 +297,7 @@ var PropertyFactory = (function(){
         this.v = new Array(data.k[0].s.length);
         this.lastValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;
-        checkExpressions.bind(this)(data);
+        checkExpressions.bind(this)(elemData,data);
         if(this.x){
             this.pv = new Array(data.k[0].s.length);
         }
@@ -350,9 +350,9 @@ var PropertyFactory = (function(){
         }else if(type === 7){
             p = new TrimProperty(elemData, data, arr);
         }else if(!data.k.length){
-            p = new ValueProperty(data, mult, comp);
+            p = new ValueProperty(elemData,data, mult, comp);
         }else if(typeof(data.k[0]) === 'number'){
-            p = new MultiDimensionalProperty(data, mult, comp);
+            p = new MultiDimensionalProperty(elemData,data, mult, comp);
         }else{
             switch(type){
                 case 0:

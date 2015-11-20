@@ -439,9 +439,9 @@ var ExpressionManager = (function(){
     }
 
 
-    function initiateExpression(data,comp,elem){
+    function initiateExpression(elemData,data){
         var val = data.x;
-        console.log(val);
+        var transform = this.comp.layer(elemData.nm).transform;
         var thisComp = this.comp;
         var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
         eval(fnStr);
