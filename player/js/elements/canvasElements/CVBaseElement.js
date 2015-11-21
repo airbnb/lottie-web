@@ -1,6 +1,7 @@
-function CVBaseElement(data,globalData){
+function CVBaseElement(data, comp,globalData){
     this.globalData = globalData;
     this.data = data;
+    this.comp = comp;
     this.canvasContext = globalData.canvasContext;
     this.init();
 }
