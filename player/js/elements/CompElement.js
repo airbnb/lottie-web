@@ -22,7 +22,6 @@ ICompElement.prototype.hide = function(){
 };
 
 ICompElement.prototype.prepareFrame = function(num){
-    this.renderedFrame = num;
     this.parent.prepareFrame.call(this,num);
     if(this.isVisible===false){
         return;
@@ -34,6 +33,7 @@ ICompElement.prototype.prepareFrame = function(num){
             timeRemapped = this.data.op - 1;
         }
     }
+    this.renderedFrame = timeRemapped;
     var i,len = this.elements.length;
     for( i = 0; i < len; i+=1 ){
         this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);

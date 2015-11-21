@@ -4,8 +4,9 @@ var PropertyFactory = (function(){
 
     function getValue(){
         this.mdf = false;
-        var frameNum = this.comp.renderedFrame;
-        if(frameNum === this.lastFrame || this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))){
+        var frameNum = this.comp.renderedFrame - this.offsetTime;
+        if(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime)))){
+
         }else{
             var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
             var keyData, nextKeyData;
@@ -162,12 +163,12 @@ var PropertyFactory = (function(){
                 this.pv = this.v;
             }
         }
-        this.lastFrame = this.comp.renderedFrame;
+        this.lastFrame = frameNum;
     }
 
     function interpolateShape() {
         this.mdf = false;
-        var frameNum = this.comp.renderedFrame;
+        var frameNum = this.comp.renderedFrame - this.offsetTime;
         if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
 
         }else if(frameNum < this.keyframes[0].t-this.offsetTime){
@@ -345,10 +346,6 @@ var PropertyFactory = (function(){
     }());
 
     function getProp(elemData,data,type, mult, arr, comp) {
-        if(!comp){
-            //console.log(new Error().stack);
-            //console.log(comp);
-        }
         var p;
         if(type === 2){
             p = new TransformProperty(elemData, data, arr, comp);
@@ -648,7 +645,6 @@ var PropertyFactory = (function(){
             this.e = getProp(elemData,data.e,0,0.01,this.dynamicProperties,comp);
             this.o = getProp(elemData,data.o,0,0,this.dynamicProperties,comp);
             if(this.dynamicProperties.length){
-                arr.push(this);
                 this.k = true;
             }else{
                 this.getValue(0,true);

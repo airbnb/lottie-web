@@ -114,7 +114,7 @@ function MaskElement(data,element,globalData) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            prop:PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties)
+            prop:PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties,null,this.element.comp)
         };
         if(!this.viewData[i].prop.k){
             this.drawPath(properties[i],this.viewData[i].prop.v,this.viewData[i]);

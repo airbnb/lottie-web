@@ -182,11 +182,8 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     }
 
     this.hidden = false;
-    if(this.data.hasMask){
-        this.renderShape(this.transformHelper,null,null,true);
-    }else{
-        this.renderShape(this.finalTransform,null,null,true);
-    }
+    var tr = this.data.hasMask ? this.transformHelper : this.finalTransform;
+    this.renderShape(tr,null,null,true);
 };
 
 IShapeElement.prototype.hide = function(){
@@ -287,7 +284,6 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
         len = pathNodes.v.length;
         var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
         if(redraw) {
-            console.log(groupTransform.mat.props);
             var stops = pathNodes.s ? pathNodes.s : [];
             for (i = 1; i < len; i += 1) {
                 if (stops[i - 1]) {
