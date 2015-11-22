@@ -439,14 +439,20 @@ var ExpressionManager = (function(){
     }
 
 
-    function initiateExpression(elemData,data){
+    function initiateExpression(elem,data){
         var val = data.x;
-        var transform = this.comp.layer(elemData.nm).transform;
-        var thisComp = this.comp;
-        var fnStr = 'var fn = function(){frameN = Math.round(time*frameRate);'+val+';this.v = $bm_rt;this.mdf=true;}';
+        var transform;
+        var effect;
+        var thisComp = elem.comp;
+        var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;this.mdf=true;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k.length;
+
+        function effect(nm){
+            return elem.effectsManager.getEffect(nm);
+        }
+
         function nearestKey(time){
             var i = 0, len = data.k.length, ob = {};
             for(i=0;i<len;i+=1){
@@ -482,12 +488,25 @@ var ExpressionManager = (function(){
         }
         var time, value;
         function execute(){
+            if(!transform){
+                transform = elem.transform;
+            }
             if(this.getPreValue){
                 this.getPreValue();
             }
-            value = this.v;
+            value = this.pv;
             time = this.comp.renderedFrame;
             bindedFn();
+            if(this.mult){
+                if(typeof this.v === 'number'){
+                    this.v *= this.mult;
+                }else{
+                    var i, len = this.v.length;
+                    for(i = 0; i < len; i += 1){
+                        this.v[i] *= this.mult;
+                    }
+                }
+            }
         }
         return execute;
     }

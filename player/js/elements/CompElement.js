@@ -2,7 +2,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
 }
 createElement(SVGBaseElement, ICompElement);

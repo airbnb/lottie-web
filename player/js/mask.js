@@ -14,7 +14,7 @@ function MaskElement(data,element,globalData) {
     var i, len = this.masksProperties.length;
 
 
-    var path, properties = this.data.masksProperties;
+    var path, properties = this.masksProperties;
     var count = 0;
     var currentMasks = [];
     var j, jLen;
@@ -114,7 +114,7 @@ function MaskElement(data,element,globalData) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            prop:PropertyFactory.getShapeProp(this.data,properties[i],3,this.dynamicProperties,null,this.element.comp)
+            prop:PropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
         };
         if(!this.viewData[i].prop.k){
             this.drawPath(properties[i],this.viewData[i].prop.v,this.viewData[i]);
@@ -136,38 +136,38 @@ function MaskElement(data,element,globalData) {
     defs.appendChild(this.maskElement);
 };
 
-MaskElement.prototype.prepareFrame = function(num){
+MaskElement.prototype.prepareFrame = function(){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
+        this.dynamicProperties[i].getValue();
 
     }
 };
 
 MaskElement.prototype.renderFrame = function () {
-    var i, len = this.data.masksProperties.length;
+    var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.data.masksProperties[i].mode !== 'n' && (this.viewData[i].prop.mdf || this.firstFrame)){
-            this.drawPath(this.data.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
+        if(this.masksProperties[i].mode !== 'n' && (this.viewData[i].prop.mdf || this.firstFrame)){
+            this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
             if(this.storedData[i].expan){
                 feMorph = this.storedData[i].expan;
-                if(this.data.masksProperties[i].expansion[num] < 0){
+                if(this.masksProperties[i].expansion[num] < 0){
                     if(this.storedData[i].lastOperator !== 'erode'){
                         this.storedData[i].lastOperator = 'erode';
                         this.storedData[i].elem.setAttribute('filter','url(#'+this.storedData[i].filterId+')');
                     }
-                    if(this.storedData[i].lastRadius !== this.data.masksProperties[i].expansion[num]){
-                        feMorph.setAttribute('radius',-this.data.masksProperties[i].expansion[num]);
-                        this.storedData[i].lastRadius = this.data.masksProperties[i].expansion[num];
+                    if(this.storedData[i].lastRadius !== this.masksProperties[i].expansion[num]){
+                        feMorph.setAttribute('radius',-this.masksProperties[i].expansion[num]);
+                        this.storedData[i].lastRadius = this.masksProperties[i].expansion[num];
                     }
                 }else{
                     if(this.storedData[i].lastOperator !== 'dilate'){
                         this.storedData[i].lastOperator = 'dilate';
                         this.storedData[i].elem.setAttribute('filter',null);;
                     }
-                    if(this.storedData[i].lastRadius !== this.data.masksProperties[i].expansion[num]){
-                        this.storedData[i].elem.setAttribute('stroke-width', this.data.masksProperties[i].expansion[num]*2)
-                        this.storedData[i].lastRadius = this.data.masksProperties[i].expansion[num];
+                    if(this.storedData[i].lastRadius !== this.masksProperties[i].expansion[num]){
+                        this.storedData[i].elem.setAttribute('stroke-width', this.masksProperties[i].expansion[num]*2)
+                        this.storedData[i].lastRadius = this.masksProperties[i].expansion[num];
                     }
 
                 }

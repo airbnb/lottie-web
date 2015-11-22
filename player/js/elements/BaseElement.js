@@ -47,19 +47,23 @@ BaseElement.prototype.init = function(){
     this.dynamicProperties = [];
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
+    if(this.data.ef){
+        this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
+        this.effect = this.effectsManager.getEffect.bind(this.effectsManager);
+    }
     this.finalTransform = {
-        op: PropertyFactory.getProp(this.data,this.data.ks.o,0,0.01,this.dynamicProperties,this.comp),
-        mProp: PropertyFactory.getProp(this.data,this.data.ks,2,null,this.dynamicProperties,this.comp),
+        op: PropertyFactory.getProp(this,this.data.ks.o,0,0.01,this.dynamicProperties),
+        mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
         matMdf: false,
         opMdf: false,
         mat: new Matrix(),
         opacity: 1
     };
+    this.transform = this.finalTransform.mProp;
     this.createElements();
     if(this.data.hasMask){
         this.addMasks(this.data);
     }
-    this.transform = this.finalTransform.mProp;
 };
 BaseElement.prototype.getType = function(){
     return this.type;

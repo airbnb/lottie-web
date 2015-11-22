@@ -37,6 +37,8 @@
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="js/mask.js"></script>
+    <script src="js/effects/SliderEffect.js"></script>
+    <script src="js/effects.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/PlaceHolderElement.js"></script>
@@ -68,11 +70,11 @@
 
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/bm/data_expressions.json'
+        path: 'exports/render'
     };
     var anim = bodymovin.loadAnimation(animData);
 </script>

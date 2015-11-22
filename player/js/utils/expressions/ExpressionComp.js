@@ -16,6 +16,7 @@ function ExpressionComp(){}
             if(this.layers[i].nm === nm){
                 return this.elements[i];
             }
+            i += 1;
         }
     }
 }());

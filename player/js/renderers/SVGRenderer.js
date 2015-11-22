@@ -133,6 +133,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
+    this.globalData.frameId = 0;
     this.globalData.compSize = {
         w: animData.w,
         h: animData.h
@@ -217,6 +218,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     /*console.log('-------');
     console.log('FRAME ',num);*/
     this.globalData.frameNum = num;
+    this.globalData.frameId += 1;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
         this.elements[i].prepareFrame(num - this.layers[i].st);
