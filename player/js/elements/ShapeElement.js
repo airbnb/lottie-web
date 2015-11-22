@@ -26,6 +26,7 @@ IShapeElement.prototype.createElements = function(){
     this.parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
     styleUnselectableDiv(this.layerElement);
+    this.buildExpressionInterface();
     //this.mainShape = new ShapeItemElement(this.data,this.layerElement,this.parentContainer,this.placeholder,this.dynamicProperties,this.globalData);
 };
 
@@ -71,9 +72,8 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
                         pathElement.style.strokeDasharray = d.dasharray;
                         ////pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
                         pathElement.style.strokeDashoffset = d.dashoffset;
-                    }else{
-                        data[i].d = d;
                     }
+                    data[i].d = d;
                 }
 
             }else{
@@ -383,7 +383,7 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData, groupTransfo
     //TODO fix dashes
     var d = viewData.d;
     var dasharray,dashoffset;
-    if(d){
+    if(d && d.k){
         if(d.mdf || this.firstFrame){
             ////styleElem.pathElement.setAttribute('stroke-dasharray', d.dasharray);
             styleElem.pathElement.style.strokeDasharray = d.dasharray;
@@ -412,3 +412,6 @@ IShapeElement.prototype.destroy = function(){
     this.parentContainer = null;
     this.placeholder = null;
 };
+for (var attr in ShapeInterface.prototype) {
+    if (ShapeInterface.prototype.hasOwnProperty(attr)) IShapeElement.prototype[attr] = ShapeInterface.prototype[attr];
+}

@@ -44,12 +44,15 @@ CanvasRenderer.prototype.createItem = function(layer, comp){
         default:
             return this.createBase(layer, comp);
     }
-    return this.createBase(layer,parentContainer);
+    return this.createBase(layer,comp);
 };
 
 CanvasRenderer.prototype.buildItems = function(layers,elements, comp){
     if(!elements){
         elements = this.elements;
+    }
+    if(!comp){
+        comp = this;
     }
     var i, len = layers.length;
     for (i = 0; i < len; i++) {
@@ -204,6 +207,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.compWidth = animData.w;
     this.globalData.compHeight = animData.h;
     this.globalData.frameRate = animData.fr;
+    this.globalData.frameId = 0;
     this.layers = animData.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.w;
@@ -299,6 +303,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     }
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem.firstFrame;
+    this.globalData.frameId += 1;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
         this.canvasContext.canvas.width = this.canvasContext.canvas.width;
@@ -323,3 +328,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
         this.restore();
     }
 };
+
+for (var attr in ExpressionComp.prototype) {
+    if (ExpressionComp.prototype.hasOwnProperty(attr)) CanvasRenderer.prototype[attr] = ExpressionComp.prototype[attr];
+}

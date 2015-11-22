@@ -9,9 +9,9 @@ function CVMaskElement(data,element,globalData){
     this.viewData = new Array(this.masksProperties.length);
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        this.viewData[i] = PropertyFactory.getShapeProp(this.data,this.masksProperties[i],3,this.dynamicProperties,null,this.element.comp)
+        this.viewData[i] = PropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
     }
-};
+}
 
 CVMaskElement.prototype.prepareFrame = function(num){
     var i, len = this.dynamicProperties.length;

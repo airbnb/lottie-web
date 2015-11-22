@@ -39,23 +39,23 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                 elements: []
             };
             data[i] = {};
-            data[i].c = PropertyFactory.getProp(this.data,arr[i].c,1,null,dynamicProperties, this.comp);
+            data[i].c = PropertyFactory.getProp(this,arr[i].c,1,null,dynamicProperties);
             if(!data[i].c.k){
                 styleElem.co = 'rgb('+bm_floor(data[i].c.v[0])+','+bm_floor(data[i].c.v[1])+','+bm_floor(data[i].c.v[2])+')';
             }
-            data[i].o = PropertyFactory.getProp(this.data,arr[i].o,0,0.01,dynamicProperties, this.comp);
+            data[i].o = PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties);
             if(arr[i].ty == 'st') {
                 styleElem.lc = this.lcEnum[arr[i].lc] || 'round';
                 styleElem.lj = this.ljEnum[arr[i].lj] || 'round';
                 if(arr[i].lj == 1) {
                     styleElem.ml = arr[i].ml;
                 }
-                data[i].w = PropertyFactory.getProp(this.data,arr[i].w,0,null,dynamicProperties, this.comp);
+                data[i].w = PropertyFactory.getProp(this,arr[i].w,0,null,dynamicProperties);
                 if(!data[i].w.k){
                     styleElem.wi = data[i].w.v;
                 }
                 if(arr[i].d){
-                    var d = PropertyFactory.getDashProp(this.data,arr[i].d,'canvas',dynamicProperties, this.comp);
+                    var d = PropertyFactory.getDashProp(this,arr[i].d,'canvas',dynamicProperties);
                     data[i].d = d;
                     if(!data[i].d.k){
                         styleElem.da = data[i].d.dasharray;
@@ -79,8 +79,8 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                     opacity: 1,
                     matMdf:false,
                     opMdf:false,
-                    op: PropertyFactory.getProp(this.data,arr[i].o,0,0.01,dynamicProperties, this.comp),
-                    mProps: PropertyFactory.getProp(this.data,arr[i],2,null,dynamicProperties, this.comp)
+                    op: PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties),
+                    mProps: PropertyFactory.getProp(this,arr[i],2,null,dynamicProperties)
                 },
                 elements: []
             };
@@ -96,7 +96,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
             }else if(arr[i].ty == 'el'){
                 ty = 6;
             }
-            data[i].sh = PropertyFactory.getShapeProp(this.data,arr[i],ty,dynamicProperties, addedTrims, this.comp);
+            data[i].sh = PropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims);
             jLen = this.stylesList.length;
             var hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){
@@ -114,7 +114,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
         }else if(arr[i].ty == 'tm'){
             var trimOb = {
                 closed: false,
-                trimProp: PropertyFactory.getProp(this.data,arr[i],7,null,dynamicProperties, this.comp)
+                trimProp: PropertyFactory.getProp(this,arr[i],7,null,dynamicProperties)
             };
             addedTrims.push(trimOb);
             ownTrims.push(trimOb);

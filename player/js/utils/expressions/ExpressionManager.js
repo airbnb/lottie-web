@@ -441,8 +441,7 @@ var ExpressionManager = (function(){
 
     function initiateExpression(elem,data){
         var val = data.x;
-        var transform;
-        var effect;
+        var transform,content,effect;
         var thisComp = elem.comp;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;this.mdf=true;}';
         eval(fnStr);
@@ -491,6 +490,9 @@ var ExpressionManager = (function(){
             if(!transform){
                 transform = elem.transform;
             }
+            if(!content){
+                content = elem.content.bind(elem);
+            }
             if(this.getPreValue){
                 this.getPreValue();
             }
@@ -501,6 +503,7 @@ var ExpressionManager = (function(){
                 if(typeof this.v === 'number'){
                     this.v *= this.mult;
                 }else{
+                    console.log(this);
                     var i, len = this.v.length;
                     for(i = 0; i < len; i += 1){
                         this.v[i] *= this.mult;

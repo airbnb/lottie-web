@@ -180,9 +180,11 @@ var PropertyFactory = (function(){
         }else if(frameNum < this.keyframes[0].t-this.offsetTime){
             this.mdf = true;
             this.v = this.keyframes[0].s[0];
+            this.pv = this.keyframes[0].s[0];
         }else if(frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
             this.mdf = true;
             this.v = this.keyframes[this.keyframes.length - 2].h === 1 ? this.keyframes[this.keyframes.length - 2].s[0] : this.keyframes[this.keyframes.length - 2].e[0];
+            this.pv = this.keyframes[this.keyframes.length - 2].h === 1 ? this.keyframes[this.keyframes.length - 2].s[0] : this.keyframes[this.keyframes.length - 2].e[0];
         }else{
             this.mdf = true;
             var i = 0,len = this.keyframes.length- 1, dir = 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
@@ -217,22 +219,27 @@ var PropertyFactory = (function(){
                     perc = fnc('',(frameNum)-(keyData.t-this.offsetTime),0,1,(nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime));
                 }
             }
-            jLen = this.shapeData.i.length;
+            jLen = this.v.i.length;
             kLen = keyData.s[0].i[0].length;
             for(j=0;j<jLen;j+=1){
                 for(k=0;k<kLen;k+=1){
                     if(keyData.h === 1){
-                        this.shapeData.i[j][k] = keyData.s[0].i[j][k];
-                        this.shapeData.o[j][k] = keyData.s[0].o[j][k];
-                        this.shapeData.v[j][k] = keyData.s[0].v[j][k];
+                        this.v.i[j][k] = keyData.s[0].i[j][k];
+                        this.v.o[j][k] = keyData.s[0].o[j][k];
+                        this.v.v[j][k] = keyData.s[0].v[j][k];
+                        this.pv.i[j][k] = keyData.s[0].i[j][k];
+                        this.pv.o[j][k] = keyData.s[0].o[j][k];
+                        this.pv.v[j][k] = keyData.s[0].v[j][k];
                     }else{
-                        this.shapeData.i[j][k] = keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc;
-                        this.shapeData.o[j][k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
-                        this.shapeData.v[j][k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
+                        this.v.i[j][k] = keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc;
+                        this.v.o[j][k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
+                        this.v.v[j][k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
+                        this.pv.i[j][k] = keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc;
+                        this.pv.o[j][k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
+                        this.pv.v[j][k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
                     }
                 }
             }
-            this.v = this.shapeData;
         }
         this.lastFrame = frameNum;
     }
@@ -399,16 +406,18 @@ var PropertyFactory = (function(){
         return p;
     }
 
-    function ShapeProperty(elem, data, type, arr){
+    function ShapeProperty(elem, data, type){
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
         this.shapeData = data.ks;
         this.v = type === 3 ? data.pt.k : data.ks.k;
+        this.pv = this.v;
+        checkExpressions.bind(this)(elem,data);
     }
 
-    function KeyframedShapeProperty(elem,data,arr,type){
+    function KeyframedShapeProperty(elem,data,type){
         this.comp = elem.comp;
         this.offsetTime = elem.data.st;
         this.getValue = interpolateShape;
@@ -417,18 +426,25 @@ var PropertyFactory = (function(){
         this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
-        this.shapeData = {
+        this.v = {
+            i: new Array(len),
+            o: new Array(len),
+            v: new Array(len)
+        };
+        this.pv = {
             i: new Array(len),
             o: new Array(len),
             v: new Array(len)
         };
         for(i=0;i<len;i+=1){
-            this.shapeData.i[i] = new Array(jLen);
-            this.shapeData.o[i] = new Array(jLen);
-            this.shapeData.v[i] = new Array(jLen);
+            this.v.i[i] = new Array(jLen);
+            this.v.o[i] = new Array(jLen);
+            this.v.v[i] = new Array(jLen);
+            this.pv.i[i] = new Array(jLen);
+            this.pv.o[i] = new Array(jLen);
+            this.pv.v[i] = new Array(jLen);
         }
         this.lastFrame = initFrame;
-        arr.push(this);
     }
 
     var EllShapeProperty = (function(){
@@ -485,7 +501,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(elem,data,arr) {
+        return function(elem,data) {
             this.v = {
                 v: new Array(4),
                 i: new Array(4),
@@ -505,7 +521,7 @@ var PropertyFactory = (function(){
             this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
             this.s = getProp(elem,data.s,1,0,this.dynamicProperties);
             if(this.dynamicProperties.length){
-                arr.push(this);
+                this.k = true;
             }else{
                 this.convertEllToPath();
             }
@@ -607,7 +623,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(elem,data,arr) {
+        return function(elem,data) {
             this.v = {
                 v: new Array(8),
                 i: new Array(8),
@@ -628,7 +644,7 @@ var PropertyFactory = (function(){
             this.s = getProp(elem,data.s,1,0,this.dynamicProperties);
             this.r = getProp(elem,data.r,0,0,this.dynamicProperties);
             if(this.dynamicProperties.length){
-                arr.push(this);
+                this.k = true;
             }else{
                 this.convertRectToPath();
             }
@@ -675,7 +691,7 @@ var PropertyFactory = (function(){
                 this.oValue = o;
             }
         }
-        return function(elem,data, arr){
+        return function(elem,data){
             this.elem = elem;
             this.frameId = -1;
             this.dynamicProperties = [];
@@ -837,7 +853,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(prop,trims,arr) {
+        return function(prop,trims) {
             this.trims  = [];
             this.k = false;
             this.mdf = false;
@@ -872,9 +888,7 @@ var PropertyFactory = (function(){
             this.getValue = processKeys;
             this.addSegment = addSegment;
             this.getSegmentsLength = getSegmentsLength;
-            if(this.k){
-                arr.push(this);
-            }else{
+            if(!this.k){
                 this.getValue(true);
             }
         }
@@ -885,14 +899,14 @@ var PropertyFactory = (function(){
         if(type === 3 || type === 4){
             var keys = type === 3 ? data.pt.k : data.ks.k;
             if(keys.length){
-                prop = new KeyframedShapeProperty(elem, data, arr, type);
+                prop = new KeyframedShapeProperty(elem, data, type);
             }else{
-                prop = new ShapeProperty(elem, data, type, arr);
+                prop = new ShapeProperty(elem, data, type);
             }
         }else if(type === 5){
             prop = new RectShapeProperty(elem, data, arr);
         }else if(type === 6){
-            prop = new EllShapeProperty(elem, data, arr);
+            prop = new EllShapeProperty(elem, data);
         }
         var hasTrims = false;
         if(trims){
@@ -906,18 +920,20 @@ var PropertyFactory = (function(){
             }
         }
         if(hasTrims){
-            return new TrimTransformerProperty(prop,trims, arr);
-        }else{
-            return prop;
+            prop = new TrimTransformerProperty(prop,trims);
         }
+        if(prop.k){
+            arr.push(prop);
+        }
+        return prop;
     }
 
     var DashProperty = (function(){
 
-        function processKeys(frameNum){
+        function processKeys(forceRender){
             var i = 0, len = this.dataProps.length;
 
-            if(this.elem.globalData.frameId === this.frameId){
+            if(this.elem.globalData.frameId === this.frameId && !forceRender){
                 return;
             }
             this.mdf = false;
@@ -929,7 +945,7 @@ var PropertyFactory = (function(){
                 }
                 i+=1;
             }
-            if(this.mdf){
+            if(this.mdf || forceRender){
                 if(this.renderer === 'svg') {
                     this.dasharray = '';
                 }
@@ -971,7 +987,7 @@ var PropertyFactory = (function(){
             if(this.k){
                 dynamicProperties.push(this);
             }else{
-                this.getValue(0,true);
+                this.getValue(true);
             }
 
         }
