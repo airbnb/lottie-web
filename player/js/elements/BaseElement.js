@@ -52,13 +52,13 @@ BaseElement.prototype.init = function(){
         this.effect = this.effectsManager.getEffect.bind(this.effectsManager);
     }
     this.finalTransform = {
-        op: PropertyFactory.getProp(this,this.data.ks.o,0,0.01,this.dynamicProperties),
         mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
         matMdf: false,
         opMdf: false,
         mat: new Matrix(),
         opacity: 1
     };
+    this.finalTransform.op = this.finalTransform.mProp.o;
     this.transform = this.finalTransform.mProp;
     this.createElements();
     if(this.data.hasMask){

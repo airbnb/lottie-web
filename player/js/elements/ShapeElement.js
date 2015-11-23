@@ -130,6 +130,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
             }else if(arr[i].ty == 'el'){
                 ty = 6;
             }
+            if(addedTrims.length){
+                arr[i].trimmed = true;
+            }
             data[i].sh = PropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims, this.comp);
             jLen = this.stylesList.length;
             var element, hasStrokes = false, hasFills = false;
@@ -158,6 +161,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
             var trimOb = {
                 closed: false,
                 trimProp: PropertyFactory.getProp(this,arr[i],7,null,dynamicProperties)
+            };
+            data[i] = {
+                tr : trimOb.trimProp
             };
             addedTrims.push(trimOb);
             ownTrims.push(trimOb);

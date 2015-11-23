@@ -472,7 +472,7 @@ var ExpressionManager = (function(){
             ind -= 1;
             var ob = {
                 time: data.k[ind].t
-            }
+            };
             var arr;
             if(ind === data.k.length - 1){
                 arr = data.k[ind-1].e;
@@ -490,7 +490,7 @@ var ExpressionManager = (function(){
             if(!transform){
                 transform = elem.transform;
             }
-            if(!content){
+            if(!content && elem.content){
                 content = elem.content.bind(elem);
             }
             if(this.getPreValue){
@@ -503,7 +503,6 @@ var ExpressionManager = (function(){
                 if(typeof this.v === 'number'){
                     this.v *= this.mult;
                 }else{
-                    console.log(this);
                     var i, len = this.v.length;
                     for(i = 0; i < len; i += 1){
                         this.v[i] *= this.mult;

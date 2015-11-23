@@ -26,7 +26,7 @@ CVShapeElement.prototype.createElements = function(){
 
     this.parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
-    //this.mainShape = new CVShapeItemElement(this.data,this.dynamicProperties,this.globalData);
+    this.buildExpressionInterface();
 };
 CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
     var i, len = arr.length - 1;
@@ -95,6 +95,9 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                 ty = 5;
             }else if(arr[i].ty == 'el'){
                 ty = 6;
+            }
+            if(addedTrims.length){
+                arr[i].trimmed = true;
             }
             data[i].sh = PropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims);
             jLen = this.stylesList.length;
@@ -415,3 +418,6 @@ CVShapeElement.prototype.destroy = function(){
     this.viewData.length = 0;
     this.parent.destroy.call();
 };
+for (var attr in ShapeInterface.prototype) {
+    if (ShapeInterface.prototype.hasOwnProperty(attr)) CVShapeElement.prototype[attr] = ShapeInterface.prototype[attr];
+}

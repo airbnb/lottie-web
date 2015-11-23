@@ -338,6 +338,12 @@ var PropertyFactory = (function(){
             }
             return this.s.pv;
         }
+        function opacityGetter(){
+            if(this.o.k){
+                this.o.getValue();
+            }
+            return this.o.pv;
+        }
         function processKeys(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
@@ -368,6 +374,7 @@ var PropertyFactory = (function(){
             this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
             this.s = getProp(elem,data.s,1,0.01,this.dynamicProperties);
             this.r = getProp(elem,data.r,0,degToRads,this.dynamicProperties);
+            this.o = getProp(elem,data.o,0,0.01,arr);
             if(this.dynamicProperties.length){
                 arr.push(this);
             }else{
@@ -377,6 +384,7 @@ var PropertyFactory = (function(){
             Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
             Object.defineProperty(this, "rotation", { get: rotationGetter});
             Object.defineProperty(this, "scale", { get: scaleGetter});
+            Object.defineProperty(this, "opacity", { get: opacityGetter});
         }
     }());
 
@@ -411,7 +419,7 @@ var PropertyFactory = (function(){
         this.k = false;
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
-        this.shapeData = data.ks;
+        this.numNodes = type === 3 ? data.pt.k.v : data.ks.k.v.length;
         this.v = type === 3 ? data.pt.k : data.ks.k;
         this.pv = this.v;
         checkExpressions.bind(this)(elem,data);
@@ -508,6 +516,7 @@ var PropertyFactory = (function(){
                 o: new Array(4),
                 c: true
             };
+            this.numNodes = 4;
             this.d = data.d;
             this.dynamicProperties = [];
             data.closed = true;
@@ -630,6 +639,7 @@ var PropertyFactory = (function(){
                 o: new Array(8),
                 c: true
             };
+            this.numNodes = 8;
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;
@@ -748,6 +758,9 @@ var PropertyFactory = (function(){
 
         function processKeys(forceRender){
             this.mdf = forceRender ? true : false;
+            if(this.prop.k){
+                this.prop.getValue();
+            }
             var i = 0, len = this.trims.length;
             this.pathStarted = false;
             while(i<len) {
@@ -857,6 +870,7 @@ var PropertyFactory = (function(){
             this.trims  = [];
             this.k = false;
             this.mdf = false;
+            this.ty = 'tm';
             ////this.comp = elem.comp;
             this.pathStarted = false;
             this.segments = [
@@ -880,7 +894,7 @@ var PropertyFactory = (function(){
                 }
             }
             this.prop = prop;
-            len = this.prop.shapeData.k.v.length - 1;
+            len = this.prop.numNodes - 1;
             len += this.prop.closed ? 1:0;
             this.lengths = new Array(len);
             this.k = prop.k ? true : this.k;
@@ -889,6 +903,7 @@ var PropertyFactory = (function(){
             this.addSegment = addSegment;
             this.getSegmentsLength = getSegmentsLength;
             if(!this.k){
+                this.prop.getValue();
                 this.getValue(true);
             }
         }
@@ -904,7 +919,7 @@ var PropertyFactory = (function(){
                 prop = new ShapeProperty(elem, data, type);
             }
         }else if(type === 5){
-            prop = new RectShapeProperty(elem, data, arr);
+            prop = new RectShapeProperty(elem, data);
         }else if(type === 6){
             prop = new EllShapeProperty(elem, data);
         }
