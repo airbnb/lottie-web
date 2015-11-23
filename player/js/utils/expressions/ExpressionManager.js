@@ -443,7 +443,7 @@ var ExpressionManager = (function(){
         var val = data.x;
         var transform,content,effect;
         var thisComp = elem.comp;
-        var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;this.mdf=true;}';
+        var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k.length;
@@ -499,13 +499,28 @@ var ExpressionManager = (function(){
             value = this.pv;
             time = this.comp.renderedFrame;
             bindedFn();
+            var i,len;
             if(this.mult){
                 if(typeof this.v === 'number'){
                     this.v *= this.mult;
                 }else{
-                    var i, len = this.v.length;
+                    len = this.v.length;
                     for(i = 0; i < len; i += 1){
                         this.v[i] *= this.mult;
+                    }
+                }
+            }
+            if(typeof this.v === 'number'){
+                if(this.lastValue !== this.v){
+                    this.lastValue = this.v;
+                    this.mdf = true;
+                }
+            }else{
+                len = this.v.length;
+                for(i = 0; i < len; i += 1){
+                    if(this.v[i] !== this.lastValue[i]){
+                        this.lastValue[i] = this.v[i];
+                        this.mdf = true;
                     }
                 }
             }

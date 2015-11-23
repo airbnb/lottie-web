@@ -47,9 +47,9 @@ var PropertyFactory = (function(){
                     for(k = 0; k < kLen; k += 1){
                         this.v[k] = this.mult ? bezierData.points[ind].point[k]*this.mult : bezierData.points[ind].point[k];
                         this.pv[k] = bezierData.points[ind].point[k];
-                        if(this.lastValue[k] !== this.v[k]) {
+                        if(this.lastPValue[k] !== this.pv[k]) {
                             this.mdf = true;
-                            this.lastValue[k] = this.v[k];
+                            this.lastPValue[k] = this.pv[k];
                         }
                     }
                 }else{
@@ -74,9 +74,9 @@ var PropertyFactory = (function(){
                             for(k=0;k<kLen;k+=1){
                                 this.v[k] = this.mult ? bezierData.points[j].point[k]*this.mult : bezierData.points[j].point[k];
                                 this.pv[k] = bezierData.points[j].point[k];
-                                if(this.lastValue[k] !== this.v[k]) {
+                                if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
-                                    this.lastValue[k] = this.v[k];
+                                    this.lastPValue[k] = this.pv[k];
                                 }
                             }
                             break;
@@ -87,9 +87,9 @@ var PropertyFactory = (function(){
                                 this.v[k] = this.mult ? (bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc)*this.mult : bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
                                 this.pv[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
 
-                                if(this.lastValue[k] !== this.v[k]) {
+                                if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
-                                    this.lastValue[k] = this.v[k];
+                                    this.lastPValue[k] = this.pv[k];
                                 }
                             }
                             break;
@@ -154,16 +154,16 @@ var PropertyFactory = (function(){
                     if(len === 1){
                         this.v = this.mult ? keyValue*this.mult : keyValue;
                         this.pv = keyValue;
-                        if(this.lastValue != this.v){
+                        if(this.lastPValue != this.pv){
                             this.mdf = true;
-                            this.lastValue = this.v;
+                            this.lastPValue = this.pv;
                         }
                     }else{
                         this.v[i] = this.mult ? keyValue*this.mult : keyValue;
                         this.pv[i] = keyValue;
-                        if(this.lastValue[i] !== this.v[i]){
+                        if(this.lastPValue[i] !== this.pv[i]){
                             this.mdf = true;
-                            this.lastValue[i] = this.v[i];
+                            this.lastPValue[i] = this.pv[i];
                         }
                     }
                 }
@@ -285,6 +285,7 @@ var PropertyFactory = (function(){
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.lastValue = -99999;
+        this.lastPValue = -99999;
         this.frameId = -1;
         this.k = true;
         this.mult = mult;
@@ -309,6 +310,7 @@ var PropertyFactory = (function(){
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
         this.lastValue = new Array(data.k[0].s.length);
+        this.lastPValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;
         checkExpressions.bind(this)(elem,data);
     }
