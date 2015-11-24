@@ -423,8 +423,9 @@ var PropertyFactory = (function(){
         this.closed = type === 3 ? data.cl : data.closed;
         this.numNodes = type === 3 ? data.pt.k.v : data.ks.k.v.length;
         this.v = type === 3 ? data.pt.k : data.ks.k;
+        var shapeData = type === 3 ? data.pt : data.ks;
         this.pv = this.v;
-        checkExpressions.bind(this)(elem,data);
+        checkExpressions.bind(this)(elem,shapeData);
     }
 
     function KeyframedShapeProperty(elem,data,type){

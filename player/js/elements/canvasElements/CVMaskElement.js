@@ -59,6 +59,18 @@ CVMaskElement.prototype.renderFrame = function (transform) {
     }
 };
 
+CVMaskElement.prototype.getMask = function(nm){
+    var i = 0, len = this.masksProperties.length;
+    while(i<len){
+        if(this.masksProperties[i].nm === nm){
+            return {
+                maskPath: this.viewData[i].pv
+            }
+        }
+        i += 1;
+    }
+};
+
 CVMaskElement.prototype.destroy = function(){
     this.ctx = null;
 };
