@@ -1,6 +1,16 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.1.4:
+- svg transform bug fix
+
+## V 3.1.3: Naming convention
+- if you name your AE layers with a '#' in front, they will get their id attribute set to that name on the svg renderer. You can use it to add interaction to specific shapes or add additional styles.
+
+## V 3.1.2:
+- shape hold keyframe fix
+- snapshot feature fix
+
 ## V 3.1.1:
 - translation bug fix
 

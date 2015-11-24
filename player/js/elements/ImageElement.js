@@ -1,7 +1,7 @@
-function IImageElement(data,parentContainer,globalData,placeholder){
+function IImageElement(data,parentContainer,globalData,comp,placeholder){
     this.assetData = globalData.getAssetData(data.refId);
     this.path = globalData.getPath();
-    this.parent.constructor.call(this,data,parentContainer,globalData,placeholder);
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
 }
 createElement(SVGBaseElement, IImageElement);
 
@@ -29,6 +29,9 @@ IImageElement.prototype.createElements = function(){
         this.appendNodeToParent(this.innerElem);
     }else{
         this.layerElement.appendChild(this.innerElem);
+    }
+    if(this.data.ln){
+        this.innerElem.setAttribute('id',this.data.ln);
     }
 
 };

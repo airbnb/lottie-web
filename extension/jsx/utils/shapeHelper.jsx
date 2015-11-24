@@ -81,6 +81,7 @@ var bm_shapeHelper = (function () {
                 }
                 if (itemType === shapeItemTypes.shape) {
                     ob = {};
+                    ob.ind = i;
                     ob.ty = itemType;
                     ob.closed = prop.property('Path').value.closed;
                     ob.ks = bm_keyframeHelper.exportKeyframes(prop.property('Path'), frameRate);
@@ -130,14 +131,15 @@ var bm_shapeHelper = (function () {
                             changed = true;
                             var dashData = {};
                             var name = '';
-                            if (prop.property('Dashes').property(j + 1).name === 'Dash') {
+                            if (prop.property('Dashes').property(j + 1).name.indexOf('Dash') !== -1) {
                                 name = 'd';
-                            } else if (prop.property('Dashes').property(j + 1).name === 'Gap') {
+                            } else if (prop.property('Dashes').property(j + 1).name.indexOf('Gap') !== -1) {
                                 name = 'g';
                             } else if (prop.property('Dashes').property(j + 1).name === 'Offset') {
                                 name = 'o';
                             }
                             dashData.n = name;
+                            dashData.nm = prop.property('Dashes').property(j + 1).name.toLowerCase().split(' ').join('');
                             dashData.v = bm_keyframeHelper.exportKeyframes(prop.property('Dashes').property(j + 1), frameRate);
                             dashesData.push(dashData);
                         }
@@ -162,7 +164,8 @@ var bm_shapeHelper = (function () {
                 } else if (itemType === shapeItemTypes.group) {
                     ob = {
                         ty : itemType,
-                        it: []
+                        it: [],
+                        nm: prop.name
                     };
                     iterateProperties(prop.property('Contents'), ob.it, frameRate, isText);
                     if (!isText) {
@@ -178,6 +181,7 @@ var bm_shapeHelper = (function () {
                     }
                     array.push(ob);
                 }
+                ob.nm = prop.name;
             }
             
         }

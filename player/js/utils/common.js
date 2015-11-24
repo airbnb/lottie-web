@@ -191,6 +191,6 @@ function LetterProps(o,sw,sc,fc,m,p){
 function iterateDynamicProperties(num){
     var i, len = this.dynamicProperties;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getInterpolatedValue(num);
+        this.dynamicProperties[i].getValue(num);
     }
 }

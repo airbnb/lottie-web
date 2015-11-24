@@ -205,7 +205,7 @@ var bm_dataManager = (function () {
         } catch (errr) {
             bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
         }
-        animationSegments = '';
+        animationSegments = [];
         segmentCount = 0;
     }
     

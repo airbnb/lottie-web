@@ -71,7 +71,7 @@ var snapshotController = (function () {
                 path: uri
             };
         anim = bodymovin.loadAnimation(params);
-        anim.addEventListener('bm:config_ready', setTotalFrames);
+        anim.addEventListener('config_ready', setTotalFrames);
     }
     
     function addSelectionListener(elem, data) {

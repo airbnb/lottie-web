@@ -1,8 +1,8 @@
-function ICompElement(data,parentContainer,globalData, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
+function ICompElement(data,parentContainer,globalData,comp, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this.data,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
 }
 createElement(SVGBaseElement, ICompElement);
@@ -33,6 +33,7 @@ ICompElement.prototype.prepareFrame = function(num){
             timeRemapped = this.data.op - 1;
         }
     }
+    this.renderedFrame = timeRemapped;
     var i,len = this.elements.length;
     for( i = 0; i < len; i+=1 ){
         this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
@@ -76,3 +77,6 @@ ICompElement.prototype.destroy = function(){
         this.elements[i].destroy();
     }
 };
+for (var attr in ExpressionComp.prototype) {
+    if (ExpressionComp.prototype.hasOwnProperty(attr)) ICompElement.prototype[attr] = ExpressionComp.prototype[attr];
+}

@@ -9,7 +9,7 @@ function CanvasRenderer(animationItem, config){
     if (this.animationItem.wrapper) {
         this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
     }
-    this.lastFrame = -1;
+    this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1
     };
@@ -27,36 +27,39 @@ function CanvasRenderer(animationItem, config){
     this.elements = [];
 }
 
-CanvasRenderer.prototype.createItem = function(layer){
+CanvasRenderer.prototype.createItem = function(layer, comp){
     switch(layer.ty){
         case 0:
-            return this.createComp(layer);
+            return this.createComp(layer, comp);
         case 1:
-            return this.createSolid(layer);
+            return this.createSolid(layer, comp);
         case 2:
-            return this.createImage(layer);
+            return this.createImage(layer, comp);
         case 4:
-            return this.createShape(layer);
+            return this.createShape(layer, comp);
         case 5:
-            return this.createText(layer);
+            return this.createText(layer, comp);
         case 99:
-            return this.createPlaceHolder(layer);
+            return this.createPlaceHolder(layer, comp);
         default:
-            return this.createBase(layer);
+            return this.createBase(layer, comp);
     }
-    return this.createBase(layer,parentContainer);
+    return this.createBase(layer,comp);
 };
 
-CanvasRenderer.prototype.buildItems = function(layers,elements){
+CanvasRenderer.prototype.buildItems = function(layers,elements, comp){
     if(!elements){
         elements = this.elements;
     }
+    if(!comp){
+        comp = this;
+    }
     var i, len = layers.length;
     for (i = 0; i < len; i++) {
-        elements[i] = this.createItem(layers[i]);
+        elements[i] = this.createItem(layers[i], comp);
         if (layers[i].ty === 0) {
             var elems = [];
-            this.buildItems(layers[i].layers,elems);
+            this.buildItems(layers[i].layers,elems,elements[i]);
             elements[elements.length - 1].setElements(elems);
         }
     }
@@ -75,7 +78,7 @@ CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,element
                 elements[j] = this.createItem(layers[i],parentContainer);
                 if (layers[i].ty === 0) {
                     elems = [];
-                    this.buildItems(layers[i].layers,elems);
+                    this.buildItems(layers[i].layers,elems, this);
                     elements[j].setElements(elems);
                 }
                 break;
@@ -85,32 +88,32 @@ CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,element
     }
 };
 
-CanvasRenderer.prototype.createBase = function (data) {
-    return new CVBaseElement(data, this.globalData);
+CanvasRenderer.prototype.createBase = function (data, comp) {
+    return new CVBaseElement(data, comp, this.globalData);
 };
 
-CanvasRenderer.prototype.createShape = function (data) {
-    return new CVShapeElement(data, this.globalData);
+CanvasRenderer.prototype.createShape = function (data, comp) {
+    return new CVShapeElement(data, comp, this.globalData);
 };
 
-CanvasRenderer.prototype.createText = function (data) {
-    return new CVTextElement(data, this.globalData);
+CanvasRenderer.prototype.createText = function (data, comp) {
+    return new CVTextElement(data, comp, this.globalData);
 };
 
 CanvasRenderer.prototype.createPlaceHolder = function (data) {
     return new PlaceHolderElement(data, null,this.globalData);
 };
 
-CanvasRenderer.prototype.createImage = function (data) {
-    return new CVImageElement(data, this.globalData);
+CanvasRenderer.prototype.createImage = function (data, comp) {
+    return new CVImageElement(data, comp, this.globalData);
 };
 
-CanvasRenderer.prototype.createComp = function (data) {
-    return new CVCompElement(data, this.globalData);
+CanvasRenderer.prototype.createComp = function (data, comp) {
+    return new CVCompElement(data, comp, this.globalData);
 };
 
-CanvasRenderer.prototype.createSolid = function (data) {
-    return new CVSolidElement(data, this.globalData);
+CanvasRenderer.prototype.createSolid = function (data, comp) {
+    return new CVSolidElement(data, comp, this.globalData);
 };
 
 CanvasRenderer.prototype.ctxTransform = function(props){
@@ -210,6 +213,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.compWidth = animData.w;
     this.globalData.compHeight = animData.h;
     this.globalData.frameRate = animData.fr;
+    this.globalData.frameId = 0;
     this.layers = animData.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.w;
@@ -303,11 +307,12 @@ CanvasRenderer.prototype.destroy = function () {
 };
 
 CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.lastFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed){
+    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed){
         return;
     }
-    this.lastFrame = num;
+    this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem.firstFrame;
+    this.globalData.frameId += 1;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
         this.canvasContext.canvas.width = this.canvasContext.canvas.width;
@@ -332,3 +337,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
         this.restore();
     }
 };
+
+for (var attr in ExpressionComp.prototype) {
+    if (ExpressionComp.prototype.hasOwnProperty(attr)) CanvasRenderer.prototype[attr] = ExpressionComp.prototype[attr];
+}
