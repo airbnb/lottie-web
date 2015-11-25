@@ -3,7 +3,6 @@ function ITextElement(data, animationItem,parentContainer,globalData){
 ITextElement.prototype.init = function(){
     this.parent.init.call(this);
     var data = this.data;
-    console.log(data);
     this.renderedLetters = [];
     this.viewData = {
         m:{
@@ -47,33 +46,35 @@ ITextElement.prototype.init = function(){
             if('t' in animatorProps.a) {
                 animatorData.a.t = PropertyFactory.getProp(this,animatorProps.a.t,0,0,this.dynamicProperties);
             }
-            if('s' in animatorProps.s) {
-                animatorData.s.s = PropertyFactory.getProp(this,animatorProps.s.s,0,0,this.dynamicProperties);
-            }else if('x' in animatorProps.s) {
-                animatorData.s.s = {v:0};
-                animatorData.s.e = {v:100};
-            }else{
-                animatorData.s.s = {v:0};
-            }
+            if(animatorProps.s.t === 0){
+                if('s' in animatorProps.s) {
+                    animatorData.s.s = PropertyFactory.getProp(this,animatorProps.s.s,0,0,this.dynamicProperties);
+                }else{
+                    animatorData.s.s = {v:0};
+                }
 
-            if('e' in animatorProps.s) {
-                animatorData.s.e = PropertyFactory.getProp(this,animatorProps.s.e,0,0,this.dynamicProperties);
+                if('e' in animatorProps.s) {
+                    animatorData.s.e = PropertyFactory.getProp(this,animatorProps.s.e,0,0,this.dynamicProperties);
+                }
+                if('o' in animatorProps.s) {
+                    animatorData.s.o = PropertyFactory.getProp(this,animatorProps.s.o,0,0,this.dynamicProperties);
+                }else{
+                    animatorData.s.o = {v:0};
+                }
+                if('xe' in animatorProps.s) {
+                    animatorData.s.xe = PropertyFactory.getProp(this,animatorProps.s.xe,0,0,this.dynamicProperties);
+                }else{
+                    animatorData.s.xe = {v:0};
+                }
+                if('ne' in animatorProps.s) {
+                    animatorData.s.ne = PropertyFactory.getProp(this,animatorProps.s.ne,0,0,this.dynamicProperties);
+                }else{
+                    animatorData.s.ne = {v:0};
+                }
+            }else if(animatorProps.s.t === 1){
+                animatorData.s.x = PropertyFactory.getTextSelectorProp(this,animatorProps.s);
             }
-            if('o' in animatorProps.s) {
-                animatorData.s.o = PropertyFactory.getProp(this,animatorProps.s.o,0,0,this.dynamicProperties);
-            }else{
-                animatorData.s.o = {v:0};
-            }
-            if('xe' in animatorProps.s) {
-                animatorData.s.xe = PropertyFactory.getProp(this,animatorProps.s.xe,0,0,this.dynamicProperties);
-            }else{
-                animatorData.s.xe = {v:0};
-            }
-            if('ne' in animatorProps.s) {
-                animatorData.s.ne = PropertyFactory.getProp(this,animatorProps.s.ne,0,0,this.dynamicProperties);
-            }else{
-                animatorData.s.ne = {v:0};
-            }
+            animatorData.s.t = animatorProps.s.t;
             this.viewData.a[i] = animatorData;
         }
     }else{
@@ -179,23 +180,27 @@ ITextElement.prototype.getMeasures = function(){
     var ranges = [], totalChars, divisor;
     var lastLetters = data._letters, lastLetter;
     for(j=0;j<jLen;j+=1){
-        totalChars = data.t.a[j].totalChars;
-        divisor = data.t.a[j].s.r === 2 ? 1 : 100/totalChars;
-        if(!('e' in renderedData.a[j].s)){
-            renderedData.a[j].s.e = {v:data.t.a[j].s.r === 2 ? totalChars : 100};
-        }
-        var o = renderedData.a[j].s.o.v/divisor;
-        if(o === 0 && renderedData.a[j].s.s.v === 0 && renderedData.a[j].s.e.v === divisor){
+        if(renderedData.a[j].s.t === 0){
+            totalChars = data.t.a[j].totalChars;
+            divisor = data.t.a[j].s.r === 2 ? 1 : 100/totalChars;
+            if(!('e' in renderedData.a[j].s)){
+                renderedData.a[j].s.e = {v:data.t.a[j].s.r === 2 ? totalChars : 100};
+            }
+            var o = renderedData.a[j].s.o.v/divisor;
+            if(o === 0 && renderedData.a[j].s.s.v === 0 && renderedData.a[j].s.e.v === divisor){
 
+            }
+            var s = renderedData.a[j].s.s.v/divisor + o;
+            var e = (renderedData.a[j].s.e.v/divisor) + o;
+            if(s>e){
+                var _s = s;
+                s = e;
+                e = _s;
+            }
+            ranges.push({s:s,e:e,ne:renderedData.a[j].s.ne.v,xe:renderedData.a[j].s.xe.v});
+        }else{
+            ranges.push(renderedData.a[j].s.x);
         }
-        var s = renderedData.a[j].s.s.v/divisor + o;
-        var e = (renderedData.a[j].s.e.v/divisor) + o;
-        if(s>e){
-            var _s = s;
-            s = e;
-            e = _s;
-        }
-        ranges.push({s:s,e:e,ne:renderedData.a[j].s.ne.v,xe:renderedData.a[j].s.xe.v});
     }
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
@@ -319,7 +324,21 @@ ITextElement.prototype.getMeasures = function(){
 
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
-                if ('p' in animatorProps && 's' in ranges[j]) {
+
+                if ('p' in animatorProps) {
+                    if('s' in ranges[j]){
+                        mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
+                    }else if('x' in ranges[j]){
+                        mult = ranges[j].getMult(i,len);
+                    }
+                    if('m' in data.t.p) {
+                        matrixHelper.translate(0, animatorProps.p.v[1] * mult);
+                    }else{
+                        matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult);
+                    }
+                }
+
+                /*if ('p' in animatorProps && 's' in ranges[j]) {
                     console.log('ranges[j]: ',ranges[j]);
                     mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
                     if('m' in data.t.p) {
@@ -327,7 +346,7 @@ ITextElement.prototype.getMeasures = function(){
                     }else{
                         matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult);
                     }
-                }
+                }*/
             }
             if(documentData.strokeWidthAnim) {
                 sw = data.t.d.sw || 0;

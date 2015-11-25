@@ -446,7 +446,7 @@ var ExpressionManager = (function(){
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
-        var numKeys = data.k.length;
+        var numKeys = data.k ? data.k.length : 0;
 
         function effect(nm){
             return elem.effectsManager.getEffect(nm);
@@ -485,8 +485,12 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
-        var time, value;
+        var time, value,textIndex,textTotal;
         function execute(){
+            if(this.type === 'textSelector'){
+                textIndex = this.textIndex;
+                textTotal = this.textTotal;
+            }
             if(!transform){
                 transform = elem.transform;
             }

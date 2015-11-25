@@ -212,7 +212,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
-    //*
+    /*
     this.firstFrame = 16;
     this.totalFrames = 1;
     this.animationData.tf = 1;
