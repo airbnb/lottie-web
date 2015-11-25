@@ -3,6 +3,7 @@ function ITextElement(data, animationItem,parentContainer,globalData){
 ITextElement.prototype.init = function(){
     this.parent.init.call(this);
     var data = this.data;
+    console.log(data);
     this.renderedLetters = [];
     this.viewData = {
         m:{
@@ -48,6 +49,9 @@ ITextElement.prototype.init = function(){
             }
             if('s' in animatorProps.s) {
                 animatorData.s.s = PropertyFactory.getProp(this,animatorProps.s.s,0,0,this.dynamicProperties);
+            }else if('x' in animatorProps.s) {
+                animatorData.s.s = {v:0};
+                animatorData.s.e = {v:100};
             }else{
                 animatorData.s.s = {v:0};
             }
@@ -316,6 +320,7 @@ ITextElement.prototype.getMeasures = function(){
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
                 if ('p' in animatorProps && 's' in ranges[j]) {
+                    console.log('ranges[j]: ',ranges[j]);
                     mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
                     if('m' in data.t.p) {
                         matrixHelper.translate(0, animatorProps.p.v[1] * mult);
