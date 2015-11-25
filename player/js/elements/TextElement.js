@@ -6,7 +6,7 @@ ITextElement.prototype.init = function(){
     this.renderedLetters = [];
     this.viewData = {
         m:{
-            a: PropertyFactory.getProp(data,data.t.m.a,1,0,this.dynamicProperties)
+            a: PropertyFactory.getProp(this,data.t.m.a,1,0,this.dynamicProperties)
         }
     };
     var textData = this.data.t;
@@ -20,53 +20,53 @@ ITextElement.prototype.init = function(){
                 s: {}
             };
             if('r' in animatorProps.a) {
-                animatorData.a.r = PropertyFactory.getProp(data,animatorProps.a.r,0,degToRads,this.dynamicProperties);
+                animatorData.a.r = PropertyFactory.getProp(this,animatorProps.a.r,0,degToRads,this.dynamicProperties);
             }
             if('s' in animatorProps.a) {
-                animatorData.a.s = PropertyFactory.getProp(data,animatorProps.a.s,1,0.01,this.dynamicProperties);
+                animatorData.a.s = PropertyFactory.getProp(this,animatorProps.a.s,1,0.01,this.dynamicProperties);
             }
             if('a' in animatorProps.a) {
-                animatorData.a.a = PropertyFactory.getProp(data,animatorProps.a.a,1,0,this.dynamicProperties);
+                animatorData.a.a = PropertyFactory.getProp(this,animatorProps.a.a,1,0,this.dynamicProperties);
             }
             if('o' in animatorProps.a) {
-                animatorData.a.o = PropertyFactory.getProp(data,animatorProps.a.o,0,0.01,this.dynamicProperties);
+                animatorData.a.o = PropertyFactory.getProp(this,animatorProps.a.o,0,0.01,this.dynamicProperties);
             }
             if('p' in animatorProps.a) {
-                animatorData.a.p = PropertyFactory.getProp(data,animatorProps.a.p,1,0,this.dynamicProperties);
+                animatorData.a.p = PropertyFactory.getProp(this,animatorProps.a.p,1,0,this.dynamicProperties);
             }
             if('sw' in animatorProps.a) {
-                animatorData.a.sw = PropertyFactory.getProp(data,animatorProps.a.sw,0,0,this.dynamicProperties);
+                animatorData.a.sw = PropertyFactory.getProp(this,animatorProps.a.sw,0,0,this.dynamicProperties);
             }
             if('sc' in animatorProps.a) {
-                animatorData.a.sc = PropertyFactory.getProp(data,animatorProps.a.sc,1,0,this.dynamicProperties);
+                animatorData.a.sc = PropertyFactory.getProp(this,animatorProps.a.sc,1,0,this.dynamicProperties);
             }
             if('fc' in animatorProps.a) {
-                animatorData.a.fc = PropertyFactory.getProp(data,animatorProps.a.fc,1,0,this.dynamicProperties);
+                animatorData.a.fc = PropertyFactory.getProp(this,animatorProps.a.fc,1,0,this.dynamicProperties);
             }
             if('t' in animatorProps.a) {
-                animatorData.a.t = PropertyFactory.getProp(data,animatorProps.a.t,0,0,this.dynamicProperties);
+                animatorData.a.t = PropertyFactory.getProp(this,animatorProps.a.t,0,0,this.dynamicProperties);
             }
             if('s' in animatorProps.s) {
-                animatorData.s.s = PropertyFactory.getProp(data,animatorProps.s.s,0,0,this.dynamicProperties);
+                animatorData.s.s = PropertyFactory.getProp(this,animatorProps.s.s,0,0,this.dynamicProperties);
             }else{
                 animatorData.s.s = {v:0};
             }
 
             if('e' in animatorProps.s) {
-                animatorData.s.e = PropertyFactory.getProp(data,animatorProps.s.e,0,0,this.dynamicProperties);
+                animatorData.s.e = PropertyFactory.getProp(this,animatorProps.s.e,0,0,this.dynamicProperties);
             }
             if('o' in animatorProps.s) {
-                animatorData.s.o = PropertyFactory.getProp(data,animatorProps.s.o,0,0,this.dynamicProperties);
+                animatorData.s.o = PropertyFactory.getProp(this,animatorProps.s.o,0,0,this.dynamicProperties);
             }else{
                 animatorData.s.o = {v:0};
             }
             if('xe' in animatorProps.s) {
-                animatorData.s.xe = PropertyFactory.getProp(data,animatorProps.s.xe,0,0,this.dynamicProperties);
+                animatorData.s.xe = PropertyFactory.getProp(this,animatorProps.s.xe,0,0,this.dynamicProperties);
             }else{
                 animatorData.s.xe = {v:0};
             }
             if('ne' in animatorProps.s) {
-                animatorData.s.ne = PropertyFactory.getProp(data,animatorProps.s.ne,0,0,this.dynamicProperties);
+                animatorData.s.ne = PropertyFactory.getProp(this,animatorProps.s.ne,0,0,this.dynamicProperties);
             }else{
                 animatorData.s.ne = {v:0};
             }
@@ -77,8 +77,8 @@ ITextElement.prototype.init = function(){
     }
     if(textData.p && 'm' in textData.p){
         this.viewData.p = {
-            f: PropertyFactory.getProp(data,textData.p.f,0,0,this.dynamicProperties),
-            l: PropertyFactory.getProp(data,textData.p.l,0,0,this.dynamicProperties),
+            f: PropertyFactory.getProp(this,textData.p.f,0,0,this.dynamicProperties),
+            l: PropertyFactory.getProp(this,textData.p.l,0,0,this.dynamicProperties),
             m: this.maskManager.getMaskProperty(textData.p.m)
         }
 

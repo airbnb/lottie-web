@@ -6,6 +6,7 @@ var bm_textShapeHelper = (function () {
     
     function reset() {
         chars.length = 0;
+        layers.length = 0;
     }
     
     function addTextLayer(layer) {
@@ -94,12 +95,13 @@ var bm_textShapeHelper = (function () {
         bm_shapeHelper.exportShape(shapeLayer, charData.data, 1, true);
         lLen = charData.data.shapes[0].it.length;
         for (l = 0; l < lLen; l += 1) {
-            var k, kLen = charData.data.shapes[0].it[l].ks.i.length;
+            var ks = charData.data.shapes[0].it[l].ks;
+            var k, kLen = charData.data.shapes[0].it[l].ks.k.i.length;
             for (k = 0; k < kLen; k += 1) {
-                charData.data.shapes[0].it[l].ks.i[k][0] += charData.data.shapes[0].it[l].ks.v[k][0];
-                charData.data.shapes[0].it[l].ks.i[k][1] += charData.data.shapes[0].it[l].ks.v[k][1];
-                charData.data.shapes[0].it[l].ks.o[k][0] += charData.data.shapes[0].it[l].ks.v[k][0];
-                charData.data.shapes[0].it[l].ks.o[k][1] += charData.data.shapes[0].it[l].ks.v[k][1];
+                charData.data.shapes[0].it[l].ks.k.i[k][0] += charData.data.shapes[0].it[l].ks.k.v[k][0];
+                charData.data.shapes[0].it[l].ks.k.i[k][1] += charData.data.shapes[0].it[l].ks.k.v[k][1];
+                charData.data.shapes[0].it[l].ks.k.o[k][0] += charData.data.shapes[0].it[l].ks.k.v[k][0];
+                charData.data.shapes[0].it[l].ks.k.o[k][1] += charData.data.shapes[0].it[l].ks.k.v[k][1];
             }
         }
         shapeLayer.selected = false;

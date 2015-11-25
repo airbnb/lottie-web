@@ -85,8 +85,8 @@ SVGTextElement.prototype.createElements = function(){
                 jLen = shapes.length;
                 matrixHelper.scale(documentData.s/100,documentData.s/100);
                 for(j=0;j<jLen;j+=1){
-                    kLen = shapes[j].ks.i.length;
-                    pathNodes = shapes[j].ks;
+                    kLen = shapes[j].ks.k.i.length;
+                    pathNodes = shapes[j].ks.k;
                     for(k=1;k<kLen;k+=1){
                         if(k==1){
                             shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);

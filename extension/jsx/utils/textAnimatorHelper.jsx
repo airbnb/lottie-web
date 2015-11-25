@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_keyframeHelper, bm_eventDispatcher, bm_generalUtils*/
+/*global bm_keyframeHelper, bm_eventDispatcher, bm_generalUtils, bm_expressionHelper*/
 var bm_textAnimatorHelper = (function () {
     'use strict';
     var ob = {};
@@ -7,13 +7,34 @@ var bm_textAnimatorHelper = (function () {
     function exportTextSelector(layerInfo, frameRate) {
         var ob = {};
         var i, len;
-        var selectorProperty = layerInfo.property('ADBE Text Selector');
+        var selectorProperty;
+        
+        var property, propertyName;
+        len = layerInfo.numProperties;
+        var selectorType = -1;
+        for (i = 0; i < len; i += 1) {
+            propertyName = layerInfo.property(i + 1).matchName;
+            if (propertyName === 'ADBE Text Selector') {
+                selectorType = 0;
+                selectorProperty = layerInfo.property('ADBE Text Selector');
+                break;
+            } else if (propertyName === 'ADBE Text Expressible Selector') {
+                selectorType = 1;
+                selectorProperty = layerInfo.property('ADBE Text Expressible Selector');
+                break;
+            }
+        }
+        
+        len = selectorProperty.numProperties;
+        /*for (i = 0; i < len; i += 1) {
+            //bm_eventDispatcher.log(selectorProperty.property(i + 1).matchName);
+        }*/
         
         
-        if (selectorProperty) {
+        if (selectorType === 0) {
             
             var advancedProperty = selectorProperty.property('ADBE Text Range Advanced');
-            
+            ob.t = 0;
             ob.xe = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Levels Max Ease'), frameRate);
             ob.ne = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Levels Min Ease'), frameRate);
             ob.b = advancedProperty.property("ADBE Text Range Type2").value;
@@ -44,6 +65,12 @@ var bm_textAnimatorHelper = (function () {
                 }
             }
             ob.r = rangeUnits;
+        } else if (selectorType === 1) {
+            ob.t = 1;
+            ob.b = selectorProperty.property('ADBE Text Range Type2').value;
+            var amount = selectorProperty.property('ADBE Text Expressible Amount');
+            bm_expressionHelper.checkExpression(amount, ob);
+            bm_eventDispatcher.log(ob.x);
         }
         return ob;
     }
