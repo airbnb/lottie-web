@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper*/
+/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper, bm_effectsHelper, bm_layerStylesHelper*/
 
 var bm_layerElement = (function () {
     'use strict';
@@ -101,6 +101,10 @@ var bm_layerElement = (function () {
         }
         layerData.ind = ind;
         layerData.ty = layerType;
+        layerData.nm = layerInfo.name;
+        if(layerInfo.name.substring(0,1) === '#'){
+            layerData.ln = layerInfo.name.substr(1);
+        }
         if (layerInfo.parent !== null) {
             layerData.parent = layerInfo.parent.index - 1;
         }
@@ -161,9 +165,12 @@ var bm_layerElement = (function () {
             bm_renderManager.renderLayerComplete();
             return;
         }
+        
         var lType = layerData.ty;
         bm_transformHelper.exportTransform(layerInfo, layerData, frameRate);
         bm_maskHelper.exportMasks(layerInfo, layerData, frameRate);
+        bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);
+        bm_layerStylesHelper.exportStyles(layerInfo, layerData, frameRate);
         bm_timeremapHelper.exportTimeremap(layerInfo, layerData, frameRate);
         
         if (lType === ob.layerTypes.shape) {

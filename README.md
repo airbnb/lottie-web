@@ -1,6 +1,26 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.1.4:
+- svg transform bug fix
+
+## V 3.1.3: Naming convention
+- if you name your AE layers with a '#' in front, they will get their id attribute set to that name on the svg renderer. You can use it to add interaction to specific shapes or add additional styles.
+
+## V 3.1.2:
+- shape hold keyframe fix
+- snapshot feature fix
+
+## V 3.1.1:
+- translation bug fix
+
+## V 3.1.0: the big refactor
+- reduced filesize
+- increased performance
+- improved memory management
+- fixed scaled strokes on canvas
+- events
+
 ## V 3.0.8
 - changed masks to clipping paths when only using AE additive masks. Performance improvement and fixes issue with strokes.
 
@@ -171,6 +191,18 @@ bodymovin has 8 main methods:
 **bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
 **bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
 **bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+
+## Events
+- onComplete
+- onLoopComplete
+- onEnterFrame
+- onSegmentStart
+
+you can also use addEventListener with the following events:
+- complete
+- loopComplete
+- enterFrame
+- segmentStart
 
 
 See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations

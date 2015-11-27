@@ -1,7 +1,7 @@
-function SVGTextElement(data, animationItem,parentContainer,globalData){
+function SVGTextElement(data,parentContainer,globalData,comp, placeholder){
     this.textSpans = [];
     this.renderType = 'svg';
-    this.parent.constructor.call(this,data, animationItem,parentContainer,globalData);
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, SVGTextElement);
 
@@ -85,8 +85,8 @@ SVGTextElement.prototype.createElements = function(){
                 jLen = shapes.length;
                 matrixHelper.scale(documentData.s/100,documentData.s/100);
                 for(j=0;j<jLen;j+=1){
-                    kLen = shapes[j].ks.i.length;
-                    pathNodes = shapes[j].ks;
+                    kLen = shapes[j].ks.k.i.length;
+                    pathNodes = shapes[j].ks.k;
                     for(k=1;k<kLen;k+=1){
                         if(k==1){
                             shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);

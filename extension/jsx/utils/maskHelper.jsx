@@ -41,6 +41,8 @@ var bm_maskHelper = (function () {
             };
             shapeData.pt = bm_keyframeHelper.exportKeyframes(maskElement.property('maskShape'), frameRate);
             shapeData.o = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Opacity'), frameRate);
+            shapeData.x = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Expansion'), frameRate);
+            shapeData.nm = maskElement.name;
             layerData.masksProperties.push(shapeData);
         }
     }
