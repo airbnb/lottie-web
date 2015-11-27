@@ -54,7 +54,7 @@ var bm_dataManager = (function () {
                 }
             }
         }
-        if (data.assets) {
+        if (data.assets && segmentComps && segmentComps.length) {
             data.assets = data.assets.concat(segmentComps);
             if (data.comps) {
                 delete data.comps;

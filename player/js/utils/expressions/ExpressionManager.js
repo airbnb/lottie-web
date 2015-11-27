@@ -471,7 +471,7 @@ var ExpressionManager = (function(){
         function key(ind){
             ind -= 1;
             var ob = {
-                time: data.k[ind].t
+                time: data.k[ind].t/thisComp.globalData.frameRate
             };
             var arr;
             if(ind === data.k.length - 1){
@@ -509,6 +509,9 @@ var ExpressionManager = (function(){
                     this.v *= this.mult;
                 }else{
                     len = this.v.length;
+                    if(value === this.v){
+                        this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
+                    }
                     for(i = 0; i < len; i += 1){
                         this.v[i] *= this.mult;
                     }

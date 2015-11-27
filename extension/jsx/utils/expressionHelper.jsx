@@ -193,8 +193,8 @@ var bm_expressionHelper = (function () {
             } else if (body[i].type === 'ReturnStatement') {
                 handleReturnStatement(body[i]);
             } else {
-                bm_eventDispatcher.log(body[i].type);
-                bm_eventDispatcher.log(body[i]);
+                //bm_eventDispatcher.log(body[i].type);
+                //bm_eventDispatcher.log(body[i]);
             }
         }
     }
@@ -210,7 +210,7 @@ var bm_expressionHelper = (function () {
         case "BinaryExpression":
             return convertBinaryExpression(element);
         default:
-            bm_eventDispatcher.log('es: ', element);
+            //bm_eventDispatcher.log('es: ', element);
             return element;
         }
     }

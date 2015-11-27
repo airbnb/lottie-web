@@ -75,10 +75,10 @@ CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,element
         j = 0;
         while(j<jLen){
             if(elements[j].data.id == layers[i].id){
-                elements[j] = this.createItem(layers[i],parentContainer);
+                elements[j] = this.createItem(layers[i],this);
                 if (layers[i].ty === 0) {
                     elems = [];
-                    this.buildItems(layers[i].layers,elems, this);
+                    this.buildItems(layers[i].layers,elems, elements[j]);
                     elements[j].setElements(elems);
                 }
                 break;
@@ -139,7 +139,6 @@ CanvasRenderer.prototype.ctxOpacity = function(op){
     }
     this.contextData.cO *= op < 0 ? 0 : op;
      this.canvasContext.globalAlpha = this.contextData.cO;
-    ///this.canvasContext.globalAlpha = this.canvasContext.globalAlpha * op;
 };
 
 CanvasRenderer.prototype.reset = function(){
@@ -306,7 +305,7 @@ CanvasRenderer.prototype.destroy = function () {
 };
 
 CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed){
+    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === null){
         return;
     }
     this.renderedFrame = num;
@@ -325,6 +324,8 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.canvasContext.closePath();
     this.canvasContext.clip();
 
+    //console.log('--------');
+    //console.log('NEW: ',num);
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
         this.elements[i].prepareFrame(num - this.layers[i].st);

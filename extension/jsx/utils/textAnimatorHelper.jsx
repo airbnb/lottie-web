@@ -70,7 +70,7 @@ var bm_textAnimatorHelper = (function () {
             ob.b = selectorProperty.property('ADBE Text Range Type2').value;
             var amount = selectorProperty.property('ADBE Text Expressible Amount');
             bm_expressionHelper.checkExpression(amount, ob);
-            bm_eventDispatcher.log(ob.x);
+            //bm_eventDispatcher.log(ob.x);
         }
         return ob;
     }

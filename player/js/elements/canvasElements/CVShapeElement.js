@@ -245,13 +245,11 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
                 }
             }
             if(type === 'st'){
-                ctx.closePath();
                 ctx.stroke();
                 renderer.restore();
             }
         }
         if(type !== 'st'){
-            ctx.closePath();
             ctx.fill();
         }
         renderer.restore();
