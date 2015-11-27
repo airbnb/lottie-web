@@ -501,7 +501,7 @@ var ExpressionManager = (function(){
                 this.getPreValue();
             }
             value = this.pv;
-            time = this.comp.renderedFrame;
+            time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             bindedFn();
             var i,len;
             if(this.mult){

@@ -28,7 +28,6 @@ function MaskElement(data,element,globalData) {
             maskRef = 'mask';
         }
 
-        //console.log('properties[i].mode: ',properties[i].mode);
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
             rect = document.createElementNS(svgNS, 'rect');
             rect.setAttribute('fill', '#ffffff');

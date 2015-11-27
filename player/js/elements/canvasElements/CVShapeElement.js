@@ -210,12 +210,14 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             ctx.lineWidth = this.stylesList[i].wi;
             ctx.lineCap = this.stylesList[i].lc;
             ctx.lineJoin = this.stylesList[i].lj;
-            ctx.miterLimit = this.stylesList[i].ml;
+            ctx.miterLimit = this.stylesList[i].ml || 0;
         }else{
             ctx.fillStyle = this.stylesList[i].co;
         }
         renderer.ctxOpacity(this.stylesList[i].coOp);
-        ctx.beginPath();
+        if(type !== 'st'){
+            ctx.beginPath();
+        }
         for(j=0;j<jLen;j+=1){
             if(type === 'st'){
                 renderer.save();
@@ -243,11 +245,13 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
                 }
             }
             if(type === 'st'){
+                ctx.closePath();
                 ctx.stroke();
                 renderer.restore();
             }
         }
         if(type !== 'st'){
+            ctx.closePath();
             ctx.fill();
         }
         renderer.restore();

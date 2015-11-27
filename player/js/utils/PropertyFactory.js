@@ -1018,15 +1018,16 @@ var PropertyFactory = (function(){
     var TextSelectorProp = (function(){
 
         function getValueProxy(index,total){
-            this.textIndex = index;
+            this.textIndex = index+1;
             this.textTotal = total;
             this.getValue();
-            return this.v*0.01;
+            return this.v;
         }
 
         return function(elem,data){
             this.pv = 1;
             this.comp = elem.comp;
+            this.mult = .01;
             this.type = 'textSelector';
             checkExpressions.bind(this)(elem,data);
             this.getMult = getValueProxy;

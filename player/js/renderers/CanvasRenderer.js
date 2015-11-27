@@ -127,7 +127,6 @@ CanvasRenderer.prototype.ctxTransform = function(props){
     this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
     var trProps = this.contextData.cTr.props;
     this.canvasContext.setTransform(trProps[0],trProps[1],trProps[2],trProps[3],trProps[4],trProps[5]);
-    ///this.canvasContext.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
 };
 
 CanvasRenderer.prototype.ctxOpacity = function(op){
@@ -315,16 +314,16 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.globalData.frameId += 1;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
-        this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-        //this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
+        //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
+        this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
     }else{
         this.save();
     }
     this.ctxTransform(this.transformCanvas.props);
+    this.canvasContext.beginPath();
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.canvasContext.closePath();
     this.canvasContext.clip();
-
-    ////this.globalData.bmCtx.clip(this.clipper);
 
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
