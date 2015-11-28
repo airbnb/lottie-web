@@ -1015,7 +1015,7 @@ var PropertyFactory = (function(){
         return new DashProperty(elem, data, dynamicProperties);
     };
 
-    var TextSelectorProp = (function(){
+    var TextExpressionSelectorProp = (function(){
 
         function getValueProxy(index,total){
             this.textIndex = index+1;
@@ -1024,7 +1024,7 @@ var PropertyFactory = (function(){
             return this.v;
         }
 
-        return function(elem,data){
+        return function TextExpressionSelectorProp(elem,data){
             this.pv = 1;
             this.comp = elem.comp;
             this.mult = .01;
@@ -1032,10 +1032,111 @@ var PropertyFactory = (function(){
             checkExpressions.bind(this)(elem,data);
             this.getMult = getValueProxy;
         }
-    }())
+    }());
 
-    function getTextSelectorProp(elem, data) {
-        return new TextSelectorProp(elem, data);
+    var TextSelectorProp = (function(){
+        var max = Math.max;
+        var min = Math.min;
+        var floor = Math.floor;
+        function updateRange(){
+            if(this.dynamicProperties.length){
+                var i, len = this.dynamicProperties.length;
+                for(i=0;i<len;i+=1){
+                    this.dynamicProperties[i].getValue();
+                }
+            }
+            var totalChars = this.data.totalChars;
+            var divisor = this.data.r === 2 ? 1 : 100/totalChars;
+            var o = this.o.v/divisor;
+            var s = this.s.v/divisor + o;
+            var e = (this.e.v/divisor) + o;
+            if(s>e){
+                var _s = s;
+                s = e;
+                e = _s;
+            }
+            this.finalS = s;
+            this.finalE = e;
+        }
+
+        function getMult(ind){
+            var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+            var mult = 0;
+            var s = this.finalS;
+            var e = this.finalE;
+            var type = this.data.sh;
+            if(type == 2){
+                if(e === s){
+                    mult = ind >= e ? 1 : 0;
+                }else{
+                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                }
+                mult = easer('',mult,0,1,1);
+            }else if(type == 3){
+                if(e === s){
+                    mult = ind >= e ? 0 : 1;
+                }else{
+                    mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                }
+
+                mult = easer('',mult,0,1,1);
+            }else if(type == 4){
+                if(e === s){
+                    mult = ind >= e ? 0 : 1;
+                }else{
+                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                    if(mult<.5){
+                        mult *= 2;
+                    }else{
+                        mult = 1 - mult;
+                    }
+                }
+            }else {
+                if(ind >= floor(s)){
+                    if(ind-s < 0){
+                        mult = 1 - (s - ind);
+                    }else{
+                        mult = max(0,min(e-ind,1));
+                    }
+                }
+            }
+            return mult;
+        }
+
+        return function TextSelectorProp(elem,data, arr){
+            this.mdf = false;
+            this.k = false;
+            this.data = data;
+            this.dynamicProperties = [];
+            this.getValue = updateRange;
+            this.getMult = getMult;
+            this.comp = elem.comp;
+            this.finalS = 0;
+            this.finalE = 0;
+            this.s = getProp(elem,data.s || {k:0},0,0,this.dynamicProperties);
+            if('e' in data){
+                this.e = getProp(elem,data.e,0,0,this.dynamicProperties);
+            }else{
+                this.e = {v:data.r === 2 ? data.totalChars : 100};
+            }
+            this.o = getProp(elem,data.o || {k:0},0,0,this.dynamicProperties);
+            this.xe = getProp(elem,data.xe || {k:0},0,0,this.dynamicProperties);
+            this.ne = getProp(elem,data.ne || {k:0},0,0,this.dynamicProperties);
+            if(this.dynamicProperties.length){
+                arr.push(this);
+            }else{
+                this.getValue();
+            }
+        }
+    }());
+
+    function getTextSelectorProp(elem, data,arr) {
+        switch(data.t){
+            case 0:
+                return new TextSelectorProp(elem, data, arr);
+            case 1:
+                return new TextExpressionSelectorProp(elem, data);
+        }
     };
 
     var ob = {};

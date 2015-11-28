@@ -1,4 +1,4 @@
-function CVTextElement(data, globalData){
+function CVTextElement(data, comp, globalData){
     this.textSpans = [];
     this.yOffset = 0;
     this.fillColorAnim = false;
@@ -14,7 +14,7 @@ function CVTextElement(data, globalData){
         sWidth: 0,
         fValue: ''
     }
-    this.parent.constructor.call(this,data, globalData);
+    this.parent.constructor.call(this,data,comp, globalData);
     this.renderedLetters = [];
 }
 createElement(CVBaseElement, CVTextElement);
@@ -63,8 +63,8 @@ CVTextElement.prototype.createElements = function(){
             jLen = shapes.length;
             commands = new Array(jLen);
             for(j=0;j<jLen;j+=1){
-                kLen = shapes[j].ks.i.length;
-                pathNodes = shapes[j].ks;
+                kLen = shapes[j].ks.k.i.length;
+                pathNodes = shapes[j].ks.k;
                 pathArr = [];
                 for(k=1;k<kLen;k+=1){
                     if(k==1){
