@@ -216,7 +216,6 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     //pathNodes.__renderedString = pathString;
 
 
-
     if(viewData.lastPath !== pathString){
         if(pathData.inv){
             viewData.elem.setAttribute('d',this.solidPath + pathString);

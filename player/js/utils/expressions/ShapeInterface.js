@@ -199,7 +199,7 @@ ShapeInterface.prototype.groupInterface = function(shapes,view,container){
             interfaceOb = this.trimInterface(view[i]);
             interfaceArr.push(interfaceOb);
         }else{
-            console.log(shapes[i].ty);
+            //console.log(shapes[i].ty);
             interfaceArr.push('');
         }
     }

@@ -171,7 +171,7 @@ var bm_dataManager = (function () {
                 dataFile.open('w', 'TEXT', '????');
                 string = JSON.stringify(animationSegments[i]);
                 /* TODO : To add Export Paths */
-                string = getIndiShapes( animationSegments[i], string);
+                string = getIndiShapes( animationSegments[i]);
                 /* --- */
                 try {
                     dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
@@ -194,7 +194,7 @@ var bm_dataManager = (function () {
         dataFile.open('w', 'TEXT', '????');
         string = JSON.stringify(data);
         /* TODO : To add Export Paths */
-        string = getIndiShapes( data, string);
+        string = getIndiShapes( data);
         /* --- */
         string = string.replace(/\n/g, '');
         ////

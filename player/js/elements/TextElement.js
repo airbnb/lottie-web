@@ -46,7 +46,8 @@ ITextElement.prototype.init = function(){
             if('t' in animatorProps.a) {
                 animatorData.a.t = PropertyFactory.getProp(this,animatorProps.a.t,0,0,this.dynamicProperties);
             }
-            if(animatorProps.s.t === 0){
+            animatorData.s = PropertyFactory.getTextSelectorProp(this,animatorProps.s,this.dynamicProperties);
+            /*if(animatorProps.s.t === 0){
                 if('s' in animatorProps.s) {
                     animatorData.s.s = PropertyFactory.getProp(this,animatorProps.s.s,0,0,this.dynamicProperties);
                 }else{
@@ -73,7 +74,7 @@ ITextElement.prototype.init = function(){
                 }
             }else if(animatorProps.s.t === 1){
                 animatorData.s.x = PropertyFactory.getTextSelectorProp(this,animatorProps.s);
-            }
+            }*/
             animatorData.s.t = animatorProps.s.t;
             this.viewData.a[i] = animatorData;
         }
@@ -172,36 +173,12 @@ ITextElement.prototype.getMeasures = function(){
     yPos = 0;
     var yOff = data.t.d.s*1.2*.714;
     var firstLine = true;
-    var renderedData = this.viewData, animatorProps;
+    var renderedData = this.viewData, animatorProps, animatorSelector;
     var j, jLen;
     var lettersValue = new Array(len), letterValue, lettersChangedFlag = false;
 
     jLen = renderedData.a.length;
-    var ranges = [], totalChars, divisor;
     var lastLetters = data._letters, lastLetter;
-    for(j=0;j<jLen;j+=1){
-        if(renderedData.a[j].s.t === 0){
-            totalChars = data.t.a[j].totalChars;
-            divisor = data.t.a[j].s.r === 2 ? 1 : 100/totalChars;
-            if(!('e' in renderedData.a[j].s)){
-                renderedData.a[j].s.e = {v:data.t.a[j].s.r === 2 ? totalChars : 100};
-            }
-            var o = renderedData.a[j].s.o.v/divisor;
-            if(o === 0 && renderedData.a[j].s.s.v === 0 && renderedData.a[j].s.e.v === divisor){
-
-            }
-            var s = renderedData.a[j].s.s.v/divisor + o;
-            var e = (renderedData.a[j].s.e.v/divisor) + o;
-            if(s>e){
-                var _s = s;
-                s = e;
-                e = _s;
-            }
-            ranges.push({s:s,e:e,ne:renderedData.a[j].s.ne.v,xe:renderedData.a[j].s.xe.v});
-        }else{
-            ranges.push(renderedData.a[j].s.x);
-        }
-    }
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
     var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd;
@@ -251,8 +228,9 @@ ITextElement.prototype.getMeasures = function(){
                 var animatorOffset = 0;
                 for(j=0;j<jLen;j+=1){
                     animatorProps = renderedData.a[j].a;
-                    if ('p' in animatorProps && 's' in ranges[j]) {
-                        mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
+                    if ('p' in animatorProps) {
+                        animatorSelector = renderedData.a[j].s;
+                        mult = animatorSelector.getMult(letters[i].anIndexes[j]);
 
                         animatorOffset += animatorProps.p.v[0] * mult;
                     }
@@ -311,8 +289,9 @@ ITextElement.prototype.getMeasures = function(){
             lineLength += letters[i].l/2;
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
-                if ('t' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
+                if ('t' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     if('m' in data.t.p) {
                         currentLength += animatorProps.t*mult;
                     }else{
@@ -326,27 +305,14 @@ ITextElement.prototype.getMeasures = function(){
                 animatorProps = renderedData.a[j].a;
 
                 if ('p' in animatorProps) {
-                    if('s' in ranges[j]){
-                        mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
-                    }else if('x' in ranges[j]){
-                        mult = ranges[j].getMult(i,len);
-                    }
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     if('m' in data.t.p) {
                         matrixHelper.translate(0, animatorProps.p.v[1] * mult);
                     }else{
                         matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult);
                     }
                 }
-
-                /*if ('p' in animatorProps && 's' in ranges[j]) {
-                    console.log('ranges[j]: ',ranges[j]);
-                    mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
-                    if('m' in data.t.p) {
-                        matrixHelper.translate(0, animatorProps.p.v[1] * mult);
-                    }else{
-                        matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult);
-                    }
-                }*/
             }
             if(documentData.strokeWidthAnim) {
                 sw = data.t.d.sw || 0;
@@ -363,22 +329,23 @@ ITextElement.prototype.getMeasures = function(){
             }
             for(j=0;j<jLen;j+=1) {
                 animatorProps = renderedData.a[j].a;
-                mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
-                if ('r' in animatorProps && 's' in ranges[j]) {
+                animatorSelector = renderedData.a[j].s;
+                mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                if ('r' in animatorProps) {
                     matrixHelper.rotate(animatorProps.r.v*mult);
                 }
-                if ('o' in animatorProps && 's' in ranges[j]) {
+                if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
                 }
-                if (documentData.strokeWidthAnim && 'sw' in animatorProps && 's' in ranges[j]) {
+                if (documentData.strokeWidthAnim && 'sw' in animatorProps) {
                     sw += animatorProps.sw.v*mult;
                 }
-                if (documentData.strokeColorAnim && 'sc' in animatorProps && 's' in ranges[j]) {
+                if (documentData.strokeColorAnim && 'sc' in animatorProps) {
                     for(k=0;k<3;k+=1){
                         sc[k] = Math.round(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult);
                     }
                 }
-                if (documentData.fillColorAnim && 'fc' in animatorProps && 's' in ranges[j]) {
+                if (documentData.fillColorAnim && 'fc' in animatorProps) {
                     for(k=0;k<3;k+=1){
                         fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult);
                     }
@@ -395,15 +362,17 @@ ITextElement.prototype.getMeasures = function(){
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
-                if ('s' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
+                if ('s' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult));
                 }
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
-                if ('a' in animatorProps && 's' in ranges[j]) {
-                    mult = this.getMult(letters[i].anIndexes[j],ranges[j].s,ranges[j].e,ranges[j].ne,ranges[j].xe,data.t.a[j].s.sh);
+                if ('a' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult);
                 }
             }

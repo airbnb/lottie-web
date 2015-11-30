@@ -6,6 +6,7 @@ var bm_pow = Math.pow;
 var bm_sqrt = Math.sqrt;
 var bm_abs = Math.abs;
 var bm_floor = Math.floor;
+var bm_max = Math.max;
 var bm_min = Math.min;
 var defaultCurveSegments = 50;
 var degToRads = Math.PI/180;

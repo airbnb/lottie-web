@@ -236,7 +236,7 @@ function dataFunctionManager(){
                     ind += 1;
                 }
             }
-            data.t.a[j].totalChars = ind;
+            data.t.a[j].s.totalChars = ind;
             var currentInd = -1, newInd;
             if(animators[j].s.rn === 1){
                 for(i = 0; i < len; i += 1){
