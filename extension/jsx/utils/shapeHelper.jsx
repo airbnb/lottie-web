@@ -14,6 +14,7 @@ var bm_shapeHelper = (function () {
     };
 
     function getItemType(matchName) {
+        bm_eventDispatcher.log(matchName);
         switch (matchName) {
         case 'ADBE Vector Shape - Group':
             return shapeItemTypes.shape;
@@ -26,6 +27,7 @@ var bm_shapeHelper = (function () {
         case 'ADBE Vector Graphic - Stroke':
             return shapeItemTypes.stroke;
         case 'ADBE Vector Graphic - Merge':
+        case 'ADBE Vector Filter - Merge':
             return shapeItemTypes.merge;
         case 'ADBE Vector Graphic - Trim':
         case 'ADBE Vector Filter - Trim':
@@ -43,9 +45,9 @@ var bm_shapeHelper = (function () {
         if (ks.i) {
             var init = 0;
             if (isClosed) {
-            newI[0] = ks.o[0];
-            newO[0] = ks.i[0];
-            newV[0] = ks.v[0];
+                newI[0] = ks.o[0];
+                newO[0] = ks.i[0];
+                newV[0] = ks.v[0];
                 init = 1;
             }
             len = ks.i.length;
@@ -88,7 +90,6 @@ var bm_shapeHelper = (function () {
                     if (prop.property("Shape Direction").value === 3) {
                         reverseShape(ob.ks, ob.closed);
                     }
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.rect && !isText) {
                     ob = {};
                     ob.ty = itemType;
@@ -96,7 +97,6 @@ var bm_shapeHelper = (function () {
                     ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Size'), frameRate);
                     ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
                     ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Roundness'), frameRate);
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.ellipse) {
                     ob = {};
                     ob.d = prop.property("Shape Direction").value;
@@ -110,7 +110,6 @@ var bm_shapeHelper = (function () {
                     ob.fillEnabled = prop.enabled;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
                     ob.ty = itemType;
@@ -147,12 +146,10 @@ var bm_shapeHelper = (function () {
                     if (changed) {
                         ob.d = dashesData;
                     }
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.merge) {
                     ob = {};
                     ob.ty = itemType;
                     ob.mm = prop.property('ADBE Vector Merge Type').value;
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.trim) {
                     ob = {};
                     ob.ty = itemType;
@@ -160,7 +157,6 @@ var bm_shapeHelper = (function () {
                     ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Offset'), frameRate);
                     ob.m = prop.property('Trim Multiple Shapes').value;
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.group) {
                     ob = {
                         ty : itemType,
@@ -179,9 +175,11 @@ var bm_shapeHelper = (function () {
                         trOb.o = bm_keyframeHelper.exportKeyframes(transformProperty.property('Opacity'), frameRate);
                         ob.it.push(trOb);
                     }
+                }
+                if (ob) {
+                    ob.nm = prop.name;
                     array.push(ob);
                 }
-                ob.nm = prop.name;
             }
             
         }

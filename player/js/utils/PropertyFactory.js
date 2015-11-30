@@ -177,70 +177,82 @@ var PropertyFactory = (function(){
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
 
-        }else if(frameNum < this.keyframes[0].t-this.offsetTime){
-            this.mdf = true;
-            this.v = this.keyframes[0].s[0];
-            this.pv = this.keyframes[0].s[0];
-        }else if(frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
-            this.mdf = true;
-            this.v = this.keyframes[this.keyframes.length - 2].h === 1 ? this.keyframes[this.keyframes.length - 2].s[0] : this.keyframes[this.keyframes.length - 2].e[0];
-            this.pv = this.keyframes[this.keyframes.length - 2].h === 1 ? this.keyframes[this.keyframes.length - 2].s[0] : this.keyframes[this.keyframes.length - 2].e[0];
         }else{
-            this.mdf = true;
-            var i = 0,len = this.keyframes.length- 1, dir = 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
-
-            while(flag){
-                keyData = this.keyframes[i];
-                nextKeyData = this.keyframes[i+1];
-                if((nextKeyData.t - this.offsetTime) > frameNum && dir == 1){
-                    break;
-                }
-                if(i < len - 1 && dir == 1 || i > 0 && dir == -1){
-                    i += dir;
+            var keyPropS,keyPropE,isHold;
+            if(frameNum < this.keyframes[0].t-this.offsetTime){
+                this.mdf = true;
+                keyPropS = this.keyframes[0].s[0];
+                isHold = true;
+            }else if(frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
+                this.mdf = true;
+                if(this.keyframes[this.keyframes.length - 2].h === 1){
+                    keyPropS = this.keyframes[this.keyframes.length - 2].s[0];
                 }else{
-                    flag = false;
+                    keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
                 }
+                isHold = true;
+            }else{
+                this.mdf = true;
+                var i = 0,len = this.keyframes.length- 1, dir = 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
+
+                while(flag){
+                    keyData = this.keyframes[i];
+                    nextKeyData = this.keyframes[i+1];
+                    if((nextKeyData.t - this.offsetTime) > frameNum && dir == 1){
+                        break;
+                    }
+                    if(i < len - 1 && dir == 1 || i > 0 && dir == -1){
+                        i += dir;
+                    }else{
+                        flag = false;
+                    }
+                }
+
+                var perc;
+                if(keyData.h !== 1){
+                    var fnc;
+                    if(keyData.__fnct){
+                        fnc = keyData.__fnct;
+                    }else{
+                        fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
+                        keyData.__fnct = fnc;
+                    }
+                    if(frameNum >= nextKeyData.t-this.offsetTime){
+                        perc = 1;
+                    }else if(frameNum < keyData.t-this.offsetTime){
+                        perc = 0;
+                    }else{
+                        perc = fnc('',(frameNum)-(keyData.t-this.offsetTime),0,1,(nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime));
+                    }
+                    keyPropE = keyData.e[0];
+                }
+                keyPropS = keyData.s[0];
+                isHold = keyData.h === 1;
             }
 
-            var perc;
-            if(keyData.h !== 1){
-                var fnc;
-                if(keyData.__fnct){
-                    fnc = keyData.__fnct;
-                }else{
-                    fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
-                    keyData.__fnct = fnc;
-                }
-                if(frameNum >= nextKeyData.t-this.offsetTime){
-                    perc = 1;
-                }else if(frameNum < keyData.t-this.offsetTime){
-                    perc = 0;
-                }else{
-                    perc = fnc('',(frameNum)-(keyData.t-this.offsetTime),0,1,(nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime));
-                }
-            }
             jLen = this.v.i.length;
-            kLen = keyData.s[0].i[0].length;
+            kLen = keyPropS.i[0].length;
             for(j=0;j<jLen;j+=1){
                 for(k=0;k<kLen;k+=1){
-                    if(keyData.h === 1){
-                        this.v.i[j][k] = keyData.s[0].i[j][k];
-                        this.v.o[j][k] = keyData.s[0].o[j][k];
-                        this.v.v[j][k] = keyData.s[0].v[j][k];
-                        this.pv.i[j][k] = keyData.s[0].i[j][k];
-                        this.pv.o[j][k] = keyData.s[0].o[j][k];
-                        this.pv.v[j][k] = keyData.s[0].v[j][k];
+                    if(isHold){
+                        this.v.i[j][k] = keyPropS.i[j][k];
+                        this.v.o[j][k] = keyPropS.o[j][k];
+                        this.v.v[j][k] = keyPropS.v[j][k];
+                        this.pv.i[j][k] = keyPropS.i[j][k];
+                        this.pv.o[j][k] = keyPropS.o[j][k];
+                        this.pv.v[j][k] = keyPropS.v[j][k];
                     }else{
-                        this.v.i[j][k] = keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc;
-                        this.v.o[j][k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
-                        this.v.v[j][k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
-                        this.pv.i[j][k] = keyData.s[0].i[j][k]+(keyData.e[0].i[j][k]-keyData.s[0].i[j][k])*perc;
-                        this.pv.o[j][k] = keyData.s[0].o[j][k]+(keyData.e[0].o[j][k]-keyData.s[0].o[j][k])*perc;
-                        this.pv.v[j][k] = keyData.s[0].v[j][k]+(keyData.e[0].v[j][k]-keyData.s[0].v[j][k])*perc;
+                        this.v.i[j][k] = keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
+                        this.v.o[j][k] = keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
+                        this.v.v[j][k] = keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
+                        this.pv.i[j][k] = keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
+                        this.pv.o[j][k] = keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
+                        this.pv.v[j][k] = keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
                     }
                 }
             }
         }
+
         this.lastFrame = frameNum;
     }
 
@@ -421,7 +433,7 @@ var PropertyFactory = (function(){
         this.k = false;
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
-        this.numNodes = type === 3 ? data.pt.k.v : data.ks.k.v.length;
+        this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
         this.v = type === 3 ? data.pt.k : data.ks.k;
         var shapeData = type === 3 ? data.pt : data.ks;
         this.pv = this.v;
@@ -437,6 +449,7 @@ var PropertyFactory = (function(){
         this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
+        this.numNodes = len;
         this.v = {
             i: new Array(len),
             o: new Array(len),
@@ -869,7 +882,7 @@ var PropertyFactory = (function(){
             }
         }
 
-        return function(prop,trims) {
+        return function TrimTransformerProperty(prop,trims) {
             this.trims  = [];
             this.k = false;
             this.mdf = false;
