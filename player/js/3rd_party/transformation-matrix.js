@@ -48,6 +48,14 @@ var Matrix = (function(){
         return this._t(mCos, mSin, -mSin, mCos, 0, 0);
     }
 
+    function shear(sy,sx){
+        return this._t(1, sy, sx, 1, 0, 0);
+    }
+
+    function skew(ax, ay){
+        return this.shear(Math.tan(ax), Math.tan(ay));
+    }
+
     function scale(sx, sy) {
         if(sx == 1 && sy == 1){
             return this;
@@ -147,6 +155,8 @@ var Matrix = (function(){
     return function(){
         this.reset = reset;
         this.rotate = rotate;
+        this.skew = skew;
+        this.shear = shear;
         this.scale = scale;
         this.setTransform = setTransform;
         this.translate = translate;

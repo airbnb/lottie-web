@@ -117,6 +117,12 @@ var bm_textAnimatorHelper = (function () {
                 case 'ADBE Text Tracking Amount':
                     ob.t = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
+                case 'ADBE Text Skew':
+                    ob.sk = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Skew Axis':
+                    ob.sa = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
                 }
             }
         }

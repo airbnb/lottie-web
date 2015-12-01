@@ -22,6 +22,9 @@ ITextElement.prototype.init = function(){
             if('r' in animatorProps.a) {
                 animatorData.a.r = PropertyFactory.getProp(this,animatorProps.a.r,0,degToRads,this.dynamicProperties);
             }
+            if('sk' in animatorProps.a) {
+                animatorData.a.sk = PropertyFactory.getProp(this,animatorProps.a.sk,0,0,this.dynamicProperties);
+            }
             if('s' in animatorProps.a) {
                 animatorData.a.s = PropertyFactory.getProp(this,animatorProps.a.s,1,0.01,this.dynamicProperties);
             }
@@ -333,6 +336,10 @@ ITextElement.prototype.getMeasures = function(){
                 mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                 if ('r' in animatorProps) {
                     matrixHelper.rotate(animatorProps.r.v*mult);
+                }
+                if ('sk' in animatorProps) {
+                    console.log(animatorProps.sk.v);
+                    matrixHelper.translate(-0,0,0).skew(-animatorProps.sk.v*0.5*degToRads,-animatorProps.sk.v*0.5*degToRads);
                 }
                 if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
