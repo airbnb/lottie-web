@@ -67,6 +67,12 @@
     <!-- <script src="bodymovin.js"></script> -->
     <script src="exports/splitted/data.js"></script>
     <script src="exports/splitted/data_0.js"></script>
+    <script src="exports/splitted/data_1.js"></script>
+    <script src="exports/splitted/data_2.js"></script>
+    <script src="exports/splitted/data_3.js"></script>
+    <script src="exports/splitted/data_4.js"></script>
+    <script src="exports/splitted/data_5.js"></script>
+    <script src="exports/splitted/data_6.js"></script>
 </head>
 <body>
 
@@ -80,13 +86,19 @@
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/splitted/data.json'
+        animationData: bmsmd
     };
     var anim = bodymovin.loadAnimation(animData);
-    /*setTimeout(function(){
+    setTimeout(function(){
+        anim.includeLayers(bmsmd0);
         anim.includeLayers(bmsmd1);
+        anim.includeLayers(bmsmd2);
+        anim.includeLayers(bmsmd3);
+        anim.includeLayers(bmsmd4);
+        anim.includeLayers(bmsmd5);
+        anim.includeLayers(bmsmd6);
     },100);
-    anim.addEventListener('bm:config_ready', configReady);
+    /*anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
     anim.addEventListener('bm:enterFrame', enterFrame);*/
     //anim.play();
