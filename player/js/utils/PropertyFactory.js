@@ -1024,8 +1024,8 @@ var PropertyFactory = (function(){
         }
     }());
 
-    function getDashProp(elem, data, dynamicProperties) {
-        return new DashProperty(elem, data, dynamicProperties);
+    function getDashProp(elem, data,renderer, dynamicProperties) {
+        return new DashProperty(elem, data,renderer, dynamicProperties);
     };
 
     var TextExpressionSelectorProp = (function(){
