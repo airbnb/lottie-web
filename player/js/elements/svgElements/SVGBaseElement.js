@@ -98,6 +98,9 @@ SVGBaseElement.prototype.createElements = function(){
         }
         this.layerElement.setAttribute('id',this.data.ln);
     }
+    if(this.layerElement !== this.parentContainer){
+        this.placeholder = null;
+    }
     /* Todo performance killer
     if(this.data.sy){
         var filterID = 'st_'+randomString(10);

@@ -43,7 +43,7 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp
         elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
         if (layers[i].ty === 0) {
             elems = [];
-            this.buildItems(layers[i].layers,elements[i].getDomElement(),elems,elements[i], placeholder);
+            this.buildItems(layers[i].layers,elements[i].getDomElement(),elems,elements[i], elements[i].placeholder);
             elements[i].setElements(elems);
         }
         if(layers[i].td){
@@ -70,7 +70,7 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
                 elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
                 if (layers[i].ty === 0) {
                     elems = [];
-                    this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], placeholder);
+                    this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
                     elements[j].setElements(elems);
                 }
                 break;
