@@ -926,8 +926,8 @@ var PropertyFactory = (function(){
         }
     }());
 
-    function getDashProp(elemData, data, dynamicProperties) {
-        return new DashProperty(elemData, data, dynamicProperties);
+    function getDashProp(elemData, data,renderer, dynamicProperties) {
+        return new DashProperty(elemData, data,renderer, dynamicProperties);
     };
 
     var ob = {};
