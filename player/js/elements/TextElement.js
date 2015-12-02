@@ -23,7 +23,10 @@ ITextElement.prototype.init = function(){
                 animatorData.a.r = PropertyFactory.getProp(this,animatorProps.a.r,0,degToRads,this.dynamicProperties);
             }
             if('sk' in animatorProps.a) {
-                animatorData.a.sk = PropertyFactory.getProp(this,animatorProps.a.sk,0,0,this.dynamicProperties);
+                animatorData.a.sk = PropertyFactory.getProp(this,animatorProps.a.sk,0,degToRads,this.dynamicProperties);
+            }
+            if('sa' in animatorProps.a) {
+                animatorData.a.sa = PropertyFactory.getProp(this,animatorProps.a.sa,0,degToRads,this.dynamicProperties);
             }
             if('s' in animatorProps.a) {
                 animatorData.a.s = PropertyFactory.getProp(this,animatorProps.a.s,1,0.01,this.dynamicProperties);
@@ -338,8 +341,11 @@ ITextElement.prototype.getMeasures = function(){
                     matrixHelper.rotate(animatorProps.r.v*mult);
                 }
                 if ('sk' in animatorProps) {
-                    console.log(animatorProps.sk.v);
-                    matrixHelper.translate(-0,0,0).skew(-animatorProps.sk.v*0.5*degToRads,-animatorProps.sk.v*0.5*degToRads);
+                    //matrixHelper.skew(-(animatorProps.sk.v*mult*(Math.cos(animatorProps.sa.v*mult))),(animatorProps.sk.v*mult*(Math.sin(animatorProps.sa.v*mult))));
+                    matrixHelper.skewFromAxis(-(animatorProps.sk.v*mult),-animatorProps.sa.v*mult);
+                    /*matrixHelper.rotate(-animatorProps.sa.v*mult);
+                    matrixHelper.skew(-(animatorProps.sk.v*mult),0);
+                    matrixHelper.rotate(animatorProps.sa.v*mult);*/
                 }
                 if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
