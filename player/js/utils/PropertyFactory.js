@@ -275,12 +275,17 @@ var PropertyFactory = (function(){
                 }
             }
             if(this.mdf){
-                this.v.reset().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                if(this.data.p.s){
+                    this.v.reset().translate(this.p.x.v,this.p.y.v).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }else{
+                    this.v.reset().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }
             }
         }
         return function(elemData,data,arr){
             this.dynamicProperties = [];
             this.mdf = false;
+            this.data = data;
             this.getInterpolatedValue = processKeys;
             if(typeof(data.a[0]) === 'number'){
                 this.a = new MultiDimensionalProperty(data.a);
@@ -288,11 +293,18 @@ var PropertyFactory = (function(){
                 this.a = new KeyframedMultidimensionalProperty(elemData,data.a,0);
                 this.dynamicProperties.push(this.a);
             }
-            if(typeof(data.p[0]) === 'number'){
-                this.p = new MultiDimensionalProperty(data.p);
+            if(data.p.s){
+                this.p = {
+                    x: getProp(elemData,data.p.x,0,0,this.dynamicProperties),
+                    y: getProp(elemData,data.p.y,0,0,this.dynamicProperties)
+                }
             }else{
-                this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
-                this.dynamicProperties.push(this.p);
+                if(typeof(data.p[0]) === 'number'){
+                    this.p = new MultiDimensionalProperty(data.p);
+                }else{
+                    this.p = new KeyframedMultidimensionalProperty(elemData,data.p,0);
+                    this.dynamicProperties.push(this.p);
+                }
             }
             if(typeof(data.s[0]) === 'number'){
                 this.s = new MultiDimensionalProperty(data.s,0.01);
@@ -310,7 +322,11 @@ var PropertyFactory = (function(){
                 arr.push(this);
                 this.v = new Matrix();
             }else{
-                this.v = new Matrix().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                if(this.data.p.s){
+                    this.v = new Matrix().translate(this.p.x.v,this.p.y.v).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }else{
+                    this.v = new Matrix().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }
             }
         }
     }());
