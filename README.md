@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
+## V 3.1.5:
+- Fix AE 13.6
+
 ## V 3.1.4:
 - svg transform bug fix
 
@@ -48,23 +51,6 @@ After Effects plugin for exporting animations to svg + js or canvas + js
 - bodymovin.setQuality to optimize player performance. explained below.
 - segments: export animation in segments. more below.
 - snapshot: take an svg snapshot of the animation to use as poster. more below.
-
-## V 2.1.3
-- rounding path and mask coords. should give a perf boost and fixes sime glitches.
-- fixed closing rects.
-- new methods playSegments and resetSegments to play a part of the animation.
-- fix for canvas shapes fill opacity
-
-## V 2.1.1
-- reverse paths
-- mask fix
-- line join and line cap support
-- trim circles
-
-## V 2.1
-- for CC 2015 only
-- destroy method to release animation resources
-- minor improvements
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
 
