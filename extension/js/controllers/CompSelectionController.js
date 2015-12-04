@@ -225,7 +225,12 @@ var compSelectionController = (function () {
     
     function updateCompositionsList(ev) {
         markCompsForRemoval();
-        var list = JSON.parse(ev.data);
+        var list;
+        if ((typeof ev.data) === 'string') {
+            list = JSON.parse(ev.data);
+        } else {
+            list = JSON.parse(JSON.stringify(ev.data));
+        }
         var i, len = list.length;
         for (i = 0; i < len; i += 1) {
             setCompositionData(list[i]);

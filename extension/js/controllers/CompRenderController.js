@@ -29,7 +29,11 @@ var compRenderController = (function () {
     
     function renderStartHandler(ev) {
         renders.empty();
-        compositions = JSON.parse(ev.data);
+        if (typeof ev.data === 'string') {
+            compositions = JSON.parse(ev.data);
+        } else {
+            compositions = JSON.parse(JSON.stringify(ev.data));
+        }
         var i, len = compositions.length, elem;
         for (i = 0; i < len; i += 1) {
             elem = $(elementTemplate);
@@ -72,7 +76,7 @@ var compRenderController = (function () {
     
     function renderUpdateHandler(ev) {
         var messageData = ev.data;
-        var id = messageData.compId;
+        var id = messageData.compId.toString();
         var i = 0, len = compositions.length;
         while (i < len) {
             if (id === compositions[i].id.toString()) {
