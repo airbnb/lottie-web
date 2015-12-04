@@ -1104,6 +1104,20 @@ var PropertyFactory = (function(){
                         mult = 1 - mult;
                     }
                 }
+            }else if(type == 5){
+                if(e === s){
+                    mult = ind >= e ? 0 : 1;
+                }else{
+                    var tot = e - s;
+
+                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;
+                }
+            }else if(type == 6){
+                if(e === s){
+                    mult = ind >= e ? 0 : 1;
+                }else{
+                    mult = (1+(Math.cos(Math.PI+Math.PI*2*(ind-s)/(e-s))+0))/2;
+                }
             }else {
                 if(ind >= floor(s)){
                     if(ind-s < 0){

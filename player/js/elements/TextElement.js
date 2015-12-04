@@ -438,45 +438,4 @@ ITextElement.prototype.getMeasures = function(){
     }
 };
 
-ITextElement.prototype.getMult = function(ind,s,e,ne,xe,type){
-    var easer = bez.getEasingCurve(ne/100,0,1-xe/100,1);
-    var mult = 0;
-    if(type == 2){
-        if(e === s){
-            mult = ind >= e ? 1 : 0;
-        }else{
-            mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
-        }
-        mult = easer('',mult,0,1,1);
-    }else if(type == 3){
-        if(e === s){
-            mult = ind >= e ? 0 : 1;
-        }else{
-            mult = 1 - Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
-        }
-
-        mult = easer('',mult,0,1,1);
-    }else if(type == 4){
-        if(e === s){
-            mult = ind >= e ? 0 : 1;
-        }else{
-            mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
-            if(mult<.5){
-                mult *= 2;
-            }else{
-                mult = 1 - mult;
-            }
-        }
-    }else {
-        if(ind >= Math.floor(s)){
-            if(ind-s < 0){
-                mult = 1 - (s - ind);
-            }else{
-                mult = Math.max(0,Math.min(e-ind,1));
-            }
-        }
-    }
-    return mult;
-};
-
 ITextElement.prototype.emptyProp = new LetterProps();
