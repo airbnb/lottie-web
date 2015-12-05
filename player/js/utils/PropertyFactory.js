@@ -373,7 +373,11 @@ var PropertyFactory = (function(){
                 }
             }
             if(this.mdf){
-                this.v.reset().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                if(this.data.p.s){
+                    this.v.reset().translate(this.px.v,this.py.v).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }else{
+                    this.v.reset().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }
             }
         }
 
@@ -382,17 +386,27 @@ var PropertyFactory = (function(){
             this.frameId = -1;
             this.dynamicProperties = [];
             this.mdf = false;
+            this.data = data;
             this.getValue = processKeys;
             this.v = new Matrix();
             this.a = getProp(elem,data.a,1,0,this.dynamicProperties);
-            this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
+            if(data.p.s){
+                this.px = getProp(elem,data.p.x,0,0,this.dynamicProperties);
+                this.py = getProp(elem,data.p.y,0,0,this.dynamicProperties);
+            }else{
+                this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
+            }
             this.s = getProp(elem,data.s,1,0.01,this.dynamicProperties);
             this.r = getProp(elem,data.r,0,degToRads,this.dynamicProperties);
             this.o = getProp(elem,data.o,0,0.01,arr);
             if(this.dynamicProperties.length){
                 arr.push(this);
             }else{
-                this.v = this.v.translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                if(this.data.p.s){
+                    this.v = new Matrix().translate(this.px.v,this.py.v).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }else{
+                    this.v = new Matrix().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                }
             }
             Object.defineProperty(this, "position", { get: positionGetter});
             Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
