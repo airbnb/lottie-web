@@ -403,9 +403,9 @@ var PropertyFactory = (function(){
                 arr.push(this);
             }else{
                 if(this.data.p.s){
-                    this.v = new Matrix().translate(this.px.v,this.py.v).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                    this.v.translate(this.px.v,this.py.v).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
                 }else{
-                    this.v = new Matrix().translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
+                    this.v.translate(this.p.v[0],this.p.v[1]).rotate(this.r.v).scale(this.s.v[0],this.s.v[1]).translate(-this.a.v[0],-this.a.v[1]);
                 }
             }
             Object.defineProperty(this, "position", { get: positionGetter});
@@ -1044,9 +1044,8 @@ var PropertyFactory = (function(){
 
     var TextExpressionSelectorProp = (function(){
 
-        function getValueProxy(index,total){
+        function getValueProxy(index){
             this.textIndex = index+1;
-            this.textTotal = total;
             this.getValue();
             return this.v;
         }
@@ -1056,6 +1055,7 @@ var PropertyFactory = (function(){
             this.comp = elem.comp;
             this.mult = .01;
             this.type = 'textSelector';
+            this.textTotal = data.totalChars
             checkExpressions.bind(this)(elem,data);
             this.getMult = getValueProxy;
         }
