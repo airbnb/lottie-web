@@ -1,0 +1,56 @@
+function HSolidElement(data,parentContainer,globalData,comp, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+}
+createElement(HBaseElement, HSolidElement);
+
+HSolidElement.prototype.createElements = function(){
+    var parent = document.createElement('div');
+    styleDiv(parent);
+    var cont = document.createElementNS(svgNS,'svg');
+    cont.setAttribute('width',this.data.sw);
+    cont.setAttribute('height',this.data.sh);
+    parent.appendChild(cont);
+    this.layerElement = parent;
+    this.parentContainer.appendChild(parent);
+    this.innerElem = parent;
+    if(this.data.ln){
+        this.innerElem.setAttribute('id',this.data.ln);
+    }
+    var rect = document.createElementNS(svgNS,'rect');
+    rect.setAttribute('width',this.data.sw);
+    rect.setAttribute('height',this.data.sh);
+    rect.setAttribute('fill',this.data.sc);
+    cont.appendChild(rect);
+    if(this.data.hasMask){
+        this.maskedElement = rect;
+    }
+};
+
+
+
+HSolidElement.prototype.hide = function(){
+    if(!this.hidden){
+        this.innerElem.setAttribute('visibility','hidden');
+        this.hidden = true;
+    }
+};
+
+HSolidElement.prototype.renderFrame = function(parentMatrix){
+    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    if(renderParent===false){
+        this.hide();
+        return;
+    }
+    if(this.hidden){
+        this.hidden = false;
+        this.innerElem.setAttribute('visibility', 'visible');
+    }
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
+};
+
+HSolidElement.prototype.destroy = function(){
+    this.parent.destroy.call();
+    this.innerElem =  null;
+};
