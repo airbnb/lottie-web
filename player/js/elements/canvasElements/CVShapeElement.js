@@ -420,6 +420,4 @@ CVShapeElement.prototype.destroy = function(){
     this.viewData.length = 0;
     this.parent.destroy.call();
 };
-for (var attr in ShapeInterface.prototype) {
-    if (ShapeInterface.prototype.hasOwnProperty(attr)) CVShapeElement.prototype[attr] = ShapeInterface.prototype[attr];
-}
+extendPrototype(ShapeInterface,CVShapeElement);

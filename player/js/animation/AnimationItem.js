@@ -47,6 +47,11 @@ AnimationItem.prototype.setParams = function(params) {
             break;
         case 'svg':
             this.renderer = new SVGRenderer(this, params.renderer);
+            break;
+        case 'hybrid':
+        case 'html':
+            this.renderer = new HybridRenderer(this, params.renderer);
+            break;
     }
     this.animType = animType;
 
@@ -213,7 +218,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     /*
-    this.firstFrame = 63;
+    this.firstFrame = 22;
     this.totalFrames = 1;
     this.animationData.tf = 1;
     //this.frameMult = 10000/1000;

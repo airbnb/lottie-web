@@ -6,6 +6,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     }
 }
 createElement(SVGBaseElement, ICompElement);
+extendPrototype(ExpressionComp,ICompElement);
 
 ICompElement.prototype.getComposingElement = function(){
     return this.layerElement;
@@ -77,6 +78,3 @@ ICompElement.prototype.destroy = function(){
         this.elements[i].destroy();
     }
 };
-for (var attr in ExpressionComp.prototype) {
-    if (ExpressionComp.prototype.hasOwnProperty(attr)) ICompElement.prototype[attr] = ExpressionComp.prototype[attr];
-}

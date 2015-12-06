@@ -338,6 +338,4 @@ CanvasRenderer.prototype.renderFrame = function(num){
     }
 };
 
-for (var attr in ExpressionComp.prototype) {
-    if (ExpressionComp.prototype.hasOwnProperty(attr)) CanvasRenderer.prototype[attr] = ExpressionComp.prototype[attr];
-}
+extendPrototype(ExpressionComp,CanvasRenderer);

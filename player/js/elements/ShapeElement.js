@@ -418,6 +418,4 @@ IShapeElement.prototype.destroy = function(){
     this.parentContainer = null;
     this.placeholder = null;
 };
-for (var attr in ShapeInterface.prototype) {
-    if (ShapeInterface.prototype.hasOwnProperty(attr)) IShapeElement.prototype[attr] = ShapeInterface.prototype[attr];
-}
+extendPrototype(ShapeInterface,IShapeElement);
