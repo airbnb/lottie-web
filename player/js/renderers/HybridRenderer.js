@@ -94,7 +94,10 @@ HybridRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
 };
 
 HybridRenderer.prototype.createShape = function (data,parentContainer,comp, placeholder) {
-    return new IShapeElement(data, parentContainer,this.globalData,comp, placeholder);
+    if(comp.isSvg){
+        return new IShapeElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HShapeElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
 HybridRenderer.prototype.createText = function (data,parentContainer,comp, placeholder) {
@@ -106,12 +109,15 @@ HybridRenderer.prototype.createImage = function (data,parentContainer,comp, plac
 };
 
 HybridRenderer.prototype.createComp = function (data,parentContainer,comp, placeholder) {
+    if(comp.isSvg){
+        return new ICompElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
     return new HCompElement(data, parentContainer,this.globalData,comp, placeholder);
 
 };
 
 HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, placeholder) {
-    if(comp.data.hasMask){
+    if(comp.isSvg){
         return new ISolidElement(data, parentContainer,this.globalData,comp, placeholder);
     }
     return new HSolidElement(data, parentContainer,this.globalData,comp, placeholder);
@@ -127,6 +133,9 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     var svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('width','1');
+    svg.setAttribute('height','1');
+    styleDiv(svg);
     this.animationItem.container.appendChild(svg);
     var defs = document.createElementNS(svgNS,'defs');
     svg.appendChild(defs);

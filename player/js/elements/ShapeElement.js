@@ -133,7 +133,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
             if(addedTrims.length){
                 arr[i].trimmed = true;
             }
-            data[i].sh = PropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims, this.comp);
+            data[i].sh = PropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims);
             jLen = this.stylesList.length;
             var element, hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){

@@ -119,6 +119,15 @@ var Matrix = (function(){
         return this;
     }
 
+    function clone(matr){
+        matr.props[0] = this.props[0];
+        matr.props[1] = this.props[1];
+        matr.props[2] = this.props[2];
+        matr.props[3] = this.props[3];
+        matr.props[4] = this.props[4];
+        matr.props[5] = this.props[5];
+    }
+
     function applyToPoint(x, y) {
 
         return {
@@ -176,6 +185,7 @@ var Matrix = (function(){
         this.toArray = toArray;
         this.toCSS = toCSS;
         this.toString = toString;
+        this.clone = clone;
         this._t = this.transform;
 
         this.props = [1,0,0,1,0,0];

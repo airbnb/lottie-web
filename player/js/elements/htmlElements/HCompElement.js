@@ -1,8 +1,12 @@
 function HCompElement(data,parentContainer,globalData,comp, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
+    this.isSvg = false;
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+    }
+    if(this.data.hasMask) {
+        this.isSvg = true;
     }
 }
 createElement(HBaseElement, HCompElement);

@@ -1,6 +1,7 @@
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
+    this.isSvg = true;
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
