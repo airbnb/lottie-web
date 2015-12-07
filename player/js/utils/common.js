@@ -1,4 +1,4 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -66,7 +66,7 @@ function BMSegmentStartEvent(n,f,t){
     this.totalFrames = t;
 }
 
-function addEventListener(eventName, callback){
+function _addEventListener(eventName, callback){
 
     if (!this._cbs[eventName]){
         this._cbs[eventName] = [];
@@ -75,7 +75,7 @@ function addEventListener(eventName, callback){
 
 }
 
-function removeEventListener(eventName,callback){
+function _removeEventListener(eventName,callback){
 
     if (!callback){
         this._cbs[eventName] = null;
@@ -96,7 +96,7 @@ function removeEventListener(eventName,callback){
 
 }
 
-function triggerEvent(eventName, args){
+function _triggerEvent(eventName, args){
 
     if (this._cbs[eventName]) {
         var len = this._cbs[eventName].length;

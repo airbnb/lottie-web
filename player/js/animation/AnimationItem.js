@@ -528,6 +528,6 @@ AnimationItem.prototype.trigger = function(name){
     }
 };
 
-AnimationItem.prototype.addEventListener = addEventListener;
-AnimationItem.prototype.removeEventListener = removeEventListener;
-AnimationItem.prototype.triggerEvent = triggerEvent;
+AnimationItem.prototype.addEventListener = _addEventListener;
+AnimationItem.prototype.removeEventListener = _removeEventListener;
+AnimationItem.prototype.triggerEvent = _triggerEvent;

@@ -4,7 +4,6 @@ var animationManager = (function(){
     var initTime = 0;
     var isPaused = true;
     var len = 0;
-    var ctx,cvFlag = false;
 
     function registerAnimation(element, animationData){
         if(!element){
@@ -25,7 +24,6 @@ var animationManager = (function(){
     }
 
     function loadAnimation(params){
-        ctx = document.getElementById('cvs').getContext('2d');
         var animItem = new AnimationItem();
         animItem.setParams(params);
         registeredAnimations.push({elem: null,animation:animItem});
@@ -64,8 +62,7 @@ var animationManager = (function(){
         }
     }
 
-    function resume() {
-        var nowTime = Date.now();
+    function resume(nowTime) {
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
@@ -78,14 +75,11 @@ var animationManager = (function(){
             }
         }
         initTime = nowTime;
-        if(cvFlag){
-            cvFlag = false;
-            ctx.fillStyle = '#ff0000';
-        }else{
-            cvFlag = true;
-            ctx.fillStyle = '#00ff00';
-        }
-        ctx.fillRect(0,0,100,100);
+        requestAnimationFrame(resume);
+    }
+
+    function first(nowTime){
+        initTime = nowTime;
         requestAnimationFrame(resume);
     }
 
@@ -156,8 +150,7 @@ var animationManager = (function(){
     }
 
     function start(){
-        initTime = Date.now();
-        requestAnimationFrame(resume);
+        requestAnimationFrame(first);
     }
     //start();
 
