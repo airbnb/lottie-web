@@ -81,11 +81,31 @@ var bm_generalUtils = (function () {
         };
     }());
     
+    function convertPathsToAbsoluteValues(ks) {
+        var i, len;
+        if (ks.i) {
+            len = ks.i.length;
+            for (i = 0; i < len; i += 1) {
+                ks.i[i][0] += ks.v[i][0];
+                ks.i[i][1] += ks.v[i][1];
+                ks.o[i][0] += ks.v[i][0];
+                ks.o[i][1] += ks.v[i][1];
+            }
+        } else {
+            len = ks.length;
+            for (i = 0; i < len - 1; i += 1) {
+                convertPathsToAbsoluteValues(ks[i].s[0]);
+                convertPathsToAbsoluteValues(ks[i].e[0]);
+            }
+        }
+    }
+    
     ob.random = random;
     ob.roundNumber = roundNumber;
     ob.setTimeout = setTimeout;
     ob.arrayRgbToHex = arrayRgbToHex;
     ob.iterateProperty = iterateProperty;
+    ob.convertPathsToAbsoluteValues = convertPathsToAbsoluteValues;
     
     return ob;
     

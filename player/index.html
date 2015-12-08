@@ -12,8 +12,8 @@
         }
         #bodymovin{
             background-color:#000;
-            width:533px;
-            height:300px;
+            width:970px;
+            height:250px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -65,6 +65,7 @@
     <script src="js/elements/htmlElements/HSolidElement.js"></script>
     <script src="js/elements/htmlElements/HCompElement.js"></script>
     <script src="js/elements/htmlElements/HShapeElement.js"></script>
+    <script src="js/elements/htmlElements/HTextElement.js"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
      <script src="js/module.js"></script>
@@ -80,10 +81,10 @@
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'html',
-        loop: false,
+        loop: true,
         prerender: false,
         autoplay: true,
-        path: 'exports/render/data.json'
+        path: 'exports/render/data_full.json'
     };
     var anim = bodymovin.loadAnimation(animData);
     //anim.play();

@@ -112,10 +112,10 @@ var PropertyFactory = (function(){
                                 keyData.__fnct = [];
                             }
                             if(!keyData.__fnct[i]){
-                                outX = keyData.o.x[i] ? keyData.o.x[i] : keyData.o.x[0];
-                                outY = keyData.o.y[i] ? keyData.o.y[i] : keyData.o.y[0];
-                                inX = keyData.i.x[i] ? keyData.i.x[i] : keyData.i.x[0];
-                                inY = keyData.i.y[i] ? keyData.i.y[i] : keyData.i.y[0];
+                                outX = keyData.o.x[i] || keyData.o.x[0];
+                                outY = keyData.o.y[i] || keyData.o.y[0];
+                                inX = keyData.i.x[i] || keyData.i.x[0];
+                                inY = keyData.i.y[i] || keyData.i.y[0];
                             }
                         }else{
                             isArray = false;
@@ -268,35 +268,6 @@ var PropertyFactory = (function(){
         }
     }
 
-    function getKeys(arr){
-        var i = 0, len = arr.length;
-        if(!this.keyframes){
-            var i = 0, len = arr.length;
-            while(i<len){
-                if(arr[i] === 0){
-                    return;
-                }
-                i+=1;
-            }
-            arr.push(0);
-        }else{
-            var j, jLen = this.keyframes.length,found;
-            for(j=0;j<jLen;j+=1){
-                i = 0;
-                found = false;
-                while(i<len){
-                    if(arr[i] === this.keyframes[j].t){
-                        found = true;
-                    }
-                    i+=1;
-                }
-                if(!found){
-                    arr.push(this.keyframes[j].t);
-                }
-            }
-        }
-    }
-
     function ValueProperty(elem,data, mult){
         this.mult = mult;
         this.v = mult ? data.k * mult : data.k;
@@ -304,7 +275,6 @@ var PropertyFactory = (function(){
         this.mdf = false;
         this.comp = elem.comp;
         this.k = false;
-        this.getKeys = getKeys;
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -316,7 +286,6 @@ var PropertyFactory = (function(){
         checkExpressions.bind(this)(elem,data);
         this.v = new Array(data.k.length);
         this.pv = new Array(data.k.length);
-        this.getKeys = getKeys;
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
@@ -338,7 +307,6 @@ var PropertyFactory = (function(){
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
         this.getValue = getValue;
-        this.getKeys = getKeys;
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -356,7 +324,6 @@ var PropertyFactory = (function(){
         this.lastValue = new Array(data.k[0].s.length);
         this.lastPValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;
-        this.getKeys = getKeys;
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -391,12 +358,6 @@ var PropertyFactory = (function(){
             }
             return this.o.pv;
         }
-        function getKeys(arr){
-            this.a.getKeys(arr);
-            this.p.getKeys(arr);
-            this.s.getKeys(arr);
-            this.r.getKeys(arr);
-        }
         function processKeys(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
@@ -427,7 +388,6 @@ var PropertyFactory = (function(){
             this.mdf = false;
             this.data = data;
             this.getValue = processKeys;
-            this.getKeys = getKeys;
             this.v = new Matrix();
             this.a = getProp(elem,data.a,1,0,this.dynamicProperties);
             if(data.p.s){
@@ -491,7 +451,6 @@ var PropertyFactory = (function(){
         this.v = type === 3 ? data.pt.k : data.ks.k;
         var shapeData = type === 3 ? data.pt : data.ks;
         this.pv = this.v;
-        this.getKeys = getKeys;
         checkExpressions.bind(this)(elem,shapeData);
     }
 
@@ -500,7 +459,6 @@ var PropertyFactory = (function(){
         this.offsetTime = elem.data.st;
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
-        this.getKeys = getKeys;
         this.k = true;
         this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
@@ -581,11 +539,6 @@ var PropertyFactory = (function(){
             }
         }
 
-        function getKeys(arr){
-            this.p.getKeys(arr);
-            this.s.getKeys(arr);
-        }
-
         return function(elem,data) {
             this.v = {
                 v: new Array(4),
@@ -604,7 +557,6 @@ var PropertyFactory = (function(){
             this.mdf = false;
             this.getValue = processKeys;
             this.convertEllToPath = convertEllToPath;
-            this.getKeys = getKeys;
             this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
             this.s = getProp(elem,data.s,1,0,this.dynamicProperties);
             if(this.dynamicProperties.length){
@@ -710,12 +662,6 @@ var PropertyFactory = (function(){
             }
         }
 
-        function getKeys(arr){
-            this.p.getKeys(arr);
-            this.s.getKeys(arr);
-            this.r.getKeys(arr);
-        }
-
         return function(elem,data) {
             this.v = {
                 v: new Array(8),
@@ -734,7 +680,6 @@ var PropertyFactory = (function(){
             this.closed = true;
             this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
-            this.getKeys = getKeys;
             this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
             this.s = getProp(elem,data.s,1,0,this.dynamicProperties);
             this.r = getProp(elem,data.r,0,0,this.dynamicProperties);

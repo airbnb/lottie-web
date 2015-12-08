@@ -101,7 +101,10 @@ HybridRenderer.prototype.createShape = function (data,parentContainer,comp, plac
 };
 
 HybridRenderer.prototype.createText = function (data,parentContainer,comp, placeholder) {
-    return new SVGTextElement(data, parentContainer,this.globalData,comp, placeholder);
+    if(comp.isSvg){
+        return new SVGTextElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HTextElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
 HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {

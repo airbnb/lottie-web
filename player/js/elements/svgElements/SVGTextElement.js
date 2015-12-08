@@ -7,7 +7,6 @@ createElement(SVGBaseElement, SVGTextElement);
 
 SVGTextElement.prototype.init = ITextElement.prototype.init;
 SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
-SVGTextElement.prototype.getMult = ITextElement.prototype.getMult;
 
 SVGTextElement.prototype.createElements = function(){
 
@@ -125,7 +124,7 @@ SVGTextElement.prototype.createElements = function(){
 
 SVGTextElement.prototype.hide = function(){
     if(!this.hidden){
-        this.innerElem.setAttribute('visibility','hidden');
+        this.innerElem.style.display = 'none';
         this.hidden = true;
     }
 };
@@ -139,7 +138,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     }
     if(this.hidden){
         this.hidden = false;
-        this.innerElem.setAttribute('visibility', 'visible');
+        this.innerElem.style.display = 'block';
     }
     if(!this.data.hasMask){
         if(this.finalTransform.matMdf){
