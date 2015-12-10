@@ -589,7 +589,7 @@ var PropertyFactory = (function(){
                 this.r = new KeyframedValueProperty(elemData,data.r,0);
                 this.dynamicProperties.push(this.r);
             }else{
-                this.r = new ValueProperty(data.r,degToRads);
+                this.r = new ValueProperty(data.r,0);
             }
             if(this.dynamicProperties.length){
                 arr.push(this);
