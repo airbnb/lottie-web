@@ -22,6 +22,12 @@ ITextElement.prototype.init = function(){
             if('r' in animatorProps.a) {
                 animatorData.a.r = PropertyFactory.getProp(this,animatorProps.a.r,0,degToRads,this.dynamicProperties);
             }
+            if('sk' in animatorProps.a) {
+                animatorData.a.sk = PropertyFactory.getProp(this,animatorProps.a.sk,0,degToRads,this.dynamicProperties);
+            }
+            if('sa' in animatorProps.a) {
+                animatorData.a.sa = PropertyFactory.getProp(this,animatorProps.a.sa,0,degToRads,this.dynamicProperties);
+            }
             if('s' in animatorProps.a) {
                 animatorData.a.s = PropertyFactory.getProp(this,animatorProps.a.s,1,0.01,this.dynamicProperties);
             }
@@ -334,6 +340,13 @@ ITextElement.prototype.getMeasures = function(){
                 if ('r' in animatorProps) {
                     matrixHelper.rotate(animatorProps.r.v*mult);
                 }
+                if ('sk' in animatorProps) {
+                    //matrixHelper.skew(-(animatorProps.sk.v*mult*(Math.cos(animatorProps.sa.v*mult))),(animatorProps.sk.v*mult*(Math.sin(animatorProps.sa.v*mult))));
+                    matrixHelper.skewFromAxis(-(animatorProps.sk.v*mult),-animatorProps.sa.v*mult);
+                    /*matrixHelper.rotate(-animatorProps.sa.v*mult);
+                    matrixHelper.skew(-(animatorProps.sk.v*mult),0);
+                    matrixHelper.rotate(animatorProps.sa.v*mult);*/
+                }
                 if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
                 }
@@ -423,47 +436,6 @@ ITextElement.prototype.getMeasures = function(){
     if(lettersChangedFlag){
         this.renderedLetters = lettersValue;
     }
-};
-
-ITextElement.prototype.getMult = function(ind,s,e,ne,xe,type){
-    var easer = bez.getEasingCurve(ne/100,0,1-xe/100,1);
-    var mult = 0;
-    if(type == 2){
-        if(e === s){
-            mult = ind >= e ? 1 : 0;
-        }else{
-            mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
-        }
-        mult = easer('',mult,0,1,1);
-    }else if(type == 3){
-        if(e === s){
-            mult = ind >= e ? 0 : 1;
-        }else{
-            mult = 1 - Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
-        }
-
-        mult = easer('',mult,0,1,1);
-    }else if(type == 4){
-        if(e === s){
-            mult = ind >= e ? 0 : 1;
-        }else{
-            mult = Math.max(0,Math.min(0.5/(e-s) + (ind-s)/(e-s),1));
-            if(mult<.5){
-                mult *= 2;
-            }else{
-                mult = 1 - mult;
-            }
-        }
-    }else {
-        if(ind >= Math.floor(s)){
-            if(ind-s < 0){
-                mult = 1 - (s - ind);
-            }else{
-                mult = Math.max(0,Math.min(e-ind,1));
-            }
-        }
-    }
-    return mult;
 };
 
 ITextElement.prototype.emptyProp = new LetterProps();

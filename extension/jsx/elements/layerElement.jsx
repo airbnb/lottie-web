@@ -102,7 +102,7 @@ var bm_layerElement = (function () {
         layerData.ind = ind;
         layerData.ty = layerType;
         layerData.nm = layerInfo.name;
-        if(layerInfo.name.substring(0,1) === '#'){
+        if (layerInfo.name.substring(0, 1) === '#') {
             layerData.ln = layerInfo.name.substr(1);
         }
         if (layerInfo.parent !== null) {
@@ -182,6 +182,9 @@ var bm_layerElement = (function () {
             layerData.sc = bm_generalUtils.arrayRgbToHex(layerInfo.source.mainSource.color);
         } else if (lType === ob.layerTypes.text) {
             bm_textHelper.exportText(layerInfo, layerData, frameRate);
+        } else if (lType === ob.layerTypes.precomp) {
+            layerData.w = layerInfo.width;
+            layerData.h = layerInfo.height;
         }
         layerData.ip = layerInfo.inPoint * frameRate;
         layerData.op = layerInfo.outPoint * frameRate;

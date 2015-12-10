@@ -1,11 +1,13 @@
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
+    this.isSvg = true;
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
 }
 createElement(SVGBaseElement, ICompElement);
+extendPrototype(ExpressionComp,ICompElement);
 
 ICompElement.prototype.getComposingElement = function(){
     return this.layerElement;
@@ -77,6 +79,3 @@ ICompElement.prototype.destroy = function(){
         this.elements[i].destroy();
     }
 };
-for (var attr in ExpressionComp.prototype) {
-    if (ExpressionComp.prototype.hasOwnProperty(attr)) ICompElement.prototype[attr] = ExpressionComp.prototype[attr];
-}

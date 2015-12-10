@@ -12,8 +12,8 @@
         }
         #bodymovin{
             background-color:#000;
-            width:100%;
-            height:100%;
+            width:533px;
+            height:300px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -39,6 +39,7 @@
     <script src="js/utils/PropertyFactory.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
+    <script src="js/renderers/HybridRenderer.js"></script>
     <script src="js/mask.js"></script>
     <script src="js/effects/SliderEffect.js"></script>
     <script src="js/effects.js"></script>
@@ -60,6 +61,11 @@
     <script src="js/elements/canvasElements/CVShapeItemElement.js"></script>
     <script src="js/elements/canvasElements/CVSolidElement.js"></script>
     <script src="js/elements/canvasElements/CVTextElement.js"></script>
+    <script src="js/elements/htmlElements/HBaseElement.js"></script>
+    <script src="js/elements/htmlElements/HSolidElement.js"></script>
+    <script src="js/elements/htmlElements/HCompElement.js"></script>
+    <script src="js/elements/htmlElements/HShapeElement.js"></script>
+    <script src="js/elements/htmlElements/HTextElement.js"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
      <script src="js/module.js"></script>
@@ -75,15 +81,15 @@
     <script src="exports/splitted/data_6.js"></script>
 </head>
 <body>
-
+<canvas id="cvs" width="100" height="100"></canvas>
 <div id="bodymovin"></div>
 
 <script>
 
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'svg',
-        loop: false,
+        renderer: 'canvas',
+        loop: true,
         prerender: false,
         autoplay: true,
         animationData: bmsmd

@@ -1,35 +1,7 @@
-/*!
- Transformation Matrix v2.0
- (c) Epistemex 2014-2015
- www.epistemex.com
- By Ken Fyrstenberg
- Contributions by leeoniya.
- License: MIT, header required.
- */
+var Matrix = (function () {
+    'use strict';
 
-/**
- * 2D transformation matrix object initialized with identity matrix.
- *
- * The matrix can synchronize a canvas context by supplying the context
- * as an argument, or later apply current absolute transform to an
- * existing context.
- *
- * All values are handled as floating point values.
- *
- * @param {CanvasRenderingContext2D} [context] - Optional context to sync with Matrix
- * @prop {number} a - scale x
- * @prop {number} b - shear y
- * @prop {number} c - shear x
- * @prop {number} d - scale y
- * @prop {number} e - translate x
- * @prop {number} f - translate y
- * @prop {CanvasRenderingContext2D|null} [context=null] - set or get current canvas context
- * @constructor
- */
-
-var Matrix = (function(){
-
-    function reset(){
+    function reset() {
         this.props[0] = 1;
         this.props[1] = 0;
         this.props[2] = 0;
@@ -40,7 +12,7 @@ var Matrix = (function(){
     }
 
     function rotate(angle) {
-        if(angle === 0){
+        if (angle === 0) {
             return this;
         }
         var mCos = Math.cos(angle);
@@ -48,22 +20,21 @@ var Matrix = (function(){
         return this._t(mCos, mSin, -mSin, mCos, 0, 0);
     }
 
-    function shear(sx,sy){
+    function shear(sx, sy) {
         return this._t(1, sy, sx, 1, 0, 0);
     }
 
-    function skew(ax, ay){
+    function skew(ax, ay) {
         return this.shear(Math.tan(ax), Math.tan(ay));
     }
 
-    function skewFromAxis(ax, angle){
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+    function skewFromAxis(ax, angle) {
+        var mCos = Math.cos(angle), mSin = Math.sin(angle);
         return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, Math.tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
     function scale(sx, sy) {
-        if(sx == 1 && sy == 1){
+        if (sx === 1 && sy === 1) {
             return this;
         }
         return this._t(sx, 0, 0, sy, 0, 0);
@@ -80,7 +51,7 @@ var Matrix = (function(){
     }
 
     function translate(tx, ty) {
-        if(tx !== 0 || ty !== 0){
+        if(tx !== 0 || ty !== 0) {
             this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
             this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
         }
@@ -89,8 +60,8 @@ var Matrix = (function(){
 
     function transform(a2, b2, c2, d2, e2, f2) {
 
-        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
-            if(e2 !== 0 || f2 !== 0){
+        if (a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1) {
+            if (e2 !== 0 || f2 !== 0) {
                 this.props[4] = this.props[0] * e2 + this.props[2] * f2 + this.props[4];
                 this.props[5] = this.props[1] * e2 + this.props[3] * f2 + this.props[5];
             }
@@ -119,7 +90,7 @@ var Matrix = (function(){
         return this;
     }
 
-    function clone(matr){
+    function clone(matr) {
         matr.props[0] = this.props[0];
         matr.props[1] = this.props[1];
         matr.props[2] = this.props[2];
@@ -146,15 +117,15 @@ var Matrix = (function(){
         return x * this.props[1] + y * this.props[3] + this.props[5];
     }
 
-    function applyToPointArray(x,y){
-        return [x * this.props[0] + y * this.props[2] + this.props[4],x * this.props[1] + y * this.props[3] + this.props[5]];
+    function applyToPointArray(x, y){
+        return [x * this.props[0] + y * this.props[2] + this.props[4], x * this.props[1] + y * this.props[3] + this.props[5]];
     }
     function applyToPointStringified(x, y) {
-        return (bm_rnd(x * this.props[0] + y * this.props[2] + this.props[4]))+','+(bm_rnd(x * this.props[1] + y * this.props[3] + this.props[5]));
+        return (bm_rnd(x * this.props[0] + y * this.props[2] + this.props[4]))+',' + (bm_rnd(x * this.props[1] + y * this.props[3] + this.props[5]));
     }
 
     function toArray() {
-        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
+        return [this.props[0], this.props[1], this.props[2], this.props[3], this.props[4], this.props[5]];
     }
 
     function toCSS() {
@@ -188,13 +159,8 @@ var Matrix = (function(){
         this.clone = clone;
         this._t = this.transform;
 
-        this.props = [1,0,0,1,0,0];
+        this.props = [1, 0, 0, 1, 0, 0];
 
-        this.cssParts = ['matrix(','',')'];
+        this.cssParts = ['matrix(', '', ')'];
     }
 }());
-
-function Matrix() {
-
-
-}

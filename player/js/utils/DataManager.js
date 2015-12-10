@@ -2,6 +2,7 @@ function dataFunctionManager(){
 
     //var tSpanHelper = document.createElementNS(svgNS,'text');
     var tCanvasHelper = document.createElement('canvas').getContext('2d');
+    var matrixHelper = new Matrix();
 
     function completeLayers(layers, comps, fontManager){
         var layerData;
@@ -42,7 +43,7 @@ function dataFunctionManager(){
                 layerData.layers = findCompLayers(layerData.refId, comps);
                 completeLayers(layerData.layers,comps, fontManager);
             }else if(layerData.ty === 4){
-                completeShapes(layerData.shapes);
+                completeShapes(layerData.shapes, false);
             }else if(layerData.ty == 5){
                 completeText(layerData, fontManager);
             }

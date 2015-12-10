@@ -47,6 +47,11 @@ AnimationItem.prototype.setParams = function(params) {
             break;
         case 'svg':
             this.renderer = new SVGRenderer(this, params.renderer);
+            break;
+        case 'hybrid':
+        case 'html':
+            this.renderer = new HybridRenderer(this, params.renderer);
+            break;
     }
     this.animType = animType;
 
@@ -155,7 +160,7 @@ AnimationItem.prototype.includeLayers = function(data) {
             this.animationData.assets.push(data.assets[i]);
         }
     }
-    dataManager.completeData(this.animationData);
+    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
     this.renderer.renderFrame(null);
@@ -221,9 +226,9 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     /*
-    this.firstFrame = 0;
-    this.totalFrames = 94;
-    this.animationData.tf = 94;
+    this.firstFrame = 761;
+    this.totalFrames = 1;
+    this.animationData.tf = 1;
     //this.frameMult = 10000/1000;
     //*/////
     this.trigger('config_ready');
@@ -531,6 +536,6 @@ AnimationItem.prototype.trigger = function(name){
     }
 };
 
-AnimationItem.prototype.addEventListener = addEventListener;
-AnimationItem.prototype.removeEventListener = removeEventListener;
-AnimationItem.prototype.triggerEvent = triggerEvent;
+AnimationItem.prototype.addEventListener = _addEventListener;
+AnimationItem.prototype.removeEventListener = _removeEventListener;
+AnimationItem.prototype.triggerEvent = _triggerEvent;

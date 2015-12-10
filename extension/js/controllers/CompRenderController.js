@@ -32,7 +32,11 @@ var compRenderController = (function () {
     
     function renderStartHandler(ev) {
         renders.empty();
-        compositions = JSON.parse(ev.data);
+        if (typeof ev.data === 'string') {
+            compositions = JSON.parse(ev.data);
+        } else {
+            compositions = JSON.parse(JSON.stringify(ev.data));
+        }
         var i, len = compositions.length, elem;
         for (i = 0; i < len; i += 1) {
             elem = $(elementTemplate);
@@ -75,7 +79,7 @@ var compRenderController = (function () {
     
     function renderUpdateHandler(ev) {
         var messageData = ev.data;
-        var id = messageData.compId;
+        var id = messageData.compId.toString();
         var i = 0, len = compositions.length;
         while (i < len) {
             if (id === compositions[i].id.toString()) {
@@ -150,7 +154,7 @@ var compRenderController = (function () {
     
     function renderFontsHandler(ev) {
         var messageData = ev.data;
-        var id = messageData.compId;
+        var id = messageData.compId.toString();
         var i = 0, len = compositions.length;
         while (i < len) {
             if (id === compositions[i].id.toString()) {
@@ -160,7 +164,12 @@ var compRenderController = (function () {
         }
         var compData = compositions[i];
         var elem = compData.elem;
-        var fonts = JSON.parse(messageData.fonts);
+        var fonts;
+        if ((typeof messageData.fonts) === 'string') {
+            fonts = JSON.parse(messageData.fonts);
+        } else {
+            fonts = messageData.fonts;
+        }
         elem.find('.statusText').html('Select font families and font paths if necessary.');
         var fontsContainer = elem.find('.fontsContainer');
         fontsContainer.show();
@@ -195,7 +204,13 @@ var compRenderController = (function () {
     
     function renderCharsHandler(ev) {
         var messageData = ev.data;
-        var chars = JSON.parse(messageData.chars);
+        var chars;
+        if ((typeof messageData.chars) === 'string') {
+            chars = JSON.parse(messageData.chars);
+        } else {
+            chars = messageData.chars;
+        }
+        
         var i, len = chars.length;
         for (i = 0; i < len; i += 1) {
             var styles = chars[i].style.split(' ');

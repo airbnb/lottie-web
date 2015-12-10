@@ -1,4 +1,4 @@
-function SVGRenderer(animationItem){
+function HybridRenderer(animationItem){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
@@ -9,7 +9,7 @@ function SVGRenderer(animationItem){
     this.destroyed = false;
 }
 
-SVGRenderer.prototype.createItem = function(layer,parentContainer,comp, placeholder){
+HybridRenderer.prototype.createItem = function(layer,parentContainer,comp, placeholder){
     switch(layer.ty){
         case 2:
             return this.createImage(layer,parentContainer,comp, placeholder);
@@ -27,7 +27,7 @@ SVGRenderer.prototype.createItem = function(layer,parentContainer,comp, placehol
     return this.createBase(layer,parentContainer,comp);
 };
 
-SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
+HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
     var  i, len = layers.length;
     if(!elements){
         elements = this.elements;
@@ -53,7 +53,7 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp
     }
 };
 
-SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
+HybridRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     var i, len = layers.length;
     if(!elements){
         elements = this.elements;
@@ -63,28 +63,19 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     }
     var j, jLen = elements.length, elems, placeholder;
     for(i=0;i<len;i+=1){
-        if(!layers[i].id){
-            var elem = this.createItem(layers[i],parentContainer, this);
-            elements.push(elem);
-            if (layers[i].ty === 0) {
-                elems = [];
-                this.buildItems(layers[i].layers,elem.getDomElement(),elems, elem);
-                elem.setElements(elems);
-            }
-        }else {
-            j = 0;
-            while (j < jLen) {
-                if (elements[j].data.id == layers[i].id) {
-                    placeholder = elements[j];
-                    elements[j] = this.createItem(layers[i], parentContainer, this, placeholder);
-                    if (layers[i].ty === 0) {
-                        elems = [];
-                        this.buildItems(layers[i].layers, elements[j].getDomElement(), elems, elements[j], elements[i].placeholder);
-                        elements[j].setElements(elems);
-                    }
+        j = 0;
+        while(j<jLen){
+            if(elements[j].data.id == layers[i].id){
+                placeholder = elements[j];
+                elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
+                if (layers[i].ty === 0) {
+                    elems = [];
+                    this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
+                    elements[j].setElements(elems);
                 }
-                j += 1;
+                break;
             }
+            j += 1;
         }
     }
     for(i=0;i<len;i+=1){
@@ -94,52 +85,65 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     }
 };
 
-SVGRenderer.prototype.createBase = function (data,parentContainer,comp, placeholder) {
+HybridRenderer.prototype.createBase = function (data,parentContainer,comp, placeholder) {
     return new SVGBaseElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
-SVGRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
+HybridRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
     return new PlaceHolderElement(data, parentContainer,this.globalData);
 };
 
-SVGRenderer.prototype.createShape = function (data,parentContainer,comp, placeholder) {
-    return new IShapeElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createShape = function (data,parentContainer,comp, placeholder) {
+    if(comp.isSvg){
+        return new IShapeElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HShapeElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
-SVGRenderer.prototype.createText = function (data,parentContainer,comp, placeholder) {
-    return new SVGTextElement(data, parentContainer,this.globalData,comp, placeholder);
-
+HybridRenderer.prototype.createText = function (data,parentContainer,comp, placeholder) {
+    if(comp.isSvg){
+        return new SVGTextElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HTextElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
-SVGRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
+HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
     return new IImageElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
-SVGRenderer.prototype.createComp = function (data,parentContainer,comp, placeholder) {
-    return new ICompElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createComp = function (data,parentContainer,comp, placeholder) {
+    if(comp.isSvg){
+        return new ICompElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HCompElement(data, parentContainer,this.globalData,comp, placeholder);
 
 };
 
-SVGRenderer.prototype.createSolid = function (data,parentContainer,comp, placeholder) {
-    return new ISolidElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, placeholder) {
+    if(comp.isSvg){
+        return new ISolidElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HSolidElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
-SVGRenderer.prototype.configAnimation = function(animData){
-    this.animationItem.container = document.createElementNS(svgNS,'svg');
-    this.animationItem.container.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.animationItem.container.setAttribute('width',animData.w);
-    this.animationItem.container.setAttribute('height',animData.h);
-    this.animationItem.container.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
-    this.animationItem.container.setAttribute('preserveAspectRatio','xMidYMid meet');
-    this.animationItem.container.style.width = '100%';
-    this.animationItem.container.style.height = '100%';
+HybridRenderer.prototype.configAnimation = function(animData){
+    this.animationItem.container = document.createElement('div');
+    this.animationItem.container.style.width = animData.w+'px';
+    this.animationItem.container.style.height = animData.h+'px';
     this.animationItem.container.style.transform = 'translate3d(0,0,0)';
+    this.animationItem.container.style.position = 'absolute';
+    this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.animationItem.container);
-    //Mask animation
-    var defs = document.createElementNS(svgNS, 'defs');
+    var svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('width','1');
+    svg.setAttribute('height','1');
+    styleDiv(svg);
+    this.animationItem.container.appendChild(svg);
+    var defs = document.createElementNS(svgNS,'defs');
+    svg.appendChild(defs);
     this.globalData.defs = defs;
-    this.animationItem.container.appendChild(defs);
+    //Mask animation
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
@@ -149,27 +153,13 @@ SVGRenderer.prototype.configAnimation = function(animData){
         h: animData.h
     };
     this.globalData.frameRate = animData.fr;
-    var maskElement = document.createElementNS(svgNS, 'clipPath');
-    var rect = document.createElementNS(svgNS,'rect');
-    rect.setAttribute('width',animData.w);
-    rect.setAttribute('height',animData.h);
-    rect.setAttribute('x',0);
-    rect.setAttribute('y',0);
-    var maskId = 'animationMask_'+randomString(10);
-    maskElement.setAttribute('id', maskId);
-    maskElement.appendChild(rect);
-    var maskedElement = document.createElementNS(svgNS,'g');
-    maskedElement.setAttribute("clip-path", "url(#"+maskId+")");
-    this.animationItem.container.appendChild(maskedElement);
-    defs.appendChild(maskElement);
-    this.animationItem.container = maskedElement;
     this.layers = animData.layers;
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,defs);
+    this.globalData.fontManager.addFonts(animData.fonts,document);
 };
 
-SVGRenderer.prototype.buildStage = function (container, layers,elements) {
+HybridRenderer.prototype.buildStage = function (container, layers,elements) {
     var i, len = layers.length, layerData;
     if(!elements){
         elements = this.elements;
@@ -185,7 +175,7 @@ SVGRenderer.prototype.buildStage = function (container, layers,elements) {
         }
     }
 };
-SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,parentName,elements, resetHierarchyFlag) {
+HybridRenderer.prototype.buildItemParenting = function (layerData,element,layers,parentName,elements, resetHierarchyFlag) {
     if(!layerData.parents){
         layerData.parents = [];
     }
@@ -204,7 +194,7 @@ SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,pa
     }
 };
 
-SVGRenderer.prototype.destroy = function () {
+HybridRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
     this.animationItem.container = null;
     this.globalData.defs = null;
@@ -216,10 +206,10 @@ SVGRenderer.prototype.destroy = function () {
     this.destroyed = true;
 };
 
-SVGRenderer.prototype.updateContainerSize = function () {
+HybridRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.renderFrame = function(num){
+HybridRenderer.prototype.renderFrame = function(num){
     if(this.renderedFrame == num || this.destroyed){
         return;
     }
@@ -241,4 +231,4 @@ SVGRenderer.prototype.renderFrame = function(num){
     }
 };
 
-extendPrototype(ExpressionComp,SVGRenderer);
+extendPrototype(ExpressionComp,HybridRenderer);

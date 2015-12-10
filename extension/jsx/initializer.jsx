@@ -27,3 +27,6 @@ $.evalFile(extensionPath + 'utils/expressionHelper.jsx');
 $.evalFile(extensionPath + 'esprima.jsx');
 $.evalFile(extensionPath + 'escodegen.jsx');
 $.evalFile(extensionPath + 'utils/markerHelper.jsx');
+$.evalFile(extensionPath + 'utils/bez.jsx');
+$.evalFile(extensionPath + 'utils/transformation-matrix.jsx');
+$.evalFile(extensionPath + 'utils/PropertyFactory.jsx');
