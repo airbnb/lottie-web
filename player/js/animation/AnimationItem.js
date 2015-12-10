@@ -152,7 +152,7 @@ AnimationItem.prototype.includeLayers = function(data) {
             this.animationData.assets.push(data.assets[i]);
         }
     }
-    dataManager.completeData(this.animationData);
+    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
     this.renderer.renderFrame(null);
@@ -218,7 +218,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     /*
-    this.firstFrame = 68;
+    this.firstFrame = 761;
     this.totalFrames = 1;
     this.animationData.tf = 1;
     //this.frameMult = 10000/1000;
