@@ -79,6 +79,8 @@
     <script src="exports/splitted/data_4.js"></script>
     <script src="exports/splitted/data_5.js"></script>
     <script src="exports/splitted/data_6.js"></script>
+    <script src="exports/splitted/data_7.js"></script>
+    <script src="exports/splitted/data_8.js"></script>
 </head>
 <body>
 <canvas id="cvs" width="100" height="100"></canvas>
@@ -88,7 +90,7 @@
 
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: true,
         prerender: false,
         autoplay: true,
@@ -103,6 +105,8 @@
         anim.includeLayers(bmsmd4);
         anim.includeLayers(bmsmd5);
         anim.includeLayers(bmsmd6);
+        anim.includeLayers(bmsmd7);
+        anim.includeLayers(bmsmd8);
     },100);
     /*anim.addEventListener('bm:config_ready', configReady);
     anim.addEventListener('bm:data_ready', dataReady);
