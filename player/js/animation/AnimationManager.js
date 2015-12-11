@@ -4,8 +4,8 @@ var animationManager = (function(){
     var initTime = 0;
     var isPaused = true;
     var len = 0;
-    //var ctx;
-    //var colFlag = false;
+    var ctx;
+    var colFlag = false;
 
     function registerAnimation(element, animationData){
         if(!element){
@@ -77,19 +77,19 @@ var animationManager = (function(){
             }
         }
         initTime = nowTime;
-        /*if(colFlag){
+        if(colFlag){
             colFlag = false;
             ctx.fillStyle = '#cccccc';
         }else{
             colFlag = true;
             ctx.fillStyle = '#333333';
         }
-        ctx.fillRect(0,0,100,100);*/
+        ctx.fillRect(0,0,100,100);
         requestAnimationFrame(resume);
     }
 
     function first(nowTime){
-        //ctx = document.getElementById('cvs').getContext('2d');
+        ctx = document.getElementById('cvs').getContext('2d');
         initTime = nowTime;
         requestAnimationFrame(resume);
     }
