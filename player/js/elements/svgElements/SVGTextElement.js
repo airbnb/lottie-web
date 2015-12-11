@@ -30,7 +30,11 @@ SVGTextElement.prototype.createElements = function(){
     var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
     this.innerElem.setAttribute('font-style', fStyle);
     this.innerElem.setAttribute('font-weight', fWeight);
-    this.layerElement.appendChild(this.innerElem);
+    if(this.layerElement === this.parentContainer){
+        this.appendNodeToParent(this.innerElem);
+    }else{
+        this.layerElement.appendChild(this.innerElem);
+    }
 
 
 

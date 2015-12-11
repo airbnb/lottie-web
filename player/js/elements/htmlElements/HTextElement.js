@@ -115,13 +115,16 @@ HTextElement.prototype.createElements = function(){
             }
             if(!this.data.hasMask){
                 this.innerElem.appendChild(tParent);
+                var scale = documentData.s/100;
                 if(shapeData){
-                    var rBound = Math.ceil(shapeData.bounds.r*documentData.s/100);
-                    var tBound = Math.floor(shapeData.bounds.t*documentData.s/100);
-                    tCont.setAttribute('width',rBound - shapeData.bounds.l);
-                    tCont.setAttribute('height',shapeData.bounds.b - tBound);
-                    tCont.setAttribute('viewBox',shapeData.bounds.l+' '+tBound+' '+(rBound - shapeData.bounds.l)+' '+(shapeData.bounds.b - tBound));
-                    tCont.style.transform = 'translate('+shapeData.bounds.l+'px,'+ tBound+'px)';
+                    var rBound = Math.ceil(shapeData.bounds.r*scale);
+                    var tBound = Math.floor(shapeData.bounds.t*scale);
+                    var lBound = Math.floor(shapeData.bounds.l*scale);
+                    var bBound = Math.ceil(shapeData.bounds.b*scale);
+                    tCont.setAttribute('width',rBound - lBound);
+                    tCont.setAttribute('height',bBound - tBound);
+                    tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
+                    tCont.style.transform = 'translate('+lBound+'px,'+ tBound+'px)';
                 }
             }else{
                 this.innerElem.appendChild(tSpan);

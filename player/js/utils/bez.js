@@ -32,7 +32,8 @@ function bezFunction(){
             B1 = 3 * (dd - bb) - C1;
             A1 = 1 - C1 - B1;
             var polyB = x * (C1 + x * (B1 + x * A1));
-            return c * polyB + b;
+            //return c * polyB + b;
+            return polyB;
         };
         return easingFunctions[encodedFuncName];
     }
