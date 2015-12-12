@@ -125,6 +125,9 @@ HTextElement.prototype.createElements = function(){
                     tCont.setAttribute('height',bBound - tBound);
                     tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
                     tCont.style.transform = 'translate('+lBound+'px,'+ tBound+'px)';
+                } else{
+                    tCont.setAttribute('width',1);
+                    tCont.setAttribute('height',1);
                 }
             }else{
                 this.innerElem.appendChild(tSpan);

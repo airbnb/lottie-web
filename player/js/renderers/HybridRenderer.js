@@ -108,7 +108,10 @@ HybridRenderer.prototype.createText = function (data,parentContainer,comp, place
 };
 
 HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
-    return new IImageElement(data, parentContainer,this.globalData,comp, placeholder);
+    if(comp.isSvg){
+        return new IImageElement(data, parentContainer,this.globalData,comp, placeholder);
+    }
+    return new HImageElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
 HybridRenderer.prototype.createComp = function (data,parentContainer,comp, placeholder) {

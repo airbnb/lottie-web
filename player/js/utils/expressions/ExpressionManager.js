@@ -163,11 +163,12 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
-        var time, value,textIndex,textTotal;
+        var time, value,textIndex,textTotal,selectorValue;
         function execute(){
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
+                selectorValue = this.selectorValue;
             }
             if(!transform){
                 transform = elem.transform;

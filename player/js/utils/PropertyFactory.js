@@ -1056,7 +1056,8 @@ var PropertyFactory = (function(){
             this.comp = elem.comp;
             this.mult = .01;
             this.type = 'textSelector';
-            this.textTotal = data.totalChars
+            this.textTotal = data.totalChars;
+            this.selectorValue = 100;
             checkExpressions.bind(this)(elem,data);
             this.getMult = getValueProxy;
         }
@@ -1142,7 +1143,7 @@ var PropertyFactory = (function(){
                     }
                 }
             }
-            return mult;
+            return mult*this.a.v;
         }
 
         return function TextSelectorProp(elem,data, arr){
@@ -1164,6 +1165,7 @@ var PropertyFactory = (function(){
             this.o = getProp(elem,data.o || {k:0},0,0,this.dynamicProperties);
             this.xe = getProp(elem,data.xe || {k:0},0,0,this.dynamicProperties);
             this.ne = getProp(elem,data.ne || {k:0},0,0,this.dynamicProperties);
+            this.a = getProp(elem,data.a,0,0.01,this.dynamicProperties);
             if(this.dynamicProperties.length){
                 arr.push(this);
             }else{
