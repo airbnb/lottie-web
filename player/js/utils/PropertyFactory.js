@@ -59,7 +59,7 @@ var PropertyFactory = (function(){
                         fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
                         keyData.__fnct = fnc;
                     }
-                    perc = fnc('',(frameNum)-(keyData.t-this.offsetTime),0,1,(nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime));
+                    perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                     var distanceInLine = bezierData.segmentLength*perc;
 
                     var segmentPerc;
@@ -146,7 +146,7 @@ var PropertyFactory = (function(){
                         }else if(frameNum < keyData.t-this.offsetTime){
                             perc = 0;
                         }else{
-                            perc = fnc('',(frameNum)-(keyData.t-this.offsetTime),0,1,(nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime));
+                            perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                         }
                     }
 
@@ -222,7 +222,7 @@ var PropertyFactory = (function(){
                     }else if(frameNum < keyData.t-this.offsetTime){
                         perc = 0;
                     }else{
-                        perc = fnc('',(frameNum)-(keyData.t-this.offsetTime),0,1,(nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime));
+                        perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                     }
                     keyPropE = keyData.e[0];
                 }
@@ -483,6 +483,8 @@ var PropertyFactory = (function(){
             this.pv.v[i] = new Array(jLen);
         }
         this.lastFrame = initFrame;
+        var shapeData = type === 3 ? data.pt : data.ks;
+        checkExpressions.bind(this)(elem,shapeData);
     }
 
     var EllShapeProperty = (function(){
@@ -1100,7 +1102,7 @@ var PropertyFactory = (function(){
                 }else{
                     mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
                 }
-                mult = easer('',mult,0,1,1);
+                mult = easer(mult);
             }else if(type == 3){
                 if(e === s){
                     mult = ind >= e ? 0 : 1;
@@ -1108,7 +1110,7 @@ var PropertyFactory = (function(){
                     mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
                 }
 
-                mult = easer('',mult,0,1,1);
+                mult = easer(mult);
             }else if(type == 4){
                 if(e === s){
                     mult = ind >= e ? 0 : 1;

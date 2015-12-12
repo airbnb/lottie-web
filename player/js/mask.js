@@ -19,7 +19,7 @@ function MaskElement(data,element,globalData) {
     var currentMasks = [];
     var j, jLen;
     var layerId = randomString(10);
-    var rect, expansor, feMorph;
+    var rect, expansor, feMorph,x;
     var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
 
@@ -38,7 +38,7 @@ function MaskElement(data,element,globalData) {
             currentMasks.push(rect);
         }
 
-        if(properties[i].mode == 'n') {
+        if(properties[i].mode == 'n' || properties[i].cl === false) {
             this.viewData[i] = {
                 prop: PropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
             };
@@ -67,7 +67,7 @@ function MaskElement(data,element,globalData) {
         if(properties[i].x.k !== 0){
             maskType = 'mask';
             maskRef = 'mask';
-            var x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
+            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
             var filterID = 'fi_'+randomString(10);
             expansor = document.createElementNS(svgNS,'filter');
             expansor.setAttribute('id',filterID);
@@ -84,6 +84,7 @@ function MaskElement(data,element,globalData) {
             }
         }else{
             feMorph = null;
+            x = null;
         }
 
 
@@ -157,7 +158,7 @@ MaskElement.prototype.prepareFrame = function(){
 MaskElement.prototype.renderFrame = function () {
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.masksProperties[i].mode !== 'n'){
+        if(this.masksProperties[i].mode !== 'n' && this.masksProperties[i].cl !== false){
             if(this.viewData[i].prop.mdf || this.firstFrame){
                 this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
             }
@@ -174,7 +175,6 @@ MaskElement.prototype.renderFrame = function () {
                         this.storedData[i].lastOperator = 'dilate';
                         this.storedData[i].elem.setAttribute('filter',null);
                     }
-                    console.log(this.storedData[i].x.v*2);
                     this.storedData[i].elem.setAttribute('stroke-width', this.storedData[i].x.v*2);
 
                 }

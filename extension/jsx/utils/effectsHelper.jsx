@@ -24,7 +24,7 @@ var bm_effectsHelper = (function () {
         case 'ADBE Checkbox Control':
             return effectTypes.checkboxControl;
         default:
-            bm_eventDispatcher.log(name);
+            //bm_eventDispatcher.log(name);
             return '';
         }
     }
