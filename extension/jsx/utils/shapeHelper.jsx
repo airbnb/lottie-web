@@ -223,7 +223,7 @@ var bm_shapeHelper = (function () {
     }
 
     function getBoundingBox(p1, p2, p3, p4, bounds) {
-        var pts = [p1, p4];
+        var pts = [p1,p4];
         getTPos(p1, p2, p3, p4, pts);
 
         var minX = bounds.l, minY = bounds.t, maxX = bounds.r, maxY = bounds.b, pt;
@@ -279,9 +279,9 @@ var bm_shapeHelper = (function () {
             var points = shapeProp.v;
             var k, kLen = points.v.length;
             for (k = 0; k < kLen - 1; k += 1) {
-                getBoundingBox(matr.applyToPointArray(points.v[k][0], points.v[k][1]), matr.applyToPointArray(points.o[k][0], points.o[k][1]), matr.applyToPointArray(points.i[k + 1][0], points.i[k + 1][1]), matr.applyToPointArray(points.v[k + 1][0], points.v[k + 1][1]), bounds);
+                getBoundingBox(matr.applyToPointArray(points.v[k][0], points.v[k][1]), matr.applyToPointArray(points.o[k][0]+points.v[k][0], points.o[k][1]+points.v[k][1]), matr.applyToPointArray(points.i[k + 1][0]+points.v[k + 1][0], points.i[k + 1][1]+points.v[k + 1][1]), matr.applyToPointArray(points.v[k + 1][0], points.v[k + 1][1]), bounds);
             }
-            getBoundingBox(matr.applyToPointArray(points.v[k][0], points.v[k][1]), matr.applyToPointArray(points.o[k][0], points.o[k][1]), matr.applyToPointArray(points.i[0][0], points.i[0][1]), matr.applyToPointArray(points.v[0][0], points.v[0][1]), bounds);
+            getBoundingBox(matr.applyToPointArray(points.v[k][0], points.v[k][1]), matr.applyToPointArray(points.o[k][0]+points.v[k][0], points.o[k][1]+points.v[k][1]), matr.applyToPointArray(points.i[0][0]+points.v[0][0], points.i[0][1]+points.v[0][1]), matr.applyToPointArray(points.v[0][0], points.v[0][1]), bounds);
         }
         len = strokes.length;
         arr = [];
