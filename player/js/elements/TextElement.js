@@ -292,8 +292,10 @@ ITextElement.prototype.getMeasures = function(){
                 offf = letters[i].an/2 - letters[i].add;
             }else{
                 matrixHelper.translate(xPos,yPos,0);
+                console.log('xPos,yPos,0: ',xPos,yPos,0);
                 offf = letters[i].an/2 - letters[i].add;
                 matrixHelper.translate(offf,0,0);
+                console.log('offf:',offf);
 
                 // Grouping alignment
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
@@ -395,7 +397,7 @@ ITextElement.prototype.getMeasures = function(){
                 if ('s' in animatorProps) {
                     animatorSelector = renderedData.a[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j]);
-                    matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult));
+                    matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult),1);
                 }
             }
 
@@ -413,6 +415,7 @@ ITextElement.prototype.getMeasures = function(){
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
             if(renderType === 'svg'){
+                console.log(matrixHelper.props);
                 letterM = matrixHelper.toCSS();
                 console.log(letterM);
             }else{

@@ -149,7 +149,7 @@ var Matrix = (function(){
 
     function transform(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
 
-        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0){
+        /*if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0){
             if(m2 !== 0 || n2 !== 0 || o2 !== 0){
 
                 this.props[12] = this.props[12] * a2 + this.props[13] * e2 + this.props[14] * i2 + this.props[15] * m2 ;
@@ -158,7 +158,7 @@ var Matrix = (function(){
                 this.props[15] = this.props[12] * d2 + this.props[13] * h2 + this.props[14] * l2 + this.props[15] * p2 ;
             }
             return this;
-        }
+        }*/
 
         var a1 = this.props[0];
         var b1 = this.props[1];
@@ -196,7 +196,8 @@ var Matrix = (function(){
         this.props[9] = i1 * b2 + j1 * f2 + k1 * j2 + l1 * n2 ;
         this.props[10] = i1 * c2 + j1 * g2 + k1 * k2 + l1 * o2 ;
         this.props[11] = i1 * d2 + j1 * h2 + k1 * l2 + l1 * p2 ;
-
+        console.log('m1 , a2 , n1 , e2 , o1 , i2 , p1 , m2: ',m1 , a2 , n1 , e2 , o1 , i2 , p1 , m2);
+        console.log('result: ',m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2);
         this.props[12] = m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2 ;
         this.props[13] = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2 ;
         this.props[14] = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
