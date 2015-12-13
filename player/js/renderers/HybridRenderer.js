@@ -21,6 +21,8 @@ HybridRenderer.prototype.createItem = function(layer,parentContainer,comp, place
             return this.createShape(layer,parentContainer,comp, placeholder);
         case 5:
             return this.createText(layer,parentContainer,comp, placeholder);
+        case 13:
+            return this.createCamera(layer,parentContainer,comp, placeholder);
         case 99:
             return this.createPlaceHolder(layer,parentContainer);
     }
@@ -107,6 +109,10 @@ HybridRenderer.prototype.createText = function (data,parentContainer,comp, place
     return new HTextElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
+HybridRenderer.prototype.createCamera = function (data,parentContainer,comp, placeholder) {
+    return new HCameraElement(data, parentContainer,this.globalData,comp, placeholder);
+};
+
 HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
     if(comp.isSvg){
         return new IImageElement(data, parentContainer,this.globalData,comp, placeholder);
@@ -133,11 +139,15 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container = document.createElement('div');
     this.animationItem.container.style.width = animData.w+'px';
     this.animationItem.container.style.height = animData.h+'px';
-    this.animationItem.container.style.transform = 'translate3d(0,0,0)';
     this.animationItem.container.style.position = 'absolute';
+    this.animationItem.container.style.top = 0;
+    this.animationItem.container.style.left = 0;
     this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
-    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
+    this.animationItem.container.style.webkitTransformStyle = "preserve-3d";
+    this.animationItem.container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     this.animationItem.wrapper.appendChild(this.animationItem.container);
+    this.animationItem.wrapper.style.transformStyle = this.animationItem.wrapper.style.webkitTransformStyle = "preserve-3d";
+    this.animationItem.wrapper.style.transformOrigin = this.animationItem.wrapper.style.mozTransformOrigin = this.animationItem.wrapper.style.webkitTransformOrigin = this.animationItem.wrapper.style['-webkit-transform'] = "0px 0px 0px";
     var svg = document.createElementNS(svgNS,'svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');

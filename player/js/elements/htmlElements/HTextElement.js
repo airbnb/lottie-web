@@ -111,6 +111,7 @@ HTextElement.prototype.createElements = function(){
                     //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
                     shapeStr += 'z';
                 }
+                //shapeStr = 'M -10 -10 H20 V20 H-20 V-20z';
                 tSpan.setAttribute('d',shapeStr);
             }
             if(!this.data.hasMask){
@@ -125,6 +126,12 @@ HTextElement.prototype.createElements = function(){
                     tCont.setAttribute('height',bBound - tBound);
                     tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
                     tCont.style.transform = 'translate('+lBound+'px,'+ tBound+'px)';
+
+
+                    /*tCont.setAttribute('width','20');
+                    tCont.setAttribute('height','20');
+                    tCont.setAttribute('viewBox','-10 -10 20 20');
+                    tCont.style.transform = 'translate(0px, 0px)';*/
                 } else{
                     tCont.setAttribute('width',1);
                     tCont.setAttribute('height',1);

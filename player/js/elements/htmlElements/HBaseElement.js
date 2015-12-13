@@ -67,7 +67,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
 
     if(parentTransform){
         mat = parentTransform.mat.props;
-        finalMat.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+        finalMat.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
         this.finalTransform.opacity *= parentTransform.opacity;
         this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
         this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
@@ -81,10 +81,10 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
         for(i=len-1;i>=0;i-=1){
             this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
             mat = this.hierarchy[i].finalTransform.mProp.v.props;
-            finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+            finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
         }
         mat = this.finalTransform.mProp.v.props;
-        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
     }else{
         if(this.isVisible){
             if(!parentTransform){
@@ -94,13 +94,23 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
                 finalMat.props[3] = this.finalTransform.mProp.v.props[3];
                 finalMat.props[4] = this.finalTransform.mProp.v.props[4];
                 finalMat.props[5] = this.finalTransform.mProp.v.props[5];
+                finalMat.props[6] = this.finalTransform.mProp.v.props[6];
+                finalMat.props[7] = this.finalTransform.mProp.v.props[7];
+                finalMat.props[8] = this.finalTransform.mProp.v.props[8];
+                finalMat.props[9] = this.finalTransform.mProp.v.props[9];
+                finalMat.props[10] = this.finalTransform.mProp.v.props[10];
+                finalMat.props[11] = this.finalTransform.mProp.v.props[11];
+                finalMat.props[12] = this.finalTransform.mProp.v.props[12];
+                finalMat.props[13] = this.finalTransform.mProp.v.props[13];
+                finalMat.props[14] = this.finalTransform.mProp.v.props[14];
+                finalMat.props[15] = this.finalTransform.mProp.v.props[15];
             }else{
                 mat = this.finalTransform.mProp.v.props;
-                finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+                finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
             }
         }
     }
-    this.layerElement.style.transform = 'matrix3d('+finalMat.props[0]+','+finalMat.props[1]+',0,0, '+finalMat.props[2]+','+finalMat.props[3]+',0,0, 0,0,1,0, '+finalMat.props[4]+','+finalMat.props[5]+',0,1)';
+    this.layerElement.style.transform = finalMat.toCSS();
     this.layerElement.style.opacity = this.finalTransform.opacity;
     return this.isVisible;
 };

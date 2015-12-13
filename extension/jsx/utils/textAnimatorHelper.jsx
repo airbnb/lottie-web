@@ -97,6 +97,12 @@ var bm_textAnimatorHelper = (function () {
                 case 'ADBE Text Rotation':
                     ob.r = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
+                case 'ADBE Text Rotation X':
+                    ob.rx = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Rotation Y':
+                    ob.ry = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
                 case 'ADBE Text Opacity':
                     ob.o = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;

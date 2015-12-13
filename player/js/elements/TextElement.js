@@ -22,6 +22,12 @@ ITextElement.prototype.init = function(){
             if('r' in animatorProps.a) {
                 animatorData.a.r = PropertyFactory.getProp(this,animatorProps.a.r,0,degToRads,this.dynamicProperties);
             }
+            if('rx' in animatorProps.a) {
+                animatorData.a.rx = PropertyFactory.getProp(this,animatorProps.a.rx,0,degToRads,this.dynamicProperties);
+            }
+            if('ry' in animatorProps.a) {
+                animatorData.a.ry = PropertyFactory.getProp(this,animatorProps.a.ry,0,degToRads,this.dynamicProperties);
+            }
             if('sk' in animatorProps.a) {
                 animatorData.a.sk = PropertyFactory.getProp(this,animatorProps.a.sk,0,degToRads,this.dynamicProperties);
             }
@@ -285,10 +291,11 @@ ITextElement.prototype.getMeasures = function(){
                 }
                 offf = letters[i].an/2 - letters[i].add;
             }else{
-                matrixHelper.translate(xPos,yPos);
+                matrixHelper.translate(xPos,yPos,0);
                 offf = letters[i].an/2 - letters[i].add;
-                matrixHelper.translate(offf,0);
+                matrixHelper.translate(offf,0,0);
 
+                // Grouping alignment
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
             }
 
@@ -314,9 +321,9 @@ ITextElement.prototype.getMeasures = function(){
                     animatorSelector = renderedData.a[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     if('m' in data.t.p) {
-                        matrixHelper.translate(0, animatorProps.p.v[1] * mult);
+                        matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
                     }else{
-                        matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult);
+                        matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
                     }
                 }
             }
@@ -333,19 +340,29 @@ ITextElement.prototype.getMeasures = function(){
             if(documentData.fillColorAnim) {
                 fc = [data.t.d.fc[0], data.t.d.fc[1], data.t.d.fc[2]];
             }
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if ('a' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult, animatorProps.a.v[2]*mult);
+                }
+            }
             for(j=0;j<jLen;j+=1) {
                 animatorProps = renderedData.a[j].a;
                 animatorSelector = renderedData.a[j].s;
                 mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                if ('rx' in animatorProps) {
+                    matrixHelper.rotateX(animatorProps.rx.v*mult);
+                }
+                if ('ry' in animatorProps) {
+                    matrixHelper.rotateY(animatorProps.ry.v*mult);
+                }
                 if ('r' in animatorProps) {
                     matrixHelper.rotate(animatorProps.r.v*mult);
                 }
                 if ('sk' in animatorProps) {
-                    //matrixHelper.skew(-(animatorProps.sk.v*mult*(Math.cos(animatorProps.sa.v*mult))),(animatorProps.sk.v*mult*(Math.sin(animatorProps.sa.v*mult))));
                     matrixHelper.skewFromAxis(-(animatorProps.sk.v*mult),-animatorProps.sa.v*mult);
-                    /*matrixHelper.rotate(-animatorProps.sa.v*mult);
-                    matrixHelper.skew(-(animatorProps.sk.v*mult),0);
-                    matrixHelper.rotate(animatorProps.sa.v*mult);*/
                 }
                 if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
@@ -381,14 +398,6 @@ ITextElement.prototype.getMeasures = function(){
                     matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult));
                 }
             }
-            for(j=0;j<jLen;j+=1){
-                animatorProps = renderedData.a[j].a;
-                if ('a' in animatorProps) {
-                    animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
-                    matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult);
-                }
-            }
 
             if('m' in data.t.p) {
                 matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200, -renderedData.m.a.v[1]*yOff/100);
@@ -397,14 +406,15 @@ ITextElement.prototype.getMeasures = function(){
                     currentLength += letters[i].an / 2;
                     currentLength += documentData.tr/1000*data.t.d.s;
                 }
-                matrixHelper.translate(-offf,0);
+                matrixHelper.translate(-offf,0,0);
             }else{
-                matrixHelper.translate(-offf,0);
+                matrixHelper.translate(-offf,0,0);
                 matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200,-renderedData.m.a.v[1]*yOff/100);
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
             if(renderType === 'svg'){
                 letterM = matrixHelper.toCSS();
+                console.log(letterM);
             }else{
                 letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
             }

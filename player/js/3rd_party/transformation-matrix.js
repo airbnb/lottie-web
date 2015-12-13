@@ -33,9 +33,19 @@ var Matrix = (function(){
         this.props[0] = 1;
         this.props[1] = 0;
         this.props[2] = 0;
-        this.props[3] = 1;
+        this.props[3] = 0;
         this.props[4] = 0;
-        this.props[5] = 0;
+        this.props[5] = 1;
+        this.props[6] = 0;
+        this.props[7] = 0;
+        this.props[8] = 0;
+        this.props[9] = 0;
+        this.props[10] = 1;
+        this.props[11] = 0;
+        this.props[12] = 0;
+        this.props[13] = 0;
+        this.props[14] = 0;
+        this.props[15] = 1;
         return this;
     }
 
@@ -45,7 +55,46 @@ var Matrix = (function(){
         }
         var mCos = Math.cos(angle);
         var mSin = Math.sin(angle);
-        return this._t(mCos, mSin, -mSin, mCos, 0, 0);
+        return this._t(mCos, -mSin,  0, 0
+            , mSin,  mCos, 0, 0
+            , 0,  0,  1, 0
+            , 0, 0, 0, 1);
+    }
+
+    function rotateX(angle){
+        if(angle === 0){
+            return this;
+        }
+        var mCos = Math.cos(angle);
+        var mSin = Math.sin(angle);
+        return this._t(1, 0, 0, 0
+            , 0, mCos, -mSin, 0
+            , 0, mSin,  mCos, 0
+            , 0, 0, 0, 1);
+    }
+
+    function rotateY(angle){
+        if(angle === 0){
+            return this;
+        }
+        var mCos = Math.cos(angle);
+        var mSin = Math.sin(angle);
+        return this._t(mCos,  0,  mSin, 0
+            , 0, 1, 0, 0
+            , -mSin,  0,  mCos, 0
+            , 0, 0, 0, 1);
+    }
+
+    function rotateZ(angle){
+        if(angle === 0){
+            return this;
+        }
+        var mCos = Math.cos(angle);
+        var mSin = Math.sin(angle);
+        return this._t(mCos, -mSin,  0, 0
+            , mSin,  mCos, 0, 0
+            , 0,  0,  1, 0
+            , 0, 0, 0, 1);
     }
 
     function shear(sx,sy){
@@ -62,37 +111,51 @@ var Matrix = (function(){
         return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, Math.tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
-    function scale(sx, sy) {
-        if(sx == 1 && sy == 1){
+    function scale(sx, sy, sz) {
+        sz = isNaN(sz) ? 1 : sz;
+        if(sx == 1 && sy == 1 && sz == 1){
             return this;
         }
-        return this._t(sx, 0, 0, sy, 0, 0);
+        return this._t(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1);
     }
 
-    function setTransform(a, b, c, d, e, f) {
+    function setTransform(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
         this.props[0] = a;
         this.props[1] = b;
         this.props[2] = c;
         this.props[3] = d;
         this.props[4] = e;
         this.props[5] = f;
+        this.props[6] = g;
+        this.props[7] = h;
+        this.props[8] = i;
+        this.props[9] = j;
+        this.props[10] = k;
+        this.props[11] = l;
+        this.props[12] = m;
+        this.props[13] = n;
+        this.props[14] = o;
+        this.props[15] = p;
         return this;
     }
 
-    function translate(tx, ty) {
-        if(tx !== 0 || ty !== 0){
-            this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
-            this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
+    function translate(tx, ty, tz) {
+        tz = isNaN(tz) ? 0 : tz;
+        if(tx !== 0 || ty !== 0 || tz !== 0){
+            return this._t(1,0,0,0,0,1,0,0,0,0,1,0,tx,ty,tz,1);
         }
         return this;
     }
 
-    function transform(a2, b2, c2, d2, e2, f2) {
+    function transform(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
 
-        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
-            if(e2 !== 0 || f2 !== 0){
-                this.props[4] = this.props[0] * e2 + this.props[2] * f2 + this.props[4];
-                this.props[5] = this.props[1] * e2 + this.props[3] * f2 + this.props[5];
+        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0){
+            if(m2 !== 0 || n2 !== 0 || o2 !== 0){
+
+                this.props[12] = this.props[12] * a2 + this.props[13] * e2 + this.props[14] * i2 + this.props[15] * m2 ;
+                this.props[13] = this.props[12] * b2 + this.props[13] * f2 + this.props[14] * j2 + this.props[15] * n2 ;
+                this.props[14] = this.props[12] * c2 + this.props[13] * g2 + this.props[14] * k2 + this.props[15] * o2 ;
+                this.props[15] = this.props[12] * d2 + this.props[13] * h2 + this.props[14] * l2 + this.props[15] * p2 ;
             }
             return this;
         }
@@ -103,18 +166,41 @@ var Matrix = (function(){
         var d1 = this.props[3];
         var e1 = this.props[4];
         var f1 = this.props[5];
+        var g1 = this.props[6];
+        var h1 = this.props[7];
+        var i1 = this.props[8];
+        var j1 = this.props[9];
+        var k1 = this.props[10];
+        var l1 = this.props[11];
+        var m1 = this.props[12];
+        var n1 = this.props[13];
+        var o1 = this.props[14];
+        var p1 = this.props[15];
 
         /* matrix order (canvas compatible):
          * ace
          * bdf
          * 001
          */
-        this.props[0] = a1 * a2 + c1 * b2;
-        this.props[1] = b1 * a2 + d1 * b2;
-        this.props[2] = a1 * c2 + c1 * d2;
-        this.props[3] = b1 * c2 + d1 * d2;
-        this.props[4] = a1 * e2 + c1 * f2 + e1;
-        this.props[5] = b1 * e2 + d1 * f2 + f1;
+        this.props[0] = a1 * a2 + b1 * e2 + c1 * i2 + d1 * m2;
+        this.props[1] = a1 * b2 + b1 * f2 + c1 * j2 + d1 * n2 ;
+        this.props[2] = a1 * c2 + b1 * g2 + c1 * k2 + d1 * o2 ;
+        this.props[3] = a1 * d2 + b1 * h2 + c1 * l2 + d1 * p2 ;
+
+        this.props[4] = e1 * a2 + f1 * e2 + g1 * i2 + h1 * m2 ;
+        this.props[5] = e1 * b2 + f1 * f2 + g1 * j2 + h1 * n2 ;
+        this.props[6] = e1 * c2 + f1 * g2 + g1 * k2 + h1 * o2 ;
+        this.props[7] = e1 * d2 + f1 * h2 + g1 * l2 + h1 * p2 ;
+
+        this.props[8] = i1 * a2 + j1 * e2 + k1 * i2 + l1 * m2 ;
+        this.props[9] = i1 * b2 + j1 * f2 + k1 * j2 + l1 * n2 ;
+        this.props[10] = i1 * c2 + j1 * g2 + k1 * k2 + l1 * o2 ;
+        this.props[11] = i1 * d2 + j1 * h2 + k1 * l2 + l1 * p2 ;
+
+        this.props[12] = m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2 ;
+        this.props[13] = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2 ;
+        this.props[14] = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
+        this.props[15] = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
 
         return this;
     }
@@ -126,41 +212,59 @@ var Matrix = (function(){
         matr.props[3] = this.props[3];
         matr.props[4] = this.props[4];
         matr.props[5] = this.props[5];
+        matr.props[6] = this.props[6];
+        matr.props[7] = this.props[7];
+        matr.props[8] = this.props[8];
+        matr.props[9] = this.props[9];
+        matr.props[10] = this.props[10];
+        matr.props[11] = this.props[11];
+        matr.props[12] = this.props[12];
+        matr.props[13] = this.props[13];
+        matr.props[14] = this.props[14];
+        matr.props[15] = this.props[15];
     }
 
-    function applyToPoint(x, y) {
+    function applyToPoint(x, y, z) {
 
         return {
-            x: x * this.props[0] + y * this.props[2] + this.props[4],
-            y: x * this.props[1] + y * this.props[3] + this.props[5]
+            x: x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],
+            y: x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
+            z: x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]
         };
         /*return {
          x: x * me.a + y * me.c + me.e,
          y: x * me.b + y * me.d + me.f
          };*/
     }
-    function applyToX(x, y) {
-        return x * this.props[0] + y * this.props[2] + this.props[4];
+    function applyToX(x, y, z) {
+        return x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12];
     }
-    function applyToY(x, y) {
-        return x * this.props[1] + y * this.props[3] + this.props[5];
+    function applyToY(x, y, z) {
+        return x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13];
+    }
+    function applyToZ(x, y, z) {
+        return x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14];
     }
 
-    function applyToPointArray(x,y){
-        return [x * this.props[0] + y * this.props[2] + this.props[4],x * this.props[1] + y * this.props[3] + this.props[5]];
+    function applyToPointArray(x,y,z){
+        return [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
     }
     function applyToPointStringified(x, y) {
-        return (bm_rnd(x * this.props[0] + y * this.props[2] + this.props[4]))+','+(bm_rnd(x * this.props[1] + y * this.props[3] + this.props[5]));
+        return (bm_rnd(x * this.props[0] + y * this.props[4] + this.props[12]))+','+(bm_rnd(x * this.props[1] + y * this.props[5] + this.props[13]));
     }
 
     function toArray() {
-        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5]];
+        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5],this.props[6],this.props[7],this.props[8],this.props[9],this.props[10],this.props[11],this.props[12],this.props[13],this.props[14],this.props[15]];
     }
 
     function toCSS() {
         this.cssParts[1] = this.props.join(',');
         return this.cssParts.join('');
         //return "matrix(" + this.a + ',' + this.b + ',' + this.c + ',' + this.d + ',' + this.e + ',' + this.f + ")";
+    }
+
+    function to2dCSS() {
+        return "matrix(" + this.props[0] + ',' + this.props[1] + ',' + this.props[4] + ',' + this.props[5] + ',' + this.props[12] + ',' + this.props[13] + ")";
     }
 
     function toString() {
@@ -170,6 +274,9 @@ var Matrix = (function(){
     return function(){
         this.reset = reset;
         this.rotate = rotate;
+        this.rotateX = rotateX;
+        this.rotateY = rotateY;
+        this.rotateZ = rotateZ;
         this.skew = skew;
         this.skewFromAxis = skewFromAxis;
         this.shear = shear;
@@ -180,17 +287,19 @@ var Matrix = (function(){
         this.applyToPoint = applyToPoint;
         this.applyToX = applyToX;
         this.applyToY = applyToY;
+        this.applyToZ = applyToZ;
         this.applyToPointArray = applyToPointArray;
         this.applyToPointStringified = applyToPointStringified;
         this.toArray = toArray;
         this.toCSS = toCSS;
+        this.to2dCSS = to2dCSS;
         this.toString = toString;
         this.clone = clone;
         this._t = this.transform;
 
-        this.props = [1,0,0,1,0,0];
+        this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
-        this.cssParts = ['matrix(','',')'];
+        this.cssParts = ['matrix3d(','',')'];
     }
 }());
 

@@ -241,11 +241,12 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
                 groupTransform.opacity *= data[i].transform.op.v;
                 groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
                 groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+
             }else{
                 groupTransform.opacity = groupTransform.op.o;
             }
-            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
+            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5],mtArr[6],mtArr[7],mtArr[8],mtArr[9],mtArr[10],mtArr[11],mtArr[12],mtArr[13],mtArr[14],mtArr[15]);
         }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
@@ -346,7 +347,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
                 }
             }
             if (viewData.st) {
-                t = 'matrix(' + groupTransform.mat.props.join(',') + ')';
+                t = groupTransform.mat.to2dCSS();
             }
             viewData.lStr = pathStringTransformed;
         }else{
