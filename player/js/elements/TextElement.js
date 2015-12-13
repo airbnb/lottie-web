@@ -200,6 +200,7 @@ ITextElement.prototype.getMeasures = function(){
     var letterSw,letterSc,letterFc,letterM,letterP,letterO;
 
     for( i = 0; i < len; i += 1) {
+        console.log('---- new letter ----');
         matrixHelper.reset();
         switch(documentData.j){
             case 1:
@@ -415,9 +416,7 @@ ITextElement.prototype.getMeasures = function(){
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
             if(renderType === 'svg'){
-                console.log(matrixHelper.props);
                 letterM = matrixHelper.toCSS();
-                console.log(letterM);
             }else{
                 letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
             }
