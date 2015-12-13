@@ -66,7 +66,6 @@ var Matrix = (function(){
         if(sx == 1 && sy == 1){
             return this;
         }
-        console.log('scalescale',sx,sy);
         return this._t(sx, 0, 0, sy, 0, 0);
     }
 
@@ -81,22 +80,22 @@ var Matrix = (function(){
     }
 
     function translate(tx, ty) {
-        /*if(tx !== 0 || ty !== 0){
+        if(tx !== 0 || ty !== 0){
             this.props[4] = this.props[0] * tx + this.props[2] * ty + this.props[4];
             this.props[5] = this.props[1] * tx + this.props[3] * ty + this.props[5];
-        }*/
-        return this._t(1,0,0,1,tx,ty);
+        }
+        return this;
     }
 
     function transform(a2, b2, c2, d2, e2, f2) {
 
-        /*if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
+        if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 1){
             if(e2 !== 0 || f2 !== 0){
                 this.props[4] = this.props[0] * e2 + this.props[2] * f2 + this.props[4];
                 this.props[5] = this.props[1] * e2 + this.props[3] * f2 + this.props[5];
             }
             return this;
-        }*/
+        }
 
         var a1 = this.props[0];
         var b1 = this.props[1];
@@ -114,8 +113,6 @@ var Matrix = (function(){
         this.props[1] = b1 * a2 + d1 * b2;
         this.props[2] = a1 * c2 + c1 * d2;
         this.props[3] = b1 * c2 + d1 * d2;
-        console.log('vars: ',a1 , e2 , c1 , f2 , e1);
-        console.log('result: ',a1 * e2 + c1 * f2 + e1);
         this.props[4] = a1 * e2 + c1 * f2 + e1;
         this.props[5] = b1 * e2 + d1 * f2 + f1;
 
