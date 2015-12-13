@@ -194,6 +194,7 @@ ITextElement.prototype.getMeasures = function(){
     var letterSw,letterSc,letterFc,letterM,letterP,letterO;
 
     for( i = 0; i < len; i += 1) {
+        console.log('---- new letter ----');
         matrixHelper.reset();
         switch(documentData.j){
             case 1:
@@ -292,7 +293,6 @@ ITextElement.prototype.getMeasures = function(){
                 console.log('offf',offf);
 
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
-                console.log('renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100',renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
             }
 
             lineLength += letters[i].l/2;
