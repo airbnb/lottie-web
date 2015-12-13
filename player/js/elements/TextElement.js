@@ -286,10 +286,13 @@ ITextElement.prototype.getMeasures = function(){
                 offf = letters[i].an/2 - letters[i].add;
             }else{
                 matrixHelper.translate(xPos,yPos);
+                console.log('xPos,yPos',xPos,yPos);
                 offf = letters[i].an/2 - letters[i].add;
                 matrixHelper.translate(offf,0);
+                console.log('offf',offf);
 
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
+                console.log('renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100',renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
             }
 
             lineLength += letters[i].l/2;
@@ -400,11 +403,15 @@ ITextElement.prototype.getMeasures = function(){
                 matrixHelper.translate(-offf,0);
             }else{
                 matrixHelper.translate(-offf,0);
+                console.log('-offf',-offf);
                 matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200,-renderedData.m.a.v[1]*yOff/100);
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
             if(renderType === 'svg'){
                 letterM = matrixHelper.toCSS();
+                var props = matrixHelper.props;
+                letterM = 'matrix3d('+props[0]+',0,0,0,0,'+props[3]+',0,0,0,0,1,0,'+props[4]+','+props[5]+',0,1)';
+                console.log(letterM);
             }else{
                 letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
             }
