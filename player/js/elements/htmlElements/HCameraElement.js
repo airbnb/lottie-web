@@ -20,7 +20,7 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     this.comp.animationItem.container.style.transformOrigin =
     this.comp.animationItem.container.style.mozTransformOrigin =
     this.comp.animationItem.container.style.webkitTransformOrigin =
-    this.comp.animationItem.container.style['-webkit-transform'] = this.globalData.compSize.w/2 + "px " + this.globalData.compSize.h/2 + "px "+this.pe.v+"px";
+    this.comp.animationItem.container.style['-webkit-transform'] = "0px 0px "+this.pe.v+"px";
 }
 createElement(HBaseElement, HCameraElement);
 
@@ -40,17 +40,24 @@ HCameraElement.prototype.renderFrame = function(){
         this.comp.animationItem.container.style.transformOrigin =
         this.comp.animationItem.container.style.mozTransformOrigin =
         this.comp.animationItem.container.style.webkitTransformOrigin =
-        this.comp.animationItem.container.style['-webkit-transform'] = this.globalData.compSize.w/2 + "px " + this.globalData.compSize.h/2 + "px "+this.pe.v+"px";
+        this.comp.animationItem.container.style['-webkit-transform'] = "0px " + "0px "+this.pe.v+"px";
     }
     if(this.finalTransform.mProp.mdf) {
     }
+    var matStr = '';
     var mt = new Matrix();
-    mt.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
-    mt.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
+    //mt.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
     mt.translate(-this.p.v[0],-this.p.v[1],this.pe.v+this.p.v[2]);
+    mt.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
+    matStr += ' rotateZ(' + -this.rz.v + 'rad) ';
+    matStr += ' rotateY(' + -this.ry.v + 'rad) ';
+    matStr += ' rotateX(' + this.rx.v + 'rad) ';
+    matStr += ' translate3d(' + -this.p.v[0] + 'px,' + -this.p.v[1] + 'px,' + (this.p.v[2]) + 'px) ';
+    matStr += ' translate3d(0px,0px,' + (this.pe.v) + 'px) ';
     //renderedData.an.cameraValue = matrixInstance.getMatrix3FromParams(-matrixParams.rx,-matrixParams.ry,matrixParams.rz,matrixParams.sx,matrixParams.sy,matrixParams.sz,-matrixParams.px,-matrixParams.py,item.pe+matrixParams.pz) + ' translate3d('+ dataOb.a[0]+'px, '+ dataOb.a[1]+'px, 0)';
     //this.comp.animationItem.container.style.transform = this.finalTransform.mProp.v.toCSS() + this.translateCamera;
-    this.comp.animationItem.container.style.transform = this.translateCamera + mt.toCSS();
+    this.comp.animationItem.container.style.transform = this.translateCamera + mt.toCSS()  ;
+    //this.comp.animationItem.container.style.transform = this.translateCamera + matStr  ;
 };
 
 HCameraElement.prototype.destroy = function(){

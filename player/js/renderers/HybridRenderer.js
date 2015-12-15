@@ -142,7 +142,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.style.position = 'absolute';
     this.animationItem.container.style.top = 0;
     this.animationItem.container.style.left = 0;
-    this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
+    //this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
     this.animationItem.container.style.webkitTransformStyle = "preserve-3d";
     this.animationItem.container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     this.animationItem.wrapper.appendChild(this.animationItem.container);

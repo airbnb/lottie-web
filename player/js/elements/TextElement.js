@@ -197,17 +197,19 @@ ITextElement.prototype.getMeasures = function(){
     var elemOpacity;
     var sc,sw,fc,k;
     var lineLength = 0;
-    var letterSw,letterSc,letterFc,letterM,letterP,letterO;
+    var letterSw,letterSc,letterFc,letterM,letterP,letterO, letterTest;
 
     for( i = 0; i < len; i += 1) {
-        console.log('---- new letter ----');
+        letterTest = '';
         matrixHelper.reset();
         switch(documentData.j){
             case 1:
-                matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0);
+                letterTest += ' translate3d(' + (documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])) + 'px,' + 0 + 'px,0) ';
+                matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
                 break;
             case 2:
-                matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0);
+                letterTest += ' translate3d(' + (documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2) + 'px,' + 0 + 'px,0) ';
+                matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
                 break;
         }
         elemOpacity = 1;
@@ -292,13 +294,13 @@ ITextElement.prototype.getMeasures = function(){
                 }
                 offf = letters[i].an/2 - letters[i].add;
             }else{
-                matrixHelper.translate(xPos,yPos,0);
-                console.log('xPos,yPos,0: ',xPos,yPos,0);
+                letterTest += ' translate3d(' + xPos + 'px,' + yPos + 'px,0) ';
                 offf = letters[i].an/2 - letters[i].add;
-                matrixHelper.translate(offf,0,0);
-                console.log('offf:',offf);
+                letterTest += ' translate3d('+offf+'px,'+0+'px,0) ';
+                matrixHelper.translate(-offf,0,0);
 
                 // Grouping alignment
+                letterTest += ' translate3d('+renderedData.m.a.v[0]*letters[i].an/200+'px,'+renderedData.m.a.v[1]*yOff/100+'px,0) ';
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
             }
 
@@ -316,20 +318,6 @@ ITextElement.prototype.getMeasures = function(){
                 }
             }
             lineLength += letters[i].l/2;
-
-            for(j=0;j<jLen;j+=1){
-                animatorProps = renderedData.a[j].a;
-
-                if ('p' in animatorProps) {
-                    animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
-                    if('m' in data.t.p) {
-                        matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
-                    }else{
-                        matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
-                    }
-                }
-            }
             if(documentData.strokeWidthAnim) {
                 sw = data.t.d.sw || 0;
             }
@@ -351,21 +339,55 @@ ITextElement.prototype.getMeasures = function(){
                     matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult, animatorProps.a.v[2]*mult);
                 }
             }
+
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+
+                if ('p' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    if('m' in data.t.p) {
+                        letterTest += ' translate3d('+0+'px,'+animatorProps.p.v[1] * mult+'px,' + -animatorProps.p.v[2] * mult + 'px) ';
+                    }else{
+                        letterTest += ' translate3d('+animatorProps.p.v[0] * mult+'px,'+animatorProps.p.v[1] * mult+'px,' + -animatorProps.p.v[2] * mult + 'px) ';
+                    }
+                }
+            }
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if ('s' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult),1);
+                }
+            }
             for(j=0;j<jLen;j+=1) {
                 animatorProps = renderedData.a[j].a;
                 animatorSelector = renderedData.a[j].s;
                 mult = animatorSelector.getMult(letters[i].anIndexes[j]);
-                if ('rx' in animatorProps) {
-                    matrixHelper.rotateX(animatorProps.rx.v*mult);
+                if ('sk' in animatorProps) {
+                    matrixHelper.skewFromAxis(-animatorProps.sk.v*mult,animatorProps.sa.v*mult);
+                }
+                if ('r' in animatorProps) {
+                    matrixHelper.rotateZ(-animatorProps.r.v*mult);
                 }
                 if ('ry' in animatorProps) {
                     matrixHelper.rotateY(animatorProps.ry.v*mult);
                 }
+                if ('rx' in animatorProps) {
+                    matrixHelper.rotateX(animatorProps.rx.v*mult);
+                    letterTest += ' rotateX('+ -animatorProps.rx.v + 'rad) ';
+                }
+                if ('ry' in animatorProps) {
+                    letterTest += ' rotateY('+ -animatorProps.ry.v*mult + 'rad) ';
+                }
                 if ('r' in animatorProps) {
-                    matrixHelper.rotate(animatorProps.r.v*mult);
+                    letterTest += ' rotateZ('+ animatorProps.r.v*mult + 'rad) ';
                 }
                 if ('sk' in animatorProps) {
-                    matrixHelper.skewFromAxis(-(animatorProps.sk.v*mult),-animatorProps.sa.v*mult);
+                    letterTest += ' rotateZ('+ -animatorProps.sa.v*mult + 'rad) ';
+                    letterTest += ' skewX('+ -animatorProps.sk.v*mult + 'rad) ';
+                    letterTest += ' rotateZ('+ animatorProps.sa.v*mult + 'rad) ';
                 }
                 if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
@@ -384,6 +406,36 @@ ITextElement.prototype.getMeasures = function(){
                     }
                 }
             }
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if ('s' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    letterTest += ' scale3d('+ (1+((animatorProps.s.v[0]-1)*mult))+','+(1+((animatorProps.s.v[1]-1)*mult))+','+1 + ') ';
+                }
+            }
+
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+
+                if ('p' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    if('m' in data.t.p) {
+                        matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
+                    }else{
+                        matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
+                    }
+                }
+            }
+            for(j=0;j<jLen;j+=1){
+                animatorProps = renderedData.a[j].a;
+                if ('a' in animatorProps) {
+                    animatorSelector = renderedData.a[j].s;
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    letterTest += ' translate3d('+ -animatorProps.a.v[0]*mult+'px,'+ -animatorProps.a.v[1]*mult+'px,' + animatorProps.a.v[2]*mult + 'px) ';
+                }
+            }
             if(documentData.strokeWidthAnim){
                 letterSw = sw < 0 ? 0 : sw;
             }
@@ -393,30 +445,27 @@ ITextElement.prototype.getMeasures = function(){
             if(documentData.fillColorAnim){
                 letterFc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
             }
-            for(j=0;j<jLen;j+=1){
-                animatorProps = renderedData.a[j].a;
-                if ('s' in animatorProps) {
-                    animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
-                    matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult),1);
-                }
-            }
+            matrixHelper.translate(xPos,yPos,0);
 
             if('m' in data.t.p) {
+                letterTest += ' translate3d('+ -renderedData.m.a.v[0]*letters[i].an/200 + 'px,'+ -renderedData.m.a.v[1]*yOff/100 + 'px,0) ';
                 matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200, -renderedData.m.a.v[1]*yOff/100);
                 currentLength -= renderedData.m.a.v[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
                     currentLength += documentData.tr/1000*data.t.d.s;
                 }
-                matrixHelper.translate(-offf,0,0);
+                letterTest += ' translate3d('+ -offf +'px,'+0+'px,0) ';
+                matrixHelper.translate(offf,0,0);
             }else{
-                matrixHelper.translate(-offf,0,0);
+                letterTest += ' translate3d('+ -offf +'px,'+0+'px,0) ';
+                matrixHelper.translate(offf,0,0);
                 matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200,-renderedData.m.a.v[1]*yOff/100);
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
             if(renderType === 'svg'){
                 letterM = matrixHelper.toCSS();
+                //letterM = letterTest;
             }else{
                 letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
             }

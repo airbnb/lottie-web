@@ -106,14 +106,26 @@ var Matrix = (function(){
     }
 
     function skewFromAxis(ax, angle){
+        console.log('asd');
         var mCos = Math.cos(angle);
         var mSin = Math.sin(angle);
-        return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, Math.tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
+        return this._t(mCos, mSin,  0, 0
+            , -mSin,  mCos, 0, 0
+            , 0,  0,  1, 0
+            , 0, 0, 0, 1)
+            ._t(1, 0,  0, 0
+            , Math.tan(ax),  1, 0, 0
+            , 0,  0,  1, 0
+            , 0, 0, 0, 1)
+            ._t(mCos, -mSin,  0, 0
+            , mSin,  mCos, 0, 0
+            , 0,  0,  1, 0
+            , 0, 0, 0, 1);
+        //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, Math.tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
     function scale(sx, sy, sz) {
         sz = isNaN(sz) ? 1 : sz;
-        console.log('scalescale' , sx, sy, sz);
         if(sx == 1 && sy == 1 && sz == 1){
             return this;
         }
@@ -149,7 +161,6 @@ var Matrix = (function(){
     }
 
     function transform(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
-        console.log(this.props[0]);
 
         if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0){
             if(m2 !== 0 || n2 !== 0 || o2 !== 0){
