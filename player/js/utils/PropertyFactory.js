@@ -103,6 +103,10 @@ var PropertyFactory = (function(){
                 }
             }else{
                 var outX,outY,inX,inY, isArray = false, keyValue;
+                if(!keyData.s){
+                    console.log(this.keyframes);
+                    console.log(keyData);
+                }
                 len = keyData.s.length;
                 for(i=0;i<len;i+=1){
                     if(keyData.h !== 1){
@@ -295,6 +299,7 @@ var PropertyFactory = (function(){
         checkExpressions.bind(this)(elem,data);
         this.v = new Array(data.k.length);
         this.pv = new Array(data.k.length);
+        this.lastValue = new Array(data.k.length);
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
@@ -387,13 +392,13 @@ var PropertyFactory = (function(){
                 if(this.a){
                     this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
                 }
+                if(this.s){
+                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
                 if(this.r){
                     this.v.rotate(this.r.v);
                 }else{
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateX(this.or.v[0]).rotateY(this.or.v[1]).rotateZ(this.or.v[2]);
-                }
-                if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
                 }
                 if(this.data.p.s){
                     this.v.translate(this.px.v,this.py.v,-this.pz.v);
@@ -443,13 +448,13 @@ var PropertyFactory = (function(){
                 if(this.a){
                     this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
                 }
+                if(this.s){
+                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
                 if(this.r){
                     this.v.rotate(this.r.v);
                 }else{
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateX(this.or.v[0]).rotateY(this.or.v[1]).rotateZ(this.or.v[2]);
-                }
-                if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
                 }
                 if(this.data.p.s){
                     this.v.translate(this.px.v,this.py.v,-this.pz.v);

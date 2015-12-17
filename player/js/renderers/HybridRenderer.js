@@ -143,10 +143,10 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.style.top = 0;
     this.animationItem.container.style.left = 0;
     //this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
-    this.animationItem.container.style.webkitTransformStyle = "preserve-3d";
+    this.animationItem.container.style.transformStyle = this.animationItem.container.style.webkitTransformStyle = this.animationItem.container.style.mozTransformStyle = "preserve-3d";
     this.animationItem.container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     this.animationItem.wrapper.appendChild(this.animationItem.container);
-    this.animationItem.wrapper.style.transformStyle = this.animationItem.wrapper.style.webkitTransformStyle = "preserve-3d";
+    this.animationItem.wrapper.style.transformStyle = this.animationItem.wrapper.style.webkitTransformStyle = this.animationItem.wrapper.style.mozTransformStyle = "preserve-3d";
     this.animationItem.wrapper.style.transformOrigin = this.animationItem.wrapper.style.mozTransformOrigin = this.animationItem.wrapper.style.webkitTransformOrigin = this.animationItem.wrapper.style['-webkit-transform'] = "0px 0px 0px";
     var svg = document.createElementNS(svgNS,'svg');
     svg.setAttribute('width','1');
