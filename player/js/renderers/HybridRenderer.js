@@ -136,18 +136,30 @@ HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, plac
 };
 
 HybridRenderer.prototype.configAnimation = function(animData){
-    this.animationItem.container = document.createElement('div');
-    this.animationItem.container.style.width = animData.w+'px';
-    this.animationItem.container.style.height = animData.h+'px';
-    this.animationItem.container.style.position = 'absolute';
-    this.animationItem.container.style.top = 0;
-    this.animationItem.container.style.left = 0;
+    var perspectiveElem = document.createElement('div');
+    var container = document.createElement('div');
+    var wrapper = this.animationItem.wrapper;
+    container.style.width = animData.w+'px';
+    container.style.height = animData.h+'px';
+    container.style.position = 'absolute';
+    container.style.top = 0;
+    container.style.left = 0;
+    perspectiveElem.style.width = animData.w+'px';
+    perspectiveElem.style.height = animData.h+'px';
+    perspectiveElem.style.position = 'absolute';
+    perspectiveElem.style.top = 0;
+    perspectiveElem.style.left = 0;
     //this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
-    this.animationItem.container.style.transformStyle = this.animationItem.container.style.webkitTransformStyle = this.animationItem.container.style.mozTransformStyle = "preserve-3d";
-    this.animationItem.container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
-    this.animationItem.wrapper.appendChild(this.animationItem.container);
-    this.animationItem.wrapper.style.transformStyle = this.animationItem.wrapper.style.webkitTransformStyle = this.animationItem.wrapper.style.mozTransformStyle = "preserve-3d";
-    this.animationItem.wrapper.style.transformOrigin = this.animationItem.wrapper.style.mozTransformOrigin = this.animationItem.wrapper.style.webkitTransformOrigin = this.animationItem.wrapper.style['-webkit-transform'] = "0px 0px 0px";
+    container.style.transformStyle = container.style.webkitTransformStyle = container.style.mozTransformStyle = "preserve-3d";
+    container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    this.animationItem.container = container;
+    this.animationItem.perspectiveElem = perspectiveElem;
+    perspectiveElem.appendChild(container);
+    wrapper.appendChild(perspectiveElem);
+    perspectiveElem.style.transformStyle = perspectiveElem.style.webkitTransformStyle = perspectiveElem.style.mozTransformStyle = "preserve-3d";
+    perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "0px 0px 0px";
+    perspectiveElem.style.overflow = 'hidden';
+    wrapper.style.transformOrigin = wrapper.style.mozTransformOrigin = wrapper.style.webkitTransformOrigin = "0px 0px 0px";
     var svg = document.createElementNS(svgNS,'svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
@@ -170,6 +182,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,document);
+    this.updateContainerSize();
 };
 
 HybridRenderer.prototype.buildStage = function (container, layers,elements) {
@@ -220,6 +233,24 @@ HybridRenderer.prototype.destroy = function () {
 };
 
 HybridRenderer.prototype.updateContainerSize = function () {
+    var elementWidth = this.animationItem.wrapper.offsetWidth;
+    var elementHeight = this.animationItem.wrapper.offsetHeight;
+    var elementRel = elementWidth/elementHeight;
+    var animationRel = this.globalData.compSize.w/this.globalData.compSize.h;
+    var sx,sy,tx,ty;
+    if(animationRel>elementRel){
+        sx = elementWidth/(this.globalData.compSize.w);
+        sy = elementWidth/(this.globalData.compSize.w);
+        tx = 0;
+        ty = ((elementHeight-this.globalData.compSize.h*(elementWidth/this.globalData.compSize.w))/2);
+    }else{
+        sx = elementHeight/(this.globalData.compSize.h);
+        sy = elementHeight/(this.globalData.compSize.h);
+        tx = (elementWidth-this.globalData.compSize.w*(elementHeight/this.globalData.compSize.h))/2;
+        ty = 0;
+    }
+    this.animationItem.perspectiveElem.style.transform = this.animationItem.perspectiveElem.style.webkitTransform = 'matrix(' + sx + ',0,0,'+sy+','+tx+','+ty+')';
+    console.log(sx,sy,tx,ty);
 };
 
 HybridRenderer.prototype.renderFrame = function(num){
