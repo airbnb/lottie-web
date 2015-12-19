@@ -136,32 +136,22 @@ HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, plac
 };
 
 HybridRenderer.prototype.configAnimation = function(animData){
-    var perspectiveElem = document.createElement('div');
+    var resizerElem = document.createElement('div');
     var container = document.createElement('div');
     var wrapper = this.animationItem.wrapper;
     container.style.width = animData.w+'px';
     container.style.height = animData.h+'px';
-    container.style.position = 'absolute';
-    container.style.top = 0;
-    container.style.left = 0;
-    perspectiveElem.style.width = animData.w+'px';
-    perspectiveElem.style.height = animData.h+'px';
-    perspectiveElem.style.position = 'absolute';
-    perspectiveElem.style.top = 0;
-    perspectiveElem.style.left = 0;
-    //this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
-    container.style.transformStyle = container.style.webkitTransformStyle = container.style.mozTransformStyle = "preserve-3d";
+    resizerElem.style.width = animData.w+'px';
+    resizerElem.style.height = animData.h+'px';
     container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     styleDiv(container);
     this.animationItem.container = container;
-    this.animationItem.perspectiveElem = perspectiveElem;
-    perspectiveElem.appendChild(container);
-    perspectiveElem.style.transformStyle = perspectiveElem.style.webkitTransformStyle = perspectiveElem.style.mozTransformStyle = "preserve-3d";
-    styleDiv(perspectiveElem);
-    wrapper.appendChild(perspectiveElem);
+    this.animationItem.resizerElem = resizerElem;
+    resizerElem.appendChild(container);
+    styleDiv(resizerElem);
+    wrapper.appendChild(resizerElem);
 
-    perspectiveElem.style.transformStyle = perspectiveElem.style.webkitTransformStyle = perspectiveElem.style.mozTransformStyle = "preserve-3d";
-    //perspectiveElem.style.overflow = 'hidden';
+    //resizerElem.style.overflow = 'hidden';
     var svg = document.createElementNS(svgNS,'svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
@@ -251,7 +241,7 @@ HybridRenderer.prototype.updateContainerSize = function () {
         tx = (elementWidth-this.globalData.compSize.w*(elementHeight/this.globalData.compSize.h))/2;
         ty = 0;
     }
-    this.animationItem.perspectiveElem.style.transform = this.animationItem.perspectiveElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
+    this.animationItem.resizerElem.style.transform = this.animationItem.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
 };
 
 HybridRenderer.prototype.renderFrame = function(num){
