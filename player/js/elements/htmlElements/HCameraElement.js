@@ -14,7 +14,6 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     this.rx = PropertyFactory.getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
     this.ry = PropertyFactory.getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
     this.rz = PropertyFactory.getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
-    this.translateCamera = ' translate3d('+ this.globalData.compSize.w/2+'px, '+ this.globalData.compSize.h/2+'px, 0) ';
 
     this.comp.animationItem.perspectiveElem.style.perspective = this.comp.animationItem.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
     this.comp.animationItem.container.style.transformOrigin =
@@ -53,7 +52,8 @@ HCameraElement.prototype.renderFrame = function(){
         //mt.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
         this.mat.translate(-this.p.v[0],-this.p.v[1],this.pe.v+this.p.v[2]);
         this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
-        this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.translateCamera + this.mat.toCSS()  ;
+        this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
+        this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.mat.toCSS()  ;
     }
 };
 

@@ -151,15 +151,17 @@ HybridRenderer.prototype.configAnimation = function(animData){
     perspectiveElem.style.left = 0;
     //this.animationItem.container.style.clip = 'rect(0px, '+animData.w+'px, '+animData.h+'px, 0px)';
     container.style.transformStyle = container.style.webkitTransformStyle = container.style.mozTransformStyle = "preserve-3d";
-    container.style.transform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    styleDiv(container);
     this.animationItem.container = container;
     this.animationItem.perspectiveElem = perspectiveElem;
     perspectiveElem.appendChild(container);
-    wrapper.appendChild(perspectiveElem);
     perspectiveElem.style.transformStyle = perspectiveElem.style.webkitTransformStyle = perspectiveElem.style.mozTransformStyle = "preserve-3d";
-    perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "0px 0px 0px";
-    perspectiveElem.style.overflow = 'hidden';
-    wrapper.style.transformOrigin = wrapper.style.mozTransformOrigin = wrapper.style.webkitTransformOrigin = "0px 0px 0px";
+    styleDiv(perspectiveElem);
+    wrapper.appendChild(perspectiveElem);
+
+    perspectiveElem.style.transformStyle = perspectiveElem.style.webkitTransformStyle = perspectiveElem.style.mozTransformStyle = "preserve-3d";
+    //perspectiveElem.style.overflow = 'hidden';
     var svg = document.createElementNS(svgNS,'svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
@@ -249,8 +251,7 @@ HybridRenderer.prototype.updateContainerSize = function () {
         tx = (elementWidth-this.globalData.compSize.w*(elementHeight/this.globalData.compSize.h))/2;
         ty = 0;
     }
-    this.animationItem.perspectiveElem.style.transform = this.animationItem.perspectiveElem.style.webkitTransform = 'matrix(' + sx + ',0,0,'+sy+','+tx+','+ty+')';
-    console.log(sx,sy,tx,ty);
+    this.animationItem.perspectiveElem.style.transform = this.animationItem.perspectiveElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
 };
 
 HybridRenderer.prototype.renderFrame = function(num){

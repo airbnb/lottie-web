@@ -111,7 +111,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
             }
         }
     }
-    this.layerElement.style.transform = finalMat.toCSS();
+    this.layerElement.style.transform = this.layerElement.style.webkitTransform = finalMat.toCSS();
     this.layerElement.style.opacity = this.finalTransform.opacity;
     return this.isVisible;
 };

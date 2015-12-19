@@ -125,7 +125,7 @@ HTextElement.prototype.createElements = function(){
                     tCont.setAttribute('width',rBound - lBound);
                     tCont.setAttribute('height',bBound - tBound);
                     tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
-                    tCont.style.transform = 'translate('+lBound+'px,'+ tBound+'px)';
+                    tCont.style.transform = tCont.style.webkitTransform = 'translate('+lBound+'px,'+ tBound+'px)';
 
 
                     /*tCont.setAttribute('width','20');
@@ -169,7 +169,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
     }
     if(this.data.hasMask && this.finalTransform.matMdf){
         this.cont.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
-        this.cont.style.transform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
+        this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
     }
     if(this.data.singleShape && !this.firstFrame){
         return;
@@ -191,7 +191,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
         renderedLetter = renderedLetters[i];
         ////this.textSpans[i].setAttribute('transform',renderedLetter.m);
-        this.textSpans[i].style.transform = renderedLetter.m;
+        this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
         ////this.textSpans[i].setAttribute('opacity',renderedLetter.o);
         this.textSpans[i].style.opacity = renderedLetter.o;
         if(renderedLetter.sw){
@@ -222,7 +222,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
             this.currentBBox.y = boundingBox.y;
 
             this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-            this.cont.style.transform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+            this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
         }
     }
     if(this.firstFrame){

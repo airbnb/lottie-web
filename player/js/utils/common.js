@@ -27,7 +27,7 @@ function styleDiv(element){
     element.style.top = 0;
     element.style.left = 0;
     element.style.display = 'block';
-    element.style.transformOrigin = '0 0';
+    element.style.transformOrigin = element.style.webkitTransformOrigin = '0 0';
     element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'visible';
     element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
     styleUnselectableDiv(element);
