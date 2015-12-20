@@ -396,7 +396,7 @@ var PropertyFactory = (function(){
                     this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
                 }
                 if(this.r){
-                    this.v.rotate(this.r.v);
+                    this.v.rotate(-this.r.v);
                 }else{
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateX(this.or.v[0]).rotateY(this.or.v[1]).rotateZ(this.or.v[2]);
                 }
@@ -452,7 +452,7 @@ var PropertyFactory = (function(){
                     this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
                 }
                 if(this.r){
-                    this.v.rotate(this.r.v);
+                    this.v.rotate(-this.r.v);
                 }else{
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateX(this.or.v[0]).rotateY(this.or.v[1]).rotateZ(this.or.v[2]);
                 }

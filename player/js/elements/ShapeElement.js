@@ -181,6 +181,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
 
+
     var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();

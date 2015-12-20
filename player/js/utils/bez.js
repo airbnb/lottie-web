@@ -185,7 +185,6 @@ function bezFunction(){
         var i, len = pt1.length;
         var u0 = 1 - t0;
         var u1 = 1 - t1;
-        console.log(len);
         for(i=0;i<len;i+=1){
             pts.pt1[i] =  u0*u0*u0* pt1[i] + (t0*u0*u0 + u0*t0*u0 + u0*u0*t0) * pt3[i] + (t0*t0*u0 + u0*t0*t0 + t0*u0*t0)* pt4[i] + t0*t0*t0* pt2[i];
             pts.pt3[i] = u0*u0*u1*pt1[i] + (t0*u0*u1 + u0*t0*u1 + u0*u0*t1)* pt3[i] + (t0*t0*u1 + u0*t0*t1 + t0*u0*t1)* pt4[i] + t0*t0*t1* pt2[i];

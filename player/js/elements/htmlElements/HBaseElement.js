@@ -89,22 +89,9 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
     }else{
         if(this.isVisible && this.finalTransform.matMdf){
             if(!parentTransform){
-                finalMat.props[0] = this.finalTransform.mProp.v.props[0];
-                finalMat.props[1] = this.finalTransform.mProp.v.props[1];
-                finalMat.props[2] = this.finalTransform.mProp.v.props[2];
-                finalMat.props[3] = this.finalTransform.mProp.v.props[3];
-                finalMat.props[4] = this.finalTransform.mProp.v.props[4];
-                finalMat.props[5] = this.finalTransform.mProp.v.props[5];
-                finalMat.props[6] = this.finalTransform.mProp.v.props[6];
-                finalMat.props[7] = this.finalTransform.mProp.v.props[7];
-                finalMat.props[8] = this.finalTransform.mProp.v.props[8];
-                finalMat.props[9] = this.finalTransform.mProp.v.props[9];
-                finalMat.props[10] = this.finalTransform.mProp.v.props[10];
-                finalMat.props[11] = this.finalTransform.mProp.v.props[11];
-                finalMat.props[12] = this.finalTransform.mProp.v.props[12];
-                finalMat.props[13] = this.finalTransform.mProp.v.props[13];
-                finalMat.props[14] = this.finalTransform.mProp.v.props[14];
-                finalMat.props[15] = this.finalTransform.mProp.v.props[15];
+                for(i = 0; i < 16; i+=1){
+                    finalMat.props[i] = this.finalTransform.mProp.v.props[i];
+                }
             }else{
                 mat = this.finalTransform.mProp.v.props;
                 finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
