@@ -16,12 +16,10 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     this.rz = PropertyFactory.getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
 
     this.comp.animationItem.wrapper.style.perspective = this.comp.animationItem.wrapper.style.webkitPerspective = this.pe.v+'px';
-    //this.comp.animationItem.zDistancer.style.perspective = this.comp.animationItem.zDistancer.style.webkitPerspective = this.pe.v+'px';
     this.comp.animationItem.container.style.transformOrigin =
     this.comp.animationItem.container.style.mozTransformOrigin =
-    //this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px " + this.pe.v +'px';
+    //this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px " + this.pe.v +'px'; // Not working on Safari
     this.comp.animationItem.container.style.webkitTransformOrigin = "0px 0px 0px";
-    //this.comp.animationItem.zDistancer.style.transform = 'translateZ('+ -this.pe.v+'px)';
     this.mat = new Matrix();
 }
 createElement(HBaseElement, HCameraElement);
@@ -37,16 +35,9 @@ HCameraElement.prototype.hide = function(){
 HCameraElement.prototype.renderFrame = function(){
     if(this.hierarchy){
     }
-    if(this.pe.mdf){
-        this.comp.animationItem.container.style.transformOrigin =
-        this.comp.animationItem.container.style.mozTransformOrigin =
-        this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px " + this.pe.v +'px';
-        this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px 0px";
-        //this.comp.animationItem.wrapper.style.perspective = this.comp.animationItem.wrapper.style.webkitPerspective = this.pe.v+'px';
-    }
     if(this.p.mdf || this.rx.mdf || this.ry.mdf || this.rz.mdf) {
-        var matStr = '';
-        /*matStr += ' rotateZ(' + -this.rz.v + 'rad) ';
+        /*var matStr = '';
+        matStr += ' rotateZ(' + -this.rz.v + 'rad) ';
          matStr += ' rotateY(' + -this.ry.v + 'rad) ';
          matStr += ' rotateX(' + this.rx.v + 'rad) ';
          matStr += ' translate3d(' + -this.p.v[0] + 'px,' + -this.p.v[1] + 'px,' + (this.p.v[2]) + 'px) ';
@@ -58,8 +49,9 @@ HCameraElement.prototype.renderFrame = function(){
         this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
-        this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.mat.toCSS()  ;
+        this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.mat.toCSS();
     }
+    this.firstFrame = false;
 };
 
 HCameraElement.prototype.destroy = function(){

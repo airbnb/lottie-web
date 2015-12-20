@@ -87,7 +87,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
             finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
         }
     }else{
-        if(this.isVisible){
+        if(this.isVisible && this.finalTransform.matMdf){
             if(!parentTransform){
                 finalMat.props[0] = this.finalTransform.mProp.v.props[0];
                 finalMat.props[1] = this.finalTransform.mProp.v.props[1];
@@ -111,8 +111,12 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
             }
         }
     }
-    this.layerElement.style.transform = this.layerElement.style.webkitTransform = finalMat.toCSS();
-    this.layerElement.style.opacity = this.finalTransform.opacity;
+    if(this.finalTransform.matMdf){
+        this.layerElement.style.transform = this.layerElement.style.webkitTransform = finalMat.toCSS();
+    }
+    if(this.finalTransform.opMdf){
+        this.layerElement.style.opacity = this.finalTransform.opacity;
+    }
     return this.isVisible;
 };
 
