@@ -236,6 +236,7 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             groupTransform.opMdf = groupTransform.op.mdf;
             groupMatrix = groupTransform.mat;
             groupMatrix.reset();
+            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5],mtArr[6],mtArr[7],mtArr[8],mtArr[9],mtArr[10],mtArr[11],mtArr[12],mtArr[13],mtArr[14],mtArr[15]);
             if(parentTransform){
                 var props = parentTransform.mat.props;
                 groupTransform.opacity = parentTransform.opacity;
@@ -247,7 +248,6 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             }else{
                 groupTransform.opacity = groupTransform.op.o;
             }
-            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5],mtArr[6],mtArr[7],mtArr[8],mtArr[9],mtArr[10],mtArr[11],mtArr[12],mtArr[13],mtArr[14],mtArr[15]);
         }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
