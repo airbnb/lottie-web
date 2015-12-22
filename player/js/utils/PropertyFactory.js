@@ -393,7 +393,7 @@ var PropertyFactory = (function(){
                     this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
                 }
                 if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                    this.v.scale(this.s.v[0],this.s.v[1],1);
                 }
                 if(this.r){
                     this.v.rotate(-this.r.v);

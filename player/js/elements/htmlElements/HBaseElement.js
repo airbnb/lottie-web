@@ -67,7 +67,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
 
     if(parentTransform){
         mat = parentTransform.mat.props;
-        finalMat.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
+        finalMat.cloneFromProps(mat);
         this.finalTransform.opacity *= parentTransform.opacity;
         this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
         this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
@@ -75,11 +75,8 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
 
     if(this.hierarchy){
         var i, len = this.hierarchy.length;
-        if(!parentTransform){
-            finalMat.reset();
-        }
         mat = this.finalTransform.mProp.v.props;
-        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
+        finalMat.cloneFromProps(mat);
         for(i=0;i<len;i+=1){
 
             this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
@@ -89,9 +86,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
     }else{
         if(this.isVisible && this.finalTransform.matMdf){
             if(!parentTransform){
-                for(i = 0; i < 16; i+=1){
-                    finalMat.props[i] = this.finalTransform.mProp.v.props[i];
-                }
+                finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
             }else{
                 mat = this.finalTransform.mProp.v.props;
                 finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);

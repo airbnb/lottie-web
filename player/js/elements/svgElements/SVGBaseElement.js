@@ -192,37 +192,32 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
     var mat;
     var finalMat = this.finalTransform.mat;
 
-    if(parentTransform){
-        mat = parentTransform.mat.props;
-        finalMat.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
-        this.finalTransform.opacity *= parentTransform.opacity;
-        this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
-        this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
-    }
-
     if(this.hierarchy){
         var i, len = this.hierarchy.length;
-        if(!parentTransform){
-            finalMat.reset();
-        }
-        for(i=len-1;i>=0;i-=1){
+
+        mat = this.finalTransform.mProp.v.props;
+        finalMat.cloneFromProps(mat);
+        for(i=0;i<len;i+=1){
             this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
             mat = this.hierarchy[i].finalTransform.mProp.v.props;
             finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
         }
-        mat = this.finalTransform.mProp.v.props;
-        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
     }else{
         if(this.isVisible){
             if(!parentTransform){
-                for(i = 0; i < 16; i+=1){
-                    finalMat.props[i] = this.finalTransform.mProp.v.props[i];
-                }
+                finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
             }else{
                 mat = this.finalTransform.mProp.v.props;
-                finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
+                finalMat.cloneFromProps(mat);
             }
         }
+    }
+    if(parentTransform){
+        mat = parentTransform.mat.props;
+        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
+        this.finalTransform.opacity *= parentTransform.opacity;
+        this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
+        this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf;
     }
     if(this.data.hasMask){
         if(this.finalTransform.matMdf){

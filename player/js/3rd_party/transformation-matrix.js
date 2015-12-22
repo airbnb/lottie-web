@@ -219,22 +219,17 @@ var Matrix = (function(){
     }
 
     function clone(matr){
-        matr.props[0] = this.props[0];
-        matr.props[1] = this.props[1];
-        matr.props[2] = this.props[2];
-        matr.props[3] = this.props[3];
-        matr.props[4] = this.props[4];
-        matr.props[5] = this.props[5];
-        matr.props[6] = this.props[6];
-        matr.props[7] = this.props[7];
-        matr.props[8] = this.props[8];
-        matr.props[9] = this.props[9];
-        matr.props[10] = this.props[10];
-        matr.props[11] = this.props[11];
-        matr.props[12] = this.props[12];
-        matr.props[13] = this.props[13];
-        matr.props[14] = this.props[14];
-        matr.props[15] = this.props[15];
+        var i;
+        for(i=0;i<16;i+=1){
+            matr.props[i] = this.props[i];
+        }
+    }
+
+    function cloneFromProps(props){
+        var i;
+        for(i=0;i<16;i+=1){
+            this.props[i] = props[i];
+        }
     }
 
     function applyToPoint(x, y, z) {
@@ -308,6 +303,7 @@ var Matrix = (function(){
         this.to2dCSS = to2dCSS;
         this.toString = toString;
         this.clone = clone;
+        this.cloneFromProps = cloneFromProps;
         this._t = this.transform;
 
         this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];

@@ -168,18 +168,17 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             groupTransform.matMdf = groupTransform.mProps.mdf;
             groupTransform.opMdf = groupTransform.op.mdf;
             groupMatrix = groupTransform.mat;
-            groupMatrix.reset();
+            groupMatrix.cloneFromProps(mtArr);
             if(parentTransform){
                 var props = parentTransform.mat.props;
                 groupTransform.opacity = parentTransform.opacity;
                 groupTransform.opacity *= data[i].transform.op.v;
                 groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
                 groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
             }else{
                 groupTransform.opacity = groupTransform.op.o;
             }
-            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
         }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
@@ -281,7 +280,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                     if (viewData.fl) {
                         pathStringTransformed.push({
                             t:'m',
-                            p:groupTransform.mat.applyToPointArray(stops[i - 1][0], stops[i - 1][1])
+                            p:groupTransform.mat.applyToPointArray(stops[i - 1][0], stops[i - 1][1], 0)
                         });
                     }
                 } else if (i == 1) {
@@ -295,7 +294,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                     if (viewData.fl) {
                         pathStringTransformed.push({
                             t:'m',
-                            p:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1])
+                            p:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                         });
                     }
                 }
@@ -311,9 +310,9 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                 if (viewData.fl) {
                     pathStringTransformed.push({
                         t:'c',
-                        p1:groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0],pathNodes.o[i - 1][1]),
-                        p2:groupTransform.mat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1]),
-                        p3:groupTransform.mat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1])
+                        p1:groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0],pathNodes.o[i - 1][1], 0),
+                        p2:groupTransform.mat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
+                        p3:groupTransform.mat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
                     });
                 }
             }
@@ -328,7 +327,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                     if (viewData.fl) {
                         pathStringTransformed.push({
                             t:'m',
-                            p:groupTransform.mat.applyToPointArray(stops[0][0], stops[0][1])
+                            p:groupTransform.mat.applyToPointArray(stops[0][0], stops[0][1], 0)
                         });
                     }
                 } else {
@@ -341,7 +340,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                     if (viewData.fl) {
                         pathStringTransformed.push({
                             t:'m',
-                            p:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1])
+                            p:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                         });
                     }
                 }
@@ -358,19 +357,16 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                 if (viewData.fl) {
                     pathStringTransformed.push({
                         t:'c',
-                        p1:groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]),
-                        p2:groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1]),
-                        p3:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1])
+                        p1:groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
+                        p2:groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
+                        p3:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                 }
             }
             if (viewData.st) {
-                viewData.tr[0] = groupTransform.mat.props[0];
-                viewData.tr[1] = groupTransform.mat.props[1];
-                viewData.tr[2] = groupTransform.mat.props[2];
-                viewData.tr[3] = groupTransform.mat.props[3];
-                viewData.tr[4] = groupTransform.mat.props[4];
-                viewData.tr[5] = groupTransform.mat.props[5];
+                for(i=0;i<16;i+=1){
+                    viewData.tr[i] = groupTransform.mat.props[i];
+                }
             }
             viewData.nodes = pathStringNonTransformed;
             viewData.trNodes = pathStringTransformed;
