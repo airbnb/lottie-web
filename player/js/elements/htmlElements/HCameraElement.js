@@ -59,12 +59,14 @@ HCameraElement.prototype.renderFrame = function(){
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
         if(this.hierarchy){
+            this.mat.translate(0,0,this.pe.v);
             var mat;
             len = this.hierarchy.length;
             for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.v.props;
+                mat = this.hierarchy[i].finalTransform.mProp.iv.props;
                 this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
             }
+            this.mat.translate(0,0,-this.pe.v);
         }
         this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.mat.toCSS();
     }

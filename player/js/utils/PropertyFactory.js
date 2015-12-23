@@ -408,6 +408,29 @@ var PropertyFactory = (function(){
             }
         }
 
+        function setInverted(){
+            this.inverted = true;
+            this.iv = new Matrix();
+            if(!this.k){
+                if(this.data.p.s){
+                    this.iv.translate(this.px.v,this.py.v,-this.pz.v);
+                }else{
+                    this.iv.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+                }
+                if(this.r){
+                    this.iv.rotate(-this.r.v);
+                }else{
+                    this.iv.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
+                }
+                if(this.s){
+                    this.iv.scale(this.s.v[0],this.s.v[1],1);
+                }
+                if(this.a){
+                    this.iv.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+                }
+            }
+        }
+
         return function TransformProperty(elem,data,arr){
             this.elem = elem;
             this.frameId = -1;
@@ -415,6 +438,7 @@ var PropertyFactory = (function(){
             this.mdf = false;
             this.data = data;
             this.getValue = processKeys;
+            this.setInverted = setInverted;
             this.v = new Matrix();
             if(data.p.s){
                 this.px = getProp(elem,data.p.x,0,0,this.dynamicProperties);
