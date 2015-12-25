@@ -23,15 +23,18 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     this.rx = PropertyFactory.getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
     this.ry = PropertyFactory.getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
     this.rz = PropertyFactory.getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
-
-    this.comp.animationItem.wrapper.style.perspective = this.comp.animationItem.wrapper.style.webkitPerspective = this.pe.v+'px';
-    this.comp.animationItem.container.style.transformOrigin =
-        this.comp.animationItem.container.style.mozTransformOrigin =
-            //this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px " + this.pe.v +'px'; // Not working on Safari
-            this.comp.animationItem.container.style.webkitTransformOrigin = "0px 0px 0px";
     this.mat = new Matrix();
 }
 createElement(HBaseElement, HCameraElement);
+
+HCameraElement.prototype.setup = function() {
+    var i, len = this.comp.threeDElements.length, comp;
+    for(i=0;i<len;i+=1){
+        comp = this.comp.threeDElements[i];
+        comp[0].style.perspective = comp[0].style.webkitPerspective = this.pe.v+'px';
+        comp[1].style.transformOrigin = comp[1].style.mozTransformOrigin = comp[1].style.webkitTransformOrigin = "0px 0px 0px";
+    }
+}
 
 HCameraElement.prototype.createElements = function(){
 };
@@ -58,8 +61,9 @@ HCameraElement.prototype.hide = function(){
 
 HCameraElement.prototype.renderFrame = function(){
     var mdf = this.firstFrame;
+    var i, len;
     if(this.hierarchy){
-        var i, len = this.hierarchy.length;
+        len = this.hierarchy.length;
         for(i=0;i<len;i+=1){
             mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
         }
@@ -94,7 +98,12 @@ HCameraElement.prototype.renderFrame = function(){
                 this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
             }
         }
-        this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.mat.toCSS();
+        len = this.comp.threeDElements.length;
+        var comp;
+        for(i=0;i<len;i+=1){
+            comp = this.comp.threeDElements[i];
+            comp[1].style.transform = comp[1].style.webkitTransform = this.mat.toCSS();
+        }
     }
     this.firstFrame = false;
 };

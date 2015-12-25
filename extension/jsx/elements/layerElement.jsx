@@ -99,7 +99,6 @@ var bm_layerElement = (function () {
             layerData.enabled = false;
             layerData.render = false;
         }
-        bm_eventDispatcher.log(layerInfo.threeDLayer);
         if(layerInfo.threeDLayer){
             layerData.ddd = 1;
         } else {

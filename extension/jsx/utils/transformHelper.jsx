@@ -37,7 +37,6 @@ var bm_transformHelper = (function () {
         if (layerInfo.transform.Scale) {
             data.ks.s = bm_keyframeHelper.exportKeyframes(layerInfo.transform.Scale, frameRate);
         }
-        bm_eventDispatcher.log('exportTransform3');
     }
     
     ob.exportTransform = exportTransform;

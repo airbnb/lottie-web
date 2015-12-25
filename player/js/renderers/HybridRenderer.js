@@ -6,8 +6,10 @@ function HybridRenderer(animationItem){
         frameNum: -1
     };
     this.elements = [];
+    this.threeDElements = [];
     this.destroyed = false;
-    this.hasCamera = false;
+    this.camera = null;
+
 }
 
 HybridRenderer.prototype.createItem = function(layer,parentContainer,comp, placeholder){
@@ -35,16 +37,29 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
     if(!elements){
         elements = this.elements;
     }
-    if(!parentContainer){
-        parentContainer = this.animationItem.container;
-    }
     if(!comp){
         comp = this;
     }
 
+    var currentContainer, is3d = false;
+
     var elems;
+
     for (i = len - 1; i >= 0; i--) {
-        elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
+        if(!parentContainer) {
+            if(layers[i].ddd) {
+                if(!is3d){
+                    is3d = true;
+                    currentContainer = this.getThreeDContainer();
+                }
+                elements[i] = this.createItem(layers[i],currentContainer,comp, placeholder);
+            } else {
+                is3d = false;
+                elements[i] = this.createItem(layers[i],this.animationItem.resizerElem,comp, placeholder);
+            }
+        } else{
+            elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
+        }
         if (layers[i].ty === 0) {
             elems = [];
             this.buildItems(layers[i].layers,elements[i].getDomElement(),elems,elements[i], elements[i].placeholder);
@@ -56,11 +71,20 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
         //NullLayer
     }
 
-    if(!this.hasCamera){
-        var cWidth = this.globalData.compSize.w;
-        var cHeight = this.globalData.compSize.h;
-        this.animationItem.wrapper.style.perspective = this.animationItem.wrapper.style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
+    if(!parentContainer){
+        if(this.threeDElements.length){
+            if(!this.camera){
+                var cWidth = this.globalData.compSize.w;
+                var cHeight = this.globalData.compSize.h;
+                len = this.threeDElements.length;
+                for(i=0;i<len;i+=1){
+                    this.threeDElements[0][i].style.perspective = this.threeDElements[0][i].style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
+                }
 
+            } else {
+                this.camera.setup();
+            }
+        }
     }
 };
 
@@ -119,8 +143,8 @@ HybridRenderer.prototype.createText = function (data,parentContainer,comp, place
 };
 
 HybridRenderer.prototype.createCamera = function (data,parentContainer,comp, placeholder) {
-    this.hasCamera = true;
-    return new HCameraElement(data, parentContainer,this.globalData,comp, placeholder);
+    this.camera = new HCameraElement(data, parentContainer,this.globalData,comp, placeholder);
+    return this.camera;
 };
 
 HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
@@ -145,20 +169,28 @@ HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, plac
     return new HSolidElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
+HybridRenderer.prototype.getThreeDContainer = function(){
+    var perspectiveElem = document.createElement('div');
+    styleDiv(perspectiveElem);
+    perspectiveElem.style.width = this.globalData.compSize.w+'px';
+    perspectiveElem.style.height = this.globalData.compSize.h+'px';
+    var container = document.createElement('div');
+    styleDiv(container);
+    container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    perspectiveElem.appendChild(container);
+    this.animationItem.resizerElem.appendChild(perspectiveElem);
+    this.threeDElements.push([perspectiveElem,container]);
+    return container;
+}
+
 HybridRenderer.prototype.configAnimation = function(animData){
     var resizerElem = document.createElement('div');
-    var container = document.createElement('div');
     var wrapper = this.animationItem.wrapper;
-    container.style.width = animData.w+'px';
-    container.style.height = animData.h+'px';
     resizerElem.style.width = animData.w+'px';
     resizerElem.style.height = animData.h+'px';
-    container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
-    styleDiv(container);
-    this.animationItem.container = container;
     this.animationItem.resizerElem = resizerElem;
-    resizerElem.appendChild(container);
     styleDiv(resizerElem);
+    resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
     wrapper.appendChild(resizerElem);
 
     //resizerElem.style.overflow = 'hidden';
@@ -166,7 +198,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
     styleDiv(svg);
-    this.animationItem.container.appendChild(svg);
+    this.animationItem.resizerElem.appendChild(svg);
     var defs = document.createElementNS(svgNS,'defs');
     svg.appendChild(defs);
     this.globalData.defs = defs;
