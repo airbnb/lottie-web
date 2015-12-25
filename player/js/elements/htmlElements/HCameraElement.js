@@ -8,6 +8,9 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     }else{
         this.p = PropertyFactory.getProp(this,data.ks.p,1,0,this.dynamicProperties);
     }
+    if(data.ks.a){
+        this.a = PropertyFactory.getProp(this,data.ks.a,1,0,this.dynamicProperties);
+    }
     if(data.ks.or.k.length){
         var i,len = data.ks.or.k.length;
         for(i=0;i<len;i+=1){
@@ -23,9 +26,9 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
 
     this.comp.animationItem.wrapper.style.perspective = this.comp.animationItem.wrapper.style.webkitPerspective = this.pe.v+'px';
     this.comp.animationItem.container.style.transformOrigin =
-    this.comp.animationItem.container.style.mozTransformOrigin =
-    //this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px " + this.pe.v +'px'; // Not working on Safari
-    this.comp.animationItem.container.style.webkitTransformOrigin = "0px 0px 0px";
+        this.comp.animationItem.container.style.mozTransformOrigin =
+            //this.comp.animationItem.container.style.webkitTransformOrigin = "0px " + "0px " + this.pe.v +'px'; // Not working on Safari
+            this.comp.animationItem.container.style.webkitTransformOrigin = "0px 0px 0px";
     this.mat = new Matrix();
 }
 createElement(HBaseElement, HCameraElement);
@@ -33,7 +36,22 @@ createElement(HBaseElement, HCameraElement);
 HCameraElement.prototype.createElements = function(){
 };
 
+function getMagnitude(p2){
+    var mag = Math.sqrt(Math.pow(p2[0],2)+Math.pow(p2[1],2)+Math.pow(p2[2],2));
+    return mag;
+}
 
+function getNormalizedPoint(p2){
+    var mag = getMagnitude(p2);
+    var x = (p2[0])/mag;
+    var y = (p2[1])/mag;
+    var z = (p2[2])/mag;
+    return [x,y,z];
+}
+
+function getDiffVector(p1,p2){
+    return [p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]];
+}
 
 HCameraElement.prototype.hide = function(){
 };
@@ -46,27 +64,35 @@ HCameraElement.prototype.renderFrame = function(){
             mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
         }
     }
-    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf) {
+    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || (this.a && this.a.mdf)) {
         this.mat.reset();
-        this.mat.translate(0,0,-this.pe.v);
+
         //this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
         if(this.p){
-            this.mat.translate(-this.p.v[0],-this.p.v[1],this.pe.v+this.p.v[2]);
+            this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
         }else{
-            this.mat.translate(-this.px.v,-this.py.v,this.pe.v+this.pz.v);
+            this.mat.translate(-this.px.v,-this.py.v,this.pz.v);
+        }
+        if(this.a){
+
+            var camCoords = [this.p.v[0],this.p.v[1],-this.p.v[2]];
+            var lookDir = getNormalizedPoint(getDiffVector(this.a.v,camCoords));
+            var lookLengthOnXZ = Math.sqrt( lookDir[2]*lookDir[2] + lookDir[0]*lookDir[0] );
+            var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));
+            var m_rotationY = (Math.atan2( lookDir[0], lookDir[2]));
+            this.mat.rotateY(m_rotationY).rotateX(-m_rotationX);
+
         }
         this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
         if(this.hierarchy){
-            this.mat.translate(0,0,this.pe.v);
             var mat;
             len = this.hierarchy.length;
             for(i=0;i<len;i+=1){
                 mat = this.hierarchy[i].finalTransform.mProp.iv.props;
                 this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
             }
-            this.mat.translate(0,0,-this.pe.v);
         }
         this.comp.animationItem.container.style.transform = this.comp.animationItem.container.style.webkitTransform = this.mat.toCSS();
     }

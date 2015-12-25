@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, continue:true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_keyframeHelper*/
+/*global bm_keyframeHelper, bm_eventDispatcher, bm_generalUtils*/
 var bm_cameraHelper = (function () {
     'use strict';
     var ob = {};
@@ -7,6 +7,9 @@ var bm_cameraHelper = (function () {
     function exportCamera(layerInfo, data, frameRate) {
         data.pe = bm_keyframeHelper.exportKeyframes(layerInfo.property('Camera Options').property('Zoom'), frameRate);
         data.ks = {};
+        if (layerInfo.transform['Point of Interest'].canSetExpression) {
+            data.ks.a = bm_keyframeHelper.exportKeyframes(layerInfo.transform['Point of Interest'], frameRate);
+        }
         if (layerInfo.transform.position.dimensionsSeparated) {
             data.ks.p = {s: true};
             data.ks.p.x = bm_keyframeHelper.exportKeyframes(layerInfo.transform['X Position'], frameRate);
