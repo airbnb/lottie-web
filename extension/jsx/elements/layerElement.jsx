@@ -99,6 +99,12 @@ var bm_layerElement = (function () {
             layerData.enabled = false;
             layerData.render = false;
         }
+        bm_eventDispatcher.log(layerInfo.threeDLayer);
+        if(layerInfo.threeDLayer){
+            layerData.ddd = 1;
+        } else {
+            layerData.ddd = 0;
+        }
         layerData.ind = ind;
         layerData.ty = layerType;
         layerData.nm = layerInfo.name;

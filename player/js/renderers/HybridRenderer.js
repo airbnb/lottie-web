@@ -7,6 +7,7 @@ function HybridRenderer(animationItem){
     };
     this.elements = [];
     this.destroyed = false;
+    this.hasCamera = false;
 }
 
 HybridRenderer.prototype.createItem = function(layer,parentContainer,comp, placeholder){
@@ -40,6 +41,7 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
     if(!comp){
         comp = this;
     }
+
     var elems;
     for (i = len - 1; i >= 0; i--) {
         elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
@@ -52,6 +54,13 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
             elements[i+1].setMatte(elements[i].layerId);
         }
         //NullLayer
+    }
+
+    if(!this.hasCamera){
+        var cWidth = this.globalData.compSize.w;
+        var cHeight = this.globalData.compSize.h;
+        this.animationItem.wrapper.style.perspective = this.animationItem.wrapper.style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
+
     }
 };
 
@@ -110,6 +119,7 @@ HybridRenderer.prototype.createText = function (data,parentContainer,comp, place
 };
 
 HybridRenderer.prototype.createCamera = function (data,parentContainer,comp, placeholder) {
+    this.hasCamera = true;
     return new HCameraElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
