@@ -245,7 +245,6 @@ HybridRenderer.prototype.buildItemParenting = function (layerData,element,layers
     var i=0, len = layers.length;
     while(i<len){
         if(layers[i].ind == parentName){
-            console.log(element.data.ty);
             element.getHierarchy().push(elements[i]);
             if(element.data.ty === 13){
                 elements[i].finalTransform.mProp.setInverted();

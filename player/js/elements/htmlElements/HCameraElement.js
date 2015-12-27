@@ -51,7 +51,7 @@ HCameraElement.prototype.renderFrame = function(){
             mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
         }
     }
-    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || (this.a && this.a.mdf)) {
+    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || this.or.mdf || (this.a && this.a.mdf)) {
         this.mat.reset();
 
         if(this.p){
@@ -71,6 +71,7 @@ HCameraElement.prototype.renderFrame = function(){
 
         }
         this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
+        this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
         if(this.hierarchy){
@@ -85,7 +86,6 @@ HCameraElement.prototype.renderFrame = function(){
         var comp;
         for(i=0;i<len;i+=1){
             comp = this.comp.threeDElements[i];
-            console.log('asd');
             comp[1].style.transform = comp[1].style.webkitTransform = this.mat.toCSS();
         }
     }

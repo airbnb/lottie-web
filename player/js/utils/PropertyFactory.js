@@ -156,8 +156,10 @@ var PropertyFactory = (function(){
                     if(this.sh && keyData.h !== 1){
                         var initP = keyData.s[i];
                         var endP = keyData.e[i];
-                        if(Math.abs(initP-endP)>180){
+                        if(initP-endP < -180){
                             initP += 360;
+                        } else if(initP-endP > 180){
+                            initP -= 360;
                         }
                         keyValue = initP+(endP-initP)*perc;
                     } else {
@@ -355,6 +357,12 @@ var PropertyFactory = (function(){
             }
             return this.a.pv;
         }
+        function orientationGetter(){
+            if(this.or.k){
+                this.getValue();
+            }
+            return this.or.pv;
+        }
         function rotationGetter(){
             if(this.r.k){
                 this.getValue();
@@ -393,12 +401,12 @@ var PropertyFactory = (function(){
                     this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
                 }
                 if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],1);
+                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
                 }
                 if(this.r){
                     this.v.rotate(-this.r.v);
                 }else{
-                    this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateX(this.or.v[0]).rotateY(this.or.v[1]).rotateZ(this.or.v[2]);
+                    this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
                 if(this.data.p.s){
                     this.v.translate(this.px.v,this.py.v,-this.pz.v);
@@ -478,7 +486,7 @@ var PropertyFactory = (function(){
                 if(this.r){
                     this.v.rotate(-this.r.v);
                 }else{
-                    this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateX(this.or.v[0]).rotateY(this.or.v[1]).rotateZ(this.or.v[2]);
+                    this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
                 if(this.data.p.s){
                     this.v.translate(this.px.v,this.py.v,-this.pz.v);
@@ -487,6 +495,7 @@ var PropertyFactory = (function(){
                 }
             }
             Object.defineProperty(this, "position", { get: positionGetter});
+            Object.defineProperty(this, "orientation", { get: orientationGetter});
             Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
             Object.defineProperty(this, "rotation", { get: rotationGetter});
             Object.defineProperty(this, "scale", { get: scaleGetter});
