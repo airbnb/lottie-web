@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification*/
+/*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification, bm_generalUtils*/
 var bm_textShapeHelper = (function () {
     'use strict';
     var ob = {}, chars = [], comp, layers = [];
@@ -82,7 +82,7 @@ var bm_textShapeHelper = (function () {
         removeLayerAnimators(dupl);
         var textProp = dupl.property("Source Text");
         var textDocument = textProp.value;
-        textDocument.text = ch;
+        textDocument.text = ch + ch;
         textDocument.fontSize = 100;
         textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
         textProp.setValue(textDocument);
@@ -90,6 +90,12 @@ var bm_textShapeHelper = (function () {
         dupl.selected = true;
         app.executeCommand(cmdID);
         dupl.selected = false;
+        var doubleSize, singleSize;
+        doubleSize = dupl.sourceRectAtTime(0, false).width;
+        textDocument.text = ch;
+        textProp.setValue(textDocument);
+        singleSize = dupl.sourceRectAtTime(0, false).width;
+        charData.w = bm_generalUtils.roundNumber(doubleSize - singleSize, 2);
         shapeLayer = comp.layers[1];
         charData.data = {};
         bm_shapeHelper.exportShape(shapeLayer, charData.data, 1, true);

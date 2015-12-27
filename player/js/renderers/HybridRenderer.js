@@ -215,7 +215,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.layers = animData.layers;
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,document);
+    this.globalData.fontManager.addFonts(animData.fonts,wrapper);
     this.updateContainerSize();
 };
 

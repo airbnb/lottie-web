@@ -1,4 +1,4 @@
-var subframeEnabled = true;
+var subframeEnabled = false;
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -8,7 +8,7 @@ var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_max = Math.max;
 var bm_min = Math.min;
-var defaultCurveSegments = 50;
+var defaultCurveSegments = 75;
 var degToRads = Math.PI/180;
 
 function roundValues(flag){

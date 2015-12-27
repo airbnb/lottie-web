@@ -245,8 +245,10 @@ var compRenderController = (function () {
             textHelper.setAttribute('font-size', chars[i].size);
             textHelper.setAttribute('font-size', 100);
             textHelper.textContent = chars[i].ch === ' ' ? '\u00A0' : chars[i].ch;
+            /* Not using this for now.
             var cLength = textHelper.getComputedTextLength();
             chars[i].w = cLength;
+            */
             delete chars[i].font;
         }
         var charsInfoString = JSON.stringify(chars);

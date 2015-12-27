@@ -106,7 +106,6 @@ var Matrix = (function(){
     }
 
     function skewFromAxis(ax, angle){
-        console.log('asd');
         var mCos = Math.cos(angle);
         var mSin = Math.sin(angle);
         return this._t(mCos, mSin,  0, 0

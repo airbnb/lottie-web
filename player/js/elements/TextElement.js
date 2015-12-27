@@ -125,7 +125,7 @@ ITextElement.prototype.getMeasures = function(){
             };
             len = paths.v.length - 1;
             var pathData;
-
+            var totalLength = 0;
             for (i = 0; i < len; i += 1) {
                 pathData = {
                     s: paths.v[i],
@@ -136,6 +136,7 @@ ITextElement.prototype.getMeasures = function(){
                 bez.buildBezierData(pathData);
                 pathInfo.tLength += pathData.bezierData.segmentLength;
                 pathInfo.segments.push(pathData);
+                totalLength += pathData.bezierData.segmentLength;
             }
             i = len;
             if (mask.closed) {
@@ -148,6 +149,7 @@ ITextElement.prototype.getMeasures = function(){
                 bez.buildBezierData(pathData);
                 pathInfo.tLength += pathData.bezierData.segmentLength;
                 pathInfo.segments.push(pathData);
+                totalLength += pathData.bezierData.segmentLength;
             }
             this.viewData.p.pi = pathInfo;
         }
@@ -195,12 +197,11 @@ ITextElement.prototype.getMeasures = function(){
     var lastLetters = data._letters, lastLetter;
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
-    var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd;
+    var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd, currentLine = -1;
     var elemOpacity;
     var sc,sw,fc,k;
     var lineLength = 0;
     var letterSw,letterSc,letterFc,letterM,letterP,letterO;
-
     for( i = 0; i < len; i += 1) {
         matrixHelper.reset();
         elemOpacity = 1;
@@ -223,6 +224,17 @@ ITextElement.prototype.getMeasures = function(){
             lettersValue[i] = this.emptyProp;
         }else{
             if(this.maskPath) {
+                if(currentLine !== letters[i].line){
+                    switch(documentData.j){
+                        case 1:
+                            currentLength += totalLength - documentData.lineWidths[letters[i].line];
+                            break;
+                        case 2:
+                            currentLength += (totalLength - documentData.lineWidths[letters[i].line])/2;
+                            break;
+                    }
+                    currentLine = letters[i].line;
+                }
                 if (ind !== letters[i].ind) {
                     if (letters[ind]) {
                         currentLength += letters[ind].extra;
@@ -247,17 +259,7 @@ ITextElement.prototype.getMeasures = function(){
                         perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
                         xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
                         yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-                        if (data.t.p.p) {
-                            tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
-                            var rot = Math.atan(tanAngle) * 180 / Math.PI;
-                            if (currentPoint.point[0] < prevPoint.point[0]) {
-                                rot += 180;
-                            }
-                            matrixHelper.rotate(rot * Math.PI / 180);
-                            //console.log('paso 4: rotate', rot * Math.PI / 180);
-                        }
-                        matrixHelper.translate(0, -(renderedData.m.a.v[1] * yOff / 100 + yPos));
-                        //console.log('paso 5','translate',0, -(renderedData.m.a.v[1] * yOff / 100 + yPos));
+                        matrixHelper.translate(0, -(renderedData.m.a.v[1] * yOff / 100) + yPos);
                         flag = false;
                     } else if (points) {
                         segmentLength += currentPoint.partialLength;
@@ -271,6 +273,7 @@ ITextElement.prototype.getMeasures = function(){
                                     segmentInd = 0;
                                     points = segments[segmentInd].bezierData.points;
                                 } else {
+                                    segmentLength -= currentPoint.partialLength;
                                     points = null;
                                 }
                             } else {
@@ -289,11 +292,9 @@ ITextElement.prototype.getMeasures = function(){
             } else {
                 offf = letters[i].an/2 - letters[i].add;
                 matrixHelper.translate(-offf,0,0);
-                //console.log('paso 6');
 
                 // Grouping alignment
                 matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200, -renderedData.m.a.v[1]*yOff/100, 0);
-                //console.log('paso 7');
             }
 
             lineLength += letters[i].l/2;
@@ -329,7 +330,6 @@ ITextElement.prototype.getMeasures = function(){
                     animatorSelector = renderedData.a[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult, animatorProps.a.v[2]*mult);
-                    //console.log('paso 8');
                 }
             }
             for(j=0;j<jLen;j+=1){
@@ -338,7 +338,6 @@ ITextElement.prototype.getMeasures = function(){
                     animatorSelector = renderedData.a[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult),1);
-                    //console.log('paso 9');
                 }
             }
             for(j=0;j<jLen;j+=1) {
@@ -347,19 +346,15 @@ ITextElement.prototype.getMeasures = function(){
                 mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                 if ('sk' in animatorProps) {
                     matrixHelper.skewFromAxis(-animatorProps.sk.v*mult,animatorProps.sa.v*mult);
-                    //console.log('paso 10');
                 }
                 if ('r' in animatorProps) {
                     matrixHelper.rotateZ(-animatorProps.r.v*mult);
-                    //console.log('paso 11','rotate',-animatorProps.r.v*mult);
                 }
                 if ('ry' in animatorProps) {
                     matrixHelper.rotateY(animatorProps.ry.v*mult);
-                    //console.log('paso 12');
                 }
                 if ('rx' in animatorProps) {
                     matrixHelper.rotateX(animatorProps.rx.v*mult);
-                    //console.log('paso 13');
                 }
                 if ('o' in animatorProps) {
                     elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
@@ -394,7 +389,6 @@ ITextElement.prototype.getMeasures = function(){
                     mult = animatorSelector.getMult(letters[i].anIndexes[j]);
                     if(this.maskPath) {
                         matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
-                        //console.log('paso 14',0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
                     }else{
                         matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
                     }
@@ -416,37 +410,37 @@ ITextElement.prototype.getMeasures = function(){
             if(documentData.fillColorAnim){
                 letterFc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
             }
-            matrixHelper.translate(xPos,yPos,0);
-            //console.log('paso 16','translate',xPos,yPos);
-
-            switch(documentData.j){
-                case 1:
-                    matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
-                    //console.log('paso 1');
-                    break;
-                case 2:
-                    matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
-                    //console.log('paso 2');
-                    break;
-            }
 
             if(this.maskPath) {
+                if (data.t.p.p) {
+                    tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
+                    var rot = Math.atan(tanAngle) * 180 / Math.PI;
+                    if (currentPoint.point[0] < prevPoint.point[0]) {
+                        rot += 180;
+                    }
+                    matrixHelper.rotate(-rot * Math.PI / 180);
+                }
                 matrixHelper.translate(xPathPos, yPathPos, 0);
-                //console.log('paso 3','translate',xPathPos, yPathPos);
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100,0);
-                //console.log('paso 17','translate',-renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100);
                 currentLength -= renderedData.m.a.v[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
                     currentLength += documentData.tr/1000*data.t.d.s;
                 }
                 //matrixHelper.translate(-offf,0,0);
-                //console.log('paso 18',offf);
             }else{
+
+                matrixHelper.translate(xPos,yPos,0);
+                switch(documentData.j){
+                    case 1:
+                        matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
+                        break;
+                    case 2:
+                        matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
+                        break;
+                }
                 matrixHelper.translate(offf,0,0);
-                //console.log('paso 19');
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200,renderedData.m.a.v[1]*yOff/100,0);
-                //console.log('paso 20');
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
             if(renderType === 'svg'){
