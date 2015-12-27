@@ -1,5 +1,18 @@
 function BaseElement(){
 };
+BaseElement.prototype.checkMasks = function(){
+    if(!this.data.hasMask){
+        return false;
+    }
+    var i = 0, len = this.data.masksProperties;
+    while(i<len) {
+        if((this.data.masksProperties[i].mode == 'n' || this.data.masksProperties[i].cl === false)) {
+            return true;
+        }
+        i += 1;
+    }
+    return false;
+}
 
 BaseElement.prototype.prepareFrame = function(num){
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)

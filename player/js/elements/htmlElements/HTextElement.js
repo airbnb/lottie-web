@@ -8,6 +8,7 @@ function HTextElement(data,parentContainer,globalData,comp, placeholder){
         w: 0
     }
     this.renderType = 'svg';
+    this.isMasked = false;
     this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 
 }
@@ -17,11 +18,12 @@ HTextElement.prototype.init = ITextElement.prototype.init;
 HTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 
 HTextElement.prototype.createElements = function(){
+    this.isMasked = this.checkMasks();
     var documentData = this.data.t.d;
     var parent = document.createElement('div');
     styleDiv(parent);
     this.layerElement = parent;
-    if(this.data.hasMask){
+    if(this.isMasked){
         var cont = document.createElementNS(svgNS,'svg');
         this.cont = cont;
         this.compW = this.comp.data ? this.comp.data.w : this.globalData.compSize.w;
@@ -73,7 +75,7 @@ HTextElement.prototype.createElements = function(){
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
             tSpan = document.createElementNS(svgNS,'path');
-            if(!this.data.hasMask){
+            if(!this.isMasked){
                 tParent = document.createElement('div');
                 tCont = document.createElementNS(svgNS,'svg');
                 tParent.appendChild(tCont);
@@ -114,7 +116,7 @@ HTextElement.prototype.createElements = function(){
                 //shapeStr = 'M -10 -10 H20 V20 H-20 V-20z';
                 tSpan.setAttribute('d',shapeStr);
             }
-            if(!this.data.hasMask){
+            if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
                 var scale = documentData.s/100;
                 if(shapeData){
@@ -145,7 +147,7 @@ HTextElement.prototype.createElements = function(){
             this.innerElem.appendChild(tSpan);
         }
         //
-        if(!this.data.hasMask){
+        if(!this.isMasked){
             this.textSpans.push(tParent);
         }else{
             this.textSpans.push(tSpan);
@@ -167,7 +169,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         this.hidden = false;
         this.innerElem.style.display = 'block';
     }
-    if(this.data.hasMask && this.finalTransform.matMdf){
+    if(this.isMasked && this.finalTransform.matMdf){
         this.cont.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
         this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
     }
@@ -204,7 +206,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
             this.textPaths[i].setAttribute('fill',renderedLetter.fc);
         }
     }
-    if(this.data.hasMask){
+    if(this.isMasked){
 
         var boundingBox = this.innerElem.getBBox();
         if(this.currentBBox.w !== boundingBox.width){
