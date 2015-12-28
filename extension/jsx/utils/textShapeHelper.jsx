@@ -71,7 +71,7 @@ var bm_textShapeHelper = (function () {
     }
     
     function createNewChar(layerInfo, ch, charData) {
-        if (ch === ' ' || ch.charCodeAt(0) === 13) {
+        if (ch.charCodeAt(0) === 13) {
             return;
         }
         var shapeLayer;
@@ -82,38 +82,50 @@ var bm_textShapeHelper = (function () {
         removeLayerAnimators(dupl);
         var textProp = dupl.property("Source Text");
         var textDocument = textProp.value;
-        textDocument.text = ch + ch;
+        if (ch !== ' ') {
+            textDocument.text = ch + ch;
+        } else {
+            textDocument.text = 'i i';
+        }
         textDocument.fontSize = 100;
         textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
         textProp.setValue(textDocument);
         dupl.enabled = true;
         dupl.selected = true;
-        app.executeCommand(cmdID);
+        if (ch !== ' ') {
+            app.executeCommand(cmdID);
+        }
         dupl.selected = false;
         var doubleSize, singleSize;
         doubleSize = dupl.sourceRectAtTime(0, false).width;
-        textDocument.text = ch;
+        if (ch !== ' ') {
+            textDocument.text = ch;
+        } else {
+            textDocument.text = 'ii';
+        }
         textProp.setValue(textDocument);
         singleSize = dupl.sourceRectAtTime(0, false).width;
         charData.w = bm_generalUtils.roundNumber(doubleSize - singleSize, 2);
         shapeLayer = comp.layers[1];
         charData.data = {};
-        bm_shapeHelper.exportShape(shapeLayer, charData.data, 1, true);
-        lLen = charData.data.shapes[0].it.length;
-        for (l = 0; l < lLen; l += 1) {
-            var ks = charData.data.shapes[0].it[l].ks;
-            if (ks) {
-                var k, kLen = ks.k.i.length;
-                for (k = 0; k < kLen; k += 1) {
-                    ks.k.i[k][0] += ks.k.v[k][0];
-                    ks.k.i[k][1] += ks.k.v[k][1];
-                    ks.k.o[k][0] += ks.k.v[k][0];
-                    ks.k.o[k][1] += ks.k.v[k][1];
+        if (ch !== ' ') {
+            bm_shapeHelper.exportShape(shapeLayer, charData.data, 1, true);
+            lLen = charData.data.shapes[0].it.length;
+            for (l = 0; l < lLen; l += 1) {
+                var ks = charData.data.shapes[0].it[l].ks;
+                if (ks) {
+                    var k, kLen = ks.k.i.length;
+                    for (k = 0; k < kLen; k += 1) {
+                        ks.k.i[k][0] += ks.k.v[k][0];
+                        ks.k.i[k][1] += ks.k.v[k][1];
+                        ks.k.o[k][0] += ks.k.v[k][0];
+                        ks.k.o[k][1] += ks.k.v[k][1];
+                    }
+                } else {
+                    charData.data.shapes[0].it.splice(l, 1);
+                    l -= 1;
+                    lLen -= 1;
                 }
-            } else {
-                charData.data.shapes[0].it.splice(l, 1);
-                l -= 1;
-                lLen -= 1;
             }
         }
         shapeLayer.selected = false;

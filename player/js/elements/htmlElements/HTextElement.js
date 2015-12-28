@@ -41,10 +41,10 @@ HTextElement.prototype.createElements = function(){
     this.parentContainer.appendChild(parent);
 
     if(documentData.fc) {
-        this.innerElem.style.fill = 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')';
+        this.innerElem.style.color = this.innerElem.style.fill = 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')';
         ////this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
     }else{
-        this.innerElem.style.fill = 'rgba(0,0,0,0)';
+        this.innerElem.style.color = this.innerElem.style.fill = 'rgba(0,0,0,0)';
         ////this.innerElem.setAttribute('fill', 'rgba(0,0,0,0)');
     }
     if(documentData.sc){
@@ -82,18 +82,26 @@ HTextElement.prototype.createElements = function(){
                 tCont.appendChild(tSpan);
                 styleDiv(tParent);
             }
+            tSpan.setAttribute('stroke-linecap', 'butt');
+            tSpan.setAttribute('stroke-linejoin','round');
+            tSpan.setAttribute('stroke-miterlimit','4');
         }else{
-            tSpan = document.createElementNS(svgNS,'text');
+            if(!this.isMasked){
+                tParent = document.createElement('div');
+                styleDiv(tParent);
+                tSpan = document.createElement('span');
+                styleDiv(tSpan);
+                tParent.appendChild(tSpan);
+            } else {
+                tSpan = document.createElement('span');
+            }
         }
-        tSpan.setAttribute('stroke-linecap', 'butt');
-        tSpan.setAttribute('stroke-linejoin','round');
-        tSpan.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData = charData.data;
             matrixHelper.reset();
-            if(shapeData){
+            if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
                 shapeStr = '';
                 jLen = shapes.length;
@@ -119,7 +127,7 @@ HTextElement.prototype.createElements = function(){
             if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
                 var scale = documentData.s/100;
-                if(shapeData){
+                if(shapeData && shapeData.shapes){
                     var rBound = Math.ceil(shapeData.bounds.r*scale);
                     var tBound = Math.floor(shapeData.bounds.t*scale);
                     var lBound = Math.floor(shapeData.bounds.l*scale);
@@ -144,7 +152,13 @@ HTextElement.prototype.createElements = function(){
         }else{
             tSpan.textContent = letters[i].val;
             tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-            this.innerElem.appendChild(tSpan);
+            if(!this.isMasked){
+                this.innerElem.appendChild(tParent);
+                //
+                tSpan.style.transform = tSpan.style.webkitTransform = 'translate('+ -tSpan.offsetWidth/2 + 'px,'+ -tSpan.offsetHeight+'px)';
+            } else {
+                this.innerElem.appendChild(tSpan);
+            }
         }
         //
         if(!this.isMasked){
@@ -204,6 +218,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
         if(renderedLetter.fc){
             this.textPaths[i].setAttribute('fill',renderedLetter.fc);
+            this.textPaths[i].style.color = renderedLetter.fc;
         }
     }
     if(this.isMasked){

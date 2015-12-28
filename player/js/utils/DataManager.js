@@ -114,7 +114,7 @@ function dataFunctionManager(){
         var maxLineWidth = 0;
         var j, jLen;
         var fontData = fontManager.getFontByName(documentData.f);
-        var charData, cLength;
+        var charData, cLength = 0;
         var styles = fontData.fStyle.split(' ');
 
         var fWeight = 'normal', fStyle = 'normal';
