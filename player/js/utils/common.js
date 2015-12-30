@@ -1,4 +1,4 @@
-var subframeEnabled = true;
+var subframeEnabled = false;
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;

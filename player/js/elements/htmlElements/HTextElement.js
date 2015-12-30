@@ -55,6 +55,7 @@ HTextElement.prototype.createElements = function(){
     }
     ////this.innerElem.setAttribute('font-size', documentData.s);
     this.innerElem.style.fontSize = documentData.s+'px';
+    this.innerElem.style.lineHeight = documentData.s+'px';
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     ////this.innerElem.setAttribute('font-family', fontData.fFamily);
     this.innerElem.style.fontFamily = fontData.fFamily;
@@ -87,7 +88,7 @@ HTextElement.prototype.createElements = function(){
             tSpan.setAttribute('stroke-miterlimit','4');
         }else{
             if(!this.isMasked){
-                tParent = document.createElement('div');
+                tParent = document.createElement('span');
                 styleDiv(tParent);
                 tSpan = document.createElement('span');
                 styleDiv(tSpan);
@@ -99,7 +100,12 @@ HTextElement.prototype.createElements = function(){
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-            var shapeData = charData.data;
+            var shapeData;
+            if(charData){
+                shapeData = charData.data;
+            } else {
+                shapeData = null;
+            }
             matrixHelper.reset();
             if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
@@ -136,6 +142,7 @@ HTextElement.prototype.createElements = function(){
                     tCont.setAttribute('height',bBound - tBound);
                     tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
                     tCont.style.transform = tCont.style.webkitTransform = 'translate('+lBound+'px,'+ tBound+'px)';
+                    letters[i].yOffset = tBound;
 
 
                     /*tCont.setAttribute('width','20');
@@ -155,7 +162,7 @@ HTextElement.prototype.createElements = function(){
             if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
                 //
-                tSpan.style.transform = tSpan.style.webkitTransform = 'translate('+ -tSpan.offsetWidth/2 + 'px,'+ -tSpan.offsetHeight+'px)';
+                tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,'+ -documentData.s/1.2+'px,0)';
             } else {
                 this.innerElem.appendChild(tSpan);
             }

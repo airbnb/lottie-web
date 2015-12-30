@@ -137,6 +137,38 @@ function dataFunctionManager(){
         documentData.fWeight = fWeight;
         documentData.fStyle = fStyle;
         len = documentData.t.length;
+        if(documentData.sz){
+            var boxWidth = documentData.sz[0];
+            var lastSpaceIndex;
+            for(i=0;i<len;i+=1){
+                newLineFlag = false;
+                if(documentData.t.charAt(i) === ' '){
+                    lastSpaceIndex = i;
+                }else if(documentData.t.charCodeAt(i) === 13){
+                    lineWidth = 0;
+                    newLineFlag = true;
+                }
+                if(fontManager.chars){
+                    charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
+                    //console.log(documentData.t.charCodeAt(i), documentData.t.charAt(i));
+                    cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                }else{
+                    tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
+                    cLength = tCanvasHelper.measureText(documentData.t.charAt(i)).width;
+                }
+                if(lineWidth + cLength > boxWidth){
+                    i = lastSpaceIndex;
+                    lineWidth = 0;
+                    var pre = documentData.t.substr(0,i);
+                    documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
+                }else {
+                    lineWidth += cLength;
+                }
+            }
+            len = documentData.t.length;
+        }
+        lineWidth = 0;
+        cLength = 0;
         for (i = 0;i < len ;i += 1) {
             newLineFlag = false;
             if(documentData.t.charAt(i) === ' '){
@@ -158,6 +190,7 @@ function dataFunctionManager(){
                 tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
                 cLength = tCanvasHelper.measureText(val).width;
             }
+
             //
             lineWidth += cLength;
             letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
@@ -200,18 +233,23 @@ function dataFunctionManager(){
         documentData.l = letters;
         maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
         lineWidths.push(lineWidth);
-        documentData.boxWidth = maxLineWidth;
-        documentData.lineWidths = lineWidths;
-        switch(documentData.j){
-            case 1:
-                data.t.d.justifyOffset = - documentData.boxWidth;
-                break;
-            case 2:
-                data.t.d.justifyOffset = - documentData.boxWidth/2;
-                break;
-            default:
-                data.t.d.justifyOffset = 0;
+        if(documentData.sz){
+            documentData.boxWidth = documentData.sz[0];
+            data.t.d.justifyOffset = 0;
+        }else{
+            documentData.boxWidth = maxLineWidth;
+            switch(documentData.j){
+                case 1:
+                    data.t.d.justifyOffset = - documentData.boxWidth;
+                    break;
+                case 2:
+                    data.t.d.justifyOffset = - documentData.boxWidth/2;
+                    break;
+                default:
+                    data.t.d.justifyOffset = 0;
+            }
         }
+        documentData.lineWidths = lineWidths;
 
         var animators = data.t.a;
         jLen = animators.length;
@@ -253,35 +291,7 @@ function dataFunctionManager(){
             data.singleShape = true;
         }
         documentData.yOffset = documentData.s*1.2;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function iterateText(item,offsettedFrameNum,renderType){
-        var renderedData = item.renderedData[offsettedFrameNum];
-        renderedData.t = {
-        };
-        if(item.t.p && 'm' in item.t.p) {
-            renderedData.t.p = [];
-            getInterpolatedValue(item.t.p.f,offsettedFrameNum, item.st,renderedData.t.p,0,1);
-        }
-        renderedData.t.m = {
-            a: getInterpolatedValue(item.t.m.a,offsettedFrameNum, item.st)
-        };
+        documentData.ascent = fontData.ascent*documentData.s/100;
     }
 
     var moduleOb = {};
