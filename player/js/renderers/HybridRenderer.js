@@ -174,6 +174,7 @@ HybridRenderer.prototype.getThreeDContainer = function(){
     styleDiv(perspectiveElem);
     perspectiveElem.style.width = this.globalData.compSize.w+'px';
     perspectiveElem.style.height = this.globalData.compSize.h+'px';
+    perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "50% 50%";
     var container = document.createElement('div');
     styleDiv(container);
     container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';

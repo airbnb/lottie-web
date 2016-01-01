@@ -1,4 +1,5 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -21,6 +22,14 @@ function roundValues(flag){
     }
 }
 roundValues(false);
+
+function roundTo2Decimals(val){
+    return Math.round(val*10000)/10000;
+}
+
+function roundTo3Decimals(val){
+    return Math.round(val*100)/100;
+}
 
 function styleDiv(element){
     element.style.position = 'absolute';

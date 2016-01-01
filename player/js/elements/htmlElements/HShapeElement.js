@@ -20,7 +20,7 @@ HShapeElement.prototype.createElements = function(){
     cont.setAttribute('width',this.data.bounds.r - this.data.bounds.l);
     cont.setAttribute('height',this.data.bounds.b - this.data.bounds.t);
     cont.setAttribute('viewBox',this.data.bounds.l+' '+this.data.bounds.t+' '+(this.data.bounds.r - this.data.bounds.l)+' '+(this.data.bounds.b - this.data.bounds.t));
-    cont.style.transform = 'translate('+this.data.bounds.l+'px,'+this.data.bounds.t+'px)';
+    cont.style.transform = cont.style.webkitTransform = 'translate('+this.data.bounds.l+'px,'+this.data.bounds.t+'px)';
     if(this.data.hasMask){
         var g = document.createElementNS(svgNS,'g');
         parent.appendChild(cont);
