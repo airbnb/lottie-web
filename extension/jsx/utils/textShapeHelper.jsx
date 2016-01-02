@@ -2,7 +2,7 @@
 /*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification, bm_generalUtils*/
 var bm_textShapeHelper = (function () {
     'use strict';
-    var ob = {}, chars = [], comp, fontComp, dupl, boxText, layers = [];
+    var ob = {}, chars = [], comp, fontComp, dupl, boxText, layers = [], currentFont;
     
     function reset() {
         comp = app.project.items.addComp('bm_charHelper', 1000, 1000, 1, 1, 1);
@@ -21,6 +21,7 @@ var bm_textShapeHelper = (function () {
         fontProp.setValue(fontDocument);
         chars.length = 0;
         layers.length = 0;
+        currentFont = '';
     }
     
     function addTextLayer(layer) {
@@ -164,6 +165,11 @@ var bm_textShapeHelper = (function () {
             var fontSize = textDocument.fontSize;
             var text = textDocument.text;
             var j, jLen = text.length;
+            
+            if(currentFont !== font){
+                currentFont = font;
+                createNewChar(layerInfo,'[]',{});
+            }
             var l, lLen;
             for (j = 0; j < jLen; j += 1) {
                 var ch = text.substr(j, 1);

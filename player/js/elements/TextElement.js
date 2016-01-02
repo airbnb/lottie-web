@@ -2,8 +2,9 @@ function ITextElement(data, animationItem,parentContainer,globalData){
 }
 ITextElement.prototype.init = function(){
     this.parent.init.call(this);
+    this.lettersChangedFlag = false;
     var data = this.data;
-    this.renderedLetters = [];
+    this.renderedLetters = new Array(data.t.d.l.length);
     this.viewData = {
         m:{
             a: PropertyFactory.getProp(this,data.t.m.a,1,0,this.dynamicProperties)
@@ -59,34 +60,6 @@ ITextElement.prototype.init = function(){
                 animatorData.a.t = PropertyFactory.getProp(this,animatorProps.a.t,0,0,this.dynamicProperties);
             }
             animatorData.s = PropertyFactory.getTextSelectorProp(this,animatorProps.s,this.dynamicProperties);
-            /*if(animatorProps.s.t === 0){
-                if('s' in animatorProps.s) {
-                    animatorData.s.s = PropertyFactory.getProp(this,animatorProps.s.s,0,0,this.dynamicProperties);
-                }else{
-                    animatorData.s.s = {v:0};
-                }
-
-                if('e' in animatorProps.s) {
-                    animatorData.s.e = PropertyFactory.getProp(this,animatorProps.s.e,0,0,this.dynamicProperties);
-                }
-                if('o' in animatorProps.s) {
-                    animatorData.s.o = PropertyFactory.getProp(this,animatorProps.s.o,0,0,this.dynamicProperties);
-                }else{
-                    animatorData.s.o = {v:0};
-                }
-                if('xe' in animatorProps.s) {
-                    animatorData.s.xe = PropertyFactory.getProp(this,animatorProps.s.xe,0,0,this.dynamicProperties);
-                }else{
-                    animatorData.s.xe = {v:0};
-                }
-                if('ne' in animatorProps.s) {
-                    animatorData.s.ne = PropertyFactory.getProp(this,animatorProps.s.ne,0,0,this.dynamicProperties);
-                }else{
-                    animatorData.s.ne = {v:0};
-                }
-            }else if(animatorProps.s.t === 1){
-                animatorData.s.x = PropertyFactory.getTextSelectorProp(this,animatorProps.s);
-            }*/
             animatorData.s.t = animatorProps.s.t;
             this.viewData.a[i] = animatorData;
         }
@@ -191,10 +164,11 @@ ITextElement.prototype.getMeasures = function(){
     var firstLine = true;
     var renderedData = this.viewData, animatorProps, animatorSelector;
     var j, jLen;
-    var lettersValue = new Array(len), letterValue, lettersChangedFlag = false;
+    var lettersValue = new Array(len), letterValue;
+    this.lettersChangedFlag = false;
 
     jLen = renderedData.a.length;
-    var lastLetters = data._letters, lastLetter;
+    var lastLetter;
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
     var initPathPos = currentLength,initSegmentInd = segmentInd, initPointInd = pointInd, currentLine = -1;
@@ -427,7 +401,6 @@ ITextElement.prototype.getMeasures = function(){
                     currentLength += letters[i].an / 2;
                     currentLength += documentData.tr/1000*data.t.d.s;
                 }
-                //matrixHelper.translate(-offf,0,0);
             }else{
 
                 matrixHelper.translate(xPos,yPos,0);
@@ -448,38 +421,33 @@ ITextElement.prototype.getMeasures = function(){
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200,renderedData.m.a.v[1]*yOff/100,0);
                 xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
             }
-            if(renderType === 'svg'){
+            if(renderType === 'html'){
                 letterM = matrixHelper.toCSS();
+            }else if(renderType === 'svg'){
+                letterM = matrixHelper.to2dCSS();
             }else{
-                letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]];
+                letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5],matrixHelper.props[6],matrixHelper.props[7],matrixHelper.props[8],matrixHelper.props[9],matrixHelper.props[10],matrixHelper.props[11],matrixHelper.props[12],matrixHelper.props[13],matrixHelper.props[14],matrixHelper.props[15]];
             }
             letterO = elemOpacity;
-            if(lastLetters){
-                lastLetter = lastLetters[i];
-                if(lastLetter.o !== letterO || lastLetter.sw !== letterSw || lastLetter.sc !== letterSc || lastLetter.fc !== letterFc){
-                    lettersChangedFlag = true;
-                    letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM,letterP);
-                }else{
-                    if(renderType === 'svg' && lastLetter.m !== letterM){
-                        lettersChangedFlag = true;
-                        letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM);
-                    }else if(renderType !== 'svg' && (lastLetter.props[1] !== matrixHelper.props[1] || lastLetter.props[2] !== matrixHelper.props[2] || lastLetter.props[3] !== matrixHelper.props[3] || lastLetter.props[4] !== matrixHelper.props[4] || lastLetter.props[5] !== matrixHelper.props[5])){
-                        lettersChangedFlag = true;
-                        letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,null,[matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5]]);
-                    }else{
-                        letterValue = lastLetter;
-                    }
-                }
 
-            }else{
-                lettersChangedFlag = true;
+            lastLetter = this.renderedLetters[i];
+            if(lastLetter && (lastLetter.o !== letterO || lastLetter.sw !== letterSw || lastLetter.sc !== letterSc || lastLetter.fc !== letterFc)){
+                this.lettersChangedFlag = true;
                 letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM,letterP);
+            }else{
+                if((renderType === 'svg' || renderType === 'html') && (!lastLetter || lastLetter.m !== letterM)){
+                    this.lettersChangedFlag = true;
+                    letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM);
+                }else if(renderType === 'canvas' && (!lastLetter || (lastLetter.props[0] !== letterP[0] || lastLetter.props[1] !== letterP[1] || lastLetter.props[4] !== letterP[4] || lastLetter.props[5] !== letterP[5] || lastLetter.props[12] !== letterP[12] || lastLetter.props[13] !== letterP[13]))){
+                    this.lettersChangedFlag = true;
+                    letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,null,letterP);
+                } else {
+                    letterValue = lastLetter;
+                }
             }
-            lettersValue[i] = letterValue;
+
+            this.renderedLetters[i] = letterValue;
         }
-    }
-    if(lettersChangedFlag){
-        this.renderedLetters = lettersValue;
     }
 };
 

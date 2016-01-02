@@ -4,9 +4,9 @@ BaseElement.prototype.checkMasks = function(){
     if(!this.data.hasMask){
         return false;
     }
-    var i = 0, len = this.data.masksProperties;
+    var i = 0, len = this.data.masksProperties.length;
     while(i<len) {
-        if((this.data.masksProperties[i].mode == 'n' || this.data.masksProperties[i].cl === false)) {
+        if((this.data.masksProperties[i].mode !== 'n' && this.data.masksProperties[i].cl !== false)) {
             return true;
         }
         i += 1;

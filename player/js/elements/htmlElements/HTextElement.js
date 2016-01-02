@@ -24,6 +24,7 @@ HTextElement.prototype.createElements = function(){
     styleDiv(parent);
     this.layerElement = parent;
     if(this.isMasked){
+        this.renderType = 'svg';
         var cont = document.createElementNS(svgNS,'svg');
         this.cont = cont;
         this.compW = this.comp.data ? this.comp.data.w : this.globalData.compSize.w;
@@ -36,6 +37,7 @@ HTextElement.prototype.createElements = function(){
         this.maskedElement = g;
         this.innerElem = g;
     } else {
+        this.renderType = 'html';
         this.innerElem = parent;
     }
     this.parentContainer.appendChild(parent);
@@ -94,7 +96,7 @@ HTextElement.prototype.createElements = function(){
                 styleDiv(tSpan);
                 tParent.appendChild(tSpan);
             } else {
-                tSpan = document.createElement('span');
+                tSpan = document.createElementNS(svgNS,'text');
             }
         }
         //tSpan.setAttribute('visibility', 'hidden');
@@ -190,18 +192,24 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         this.hidden = false;
         this.innerElem.style.display = 'block';
     }
-    if(this.isMasked && this.finalTransform.matMdf){
-        this.cont.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
-        this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
-    }
-    if(this.data.singleShape && !this.firstFrame){
-        return;
+
+    if(this.data.singleShape){
+        if(!this.firstFrame){
+            return;
+        } else {
+            // Todo Benchmark if using this is better than getBBox
+             if(this.isMasked && this.finalTransform.matMdf){
+                 this.cont.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
+                this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
+             }
+        }
     }
 
     this.getMeasures();
-
+    if(!this.lettersChangedFlag){
+        return;
+    }
     var  i,len;
-
     var renderedLetters = this.renderedLetters;
 
     var letters = this.data.t.d.l;
@@ -213,8 +221,11 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
             continue;
         }
         renderedLetter = renderedLetters[i];
-        ////this.textSpans[i].setAttribute('transform',renderedLetter.m);
-        this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
+        if(!this.isMasked){
+            this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
+        }else{
+            this.textSpans[i].setAttribute('transform',renderedLetter.m);
+        }
         ////this.textSpans[i].setAttribute('opacity',renderedLetter.o);
         this.textSpans[i].style.opacity = renderedLetter.o;
         if(renderedLetter.sw){

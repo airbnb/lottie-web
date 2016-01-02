@@ -8,6 +8,7 @@ function CVTextElement(data, comp, globalData){
     this.fill = false;
     this.justifyOffset = 0;
     this.currentRender = null;
+    this.renderType = 'canvas';
     this.values = {
         fill: 'rgba(0,0,0,0)',
         stroke: 'rgba(0,0,0,0)',
@@ -15,7 +16,6 @@ function CVTextElement(data, comp, globalData){
         fValue: ''
     }
     this.parent.constructor.call(this,data,comp, globalData);
-    this.renderedLetters = [];
 }
 createElement(CVBaseElement, CVTextElement);
 
@@ -47,20 +47,42 @@ CVTextElement.prototype.createElements = function(){
     }
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     var i, len;
+    var letters = documentData.l;
     var matrixHelper = this.mHelper;
     this.stroke = hasStroke;
     this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
     len = documentData.t.length;
     this.tHelper.font = this.values.fValue;
-    var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr;
+    var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
+    if (singleShape) {
+        var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
+    }
     for (i = 0;i < len ;i += 1) {
         charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
         matrixHelper.reset();
+        if(singleShape && letters[i].n) {
+            xPos = 0;
+            yPos += documentData.yOffset;
+            yPos += firstLine ? 1 : 0;
+            firstLine = false;
+        }
         matrixHelper.scale(documentData.s/100,documentData.s/100);
+
         shapeData = charData.data;
         if(shapeData){
             shapes = shapeData.shapes[0].it;
             jLen = shapes.length;
+            if(singleShape){
+                switch(documentData.j){
+                    case 1:
+                        matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
+                        break;
+                    case 2:
+                        matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
+                        break;
+                }
+                matrixHelper.translate(xPos,yPos,0);
+            }
             commands = new Array(jLen);
             for(j=0;j<jLen;j+=1){
                 kLen = shapes[j].ks.k.i.length;
@@ -68,23 +90,19 @@ CVTextElement.prototype.createElements = function(){
                 pathArr = [];
                 for(k=1;k<kLen;k+=1){
                     if(k==1){
-                        pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
-                        //path2d.moveTo(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
-                        //path2d.moveTo(pathNodes.v[0][0],pathNodes.v[0][1]);
+                        pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
                     }
-                    pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1]),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1]));
-                    //path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1]),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1]),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1]));
-                    //path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[k][0],pathNodes.i[k][1],pathNodes.v[k][0],pathNodes.v[k][1]);
+                    pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1],0),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1],0));
                 }
-                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
-                //path2d.bezierCurveTo(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1]),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1]),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1]),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1]));
-                //path2d.bezierCurveTo(pathNodes.o[k-1][0],pathNodes.o[k-1][1],pathNodes.i[0][0],pathNodes.i[0][1],pathNodes.v[0][0],pathNodes.v[0][1]);
+                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
                 commands[j] = pathArr;
             }
         }else{
             commands = [];
         }
-        //var cLength = this.tHelper.measureText(val).width;
+        if(singleShape){
+            xPos += letters[i].l;
+        }
         this.textSpans.push({elem: commands});
     }
 };
@@ -103,8 +121,9 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
     ctx.lineJoin = 'miter';
     ctx.miterLimit = 4;
 
-
-    this.getMeasures();
+    if(!this.data.singleShape){
+        this.getMeasures();
+    }
 
     var  i,len, j, jLen, k, kLen;
     var renderedLetters = this.renderedLetters;
@@ -119,11 +138,13 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
             continue;
         }
         renderedLetter = renderedLetters[i];
-        this.globalData.renderer.save();
-        this.globalData.renderer.ctxTransform(renderedLetter.props);
-        this.globalData.renderer.ctxOpacity(renderedLetter.o);
+        if(renderedLetter){
+            this.globalData.renderer.save();
+            this.globalData.renderer.ctxTransform(renderedLetter.props);
+            this.globalData.renderer.ctxOpacity(renderedLetter.o);
+        }
         if(this.fill){
-            if(renderedLetter.fc){
+            if(renderedLetter && renderedLetter.fc){
                 if(lastFill !== renderedLetter.fc){
                     lastFill = renderedLetter.fc;
                     ctx.fillStyle = renderedLetter.fc;
@@ -148,7 +169,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
             ///ctx.fillText(this.textSpans[i].val,0,0);
         }
         if(this.stroke){
-            if(renderedLetter.sw){
+            if(renderedLetter && renderedLetter.sw){
                 if(lastStrokeW !== renderedLetter.sw){
                     lastStrokeW = renderedLetter.sw;
                     ctx.lineWidth = renderedLetter.sw;
@@ -157,7 +178,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
                 lastStrokeW = this.values.sWidth;
                 ctx.lineWidth = this.values.sWidth;
             }
-            if(renderedLetter.sc){
+            if(renderedLetter && renderedLetter.sc){
                 if(lastStroke !== renderedLetter.sc){
                     lastStroke = renderedLetter.sc;
                     ctx.strokeStyle = renderedLetter.sc;
@@ -181,10 +202,15 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
             this.globalData.canvasContext.stroke();
             ///ctx.strokeText(letters[i].val,0,0);
         }
-        this.globalData.renderer.restore();
+        if(renderedLetter) {
+            this.globalData.renderer.restore();
+        }
     }
     /*if(this.data.hasMask){
      this.globalData.renderer.restore(true);
      }*/
     this.globalData.renderer.restore(this.data.hasMask);
+    if(this.firstFrame){
+        this.firstFrame = false;
+    }
 };

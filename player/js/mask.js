@@ -137,7 +137,7 @@ function MaskElement(data,element,globalData) {
 
     this.maskElement.setAttribute('id', layerId);
     if(count > 0){
-        maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
+        this.element.maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
     }
 
     defs.appendChild(this.maskElement);

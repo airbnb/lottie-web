@@ -72,21 +72,21 @@ SVGTextElement.prototype.createElements = function(){
             }
             if(shapeData){
                 shapes = shapeData.shapes[0].it;
+                jLen = shapes.length;
+                matrixHelper.scale(documentData.s/100,documentData.s/100);
                 if(!singleShape){
                     shapeStr = '';
                 }else{
                     switch(documentData.j){
                         case 1:
-                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0);
+                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
                             break;
                         case 2:
-                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0);
+                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
                             break;
                     }
-                    matrixHelper.translate(xPos,yPos);
+                    matrixHelper.translate(xPos,yPos,0);
                 }
-                jLen = shapes.length;
-                matrixHelper.scale(documentData.s/100,documentData.s/100);
                 for(j=0;j<jLen;j+=1){
                     kLen = shapes[j].ks.k.i.length;
                     pathNodes = shapes[j].ks.k;
@@ -146,7 +146,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     }
     if(!this.data.hasMask){
         if(this.finalTransform.matMdf){
-            this.innerElem.setAttribute('transform','matrix('+this.finalTransform.mat.props.join(',')+')');
+            this.innerElem.setAttribute('transform',this.finalTransform.mat.to2dCSS());
         }
         if(this.finalTransform.opMdf){
             this.innerElem.setAttribute('opacity',this.finalTransform.opacity);
@@ -158,9 +158,10 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     }
 
     this.getMeasures();
-
+    if(!this.lettersChangedFlag){
+        return;
+    }
     var  i,len;
-
     var renderedLetters = this.renderedLetters;
 
     var letters = this.data.t.d.l;
