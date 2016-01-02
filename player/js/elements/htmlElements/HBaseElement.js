@@ -111,6 +111,7 @@ HBaseElement.prototype.destroy = function(){
     }
     if(this.maskManager) {
         this.maskManager.destroy();
+        this.maskManager = null;
     }
 };
 

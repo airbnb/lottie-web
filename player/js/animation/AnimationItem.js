@@ -198,7 +198,7 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
-    console.log(animData);
+    //console.log(animData);
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
@@ -407,6 +407,8 @@ AnimationItem.prototype.destroy = function (name) {
         return;
     }
     this.renderer.destroy();
+    this.trigger('destroy');
+    this._cbs = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
@@ -512,6 +514,9 @@ AnimationItem.prototype.trigger = function(name){
             case 'segmentStart':
                 this.triggerEvent(name,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
                 break;
+            case 'destroy':
+                this.triggerEvent(name,new BMDestroyEvent(name,this));
+                break;
             default:
                 this.triggerEvent(name);
         }
@@ -527,6 +532,9 @@ AnimationItem.prototype.trigger = function(name){
     }
     if(name === 'segmentStart' && this.onSegmentStart){
         this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
+    }
+    if(name === 'destroy' && this.onDestroy){
+        this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
 

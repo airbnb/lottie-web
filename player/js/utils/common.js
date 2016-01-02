@@ -74,6 +74,11 @@ function BMSegmentStartEvent(n,f,t){
     this.totalFrames = t;
 }
 
+function BMDestroyEvent(n,t){
+    this.type = n;
+    this.target = t;
+}
+
 function _addEventListener(eventName, callback){
 
     if (!this._cbs[eventName]){
@@ -105,7 +110,6 @@ function _removeEventListener(eventName,callback){
 }
 
 function _triggerEvent(eventName, args){
-
     if (this._cbs[eventName]) {
         var len = this._cbs[eventName].length;
         for (var i = 0; i < len; i++){

@@ -90,19 +90,38 @@
 <div id="bodymovin"></div>
 
 <script>
-
+    var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'canvas',
+        renderer: 'html',
         loop: false,
         prerender: false,
         autoplay: true,
         path: 'exports/render/data_glyphs.json'
     };
-    var anim = bodymovin.loadAnimation(animData);
+
+    var anim;
+
+    function loadAnimation(){
+        anim = bodymovin.loadAnimation(animData);
+        setTimeout(destroyAnimation,2000);
+    }
+
+    function destroyAnimation(){
+        anim.destroy();
+        anim = null;
+        count += 1;
+        if(count<50){
+            setTimeout(loadAnimation,2000);
+        }
+    }
+
+    setTimeout(function(){
+        loadAnimation();
+    },2000);
     //anim.play();
     //anim.playSegments([0,40],true);
-    window.onresize = anim.resize.bind(anim);
+    //window.onresize = anim.resize.bind(anim);
 
     /*var stats = new Stats();
     stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb

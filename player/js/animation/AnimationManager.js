@@ -7,6 +7,20 @@ var animationManager = (function(){
     /*var ctx;
     var colFlag = false;*/
 
+    function removeElement(ev){
+        var i = 0;
+        var animItem = ev.target;
+        animItem.removeEventListener('destroy',removeElement);
+        while(i<len) {
+            if (registeredAnimations[i].animation === animItem) {
+                registeredAnimations.splice(i, 1);
+                i -= 1;
+                len -= 1;
+            }
+            i += 1;
+        }
+    }
+
     function registerAnimation(element, animationData){
         if(!element){
             return null;
@@ -20,6 +34,7 @@ var animationManager = (function(){
         }
         var animItem = new AnimationItem();
         animItem.setData(element, animationData);
+        animItem.addEventListener('destroy',removeElement);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
         return animItem;
@@ -28,6 +43,7 @@ var animationManager = (function(){
     function loadAnimation(params){
         var animItem = new AnimationItem();
         animItem.setParams(params);
+        animItem.addEventListener('destroy',removeElement);
         registeredAnimations.push({elem: null,animation:animItem});
         len += 1;
         return animItem;
@@ -67,18 +83,10 @@ var animationManager = (function(){
     function resume(nowTime) {
         //stats.begin();
 
-        //nowTime = Date.now();
-
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
-            if(registeredAnimations[i].animation.renderer.destroyed) {
-                registeredAnimations.splice(i,1);
-                i -= 1;
-                len -= 1;
-            }else{
-                registeredAnimations[i].animation.advanceTime(elapsedTime);
-            }
+            registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
         /*if(colFlag){
