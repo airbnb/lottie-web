@@ -145,12 +145,6 @@ HTextElement.prototype.createElements = function(){
                     tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
                     tCont.style.transform = tCont.style.webkitTransform = 'translate('+lBound+'px,'+ tBound+'px)';
                     letters[i].yOffset = tBound;
-
-
-                    /*tCont.setAttribute('width','20');
-                    tCont.setAttribute('height','20');
-                    tCont.setAttribute('viewBox','-10 -10 20 20');
-                    tCont.style.transform = 'translate(0px, 0px)';*/
                 } else{
                     tCont.setAttribute('width',1);
                     tCont.setAttribute('height',1);
