@@ -178,7 +178,8 @@ bodymovin has 8 main methods:
 **bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
 **bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
+**bodymovin.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
+**bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
 **bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
 
 ## Events
