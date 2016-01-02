@@ -77,10 +77,10 @@ CVTextElement.prototype.createElements = function(){
             shapes = shapeData.shapes[0].it;
             jLen = shapes.length;
             matrixHelper.scale(documentData.s/100,documentData.s/100);
-            if(documentData.ps){
-                matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
-            }
             if(singleShape){
+                if(documentData.ps){
+                    matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+                }
                 switch(documentData.j){
                     case 1:
                         matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
