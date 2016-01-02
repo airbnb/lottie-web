@@ -62,7 +62,12 @@ SVGTextElement.prototype.createElements = function(){
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-            var shapeData = charData.data;
+            var shapeData;
+            if(charData){
+                shapeData = charData.data;
+            } else {
+                shapeData = null;
+            }
             matrixHelper.reset();
             if(singleShape && letters[i].n) {
                 xPos = 0;
@@ -70,13 +75,16 @@ SVGTextElement.prototype.createElements = function(){
                 yPos += firstLine ? 1 : 0;
                 firstLine = false;
             }
-            if(shapeData){
+            if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
                 jLen = shapes.length;
                 matrixHelper.scale(documentData.s/100,documentData.s/100);
                 if(!singleShape){
                     shapeStr = '';
                 }else{
+                    if(documentData.ps){
+                        matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+                    }
                     switch(documentData.j){
                         case 1:
                             matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);

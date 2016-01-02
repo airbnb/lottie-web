@@ -59,6 +59,12 @@ CVTextElement.prototype.createElements = function(){
     }
     for (i = 0;i < len ;i += 1) {
         charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        var shapeData;
+        if(charData){
+            shapeData = charData.data;
+        } else {
+            shapeData = null;
+        }
         matrixHelper.reset();
         if(singleShape && letters[i].n) {
             xPos = 0;
@@ -66,12 +72,14 @@ CVTextElement.prototype.createElements = function(){
             yPos += firstLine ? 1 : 0;
             firstLine = false;
         }
-        matrixHelper.scale(documentData.s/100,documentData.s/100);
 
-        shapeData = charData.data;
-        if(shapeData){
+        if(shapeData && shapeData.shapes){
             shapes = shapeData.shapes[0].it;
             jLen = shapes.length;
+            matrixHelper.scale(documentData.s/100,documentData.s/100);
+            if(documentData.ps){
+                matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+            }
             if(singleShape){
                 switch(documentData.j){
                     case 1:
