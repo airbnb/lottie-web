@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
         
-<link rel="stylesheet" href="css/topcoat-desktop-dark.min.css"/>
+<!-- <link rel="stylesheet" href="css/topcoat-desktop-dark.min.css"/> -->
 <link  id="hostStyle" rel="stylesheet" href="css/boilerplate.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/styles.css"/>
 <link  id="hostStyle" rel="stylesheet" href="css/compsSelection.css"/>
@@ -158,6 +158,7 @@
     <script src="js/libs/CSInterface.js"></script>
     <script src="js/libs/jquery-2.0.2.min.js"></script>
     <script src="js/libs/bodymovin.js"></script>
+    <script src="js/libs/mustache.js"></script>
     
     <script src="js/animations/radio.js"></script>
     <script src="js/animations/alert.js"></script>
@@ -176,6 +177,80 @@
     <script src="js/utils/storage.js"></script>
     <script src="js/controllers/snapshotController.js"></script>
     <script src="js/main.js"></script>
+    
+    <script  id="elementTemplate" type="text/html">
+        <div class='renderingElement'>
+            <div class='header'>
+                <div class='compName'>{{name}}</div>
+            </div>
+            <div class='progressBar'></div>
+            <div class='status'>
+                <div class='compAnim'></div>
+                <div class='statusText'></div>
+                <div class='folder'></div>
+                <div class='buttonHover'></div>
+            </div>
+            <div class='fontsContainer'>
+                <div class='typekitContainer'>
+                    <button class='generalButton typekitButton'>Include typekit path</button>
+                    <div class='typekitElem'>
+                        <span>Typekit path</span>
+                        <input class='typekitPath' type='text'/>
+                    </div>
+                </div>
+                <div class='fontsList'></div>
+                <div class='buttons'>
+                    <button class='generalButton continue'>Continue</button>                   </div>
+            </div>
+        </div>
+    </script>
+    <script id="fontTemplate" type="text/html">
+        <div class="fontElement">
+            <div class="fontTitle">{{fontData.name}}</div>
+            <div class="origin">
+                <div class="title">Select font origin:</div>
+                <div class="group">
+                    <input type="radio" id="fontOrigin_g_{{fontData.__index}}" name="fontOrigin_{{fontData.__index}}" value="g"/>
+                    <label for="fontOrigin_g_{{fontData.__index}}">Google font</label>
+                </div>
+                <div class="group">
+                    <input type="radio" id="fontOrigin_t_{{fontData.__index}}" name="fontOrigin_{{fontData.__index}}" value="t"/>
+                    <label for="fontOrigin_t_{{fontData.__index}}">Typekit</label>
+                </div>
+                <div class="group">
+                    <input type="radio" id="fontOrigin_p_{{fontData.__index}}" name="fontOrigin_{{fontData.__index}}" value="p"/>
+                    <label for="fontOrigin_p_{{fontData.__index}}">URL</label>
+                </div>
+                <div class="group">
+                    <input type="radio" id="fontOrigin_n_{{fontData.__index}}" name="fontOrigin_{{fontData.__index}}" value="n"/>
+                    <label for="fontOrigin_n_{{fontData.__index}}">None</label>
+                </div>
+            </div>
+            <div class="fontFormItem">
+                <span>Font path (optional)</span>
+                <input class="fontPath" type="text" value="{{storedData.fPath}}" />
+            </div>
+            <div class="fontFormItem">
+                <span>Font Family (optional)</span>
+                <input class="fontFamily" type="text" value="{{fontData.family}}"  />
+            </div>
+            <div class="fontFormItem">
+                <span>Font Weight</span>
+                <input class="fontWeight" type="text" value="{{storedData.fWeight}}"/>
+            </div>
+            <div class="fontFormItem">
+                <span>Font Style</span>
+                <input class="fontStyle" type="text" value="{{fontData.style}}"/>
+            </div>
+        </div>
+    </script>
+    
+    <script type='text/javascript'>
+        /*var view = {testVar:'llll123132'};
+      var template = document.getElementById('template').innerHTML;
+      var output = Mustache.render(template, view);
+      document.getElementById('message').innerHTML = output;*/
+    </script>
 
         
 </body>

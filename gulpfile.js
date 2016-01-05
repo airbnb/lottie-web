@@ -15,7 +15,6 @@ var rename = require('gulp-rename');
 
 gulp.task('gzipFile', function(){
   gulp.src('player/exports/render/data.json')
-  //gulp.src('build/player/bodymovin.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });

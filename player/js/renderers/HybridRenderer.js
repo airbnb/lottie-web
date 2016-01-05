@@ -194,7 +194,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
     wrapper.appendChild(resizerElem);
 
-    //resizerElem.style.overflow = 'hidden';
+    resizerElem.style.overflow = 'hidden';
     var svg = document.createElementNS(svgNS,'svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');

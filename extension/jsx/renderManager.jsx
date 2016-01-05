@@ -146,11 +146,31 @@ var bm_renderManager = (function () {
     
     function checkFonts() {
         var fonts = bm_sourceHelper.getFonts();
+        var exportData;
         if (fonts.length === 0) {
             saveData();
         } else {
-            var exportData = ob.renderData.exportData;
-            bm_eventDispatcher.sendEvent('bm:render:fonts', {type: 'save', compId: currentCompID, fonts: fonts});
+            if (currentCompSettings.glyphs) {
+                var fontsInfo = {
+                    list: []
+                };
+                var list = fontsInfo.list;
+                var i, len = fonts.length, fontOb;
+                for (i = 0; i < len; i += 1) {
+                    fontOb = {};
+                    fontOb.fName = fonts[i].name;
+                    fontOb.fFamily = fonts[i].family;
+                    fontOb.fStyle = fonts[i].style;
+                    list.push(fontOb);
+                }
+                exportData = ob.renderData.exportData;
+                exportData.fonts = fontsInfo;
+                bm_textShapeHelper.exportFonts(fontsInfo);
+                bm_textShapeHelper.exportChars(fontsInfo);
+            } else {
+                exportData = ob.renderData.exportData;
+                bm_eventDispatcher.sendEvent('bm:render:fonts', {type: 'save', compId: currentCompID, fonts: fonts});
+            }
         }
     }
     

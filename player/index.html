@@ -3,7 +3,7 @@
 <head>
     <style>
         body{
-            background-color:#333;
+            background-color:#ccc;
             margin: 0px;
             height: 100%;
             font-family: sans-serif;
@@ -11,9 +11,9 @@
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#000;
-            width:1024px;
-            height:768px;
+            background-color:#333;
+            width:100%;
+            height:100%;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -41,7 +41,6 @@
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
-    <!-- <script src="js/utils/text_helper.js"></script> -->
     <script src="js/utils/FontManager.js"></script>
     <script src="js/utils/expressions/ExpressionManager.js"></script>
     <script src="js/utils/expressions/ExpressionComp.js"></script>
@@ -97,28 +96,13 @@
         loop: false,
         prerender: false,
         autoplay: true,
-        path: 'exports/render/data_glyphs.json'
+        path: 'exports/render/data.json'
     };
 
     var anim;
 
-    function loadAnimation(){
-        anim = bodymovin.loadAnimation(animData);
-        setTimeout(destroyAnimation,2000);
-    }
+    anim = bodymovin.loadAnimation(animData);
 
-    function destroyAnimation(){
-        anim.destroy();
-        anim = null;
-        count += 1;
-        if(count<50){
-            setTimeout(loadAnimation,2000);
-        }
-    }
-
-    setTimeout(function(){
-        loadAnimation();
-    },2000);
     //anim.play();
     //anim.playSegments([0,40],true);
     //window.onresize = anim.resize.bind(anim);
@@ -132,6 +116,29 @@
     stats.domElement.style.top = '0px';
 
     document.body.appendChild( stats.domElement );*/
+
+    function loadAndDestroy(){
+
+
+        function loadAnimation(){
+            anim = bodymovin.loadAnimation(animData);
+            setTimeout(destroyAnimation,2000);
+        }
+
+        function destroyAnimation(){
+            anim.destroy();
+            anim = null;
+            count += 1;
+            if(count<50){
+                setTimeout(loadAnimation,2000);
+            }
+        }
+
+        setTimeout(function(){
+            loadAnimation();
+        },2000);
+    }
+
 </script>
 </body>
 </html>
