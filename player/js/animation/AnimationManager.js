@@ -65,6 +65,9 @@ var animationManager = (function(){
     }
 
     function resume(nowTime) {
+
+        //nowTime = Date.now();
+
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
@@ -86,6 +89,7 @@ var animationManager = (function(){
         }
         ctx.fillRect(0,0,100,100);*/
         requestAnimationFrame(resume);
+
     }
 
     function first(nowTime){

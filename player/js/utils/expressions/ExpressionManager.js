@@ -163,11 +163,12 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
-        var time, value,textIndex,textTotal;
+        var time, value,textIndex,textTotal,selectorValue;
         function execute(){
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
+                selectorValue = this.selectorValue;
             }
             if(!transform){
                 transform = elem.transform;
@@ -200,8 +201,12 @@ var ExpressionManager = (function(){
                     this.lastValue = this.v;
                     this.mdf = true;
                 }
+            }else if(this.v.i){
+                // Todo Improve validation for masks and shapes
+                this.mdf = true;
             }else{
                 len = this.v.length;
+                console.log(this.v);
                 for(i = 0; i < len; i += 1){
                     if(this.v[i] !== this.lastValue[i]){
                         this.lastValue[i] = this.v[i];

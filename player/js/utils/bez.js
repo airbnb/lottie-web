@@ -16,9 +16,8 @@ function bezFunction(){
         }
         var A0, B0, C0;
         var A1, B1, C1;
-        easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
-            var tt = t/d;
-            x = tt;
+        easingFunctions[encodedFuncName] = function(tt) {
+            var x = tt;
             var i = 0, z;
             while (++i < 20) {
                 C0 = 3 * aa;

@@ -200,7 +200,7 @@ var PropertyFactory = (function () {
                     if((nextKeyData.t - this.offsetTime) > frameNum && dir == 1){
                         break;
                     }
-                    if(i < len - 1 && dir == 1 || i > 0 && dir == -1){
+                    if(i < len - 1 && dir == 1){
                         i += dir;
                     }else{
                         flag = false;

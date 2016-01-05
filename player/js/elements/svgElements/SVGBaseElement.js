@@ -13,6 +13,8 @@ createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.appendNodeToParent = function(node) {
     if(this.placeholder){
+        console.log(this.placeholder);
+        console.log(this.placeholder.phElement);
         var g = this.placeholder.phElement;
         g.parentNode.insertBefore(node, g);
         //g.parentNode.removeChild(g);

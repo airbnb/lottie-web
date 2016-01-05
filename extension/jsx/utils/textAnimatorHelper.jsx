@@ -37,6 +37,7 @@ var bm_textAnimatorHelper = (function () {
             ob.t = 0;
             ob.xe = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Levels Max Ease'), frameRate);
             ob.ne = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Levels Min Ease'), frameRate);
+            ob.a = bm_keyframeHelper.exportKeyframes(advancedProperty.property('ADBE Text Selector Max Amount'), frameRate);
             ob.b = advancedProperty.property("ADBE Text Range Type2").value;
             ob.rn = advancedProperty.property("ADBE Text Randomize Order").value;
             ob.sh = advancedProperty.property("ADBE Text Range Shape").value;
