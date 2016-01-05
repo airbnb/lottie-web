@@ -146,12 +146,18 @@ AnimationItem.prototype.includeLayers = function(data) {
             i += 1;
         }
     }
+    if(data.chars || data.fonts){
+        this.renderer.globalData.fontManager.addChars(data.chars);
+        this.renderer.globalData.fontManager.addFonts(data.fonts, this.renderer.globalData.defs);
+    }
+
     if(data.assets){
         len = data.assets.length;
         for(i = 0; i < len; i += 1){
             this.animationData.assets.push(data.assets[i]);
         }
     }
+
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
@@ -217,7 +223,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
-    //*
+    /*
     this.firstFrame = 90;
     this.totalFrames = 1;
     this.animationData.tf = 1;
