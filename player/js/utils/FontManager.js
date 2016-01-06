@@ -37,22 +37,39 @@ var FontManager = (function(){
                 loadedCount -= 1;
                 continue;
             }
-            node = this.fonts[i].monoCase.node;
-            w = this.fonts[i].monoCase.w;
-            if(node.offsetWidth !== w){
-                loadedCount -= 1;
+            if(this.fonts[i].fOrigin === 't'){
+                if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
+                    this.typekitLoaded = 1;
+                    try{Typekit.load({
+                        async: true,
+                        active: function() {
+                            this.typekitLoaded = 2;
+                        }.bind(this)
+                    });}catch(e){console.log('errwor',e)}
+                }
+                if(this.typekitLoaded === 2) {
+                    this.fonts[i].loaded = true;
+                }
+            } else if(this.fonts[i].fOrigin === 'n'){
                 this.fonts[i].loaded = true;
-            }else{
-                node = this.fonts[i].sansCase.node;
-                w = this.fonts[i].sansCase.w;
+            } else{
+                node = this.fonts[i].monoCase.node;
+                w = this.fonts[i].monoCase.w;
                 if(node.offsetWidth !== w){
                     loadedCount -= 1;
                     this.fonts[i].loaded = true;
+                }else{
+                    node = this.fonts[i].sansCase.node;
+                    w = this.fonts[i].sansCase.w;
+                    if(node.offsetWidth !== w){
+                        loadedCount -= 1;
+                        this.fonts[i].loaded = true;
+                    }
                 }
-            }
-            if(this.fonts[i].loaded){
-                this.fonts[i].sansCase.parent.parentNode.removeChild(this.fonts[i].sansCase.parent);
-                this.fonts[i].monoCase.parent.parentNode.removeChild(this.fonts[i].monoCase.parent);
+                if(this.fonts[i].loaded){
+                    this.fonts[i].sansCase.parent.parentNode.removeChild(this.fonts[i].sansCase.parent);
+                    this.fonts[i].monoCase.parent.parentNode.removeChild(this.fonts[i].monoCase.parent);
+                }
             }
         }
 
@@ -62,14 +79,6 @@ var FontManager = (function(){
             this.loaded = true;
         }
     };
-
-    function waitForTypekit() {
-        if(window.Typekit && window.Typekit.load){
-            try{Typekit.load({ async: false });}catch(e){console.log('errwor',e)}
-        }else{
-            setTimeout(waitForTypekit,50);
-        }
-    }
 
     function addFonts(fontData, defs){
         if(!fontData){
@@ -81,13 +90,7 @@ var FontManager = (function(){
             this.fonts = fontData.list;
             return;
         }
-        if(fontData.tk){
-            var s = document.createElement('script');
-            s.setAttribute('src',fontData.tk);
-            defs.appendChild(s);
-            waitForTypekit();
 
-        }
         var fontArr = fontData.list;
         var i, len = fontArr.length;
         for(i=0; i<len; i+= 1){
@@ -95,11 +98,25 @@ var FontManager = (function(){
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
             if(fontArr[i].fPath){
-                if(fontArr[i].fPath){
+                if(!fontArr[i].fPath) {
+                    fontArr[i].loaded = true;
+                }else if(fontArr[i].fOrigin === 'p'){
                     var s = document.createElement('style');
                     s.type = "text/css";
                     s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                     defs.appendChild(s);
+                } else if(fontArr[i].fOrigin === 'g'){
+                    //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+                    var l = document.createElement('link');
+                    l.type = "text/css";
+                    l.rel = "stylesheet";
+                    l.href = fontArr[i].fPath;
+                    defs.appendChild(l);
+                } else if(fontArr[i].fOrigin === 't'){
+                    //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+                    var sc = document.createElement('script');
+                    sc.setAttribute('src',fontArr[i].fPath);
+                    defs.appendChild(sc);
                 }
             }
             this.fonts.push(fontArr[i]);
@@ -135,6 +152,7 @@ var FontManager = (function(){
     var Font = function(){
         this.fonts = [];
         this.chars = null;
+        this.typekitLoaded = 0;
         this.loaded = false;
         this.initTime = Date.now();
     };

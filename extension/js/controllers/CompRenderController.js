@@ -114,7 +114,9 @@ var compRenderController = (function () {
             fFamily : name,
             fWeight : 'normal',
             fStyle : 'normal',
-            fPath : ''
+            fPath : '',
+            fClass : '',
+            fOrigin: 'p'
         };
         fontsStorage.push(ob);
         return ob;
@@ -132,14 +134,20 @@ var compRenderController = (function () {
             fontOb = {};
             fontOb.fName = fonts[index].name;
             fontOb.fPath = $(item).find('.fontPath')[0].value;
+            fontOb.fClass = $(item).find('.fontClass')[0].value;
             fontOb.fFamily = $(item).find('.fontFamily')[0].value;
             fontOb.fWeight = $(item).find('.fontWeight')[0].value;
             fontOb.fStyle = $(item).find('.fontStyle')[0].value;
+            var checked = $(item).find('input[type=radio]:checked');
+            var radioVal = checked.val();
+            fontOb.fOrigin = radioVal || 'n';
             var storedOb = getStoredFontData(fonts[index].name);
             storedOb.fPath = fontOb.fPath;
+            storedOb.fClass = fontOb.fClass;
             storedOb.fFamily = fontOb.fFamily;
             storedOb.fWeight = fontOb.fontWeight;
             storedOb.fStyle = fontOb.fontStyle;
+            storedOb.fOrigin = fontOb.fOrigin;
             list.push(fontOb);
         });
         var typekitElem = fontsContainer.find('.typekitElem');
@@ -150,14 +158,6 @@ var compRenderController = (function () {
         var fontsInfoString = JSON.stringify(fontsInfo);
         var eScript = 'bm_renderManager.setFontData(' + fontsInfoString + ')';
         csInterface.evalScript(eScript);
-    }
-    
-    function addFontListeners(elem) {
-        function handleOriginChange(ev) {
-            console.log('asdasdasda');
-        }
-        console.log(elem.find('.origin .group input'));
-        elem.find('.origin .group input').on('change',handleOriginChange); 
     }
     
     function renderFontsHandler(ev) {
@@ -192,7 +192,9 @@ var compRenderController = (function () {
             template = document.getElementById('fontTemplate').innerHTML;
             output = Mustache.render(template, {fontData: fonts[i], storedData: storedData});
             fontElem = $(output);
-            addFontListeners(fontElem);
+            if (storedData.fOrigin) {
+                fontElem.find("input[type=radio][value=" + storedData.fOrigin + "]").prop('checked', true);
+            }
             fontsList.append(fontElem);
         }
         fontsContainer.find('button.continue').on('click', function () {

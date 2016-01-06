@@ -59,14 +59,18 @@ HTextElement.prototype.createElements = function(){
     this.innerElem.style.fontSize = documentData.s+'px';
     this.innerElem.style.lineHeight = documentData.s+'px';
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
-    ////this.innerElem.setAttribute('font-family', fontData.fFamily);
-    this.innerElem.style.fontFamily = fontData.fFamily;
+    if(fontData.fClass){
+        this.innerElem.className = fontData.fClass;
+    } else {
+        ////this.innerElem.setAttribute('font-family', fontData.fFamily);
+        this.innerElem.style.fontFamily = fontData.fFamily;
+        var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
+        ////this.innerElem.setAttribute('font-style', fStyle);
+        this.innerElem.style.fontStyle = fStyle;
+        ////this.innerElem.setAttribute('font-weight', fWeight);
+        this.innerElem.style.fontWeight = fWeight;
+    }
     var i, len;
-    var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
-    ////this.innerElem.setAttribute('font-style', fStyle);
-    this.innerElem.style.fontStyle = fStyle;
-    ////this.innerElem.setAttribute('font-weight', fWeight);
-    this.innerElem.style.fontWeight = fWeight;
 
 
 
