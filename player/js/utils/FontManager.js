@@ -90,6 +90,7 @@ var FontManager = (function(){
             this.fonts = fontData.list;
             return;
         }
+        defs.appendChild(this.tSpanHelper);
 
         var fontArr = fontData.list;
         var i, len = fontArr.length;
@@ -138,6 +139,18 @@ var FontManager = (function(){
         }
     }
 
+    function measureText(char, fontName, size){
+        var fontData = this.getFontByName(fontName);
+        if(fontData.fClass){
+            this.tSpanHelper.style.fontFamily = 'inherit';
+        } else {
+            this.tSpanHelper.style.fontFamily = fontData.fFamily;
+        }
+        this.tSpanHelper.textContent = char;
+        this.tSpanHelper.style.fontSize = size + 'px';
+        return this.tSpanHelper.getComputedTextLength();
+    }
+
     function getFontByName(name){
         var i = 0, len = this.fonts.length;
         while(i<len){
@@ -155,11 +168,15 @@ var FontManager = (function(){
         this.typekitLoaded = 0;
         this.loaded = false;
         this.initTime = Date.now();
+        this.tSpanHelper = document.createElementNS(svgNS,'text');
+        this.tSpanHelper.style.fontSize = '100px';
+        this.tSpanHelper.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
     };
     Font.prototype.addChars = addChars;
     Font.prototype.addFonts = addFonts;
     Font.prototype.getCharData = getCharData;
     Font.prototype.getFontByName = getFontByName;
+    Font.prototype.measureText = measureText;
 
     return Font;
 

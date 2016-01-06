@@ -122,6 +122,7 @@ var ExpressionManager = (function(){
         var transform,content,effect;
         var thisComp = elem.comp;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
+        console.log(fnStr);
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;

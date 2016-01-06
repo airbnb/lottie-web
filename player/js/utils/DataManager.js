@@ -1,9 +1,5 @@
 function dataFunctionManager(){
 
-    //var tSpanHelper = document.createElementNS(svgNS,'text');
-    var tCanvasHelper = document.createElement('canvas').getContext('2d');
-    var matrixHelper = new Matrix();
-
     function completeLayers(layers, comps, fontManager){
         var layerData;
         var animArray, lastFrame;
@@ -153,8 +149,7 @@ function dataFunctionManager(){
                     //console.log(documentData.t.charCodeAt(i), documentData.t.charAt(i));
                     cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
                 }else{
-                    tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
-                    cLength = tCanvasHelper.measureText(documentData.t.charAt(i)).width;
+                    cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
                 }
                 if(lineWidth + cLength > boxWidth){
                     i = lastSpaceIndex;
@@ -187,8 +182,7 @@ function dataFunctionManager(){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
                 cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
             }else{
-                tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-                cLength = tCanvasHelper.measureText(val).width;
+                cLength = fontManager.measureText(val, documentData.f, documentData.s);
             }
 
             //
