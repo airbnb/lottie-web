@@ -170,7 +170,8 @@ var FontManager = (function(){
         this.initTime = Date.now();
         this.tSpanHelper = document.createElementNS(svgNS,'text');
         this.tSpanHelper.style.fontSize = '100px';
-        this.tSpanHelper.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
+        //this.tSpanHelper.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
+        this.tSpanHelper.setAttribute("transform", "translate(0,100)");
     };
     Font.prototype.addChars = addChars;
     Font.prototype.addFonts = addFonts;

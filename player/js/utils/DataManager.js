@@ -186,9 +186,11 @@ function dataFunctionManager(){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
                 cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
             }else{
-                var charWidth = fontManager.measureText(val, documentData.f);
+                var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
                 tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
                 cLength = tCanvasHelper.measureText(val).width;
+                console.log('tCanvasHelper.font: ',tCanvasHelper.font);
+                console.log('val: ',val);
                 console.log('cLength: ',cLength);
                 console.log('charWidth: ',charWidth);
             }
