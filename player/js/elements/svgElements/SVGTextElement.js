@@ -43,10 +43,8 @@ SVGTextElement.prototype.createElements = function(){
     var tSpan;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '', j, jLen, k, kLen, pathNodes, singleShape = this.data.singleShape;
-    if(this.globalData.fontManager.chars) {
-        if (singleShape) {
-            var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
-        }
+    if (singleShape) {
+        var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
     }
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
@@ -60,6 +58,12 @@ SVGTextElement.prototype.createElements = function(){
         tSpan.setAttribute('stroke-linejoin','round');
         tSpan.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
+        if(singleShape && letters[i].n) {
+            xPos = 0;
+            yPos += documentData.yOffset;
+            yPos += firstLine ? 1 : 0;
+            firstLine = false;
+        }
         if(this.globalData.fontManager.chars){
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData;
@@ -69,12 +73,6 @@ SVGTextElement.prototype.createElements = function(){
                 shapeData = null;
             }
             matrixHelper.reset();
-            if(singleShape && letters[i].n) {
-                xPos = 0;
-                yPos += documentData.yOffset;
-                yPos += firstLine ? 1 : 0;
-                firstLine = false;
-            }
             if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
                 jLen = shapes.length;
@@ -115,20 +113,24 @@ SVGTextElement.prototype.createElements = function(){
                     tSpan.setAttribute('d',shapeStr);
                 }
             }
-            if(singleShape){
-                xPos += letters[i].l;
-            }else{
+            if(!singleShape){
                 this.innerElem.appendChild(tSpan);
             }
         }else{
             tSpan.textContent = letters[i].val;
             tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
             this.innerElem.appendChild(tSpan);
+            if(singleShape){
+                //tSpan.setAttribute('transform','translate('+xPos+','+yPos+')');
+            }
+        }
+        if(singleShape) {
+            xPos += letters[i].l;
         }
         //
         this.textSpans.push(tSpan);
     }
-    if(singleShape){
+    if(singleShape && this.globalData.fontManager.chars){
         tSpan.setAttribute('d',shapeStr);
         this.innerElem.appendChild(tSpan);
     }
@@ -161,7 +163,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
 
-    if(this.data.singleShape){
+    if(this.data.singleShape && !this.firstFrame){
         return;
     }
 
@@ -192,6 +194,9 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
         if(renderedLetter.fc){
             this.textSpans[i].setAttribute('fill',renderedLetter.fc);
         }
+    }
+    if(this.firstFrame) {
+        this.firstFrame = false;
     }
 }
 
