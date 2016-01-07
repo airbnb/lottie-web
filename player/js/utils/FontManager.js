@@ -76,9 +76,25 @@ var FontManager = (function(){
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
             setTimeout(checkLoadedFonts.bind(this),20);
         }else{
-            this.loaded = true;
+            setTimeout(function(){this.loaded = true;}.bind(this),0);
+
         }
     };
+
+    function createHelper(def, fontData){
+        var tHelper = document.createElementNS(svgNS,'text');
+        tHelper.style.fontSize = '100px';
+        tHelper.style.fontFamily = fontData.fFamily;
+        tHelper.textContent = '1';
+        if(fontData.fClass){
+            tHelper.style.fontFamily = 'inherit';
+            tHelper.className = fontData.fClass;
+        } else {
+            tHelper.style.fontFamily = fontData.fFamily;
+        }
+        def.appendChild(tHelper);
+        return tHelper;
+    }
 
     function addFonts(fontData, defs){
         if(!fontData){
@@ -90,7 +106,6 @@ var FontManager = (function(){
             this.fonts = fontData.list;
             return;
         }
-        defs.appendChild(this.tSpanHelper);
 
         var fontArr = fontData.list;
         var i, len = fontArr.length;
@@ -98,27 +113,28 @@ var FontManager = (function(){
             fontArr[i].loaded = false;
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
-            if(fontArr[i].fPath){
-                if(!fontArr[i].fPath) {
-                    fontArr[i].loaded = true;
-                }else if(fontArr[i].fOrigin === 'p'){
-                    var s = document.createElement('style');
-                    s.type = "text/css";
-                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
-                    defs.appendChild(s);
-                } else if(fontArr[i].fOrigin === 'g'){
-                    //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-                    var l = document.createElement('link');
-                    l.type = "text/css";
-                    l.rel = "stylesheet";
-                    l.href = fontArr[i].fPath;
-                    defs.appendChild(l);
-                } else if(fontArr[i].fOrigin === 't'){
-                    //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-                    var sc = document.createElement('script');
-                    sc.setAttribute('src',fontArr[i].fPath);
-                    defs.appendChild(sc);
-                }
+            if(!fontArr[i].fPath) {
+                fontArr[i].loaded = true;
+            }else if(fontArr[i].fOrigin === 'p'){
+                var s = document.createElement('style');
+                s.type = "text/css";
+                s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                defs.appendChild(s);
+                fontArr[i].helper = createHelper(defs,fontArr[i]);
+            } else if(fontArr[i].fOrigin === 'g'){
+                //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+                var l = document.createElement('link');
+                l.type = "text/css";
+                l.rel = "stylesheet";
+                l.href = fontArr[i].fPath;
+                defs.appendChild(l);
+                fontArr[i].helper = createHelper(defs,fontArr[i]);
+            } else if(fontArr[i].fOrigin === 't'){
+                //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+                var sc = document.createElement('script');
+                sc.setAttribute('src',fontArr[i].fPath);
+                defs.appendChild(sc);
+                fontArr[i].helper = createHelper(defs,fontArr[i]);
             }
             this.fonts.push(fontArr[i]);
         }
@@ -141,14 +157,9 @@ var FontManager = (function(){
 
     function measureText(char, fontName, size){
         var fontData = this.getFontByName(fontName);
-        if(fontData.fClass){
-            this.tSpanHelper.style.fontFamily = 'inherit';
-        } else {
-            this.tSpanHelper.style.fontFamily = fontData.fFamily;
-        }
-        this.tSpanHelper.textContent = char;
-        this.tSpanHelper.style.fontSize = size + 'px';
-        return this.tSpanHelper.getComputedTextLength();
+        var tHelper = fontData.helper;
+        tHelper.textContent = char;
+        return tHelper.getComputedTextLength()*size/100;
     }
 
     function getFontByName(name){
@@ -168,10 +179,6 @@ var FontManager = (function(){
         this.typekitLoaded = 0;
         this.loaded = false;
         this.initTime = Date.now();
-        this.tSpanHelper = document.createElementNS(svgNS,'text');
-        this.tSpanHelper.style.fontSize = '100px';
-        //this.tSpanHelper.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-        this.tSpanHelper.setAttribute("transform", "translate(0,100)");
     };
     Font.prototype.addChars = addChars;
     Font.prototype.addFonts = addFonts;

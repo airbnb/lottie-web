@@ -25,11 +25,16 @@ SVGTextElement.prototype.createElements = function(){
     }
     this.innerElem.setAttribute('font-size', documentData.s);
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
-    this.innerElem.setAttribute('font-family', fontData.fFamily);
+    if(fontData.fClass){
+        console.log(this.innerElem);
+        this.innerElem.setAttribute('class',fontData.fClass);
+    } else {
+        this.innerElem.setAttribute('font-family', fontData.fFamily);
+        var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
+        this.innerElem.setAttribute('font-style', fStyle);
+        this.innerElem.setAttribute('font-weight', fWeight);
+    }
     var i, len;
-    var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
-    this.innerElem.setAttribute('font-style', fStyle);
-    this.innerElem.setAttribute('font-weight', fWeight);
     if(this.layerElement === this.parentContainer){
         this.appendNodeToParent(this.innerElem);
     }else{

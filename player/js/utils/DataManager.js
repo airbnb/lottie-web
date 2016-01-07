@@ -188,11 +188,11 @@ function dataFunctionManager(){
             }else{
                 var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
                 tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-                cLength = tCanvasHelper.measureText(val).width;
-                console.log('tCanvasHelper.font: ',tCanvasHelper.font);
+                cLength = charWidth;
+                /*console.log('tCanvasHelper.font: ',tCanvasHelper.font);
                 console.log('val: ',val);
                 console.log('cLength: ',cLength);
-                console.log('charWidth: ',charWidth);
+                console.log('charWidth: ',charWidth);*/
             }
 
             //
