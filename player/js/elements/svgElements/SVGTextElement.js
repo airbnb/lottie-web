@@ -154,7 +154,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
 
-    if(this.data.singleShape && !this.firstFrame){
+    if(this.data.singleShape){
         return;
     }
 
