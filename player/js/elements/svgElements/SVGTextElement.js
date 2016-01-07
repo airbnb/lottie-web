@@ -27,7 +27,6 @@ SVGTextElement.prototype.createElements = function(){
     this.innerElem.setAttribute('font-size', documentData.s);
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     if(fontData.fClass){
-        console.log(this.innerElem);
         this.innerElem.setAttribute('class',fontData.fClass);
     } else {
         this.innerElem.setAttribute('font-family', fontData.fFamily);
@@ -70,6 +69,24 @@ SVGTextElement.prototype.createElements = function(){
             yPos += firstLine ? 1 : 0;
             firstLine = false;
         }
+        matrixHelper.reset();
+        if(this.globalData.fontManager.chars) {
+            matrixHelper.scale(documentData.s / 100, documentData.s / 100);
+        }
+        if (singleShape) {
+            if(documentData.ps){
+                matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+            }
+            switch(documentData.j){
+                case 1:
+                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
+                    break;
+                case 2:
+                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
+                    break;
+            }
+            matrixHelper.translate(xPos, yPos, 0);
+        }
         if(this.globalData.fontManager.chars){
             var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData;
@@ -78,25 +95,10 @@ SVGTextElement.prototype.createElements = function(){
             } else {
                 shapeData = null;
             }
-            matrixHelper.reset();
             if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
-                matrixHelper.scale(documentData.s/100,documentData.s/100);
                 if(!singleShape){
                     shapeStr = '';
-                }else{
-                    if(documentData.ps){
-                        matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
-                    }
-                    switch(documentData.j){
-                        case 1:
-                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
-                            break;
-                        case 2:
-                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
-                            break;
-                    }
-                    matrixHelper.translate(xPos,yPos,0);
                 }
                 shapeStr += this.createPathShape(matrixHelper,shapes);
                 if(!singleShape){
@@ -112,7 +114,7 @@ SVGTextElement.prototype.createElements = function(){
             tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
             this.innerElem.appendChild(tSpan);
             if(singleShape){
-                //tSpan.setAttribute('transform','translate('+xPos+','+yPos+')');
+                tSpan.setAttribute('transform',matrixHelper.to2dCSS());
             }
         }
         if(singleShape) {

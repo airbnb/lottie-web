@@ -153,7 +153,6 @@ function dataFunctionManager(){
                 }else{
                     tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
                     cLength = tCanvasHelper.measureText(documentData.t.charAt(i)).width;
-                    console.log(cLength);
                 }
                 if(lineWidth + cLength > boxWidth){
                     i = lastSpaceIndex;

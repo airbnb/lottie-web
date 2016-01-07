@@ -196,8 +196,8 @@ HybridRenderer.prototype.configAnimation = function(animData){
 
     resizerElem.style.overflow = 'hidden';
     var svg = document.createElementNS(svgNS,'svg');
-    svg.setAttribute('width','300');
-    svg.setAttribute('height','300');
+    svg.setAttribute('width','1');
+    svg.setAttribute('height','1');
     styleDiv(svg);
     this.animationItem.resizerElem.appendChild(svg);
     var defs = document.createElementNS(svgNS,'defs');
