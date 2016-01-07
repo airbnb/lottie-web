@@ -6,6 +6,7 @@ function SVGTextElement(data,parentContainer,globalData,comp, placeholder){
 createElement(SVGBaseElement, SVGTextElement);
 
 SVGTextElement.prototype.init = ITextElement.prototype.init;
+SVGTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 
 SVGTextElement.prototype.createElements = function(){
@@ -47,7 +48,7 @@ SVGTextElement.prototype.createElements = function(){
     len = letters.length;
     var tSpan;
     var matrixHelper = this.mHelper;
-    var shapes, shapeStr = '', j, jLen, k, kLen, pathNodes, singleShape = this.data.singleShape;
+    var shapes, shapeStr = '', singleShape = this.data.singleShape;
     if (singleShape) {
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
     }
@@ -80,7 +81,6 @@ SVGTextElement.prototype.createElements = function(){
             matrixHelper.reset();
             if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
-                jLen = shapes.length;
                 matrixHelper.scale(documentData.s/100,documentData.s/100);
                 if(!singleShape){
                     shapeStr = '';
@@ -98,21 +98,7 @@ SVGTextElement.prototype.createElements = function(){
                     }
                     matrixHelper.translate(xPos,yPos,0);
                 }
-                for(j=0;j<jLen;j+=1){
-                    kLen = shapes[j].ks.k.i.length;
-                    pathNodes = shapes[j].ks.k;
-                    for(k=1;k<kLen;k+=1){
-                        if(k==1){
-                            shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
-                            //shapeStr += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-                        }
-                        shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
-                        //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[k][0]+','+pathNodes.i[k][1] + " "+pathNodes.v[k][0]+','+pathNodes.v[k][1];
-                    }
-                    shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
-                    //shapeStr += " C"+pathNodes.o[k-1][0]+','+pathNodes.o[k-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-                    shapeStr += 'z';
-                }
+                shapeStr += this.createPathShape(matrixHelper,shapes);
                 if(!singleShape){
 
                     tSpan.setAttribute('d',shapeStr);

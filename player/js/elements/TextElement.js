@@ -78,6 +78,24 @@ ITextElement.prototype.init = function(){
     }
 };
 
+ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
+    var j,jLen = shapes.length;
+    var k, kLen, pathNodes;
+    var shapeStr = '';
+    for(j=0;j<jLen;j+=1){
+        kLen = shapes[j].ks.k.i.length;
+        pathNodes = shapes[j].ks.k;
+        for(k=1;k<kLen;k+=1){
+            if(k==1){
+                shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+            }
+            shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
+        }
+        shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+        shapeStr += 'z';
+    }
+    return shapeStr;
+};
 
 ITextElement.prototype.getMeasures = function(){
 
