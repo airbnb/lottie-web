@@ -137,7 +137,7 @@ function dataFunctionManager(){
         len = documentData.t.length;
         if(documentData.sz){
             var boxWidth = documentData.sz[0];
-            var lastSpaceIndex;
+            var lastSpaceIndex = -1;
             for(i=0;i<len;i+=1){
                 newLineFlag = false;
                 if(documentData.t.charAt(i) === ' '){
@@ -148,17 +148,22 @@ function dataFunctionManager(){
                 }
                 if(fontManager.chars){
                     charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
-                    //console.log(documentData.t.charCodeAt(i), documentData.t.charAt(i));
                     cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
                 }else{
                     tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
                     cLength = tCanvasHelper.measureText(documentData.t.charAt(i)).width;
                 }
                 if(lineWidth + cLength > boxWidth){
-                    i = lastSpaceIndex;
+                    if(lastSpaceIndex === -1){
+                       //i -= 1;
+                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i);
+                        len += 1;
+                    } else {
+                        i = lastSpaceIndex;
+                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
+                    }
+                    lastSpaceIndex = -1;
                     lineWidth = 0;
-                    var pre = documentData.t.substr(0,i);
-                    documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
                 }else {
                     lineWidth += cLength;
                 }
