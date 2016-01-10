@@ -26,6 +26,10 @@ var bm_textHelper = (function () {
     function exportTextDocumentData(layerInfo, ob) {
         
         var textDocument = layerInfo.property("Source Text").value;
+        if (textDocument.boxText) {
+            ob.sz = textDocument.boxTextSize;
+            ob.ps = textDocument.boxTextPos;
+        }
         var i, len;
         ob.s = textDocument.fontSize;
         ob.f = textDocument.font;

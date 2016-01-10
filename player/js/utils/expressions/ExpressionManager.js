@@ -122,6 +122,7 @@ var ExpressionManager = (function(){
         var transform,content,effect;
         var thisComp = elem.comp;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
+        console.log(fnStr);
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
@@ -205,8 +206,10 @@ var ExpressionManager = (function(){
                 // Todo Improve validation for masks and shapes
                 this.mdf = true;
             }else{
+                if(!this.lastValue){
+
+                }
                 len = this.v.length;
-                console.log(this.v);
                 for(i = 0; i < len; i += 1){
                     if(this.v[i] !== this.lastValue[i]){
                         this.lastValue[i] = this.v[i];

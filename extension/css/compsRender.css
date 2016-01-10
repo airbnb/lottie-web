@@ -118,6 +118,33 @@
     display: block;
 }
 
+#compsRender div.fontsContainer .origin {
+    padding: 10px 0;
+}
+
+#compsRender div.fontsContainer .origin .title {
+    color: #484043;
+    font-size: 14px;
+    padding-bottom: 5px;
+}
+
+#compsRender div.fontsContainer .origin .group {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+#compsRender div.fontsContainer .origin input[type="radio"] {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#compsRender div.fontsContainer .origin label {
+    display: inline-block;
+    vertical-align: top;
+    color: #484043;
+    font-size: 12px;
+}
+
 #compsRender div.fontsContainer .buttons {
     padding-top: 5px;
 }
@@ -142,7 +169,7 @@
     padding-bottom: 2px;
 }
 
-#compsRender div.fontElement input {
+#compsRender div.fontElement input[type="text"] {
     width: 100%;
     font-size: 12px;
 }

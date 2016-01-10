@@ -1,4 +1,5 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -8,7 +9,7 @@ var bm_abs = Math.abs;
 var bm_floor = Math.floor;
 var bm_max = Math.max;
 var bm_min = Math.min;
-var defaultCurveSegments = 50;
+var defaultCurveSegments = 75;
 var degToRads = Math.PI/180;
 
 function roundValues(flag){
@@ -22,15 +23,22 @@ function roundValues(flag){
 }
 roundValues(false);
 
+function roundTo2Decimals(val){
+    return Math.round(val*10000)/10000;
+}
+
+function roundTo3Decimals(val){
+    return Math.round(val*100)/100;
+}
+
 function styleDiv(element){
     element.style.position = 'absolute';
     element.style.top = 0;
     element.style.left = 0;
     element.style.display = 'block';
-    element.style.transformOrigin = '0 0';
-    element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'hidden';
-    //element.style.transformStyle = element.style.webkitTransformStyle = "preserve-3d";
-    styleUnselectableDiv(element);
+    element.style.transformOrigin = element.style.webkitTransformOrigin = '0 0';
+    element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'visible';
+    element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
 function styleUnselectableDiv(element){
@@ -66,6 +74,11 @@ function BMSegmentStartEvent(n,f,t){
     this.totalFrames = t;
 }
 
+function BMDestroyEvent(n,t){
+    this.type = n;
+    this.target = t;
+}
+
 function _addEventListener(eventName, callback){
 
     if (!this._cbs[eventName]){
@@ -97,7 +110,6 @@ function _removeEventListener(eventName,callback){
 }
 
 function _triggerEvent(eventName, args){
-
     if (this._cbs[eventName]) {
         var len = this._cbs[eventName].length;
         for (var i = 0; i < len; i++){

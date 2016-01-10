@@ -1,11 +1,9 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, renderingData, folderData, bodymovin, LocalStorageManager */
+/*global $, renderingData, folderData, bodymovin, LocalStorageManager, Mustache */
 var compRenderController = (function () {
     'use strict';
     var view, renders, csInterface, compositions, cancelButton, returnButton;
     var ob = {};
-    var elementTemplate = "<div class='renderingElement'><div class='header'><div class='compName'></div></div><div class='progressBar'></div><div class='status'><div class='compAnim'></div><div class='statusText'></div><div class='folder'></div><div class='buttonHover'></div></div><div class='fontsContainer'><div class='typekitContainer'><button class='generalButton typekitButton'>Include typekit path</button><div class='typekitElem'><span>Typekit path</span><input class='typekitPath' type='text'/></div></div><div class='fontsList'></div><div class='buttons'><button class='generalButton continue'>Continue</button></div></div></div>";
-    var fontTemplate = "<div class='fontElement'><div class='fontTitle'></div><div class='fontFormItem'><span>Font path (optional)</span><input class='fontPath' type='text' /></div><div class='fontFormItem'><span>Font Family (optional)</span><input class='fontFamily' type='text' /></div><div class='fontFormItem'><span>Font Weight</span><input class='fontWeight' type='text' /></div><div class='fontFormItem'><span>Font Style</span><input class='fontStyle' type='text' list='browsers'/></div></div>";
     
     var fontsStorage, textHelper;
     
@@ -39,8 +37,10 @@ var compRenderController = (function () {
         }
         var i, len = compositions.length, elem;
         for (i = 0; i < len; i += 1) {
-            elem = $(elementTemplate);
-            elem.find('.compName').html(compositions[i].name);
+            var template = document.getElementById('elementTemplate').innerHTML;
+            var output = Mustache.render(template, compositions[i]);
+            elem = $(output);
+            //elem.find('.compName').html(compositions[i].name);
             elem.find('.statusText').html('Queued');
             addFolderEvent(elem.find('.buttonHover'), compositions[i]);
             
@@ -114,7 +114,9 @@ var compRenderController = (function () {
             fFamily : name,
             fWeight : 'normal',
             fStyle : 'normal',
-            fPath : ''
+            fPath : '',
+            fClass : '',
+            fOrigin: 'p'
         };
         fontsStorage.push(ob);
         return ob;
@@ -132,14 +134,20 @@ var compRenderController = (function () {
             fontOb = {};
             fontOb.fName = fonts[index].name;
             fontOb.fPath = $(item).find('.fontPath')[0].value;
+            fontOb.fClass = $(item).find('.fontClass')[0].value;
             fontOb.fFamily = $(item).find('.fontFamily')[0].value;
             fontOb.fWeight = $(item).find('.fontWeight')[0].value;
             fontOb.fStyle = $(item).find('.fontStyle')[0].value;
+            var checked = $(item).find('input[type=radio]:checked');
+            var radioVal = checked.val();
+            fontOb.fOrigin = radioVal || 'n';
             var storedOb = getStoredFontData(fonts[index].name);
             storedOb.fPath = fontOb.fPath;
+            storedOb.fClass = fontOb.fClass;
             storedOb.fFamily = fontOb.fFamily;
             storedOb.fWeight = fontOb.fontWeight;
             storedOb.fStyle = fontOb.fontStyle;
+            storedOb.fOrigin = fontOb.fOrigin;
             list.push(fontOb);
         });
         var typekitElem = fontsContainer.find('.typekitElem');
@@ -176,15 +184,17 @@ var compRenderController = (function () {
         var fontsList = fontsContainer.find('.fontsList');
         var typekitElem = fontsContainer.find('.typekitElem');
         len = fonts.length;
-        var fontElem, storedData;
+        var fontElem, storedData, template, output;
         for (i = 0; i < len; i += 1) {
+            fonts[i].__index = i;
             storedData = getStoredFontData(fonts[i].name);
-            fontElem = $(fontTemplate);
-            fontElem.find('.fontTitle').html(fonts[i].name);
-            fontElem.find('.fontFamily').val(fonts[i].family);
-            fontElem.find('.fontWeight').val(storedData.fWeight);
-            fontElem.find('.fontPath').val(storedData.fPath);
-            fontElem.find('.fontStyle').val(fonts[i].style);
+            
+            template = document.getElementById('fontTemplate').innerHTML;
+            output = Mustache.render(template, {fontData: fonts[i], storedData: storedData});
+            fontElem = $(output);
+            if (storedData.fOrigin) {
+                fontElem.find("input[type=radio][value=" + storedData.fOrigin + "]").prop('checked', true);
+            }
             fontsList.append(fontElem);
         }
         fontsContainer.find('button.continue').on('click', function () {
@@ -245,8 +255,10 @@ var compRenderController = (function () {
             textHelper.setAttribute('font-size', chars[i].size);
             textHelper.setAttribute('font-size', 100);
             textHelper.textContent = chars[i].ch === ' ' ? '\u00A0' : chars[i].ch;
+            /* Not using this for now.
             var cLength = textHelper.getComputedTextLength();
             chars[i].w = cLength;
+            */
             delete chars[i].font;
         }
         var charsInfoString = JSON.stringify(chars);

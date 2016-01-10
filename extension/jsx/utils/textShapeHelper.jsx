@@ -1,12 +1,27 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification*/
+/*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification, bm_generalUtils*/
 var bm_textShapeHelper = (function () {
     'use strict';
-    var ob = {}, chars = [], comp, layers = [];
+    var ob = {}, chars = [], comp, fontComp, dupl, boxText, layers = [], currentFont;
     
     function reset() {
+        comp = app.project.items.addComp('bm_charHelper', 1000, 1000, 1, 1, 1);
+        fontComp = app.project.items.addComp('bm_fontHelper', 1000, 1000, 1, 1, 1);
+        boxText = fontComp.layers.addBoxText([500, 500], 'm');
+        dupl = comp.layers.addText();
+        var textProp = dupl.property("Source Text");
+        var textDocument = textProp.value;
+        textDocument.fontSize = 100;
+        textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
+        textProp.setValue(textDocument);
+        var fontProp = dupl.property("Source Text");
+        var fontDocument = fontProp.value;
+        fontDocument.fontSize = 100;
+        fontDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
+        fontProp.setValue(fontDocument);
         chars.length = 0;
         layers.length = 0;
+        currentFont = '';
     }
     
     function addTextLayer(layer) {
@@ -71,50 +86,72 @@ var bm_textShapeHelper = (function () {
     }
     
     function createNewChar(layerInfo, ch, charData) {
-        if (ch === ' ' || ch.charCodeAt(0) === 13) {
+            //"allCaps","applyFill","applyStroke","baselineLocs","baselineShift","boxText","boxTextPos","boxTextSize","fauxBold","fauxItalic","fillColor","font","fontFamily","fontLocation","fontSize","fontStyle","horizontalScale","justification","pointText","resetCharStyle","resetParagraphStyle","smallCaps","strokeColor","strokeOverFill","strokeWidth","subscript","superscript","text","tracking","tsume","verticalScale"
+        if (ch.charCodeAt(0) === 13) {
             return;
         }
         var shapeLayer;
         var l, lLen;
         var cmdID = bm_projectManager.getCommandID('shapesFromText');
         layerInfo.copyToComp(comp);
-        var dupl = comp.layers[1];
-        removeLayerAnimators(dupl);
+        var originalTextDocument = layerInfo.property('Source Text').value;
+        //var dupl = comp.layers[1];
+        //var dupl = comp.layers.addText();
+        //removeLayerAnimators(dupl);
         var textProp = dupl.property("Source Text");
         var textDocument = textProp.value;
-        textDocument.text = ch;
+        if (ch !== ' ') {
+            textDocument.text = ch + ch;
+        } else {
+            textDocument.text = 'i i';
+        }
+        textDocument.font = originalTextDocument.font;
         textDocument.fontSize = 100;
         textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
         textProp.setValue(textDocument);
         dupl.enabled = true;
         dupl.selected = true;
-        app.executeCommand(cmdID);
+        if (ch !== ' ') {
+            app.executeCommand(cmdID);
+        }
         dupl.selected = false;
+        var doubleSize, singleSize;
+        doubleSize = dupl.sourceRectAtTime(0, false).width;
+        if (ch !== ' ') {
+            textDocument.text = ch;
+        } else {
+            textDocument.text = 'ii';
+        }
+        textProp.setValue(textDocument);
+        singleSize = dupl.sourceRectAtTime(0, false).width;
+        charData.w = bm_generalUtils.roundNumber(doubleSize - singleSize, 2);
         shapeLayer = comp.layers[1];
         charData.data = {};
-        bm_shapeHelper.exportShape(shapeLayer, charData.data, 1, true);
-        lLen = charData.data.shapes[0].it.length;
-        for (l = 0; l < lLen; l += 1) {
-            var ks = charData.data.shapes[0].it[l].ks;
-            if (ks) {
-                var k, kLen = ks.k.i.length;
-                for (k = 0; k < kLen; k += 1) {
-                    ks.k.i[k][0] += ks.k.v[k][0];
-                    ks.k.i[k][1] += ks.k.v[k][1];
-                    ks.k.o[k][0] += ks.k.v[k][0];
-                    ks.k.o[k][1] += ks.k.v[k][1];
+        if (ch !== ' ') {
+            bm_shapeHelper.exportShape(shapeLayer, charData.data, 1, true);
+            lLen = charData.data.shapes[0].it.length;
+            for (l = 0; l < lLen; l += 1) {
+                var ks = charData.data.shapes[0].it[l].ks;
+                if (ks) {
+                    var k, kLen = ks.k.i.length;
+                    for (k = 0; k < kLen; k += 1) {
+                        ks.k.i[k][0] += ks.k.v[k][0];
+                        ks.k.i[k][1] += ks.k.v[k][1];
+                        ks.k.o[k][0] += ks.k.v[k][0];
+                        ks.k.o[k][1] += ks.k.v[k][1];
+                    }
+                } else {
+                    charData.data.shapes[0].it.splice(l, 1);
+                    l -= 1;
+                    lLen -= 1;
                 }
-            } else {
-                charData.data.shapes[0].it.splice(l, 1);
-                l -= 1;
-                lLen -= 1;
             }
         }
         shapeLayer.selected = false;
     }
     
     function exportChars(fonts) {
-        comp = app.project.items.addComp('bm_fontHelper', 1000, 1000, 1, 1, 1);
+        
         comp.openInViewer();
         var layerCollection = comp.layers;
         var i, len = layers.length, layerInfo;
@@ -128,6 +165,11 @@ var bm_textShapeHelper = (function () {
             var fontSize = textDocument.fontSize;
             var text = textDocument.text;
             var j, jLen = text.length;
+            
+            if(currentFont !== font){
+                currentFont = font;
+                createNewChar(layerInfo,'[]',{});
+            }
             var l, lLen;
             for (j = 0; j < jLen; j += 1) {
                 var ch = text.substr(j, 1);
@@ -151,10 +193,28 @@ var bm_textShapeHelper = (function () {
         bm_renderManager.setChars(chars);
     }
     
+    function exportFonts(fonts) {
+        fontComp.openInViewer();
+        var i, len = fonts.list.length, rect;
+        var fontProp = boxText.property("Source Text");
+        var fontDocument = fontProp.value;
+        fontDocument.text = 'm';
+        for( i = 0; i < len; i += 1) {
+            fontDocument.font = fonts.list[i].fName;
+            fontDocument.fontSize = 100;
+            fontProp.setValue(fontDocument);
+            rect = boxText.sourceRectAtTime(0, false);
+            bm_eventDispatcher.log(rect);
+            fonts.list[i].ascent = 250 + rect.top + rect.height; 
+        }
+        fontComp.remove();
+    }
+    
     ob.reset = reset;
     ob.addChar = addChar;
     ob.addTextLayer = addTextLayer;
     ob.exportChars = exportChars;
+    ob.exportFonts = exportFonts;
     
     return ob;
 }());

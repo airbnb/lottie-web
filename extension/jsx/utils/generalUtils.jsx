@@ -81,6 +81,16 @@ var bm_generalUtils = (function () {
         };
     }());
     
+    function iterateOwnProperties(property){
+        var propsArray = [];
+        for (var s in property) {
+            if(property.hasOwnProperty(s)) {
+                propsArray.push(s);
+            }
+        }
+        bm_eventDispatcher.log(propsArray);
+    }
+    
     function convertPathsToAbsoluteValues(ks) {
         var i, len;
         if (ks.i) {
@@ -105,6 +115,7 @@ var bm_generalUtils = (function () {
     ob.setTimeout = setTimeout;
     ob.arrayRgbToHex = arrayRgbToHex;
     ob.iterateProperty = iterateProperty;
+    ob.iterateOwnProperties = iterateOwnProperties;
     ob.convertPathsToAbsoluteValues = convertPathsToAbsoluteValues;
     
     return ob;

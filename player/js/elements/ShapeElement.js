@@ -118,7 +118,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
                 },
                 elements: []
             };
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el'){
+        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             data[i] = {
                 elements : [],
                 styles : [],
@@ -129,6 +129,8 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
                 ty = 5;
             }else if(arr[i].ty == 'el'){
                 ty = 6;
+            }else if(arr[i].ty == 'sr'){
+                ty = 7;
             }
             if(addedTrims.length){
                 arr[i].trimmed = true;
@@ -180,6 +182,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
 };
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
+
 
     var renderParent = this.parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
@@ -234,19 +237,19 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             groupTransform.matMdf = groupTransform.mProps.mdf;
             groupTransform.opMdf = groupTransform.op.mdf;
             groupMatrix = groupTransform.mat;
-            groupMatrix.reset();
+            groupMatrix.cloneFromProps(mtArr);
             if(parentTransform){
                 var props = parentTransform.mat.props;
                 groupTransform.opacity = parentTransform.opacity;
                 groupTransform.opacity *= data[i].transform.op.v;
                 groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
                 groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+
             }else{
                 groupTransform.opacity = groupTransform.op.o;
             }
-            groupMatrix.transform(mtArr[0],mtArr[1],mtArr[2],mtArr[3],mtArr[4],mtArr[5]);
-        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
+        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],groupTransform);
@@ -346,7 +349,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
                 }
             }
             if (viewData.st) {
-                t = 'matrix(' + groupTransform.mat.props.join(',') + ')';
+                t = groupTransform.mat.to2dCSS();
             }
             viewData.lStr = pathStringTransformed;
         }else{

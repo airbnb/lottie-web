@@ -6,6 +6,7 @@ var bm_shapeHelper = (function () {
         shape: 'sh',
         rect: 'rc',
         ellipse: 'el',
+        star: 'sr',
         fill: 'fl',
         stroke: 'st',
         merge: 'mm',
@@ -14,9 +15,12 @@ var bm_shapeHelper = (function () {
     };
 
     function getItemType(matchName) {
+        bm_eventDispatcher.log(matchName);
         switch (matchName) {
         case 'ADBE Vector Shape - Group':
             return shapeItemTypes.shape;
+        case 'ADBE Vector Shape - Star':
+            return shapeItemTypes.star;
         case 'ADBE Vector Shape - Rect':
             return shapeItemTypes.rect;
         case 'ADBE Vector Shape - Ellipse':
@@ -97,6 +101,21 @@ var bm_shapeHelper = (function () {
                     ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Size'), frameRate);
                     ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
                     ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Roundness'), frameRate);
+                } else if(itemType === shapeItemTypes.star && !isText) {
+                    ob = {};
+                    bm_generalUtils.iterateProperty(prop);
+                    ob.ty = itemType;
+                    ob.sy = prop.property("Type").value;
+                    ob.d = prop.property("Shape Direction").value;
+                    ob.pt = bm_keyframeHelper.exportKeyframes(prop.property('Points'), frameRate);
+                    ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
+                    ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Rotation'), frameRate);
+                    if(ob.sy === 1) {
+                        ob.ir = bm_keyframeHelper.exportKeyframes(prop.property('Inner Radius'), frameRate);
+                        ob.is = bm_keyframeHelper.exportKeyframes(prop.property('Inner Roundness'), frameRate);
+                    }
+                    ob.or = bm_keyframeHelper.exportKeyframes(prop.property('Outer Radius'), frameRate);
+                    ob.os = bm_keyframeHelper.exportKeyframes(prop.property('Outer Roundness'), frameRate);
                 } else if (itemType === shapeItemTypes.ellipse) {
                     ob = {};
                     ob.d = prop.property("Shape Direction").value;
@@ -262,6 +281,8 @@ var bm_shapeHelper = (function () {
             shapeProp = PropertyFactory.getShapeProp(data, shapeData, 5, [], []);
         } else if (shapeData.ty === 'el') {
             shapeProp = PropertyFactory.getShapeProp(data, shapeData, 6, [], []);
+        } else if (shapeData.ty === 'sr') {
+            shapeProp = PropertyFactory.getShapeProp(data, shapeData, 7, [], []);
         }
         shapeProp.getKeys(arr);
         var j, jLen = arr.length, matr = new Matrix();
@@ -321,7 +342,7 @@ var bm_shapeHelper = (function () {
         matr = matr.concat(matrices);
         strk = strk.concat(strokes);
         for (i = len - 1; i >= 0; i -= 1) {
-            if (arr[i].ty === 'sh' || arr[i].ty === 'el' || arr[i].ty === 'rc') {
+            if (arr[i].ty === 'sh' || arr[i].ty === 'el' || arr[i].ty === 'rc' || arr[i].ty === 'sr') {
                 setBounds(arr[i], bounds, matr, strk, data);
             } else if (arr[i].ty === 'gr') {
                 completeShapes(arr[i].it, bounds, matr, strk, data);

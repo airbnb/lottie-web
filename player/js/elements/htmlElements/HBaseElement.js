@@ -65,43 +65,41 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
     var mat;
     var finalMat = this.finalTransform.mat;
 
+    if(this.hierarchy){
+        var i, len = this.hierarchy.length;
+
+        mat = this.finalTransform.mProp.v.props;
+        finalMat.cloneFromProps(mat);
+        for(i=0;i<len;i+=1){
+            this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
+            mat = this.hierarchy[i].finalTransform.mProp.v.props;
+            finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
+        }
+    }else{
+        if(this.isVisible && this.finalTransform.matMdf){
+            if(!parentTransform){
+                finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
+            }else{
+                mat = this.finalTransform.mProp.v.props;
+                finalMat.cloneFromProps(mat);
+            }
+        }
+    }
+
     if(parentTransform){
         mat = parentTransform.mat.props;
-        finalMat.reset().transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
+        finalMat.cloneFromProps(mat);
         this.finalTransform.opacity *= parentTransform.opacity;
         this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
         this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
     }
 
-    if(this.hierarchy){
-        var i, len = this.hierarchy.length;
-        if(!parentTransform){
-            finalMat.reset();
-        }
-        for(i=len-1;i>=0;i-=1){
-            this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
-            mat = this.hierarchy[i].finalTransform.mProp.v.props;
-            finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
-        }
-        mat = this.finalTransform.mProp.v.props;
-        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
-    }else{
-        if(this.isVisible){
-            if(!parentTransform){
-                finalMat.props[0] = this.finalTransform.mProp.v.props[0];
-                finalMat.props[1] = this.finalTransform.mProp.v.props[1];
-                finalMat.props[2] = this.finalTransform.mProp.v.props[2];
-                finalMat.props[3] = this.finalTransform.mProp.v.props[3];
-                finalMat.props[4] = this.finalTransform.mProp.v.props[4];
-                finalMat.props[5] = this.finalTransform.mProp.v.props[5];
-            }else{
-                mat = this.finalTransform.mProp.v.props;
-                finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5]);
-            }
-        }
+    if(this.finalTransform.matMdf){
+        this.layerElement.style.transform = this.layerElement.style.webkitTransform = finalMat.toCSS();
     }
-    this.layerElement.style.transform = 'matrix3d('+finalMat.props[0]+','+finalMat.props[1]+',0,0, '+finalMat.props[2]+','+finalMat.props[3]+',0,0, 0,0,1,0, '+finalMat.props[4]+','+finalMat.props[5]+',0,1)';
-    this.layerElement.style.opacity = this.finalTransform.opacity;
+    if(this.finalTransform.opMdf){
+        this.layerElement.style.opacity = this.finalTransform.opacity;
+    }
     return this.isVisible;
 };
 
@@ -113,6 +111,7 @@ HBaseElement.prototype.destroy = function(){
     }
     if(this.maskManager) {
         this.maskManager.destroy();
+        this.maskManager = null;
     }
 };
 

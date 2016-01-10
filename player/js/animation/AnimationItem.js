@@ -212,6 +212,7 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
+    //console.log(animData);
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
@@ -232,18 +233,18 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     /*
-    this.firstFrame = 90;
+    this.firstFrame = 25;
     this.totalFrames = 1;
     this.animationData.tf = 1;
     //this.frameMult = 1/100;
     //*/////
     this.trigger('config_ready');
     this.loadSegments();
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.updaFrameModifier();
     if(this.renderer.globalData.fontManager){
         this.waitForFontsLoaded();
     }else{
+        dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
         this.checkLoaded();
     }
 };
@@ -251,6 +252,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
 AnimationItem.prototype.waitForFontsLoaded = (function(){
     function checkFontsLoaded(){
         if(this.renderer.globalData.fontManager.loaded){
+            dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
             this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
@@ -419,6 +421,8 @@ AnimationItem.prototype.destroy = function (name) {
         return;
     }
     this.renderer.destroy();
+    this.trigger('destroy');
+    this._cbs = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
@@ -524,6 +528,9 @@ AnimationItem.prototype.trigger = function(name){
             case 'segmentStart':
                 this.triggerEvent(name,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
                 break;
+            case 'destroy':
+                this.triggerEvent(name,new BMDestroyEvent(name,this));
+                break;
             default:
                 this.triggerEvent(name);
         }
@@ -539,6 +546,9 @@ AnimationItem.prototype.trigger = function(name){
     }
     if(name === 'segmentStart' && this.onSegmentStart){
         this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
+    }
+    if(name === 'destroy' && this.onDestroy){
+        this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
 

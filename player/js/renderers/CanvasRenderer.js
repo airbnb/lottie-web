@@ -22,9 +22,10 @@ function CanvasRenderer(animationItem, config){
     };
     var i, len = 15;
     for(i=0;i<len;i+=1){
-        this.contextData.saved[i] = new Array(6);
+        this.contextData.saved[i] = new Array(16);
     }
     this.elements = [];
+    this.transformMat = new Matrix();
 }
 
 CanvasRenderer.prototype.createItem = function(layer, comp){
@@ -126,16 +127,19 @@ CanvasRenderer.prototype.createSolid = function (data, comp) {
 };
 
 CanvasRenderer.prototype.ctxTransform = function(props){
-    if(props[0] === 1 && props[1] === 0 && props[2] === 0 && props[3] === 1 && props[4] === 0 && props[5] === 0){
+    if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0){
         return;
     }
     if(!this.renderConfig.clearCanvas){
-        this.canvasContext.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+        this.canvasContext.transform(props[0],props[1],props[4],props[5],props[12],props[13]);
         return;
     }
-    this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5]);
+    this.transformMat.cloneFromProps(props);
+    this.transformMat.transform(this.contextData.cTr.props[0],this.contextData.cTr.props[1],this.contextData.cTr.props[2],this.contextData.cTr.props[3],this.contextData.cTr.props[4],this.contextData.cTr.props[5],this.contextData.cTr.props[6],this.contextData.cTr.props[7],this.contextData.cTr.props[8],this.contextData.cTr.props[9],this.contextData.cTr.props[10],this.contextData.cTr.props[11],this.contextData.cTr.props[12],this.contextData.cTr.props[13],this.contextData.cTr.props[14],this.contextData.cTr.props[15])
+    //this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+    this.contextData.cTr.cloneFromProps(this.transformMat.props);
     var trProps = this.contextData.cTr.props;
-    this.canvasContext.setTransform(trProps[0],trProps[1],trProps[2],trProps[3],trProps[4],trProps[5]);
+    this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
 };
 
 CanvasRenderer.prototype.ctxOpacity = function(op){
@@ -170,10 +174,10 @@ CanvasRenderer.prototype.save = function(actionFlag){
     }
     var props = this.contextData.cTr.props;
     if(this.contextData.saved[this.contextData.cArrPos] === null || this.contextData.saved[this.contextData.cArrPos] === undefined){
-        this.contextData.saved[this.contextData.cArrPos] = new Array(6);
+        this.contextData.saved[this.contextData.cArrPos] = new Array(16);
     }
-    var i, len = 6,arr = this.contextData.saved[this.contextData.cArrPos];
-    for(i=0;i<len;i+=1){
+    var i,arr = this.contextData.saved[this.contextData.cArrPos];
+    for(i=0;i<16;i+=1){
         arr[i] = props[i];
     }
     this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
@@ -190,11 +194,11 @@ CanvasRenderer.prototype.restore = function(actionFlag){
     }
     this.contextData.cArrPos -= 1;
     var popped = this.contextData.saved[this.contextData.cArrPos];
-    var i, len = 6,arr = this.contextData.cTr.props;
-    for(i=0;i<len;i+=1){
+    var i,arr = this.contextData.cTr.props;
+    for(i=0;i<16;i+=1){
         arr[i] = popped[i];
     }
-    this.canvasContext.setTransform(popped[0],popped[1],popped[2],popped[3],popped[4],popped[5]);
+    this.canvasContext.setTransform(popped[0],popped[1],popped[4],popped[5],popped[12],popped[13]);
     popped = this.contextData.savedOp[this.contextData.cArrPos];
     this.contextData.cO = popped;
     this.canvasContext.globalAlpha = popped;
@@ -262,7 +266,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.tx = 0;
         this.transformCanvas.ty = 0;
     }
-    this.transformCanvas.props = [this.transformCanvas.sx,0,0,this.transformCanvas.sy,this.transformCanvas.tx,this.transformCanvas.ty];
+    this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
     this.globalData.cWidth = elementWidth;
     this.globalData.cHeight = elementHeight;
 };

@@ -4,7 +4,12 @@ function bezFunction(){
     var math = Math;
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
-        return bm_abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
+        var det1 = (x1*y2) + (y1*x3) + (x2*y3) - (x3*y2) - (y3*x1) - (x2*y1);
+        return det1 > -0.0001 && det1 < 0.0001;
+    }
+
+    function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
+        return pointOnLine2D(x1,y1, x2,y2, x3,y3) && pointOnLine2D(x1,z1, x2,z2, x3,z3);
     }
 
     function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
@@ -60,6 +65,7 @@ function bezFunction(){
                 segments: []
             };
             if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
+                console.log('asdasd');
                 curveSegments = 2;
             }
             len = pt3.length;
@@ -115,7 +121,7 @@ function bezFunction(){
             var ptCoord,perc,addedLength = 0;
             var ptDistance;
             var point,lastPoint = null;
-            if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+            if(pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
                 curveSegments = 2;
             }
             var bezierData = new BezierData(curveSegments);
@@ -198,7 +204,9 @@ function bezFunction(){
         getEasingCurve : getEasingCurve,
         getBezierLength : getBezierLength,
         getNewSegment : getNewSegment,
-        buildBezierData : buildBezierData
+        buildBezierData : buildBezierData,
+        pointOnLine2D : pointOnLine2D,
+        pointOnLine3D : pointOnLine3D
     };
 }
 

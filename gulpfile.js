@@ -14,8 +14,7 @@ var jshint = require('gulp-jshint');
 var rename = require('gulp-rename');
 
 gulp.task('gzipFile', function(){
-  gulp.src('player/exports/render/data.js')
-  //gulp.src('build/player/bodymovin.js')
+  gulp.src('player/exports/render/data.json')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });

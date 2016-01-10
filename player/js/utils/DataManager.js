@@ -1,8 +1,6 @@
 function dataFunctionManager(){
 
-    //var tSpanHelper = document.createElementNS(svgNS,'text');
     var tCanvasHelper = document.createElement('canvas').getContext('2d');
-    var matrixHelper = new Matrix();
 
     function completeLayers(layers, comps, fontManager){
         var layerData;
@@ -114,7 +112,7 @@ function dataFunctionManager(){
         var maxLineWidth = 0;
         var j, jLen;
         var fontData = fontManager.getFontByName(documentData.f);
-        var charData, cLength;
+        var charData, cLength = 0;
         var styles = fontData.fStyle.split(' ');
 
         var fWeight = 'normal', fStyle = 'normal';
@@ -137,6 +135,43 @@ function dataFunctionManager(){
         documentData.fWeight = fWeight;
         documentData.fStyle = fStyle;
         len = documentData.t.length;
+        if(documentData.sz){
+            var boxWidth = documentData.sz[0];
+            var lastSpaceIndex = -1;
+            for(i=0;i<len;i+=1){
+                newLineFlag = false;
+                if(documentData.t.charAt(i) === ' '){
+                    lastSpaceIndex = i;
+                }else if(documentData.t.charCodeAt(i) === 13){
+                    lineWidth = 0;
+                    newLineFlag = true;
+                }
+                if(fontManager.chars){
+                    charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
+                    cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                }else{
+                    tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
+                    cLength = tCanvasHelper.measureText(documentData.t.charAt(i)).width;
+                }
+                if(lineWidth + cLength > boxWidth){
+                    if(lastSpaceIndex === -1){
+                       //i -= 1;
+                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i);
+                        len += 1;
+                    } else {
+                        i = lastSpaceIndex;
+                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
+                    }
+                    lastSpaceIndex = -1;
+                    lineWidth = 0;
+                }else {
+                    lineWidth += cLength;
+                }
+            }
+            len = documentData.t.length;
+        }
+        lineWidth = 0;
+        cLength = 0;
         for (i = 0;i < len ;i += 1) {
             newLineFlag = false;
             if(documentData.t.charAt(i) === ' '){
@@ -155,9 +190,15 @@ function dataFunctionManager(){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
                 cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
             }else{
+                var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
                 tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-                cLength = tCanvasHelper.measureText(val).width;
+                cLength = charWidth;
+                /*console.log('tCanvasHelper.font: ',tCanvasHelper.font);
+                console.log('val: ',val);
+                console.log('cLength: ',cLength);
+                console.log('charWidth: ',charWidth);*/
             }
+
             //
             lineWidth += cLength;
             letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
@@ -200,18 +241,23 @@ function dataFunctionManager(){
         documentData.l = letters;
         maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
         lineWidths.push(lineWidth);
-        documentData.boxWidth = maxLineWidth;
-        documentData.lineWidths = lineWidths;
-        switch(documentData.j){
-            case 1:
-                data.t.d.justifyOffset = - documentData.boxWidth;
-                break;
-            case 2:
-                data.t.d.justifyOffset = - documentData.boxWidth/2;
-                break;
-            default:
-                data.t.d.justifyOffset = 0;
+        if(documentData.sz){
+            documentData.boxWidth = documentData.sz[0];
+            data.t.d.justifyOffset = 0;
+        }else{
+            documentData.boxWidth = maxLineWidth;
+            switch(documentData.j){
+                case 1:
+                    data.t.d.justifyOffset = - documentData.boxWidth;
+                    break;
+                case 2:
+                    data.t.d.justifyOffset = - documentData.boxWidth/2;
+                    break;
+                default:
+                    data.t.d.justifyOffset = 0;
+            }
         }
+        documentData.lineWidths = lineWidths;
 
         var animators = data.t.a;
         jLen = animators.length;
@@ -253,35 +299,7 @@ function dataFunctionManager(){
             data.singleShape = true;
         }
         documentData.yOffset = documentData.s*1.2;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function iterateText(item,offsettedFrameNum,renderType){
-        var renderedData = item.renderedData[offsettedFrameNum];
-        renderedData.t = {
-        };
-        if(item.t.p && 'm' in item.t.p) {
-            renderedData.t.p = [];
-            getInterpolatedValue(item.t.p.f,offsettedFrameNum, item.st,renderedData.t.p,0,1);
-        }
-        renderedData.t.m = {
-            a: getInterpolatedValue(item.t.m.a,offsettedFrameNum, item.st)
-        };
+        documentData.ascent = fontData.ascent*documentData.s/100;
     }
 
     var moduleOb = {};
