@@ -79,7 +79,7 @@ var PropertyFactory = (function () {
                                 }
                             }
                             break;
-                        } else if (distanceInLine > addedLength && distanceInLine < addedLength + bezierData.points[j + 1].partialLength) {
+                        } else if (distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j + 1].partialLength) {
                             segmentPerc = (distanceInLine - addedLength) / (bezierData.points[j + 1].partialLength);
                             kLen = bezierData.points[j].point.length;
                             for (k = 0; k < kLen; k += 1) {
@@ -690,6 +690,139 @@ var PropertyFactory = (function () {
             }
         }
     }());
+    
+    var StarShapeProperty = (function() {
+
+        function convertPolygonToPath(){
+            var numPts = Math.floor(this.pt.v);
+            var angle = Math.PI*2/numPts;
+            this.v.v.length = numPts;
+            this.v.i.length = numPts;
+            this.v.o.length = numPts;
+            var rad = this.or.v;
+            var roundness = this.os.v;
+            var perimSegment = 2*Math.PI*rad/(numPts*4);
+            var i, currentAng = -Math.PI/ 2;
+            var dir = this.data.d === 3 ? -1 : 1;
+            currentAng += this.r.v;
+            for(i=0;i<numPts;i+=1){
+                var x = rad * Math.cos(currentAng);
+                var y = rad * Math.sin(currentAng);
+                var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
+                var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
+                x +=  + this.p.v[0];
+                y +=  + this.p.v[1];
+                this.v.v[i] = [x,y];
+                this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
+                this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
+                currentAng += angle*dir;
+            }
+            this.numNodes = numPts;
+        }
+
+        function convertStarToPath() {
+            var numPts = Math.floor(this.pt.v)*2;
+            var angle = Math.PI*2/numPts;
+            this.v.v.length = numPts;
+            this.v.i.length = numPts;
+            this.v.o.length = numPts;
+            var longFlag = true;
+            var longRad = this.or.v;
+            var shortRad = this.ir.v;
+            var longRound = this.os.v;
+            var shortRound = this.is.v;
+            var longPerimSegment = 2*Math.PI*longRad/(numPts*2);
+            var shortPerimSegment = 2*Math.PI*shortRad/(numPts*2);
+            var i, rad,roundness,perimSegment, currentAng = -Math.PI/ 2;
+            currentAng += this.r.v;
+            var dir = this.data.d === 3 ? -1 : 1;
+            for(i=0;i<numPts;i+=1){
+                rad = longFlag ? longRad : shortRad;
+                roundness = longFlag ? longRound : shortRound;
+                perimSegment = longFlag ? longPerimSegment : shortPerimSegment;
+                var x = rad * Math.cos(currentAng);
+                var y = rad * Math.sin(currentAng);
+                var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
+                var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
+                x +=  + this.p.v[0];
+                y +=  + this.p.v[1];
+                this.v.v[i] = [x,y];
+                this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
+                this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
+                longFlag = !longFlag;
+                currentAng += angle*dir;
+            }
+            this.numNodes = numPts;
+        }
+
+        function processKeys() {
+            if(this.elem.globalData.frameId === this.frameId){
+                return;
+            }
+            this.mdf = false;
+            this.frameId = this.elem.globalData.frameId;
+            var i, len = this.dynamicProperties.length;
+
+            for(i=0;i<len;i+=1){
+                this.dynamicProperties[i].getValue();
+                if(this.dynamicProperties[i].mdf){
+                    this.mdf = true;
+                }
+            }
+            if(this.mdf){
+                this.convertToPath();
+            }
+        }
+
+        function getKeys(arr){
+            this.pt.getKeys(arr);
+            this.p.getKeys(arr);
+            this.r.getKeys(arr);
+            this.or.getKeys(arr);
+            this.os.getKeys(arr);
+            if(this.data.sy === 1){
+                this.ir.getKeys(arr);
+                this.is.getKeys(arr);
+            }
+        }
+
+        return function StarShapeProperty(elem,data) {
+            this.v = {
+                v: [],
+                i: [],
+                o: [],
+                c: true
+            };
+            this.elem = elem;
+            this.comp = elem.comp;
+            this.data = data;
+            this.frameId = -1;
+            this.d = data.d;
+            this.dynamicProperties = [];
+            this.mdf = false;
+            data.closed = true;
+            this.closed = true;
+            this.getValue = processKeys;
+            if(data.sy === 1){
+                this.ir = getProp(elem,data.ir,0,0,this.dynamicProperties);
+                this.is = getProp(elem,data.is,0,0.01,this.dynamicProperties);
+                this.convertToPath = convertStarToPath;
+            } else {
+                this.convertToPath = convertPolygonToPath;
+            }
+            this.getKeys = getKeys;
+            this.pt = getProp(elem,data.pt,0,0,this.dynamicProperties);
+            this.p = getProp(elem,data.p,1,0,this.dynamicProperties);
+            this.r = getProp(elem,data.r,0,degToRads,this.dynamicProperties);
+            this.or = getProp(elem,data.or,0,0,this.dynamicProperties);
+            this.os = getProp(elem,data.os,0,0.01,this.dynamicProperties);
+            if(this.dynamicProperties.length){
+                this.k = true;
+            }else{
+                this.convertToPath();
+            }
+        }
+    }());
 
     function getShapeProp(elem,data,type, arr, trims){
         var prop;
@@ -704,6 +837,8 @@ var PropertyFactory = (function () {
             prop = new RectShapeProperty(elem, data);
         }else if(type === 6){
             prop = new EllShapeProperty(elem, data);
+        }else if(type === 7){
+            prop = new StarShapeProperty(elem, data);
         }
         var hasTrims = false;
         if(trims){

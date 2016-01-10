@@ -84,7 +84,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                 },
                 elements: []
             };
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el'){
+        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             data[i] = {
                 nodes:[],
                 trNodes:[],
@@ -95,6 +95,8 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                 ty = 5;
             }else if(arr[i].ty == 'el'){
                 ty = 6;
+            }else if(arr[i].ty == 'sr'){
+                ty = 7;
             }
             if(addedTrims.length){
                 arr[i].trimmed = true;
@@ -179,7 +181,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             }else{
                 groupTransform.opacity = groupTransform.op.o;
             }
-        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc'){
+        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],groupTransform);
