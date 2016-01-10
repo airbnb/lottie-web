@@ -70,7 +70,7 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
         }
         //NullLayer
     }
-
+    this.currentContainer = this.animationItem.resizerElem;
     if(!parentContainer){
         if(this.threeDElements.length){
             if(!this.camera){
@@ -94,7 +94,7 @@ HybridRenderer.prototype.includeLayers = function(layers,parentContainer,element
         elements = this.elements;
     }
     if(!parentContainer){
-        parentContainer = this.animationItem.container;
+        parentContainer = this.currentContainer;
     }
     var j, jLen = elements.length, elems, placeholder;
     for(i=0;i<len;i+=1){
