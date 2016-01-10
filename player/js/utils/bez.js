@@ -7,6 +7,21 @@ function bezFunction(){
         return bm_abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
     }
 
+    function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
+        /* x1 y1 1   x1 y1
+           x2 y2 1   x2 y2
+           x3 y3 1   x3 y3
+
+         x1 z1 1
+         x2 z2 1
+         x3 z3 1
+
+         */
+        var det1 = (x1*y2) + (y1*x3) + (x2*y3) - (x3*y2) - (y3*x1) - (x2*y1);
+        var det2 = (x1*z2) + (z1*x3) + (x2*z3) - (x3*z2) - (z3*x1) - (x2*z1);
+        return det1 > -0.0001 && det1 < 0.00001 && det2 > -0.00001 && det2 < 0.00001;
+    }
+
     function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
         if(!encodedFuncName){
             encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
@@ -198,7 +213,9 @@ function bezFunction(){
         getEasingCurve : getEasingCurve,
         getBezierLength : getBezierLength,
         getNewSegment : getNewSegment,
-        buildBezierData : buildBezierData
+        buildBezierData : buildBezierData,
+        pointOnLine2D : pointOnLine2D,
+        pointOnLine3D : pointOnLine3D
     };
 }
 

@@ -328,6 +328,21 @@ var PropertyFactory = (function(){
     }
 
     function KeyframedMultidimensionalProperty(elem, data, mult){
+        console.log(data);
+        var i, len = data.k.length;
+        var s, e,to,ti;
+        for(i=0;i<len-1;i+=1){
+            if(data.k[i].to && data.k[i].s && data.k[i].e ){
+                s = data.k[i].s;
+                e = data.k[i].e;
+                to = data.k[i].to;
+                ti = data.k[i].ti;
+                if(bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],s[0] + to[0],s[1] + to[1],s[2] + to[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],e[0] + ti[0],e[1] + ti[1],e[2] + ti[2])){
+                    data.k[i].to = null;
+                    data.k[i].ti = null;
+                }
+            }
+        }
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;

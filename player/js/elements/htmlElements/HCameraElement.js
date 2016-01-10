@@ -33,6 +33,7 @@ HCameraElement.prototype.setup = function() {
         comp = this.comp.threeDElements[i];
         comp[0].style.perspective = comp[0].style.webkitPerspective = this.pe.v+'px';
         comp[1].style.transformOrigin = comp[1].style.mozTransformOrigin = comp[1].style.webkitTransformOrigin = "0px 0px 0px";
+        comp[0].style.transform = comp[0].style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     }
 };
 
