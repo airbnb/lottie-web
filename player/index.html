@@ -3,7 +3,7 @@
 <head>
     <style>
         body{
-            background-color:#ccc;
+            background-color:#fff;
             margin: 0px;
             height: 100%;
             font-family: sans-serif;
@@ -11,7 +11,7 @@
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#333;
+            background-color:#ccc;
             width:700px;
             height:700px;
             /*width:800px;
@@ -80,7 +80,8 @@
      <script src="js/module.js"></script>
     <!-- endbuild -->
     <!-- <script src="bodymovin.js"></script> -->
-    <script src="js/utils/stats.js"></script>
+    <script src="exports/splitted/data.js"></script>
+    <script src="exports/splitted/data_0.js"></script>
 </head>
 <body>
 <canvas id="cvs" width="100" height="100" style="position: absolute;top:0;left: 0"></canvas>
@@ -90,53 +91,20 @@
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'html',
+        renderer: 'svg',
         loop: true,
         prerender: false,
         autoplay: true,
-        path: 'exports/splitted/data.json'
+        animationData: bmsmd
         //path: 'exports/render/data_glyphs.json'
     };
 
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
-
-    //anim.play();
-    //anim.playSegments([0,40],true);
-    //window.onresize = anim.resize.bind(anim);
-
-    var stats = new Stats();
-    stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
-
-    // align top-left
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
-
-    document.body.appendChild( stats.domElement );
-
-    function loadAndDestroy(){
-
-
-        function loadAnimation(){
-            anim = bodymovin.loadAnimation(animData);
-            setTimeout(destroyAnimation,2000);
-        }
-
-        function destroyAnimation(){
-            anim.destroy();
-            anim = null;
-            count += 1;
-            if(count<50){
-                setTimeout(loadAnimation,2000);
-            }
-        }
-
-        setTimeout(function(){
-            loadAnimation();
-        },2000);
-    }
+    setTimeout(function(){
+        anim.includeLayers(bmsmd_0);
+    },100);
 
 </script>
 </body>

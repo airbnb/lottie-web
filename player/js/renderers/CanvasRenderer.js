@@ -78,7 +78,7 @@ CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,element
             elements.unshift(elem);
             if (layers[i].ty === 0) {
                 elems = [];
-                this.buildItems(layers[i].layers,elem);
+                this.buildItems(layers[i].layers,elems);
                 elem.setElements(elems);
             }
         }else {

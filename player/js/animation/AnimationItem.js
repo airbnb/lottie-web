@@ -138,7 +138,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     var j, jLen = newLayers.length;
     for(j=0;j<jLen;j+=1){
         if(!newLayers[j].id){
-            if(this.animType == 'svg'){
+            if(this.animType == 'svg' || this.animType == 'html'){
                 layers.push(newLayers[j]);
             }else{
                 layers.unshift(newLayers[j]);

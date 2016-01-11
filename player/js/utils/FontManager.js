@@ -145,6 +145,9 @@ var FontManager = (function(){
         if(!this.chars){
             this.chars = [];
         }
+        if(!chars){
+            return;
+        }
         var i, len = chars.length;
         var j, jLen = this.chars.length, found;
         for(i=0;i<len;i+=1){
