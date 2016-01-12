@@ -189,7 +189,6 @@ var bm_textShapeHelper = (function () {
             }
         }
         
-        comp.remove();
         bm_renderManager.setChars(chars);
     }
     
@@ -207,6 +206,10 @@ var bm_textShapeHelper = (function () {
             bm_eventDispatcher.log(rect);
             fonts.list[i].ascent = 250 + rect.top + rect.height; 
         }
+    }
+    
+    function removeComps() {
+        comp.remove();
         fontComp.remove();
     }
     
