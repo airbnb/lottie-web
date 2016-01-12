@@ -80,8 +80,7 @@
      <script src="js/module.js"></script>
     <!-- endbuild -->
     <!-- <script src="bodymovin.js"></script> -->
-    <script src="exports/splitted/data.js"></script>
-    <script src="exports/splitted/data_0.js"></script>
+    <script src="exports/splitted/full.js"></script>
 </head>
 <body>
 <canvas id="cvs" width="100" height="100" style="position: absolute;top:0;left: 0"></canvas>
@@ -91,8 +90,8 @@
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'svg',
-        loop: true,
+        renderer: 'html',
+        loop: false,
         prerender: false,
         autoplay: true,
         animationData: bmsmd
@@ -103,7 +102,8 @@
 
     anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
-        anim.includeLayers(bmsmd_0);
+        //anim.includeLayers(bmsmd_0);
+        anim.setSpeed(2);
     },100);
 
 </script>
