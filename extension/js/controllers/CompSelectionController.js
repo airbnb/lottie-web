@@ -309,12 +309,24 @@ var compSelectionController = (function () {
         settingsManager.init();
     }
     
+    function addFocusListener() {
+        window.onfocus = getCompositionsList;
+    }
+    
+    function removeFocusListener() {
+        window.onfocus = null;
+        
+    }
+    
     function show() {
         view.show();
+        addFocusListener();
+        getCompositionsList();
     }
     
     function hide() {
         view.hide();
+        removeFocusListener();
     }
     
     var ob = {};

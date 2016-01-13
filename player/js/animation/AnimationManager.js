@@ -81,7 +81,7 @@ var animationManager = (function(){
     }
 
     function resume(nowTime) {
-        //stats.begin();
+        stats.begin();
 
         var elapsedTime = nowTime - initTime;
         var i;
@@ -98,7 +98,7 @@ var animationManager = (function(){
         }
         ctx.fillRect(0,0,100,100);*/
         requestAnimationFrame(resume);
-        //stats.end();
+        stats.end();
 
 
     }

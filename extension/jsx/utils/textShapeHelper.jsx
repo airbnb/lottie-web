@@ -2,9 +2,20 @@
 /*global app, bm_eventDispatcher, bm_projectManager, bm_shapeHelper, bm_renderManager, ParagraphJustification, bm_generalUtils*/
 var bm_textShapeHelper = (function () {
     'use strict';
-    var ob = {}, chars = [], comp, fontComp, dupl, boxText, layers = [], currentFont;
+    var ob = {}, chars = [], comp, fontComp, dupl, boxText, layers = [], currentFont, compsAddedFlag = false;
     
     function reset() {
+        chars.length = 0;
+        layers.length = 0;
+        currentFont = '';
+        compsAddedFlag = false;
+    }
+    
+    function addComps() {
+        if (compsAddedFlag) {
+            return;
+        }
+        compsAddedFlag = true;
         comp = app.project.items.addComp('bm_charHelper', 1000, 1000, 1, 1, 1);
         fontComp = app.project.items.addComp('bm_fontHelper', 1000, 1000, 1, 1, 1);
         boxText = fontComp.layers.addBoxText([500, 500], 'm');
@@ -19,9 +30,6 @@ var bm_textShapeHelper = (function () {
         fontDocument.fontSize = 100;
         fontDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
         fontProp.setValue(fontDocument);
-        chars.length = 0;
-        layers.length = 0;
-        currentFont = '';
     }
     
     function addTextLayer(layer) {
@@ -166,9 +174,9 @@ var bm_textShapeHelper = (function () {
             var text = textDocument.text;
             var j, jLen = text.length;
             
-            if(currentFont !== font){
+            if (currentFont !== font) {
                 currentFont = font;
-                createNewChar(layerInfo,'[]',{});
+                createNewChar(layerInfo, '[]', {});
             }
             var l, lLen;
             for (j = 0; j < jLen; j += 1) {
@@ -198,19 +206,21 @@ var bm_textShapeHelper = (function () {
         var fontProp = boxText.property("Source Text");
         var fontDocument = fontProp.value;
         fontDocument.text = 'm';
-        for( i = 0; i < len; i += 1) {
+        for (i = 0; i < len; i += 1) {
             fontDocument.font = fonts.list[i].fName;
             fontDocument.fontSize = 100;
             fontProp.setValue(fontDocument);
             rect = boxText.sourceRectAtTime(0, false);
-            bm_eventDispatcher.log(rect);
-            fonts.list[i].ascent = 250 + rect.top + rect.height; 
+            fonts.list[i].ascent = 250 + rect.top + rect.height;
         }
     }
     
     function removeComps() {
-        comp.remove();
-        fontComp.remove();
+        if (compsAddedFlag) {
+            comp.remove();
+            fontComp.remove();
+            compsAddedFlag = false;
+        }
     }
     
     ob.reset = reset;
@@ -218,6 +228,8 @@ var bm_textShapeHelper = (function () {
     ob.addTextLayer = addTextLayer;
     ob.exportChars = exportChars;
     ob.exportFonts = exportFonts;
+    ob.addComps = addComps;
+    ob.removeComps = removeComps;
     
     return ob;
 }());

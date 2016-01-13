@@ -64,6 +64,9 @@ var bm_renderManager = (function () {
             layerData = layers[i];
             layerInfo = comp.layers[i + 1];
             bm_layerElement.checkLayerSource(layerInfo, layerData);
+            if (layerData.ty === bm_layerElement.layerTypes.text) {
+                bm_textShapeHelper.addComps();
+            }
             if (layerData.ty === bm_layerElement.layerTypes.precomp && layerData.render !== false && layerData.compId) {
                 layerData.layers = [];
                 createLayers(layerInfo.source, layerData.layers, framerate);
@@ -109,6 +112,7 @@ var bm_renderManager = (function () {
         bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, fsPath: currentCompSettings.fsName});
         reset();
+        bm_textShapeHelper.removeComps();
         bm_compsManager.renderComplete();
     }
     
