@@ -317,7 +317,6 @@ ShapeItemElement.prototype.renderPath = function(pathData,viewData,groupTransfor
             }
             if (len && pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
                 if (viewData.st) {
-                    //console.log(pathNodes);
                     pathStringNonTransformed += " C" + pathNodes.o[i - 1][0] + ',' + pathNodes.o[i - 1][1] + " " + pathNodes.i[0][0] + ',' + pathNodes.i[0][1] + " " + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
                 }
 

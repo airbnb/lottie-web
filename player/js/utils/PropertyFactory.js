@@ -358,7 +358,7 @@ var PropertyFactory = (function(){
         this.k = false;
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
-        this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
+        this.numNodes = type === 3 ? data.pt.v.length : data.ks.v.length;
         this.shapeData = data.ks;
         this.v = type === 3 ? data.pt : data.ks;
     }

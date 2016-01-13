@@ -79,6 +79,8 @@ function dataFunctionManager(){
                 }
             }else if(arr[i].ty == 'gr'){
                 completeShapes(arr[i].it,isTrimmed);
+            }else if(arr[i].ty == 'el' || arr[i].ty == 'rc'){
+                arr[i].trimmed = isTrimmed;
             }
         }
     }
