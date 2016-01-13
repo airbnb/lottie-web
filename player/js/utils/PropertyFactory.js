@@ -358,6 +358,7 @@ var PropertyFactory = (function(){
         this.k = false;
         this.mdf = false;
         this.closed = type === 3 ? data.cl : data.closed;
+        this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
         this.shapeData = data.ks;
         this.v = type === 3 ? data.pt : data.ks;
     }
@@ -370,6 +371,7 @@ var PropertyFactory = (function(){
         this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
+        this.numNodes = len;
         this.shapeData = {
             i: new Array(len),
             o: new Array(len),
@@ -441,6 +443,7 @@ var PropertyFactory = (function(){
                 o: new Array(4),
                 c: true
             };
+            this.numNodes = 4;
             this.d = data.d;
             this.dynamicProperties = [];
             data.closed = true;
@@ -566,6 +569,7 @@ var PropertyFactory = (function(){
                 o: new Array(8),
                 c: true
             };
+            this.numNodes = 8;
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
@@ -836,7 +840,7 @@ var PropertyFactory = (function(){
                 }
             }
             this.prop = prop;
-            len = this.prop.shapeData.v.length - 1;
+            len = this.prop.numNodes - 1;
             len += this.prop.closed ? 1:0;
             this.lengths = new Array(len);
             this.k = prop.k ? true : this.k;
