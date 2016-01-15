@@ -125,3 +125,7 @@ HBaseElement.prototype.addMasks = function(data){
 HBaseElement.prototype.hide = function(){
 
 };
+
+HBaseElement.prototype.setMatte = function(){
+
+}
