@@ -126,6 +126,38 @@ var ExpressionManager = (function(){
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
 
+        var loopOut = function loopOut(type,keys){
+            var currentFrame = time*thisComp.globalData.frameRate;
+            var keyframes = this.keyframes;
+            var lastKeyTime = keyframes[keyframes.length - 1].t;
+            if(currentFrame<=lastKeyTime){
+                return this.pv;
+            }else{
+                var cycleDuration, firstFrame;
+                if(!keys){
+                    keys = 0;
+                }
+                firstFrame = keyframes[keys].t;
+                cycleDuration = lastKeyTime - firstFrame;
+                if(type === 'pingpong') {
+                    var iterations = Math.floor((currentFrame - firstFrame)/cycleDuration);
+                    if(iterations % 2 !== 0){
+                        return this.getValueAtTime(cycleDuration - (currentFrame - firstFrame)%cycleDuration +  firstFrame);
+                    }
+                } else if(type === 'offset'){
+                    var val = this.getValueAtTime(firstFrame);
+                    var initV = [val[0],val[1]];
+                    val = this.getValueAtTime(lastKeyTime);
+                    var endV = [val[0],val[1]];
+                    var current = this.getValueAtTime((currentFrame - firstFrame)%cycleDuration +  firstFrame);
+                    var repeats = Math.floor((currentFrame - firstFrame)/cycleDuration);
+                    var final = [(endV[0]-initV[0])*repeats + current[0],(endV[1]-initV[1])*repeats + current[1]];
+                    return final;
+                }
+                return this.getValueAtTime((currentFrame - firstFrame)%cycleDuration +  firstFrame);
+            }
+        }.bind(this);
+
         function effect(nm){
             return elem.effectsManager.getEffect(nm);
         }
