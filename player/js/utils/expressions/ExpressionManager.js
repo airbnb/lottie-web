@@ -126,35 +126,65 @@ var ExpressionManager = (function(){
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
 
+        var loopIn = function loopIn(type,keys) {
+            var currentFrame = time*thisComp.globalData.frameRate;
+            var keyframes = this.keyframes;
+            var firstKeyFrame = keyframes[0].t;
+            if(currentFrame>=firstKeyFrame){
+                return this.pv;
+            }else{
+                var cycleDuration, lastKeyFrame;
+                if(!keys || keys > keyframes.length - 1){
+                    keys = keyframes.length - 1;
+                }
+                lastKeyFrame = keyframes[keys].t;
+                cycleDuration = lastKeyFrame - firstKeyFrame;
+                if(type === 'pingpong') {
+                    var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
+                    if(iterations % 2 === 0){
+                        return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                    }
+                } else if(type === 'offset'){
+                    var val = this.getValueAtTime(firstKeyFrame);
+                    var initV = [val[0],val[1]];
+                    val = this.getValueAtTime(lastKeyFrame);
+                    var endV = [val[0],val[1]];
+                    var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                    var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
+                    return [current[0]-(endV[0]-initV[0])*repeats,current[1]-(endV[1]-initV[1])*repeats];
+                }
+                return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+            }
+        }.bind(this);
+
         var loopOut = function loopOut(type,keys){
             var currentFrame = time*thisComp.globalData.frameRate;
             var keyframes = this.keyframes;
-            var lastKeyTime = keyframes[keyframes.length - 1].t;
-            if(currentFrame<=lastKeyTime){
+            var lastKeyFrame = keyframes[keyframes.length - 1].t;
+            if(currentFrame<=lastKeyFrame){
                 return this.pv;
             }else{
-                var cycleDuration, firstFrame;
-                if(!keys){
-                    keys = 0;
+                var cycleDuration, firstKeyFrame;
+                if(!keys || keys > keyframes.length - 1){
+                    keys = keyframes.length - 1;
                 }
-                firstFrame = keyframes[keys].t;
-                cycleDuration = lastKeyTime - firstFrame;
+                firstKeyFrame = keyframes[keyframes.length - 1 - keys].t;
+                cycleDuration = lastKeyFrame - firstKeyFrame;
                 if(type === 'pingpong') {
-                    var iterations = Math.floor((currentFrame - firstFrame)/cycleDuration);
+                    var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
-                        return this.getValueAtTime(cycleDuration - (currentFrame - firstFrame)%cycleDuration +  firstFrame);
+                        return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
                     }
                 } else if(type === 'offset'){
-                    var val = this.getValueAtTime(firstFrame);
+                    var val = this.getValueAtTime(firstKeyFrame);
                     var initV = [val[0],val[1]];
-                    val = this.getValueAtTime(lastKeyTime);
+                    val = this.getValueAtTime(lastKeyFrame);
                     var endV = [val[0],val[1]];
-                    var current = this.getValueAtTime((currentFrame - firstFrame)%cycleDuration +  firstFrame);
-                    var repeats = Math.floor((currentFrame - firstFrame)/cycleDuration);
-                    var final = [(endV[0]-initV[0])*repeats + current[0],(endV[1]-initV[1])*repeats + current[1]];
-                    return final;
+                    var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                    var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
+                    return [(endV[0]-initV[0])*repeats + current[0],(endV[1]-initV[1])*repeats + current[1]];
                 }
-                return this.getValueAtTime((currentFrame - firstFrame)%cycleDuration +  firstFrame);
+                return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
             }
         }.bind(this);
 
