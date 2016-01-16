@@ -6,6 +6,7 @@ var PropertyFactory = (function(){
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
         var offsetTime = 0;
+        var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
 
         while(flag){
             keyData = this.keyframes[i];
@@ -37,7 +38,7 @@ var PropertyFactory = (function(){
                 var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
                 kLen = bezierData.points[ind].point.length;
                 for(k = 0; k < kLen; k += 1){
-                    this.retVal[k] = bezierData.points[ind].point[k];
+                    retVal[k] = bezierData.points[ind].point[k];
                 }
             }else{
                 if(keyData.__fnct){
@@ -59,14 +60,14 @@ var PropertyFactory = (function(){
                     if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                         kLen = bezierData.points[j].point.length;
                         for(k=0;k<kLen;k+=1){
-                            this.retVal[k] = bezierData.points[j].point[k];
+                            retVal[k] = bezierData.points[j].point[k];
                         }
                         break;
                     }else if(distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
                         segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
                         kLen = bezierData.points[j].point.length;
                         for(k=0;k<kLen;k+=1){
-                            this.retVal[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
+                            retVal[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
                         }
                         break;
                     }
@@ -138,13 +139,13 @@ var PropertyFactory = (function(){
                     keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
                 }
                 if(len === 1){
-                    this.retVal = keyValue;
+                    retVal = keyValue;
                 }else{
-                    this.retVal[i] = keyValue;
+                    retVal[i] = keyValue;
                 }
             }
         }
-        return this.retVal;
+        return retVal;
     }
 
     function getValue(){
@@ -465,6 +466,7 @@ var PropertyFactory = (function(){
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
         this.getValue = getValue;
+        this.getValueAtTime = getValueAtTime;
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -495,7 +497,6 @@ var PropertyFactory = (function(){
         this.frameId = -1;
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
-        this.retVal = new Array(data.k[0].s.length);
         this.lastValue = new Array(data.k[0].s.length);
         this.lastPValue = new Array(data.k[0].s.length);
         this.lastFrame = initFrame;

@@ -126,7 +126,10 @@ var ExpressionManager = (function(){
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
 
-        var loopIn = function loopIn(type,keys) {
+        var loopIn = function loopIn(type,duration, durationFlag) {
+            if(!this.k){
+                return this.pv;
+            }
             var currentFrame = time*thisComp.globalData.frameRate;
             var keyframes = this.keyframes;
             var firstKeyFrame = keyframes[0].t;
@@ -134,30 +137,52 @@ var ExpressionManager = (function(){
                 return this.pv;
             }else{
                 var cycleDuration, lastKeyFrame;
-                if(!keys || keys > keyframes.length - 1){
-                    keys = keyframes.length - 1;
+                if(!durationFlag){
+                    if(!duration || duration > keyframes.length - 1){
+                        duration = keyframes.length - 1;
+                    }
+                    lastKeyFrame = keyframes[duration].t;
+                    cycleDuration = lastKeyFrame - firstKeyFrame;
+                } else {
+                    if(!duration){
+                        cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
+                    } else {
+                        cycleDuration = Math.abs(thisComp.globalData.frameRate*duration);
+                    }
+                    lastKeyFrame = firstKeyFrame + cycleDuration;
                 }
-                lastKeyFrame = keyframes[keys].t;
-                cycleDuration = lastKeyFrame - firstKeyFrame;
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
                         return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
                     }
                 } else if(type === 'offset'){
-                    var val = this.getValueAtTime(firstKeyFrame);
-                    var initV = [val[0],val[1]];
-                    val = this.getValueAtTime(lastKeyFrame);
-                    var endV = [val[0],val[1]];
+                    var initV = this.getValueAtTime(firstKeyFrame);
+                    var endV = this.getValueAtTime(lastKeyFrame);
                     var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
                     var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
-                    return [current[0]-(endV[0]-initV[0])*repeats,current[1]-(endV[1]-initV[1])*repeats];
+                    if(this.pv.length){
+                        var ret = new Array(initV.length);
+                        var i, len = ret.length;
+                        for(i=0;i<len;i+=1){
+                            ret[i] = current[i]-(endV[i]-initV[i])*repeats;
+                        }
+                        return ret;
+                    }
+                    return current-(endV-initV)*repeats;
                 }
                 return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
             }
         }.bind(this);
 
-        var loopOut = function loopOut(type,keys){
+        var loopInDuration = function loopInDuration(type,duration){
+            return loopIn(type,duration,true);
+        }.bind(this);
+
+        var loopOut = function loopOut(type,duration,durationFlag){
+            if(!this.k){
+                return this.pv;
+            }
             var currentFrame = time*thisComp.globalData.frameRate;
             var keyframes = this.keyframes;
             var lastKeyFrame = keyframes[keyframes.length - 1].t;
@@ -165,27 +190,46 @@ var ExpressionManager = (function(){
                 return this.pv;
             }else{
                 var cycleDuration, firstKeyFrame;
-                if(!keys || keys > keyframes.length - 1){
-                    keys = keyframes.length - 1;
+                if(!durationFlag){
+                    if(!duration || duration > keyframes.length - 1){
+                        duration = keyframes.length - 1;
+                    }
+                    firstKeyFrame = keyframes[keyframes.length - 1 - duration].t;
+                    cycleDuration = lastKeyFrame - firstKeyFrame;
+                } else {
+                    if(!duration){
+                        cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
+                    } else {
+                        cycleDuration = Math.abs(lastKeyFrame - thisComp.globalData.frameRate*duration);
+                    }
+                    firstKeyFrame = lastKeyFrame - cycleDuration;
                 }
-                firstKeyFrame = keyframes[keyframes.length - 1 - keys].t;
-                cycleDuration = lastKeyFrame - firstKeyFrame;
                 if(type === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
                         return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
                     }
                 } else if(type === 'offset'){
-                    var val = this.getValueAtTime(firstKeyFrame);
-                    var initV = [val[0],val[1]];
-                    val = this.getValueAtTime(lastKeyFrame);
-                    var endV = [val[0],val[1]];
+                    var initV = this.getValueAtTime(firstKeyFrame);
+                    var endV = this.getValueAtTime(lastKeyFrame);
                     var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
                     var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
-                    return [(endV[0]-initV[0])*repeats + current[0],(endV[1]-initV[1])*repeats + current[1]];
+                    if(this.pv.length){
+                        var ret = new Array(initV.length);
+                        var i, len = ret.length;
+                        for(i=0;i<len;i+=1){
+                            ret[i] = (endV[i]-initV[i])*repeats + current[i];
+                        }
+                        return ret;
+                    }
+                    return (endV-initV)*repeats + current;
                 }
                 return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
             }
+        }.bind(this);
+
+        var loopOutDuration = function loopOutDuration(type,duration){
+            return loopOut(type,duration,true);
         }.bind(this);
 
         function effect(nm){
