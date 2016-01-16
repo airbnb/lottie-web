@@ -151,6 +151,7 @@ var ExpressionManager = (function(){
                     }
                     lastKeyFrame = firstKeyFrame + cycleDuration;
                 }
+                var i, len, ret;
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
@@ -162,14 +163,26 @@ var ExpressionManager = (function(){
                     var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
                     var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
                     if(this.pv.length){
-                        var ret = new Array(initV.length);
-                        var i, len = ret.length;
+                        ret = new Array(initV.length);
+                        len = ret.length;
                         for(i=0;i<len;i+=1){
                             ret[i] = current[i]-(endV[i]-initV[i])*repeats;
                         }
                         return ret;
                     }
                     return current-(endV-initV)*repeats;
+                } else if(type === 'continue'){
+                    var firstValue = this.getValueAtTime(firstKeyFrame);
+                    var nextFirstValue = this.getValueAtTime(firstKeyFrame + 0.001);
+                    if(this.pv.length){
+                        ret = new Array(firstValue.length);
+                        len = ret.length;
+                        for(i=0;i<len;i+=1){
+                            ret[i] = firstValue[i] + (firstValue[i]-nextFirstValue[i])*(firstKeyFrame - currentFrame)/0.0005;
+                        }
+                        return ret;
+                    }
+                    return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.0005;
                 }
                 return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
             }
@@ -204,6 +217,7 @@ var ExpressionManager = (function(){
                     }
                     firstKeyFrame = lastKeyFrame - cycleDuration;
                 }
+                var i, len, ret;
                 if(type === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
@@ -215,14 +229,26 @@ var ExpressionManager = (function(){
                     var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
                     var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(this.pv.length){
-                        var ret = new Array(initV.length);
-                        var i, len = ret.length;
+                        ret = new Array(initV.length);
+                        len = ret.length;
                         for(i=0;i<len;i+=1){
                             ret[i] = (endV[i]-initV[i])*repeats + current[i];
                         }
                         return ret;
                     }
                     return (endV-initV)*repeats + current;
+                } else if(type === 'continue'){
+                    var lastValue = this.getValueAtTime(lastKeyFrame);
+                    var nextLastValue = this.getValueAtTime(lastKeyFrame - 0.001);
+                    if(this.pv.length){
+                        ret = new Array(lastValue.length);
+                        len = ret.length;
+                        for(i=0;i<len;i+=1){
+                            ret[i] = lastValue[i] + (lastValue[i]-nextLastValue[i])*(currentFrame - lastKeyFrame)/0.0005;
+                        }
+                        return ret;
+                    }
+                    return lastValue + (lastValue-nextLastValue)*(currentFrame - lastKeyFrame)/0.0005;
                 }
                 return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
             }
