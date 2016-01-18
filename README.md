@@ -1,56 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg + js or canvas + js
 
-## V 3.1.5:
-- Fix AE 13.6
-
-## V 3.1.4:
-- svg transform bug fix
-
-## V 3.1.3: Naming convention
-- if you name your AE layers with a '#' in front, they will get their id attribute set to that name on the svg renderer. You can use it to add interaction to specific shapes or add additional styles.
-
-## V 3.1.2:
-- shape hold keyframe fix
-- snapshot feature fix
-
-## V 3.1.1:
-- translation bug fix
-
-## V 3.1.0: the big refactor
-- reduced filesize
-- increased performance
-- improved memory management
-- fixed scaled strokes on canvas
-- events
-
-## V 3.0.8
-- changed masks to clipping paths when only using AE additive masks. Performance improvement and fixes issue with strokes.
-
-## V 3.0.7
-- rounded rects fix
-- stroke dash export fix
-
-## V 3.0.5
-- major memory management optimizations. and more to come.
-- big performance improvements for svg animations
-- segments fixes
-- devicePixelRatio support. contribution from @snorpey
-
-## V 3.0.3
-- nested strokes and shapes fix
-- reverse rectangles fix
-- mask fix
-- reversed non closed shapes fix
-
-## V 3.0.2
-- bug fix for rounded rectangles
-- default quality settings modified
-
-## V 3.0.0
-- bodymovin.setQuality to optimize player performance. explained below.
-- segments: export animation in segments. more below.
-- snapshot: take an svg snapshot of the animation to use as poster. more below.
+## V 4.0.0
+- 3d
+- expressions
+- text
+- star shape
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
 
@@ -100,6 +55,7 @@ Jump directly to "Install third-party extensions"
 **snapshot:** take an svg snapshot of the animation to use as poster. After you render your animation, you can take a snapshot of any frame in the animation and save it to your disk. I recommend to pass the svg through an svg optimizer like https://jakearchibald.github.io/svgomg/ and play aroud with their settings.<br/>
 
 ### HTML
+**Check the demos for different ways to load animations.**
 - get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
 ```
@@ -193,7 +149,7 @@ you can also use addEventListener with the following events:
 
 See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations
 
-## Alerts!
+## Recommendations
 
 ### Files
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors, right click each layer and do: "Create shapes from Vector Layers"), they will be saved to an images folder relative to the destination json folder.
@@ -210,20 +166,17 @@ If you have any animations that don't work or want me to export them, don't hesi
 I'm really interested in seeing what kind of problems the plugin has. <br/>
 my email is **hernantorrisi@gmail.com**
 
-### Version
-This is version 2.1. It is even more stable but let me know if anything comes up.
-
 ## Examples
-http://codepen.io/collection/nVYWZR/ <br/>
+[See examples on codepen.](http://codepen.io/collection/nVYWZR/) <br/>
 
 ## Support
-- The script supports precomps, shapes, solids, images, null objects,
-- Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
+- The script supports precomps, shapes, solids, images, null objects, texts
 - It supports masks and inverted masks. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping (yeah!)
-- The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
-- No effects whatsoever. (stroke is on it's way)
-- No expressions (maybe some coming)
+- The script supports shapes, rectangles and ellipses and stars.
+- Only slider effects are supported at the moment.
+- Expressions. Check the wiki page for [more info.](https://github.com/bodymovin/bodymovin/wiki/Expressions)
+- Not supported: image sequences, videos and audio are (maybe some of them coming soon)
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
 
 ## Notes
@@ -232,8 +185,6 @@ http://codepen.io/collection/nVYWZR/ <br/>
 - gzipping the animation jsons and the player have a huge impact on the filesize. I recommend doing it if you use it for a project.
 
 ## Coming up
-- Text
 - Exporting images in a sprite
 - Stroke Effect support
 - Experimenting with the webAnimationAPI export
-- Exporting 3D animations (not vectors because there is no 3d svg support on browsers)

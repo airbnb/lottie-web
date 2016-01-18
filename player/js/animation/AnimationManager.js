@@ -4,8 +4,6 @@ var animationManager = (function(){
     var initTime = 0;
     var isPaused = true;
     var len = 0;
-    /*var ctx;
-    var colFlag = false;*/
 
     function removeElement(ev){
         var i = 0;
@@ -81,7 +79,6 @@ var animationManager = (function(){
     }
 
     function resume(nowTime) {
-        stats.begin();
 
         var elapsedTime = nowTime - initTime;
         var i;
@@ -89,22 +86,12 @@ var animationManager = (function(){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        /*if(colFlag){
-            colFlag = false;
-            ctx.fillStyle = '#cccccc';
-        }else{
-            colFlag = true;
-            ctx.fillStyle = '#333333';
-        }
-        ctx.fillRect(0,0,100,100);*/
         requestAnimationFrame(resume);
-        stats.end();
 
 
     }
 
     function first(nowTime){
-        //ctx = document.getElementById('cvs').getContext('2d');
         initTime = nowTime;
         requestAnimationFrame(resume);
     }

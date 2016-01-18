@@ -4,7 +4,7 @@
 var bm_renderManager = (function () {
     'use strict';
     
-    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings;
+    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
 
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -75,6 +75,7 @@ var bm_renderManager = (function () {
     }
     
     function render(comp, destination, compSettings) {
+        hasExpressionsFlag = false;
         currentCompID = comp.id;
         currentCompSettings = compSettings;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
@@ -87,7 +88,7 @@ var bm_renderManager = (function () {
         exportData.assets = [];
         exportData.comps = [];
         exportData.fonts = [];
-        exportData.v = '3.1.6';
+        exportData.v = '4.0.0';
         exportData.layers = [];
         exportData.ip = comp.workAreaStart * comp.frameRate;
         exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
@@ -129,8 +130,25 @@ var bm_renderManager = (function () {
         }
     }
     
+    function clearNames(layers) {
+        if (hasExpressionsFlag) {
+            return;
+        }
+        var i, len = layers.length;
+        for (i = 0; i < len; i += 1) {
+            layers[i].nm = null;
+            delete layers[i].nm;
+            if (layers[i].ty === bm_layerElement.layerTypes.precomp && layers[i].layers) {
+                clearNames(layers[i].layers);
+            }
+        }
+        
+    }
+    
     function removeExtraData() {
         clearUnrenderedLayers(ob.renderData.exportData.layers);
+        /* Todo check if "clearNames" it changes filesize significantly */
+        //clearNames(ob.renderData.exportData.layers);
     }
     
     function renderNextLayer() {
@@ -203,6 +221,10 @@ var bm_renderManager = (function () {
         app.scheduleTask('bm_renderManager.renderNextLayer();', 20, false);
     }
     
+    function hasExpressions() {
+        hasExpressionsFlag = true;
+    }
+    
     ob.renderData = {
         exportData : {
             assets : []
@@ -215,6 +237,7 @@ var bm_renderManager = (function () {
     ob.imagesReady = imagesReady;
     ob.setFontData = setFontData;
     ob.setCharsData = setCharsData;
+    ob.hasExpressions = hasExpressions;
     
     return ob;
 }());

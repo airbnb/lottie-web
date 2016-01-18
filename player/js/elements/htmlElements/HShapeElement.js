@@ -15,7 +15,6 @@ HShapeElement.prototype.createElements = function(){
     styleDiv(parent);
     var cont = document.createElementNS(svgNS,'svg');
     if(this.data.bounds.l === 999999){
-        console.log(this.data);
     }
     cont.setAttribute('width',this.data.bounds.r - this.data.bounds.l);
     cont.setAttribute('height',this.data.bounds.b - this.data.bounds.t);
