@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html style="width: 100%;height: 100%">
+<head>
+     <script src="../bodymovin.js"></script>
+     <script src="data.js"></script>
+</head>
+<body style="background-color:#ccc; margin: 0px;height: 100%;overflow: hidden">
+
+<div style="width:100%;height:100%;background-color:#333;" id="bodymovin"></div>
+
+<script>
+
+    var animParams = {
+        wrapper: document.getElementById('bodymovin'),
+        animType: 'html',
+        loop: true,
+        prerender: false,
+        autoplay: true,
+        animationData: animData
+
+    };
+    bodymovin.setQuality(500);
+    var anim = bodymovin.loadAnimation(animParams);
+    window.onresize = anim.resize.bind(anim);
+</script>
+</body>
+</html>
