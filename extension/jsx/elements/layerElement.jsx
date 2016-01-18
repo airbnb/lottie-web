@@ -1,5 +1,5 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper*/
+/*global bm_eventDispatcher, bm_renderManager, bm_timeremapHelper, bm_shapeHelper, bm_generalUtils, CompItem, PlaceholderSource, AVLayer, CameraLayer, LightLayer, ShapeLayer, TextLayer, TrackMatteType, bm_sourceHelper, bm_transformHelper, bm_maskHelper, bm_textHelper, bm_effectsHelper, bm_layerStylesHelper, bm_cameraHelper*/
 
 var bm_layerElement = (function () {
     'use strict';
@@ -91,7 +91,7 @@ var bm_layerElement = (function () {
     function prepareLayer(layerInfo, ind) {
         var layerData = {};
         var layerType = getLayerType(layerInfo);
-        if (layerType === ob.layerTypes.audio || layerType === ob.layerTypes.camera || layerType === ob.layerTypes.guide || layerType === ob.layerTypes.light || layerType === ob.layerTypes.adjustment || layerType === ob.layerTypes.pholderStill || layerType === ob.layerTypes.pholderVideo || layerType === ob.layerTypes.text) {
+        if (layerType === ob.layerTypes.audio || layerType === ob.layerTypes.guide || layerType === ob.layerTypes.light || layerType === ob.layerTypes.adjustment || layerType === ob.layerTypes.pholderStill || layerType === ob.layerTypes.pholderVideo) {
             layerData.isValid = false;
             layerData.render = false;
         }
@@ -99,9 +99,15 @@ var bm_layerElement = (function () {
             layerData.enabled = false;
             layerData.render = false;
         }
+        if(layerInfo.threeDLayer){
+            layerData.ddd = 1;
+        } else {
+            layerData.ddd = 0;
+        }
         layerData.ind = ind;
         layerData.ty = layerType;
-        if(layerInfo.name.substring(0,1) === '#'){
+        layerData.nm = layerInfo.name;
+        if (layerInfo.name.substring(0, 1) === '#') {
             layerData.ln = layerInfo.name.substr(1);
         }
         if (layerInfo.parent !== null) {
@@ -164,10 +170,15 @@ var bm_layerElement = (function () {
             bm_renderManager.renderLayerComplete();
             return;
         }
+        
         var lType = layerData.ty;
-        bm_transformHelper.exportTransform(layerInfo, layerData, frameRate);
-        bm_maskHelper.exportMasks(layerInfo, layerData, frameRate);
-        bm_timeremapHelper.exportTimeremap(layerInfo, layerData, frameRate);
+        if (lType !== ob.layerTypes.camera) {
+            bm_transformHelper.exportTransform(layerInfo, layerData, frameRate);
+            bm_maskHelper.exportMasks(layerInfo, layerData, frameRate);
+            bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);
+            bm_layerStylesHelper.exportStyles(layerInfo, layerData, frameRate);
+            bm_timeremapHelper.exportTimeremap(layerInfo, layerData, frameRate);
+        }
         
         if (lType === ob.layerTypes.shape) {
             bm_shapeHelper.exportShape(layerInfo, layerData, frameRate);
@@ -178,6 +189,11 @@ var bm_layerElement = (function () {
             layerData.sc = bm_generalUtils.arrayRgbToHex(layerInfo.source.mainSource.color);
         } else if (lType === ob.layerTypes.text) {
             bm_textHelper.exportText(layerInfo, layerData, frameRate);
+        } else if (lType === ob.layerTypes.precomp) {
+            layerData.w = layerInfo.width;
+            layerData.h = layerInfo.height;
+        } else if (lType === ob.layerTypes.camera) {
+            bm_cameraHelper.exportCamera(layerInfo, layerData, frameRate);
         }
         layerData.ip = layerInfo.inPoint * frameRate;
         layerData.op = layerInfo.outPoint * frameRate;

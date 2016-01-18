@@ -5,7 +5,21 @@ var animationManager = (function(){
     var isPaused = true;
     var len = 0;
 
-    function registerAnimation(element){
+    function removeElement(ev){
+        var i = 0;
+        var animItem = ev.target;
+        animItem.removeEventListener('destroy',removeElement);
+        while(i<len) {
+            if (registeredAnimations[i].animation === animItem) {
+                registeredAnimations.splice(i, 1);
+                i -= 1;
+                len -= 1;
+            }
+            i += 1;
+        }
+    }
+
+    function registerAnimation(element, animationData){
         if(!element){
             return null;
         }
@@ -17,7 +31,8 @@ var animationManager = (function(){
             i+=1;
         }
         var animItem = new AnimationItem();
-        animItem.setData(element);
+        animItem.setData(element, animationData);
+        animItem.addEventListener('destroy',removeElement);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
         return animItem;
@@ -26,6 +41,7 @@ var animationManager = (function(){
     function loadAnimation(params){
         var animItem = new AnimationItem();
         animItem.setParams(params);
+        animItem.addEventListener('destroy',removeElement);
         registeredAnimations.push({elem: null,animation:animItem});
         len += 1;
         return animItem;
@@ -62,21 +78,21 @@ var animationManager = (function(){
         }
     }
 
-    function resume() {
-        var nowTime = Date.now();
+    function resume(nowTime) {
+
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
-            if(registeredAnimations[i].animation.renderer.destroyed) {
-                registeredAnimations.splice(i,1);
-                i -= 1;
-                len -= 1;
-            }else{
-                registeredAnimations[i].animation.advanceTime(elapsedTime);
-            }
+            registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        //setTimeout(resume,10);
+        requestAnimationFrame(resume);
+
+
+    }
+
+    function first(nowTime){
+        initTime = nowTime;
         requestAnimationFrame(resume);
     }
 
@@ -115,9 +131,28 @@ var animationManager = (function(){
         }
     }
 
-    function searchAnimations(){
+    function searchAnimations(animationData, standalone, renderer){
         var animElements = document.getElementsByClassName('bodymovin');
-        Array.prototype.forEach.call(animElements,registerAnimation);
+        var i, len = animElements.length;
+        for(i=0;i<len;i+=1){
+            if(renderer){
+                animElements[i].setAttribute('data-bm-type',renderer);
+            }
+            registerAnimation(animElements[i], animationData);
+        }
+        if(standalone && len === 0){
+            if(!renderer){
+                renderer = 'svg';
+            }
+            var body = document.getElementsByTagName('body')[0];
+            body.innerHTML = '';
+            var div = document.createElement('div');
+            div.style.width = '100%';
+            div.style.height = '100%';
+            div.setAttribute('data-bm-type',renderer);
+            body.appendChild(div);
+            registerAnimation(div, animationData);
+        }
     }
 
     function resize(){
@@ -128,8 +163,7 @@ var animationManager = (function(){
     }
 
     function start(){
-        initTime = Date.now();
-        requestAnimationFrame(resume);
+        requestAnimationFrame(first);
     }
     //start();
 

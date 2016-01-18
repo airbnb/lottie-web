@@ -1,5 +1,5 @@
-function ISolidElement(data,parentContainer,globalData, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData, placeholder);
+function ISolidElement(data,parentContainer,globalData,comp, placeholder){
+    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, ISolidElement);
 

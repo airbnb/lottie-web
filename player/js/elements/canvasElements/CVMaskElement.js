@@ -1,22 +1,26 @@
+
 function CVMaskElement(data,element,globalData){
     this.data = data;
     this.element = element;
     this.globalData = globalData;
     this.dynamicProperties = [];
     this.masksProperties = this.data.masksProperties;
-    this.totalMasks = this.masksProperties.length;
     this.ctx = this.element.canvasContext;
     this.viewData = new Array(this.masksProperties.length);
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        this.viewData[i] = PropertyFactory.getShapeProp(this.data,this.masksProperties[i],3,this.dynamicProperties)
+        this.viewData[i] = PropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
     }
+}
+
+CVMaskElement.prototype.getMaskProperty = function(pos){
+    return this.viewData[pos];
 };
 
 CVMaskElement.prototype.prepareFrame = function(num){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getInterpolatedValue(num);
+        this.dynamicProperties[i].getValue(num);
     }
 };
 
@@ -40,22 +44,34 @@ CVMaskElement.prototype.renderFrame = function (transform) {
             ctx.lineTo(0, 0);
         }
         data = this.viewData[i].v;
-        pt = transform.applyToPointArray(data.v[0][0],data.v[0][1]);
+        pt = transform.applyToPointArray(data.v[0][0],data.v[0][1],0);
         ctx.moveTo(pt[0], pt[1]);
         var j, jLen = data.v.length;
         for (j = 1; j < jLen; j++) {
-            pt = transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1]);
-            pt2 = transform.applyToPointArray(data.i[j][0],data.i[j][1]);
-            pt3 = transform.applyToPointArray(data.v[j][0],data.v[j][1]);
+            pt = transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0);
+            pt2 = transform.applyToPointArray(data.i[j][0],data.i[j][1],0);
+            pt3 = transform.applyToPointArray(data.v[j][0],data.v[j][1],0);
             ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
         }
-        pt = transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1]);
-        pt2 = transform.applyToPointArray(data.i[0][0],data.i[0][1]);
-        pt3 = transform.applyToPointArray(data.v[0][0],data.v[0][1]);
+        pt = transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0);
+        pt2 = transform.applyToPointArray(data.i[0][0],data.i[0][1],0);
+        pt3 = transform.applyToPointArray(data.v[0][0],data.v[0][1],0);
         ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
     }
     if(hasMasks){
         ctx.clip();
+    }
+};
+
+CVMaskElement.prototype.getMask = function(nm){
+    var i = 0, len = this.masksProperties.length;
+    while(i<len){
+        if(this.masksProperties[i].nm === nm){
+            return {
+                maskPath: this.viewData[i].pv
+            }
+        }
+        i += 1;
     }
 };
 

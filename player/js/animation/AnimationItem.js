@@ -47,6 +47,11 @@ AnimationItem.prototype.setParams = function(params) {
             break;
         case 'svg':
             this.renderer = new SVGRenderer(this, params.renderer);
+            break;
+        case 'hybrid':
+        case 'html':
+            this.renderer = new HybridRenderer(this, params.renderer);
+            break;
     }
     this.animType = animType;
 
@@ -75,7 +80,7 @@ AnimationItem.prototype.setParams = function(params) {
         if(params.path.lastIndexOf('\\') != -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
         }else{
-            this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
+        this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
@@ -97,14 +102,15 @@ AnimationItem.prototype.setParams = function(params) {
     }
 };
 
-AnimationItem.prototype.setData = function (wrapper) {
+AnimationItem.prototype.setData = function (wrapper, animationData) {
     var params = {
-        wrapper: wrapper
+        wrapper: wrapper,
+        animationData: animationData ? JSON.parse(animationData) : null
     };
     var wrapperAttributes = wrapper.attributes;
 
     params.path = wrapperAttributes.getNamedItem('data-animation-path') ? wrapperAttributes.getNamedItem('data-animation-path').value : wrapperAttributes.getNamedItem('data-bm-path') ? wrapperAttributes.getNamedItem('data-bm-path').value :  wrapperAttributes.getNamedItem('bm-path') ? wrapperAttributes.getNamedItem('bm-path').value : '';
-    params.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  'canvas';
+    params.animType = wrapperAttributes.getNamedItem('data-anim-type') ? wrapperAttributes.getNamedItem('data-anim-type').value : wrapperAttributes.getNamedItem('data-bm-type') ? wrapperAttributes.getNamedItem('data-bm-type').value : wrapperAttributes.getNamedItem('bm-type') ? wrapperAttributes.getNamedItem('bm-type').value :  wrapperAttributes.getNamedItem('data-bm-renderer').value ? wrapperAttributes.getNamedItem('data-bm-renderer').value : wrapperAttributes.getNamedItem('bm-renderer').value ? wrapperAttributes.getNamedItem('bm-renderer').value : 'canvas';
 
     var loop = wrapperAttributes.getNamedItem('data-anim-loop') ? wrapperAttributes.getNamedItem('data-anim-loop').value :  wrapperAttributes.getNamedItem('data-bm-loop') ? wrapperAttributes.getNamedItem('data-bm-loop').value :  wrapperAttributes.getNamedItem('bm-loop') ? wrapperAttributes.getNamedItem('bm-loop').value : '';
     if(loop === ''){
@@ -146,7 +152,7 @@ AnimationItem.prototype.includeLayers = function(data) {
             this.animationData.assets.push(data.assets[i]);
         }
     }
-    dataManager.completeData(this.animationData);
+    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
     this.renderer.renderFrame(null);
@@ -212,18 +218,37 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     /*
-    this.firstFrame = 62;
+    this.firstFrame = 0;
     this.totalFrames = 1;
-    this.animationData.tf = 1;*/
-    //this.frameMult = 10000/1000;
+    this.animationData.tf = 1;
+    //this.frameMult = 1/100;
     //*/////
     this.trigger('config_ready');
     this.loadSegments();
-    dataManager.completeData(this.animationData);
-    this.renderer.buildItems(this.animationData.layers);
     this.updaFrameModifier();
-    this.checkLoaded();
+    if(this.renderer.globalData.fontManager){
+        this.waitForFontsLoaded();
+    }else{
+        dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
+        this.checkLoaded();
+    }
 };
+
+AnimationItem.prototype.waitForFontsLoaded = (function(){
+    function checkFontsLoaded(){
+        if(this.renderer.globalData.fontManager.loaded){
+            dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
+            this.renderer.buildItems(this.animationData.layers);
+            this.checkLoaded();
+        }else{
+            setTimeout(checkFontsLoaded.bind(this),20);
+        }
+    }
+
+    return function(){
+        checkFontsLoaded.bind(this)();
+    }
+}());
 
 AnimationItem.prototype.elementLoaded = function () {
     this.pendingElements--;
@@ -356,6 +381,9 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
         this.adjustSegment(this.segments.shift());
         this.setCurrentRawFrameValue(0);
     }
+    if(this.isPaused){
+        this.play();
+    }
 };
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
@@ -378,6 +406,8 @@ AnimationItem.prototype.destroy = function (name) {
         return;
     }
     this.renderer.destroy();
+    this.trigger('destroy');
+    this._cbs = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
@@ -483,6 +513,9 @@ AnimationItem.prototype.trigger = function(name){
             case 'segmentStart':
                 this.triggerEvent(name,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
                 break;
+            case 'destroy':
+                this.triggerEvent(name,new BMDestroyEvent(name,this));
+                break;
             default:
                 this.triggerEvent(name);
         }
@@ -499,8 +532,11 @@ AnimationItem.prototype.trigger = function(name){
     if(name === 'segmentStart' && this.onSegmentStart){
         this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
     }
+    if(name === 'destroy' && this.onDestroy){
+        this.onDestroy.call(this,new BMDestroyEvent(name,this));
+    }
 };
 
-AnimationItem.prototype.addEventListener = addEventListener;
-AnimationItem.prototype.removeEventListener = removeEventListener;
-AnimationItem.prototype.triggerEvent = triggerEvent;
+AnimationItem.prototype.addEventListener = _addEventListener;
+AnimationItem.prototype.removeEventListener = _removeEventListener;
+AnimationItem.prototype.triggerEvent = _triggerEvent;
