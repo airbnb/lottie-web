@@ -2,9 +2,9 @@
 After Effects plugin for exporting animations to svg + js or canvas + js
 
 ## V 4.0.0
-- 3d
-- expressions
-- text
+- 3d animations! (see wiki for more info)
+- expressions! (see wiki)
+- text (wiki)
 - star shape
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
