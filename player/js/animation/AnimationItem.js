@@ -43,14 +43,15 @@ AnimationItem.prototype.setParams = function(params) {
     var animType = params.animType ? params.animType : params.renderer ? params.renderer : 'canvas';
     switch(animType){
         case 'canvas':
-            this.renderer = new CanvasRenderer(this, params.renderer);
+            this.renderer = new CanvasRenderer(this, params.rendererSettings);
             break;
         case 'svg':
-            this.renderer = new SVGRenderer(this, params.renderer);
+            this.renderer = new SVGRenderer(this, params.rendererSettings);
             break;
         case 'hybrid':
         case 'html':
-            this.renderer = new HybridRenderer(this, params.renderer);
+        default:
+            this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;
     }
     this.animType = animType;

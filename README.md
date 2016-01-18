@@ -1,10 +1,11 @@
 # bodymovin
-After Effects plugin for exporting animations to svg + js or canvas + js
+After Effects plugin for exporting animations to svg/canvas/html + js
 
 ## V 4.0.0
 - 3d animations! (see wiki for more info)
 - expressions! (see wiki)
 - text (wiki)
+= new renderer: html
 - star shape
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
@@ -68,14 +69,14 @@ It takes an object as a unique param with:
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
-- animType: 'svg' / 'canvas' to set the renderer
-- prerender: true / false to prerender all animation before starting (true recommended)
+- renderer: 'svg' / 'canvas' / 'html' to set the renderer
+- container: the dom element on which to render the animation
 <br />
 Returns the animation object you can control with play, pause, setSpeed, etc.
 ```
 bodymovin.loadAnimation({
-  wrapper: element, // the dom element
-  animType: 'svg',
+  container: element, // the dom element
+  renderer: 'svg',
   loop: true,
   autoplay: true,
   animationData: JSON.parse(animationData) // the animation data
@@ -84,12 +85,12 @@ bodymovin.loadAnimation({
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
 ```
 bodymovin.loadAnimation({
-  wrapper: element, // the dom element
-  animType: 'svg',
+  container: element, // the dom element
+  renderer: 'svg',
   loop: true,
   autoplay: true,
   animationData: animationData, // the animation data
-  renderer: {
+  rendererSettings: {
     context: canvasContext, // the canvas context
     scaleMode: 'noScale',
     clearCanvas: false
@@ -124,6 +125,16 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
 <br/>
 
 ## Usage
+animation instances have these main methods:
+**anim.play()** <br/>
+**anim.stop()** <br/>
+**anim.pause()** <br/>
+**anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
+**anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
+**anim.setDirection(direction)** -- one param direction (1 is normal direction.) <br/>
+**anim.playSegments(segments, forceFlag)** -- first param is a single array or multiple arrays of two values each(fromFrame,toFrame), second param is a boolean for forcing the new segment right away<br/>
+**anim.destroy()**<br/>
+
 bodymovin has 8 main methods:
 **bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
