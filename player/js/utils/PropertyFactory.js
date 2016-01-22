@@ -568,7 +568,11 @@ var PropertyFactory = (function(){
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
                 if(this.data.p.s){
-                    this.v.translate(this.px.v,this.py.v,-this.pz.v);
+                    if(this.data.p.z) {
+                        this.v.translate(this.px.v, this.py.v, -this.pz.v);
+                    } else {
+                        this.v.translate(this.px.v, this.py.v, 0);
+                    }
                 }else{
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
@@ -648,7 +652,11 @@ var PropertyFactory = (function(){
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
                 if(this.data.p.s){
-                    this.v.translate(this.px.v,this.py.v,-this.pz.v);
+                    if(data.p.z) {
+                        this.v.translate(this.px.v, this.py.v, -this.pz.v);
+                    } else {
+                        this.v.translate(this.px.v, this.py.v, 0);
+                    }
                 }else{
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
