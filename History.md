@@ -1,3 +1,6 @@
+## V 4.0.1
+- separate dimensions fix
+
 ## V 4.0.0
 - 3d
 - expressions

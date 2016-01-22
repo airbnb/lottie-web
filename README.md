@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.0.1
+- separate dimensions fix
+
 ## V 4.0.0
 - 3d animations! (see wiki for more info)
 - expressions! (see wiki)
