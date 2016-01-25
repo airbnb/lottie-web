@@ -540,6 +540,40 @@ var PropertyFactory = (function(){
             }
             return this.o.pv;
         }
+        function applyToMatrix(mat, processExpressions){
+
+            this.frameId = this.elem.globalData.frameId;
+            var i, len = this.dynamicProperties.length;
+
+            if(processExpressions){
+                for(i=0;i<len;i+=1){
+                    this.dynamicProperties[i].getValue();
+                    if(this.dynamicProperties[i].mdf){
+                        this.mdf = true;
+                    }
+                }
+            }
+            if(this.a){
+                mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+            }
+            if(this.s){
+                mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+            }
+            if(this.r){
+                mat.rotate(-this.r.v);
+            }else{
+                mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+            }
+            if(this.data.p.s){
+                if(this.data.p.z) {
+                    mat.translate(this.px.v, this.py.v, -this.pz.v);
+                } else {
+                    mat.translate(this.px.v, this.py.v, 0);
+                }
+            }else{
+                mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            }
+        }
         function processKeys(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
@@ -609,6 +643,7 @@ var PropertyFactory = (function(){
             this.mdf = false;
             this.data = data;
             this.getValue = processKeys;
+            this.applyToMatrix = applyToMatrix;
             this.setInverted = setInverted;
             this.v = new Matrix();
             if(data.p.s){

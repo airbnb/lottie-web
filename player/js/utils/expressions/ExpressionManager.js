@@ -121,6 +121,7 @@ var ExpressionManager = (function(){
         var val = data.x;
         var transform,content,effect;
         var thisComp = elem.comp;
+        var thisLayer = elem;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);

@@ -114,3 +114,11 @@ BaseElement.prototype.mHelper = new Matrix();
 BaseElement.prototype.mask = function(nm){
     return this.maskManager.getMask(nm);
 }
+
+extendPrototype(LayerInterface,BaseElement,true);
+
+Object.defineProperty(BaseElement.prototype, "anchorPoint", {
+    get: function anchorPoint() {
+        return this.finalTransform.mProp.anchorPoint;
+    }
+});
