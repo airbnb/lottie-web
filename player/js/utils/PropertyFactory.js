@@ -1305,9 +1305,13 @@ var PropertyFactory = (function(){
                 }
             }
             this.prop = prop;
-            len = this.prop.numNodes - 1;
-            len += this.prop.closed ? 1:0;
-            this.lengths = new Array(len);
+            if(this.prop.numNodes){
+                len = this.prop.numNodes - 1;
+                len += this.prop.closed ? 1:0;
+                this.lengths = new Array(len);
+            } else {
+                this.lengths = [];
+            }
             this.k = prop.k ? true : this.k;
             this.totalLength = 0;
             this.getValue = processKeys;
