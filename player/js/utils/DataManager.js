@@ -190,7 +190,11 @@ function dataFunctionManager(){
             }
             if(fontManager.chars){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
-                cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                if(!charData){
+                    cLength = 0;
+                } else {
+                    cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                }
             }else{
                 //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
                 //tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;

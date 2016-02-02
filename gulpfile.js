@@ -75,7 +75,7 @@ gulp.task('joinModules', function() {
 gulp.task('buildPlayer', function(){
     gulp.src('./player/index.html')
         .pipe(usemin({
-            js: [uglify()]
+            js: []
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap('(function(window){<%= contents %>}(window));'))

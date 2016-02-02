@@ -173,6 +173,7 @@ var FontManager = (function(){
             }
             i+= 1;
         }
+        console.log('missing char: ',char);
     }
 
     function measureText(char, fontName, size){
