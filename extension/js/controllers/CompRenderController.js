@@ -150,10 +150,6 @@ var compRenderController = (function () {
             storedOb.fOrigin = fontOb.fOrigin;
             list.push(fontOb);
         });
-        var typekitElem = fontsContainer.find('.typekitElem');
-        if (typekitElem.hasClass('visible')) {
-            fontsInfo.tk = $(typekitElem).find('.typekitPath')[0].value;
-        }
         LocalStorageManager.setItem('fonts', fontsStorage);
         var fontsInfoString = JSON.stringify(fontsInfo);
         var eScript = 'bm_renderManager.setFontData(' + fontsInfoString + ')';
@@ -182,7 +178,6 @@ var compRenderController = (function () {
         var fontsContainer = elem.find('.fontsContainer');
         fontsContainer.show();
         var fontsList = fontsContainer.find('.fontsList');
-        var typekitElem = fontsContainer.find('.typekitElem');
         len = fonts.length;
         var fontElem, storedData, template, output;
         for (i = 0; i < len; i += 1) {
@@ -200,15 +195,6 @@ var compRenderController = (function () {
         fontsContainer.find('button.continue').on('click', function () {
             saveFontsData(fontsContainer, fonts);
             fontsContainer.hide();
-        });
-        fontsContainer.find('button.typekitButton').on('click', function () {
-            if (typekitElem.hasClass('visible')) {
-                typekitElem.removeClass('visible');
-                $(this).html('Include Typekit Path');
-            } else {
-                typekitElem.addClass('visible');
-                $(this).html('Exclude Typekit Path');
-            }
         });
     }
     

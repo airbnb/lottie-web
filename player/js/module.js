@@ -94,7 +94,7 @@
     bodymovinjs.goToAndStop = goToAndStop;
     bodymovinjs.destroy = destroy;
     bodymovinjs.setQuality = setQuality;
-    bodymovinjs.version = '3.1.10';
+    bodymovinjs.version = '4.0.2';
 
     function checkReady(){
         if (document.readyState === "complete") {

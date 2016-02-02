@@ -2,6 +2,152 @@ var PropertyFactory = (function(){
 
     var initFrame = -999999;
 
+    function getValueAtTime(frameNum) {
+        var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
+        var keyData, nextKeyData;
+        var offsetTime = 0;
+        var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
+
+        while(flag){
+            keyData = this.keyframes[i];
+            nextKeyData = this.keyframes[i+1];
+            if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
+                if(keyData.h){
+                    keyData = nextKeyData;
+                }
+                break;
+            }
+            if((nextKeyData.t - offsetTime) > frameNum){
+                break;
+            }
+            if(i < len - 1){
+                i += dir;
+            }else{
+                flag = false;
+            }
+        }
+
+        var k, kLen,perc,jLen, j = 0, fnc;
+        if(keyData.to){
+
+            if(!keyData.bezierData){
+                bez.buildBezierData(keyData);
+            }
+            var bezierData = keyData.bezierData;
+            if(frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime){
+                var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
+                kLen = bezierData.points[ind].point.length;
+                for(k = 0; k < kLen; k += 1){
+                    retVal[k] = bezierData.points[ind].point[k];
+                }
+            }else{
+                if(keyData.__fnct){
+                    fnc = keyData.__fnct;
+                }else{
+                    fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
+                    keyData.__fnct = fnc;
+                }
+                perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
+                var distanceInLine = bezierData.segmentLength*perc;
+
+                var segmentPerc;
+                var addedLength = 0;
+                dir = 1;
+                flag = true;
+                jLen = bezierData.points.length;
+                while(flag){
+                    addedLength +=bezierData.points[j].partialLength*dir;
+                    if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
+                        kLen = bezierData.points[j].point.length;
+                        for(k=0;k<kLen;k+=1){
+                            retVal[k] = bezierData.points[j].point[k];
+                        }
+                        break;
+                    }else if(distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
+                        segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
+                        kLen = bezierData.points[j].point.length;
+                        for(k=0;k<kLen;k+=1){
+                            retVal[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
+                        }
+                        break;
+                    }
+                    if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
+                        j += dir;
+                    }else{
+                        flag = false;
+                    }
+                }
+            }
+        }else{
+            var outX,outY,inX,inY, isArray = false, keyValue;
+            len = keyData.s.length;
+            for(i=0;i<len;i+=1){
+                if(keyData.h !== 1){
+                    if(keyData.o.x instanceof Array){
+                        isArray = true;
+                        if(!keyData.__fnct){
+                            keyData.__fnct = [];
+                        }
+                        if(!keyData.__fnct[i]){
+                            outX = keyData.o.x[i] || keyData.o.x[0];
+                            outY = keyData.o.y[i] || keyData.o.y[0];
+                            inX = keyData.i.x[i] || keyData.i.x[0];
+                            inY = keyData.i.y[i] || keyData.i.y[0];
+                        }
+                    }else{
+                        isArray = false;
+                        if(!keyData.__fnct) {
+                            outX = keyData.o.x;
+                            outY = keyData.o.y;
+                            inX = keyData.i.x;
+                            inY = keyData.i.y;
+                        }
+                    }
+                    if(isArray){
+                        if(keyData.__fnct[i]){
+                            fnc = keyData.__fnct[i];
+                        }else{
+                            fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            keyData.__fnct[i] = fnc;
+                        }
+                    }else{
+                        if(keyData.__fnct){
+                            fnc = keyData.__fnct;
+                        }else{
+                            fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            keyData.__fnct = fnc;
+                        }
+                    }
+                    if(frameNum >= nextKeyData.t-offsetTime){
+                        perc = 1;
+                    }else if(frameNum < keyData.t-offsetTime){
+                        perc = 0;
+                    }else{
+                        perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
+                    }
+                }
+                if(this.sh && keyData.h !== 1){
+                    var initP = keyData.s[i];
+                    var endP = keyData.e[i];
+                    if(initP-endP < -180){
+                        initP += 360;
+                    } else if(initP-endP > 180){
+                        initP -= 360;
+                    }
+                    keyValue = initP+(endP-initP)*perc;
+                } else {
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
+                }
+                if(len === 1){
+                    retVal = keyValue;
+                }else{
+                    retVal[i] = keyValue;
+                }
+            }
+        }
+        return retVal;
+    }
+
     function getValue(){
         if(this.elem.globalData.frameId === this.frameId){
             return;
@@ -320,6 +466,7 @@ var PropertyFactory = (function(){
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
         this.getValue = getValue;
+        this.getValueAtTime = getValueAtTime;
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -346,6 +493,7 @@ var PropertyFactory = (function(){
         this.elem = elem;
         this.comp = elem.comp;
         this.getValue = getValue;
+        this.getValueAtTime = getValueAtTime;
         this.frameId = -1;
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
@@ -420,7 +568,11 @@ var PropertyFactory = (function(){
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
                 if(this.data.p.s){
-                    this.v.translate(this.px.v,this.py.v,-this.pz.v);
+                    if(this.data.p.z) {
+                        this.v.translate(this.px.v, this.py.v, -this.pz.v);
+                    } else {
+                        this.v.translate(this.px.v, this.py.v, 0);
+                    }
                 }else{
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
@@ -500,7 +652,11 @@ var PropertyFactory = (function(){
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
                 if(this.data.p.s){
-                    this.v.translate(this.px.v,this.py.v,-this.pz.v);
+                    if(data.p.z) {
+                        this.v.translate(this.px.v, this.py.v, -this.pz.v);
+                    } else {
+                        this.v.translate(this.px.v, this.py.v, 0);
+                    }
                 }else{
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
@@ -1149,9 +1305,13 @@ var PropertyFactory = (function(){
                 }
             }
             this.prop = prop;
-            len = this.prop.numNodes - 1;
-            len += this.prop.closed ? 1:0;
-            this.lengths = new Array(len);
+            if(this.prop.numNodes){
+                len = this.prop.numNodes - 1;
+                len += this.prop.closed ? 1:0;
+                this.lengths = new Array(len);
+            } else {
+                this.lengths = [];
+            }
             this.k = prop.k ? true : this.k;
             this.totalLength = 0;
             this.getValue = processKeys;

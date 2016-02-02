@@ -2,11 +2,12 @@
 <ExtensionManifest Version="5.0" ExtensionBundleId="com.bodymovin.bodymovin" ExtensionBundleVersion="1.0.0"
 		ExtensionBundleName="bodymovin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ExtensionList>
-		<Extension Id="com.bodymovin.bodymovin" Version="1.0" />
+		<Extension Id="com.bodymovin.bodymovin" Version="4.0.2" />
 	</ExtensionList>
 	<ExecutionEnvironment>
 		<HostList>
             <Host Name="AEFT" Version="[13.0,13.9]" />
+            <Host Name="AEFX" Version="[13.0,13.9]" />
 
             <!-- Illustrator -->
             <!-- <Host Name="ILST" Version="[18.0,18.9]" />-->

@@ -1,6 +1,6 @@
 function dataFunctionManager(){
 
-    var tCanvasHelper = document.createElement('canvas').getContext('2d');
+    //var tCanvasHelper = document.createElement('canvas').getContext('2d');
 
     function completeLayers(layers, comps, fontManager){
         var layerData;
@@ -83,6 +83,8 @@ function dataFunctionManager(){
                 }
             }else if(arr[i].ty == 'gr'){
                 completeShapes(arr[i].it,isTrimmed);
+            }else if(arr[i].ty == 'el' || arr[i].ty == 'rc'){
+                arr[i].trimmed = isTrimmed;
             }
         }
     }
@@ -150,8 +152,8 @@ function dataFunctionManager(){
                     charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
                     cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
                 }else{
-                    tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
-                    cLength = tCanvasHelper.measureText(documentData.t.charAt(i)).width;
+                    //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
+                    cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
                 }
                 if(lineWidth + cLength > boxWidth){
                     if(lastSpaceIndex === -1){
@@ -190,13 +192,9 @@ function dataFunctionManager(){
                 charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
                 cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
             }else{
-                var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
-                tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-                cLength = charWidth;
-                /*console.log('tCanvasHelper.font: ',tCanvasHelper.font);
-                console.log('val: ',val);
-                console.log('cLength: ',cLength);
-                console.log('charWidth: ',charWidth);*/
+                //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
+                //tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
+                cLength = fontManager.measureText(val, documentData.f, documentData.s);
             }
 
             //
