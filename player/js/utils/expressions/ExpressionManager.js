@@ -259,6 +259,10 @@ var ExpressionManager = (function(){
             return loopOut(type,duration,true);
         }.bind(this);
 
+        var valueAtTime = function valueAtTime(t) {
+            return this.getValueAtTime(t*thisComp.globalData.frameRate);
+        }.bind(this);
+
         function effect(nm){
             return elem.effectsManager.getEffect(nm);
         }
@@ -279,6 +283,7 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
+
         function key(ind){
             ind -= 1;
             var ob = {
