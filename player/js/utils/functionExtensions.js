@@ -13,8 +13,11 @@ function createElement(parent,child,params){
     }
 }
 
-function extendPrototype(source,destination){
+function extendPrototype(source,destination,debug){
     for (var attr in source.prototype) {
+        if(debug){
+            console.log(attr);
+        }
         if (source.prototype.hasOwnProperty(attr)) destination.prototype[attr] = source.prototype[attr];
     }
 }

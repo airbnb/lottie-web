@@ -11,9 +11,15 @@
             overflow: hidden;
         }
         #bodymovin{
+<<<<<<< HEAD
             background-color:#ccc;
             width:700px;
             height:700px;
+=======
+            background-color:#333;
+            width:250px;
+            height:250px;
+>>>>>>> more_expression
             /*width:800px;
             height:500px;*/
             display:block;
@@ -45,6 +51,7 @@
     <script src="js/utils/expressions/ExpressionManager.js"></script>
     <script src="js/utils/expressions/ExpressionComp.js"></script>
     <script src="js/utils/expressions/ShapeInterface.js"></script>
+    <script src="js/utils/expressions/LayerInterface.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
@@ -90,7 +97,7 @@
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'html',
+        renderer: 'svg',
         loop: false,
         prerender: false,
         autoplay: true,

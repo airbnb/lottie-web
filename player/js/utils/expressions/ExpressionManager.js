@@ -121,6 +121,7 @@ var ExpressionManager = (function(){
         var val = data.x;
         var transform,content,effect;
         var thisComp = elem.comp;
+        var thisLayer = elem;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
@@ -258,6 +259,10 @@ var ExpressionManager = (function(){
             return loopOut(type,duration,true);
         }.bind(this);
 
+        var valueAtTime = function valueAtTime(t) {
+            return this.getValueAtTime(t*thisComp.globalData.frameRate);
+        }.bind(this);
+
         function effect(nm){
             return elem.effectsManager.getEffect(nm);
         }
@@ -266,10 +271,10 @@ var ExpressionManager = (function(){
             var i = 0, len = data.k.length, ob = {};
             for(i=0;i<len;i+=1){
                 if(time === data.k[i].t){
-                    ob.index = i + 1;
+                    ob.index = i+1;
                     break;
                 }else if(time<data.k[i].t){
-                    ob.index = i + 1;
+                    ob.index = i+1;
                     break;
                 }else if(time>data.k[i].t && i === len - 1){
                     ob.index = len;
@@ -278,6 +283,7 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
+
         function key(ind){
             ind -= 1;
             var ob = {
