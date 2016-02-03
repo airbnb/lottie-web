@@ -102,6 +102,11 @@ var ExpressionManager = (function(){
     }
 
     function clamp(num, min, max) {
+        if(min > max){
+            var mm = max;
+            max = min;
+            min = mm;
+        }
         return Math.min(Math.max(num, min), max);
     }
     function random(min,max){
@@ -116,6 +121,18 @@ var ExpressionManager = (function(){
         return min + (Math.random()*(max-min));
     }
 
+    function radiansToDegrees(val) {
+        return val/degToRads;
+    }
+
+    function length(arr1,arr2){
+        var i,len = arr1.length;
+        var addedLength = 0;
+        for(i=0;i<len;i+=1){
+            addedLength += Math.pow(arr2[i]-arr1[i],2);
+        }
+        return Math.sqrt(addedLength);
+    }
 
     function initiateExpression(elem,data){
         var val = data.x;
@@ -123,6 +140,7 @@ var ExpressionManager = (function(){
         var thisComp = elem.comp;
         var thisLayer = elem;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
+        console.log('val: ',val);
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;

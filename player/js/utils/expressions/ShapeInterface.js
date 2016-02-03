@@ -165,6 +165,18 @@ ShapeInterface.prototype.transformInterface = function(view) {
                 view.transform.mProps.r.getValue();
             }
             return view.transform.mProps.r.pv;
+        },
+        get skew(){
+            if(view.transform.mProps.sk.k){
+                view.transform.mProps.sk.getValue();
+            }
+            return view.transform.mProps.sk.pv;
+        },
+        get skewAxis(){
+            if(view.transform.mProps.sa.k){
+                view.transform.mProps.sa.getValue();
+            }
+            return view.transform.mProps.sa.pv;
         }
     }
     return ob;
