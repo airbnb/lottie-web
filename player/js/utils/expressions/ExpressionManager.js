@@ -140,7 +140,6 @@ var ExpressionManager = (function(){
         var thisComp = elem.comp;
         var thisLayer = elem;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        console.log('val: ',val);
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;

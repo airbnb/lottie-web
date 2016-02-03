@@ -317,6 +317,8 @@ var bm_expressionHelper = (function () {
     function handleExpressionStatement(expressionStatement) {
         if (expressionStatement.expression.type === 'CallExpression') {
             handleCallExpression(expressionStatement.expression);
+        } else if (expressionStatement.expression.type === 'BinaryExpression') {
+            expressionStatement.expression = convertBinaryExpression(expressionStatement.expression);
         }
     }
 
