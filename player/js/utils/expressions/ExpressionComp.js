@@ -10,4 +10,6 @@ function ExpressionComp(){}
             i += 1;
         }
     }
+
+    ExpressionComp.prototype.pixelAspect = 1;
 }());

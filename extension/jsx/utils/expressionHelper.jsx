@@ -192,9 +192,13 @@ var bm_expressionHelper = (function () {
                 handleVariableDeclaration(body[i]);
             } else if (body[i].type === 'ReturnStatement') {
                 handleReturnStatement(body[i]);
+            } else if (body[i].type === 'TryStatement') {
+                handleTryStatement(body[i]);
+            } else if (body[i].type === 'SwitchStatement') {
+                handleSwitchStatement(body[i]);
             } else {
-                //bm_eventDispatcher.log(body[i].type);
-                //bm_eventDispatcher.log(body[i]);
+                bm_eventDispatcher.log(body[i].type);
+                bm_eventDispatcher.log(body[i]);
             }
         }
     }
@@ -209,8 +213,14 @@ var bm_expressionHelper = (function () {
             return element;
         case "BinaryExpression":
             return convertBinaryExpression(element);
+        case "MemberExpression":
+            handleMemberExpression(element);
+            return element;
+        case "UpdateExpression":
+        case "UnaryExpression":
+            return element;
         default:
-            //bm_eventDispatcher.log('es: ', element);
+            bm_eventDispatcher.log('es: ', element);
             return element;
         }
     }
@@ -247,6 +257,14 @@ var bm_expressionHelper = (function () {
         return callStatementOb;
     }
 
+    function handleMemberExpression(expression) {
+        if (expression.property.type === 'BinaryExpression') {
+            expression.property = convertBinaryExpression(expression.property);
+        } else if (expression.property.type === 'CallExpression') {
+            handleCallExpression(expression.property);
+        }
+    }
+
     function handleCallExpression(expression) {
         var args = expression['arguments'];
         var i, len = args.length;
@@ -263,6 +281,8 @@ var bm_expressionHelper = (function () {
                 searchOperations(ifStatement.consequent.body);
             } else if (ifStatement.consequent.type === 'ExpressionStatement') {
                 handleExpressionStatement(ifStatement.consequent);
+            } else if (ifStatement.consequent.type === 'ReturnStatement') {
+                handleReturnStatement(ifStatement.consequent);
             }
         }
         if (ifStatement.alternate) {
@@ -273,6 +293,27 @@ var bm_expressionHelper = (function () {
             } else if (ifStatement.alternate.type === 'ExpressionStatement') {
                 handleExpressionStatement(ifStatement.alternate);
             }
+        }
+    }
+
+    function handleTryStatement(tryStatement) {
+        if (tryStatement.block) {
+            if (tryStatement.block.type === 'BlockStatement') {
+                searchOperations(tryStatement.block.body);
+            }
+        }
+        if (tryStatement.handler) {
+            if (tryStatement.handler.body.type === 'BlockStatement') {
+                searchOperations(tryStatement.handler.body.body);
+            }
+        }
+    }
+
+    function handleSwitchStatement(switchStatement) {
+        var cases = switchStatement.cases;
+        var i, len = cases.length;
+        for(i = 0; i < len; i += 1) {
+            searchOperations(cases[i].consequent);
         }
     }
 
@@ -309,7 +350,19 @@ var bm_expressionHelper = (function () {
             if (declarations[i].init) {
                 if (declarations[i].init.type === 'BinaryExpression') {
                     declarations[i].init = convertBinaryExpression(declarations[i].init);
+                } else if (declarations[i].init.type === 'CallExpression') {
+                    handleCallExpression(declarations[i].init);
                 }
+            }
+        }
+    }
+
+    function handleAssignmentExpression(assignmentExpression) {
+        if (assignmentExpression.right) {
+            if(assignmentExpression.right.type === 'BinaryExpression') {
+                assignmentExpression.right = convertBinaryExpression(assignmentExpression.right);
+            } else if (assignmentExpression.right.type === 'CallExpression') {
+                handleCallExpression(assignmentExpression.right);
             }
         }
     }
@@ -317,6 +370,10 @@ var bm_expressionHelper = (function () {
     function handleExpressionStatement(expressionStatement) {
         if (expressionStatement.expression.type === 'CallExpression') {
             handleCallExpression(expressionStatement.expression);
+        } else if (expressionStatement.expression.type === 'BinaryExpression') {
+            expressionStatement.expression = convertBinaryExpression(expressionStatement.expression);
+        } else if (expressionStatement.expression.type === 'AssignmentExpression') {
+            handleAssignmentExpression(expressionStatement.expression);
         }
     }
 
@@ -326,12 +383,106 @@ var bm_expressionHelper = (function () {
         }
     }
 
-    function replaceOperations() {
-        var parsed = esprima.parse(expressionStr, options);
-        var body = parsed.body;
+    function replaceOperations(body) {
         searchOperations(body);
-        var escodegen = ob.escodegen;
-        expressionStr = escodegen.generate(parsed);
+    }
+
+    function createAssignmentObject(){
+        return {
+            type: 'ExpressionStatement',
+            expression: {
+                left: {
+                    name: '$bm_rt',
+                    type: 'Identifier'
+                },
+                type: "AssignmentExpression",
+                operator: '='
+            }
+        }
+    }
+
+    function convertExpressionStatementToVariableDeclaration(expressionStatement) {
+        var assignmentObject;
+        if(expressionStatement.expression.type === 'Literal'){
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'Identifier') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'CallExpression') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'ArrayExpression') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'BinaryExpression') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'MemberExpression') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'LogicalExpression') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        }
+        return expressionStatement;
+    }
+
+    function assignVariableToIfStatement(ifStatement) {
+        if (ifStatement.consequent) {
+            if (ifStatement.consequent.type === 'BlockStatement') {
+                assignVariable(ifStatement.consequent.body);
+            } else if (ifStatement.consequent.type === 'ExpressionStatement') {
+                ifStatement.consequent = convertExpressionStatementToVariableDeclaration(ifStatement.consequent);
+            }
+        }
+        if (ifStatement.alternate) {
+            if (ifStatement.alternate.type === 'IfStatement') {
+                assignVariableToIfStatement(ifStatement.alternate);
+            } else if (ifStatement.alternate.type === 'BlockStatement') {
+                assignVariable(ifStatement.alternate.body);
+            } else if (ifStatement.alternate.type === 'ExpressionStatement') {
+                ifStatement.alternate = convertExpressionStatementToVariableDeclaration(ifStatement.alternate);
+            }
+        }
+    }
+
+    function assignVariable(body) {
+        var len = body.length - 1;
+        var flag = true;
+        var lastElem;
+        while (flag) {
+            lastElem = body[len];
+            if ((lastElem.type !== 'EmptyStatement' && lastElem.type !== 'FunctionDeclaration') || len === 0) {
+                flag = false;
+            } else {
+                len -= 1;
+            }
+        }
+        if (lastElem.type === 'ExpressionStatement') {
+            lastElem = convertExpressionStatementToVariableDeclaration(lastElem);
+        } else if (lastElem.type === 'TryStatement') {
+            if (lastElem.block) {
+                if (lastElem.block.type === 'BlockStatement') {
+                    assignVariable(lastElem.block.body);
+                }
+            }
+            if (lastElem.handler) {
+                if (lastElem.handler.body.type === 'BlockStatement') {
+                    assignVariable(lastElem.handler.body.body);
+                }
+            }
+        } else if (lastElem.type === 'IfStatement') {
+            assignVariableToIfStatement(lastElem);
+        }
+        body[len] = lastElem;
     }
 
     function checkExpression(prop, returnOb) {
@@ -340,9 +491,16 @@ var bm_expressionHelper = (function () {
             doneBodies.length = 0;
             expressionStr = prop.expression;
             searchUndeclaredVariables();
-            replaceOperations();
+            var parsed = esprima.parse(expressionStr, options);
+            var body = parsed.body;
+            replaceOperations(body);
+            assignVariable(body);
 
-            expressionStr = addReturnStatement(expressionStr);
+            var escodegen = ob.escodegen;
+            expressionStr = escodegen.generate(parsed);
+
+            expressionStr = 'var $bm_rt;\n' + expressionStr;
+            //console.log(expressionStr);
             returnOb.x = expressionStr;
         }
     }

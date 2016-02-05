@@ -540,9 +540,19 @@ var PropertyFactory = (function(){
             }
             return this.o.pv;
         }
+        function skewGetter(){
+            if(this.sk.k){
+                this.sk.getValue();
+            }
+            return this.sk.pv;
+        }
+        function skewAxisGetter(){
+            if(this.sa.k){
+                this.sa.getValue();
+            }
+            return this.sa.pv;
+        }
         function applyToMatrix(mat, processExpressions){
-
-            this.frameId = this.elem.globalData.frameId;
             var i, len = this.dynamicProperties.length;
 
             if(processExpressions){
@@ -552,26 +562,48 @@ var PropertyFactory = (function(){
                         this.mdf = true;
                     }
                 }
-            }
-            if(this.a){
-                mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-            }
-            if(this.s){
-                mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
-            }
-            if(this.r){
-                mat.rotate(-this.r.v);
-            }else{
-                mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
-            }
-            if(this.data.p.s){
-                if(this.data.p.z) {
-                    mat.translate(this.px.v, this.py.v, -this.pz.v);
-                } else {
-                    mat.translate(this.px.v, this.py.v, 0);
+                if(this.a){
+                    mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
                 }
-            }else{
-                mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+                if(this.s){
+                    mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
+                if(this.r){
+                    mat.rotate(-this.r.v);
+                }else{
+                    mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+                }
+                if(this.data.p.s){
+                    if(this.data.p.z) {
+                        mat.translate(this.px.v, this.py.v, -this.pz.v);
+                    } else {
+                        mat.translate(this.px.v, this.py.v, 0);
+                    }
+                }else{
+                    mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+                }
+            } else {
+
+                if(this.a){
+                    mat.translate(-this.a.pv[0],-this.a.pv[1],this.a.pv[2]);
+                }
+                if(this.s){
+                    mat.scale(this.s.pv[0],this.s.pv[1],this.s.pv[2]);
+                }
+                if(this.r){
+                    mat.rotate(-this.r.pv);
+                }else{
+                    mat.rotateZ(-this.rz.pv).rotateY(this.ry.pv).rotateX(this.rx.pv).rotateZ(-this.or.pv[2]).rotateY(this.or.pv[1]).rotateX(this.or.pv[0]);
+                }
+                if(this.data.p.s){
+                    if(this.data.p.z) {
+                        mat.translate(this.px.pv, this.py.pv, -this.pz.pv);
+                    } else {
+                        mat.translate(this.px.pv, this.py.pv, 0);
+                    }
+                }else{
+                    mat.translate(this.p.pv[0],this.p.pv[1],-this.p.pv[2]);
+                }
             }
         }
         function processKeys(){
@@ -595,6 +627,9 @@ var PropertyFactory = (function(){
                 }
                 if(this.s){
                     this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
+                if(this.sk){
+                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
                 }
                 if(this.r){
                     this.v.rotate(-this.r.v);
@@ -663,6 +698,10 @@ var PropertyFactory = (function(){
                 this.rz = getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
                 this.or = getProp(elem, data.or, 0, degToRads, this.dynamicProperties);
             }
+            if(data.sk){
+                this.sk = getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
+                this.sa = getProp(elem, data.sa, 0, degToRads, this.dynamicProperties);
+            }
             if(data.a) {
                 this.a = getProp(elem,data.a,1,0,this.dynamicProperties);
             }
@@ -671,6 +710,8 @@ var PropertyFactory = (function(){
             }
             if(data.o){
                 this.o = getProp(elem,data.o,0,0.01,arr);
+            } else {
+                this.o = {mdf:false,v:1};
             }
             if(this.dynamicProperties.length){
                 arr.push(this);
@@ -680,6 +721,9 @@ var PropertyFactory = (function(){
                 }
                 if(this.s){
                     this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
+                if(this.sk){
+                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
                 }
                 if(this.r){
                     this.v.rotate(-this.r.v);
@@ -702,6 +746,8 @@ var PropertyFactory = (function(){
             Object.defineProperty(this, "rotation", { get: rotationGetter});
             Object.defineProperty(this, "scale", { get: scaleGetter});
             Object.defineProperty(this, "opacity", { get: opacityGetter});
+            Object.defineProperty(this, "skew", { get: skewGetter});
+            Object.defineProperty(this, "skewAxis", { get: skewAxisGetter});
         }
     }());
 

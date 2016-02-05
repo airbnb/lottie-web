@@ -64,9 +64,6 @@ function bezFunction(){
                 addedLength: 0,
                 segments: []
             };
-            if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
-                curveSegments = 2;
-            }
             len = pt3.length;
             for(k=0;k<curveSegments;k+=1){
                 perc = k/(curveSegments-1);

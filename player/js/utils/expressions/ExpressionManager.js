@@ -102,6 +102,11 @@ var ExpressionManager = (function(){
     }
 
     function clamp(num, min, max) {
+        if(min > max){
+            var mm = max;
+            max = min;
+            min = mm;
+        }
         return Math.min(Math.max(num, min), max);
     }
     function random(min,max){
@@ -116,6 +121,18 @@ var ExpressionManager = (function(){
         return min + (Math.random()*(max-min));
     }
 
+    function radiansToDegrees(val) {
+        return val/degToRads;
+    }
+
+    function length(arr1,arr2){
+        var i,len = arr1.length;
+        var addedLength = 0;
+        for(i=0;i<len;i+=1){
+            addedLength += Math.pow(arr2[i]-arr1[i],2);
+        }
+        return Math.sqrt(addedLength);
+    }
 
     function initiateExpression(elem,data){
         var val = data.x;
@@ -301,7 +318,14 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
+
+        function hasParentGetter(){
+            console.log('this: ',this);
+        }
+
+        Object.defineProperty(this, "hasParent", { get: hasParentGetter});
         var time, value,textIndex,textTotal,selectorValue;
+        var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
@@ -325,6 +349,9 @@ var ExpressionManager = (function(){
                 if(typeof this.v === 'number'){
                     this.v *= this.mult;
                 }else{
+                    if(!this.v) {
+                        console.log(val);
+                    }
                     len = this.v.length;
                     if(value === this.v){
                         this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
