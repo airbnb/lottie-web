@@ -544,7 +544,6 @@ var PropertyFactory = (function(){
             if(this.sk.k){
                 this.sk.getValue();
             }
-            console.log('this.sk.pv: ',this.sk.pv);
             return this.sk.pv;
         }
         function skewAxisGetter(){
@@ -711,6 +710,8 @@ var PropertyFactory = (function(){
             }
             if(data.o){
                 this.o = getProp(elem,data.o,0,0.01,arr);
+            } else {
+                this.o = {mdf:false,v:1};
             }
             if(this.dynamicProperties.length){
                 arr.push(this);

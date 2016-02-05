@@ -194,6 +194,8 @@ var bm_expressionHelper = (function () {
                 handleReturnStatement(body[i]);
             } else if (body[i].type === 'TryStatement') {
                 handleTryStatement(body[i]);
+            } else if (body[i].type === 'SwitchStatement') {
+                handleSwitchStatement(body[i]);
             } else {
                 bm_eventDispatcher.log(body[i].type);
                 bm_eventDispatcher.log(body[i]);
@@ -213,6 +215,9 @@ var bm_expressionHelper = (function () {
             return convertBinaryExpression(element);
         case "MemberExpression":
             handleMemberExpression(element);
+            return element;
+        case "UpdateExpression":
+        case "UnaryExpression":
             return element;
         default:
             bm_eventDispatcher.log('es: ', element);
@@ -276,6 +281,8 @@ var bm_expressionHelper = (function () {
                 searchOperations(ifStatement.consequent.body);
             } else if (ifStatement.consequent.type === 'ExpressionStatement') {
                 handleExpressionStatement(ifStatement.consequent);
+            } else if (ifStatement.consequent.type === 'ReturnStatement') {
+                handleReturnStatement(ifStatement.consequent);
             }
         }
         if (ifStatement.alternate) {
@@ -299,6 +306,14 @@ var bm_expressionHelper = (function () {
             if (tryStatement.handler.body.type === 'BlockStatement') {
                 searchOperations(tryStatement.handler.body.body);
             }
+        }
+    }
+
+    function handleSwitchStatement(switchStatement) {
+        var cases = switchStatement.cases;
+        var i, len = cases.length;
+        for(i = 0; i < len; i += 1) {
+            searchOperations(cases[i].consequent);
         }
     }
 
@@ -344,7 +359,7 @@ var bm_expressionHelper = (function () {
 
     function handleAssignmentExpression(assignmentExpression) {
         if (assignmentExpression.right) {
-            if (assignmentExpression.right.type === 'BinaryExpression') {
+            if(assignmentExpression.right.type === 'BinaryExpression') {
                 assignmentExpression.right = convertBinaryExpression(assignmentExpression.right);
             } else if (assignmentExpression.right.type === 'CallExpression') {
                 handleCallExpression(assignmentExpression.right);
@@ -368,13 +383,11 @@ var bm_expressionHelper = (function () {
         }
     }
 
-    function replaceOperations() {
-        var parsed = esprima.parse(expressionStr, options);
-        var body = parsed.body;
+    function replaceOperations(body) {
         searchOperations(body);
     }
 
-    function createAssignmentObject() {
+    function createAssignmentObject(){
         return {
             type: 'ExpressionStatement',
             expression: {
@@ -385,7 +398,7 @@ var bm_expressionHelper = (function () {
                 type: "AssignmentExpression",
                 operator: '='
             }
-        };
+        }
     }
 
     function convertExpressionStatementToVariableDeclaration(expressionStatement) {
@@ -394,23 +407,27 @@ var bm_expressionHelper = (function () {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'Identifier'){
+        } else if(expressionStatement.expression.type === 'Identifier') {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'CallExpression'){
+        } else if(expressionStatement.expression.type === 'CallExpression') {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'ArrayExpression'){
+        } else if(expressionStatement.expression.type === 'ArrayExpression') {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'BinaryExpression'){
+        } else if(expressionStatement.expression.type === 'BinaryExpression') {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'MemberExpression'){
+        } else if(expressionStatement.expression.type === 'MemberExpression') {
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
+        } else if(expressionStatement.expression.type === 'LogicalExpression') {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
@@ -473,18 +490,15 @@ var bm_expressionHelper = (function () {
             pendingBodies.length = 0;
             doneBodies.length = 0;
             expressionStr = prop.expression;
-            bm_eventDispatcher.log(expressionStr);
             searchUndeclaredVariables();
-            replaceOperations();
-
             var parsed = esprima.parse(expressionStr, options);
             var body = parsed.body;
+            replaceOperations(body);
             assignVariable(body);
 
             var escodegen = ob.escodegen;
             expressionStr = escodegen.generate(parsed);
 
-            //expressionStr = addReturnStatement(expressionStr);
             expressionStr = 'var $bm_rt;\n' + expressionStr;
             //console.log(expressionStr);
             returnOb.x = expressionStr;

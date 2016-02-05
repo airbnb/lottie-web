@@ -169,6 +169,7 @@ var bm_dataManager = (function () {
                 segmentPath += filePathName + '_' + i + '.json';
                 dataFile = new File(segmentPath);
                 dataFile.open('w', 'TEXT', '????');
+                dataFile.encoding = 'UTF-8';
                 string = JSON.stringify(animationSegments[i]);
                 try {
                     dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
@@ -188,7 +189,9 @@ var bm_dataManager = (function () {
             delete data.comps;
         }
         dataFile = new File(destinationPath);
+        bm_eventDispatcher.log(File.isEncodingAvailable('UTF-8'));
         dataFile.open('w', 'TEXT', '????');
+        dataFile.encoding = 'UTF-8';
         string = JSON.stringify(data);
         string = string.replace(/\n/g, '');
         ////

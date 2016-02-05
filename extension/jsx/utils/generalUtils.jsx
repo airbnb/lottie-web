@@ -84,9 +84,9 @@ var bm_generalUtils = (function () {
     function iterateOwnProperties(property){
         var propsArray = [];
         for (var s in property) {
-            if(property.hasOwnProperty(s)) {
+            //if(property.hasOwnProperty(s)) {
                 propsArray.push(s);
-            }
+            //}
         }
         bm_eventDispatcher.log(propsArray);
     }
