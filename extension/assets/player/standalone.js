@@ -585,11 +585,8 @@ function createElement(parent,child,params){
     }
 }
 
-function extendPrototype(source,destination,debug){
+function extendPrototype(source,destination){
     for (var attr in source.prototype) {
-        if(debug){
-            console.log(attr);
-        }
         if (source.prototype.hasOwnProperty(attr)) destination.prototype[attr] = source.prototype[attr];
     }
 }
@@ -659,9 +656,6 @@ function bezFunction(){
                 addedLength: 0,
                 segments: []
             };
-            if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
-                curveSegments = 2;
-            }
             len = pt3.length;
             for(k=0;k<curveSegments;k+=1){
                 perc = k/(curveSegments-1);
@@ -1434,6 +1428,11 @@ var ExpressionManager = (function(){
     }
 
     function clamp(num, min, max) {
+        if(min > max){
+            var mm = max;
+            max = min;
+            min = mm;
+        }
         return Math.min(Math.max(num, min), max);
     }
     function random(min,max){
@@ -1448,6 +1447,18 @@ var ExpressionManager = (function(){
         return min + (Math.random()*(max-min));
     }
 
+    function radiansToDegrees(val) {
+        return val/degToRads;
+    }
+
+    function length(arr1,arr2){
+        var i,len = arr1.length;
+        var addedLength = 0;
+        for(i=0;i<len;i+=1){
+            addedLength += Math.pow(arr2[i]-arr1[i],2);
+        }
+        return Math.sqrt(addedLength);
+    }
 
     function initiateExpression(elem,data){
         var val = data.x;
@@ -1633,7 +1644,14 @@ var ExpressionManager = (function(){
             }
             return ob;
         }
+
+        function hasParentGetter(){
+            //console.log('this: ',this);
+        }
+
+        Object.defineProperty(this, "hasParent", { get: hasParentGetter});
         var time, value,textIndex,textTotal,selectorValue;
+        var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
@@ -1705,6 +1723,8 @@ function ExpressionComp(){}
             i += 1;
         }
     }
+
+    ExpressionComp.prototype.pixelAspect = 1;
 }());
 function ShapeInterface(){}
 
@@ -1873,6 +1893,18 @@ ShapeInterface.prototype.transformInterface = function(view) {
                 view.transform.mProps.r.getValue();
             }
             return view.transform.mProps.r.pv;
+        },
+        get skew(){
+            if(view.transform.mProps.sk.k){
+                view.transform.mProps.sk.getValue();
+            }
+            return view.transform.mProps.sk.pv;
+        },
+        get skewAxis(){
+            if(view.transform.mProps.sa.k){
+                view.transform.mProps.sa.getValue();
+            }
+            return view.transform.mProps.sa.pv;
         }
     }
     return ob;
@@ -1935,13 +1967,10 @@ LayerInterface.prototype.toWorld = function(arr) {
             this.hierarchy[i].finalTransform.mProp.applyToMatrix(finalMat,true);
         }
         var retArr = finalMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-        console.log(retArr);
         return retArr;
     }
     return arr;
 };
-
-console.log(LayerInterface.prototype);
 var PropertyFactory = (function(){
 
     var initFrame = -999999;
@@ -2484,9 +2513,19 @@ var PropertyFactory = (function(){
             }
             return this.o.pv;
         }
+        function skewGetter(){
+            if(this.sk.k){
+                this.sk.getValue();
+            }
+            return this.sk.pv;
+        }
+        function skewAxisGetter(){
+            if(this.sa.k){
+                this.sa.getValue();
+            }
+            return this.sa.pv;
+        }
         function applyToMatrix(mat, processExpressions){
-
-            this.frameId = this.elem.globalData.frameId;
             var i, len = this.dynamicProperties.length;
 
             if(processExpressions){
@@ -2496,26 +2535,48 @@ var PropertyFactory = (function(){
                         this.mdf = true;
                     }
                 }
-            }
-            if(this.a){
-                mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-            }
-            if(this.s){
-                mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
-            }
-            if(this.r){
-                mat.rotate(-this.r.v);
-            }else{
-                mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
-            }
-            if(this.data.p.s){
-                if(this.data.p.z) {
-                    mat.translate(this.px.v, this.py.v, -this.pz.v);
-                } else {
-                    mat.translate(this.px.v, this.py.v, 0);
+                if(this.a){
+                    mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
                 }
-            }else{
-                mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+                if(this.s){
+                    mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
+                if(this.r){
+                    mat.rotate(-this.r.v);
+                }else{
+                    mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+                }
+                if(this.data.p.s){
+                    if(this.data.p.z) {
+                        mat.translate(this.px.v, this.py.v, -this.pz.v);
+                    } else {
+                        mat.translate(this.px.v, this.py.v, 0);
+                    }
+                }else{
+                    mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+                }
+            } else {
+
+                if(this.a){
+                    mat.translate(-this.a.pv[0],-this.a.pv[1],this.a.pv[2]);
+                }
+                if(this.s){
+                    mat.scale(this.s.pv[0],this.s.pv[1],this.s.pv[2]);
+                }
+                if(this.r){
+                    mat.rotate(-this.r.pv);
+                }else{
+                    mat.rotateZ(-this.rz.pv).rotateY(this.ry.pv).rotateX(this.rx.pv).rotateZ(-this.or.pv[2]).rotateY(this.or.pv[1]).rotateX(this.or.pv[0]);
+                }
+                if(this.data.p.s){
+                    if(this.data.p.z) {
+                        mat.translate(this.px.pv, this.py.pv, -this.pz.pv);
+                    } else {
+                        mat.translate(this.px.pv, this.py.pv, 0);
+                    }
+                }else{
+                    mat.translate(this.p.pv[0],this.p.pv[1],-this.p.pv[2]);
+                }
             }
         }
         function processKeys(){
@@ -2539,6 +2600,9 @@ var PropertyFactory = (function(){
                 }
                 if(this.s){
                     this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
+                if(this.sk){
+                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
                 }
                 if(this.r){
                     this.v.rotate(-this.r.v);
@@ -2607,6 +2671,10 @@ var PropertyFactory = (function(){
                 this.rz = getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
                 this.or = getProp(elem, data.or, 0, degToRads, this.dynamicProperties);
             }
+            if(data.sk){
+                this.sk = getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
+                this.sa = getProp(elem, data.sa, 0, degToRads, this.dynamicProperties);
+            }
             if(data.a) {
                 this.a = getProp(elem,data.a,1,0,this.dynamicProperties);
             }
@@ -2615,6 +2683,8 @@ var PropertyFactory = (function(){
             }
             if(data.o){
                 this.o = getProp(elem,data.o,0,0.01,arr);
+            } else {
+                this.o = {mdf:false,v:1};
             }
             if(this.dynamicProperties.length){
                 arr.push(this);
@@ -2624,6 +2694,9 @@ var PropertyFactory = (function(){
                 }
                 if(this.s){
                     this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                }
+                if(this.sk){
+                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
                 }
                 if(this.r){
                     this.v.rotate(-this.r.v);
@@ -2646,6 +2719,8 @@ var PropertyFactory = (function(){
             Object.defineProperty(this, "rotation", { get: rotationGetter});
             Object.defineProperty(this, "scale", { get: scaleGetter});
             Object.defineProperty(this, "opacity", { get: opacityGetter});
+            Object.defineProperty(this, "skew", { get: skewGetter});
+            Object.defineProperty(this, "skewAxis", { get: skewAxisGetter});
         }
     }());
 
@@ -4909,7 +4984,7 @@ BaseElement.prototype.mask = function(nm){
     return this.maskManager.getMask(nm);
 }
 
-extendPrototype(LayerInterface,BaseElement,true);
+extendPrototype(LayerInterface,BaseElement);
 
 Object.defineProperty(BaseElement.prototype, "anchorPoint", {
     get: function anchorPoint() {
@@ -4931,8 +5006,6 @@ createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.appendNodeToParent = function(node) {
     if(this.placeholder){
-        console.log(this.placeholder);
-        console.log(this.placeholder.phElement);
         var g = this.placeholder.phElement;
         g.parentNode.insertBefore(node, g);
         //g.parentNode.removeChild(g);
@@ -8970,7 +9043,7 @@ AnimationItem.prototype.triggerEvent = _triggerEvent;
     bodymovinjs.goToAndStop = goToAndStop;
     bodymovinjs.destroy = destroy;
     bodymovinjs.setQuality = setQuality;
-    bodymovinjs.version = '4.0.3';
+    bodymovinjs.version = '4.0.4';
 
     function checkReady(){
         if (document.readyState === "complete") {
