@@ -26,9 +26,12 @@ HShapeElement.prototype.createElements = function(){
         cont.appendChild(g);
         this.maskedElement = g;
         this.layerElement = g;
+        this.shapesContainer = g;
     }else{
         parent.appendChild(cont);
         this.layerElement = cont;
+        this.shapesContainer = document.createElementNS(svgNS,'g');
+        this.layerElement.appendChild(this.shapesContainer);
     }
     this.parentContainer.appendChild(parent);
     this.innerElem = parent;
