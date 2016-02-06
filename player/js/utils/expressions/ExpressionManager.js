@@ -320,7 +320,6 @@ var ExpressionManager = (function(){
         }
 
         function hasParentGetter(){
-            console.log('this: ',this);
         }
 
         Object.defineProperty(this, "hasParent", { get: hasParentGetter});
@@ -350,7 +349,7 @@ var ExpressionManager = (function(){
                     this.v *= this.mult;
                 }else{
                     if(!this.v) {
-                        console.log(val);
+                        //console.log(val);
                     }
                     len = this.v.length;
                     if(value === this.v){
