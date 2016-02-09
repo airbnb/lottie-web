@@ -320,7 +320,6 @@ var ExpressionManager = (function(){
         }
 
         function hasParentGetter(){
-            //console.log('this: ',this);
         }
 
         Object.defineProperty(this, "hasParent", { get: hasParentGetter});

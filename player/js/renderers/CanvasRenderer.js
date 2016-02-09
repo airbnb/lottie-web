@@ -327,7 +327,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     if(this.renderConfig.clearCanvas === true){
         this.reset();
         //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-        this.canvasContext.clearRect(0, 0, this.globalData.cWidth, this.globalData.cHeight);
+        this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
     }else{
         this.save();
     }
