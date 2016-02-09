@@ -69,6 +69,31 @@ var bm_effectsHelper = (function () {
         return ob;
     }
     
+    function iterateEffectProperties(effectElement) {
+        var i, len = effectElement.numProperties;
+        for (i = 0; i < len; i += 1) {
+            var prop = effectElement.property(i + 1);
+            var propsArray = [], propValue;
+            for (var s in prop) {
+                propsArray.push({key:s,value:''});
+            }
+            bm_eventDispatcher.log(propsArray);
+            bm_eventDispatcher.log('prop.name: ' + prop.name);
+            bm_eventDispatcher.log('prop.matchName: ' + prop.matchName);
+            bm_eventDispatcher.log('prop.propertyType: ' + prop.propertyType);
+            bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
+            bm_eventDispatcher.log('prop.hasMax: ' + prop.hasMax);
+            bm_eventDispatcher.log('prop.hasMin: ' + prop.hasMin);
+            if(prop.hasMax){
+                bm_eventDispatcher.log('prop.maxValue: ' + prop.maxValue);
+            }
+            if(prop.hasMin){
+                bm_eventDispatcher.log('prop.minValue: ' + prop.minValue);
+            }
+            bm_eventDispatcher.log('----------------');
+        }
+    }
+    
     function exportEffects(layerInfo, layerData, frameRate) {
         if (!(layerInfo.effect && layerInfo.effect.numProperties > 0)) {
             return;
@@ -78,6 +103,7 @@ var bm_effectsHelper = (function () {
         var effectsArray = [];
         for (i = 0; i < len; i += 1) {
             effectElement = effects(i + 1);
+            //iterateEffectProperties(effectElement);
             var effectType = getEffectType(effectElement.matchName);
             switch (effectType) {
             case effectTypes.sliderControl:

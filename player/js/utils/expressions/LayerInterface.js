@@ -1,7 +1,7 @@
 function LayerInterface(){}
 
 LayerInterface.prototype.toWorld = function(arr) {
-    if(this.hierarchy.length){
+    if(this.hierarchy && this.hierarchy.length){
         var finalMat = new Matrix();
         var i, len = this.hierarchy.length;
         this.finalTransform.mProp.applyToMatrix(finalMat,false);
@@ -13,3 +13,8 @@ LayerInterface.prototype.toWorld = function(arr) {
     }
     return arr;
 };
+
+LayerInterface.prototype.effect = function(num) {
+    console.log(this.effectsManager);
+    console.log(num);
+}
