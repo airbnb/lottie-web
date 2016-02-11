@@ -205,42 +205,56 @@ var bm_expressionHelper = (function () {
 
     function getBinaryElement(element) {
         switch (element.type) {
-        case "Literal":
-        case "Identifier":
-            return element;
-        case "CallExpression":
-            handleCallExpression(element);
-            return element;
-        case "BinaryExpression":
-            return convertBinaryExpression(element);
-        case "MemberExpression":
-            handleMemberExpression(element);
-            return element;
-        case "UpdateExpression":
-        case "UnaryExpression":
-            return element;
-        default:
-            bm_eventDispatcher.log('es: ', element);
-            return element;
+            case "Literal":
+            case "Identifier":
+                return element;
+            case "CallExpression":
+                handleCallExpression(element);
+                return element;
+            case "BinaryExpression":
+                return convertBinaryExpression(element);
+            case "MemberExpression":
+                handleMemberExpression(element);
+                return element;
+            case "UpdateExpression":
+            case "UnaryExpression":
+                return element;
+            default:
+                bm_eventDispatcher.log('es: ', element);
+                return element;
         }
     }
 
     function getOperatorName(operator) {
         switch (operator) {
-        case '+':
-            return 'sum';
-        case '-':
-            return 'sub';
-        case '*':
-            return 'mul';
-        case '/':
-            return 'div';
+            case '+':
+                return 'sum';
+            case '-':
+                return 'sub';
+            case '*':
+                return 'mul';
+            case '/':
+                return 'div';
 
         }
     }
 
+    function isOperatorTransformable(operator){
+        switch(operator){
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+                return true;
+        }
+        return false;
+    }
+
     function convertBinaryExpression(expression) {
         if (expression.left.type === 'Literal' && expression.right.type === 'Literal') {
+            return expression;
+        }
+        if(!isOperatorTransformable(expression.operator)){
             return expression;
         }
         var callStatementOb = {
@@ -358,7 +372,7 @@ var bm_expressionHelper = (function () {
     }
 
     function handleAssignmentExpression(assignmentExpression) {
-        if (assignmentExpression.right) {
+        if(assignmentExpression.right){
             if(assignmentExpression.right.type === 'BinaryExpression') {
                 assignmentExpression.right = convertBinaryExpression(assignmentExpression.right);
             } else if (assignmentExpression.right.type === 'CallExpression') {
@@ -393,10 +407,10 @@ var bm_expressionHelper = (function () {
             expression: {
                 left: {
                     name: '$bm_rt',
-                    type: 'Identifier'
+                        type: 'Identifier'
                 },
                 type: "AssignmentExpression",
-                operator: '='
+                    operator: '='
             }
         }
     }
@@ -407,27 +421,27 @@ var bm_expressionHelper = (function () {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'Identifier') {
+        } else if(expressionStatement.expression.type === 'Identifier'){
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'CallExpression') {
+        } else if(expressionStatement.expression.type === 'CallExpression'){
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'ArrayExpression') {
+        } else if(expressionStatement.expression.type === 'ArrayExpression'){
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'BinaryExpression') {
+        } else if(expressionStatement.expression.type === 'BinaryExpression'){
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'MemberExpression') {
+        } else if(expressionStatement.expression.type === 'MemberExpression'){
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
-        } else if(expressionStatement.expression.type === 'LogicalExpression') {
+        } else if(expressionStatement.expression.type === 'LogicalExpression'){
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
@@ -435,7 +449,7 @@ var bm_expressionHelper = (function () {
         return expressionStatement;
     }
 
-    function assignVariableToIfStatement(ifStatement) {
+    function assignVariableToIfStatement(ifStatement){
         if (ifStatement.consequent) {
             if (ifStatement.consequent.type === 'BlockStatement') {
                 assignVariable(ifStatement.consequent.body);
@@ -454,7 +468,7 @@ var bm_expressionHelper = (function () {
         }
     }
 
-    function assignVariable(body) {
+    function assignVariable(body){
         var len = body.length - 1;
         var flag = true;
         var lastElem;

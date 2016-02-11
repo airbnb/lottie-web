@@ -148,6 +148,10 @@ var PropertyFactory = (function(){
         return retVal;
     }
 
+    function getNonKeyframedValueAtTime(){
+        return this.pv;
+    }
+
     function getValue(){
         if(this.elem.globalData.frameId === this.frameId){
             return;
@@ -444,6 +448,7 @@ var PropertyFactory = (function(){
         this.v = new Array(data.k.length);
         this.pv = new Array(data.k.length);
         this.lastValue = new Array(data.k.length);
+        this.getValueAtTime = getNonKeyframedValueAtTime;
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];

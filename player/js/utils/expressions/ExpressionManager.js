@@ -285,23 +285,32 @@ var ExpressionManager = (function(){
         }
 
         function nearestKey(time){
-            var i = 0, len = data.k.length, ob = {};
-            for(i=0;i<len;i+=1){
-                if(time === data.k[i].t){
-                    ob.index = i+1;
-                    break;
-                }else if(time<data.k[i].t){
-                    ob.index = i+1;
-                    break;
-                }else if(time>data.k[i].t && i === len - 1){
-                    ob.index = len;
-                    break;
+            var i, len = data.k.length,index;
+            if(!data.k.length || typeof(data.k[0]) === 'number'){
+                index = 0;
+            } else {
+                for(i=0;i<len;i+=1){
+                    if(time === data.k[i].t){
+                        index = i + 1;
+                        break;
+                    }else if(time<data.k[i].t){
+                        index = i + 1;
+                        break;
+                    }else if(time>data.k[i].t && i === len - 1){
+                        index = len;
+                        break;
+                    }
                 }
             }
+            var ob = {};
+            ob.index = index;
             return ob;
         }
 
         function key(ind){
+            if(!data.k.length || typeof(data.k[0]) === 'number'){
+                return {time:0};
+            }
             ind -= 1;
             var ob = {
                 time: data.k[ind].t/thisComp.globalData.frameRate
