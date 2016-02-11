@@ -514,7 +514,6 @@ var bm_expressionHelper = (function () {
             expressionStr = escodegen.generate(parsed);
 
             expressionStr = 'var $bm_rt;\n' + expressionStr;
-            //console.log(expressionStr);
             returnOb.x = expressionStr;
         }
     }
