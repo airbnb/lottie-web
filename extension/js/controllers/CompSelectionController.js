@@ -32,6 +32,7 @@ var compSelectionController = (function () {
         var ob = {}, settingsView, compData, tempData = {}, callback;
         var segments, segmentsCheckbox, segmentsTextBox;
         var standalone, standaloneCheckbox;
+        var demo, demoCheckbox;
         var glyphs, glyphsCheckbox;
         
         function updateSegmentsData() {
@@ -55,6 +56,14 @@ var compSelectionController = (function () {
             }
         }
         
+        function updateDemoData() {
+            if (tempData.demo) {
+                demoCheckbox.addClass('selected');
+            } else {
+                demoCheckbox.removeClass('selected');
+            }
+        }
+        
         function updateGlyphsData() {
             if (tempData.glyphs) {
                 glyphsCheckbox.addClass('selected');
@@ -69,9 +78,13 @@ var compSelectionController = (function () {
         }
         
         function handleStandaloneCheckboxClick() {
-            console.log('handleStandaloneCheckboxClick');
             tempData.standalone = !tempData.standalone;
             updateStandaloneData();
+        }
+        
+        function handleDemoCheckboxClick() {
+            tempData.demo = !tempData.demo;
+            updateDemoData();
         }
         
         function handleGlyphsCheckboxClick() {
@@ -100,6 +113,9 @@ var compSelectionController = (function () {
             standalone = settingsView.find('.standalone');
             standalone.find('.checkboxCombo').on('click', handleStandaloneCheckboxClick);
             standaloneCheckbox = standalone.find('.checkbox');
+            demo = settingsView.find('.demo');
+            demo.find('.checkboxCombo').on('click', handleDemoCheckboxClick);
+            demoCheckbox = demo.find('.checkbox');
             glyphs = settingsView.find('.glyphs');
             glyphs.find('.checkboxCombo').on('click', handleGlyphsCheckboxClick);
             glyphsCheckbox = glyphs.find('.checkbox');
@@ -107,6 +123,7 @@ var compSelectionController = (function () {
             settingsView.find('.buttons .return').on('click', saveSettings);
             updateSegmentsData();
             updateStandaloneData();
+            updateDemoData();
             updateGlyphsData();
         }
         
@@ -117,6 +134,7 @@ var compSelectionController = (function () {
             callback = cb;
             updateSegmentsData();
             updateStandaloneData();
+            updateDemoData();
             updateGlyphsData();
         }
         

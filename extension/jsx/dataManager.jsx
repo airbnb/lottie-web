@@ -195,6 +195,20 @@ var bm_dataManager = (function () {
         string = JSON.stringify(data);
         string = string.replace(/\n/g, '');
         ////
+        if (config.demo) {
+            var demoStr = bm_downloadManager.getDemoData();
+            demoStr = demoStr.replace('"__[[ANIMATIONDATA]]__"', "" + string + "");
+            var demoFile = new File(destinationPath.replace('data.json','demo.html'));
+            demoFile.open('w', 'TEXT', '????');
+            demoFile.encoding = 'UTF-8';
+            try {
+                demoFile.write(demoStr); //DO NOT ERASE, JSON UNFORMATTED
+                //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
+                demoFile.close();
+            } catch (errr) {
+                bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
+            }
+        }
         if (config.standalone) {
             var bodymovinJsStr = bm_downloadManager.getStandaloneData();
             string = bodymovinJsStr.replace('"__[ANIMATIONDATA]__"', "'" + string + "'");

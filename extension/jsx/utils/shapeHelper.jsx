@@ -15,7 +15,6 @@ var bm_shapeHelper = (function () {
     };
 
     function getItemType(matchName) {
-        bm_eventDispatcher.log(matchName);
         switch (matchName) {
         case 'ADBE Vector Shape - Group':
             return shapeItemTypes.shape;

@@ -25,6 +25,7 @@ var bm_compsManager = (function () {
                     segmented: false,
                     segmentTime: 10,
                     standalone: false,
+                    demo: false,
                     glyphs: true
                 }
             };
