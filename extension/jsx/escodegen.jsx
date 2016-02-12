@@ -1944,7 +1944,6 @@
                                     allowIn: allowIn,
                                     allowCall: true
                                 });
-                            bm_eventDispatcher.log(expr);
                             result = [
                                 generateExpression(stmt.id, {
                                     precedence: Precedence.Assignment,
@@ -2986,7 +2985,6 @@
             escodegen = global.escodegen = require('../escodegen');
             bm_expressionHelper.escodegen = escodegen;
             escodegen.browser = true;
-            bm_eventDispatcher.log(escodegen);
         }());
 
     });

@@ -189,7 +189,6 @@ var bm_dataManager = (function () {
             delete data.comps;
         }
         dataFile = new File(destinationPath);
-        bm_eventDispatcher.log(File.isEncodingAvailable('UTF-8'));
         dataFile.open('w', 'TEXT', '????');
         dataFile.encoding = 'UTF-8';
         string = JSON.stringify(data);
@@ -198,7 +197,8 @@ var bm_dataManager = (function () {
         if (config.demo) {
             var demoStr = bm_downloadManager.getDemoData();
             demoStr = demoStr.replace('"__[[ANIMATIONDATA]]__"', "" + string + "");
-            var demoFile = new File(destinationPath.replace('data.json','demo.html'));
+            var demoDestinationPath = destinationPath.replace('data.json','demo.html').destinationPath.replace('data.js','demo.html')
+            var demoFile = new File(demoDestinationPath);
             demoFile.open('w', 'TEXT', '????');
             demoFile.encoding = 'UTF-8';
             try {

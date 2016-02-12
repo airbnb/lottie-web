@@ -192,8 +192,8 @@ var compSelectionController = (function () {
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
-    function setCompositionData(item) {
-        var i = 0, len = compositions.length, comp;
+    function setCompositionData(item, pos) {
+        var i = 0, len = compositions.length, comp, isAppended = true;
         while (i < len) {
             if (item.id === compositions[i].id) {
                 comp = compositions[i];
@@ -236,6 +236,7 @@ var compSelectionController = (function () {
             comp.resized = false;
             compositions.push(comp);
             addElemListeners(comp);
+            isAppended = false;
         }
         comp.active = true;
         comp.name = item.name;
@@ -250,7 +251,14 @@ var compSelectionController = (function () {
         } else {
             elem.removeClass('selected');
         }
-        compsListContainer.append(comp.elem);
+        if(!isAppended) {
+            if(pos === 0){
+                compsListContainer.prepend(elem);
+            } else {
+                console.log(compsListContainer.find("tr"));
+                compsListContainer.find("tr").eq(pos - 1).after(elem);
+            }
+        }
         /*if (!comp.resized) {
             //comp.anim.resize();
             //comp.resized = true;
@@ -261,7 +269,6 @@ var compSelectionController = (function () {
         var i, len = compositions.length;
         for (i = 0; i < len; i += 1) {
             compositions[i].active = false;
-            compositions[i].elem.detach();
         }
     }
     
@@ -269,6 +276,7 @@ var compSelectionController = (function () {
         var i, len = compositions.length;
         for (i = 0; i < len; i += 1) {
             if (!compositions[i].active) {
+                compositions[i].elem.detach();
                 compositions[i].anim.destroy();
                 compositions.splice(i, 1);
                 i -= 1;
@@ -287,7 +295,7 @@ var compSelectionController = (function () {
         }
         var i, len = list.length;
         for (i = 0; i < len; i += 1) {
-            setCompositionData(list[i]);
+            setCompositionData(list[i], i);
         }
         clearRemovedComps();
         checkCompositions();
