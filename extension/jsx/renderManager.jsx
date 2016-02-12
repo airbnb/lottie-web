@@ -40,6 +40,7 @@ var bm_renderManager = (function () {
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
             layerData = bm_layerElement.prepareLayer(layerInfo, i);
+            currentCompSettings.ddd = layerData.ddd === 1 ? true : currentCompSettings.ddd;
             if (layerData.td && prevLayerData && prevLayerData.td) {
                 prevLayerData.td = false;
                 if (prevLayerData.enabled === false) {
@@ -78,6 +79,7 @@ var bm_renderManager = (function () {
         hasExpressionsFlag = false;
         currentCompID = comp.id;
         currentCompSettings = compSettings;
+        currentCompSettings.ddd = false;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();

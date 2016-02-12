@@ -197,7 +197,12 @@ var bm_dataManager = (function () {
         if (config.demo) {
             var demoStr = bm_downloadManager.getDemoData();
             demoStr = demoStr.replace('"__[[ANIMATIONDATA]]__"', "" + string + "");
-            var demoDestinationPath = destinationPath.replace('data.json','demo.html').destinationPath.replace('data.js','demo.html')
+            if(config.ddd) {
+                demoStr = demoStr.replace('__[[RENDERER]]__', "html");
+            } else {
+                demoStr = demoStr.replace('__[[RENDERER]]__', "svg");
+            }
+            var demoDestinationPath = destinationPath.replace('data.json','demo.html').replace('data.js','demo.html')
             var demoFile = new File(demoDestinationPath);
             demoFile.open('w', 'TEXT', '????');
             demoFile.encoding = 'UTF-8';

@@ -255,7 +255,6 @@ var compSelectionController = (function () {
             if(pos === 0){
                 compsListContainer.prepend(elem);
             } else {
-                console.log(compsListContainer.find("tr"));
                 compsListContainer.find("tr").eq(pos - 1).after(elem);
             }
         }
