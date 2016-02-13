@@ -1,8 +1,8 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, alertData, successData, bodymovin, mainController, compRenderController, messageController */
+/*global $, alertData, successData, bm, mainController, compRenderController, messageController */
 var snapshotController = (function () {
     'use strict';
-    var ob = {}, view, csInterface, anim, header, controls, current, animContainer, slider, thumb, snapshotButton, $window, showing = false;
+    var ob = {}, view, csInterface, anim, header, controls, current, animContainer, slider, thumb, sliderBg, snapshotButton, $window, showing = false;
     var totalFrames, currentFrame, sliderWidth, rendersSelection, listContainer;
     
     function showSelection() {
@@ -43,6 +43,7 @@ var snapshotController = (function () {
         }
         animContainer.css('height', $window.height() - 2 - header.outerHeight() - controls.outerHeight() + 'px');
         sliderWidth = slider.width();
+        sliderBg.css('width', (sliderWidth + 10) + 'px');
         updateControls();
         
     }
@@ -70,8 +71,8 @@ var snapshotController = (function () {
                 prerender: true,
                 path: uri
             };
-        anim = bodymovin.loadAnimation(params);
-        anim.addEventListener('bm:config_ready', setTotalFrames);
+        anim = bm.loadAnimation(params);
+        anim.addEventListener('config_ready', setTotalFrames);
     }
     
     function addSelectionListener(elem, data) {
@@ -120,7 +121,7 @@ var snapshotController = (function () {
     }
     
     function updateSliderValue(pageX) {
-        var x = pageX - slider.offset().left;
+        var x = Math.max(0, pageX - slider.offset().left);
         var perc = x / sliderWidth;
         if (perc < 0) {
             perc = 0;
@@ -149,8 +150,9 @@ var snapshotController = (function () {
     function addSliderListeners() {
         
         slider = controls.find('.slider');
+        sliderBg = controls.find('.sliderBg');
         thumb = controls.find('.thumb');
-        slider.on('mousedown', sliderDown);
+        sliderBg.on('mousedown', sliderDown);
     }
     
     function saveSnapshot() {
@@ -198,8 +200,9 @@ var snapshotController = (function () {
         if (showing) {
             showing = false;
             view.hide();
-            slider.off('mouseup', sliderUp);
-            slider.off('mousemove', sliderMove);
+            $window.off('mouseup', sliderUp);
+            $window.off('mousemove', sliderMove);
+            slideBg.off('mousedown', sliderDown);
         }
     }
     

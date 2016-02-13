@@ -13,41 +13,8 @@ function createElement(parent,child,params){
     }
 }
 
-function defineDescriptor(o, propertyName, value, params){
-    var descriptor = {
-        writable : false,
-        configurable : false,
-        enumerable : false,
-        value : value
-    };
-    if(params){
-        for( var s in params){
-            descriptor[s] = params[s];
-        }
+function extendPrototype(source,destination){
+    for (var attr in source.prototype) {
+        if (source.prototype.hasOwnProperty(attr)) destination.prototype[attr] = source.prototype[attr];
     }
-    var getType = {};
-    if(o && getType.toString.call(o) === '[object Function]'){
-        o = o.prototype;
-    }
-    Object.defineProperty(o, propertyName, descriptor);
-}
-
-function defineAccessor(o, propertyName, params){
-    var value;
-    var accessor = {
-        enumerable : false,
-        configurable : false,
-        get: function(){return value;},
-        set: function(val){value = val;}
-    };
-    if(params){
-        for( var s in params){
-            accessor[s] = params[s];
-        }
-    }
-    var getType = {};
-    if(o && getType.toString.call(o) === '[object Function]'){
-        o = o.prototype;
-    }
-    Object.defineProperty(o, propertyName, accessor);
 }

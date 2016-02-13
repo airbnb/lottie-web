@@ -1,4 +1,5 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
 var bm_rounder = Math.round;
 var bm_rnd;
@@ -6,8 +7,10 @@ var bm_pow = Math.pow;
 var bm_sqrt = Math.sqrt;
 var bm_abs = Math.abs;
 var bm_floor = Math.floor;
+var bm_max = Math.max;
 var bm_min = Math.min;
-var defaultCurveSegments = 2;
+var defaultCurveSegments = 75;
+var degToRads = Math.PI/180;
 
 function roundValues(flag){
     if(flag){
@@ -20,15 +23,22 @@ function roundValues(flag){
 }
 roundValues(false);
 
+function roundTo2Decimals(val){
+    return Math.round(val*10000)/10000;
+}
+
+function roundTo3Decimals(val){
+    return Math.round(val*100)/100;
+}
+
 function styleDiv(element){
     element.style.position = 'absolute';
     element.style.top = 0;
     element.style.left = 0;
     element.style.display = 'block';
-    element.style.verticalAlign = 'top';
-    element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'hidden';
-    //element.style.transformStyle = element.style.webkitTransformStyle = "preserve-3d";
-    styleUnselectableDiv(element);
+    element.style.transformOrigin = element.style.webkitTransformOrigin = '0 0';
+    element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'visible';
+    element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
 function styleUnselectableDiv(element){
@@ -39,41 +49,71 @@ function styleUnselectableDiv(element){
 
 }
 
-function addEventListener(eventName, callback){
+function BMEnterFrameEvent(n,c,t,d){
+    this.type = n;
+    this.currentTime = c;
+    this.totalTime = t;
+    this.direction = d < 0 ? -1:1;
+}
 
-    if (!this._cbs){
-        this._cbs = [];
-    }
+function BMCompleteEvent(n,d){
+    this.type = n;
+    this.direction = d < 0 ? -1:1;
+}
+
+function BMCompleteLoopEvent(n,c,t,d){
+    this.type = n;
+    this.currentLoop = c;
+    this.totalLoops = t;
+    this.direction = d < 0 ? -1:1;
+}
+
+function BMSegmentStartEvent(n,f,t){
+    this.type = n;
+    this.firstFrame = f;
+    this.totalFrames = t;
+}
+
+function BMDestroyEvent(n,t){
+    this.type = n;
+    this.target = t;
+}
+
+function _addEventListener(eventName, callback){
 
     if (!this._cbs[eventName]){
         this._cbs[eventName] = [];
     }
-
     this._cbs[eventName].push(callback);
 
 }
 
-function triggerEvent(eventName, args){
+function _removeEventListener(eventName,callback){
 
-    if (!this._cbs){
-        this._cbs = [];
+    if (!callback){
+        this._cbs[eventName] = null;
+    }else if(this._cbs[eventName]){
+        var i = 0, len = this._cbs[eventName].length;
+        while(i<len){
+            if(this._cbs[eventName][i] === callback){
+                this._cbs[eventName].splice(i,1);
+                i -=1;
+                len -= 1;
+            }
+            i += 1;
+        }
+        if(!this._cbs[eventName].length){
+            this._cbs[eventName] = null;
+        }
     }
 
-    var delay = this._cbs.length === 0;
-    var that = this;
+}
 
+function _triggerEvent(eventName, args){
     if (this._cbs[eventName]) {
-        if (delay){
-            setTimeout(function(){
-                for (var i = 0; i < that._cbs[eventName].length; i++){
-                    that._cbs[eventName][i](args);
-                }
-            }, 0);
-        }
-        else {
-            for (var i = 0; i < this._cbs[eventName].length; i++){
-                this._cbs[eventName][i](args);
-            }
+        var len = this._cbs[eventName].length;
+        for (var i = 0; i < len; i++){
+            this._cbs[eventName][i](args);
         }
     }
 }
@@ -150,4 +190,20 @@ var fillColorToString = (function(){
 function RenderedFrame(tr,o) {
     this.tr = tr;
     this.o = o;
+}
+
+function LetterProps(o,sw,sc,fc,m,p){
+    this.o = o;
+    this.sw = sw;
+    this.sc = sc;
+    this.fc = fc;
+    this.m = m;
+    this.props = p;
+}
+
+function iterateDynamicProperties(num){
+    var i, len = this.dynamicProperties;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getValue(num);
+    }
 }

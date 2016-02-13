@@ -1,12 +1,11 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_eventDispatcher, bm_generalUtils, bm_layerElement, File, require*/
+/*global bm_eventDispatcher, bm_generalUtils, bm_downloadManager, bm_layerElement, File*/
 
 var bm_dataManager = (function () {
     'use strict';
     var ob = {};
     var animationSegments;
-    var segmentCount = 0, currentDestinationPath;
-    
+    var segmentCount = 0;
     
     function addCompsToSegment(layers, comps, segmentComps) {
         var i, len = layers.length, j, jLen;
@@ -55,7 +54,7 @@ var bm_dataManager = (function () {
                 }
             }
         }
-        if (data.assets) {
+        if (data.assets && segmentComps && segmentComps.length) {
             data.assets = data.assets.concat(segmentComps);
             if (data.comps) {
                 delete data.comps;
@@ -132,21 +131,32 @@ var bm_dataManager = (function () {
         }
     }
     
-    function deleteExtraParams(layers) {
+    function deleteLayerParams(layers) {
         var i, len = layers.length;
         for (i = 0; i < len; i += 1) {
             delete layers[i].isValid;
             delete layers[i].render;
             delete layers[i].enabled;
             if (layers[i].ty === bm_layerElement.layerTypes.precomp && layers[i].layers) {
-                deleteExtraParams(layers[i].layers);
+                deleteLayerParams(layers[i].layers);
             }
         }
     }
     
+    function deleteExtraParams(data, settings) {
+        if (data.fonts.length === 0) {
+            delete data.fonts;
+            delete data.chars;
+        } else {
+            if (!settings.glyphs) {
+                delete data.chars;
+            }
+        }
+        deleteLayerParams(data.layers);
+    }
+    
     function saveData(data, destinationPath, config) {
-        currentDestinationPath = destinationPath;
-        deleteExtraParams(data.layers);
+        deleteExtraParams(data, config);
         separateComps(data.layers, data.comps);
         var dataFile, segmentPath, s, string;
         if (config.segmented) {
@@ -159,6 +169,7 @@ var bm_dataManager = (function () {
                 segmentPath += filePathName + '_' + i + '.json';
                 dataFile = new File(segmentPath);
                 dataFile.open('w', 'TEXT', '????');
+                dataFile.encoding = 'UTF-8';
                 string = JSON.stringify(animationSegments[i]);
                 try {
                     dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
@@ -176,27 +187,50 @@ var bm_dataManager = (function () {
             }
             data.comps = null;
             delete data.comps;
-            string = JSON.stringify(data);
-            string = string.replace(/\n/g, '');
-            bm_eventDispatcher.sendEvent('bm:zip:data', {jsonString: '_' + string});
         }
-        animationSegments = '';
-        segmentCount = 0;
-    }
-    
-    function writeZippedData(str) {
-        var dataFile = new File(currentDestinationPath);
+        dataFile = new File(destinationPath);
         dataFile.open('w', 'TEXT', '????');
+        dataFile.encoding = 'UTF-8';
+        string = JSON.stringify(data);
+        string = string.replace(/\n/g, '');
+        ////
+        if (config.demo) {
+            var demoStr = bm_downloadManager.getDemoData();
+            demoStr = demoStr.replace('"__[[ANIMATIONDATA]]__"', "" + string + "");
+            if(data.ddd) {
+                demoStr = demoStr.replace('__[[RENDERER]]__', "html");
+            } else {
+                demoStr = demoStr.replace('__[[RENDERER]]__', "svg");
+            }
+            var demoDestinationPath = destinationPath.replace('data.json','demo.html').replace('data.js','demo.html')
+            var demoFile = new File(demoDestinationPath);
+            demoFile.open('w', 'TEXT', '????');
+            demoFile.encoding = 'UTF-8';
+            try {
+                demoFile.write(demoStr); //DO NOT ERASE, JSON UNFORMATTED
+                //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
+                demoFile.close();
+            } catch (errr) {
+                bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
+            }
+        }
+        if (config.standalone) {
+            var bodymovinJsStr = bm_downloadManager.getStandaloneData();
+            string = bodymovinJsStr.replace('"__[ANIMATIONDATA]__"', "'" + string + "'");
+            string = string.replace('"__[STANDALONE]__"', 'true');
+        }
+        ////
         try {
-            dataFile.write(str); //DO NOT ERASE, JSON UNFORMATTED
+            dataFile.write(string); //DO NOT ERASE, JSON UNFORMATTED
             //dataFile.write(JSON.stringify(ob.renderData.exportData, null, '  ')); //DO NOT ERASE, JSON FORMATTED
             dataFile.close();
         } catch (errr) {
             bm_eventDispatcher.sendEvent('bm:alert', {message: 'Could not write file.<br /> Make sure you have enabled scripts to write files. <br /> Edit > Preferences > General > Allow Scripts to Write Files and Access Network '});
         }
+        animationSegments = [];
+        segmentCount = 0;
     }
     
-    ob.writeZippedData = writeZippedData;
     ob.saveData = saveData;
     
     return ob;

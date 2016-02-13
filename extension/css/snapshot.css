@@ -33,6 +33,7 @@
 #snapshot .animContainer{
     width: 100%;
     background-color: #6E6568;
+    position: relative;
 }
 
 #snapshot .controls{
@@ -49,11 +50,22 @@
     margin-left: 4px;
 }
 
+#snapshot .controls .sliderBg{
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 110%;
+    height: 10px;
+    background-color: rgba(0,0,0,0);
+    cursor: pointer;
+}
+
 #snapshot .controls .slider{
     width: 100%;
     height: 2px;
     background-color: #D23641;
     cursor: pointer;
+    pointer-events: none;
 }
 
 #snapshot .controls .thumb{

@@ -4,7 +4,12 @@ function bezFunction(){
     var math = Math;
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
-        return bm_abs(((x2 - x1) * (y3 - y1)) - ((x3 - x1) * (y2 - y1))) < 0.00001;
+        var det1 = (x1*y2) + (y1*x3) + (x2*y3) - (x3*y2) - (y3*x1) - (x2*y1);
+        return det1 > -0.0001 && det1 < 0.0001;
+    }
+
+    function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
+        return pointOnLine2D(x1,y1, x2,y2, x3,y3) && pointOnLine2D(x1,z1, x2,z2, x3,z3);
     }
 
     function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
@@ -16,11 +21,10 @@ function bezFunction(){
         }
         var A0, B0, C0;
         var A1, B1, C1;
-        easingFunctions[encodedFuncName] = function(x, t, b, c, d) {
-            var tt = t/d;
-            x = tt;
+        easingFunctions[encodedFuncName] = function(tt) {
+            var x = tt;
             var i = 0, z;
-            while (++i < 14) {
+            while (++i < 20) {
                 C0 = 3 * aa;
                 B0 = 3 * (cc - aa) - C0;
                 A0 = 1 - C0 - B0;
@@ -32,12 +36,18 @@ function bezFunction(){
             B1 = 3 * (dd - bb) - C1;
             A1 = 1 - C1 - B1;
             var polyB = x * (C1 + x * (B1 + x * A1));
-            return c * polyB + b;
+            //return c * polyB + b;
+            return polyB;
         };
         return easingFunctions[encodedFuncName];
     }
     var getBezierLength = (function(){
         var storedBezierCurves = {};
+
+        function Segment(l,p){
+            this.l = l;
+            this.p = p;
+        }
 
         return function(pt1,pt2,pt3,pt4){
             var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
@@ -54,9 +64,6 @@ function bezFunction(){
                 addedLength: 0,
                 segments: []
             };
-            if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt3[0],pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt4[0],pt4[1])){
-                curveSegments = 2;
-            }
             len = pt3.length;
             for(k=0;k<curveSegments;k+=1){
                 perc = k/(curveSegments-1);
@@ -73,7 +80,7 @@ function bezFunction(){
                     ptDistance = bm_sqrt(ptDistance);
                     addedLength += ptDistance;
                 }
-                lengthData.segments.push({l:addedLength,p:perc});
+                lengthData.segments.push(new Segment(addedLength,perc));
             }
             lengthData.addedLength = addedLength;
             storedBezierCurves[bezierName] = lengthData;
@@ -91,40 +98,52 @@ function bezFunction(){
         this.point = point;
     }
 
-    function buildBezierData(keyData){
-        var pt1 = keyData.s;
-        var pt2 = keyData.e;
-        var pt3 = keyData.to;
-        var pt4 = keyData.ti;
+    var buildBezierData = (function(){
+
+        var storedData = {};
+
+        return function (keyData){
+            var pt1 = keyData.s;
+            var pt2 = keyData.e;
+            var pt3 = keyData.to;
+            var pt4 = keyData.ti;
+            var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
+            if(storedData[bezierName]){
+                keyData.bezierData = storedData[bezierName];
+                return;
+            }
         var curveSegments = defaultCurveSegments;
         var k, i, len;
-        var ptCoord,perc,addedLength = 0;
-        var ptDistance;
-        var point,lastPoint = null;
-        if((pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
-            curveSegments = 2;
-        }
-        var bezierData = new BezierData(curveSegments);
-        len = pt3.length;
-        for(k=0;k<curveSegments;k+=1){
+            var ptCoord,perc,addedLength = 0;
+            var ptDistance;
+            var point,lastPoint = null;
+            if(pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+                curveSegments = 2;
+            }
+            var bezierData = new BezierData(curveSegments);
+            len = pt3.length;
+            for(k=0;k<curveSegments;k+=1){
             point = new Array(len);
-            perc = k/(curveSegments-1);
-            ptDistance = 0;
-            for(i=0;i<len;i+=1){
+                perc = k/(curveSegments-1);
+                ptDistance = 0;
+                for(i=0;i<len;i+=1){
                 ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
                 point[i] = ptCoord;
-                if(lastPoint !== null){
+                    if(lastPoint !== null){
                     ptDistance += bm_pow(point[i] - lastPoint[i],2);
+                    }
                 }
-            }
             ptDistance = bm_sqrt(ptDistance);
-            addedLength += ptDistance;
-            bezierData.points[k] = new PointData(ptDistance,point);
-            lastPoint = point;
+                addedLength += ptDistance;
+                bezierData.points[k] = new PointData(ptDistance,point);
+                lastPoint = point;
+            }
+            bezierData.segmentLength = addedLength;
+            keyData.bezierData = bezierData;
+            storedData[bezierName] = bezierData;
+
         }
-        bezierData.segmentLength = addedLength;
-        keyData.bezierData = bezierData;
-    }
+    }());
 
     function getDistancePerc(perc,bezierData){
         var segments = bezierData.segments;
@@ -181,7 +200,9 @@ function bezFunction(){
         getEasingCurve : getEasingCurve,
         getBezierLength : getBezierLength,
         getNewSegment : getNewSegment,
-        buildBezierData : buildBezierData
+        buildBezierData : buildBezierData,
+        pointOnLine2D : pointOnLine2D,
+        pointOnLine3D : pointOnLine3D
     };
 }
 

@@ -1,11 +1,11 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, SystemPath, radioData, gearData, bodymovin, messageController, mainController */
+/*global $, SystemPath, radioData, gearData, checkData, bodymovin, messageController, mainController */
 var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
     var compositions = [];
     var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td settingsTd"><div class="hideExtra settings"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
-    
+
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
     }
@@ -31,6 +31,9 @@ var compSelectionController = (function () {
         
         var ob = {}, settingsView, compData, tempData = {}, callback;
         var segments, segmentsCheckbox, segmentsTextBox;
+        var standalone, standaloneCheckbox;
+        var demo, demoCheckbox;
+        var glyphs, glyphsCheckbox;
         
         function updateSegmentsData() {
             if (tempData.segmented) {
@@ -45,9 +48,48 @@ var compSelectionController = (function () {
             segmentsTextBox.val(tempData.segmentTime);
         }
         
+        function updateStandaloneData() {
+            if (tempData.standalone) {
+                standaloneCheckbox.addClass('selected');
+            } else {
+                standaloneCheckbox.removeClass('selected');
+            }
+        }
+        
+        function updateDemoData() {
+            if (tempData.demo) {
+                demoCheckbox.addClass('selected');
+            } else {
+                demoCheckbox.removeClass('selected');
+            }
+        }
+        
+        function updateGlyphsData() {
+            if (tempData.glyphs) {
+                glyphsCheckbox.addClass('selected');
+            } else {
+                glyphsCheckbox.removeClass('selected');
+            }
+        }
+        
         function handleSegmentCheckboxClick() {
             tempData.segmented = !tempData.segmented;
             updateSegmentsData();
+        }
+        
+        function handleStandaloneCheckboxClick() {
+            tempData.standalone = !tempData.standalone;
+            updateStandaloneData();
+        }
+        
+        function handleDemoCheckboxClick() {
+            tempData.demo = !tempData.demo;
+            updateDemoData();
+        }
+        
+        function handleGlyphsCheckboxClick() {
+            tempData.glyphs = !tempData.glyphs;
+            updateGlyphsData();
         }
         
         function cancelSettings() {
@@ -68,9 +110,21 @@ var compSelectionController = (function () {
             segments.find('.checkboxCombo').on('click', handleSegmentCheckboxClick);
             segmentsCheckbox = segments.find('.checkbox');
             segmentsTextBox = segments.find('.inputText');
+            standalone = settingsView.find('.standalone');
+            standalone.find('.checkboxCombo').on('click', handleStandaloneCheckboxClick);
+            standaloneCheckbox = standalone.find('.checkbox');
+            demo = settingsView.find('.demo');
+            demo.find('.checkboxCombo').on('click', handleDemoCheckboxClick);
+            demoCheckbox = demo.find('.checkbox');
+            glyphs = settingsView.find('.glyphs');
+            glyphs.find('.checkboxCombo').on('click', handleGlyphsCheckboxClick);
+            glyphsCheckbox = glyphs.find('.checkbox');
             settingsView.find('.buttons .cancel').on('click', cancelSettings);
             settingsView.find('.buttons .return').on('click', saveSettings);
             updateSegmentsData();
+            updateStandaloneData();
+            updateDemoData();
+            updateGlyphsData();
         }
         
         function show(data, cb) {
@@ -79,6 +133,9 @@ var compSelectionController = (function () {
             tempData = JSON.parse(JSON.stringify(compData));
             callback = cb;
             updateSegmentsData();
+            updateStandaloneData();
+            updateDemoData();
+            updateGlyphsData();
         }
         
         ob.init = init;
@@ -110,7 +167,7 @@ var compSelectionController = (function () {
             var eScript = 'bm_compsManager.searchCompositionDestination(' + comp.id + ')';
             csInterface.evalScript(eScript);
         }
-        
+    
         function saveSettings(data) {
             comp.settings = data;
             var eScript = 'bm_compsManager.setCompositionSettings(' + comp.id + ',' + JSON.stringify(comp.settings) + ')';
@@ -132,13 +189,11 @@ var compSelectionController = (function () {
         elem.find('.stateTd').on('click', handleStateClick);
         elem.find('.settingsTd').on('click', showElemSetings);
         elem.find('.settingsTd').hover(overElemSetings, outElemSetings);
-        /*elem.find('.settingsTd').on('rollover', overElemSetings);
-        elem.find('.settingsTd').on('rollout', outElemSetings);*/
         elem.find('.destinationTd').on('click', handleDestination);
     }
     
-    function setCompositionData(item) {
-        var i = 0, len = compositions.length, comp;
+    function setCompositionData(item, pos) {
+        var i = 0, len = compositions.length, comp, isAppended = true;
         while (i < len) {
             if (item.id === compositions[i].id) {
                 comp = compositions[i];
@@ -155,7 +210,7 @@ var compSelectionController = (function () {
             var animContainer = comp.elem.find('.state')[0];
             var animData = JSON.parse(radioData);
             var params = {
-                animType: 'canvas',
+                animType: 'svg',
                 wrapper: animContainer,
                 loop: false,
                 autoplay: false,
@@ -164,8 +219,7 @@ var compSelectionController = (function () {
             };
             var anim = bodymovin.loadAnimation(params);
             comp.anim = anim;
-            
-            
+
             animContainer = comp.elem.find('.settings')[0];
             animData = JSON.parse(gearData);
             params = {
@@ -178,10 +232,11 @@ var compSelectionController = (function () {
             };
             anim = bodymovin.loadAnimation(params);
             comp.gearAnim = anim;
-            
+
             comp.resized = false;
             compositions.push(comp);
             addElemListeners(comp);
+            isAppended = false;
         }
         comp.active = true;
         comp.name = item.name;
@@ -196,18 +251,23 @@ var compSelectionController = (function () {
         } else {
             elem.removeClass('selected');
         }
-        compsListContainer.append(comp.elem);
-        if (!comp.resized) {
-            comp.anim.resize();
-            comp.resized = true;
+        if(!isAppended) {
+            if(pos === 0){
+                compsListContainer.prepend(elem);
+            } else {
+                compsListContainer.find("tr").eq(pos - 1).after(elem);
+            }
         }
+        /*if (!comp.resized) {
+            //comp.anim.resize();
+            //comp.resized = true;
+        }*/
     }
     
     function markCompsForRemoval() {
         var i, len = compositions.length;
         for (i = 0; i < len; i += 1) {
             compositions[i].active = false;
-            compositions[i].elem.detach();
         }
     }
     
@@ -215,6 +275,7 @@ var compSelectionController = (function () {
         var i, len = compositions.length;
         for (i = 0; i < len; i += 1) {
             if (!compositions[i].active) {
+                compositions[i].elem.detach();
                 compositions[i].anim.destroy();
                 compositions.splice(i, 1);
                 i -= 1;
@@ -225,10 +286,15 @@ var compSelectionController = (function () {
     
     function updateCompositionsList(ev) {
         markCompsForRemoval();
-        var list = JSON.parse(ev.data);
+        var list;
+        if ((typeof ev.data) === 'string') {
+            list = JSON.parse(ev.data);
+        } else {
+            list = JSON.parse(JSON.stringify(ev.data));
+        }
         var i, len = list.length;
         for (i = 0; i < len; i += 1) {
-            setCompositionData(list[i]);
+            setCompositionData(list[i], i);
         }
         clearRemovedComps();
         checkCompositions();
@@ -268,12 +334,24 @@ var compSelectionController = (function () {
         settingsManager.init();
     }
     
+    function addFocusListener() {
+        window.onfocus = getCompositionsList;
+    }
+    
+    function removeFocusListener() {
+        window.onfocus = null;
+        
+    }
+    
     function show() {
         view.show();
+        addFocusListener();
+        getCompositionsList();
     }
     
     function hide() {
         view.hide();
+        removeFocusListener();
     }
     
     var ob = {};

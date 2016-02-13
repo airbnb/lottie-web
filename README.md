@@ -1,43 +1,15 @@
 # bodymovin
-After Effects plugin for exporting animations to svg + js or canvas + js
+After Effects plugin for exporting animations to svg/canvas/html + js
 
-## V 3.0.5
-- major memory management optimizations. and more to come.
-- big performance improvements for svg animations
-- segments fixes
-- devicePixelRatio support. contribution from @snorpey
+## V 4.0.1
+- separate dimensions fix
 
-## V 3.0.3
-- nested strokes and shapes fix
-- reverse rectangles fix
-- mask fix
-- reversed non closed shapes fix
-
-## V 3.0.2
-- bug fix for rounded rectangles
-- default quality settings modified
-
-## V 3.0.0
-- bodymovin.setQuality to optimize player performance. explained below.
-- segments: export animation in segments. more below.
-- snapshot: take an svg snapshot of the animation to use as poster. more below.
-
-## V 2.1.3
-- rounding path and mask coords. should give a perf boost and fixes sime glitches.
-- fixed closing rects.
-- new methods playSegments and resetSegments to play a part of the animation.
-- fix for canvas shapes fill opacity
-
-## V 2.1.1
-- reverse paths
-- mask fix
-- line join and line cap support
-- trim circles
-
-## V 2.1
-- for CC 2015 only
-- destroy method to release animation resources
-- minor improvements
+## V 4.0.0
+- 3d animations! (see wiki for more info)
+- expressions! (see wiki)
+- text (wiki)
+= new renderer: html
+- star shape
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
 
@@ -87,6 +59,7 @@ Jump directly to "Install third-party extensions"
 **snapshot:** take an svg snapshot of the animation to use as poster. After you render your animation, you can take a snapshot of any frame in the animation and save it to your disk. I recommend to pass the svg through an svg optimizer like https://jakearchibald.github.io/svgomg/ and play aroud with their settings.<br/>
 
 ### HTML
+**Check the demos for different ways to load animations.**
 - get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
 ```
@@ -99,14 +72,14 @@ It takes an object as a unique param with:
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
-- animType: 'svg' / 'canvas' to set the renderer
-- prerender: true / false to prerender all animation before starting (true recommended)
+- renderer: 'svg' / 'canvas' / 'html' to set the renderer
+- container: the dom element on which to render the animation
 <br />
 Returns the animation object you can control with play, pause, setSpeed, etc.
 ```
 bodymovin.loadAnimation({
-  wrapper: element, // the dom element
-  animType: 'svg',
+  container: element, // the dom element
+  renderer: 'svg',
   loop: true,
   autoplay: true,
   animationData: JSON.parse(animationData) // the animation data
@@ -115,12 +88,12 @@ bodymovin.loadAnimation({
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
 ```
 bodymovin.loadAnimation({
-  wrapper: element, // the dom element
-  animType: 'svg',
+  container: element, // the dom element
+  renderer: 'svg',
   loop: true,
   autoplay: true,
   animationData: animationData, // the animation data
-  renderer: {
+  rendererSettings: {
     context: canvasContext, // the canvas context
     scaleMode: 'noScale',
     clearCanvas: false
@@ -155,6 +128,16 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
 <br/>
 
 ## Usage
+animation instances have these main methods:
+**anim.play()** <br/>
+**anim.stop()** <br/>
+**anim.pause()** <br/>
+**anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
+**anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
+**anim.setDirection(direction)** -- one param direction (1 is normal direction.) <br/>
+**anim.playSegments(segments, forceFlag)** -- first param is a single array or multiple arrays of two values each(fromFrame,toFrame), second param is a boolean for forcing the new segment right away<br/>
+**anim.destroy()**<br/>
+
 bodymovin has 8 main methods:
 **bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
@@ -162,13 +145,26 @@ bodymovin has 8 main methods:
 **bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
 **bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**bodymovin.destroy()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
+**bodymovin.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
+**bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
 **bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+
+## Events
+- onComplete
+- onLoopComplete
+- onEnterFrame
+- onSegmentStart
+
+you can also use addEventListener with the following events:
+- complete
+- loopComplete
+- enterFrame
+- segmentStart
 
 
 See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations
 
-## Alerts!
+## Recommendations
 
 ### Files
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors, right click each layer and do: "Create shapes from Vector Layers"), they will be saved to an images folder relative to the destination json folder.
@@ -185,20 +181,17 @@ If you have any animations that don't work or want me to export them, don't hesi
 I'm really interested in seeing what kind of problems the plugin has. <br/>
 my email is **hernantorrisi@gmail.com**
 
-### Version
-This is version 2.1. It is even more stable but let me know if anything comes up.
-
 ## Examples
-http://codepen.io/collection/nVYWZR/ <br/>
+[See examples on codepen.](http://codepen.io/collection/nVYWZR/) <br/>
 
 ## Support
-- The script supports precomps, shapes, solids, images, null objects,
-- Text, image sequences, videos and audio are not supported (maybe some of them coming soon)
+- The script supports precomps, shapes, solids, images, null objects, texts
 - It supports masks and inverted masks. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping (yeah!)
-- The script supports shapes, rectangles and ellipses. It doesn't support stars yet.
-- No effects whatsoever. (stroke is on it's way)
-- No expressions (maybe some coming)
+- The script supports shapes, rectangles and ellipses and stars.
+- Only slider effects are supported at the moment.
+- Expressions. Check the wiki page for [more info.](https://github.com/bodymovin/bodymovin/wiki/Expressions)
+- Not supported: image sequences, videos and audio are (maybe some of them coming soon)
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
 
 ## Notes
@@ -207,8 +200,6 @@ http://codepen.io/collection/nVYWZR/ <br/>
 - gzipping the animation jsons and the player have a huge impact on the filesize. I recommend doing it if you use it for a project.
 
 ## Coming up
-- Text
 - Exporting images in a sprite
 - Stroke Effect support
 - Experimenting with the webAnimationAPI export
-- Exporting 3D animations (not vectors because there is no 3d svg support on browsers)
