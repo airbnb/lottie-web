@@ -197,7 +197,7 @@ var bm_dataManager = (function () {
         if (config.demo) {
             var demoStr = bm_downloadManager.getDemoData();
             demoStr = demoStr.replace('"__[[ANIMATIONDATA]]__"', "" + string + "");
-            if(config.ddd) {
+            if(data.ddd) {
                 demoStr = demoStr.replace('__[[RENDERER]]__', "html");
             } else {
                 demoStr = demoStr.replace('__[[RENDERER]]__', "svg");
