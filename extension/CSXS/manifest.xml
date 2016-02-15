@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="5.0" ExtensionBundleId="com.bodymovin.bodymovin" ExtensionBundleVersion="4.0.4"
+<ExtensionManifest Version="6.0" ExtensionBundleId="com.bodymovin.bodymovin" ExtensionBundleVersion="4.0.4"
 		ExtensionBundleName="bodymovin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ExtensionList>
 		<Extension Id="com.bodymovin.bodymovin" Version="4.0.4" />
 	</ExtensionList>
 	<ExecutionEnvironment>
 		<HostList>
-            <Host Name="AEFT" Version="[13.0,13.9]" />
-            <Host Name="AEFX" Version="[13.0,13.9]" />
+            <Host Name="AEFT" Version="13.0" />
+            <Host Name="AEFX" Version="13.0" />
 
             <!-- Illustrator -->
             <!-- <Host Name="ILST" Version="[18.0,18.9]" />-->
@@ -27,7 +27,7 @@
 			<Locale Code="All" />
 		</LocaleList>
 		<RequiredRuntimeList>
-			<RequiredRuntime Name="CSXS" Version="5.0" />
+			<RequiredRuntime Name="CSXS" Version="6.0" />
 		</RequiredRuntimeList>
 	</ExecutionEnvironment>
 	<DispatchInfoList>
@@ -36,6 +36,11 @@
 				<Resources>
 				<MainPath>./index.html</MainPath>
 				<ScriptPath>./jsx/hostscript.jsx</ScriptPath>
+                <CEFCommandLine>
+                    <Parameter>--enable-nodejs</Parameter>
+                    <Parameter>--mixed-context</Parameter>
+                    <Parameter>--enable-media-stream</Parameter>
+                </CEFCommandLine>
 				</Resources>
 				<Lifecycle>
 					<AutoVisible>true</AutoVisible>

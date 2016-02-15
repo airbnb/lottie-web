@@ -8,10 +8,6 @@ var mainController = (function () {
     var csInterface = new CSInterface();
     var mainViews = [];
     
-    
-    var gulp = require('gulp');
-    var gzip = require('gulp-gzip');
-    
     function showView(view) {
         var i, len = mainViews.length;
         for (i = 0; i < len; i += 1) {

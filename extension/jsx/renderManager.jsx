@@ -107,6 +107,7 @@ var bm_renderManager = (function () {
     function reset() {
         pendingLayers.length = 0;
         pendingComps.length = 0;
+        ob.renderData.exportData.assets.length = 0;
         currentCompSettings = null;
     }
     
@@ -215,7 +216,10 @@ var bm_renderManager = (function () {
         saveData();
     }
     
-    function imagesReady() {
+    function imagesReady(assetsArray) {
+        if(assetsArray) {
+            ob.renderData.exportData.assets = assetsArray;
+        }
         checkFonts();
     }
     
@@ -238,6 +242,7 @@ var bm_renderManager = (function () {
     ob.setChars = setChars;
     ob.imagesReady = imagesReady;
     ob.setFontData = setFontData;
+    ob.setAtlasData = bm_sourceHelper.setAtlasData;
     ob.setCharsData = setCharsData;
     ob.hasExpressions = hasExpressions;
     

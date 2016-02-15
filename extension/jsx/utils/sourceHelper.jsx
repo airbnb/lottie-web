@@ -3,6 +3,7 @@
 var bm_sourceHelper = (function () {
     'use strict';
     var compSources = [], imageSources = [], fonts = [], currentExportingImage, destinationPath, assetsArray, folder, helperComp, currentCompID, imageCount = 0;
+    var ob = {};
 
     function checkCompSource(item) {
         var arr = compSources;
@@ -79,6 +80,72 @@ var bm_sourceHelper = (function () {
         saveNextImage();
     }
     
+    function createAtlas() {
+        var i, len = imageSources.length;
+        var imagesList = [];
+        for (i = 0; i < len; i += 1) {
+            imagesList.push({
+                w: imageSources[i].width + 4,
+                h: imageSources[i].height + 4,
+                id: imageSources[i].id
+            });
+        }
+        bm_eventDispatcher.sendEvent('bm:render:atlas', {images: imagesList});
+    }
+    
+    function getSourceDataById(id) {
+        var i = 0, len = imageSources.length;
+        while( i < len) {
+            if(imageSources[i].id === id) {
+                return imageSources[i];
+            }
+            i += 1;
+        }
+    }
+    
+    function setAtlasData(blocks) {
+        if (bm_compsManager.cancelled) {
+            return;
+        }
+        var compWidth = 0;
+        var compHeight = 0;
+        var i, len = blocks.length;
+        for (i = 0; i < len; i += 1) {
+            compWidth = Math.max(blocks[i].fit.w + blocks[i].fit.x, compWidth);
+            compHeight = Math.max(blocks[i].fit.h + blocks[i].fit.y, compHeight);
+        }
+        var helperComp = app.project.items.addComp('atlasConverterComp', Math.max(4, compWidth), Math.max(4, compHeight), 1, 1, 1);
+        var source, sourceData, layer;
+        for (i = 0; i < len; i += 1) {
+            sourceData = getSourceDataById(blocks[i].id);
+            source = sourceData.source;
+            layer = helperComp.layers.add(source);
+            layer.transform['Anchor Point'].setValue([0, 0]);
+            layer.transform['Position'].setValue([blocks[i].fit.x + 2, blocks[i].fit.y + 2]);
+            assetsArray.push({
+                id: blocks[i].id,
+                w: blocks[i].w,
+                h: blocks[i].h,
+                x: blocks[i].fit.x + 2,
+                y: blocks[i].fit.y + 2,
+                p: 'images/atlas_' + '0' + '.png'
+            });
+        }
+        bm_eventDispatcher.log('assetsArray len: ' + assetsArray.length);
+        bm_renderManager.imagesReady(assetsArray);
+        var file = new File(folder.absoluteURI + '/atlas_' + '0' + '.png');
+        helperComp.saveFrameToPng(0, file);
+        helperComp.remove();
+    }
+    
+    function saveImages() {
+        if (ob.atlas) {
+            createAtlas();
+        } else {
+            saveNextImage();
+        }
+    }
+    
     function exportImages(path, assets, compId) {
         if (imageSources.length === 0) {
             bm_renderManager.imagesReady();
@@ -93,12 +160,12 @@ var bm_sourceHelper = (function () {
         assetsArray = assets;
         if (!folder.exists) {
             if (folder.create()) {
-                saveNextImage();
+                saveImages();
             } else {
                 bm_eventDispatcher.sendEvent('alert', 'folder failed to be created at: ' + folder.fsName);
             }
         } else {
-            saveNextImage();
+            saveImages();
         }
     }
     
@@ -127,16 +194,21 @@ var bm_sourceHelper = (function () {
         imageSources.length = 0;
         fonts.length = 0;
         imageCount = 0;
+        assetsArray = null;
     }
     
-    return {
+    ob = {
         checkCompSource: checkCompSource,
         checkImageSource: checkImageSource,
         setCompSourceId: setCompSourceId,
+        setAtlasData: setAtlasData,
         exportImages : exportImages,
         addFont : addFont,
         getFonts : getFonts,
+        atlas: true,
         reset: reset
     };
+    
+    return ob;
     
 }());

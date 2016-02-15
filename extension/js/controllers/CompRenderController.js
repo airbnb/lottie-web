@@ -198,6 +198,17 @@ var compRenderController = (function () {
         });
     }
     
+    function renderAtlasHandler(ev) {
+        var messageData = ev.data;
+        bm_binpacker.reset();
+        bm_binpacker.addBlocks(messageData.images);
+        var atlasPack = bm_binpacker.getPack();
+        var atlasDataString = JSON.stringify(atlasPack);
+        var eScript = 'bm_renderManager.setAtlasData(' + atlasDataString + ')';
+        csInterface.evalScript(eScript);
+        
+    }
+    
     function renderCharsHandler(ev) {
         var messageData = ev.data;
         var chars;
@@ -272,6 +283,7 @@ var compRenderController = (function () {
         csInterface.addEventListener('bm:render:complete', renderCompleteHandler);
         csInterface.addEventListener('bm:render:fonts', renderFontsHandler);
         csInterface.addEventListener('bm:render:chars', renderCharsHandler);
+        csInterface.addEventListener('bm:render:atlas', renderAtlasHandler);
         
         cancelButton = view.find('.cancel');
         returnButton = view.find('.return');

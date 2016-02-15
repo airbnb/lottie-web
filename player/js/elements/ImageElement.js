@@ -10,15 +10,26 @@ IImageElement.prototype.createElements = function(){
     var self = this;
 
     var imageLoaded = function(){
-        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
+        var cv = document.createElement('canvas');
+        cv.width = self.assetData.w;
+        cv.height = self.assetData.h;
+        var ctx = cv.getContext('2d');
+        ctx.drawImage(img,self.assetData.x,self.assetData.y,self.assetData.w,self.assetData.h,0,0,self.assetData.w,self.assetData.h);
+        var dataUri = cv.toDataURL();
+        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',dataUri);
+        //self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
         self.maskedElement = self.innerElem;
+        ImageManager.unregisterImage(imgLoader);
     };
 
-    var img = new Image();
-    img.addEventListener('load', imageLoaded, false);
-    img.addEventListener('error', imageLoaded, false);
-
-    img.src = this.path+this.assetData.p;
+    var imgLoader = ImageManager.getImage(this.path+this.assetData.p);
+    var img = imgLoader.elem;
+    if(imgLoader.loaded) {
+        imageLoaded();
+    } else {
+        img.addEventListener('load', imageLoaded, false);
+        img.addEventListener('error', imageLoaded, false);
+    }
 
     this.parent.createElements.call(this);
 
