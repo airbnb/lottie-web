@@ -244,8 +244,10 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             for(k=0;k<kLen;k+=1){
                 if(nodes[k].t == 'm'){
                     ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
-                }else{
+                }else if(nodes[k].t == 'c'){
                     ctx.bezierCurveTo(nodes[k].p1[0],nodes[k].p1[1],nodes[k].p2[0],nodes[k].p2[1],nodes[k].p3[0],nodes[k].p3[1]);
+                }else{
+                    ctx.closePath();
                 }
             }
             if(type === 'st'){
@@ -311,6 +313,17 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                     p2:groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
                     p3:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                 });
+                if (len > 1){
+                    pathStringTransformed.push({
+                        t:'c',
+                        p1:groupTransform.mat.applyToPointArray(pathNodes.o[0][0],pathNodes.o[0][1], 0),
+                        p2:groupTransform.mat.applyToPointArray(pathNodes.i[1][0], pathNodes.i[1][1], 0),
+                        p3:groupTransform.mat.applyToPointArray(pathNodes.v[1][0], pathNodes.v[1][1], 0)
+                    });
+                }
+                /*pathStringTransformed.push({
+                    t:'z'
+                });*/
             }
             if (viewData.st) {
                 for(i=0;i<16;i+=1){

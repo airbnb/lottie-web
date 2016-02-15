@@ -318,6 +318,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
             }
             if (len && pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
                 pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                pathStringTransformed += 'z';
             }
             viewData.lStr = pathStringTransformed;
         }else{
