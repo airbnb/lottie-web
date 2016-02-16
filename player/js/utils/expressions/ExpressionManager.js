@@ -17,7 +17,7 @@ var ExpressionManager = (function(){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
-                if(a[i] && b[i]){
+                if(typeof a[i] === 'number' && typeof b[i] === 'number'){
                     retArr[i] = a[i] + b[i];
                 }else{
                     retArr[i] = a[i] || b[i];
@@ -45,7 +45,7 @@ var ExpressionManager = (function(){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
-                if(a[i] && b[i]){
+                if(typeof a[i] === 'number' && typeof b[i] === 'number'){
                     retArr[i] = a[i] - b[i];
                 }else{
                     retArr[i] = a[i] || b[i];
@@ -61,20 +61,22 @@ var ExpressionManager = (function(){
         if(typeof a === 'number' && typeof b === 'number') {
             return a * b;
         }
-        var i, len;
+        var i, len, arr;
         if(typeof a === 'object' && typeof b === 'number'){
             len = a.length;
+            arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
-                a[i] = a[i] * b;
+                arr[i] = a[i] * b;
             }
-            return a;
+            return arr;
         }
         if(typeof a === 'number' && typeof b === 'object'){
             len = b.length;
+            arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
-                b[i] = a * b[i];
+                arr[i] = a * b[i];
             }
-            return b;
+            return arr;
         }
         return 0;
     }
@@ -83,20 +85,22 @@ var ExpressionManager = (function(){
         if(typeof a === 'number' && typeof b === 'number') {
             return a / b;
         }
-        var i, len;
+        var i, len, arr;
         if(typeof a === 'object' && typeof b === 'number'){
             len = a.length;
+            arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
-                a[i] = a[i] / b;
+                arr[i] = a[i] / b;
             }
-            return a;
+            return arr;
         }
         if(typeof a === 'number' && typeof b === 'object'){
             len = b.length;
+            arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
-                b[i] = a / b[i];
+                arr[i] = a / b[i];
             }
-            return b;
+            return arr;
         }
         return 0;
     }
@@ -372,7 +376,7 @@ var ExpressionManager = (function(){
         }
 
         Object.defineProperty(this, "hasParent", { get: hasParentGetter});
-        var time, value,textIndex,textTotal,selectorValue;
+        var time, value,textIndex,textTotal,selectorValue, index = 0;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
             if(this.type === 'textSelector'){
@@ -428,7 +432,6 @@ var ExpressionManager = (function(){
                     }
                 }
             }
-            console.log(this.v);
         }
         return execute;
     }
