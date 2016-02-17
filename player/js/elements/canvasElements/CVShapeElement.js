@@ -313,17 +313,9 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                     p2:groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
                     p3:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                 });
-                if (len > 1){
-                    pathStringTransformed.push({
-                        t:'c',
-                        p1:groupTransform.mat.applyToPointArray(pathNodes.o[0][0],pathNodes.o[0][1], 0),
-                        p2:groupTransform.mat.applyToPointArray(pathNodes.i[1][0], pathNodes.i[1][1], 0),
-                        p3:groupTransform.mat.applyToPointArray(pathNodes.v[1][0], pathNodes.v[1][1], 0)
-                    });
-                }
-                /*pathStringTransformed.push({
+                pathStringTransformed.push({
                     t:'z'
-                });*/
+                });
             }
             if (viewData.st) {
                 for(i=0;i<16;i+=1){
