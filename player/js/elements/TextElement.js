@@ -56,6 +56,15 @@ ITextElement.prototype.init = function(){
             if('fc' in animatorProps.a) {
                 animatorData.a.fc = PropertyFactory.getProp(this,animatorProps.a.fc,1,0,this.dynamicProperties);
             }
+            if('fh' in animatorProps.a) {
+                animatorData.a.fh = PropertyFactory.getProp(this,animatorProps.a.fh,0,0,this.dynamicProperties);
+            }
+            if('fs' in animatorProps.a) {
+                animatorData.a.fs = PropertyFactory.getProp(this,animatorProps.a.fs,0,0.01,this.dynamicProperties);
+            }
+            if('fb' in animatorProps.a) {
+                animatorData.a.fb = PropertyFactory.getProp(this,animatorProps.a.fb,0,0.01,this.dynamicProperties);
+            }
             if('t' in animatorProps.a) {
                 animatorData.a.t = PropertyFactory.getProp(this,animatorProps.a.t,0,0,this.dynamicProperties);
             }
@@ -409,13 +418,24 @@ ITextElement.prototype.getMeasures = function(){
                         }
                     }
                 }
-                if (documentData.fillColorAnim && 'fc' in animatorProps) {
-                    for(k=0;k<3;k+=1){
-                        if(mult.length) {
-                            fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0]);
-                        } else {
-                            fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult);
+                if (documentData.fillColorAnim) {
+                    if('fc' in animatorProps){
+                        for(k=0;k<3;k+=1){
+                            if(mult.length) {
+                                fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0]);
+                            } else {
+                                fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult);
+                            }
                         }
+                    }
+                    if('fh' in animatorProps){
+                        fc = addHueToRGB(fc,animatorProps.fh.v);
+                    }
+                    if('fs' in animatorProps){
+                        fc = addSaturationToRGB(fc,animatorProps.fs.v);
+                    }
+                    if('fb' in animatorProps){
+                        fc = addBrightnessToRGB(fc,animatorProps.fb.v);
                     }
                 }
             }

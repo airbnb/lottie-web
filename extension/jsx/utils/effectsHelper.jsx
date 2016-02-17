@@ -77,7 +77,7 @@ var bm_effectsHelper = (function () {
             for (var s in prop) {
                 propsArray.push({key:s,value:''});
             }
-            bm_eventDispatcher.log(propsArray);
+            /* bm_eventDispatcher.log(propsArray);
             bm_eventDispatcher.log('prop.name: ' + prop.name);
             bm_eventDispatcher.log('prop.matchName: ' + prop.matchName);
             bm_eventDispatcher.log('prop.propertyType: ' + prop.propertyType);
@@ -90,7 +90,7 @@ var bm_effectsHelper = (function () {
             if(prop.hasMin){
                 bm_eventDispatcher.log('prop.minValue: ' + prop.minValue);
             }
-            bm_eventDispatcher.log('----------------');
+            bm_eventDispatcher.log('----------------');*/
         }
     }
     

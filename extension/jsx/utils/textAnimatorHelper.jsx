@@ -84,6 +84,7 @@ var bm_textAnimatorHelper = (function () {
             property = layerInfo.property(i + 1);
             if (property.canSetExpression) {
                 propertyName = property.matchName;
+                bm_eventDispatcher.log('propertyName: ' + propertyName);
                 switch (propertyName) {
                 case 'ADBE Text Anchor Point 3D':
                     ob.a = bm_keyframeHelper.exportKeyframes(property, frameRate);
@@ -109,8 +110,26 @@ var bm_textAnimatorHelper = (function () {
                 case 'ADBE Text Fill Color':
                     ob.fc = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
+                case 'ADBE Text Fill Hue':
+                    ob.fh = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Fill Saturation':
+                    ob.fs = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Fill Brightness':
+                    ob.fb = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
                 case 'ADBE Text Stroke Color':
                     ob.sc = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Stroke Hue':
+                    ob.sh = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Stroke Saturation':
+                    ob.ss = bm_keyframeHelper.exportKeyframes(property, frameRate);
+                    break;
+                case 'ADBE Text Stroke Brightness':
+                    ob.sb = bm_keyframeHelper.exportKeyframes(property, frameRate);
                     break;
                 case 'ADBE Text Stroke Width':
                     ob.sw = bm_keyframeHelper.exportKeyframes(property, frameRate);

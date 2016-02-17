@@ -128,6 +128,130 @@ function randomString(length, chars){
     return result;
 }
 
+function rgbToHSL(color){
+
+    var r = color[0] / 255,
+        g = color[1] / 255,
+        b = color[2] / 255,
+        cMax = Math.max(r, g, b),
+        cMin = Math.min(r, g, b),
+        delta = cMax - cMin,
+        l = (cMax + cMin) / 2,
+        h = 0,
+        s = 0;
+
+    if (delta == 0) {
+        h = 0;
+    }
+    else if (cMax == r) {
+        h = 60 * (((g - b) / delta) % 6);
+    }
+    else if (cMax == g) {
+        h = 60 * (((b - r) / delta) + 2);
+    }
+    else {
+        h = 60 * (((r - g) / delta) + 4);
+    }
+
+    if (delta == 0) {
+        s = 0;
+    }
+    else {
+        s = (delta/(1-Math.abs(2*l - 1)))
+    }
+
+    return [h,s,l];
+}
+
+function hslToRGB(h,s,l) {
+    var c = (1 - Math.abs(2*l - 1)) * s,
+        x = c * ( 1 - Math.abs((h / 60 ) % 2 - 1 )),
+        m = l - c/ 2,
+        r, g, b;
+
+    if (h < 60) {
+        r = c;
+        g = x;
+        b = 0;
+    }
+    else if (h < 120) {
+        r = x;
+        g = c;
+        b = 0;
+    }
+    else if (h < 180) {
+        r = 0;
+        g = c;
+        b = x;
+    }
+    else if (h < 240) {
+        r = 0;
+        g = x;
+        b = c;
+    }
+    else if (h < 300) {
+        r = x;
+        g = 0;
+        b = c;
+    }
+    else {
+        r = c;
+        g = 0;
+        b = x;
+    }
+
+    r = normalize_rgb_value(r, m);
+    g = normalize_rgb_value(g, m);
+    b = normalize_rgb_value(b, m);
+
+    //console.log('r,g,b: ',r,g,b);
+    return [r,g,b];
+}
+function normalize_rgb_value(color, m) {
+    color = Math.floor((color + m) * 255);
+    if (color < 0) {
+        color = 0;
+    }
+    return color;
+}
+
+function addSaturationToRGB(color,offset){
+    var hsl = rgbToHSL(color);
+    hsl[1] += offset;
+    if (hsl[1] > 1) {
+        hsl[1] = 1;
+    }
+    else if (hsl[1] < 0) {
+        hsl[1] = 0;
+    }
+    console.log(hsl);
+    return hslToRGB(hsl[0],hsl[1],hsl[2]);
+}
+
+function addBrightnessToRGB(color,offset){
+    var hsl = rgbToHSL(color);
+    hsl[2] += offset;
+    if (hsl[2] > 1) {
+        hsl[2] = 1;
+    }
+    else if (hsl[2] < 0) {
+        hsl[2] = 0;
+    }
+    return hslToRGB(hsl[0],hsl[1],hsl[2]/2);
+}
+
+function addHueToRGB(color,offset) {
+    var hsl = rgbToHSL(color);
+    hsl[0] += offset;
+    if (hsl[0] > 360) {
+        hsl[0] -= 360;
+    }
+    else if (hsl[0] < 0) {
+        hsl[0] += 360;
+    }
+    return hslToRGB(hsl[0],hsl[1],hsl[2]/2);
+}
+
 function componentToHex(c) {
     var hex = c.toString(16);
     return hex.length == 1 ? '0' + hex : hex;
