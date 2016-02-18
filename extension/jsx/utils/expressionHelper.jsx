@@ -504,6 +504,7 @@ var bm_expressionHelper = (function () {
             pendingBodies.length = 0;
             doneBodies.length = 0;
             expressionStr = prop.expression;
+            expressionStr = correctEaseAndWizz(expressionStr);
             searchUndeclaredVariables();
             var parsed = esprima.parse(expressionStr, options);
             var body = parsed.body;
@@ -516,6 +517,17 @@ var bm_expressionHelper = (function () {
             expressionStr = 'var $bm_rt;\n' + expressionStr;
             returnOb.x = expressionStr;
         }
+    }
+    
+    function correctEaseAndWizz(str){
+        bm_eventDispatcher.log(str);
+        var easeRegex = /Ease and Wizz\s[0-9. ]+: inOutQuad :/;
+        if (easeRegex.test(str)) {
+            bm_eventDispatcher.log('entrotrotro');
+            str = str.replace('key(1)[1];', 'key(1)[1].length;');
+            str = str.replace('key(1)[2];', 'key(1)[2].length;');
+        }
+        return str;
     }
 
     ob.checkExpression = checkExpression;
