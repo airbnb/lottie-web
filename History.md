@@ -1,3 +1,7 @@
+## V 4.0.7
+- some expression fixes
+- trimmed closed shapes fix
+
 ## V 4.0.5
 - more expressions supported
 - miter closed shapes fix
