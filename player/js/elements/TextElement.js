@@ -429,13 +429,26 @@ ITextElement.prototype.getMeasures = function(){
                         }
                     }
                     if('fh' in animatorProps){
-                        fc = addHueToRGB(fc,animatorProps.fh.v);
+
+                        if(mult.length) {
+                            fc = addHueToRGB(fc,animatorProps.fh.v*mult[0]);
+                        } else {
+                            fc = addHueToRGB(fc,animatorProps.fh.v*mult);
+                        }
                     }
                     if('fs' in animatorProps){
-                        fc = addSaturationToRGB(fc,animatorProps.fs.v);
+                        if(mult.length) {
+                            fc = addSaturationToRGB(fc,animatorProps.fs.v*mult[0]);
+                        } else {
+                            fc = addSaturationToRGB(fc,animatorProps.fs.v*mult);
+                        }
                     }
                     if('fb' in animatorProps){
-                        fc = addBrightnessToRGB(fc,animatorProps.fb.v);
+                        if(mult.length) {
+                            fc = addBrightnessToRGB(fc,animatorProps.fb.v*mult[0]);
+                        } else {
+                            fc = addBrightnessToRGB(fc,animatorProps.fb.v*mult);
+                        }
                     }
                 }
             }

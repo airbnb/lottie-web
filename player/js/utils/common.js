@@ -163,6 +163,53 @@ function rgbToHSL(color){
     return [h,s,l];
 }
 
+function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+    return [ Math.round(r * 255),
+         Math.round(g * 255),
+         Math.round(b * 255) ];
+}
+
+function RGBtoHSV(r, g, b) {
+    if (arguments.length === 1) {
+        g = r.g, b = r.b, r = r.r;
+    }
+    var max = Math.max(r, g, b), min = Math.min(r, g, b),
+        d = max - min,
+        h,
+        s = (max === 0 ? 0 : d / max),
+        v = max / 255;
+
+    switch (max) {
+        case min: h = 0; break;
+        case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+        case g: h = (b - r) + d * 2; h /= 6 * d; break;
+        case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    }
+
+    return [
+         h,
+         s,
+         v
+    ];
+}
+
 function hslToRGB(h,s,l) {
     var c = (1 - Math.abs(2*l - 1)) * s,
         x = c * ( 1 - Math.abs((h / 60 ) % 2 - 1 )),
@@ -216,40 +263,40 @@ function normalize_rgb_value(color, m) {
 }
 
 function addSaturationToRGB(color,offset){
-    var hsl = rgbToHSL(color);
-    hsl[1] += offset;
-    if (hsl[1] > 1) {
-        hsl[1] = 1;
+    var hsv = RGBtoHSV(color[0],color[1],color[2]);
+    hsv[1] += offset;
+    if (hsv[1] > 1) {
+        hsv[1] = 1;
     }
-    else if (hsl[1] < 0) {
-        hsl[1] = 0;
+    else if (hsv[1] <= 0) {
+        hsv[1] = 0;
+        hsv[2] = 0;
     }
-    console.log(hsl);
-    return hslToRGB(hsl[0],hsl[1],hsl[2]);
+    return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 }
 
 function addBrightnessToRGB(color,offset){
-    var hsl = rgbToHSL(color);
-    hsl[2] += offset;
-    if (hsl[2] > 1) {
-        hsl[2] = 1;
+    var hsv = RGBtoHSV(color[0],color[1],color[2]);
+    hsv[2] += offset;
+    if (hsv[2] > 1) {
+        hsv[2] = 1;
     }
-    else if (hsl[2] < 0) {
-        hsl[2] = 0;
+    else if (hsv[2] < 0) {
+        hsv[2] = 0;
     }
-    return hslToRGB(hsl[0],hsl[1],hsl[2]/2);
+    return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 }
 
 function addHueToRGB(color,offset) {
-    var hsl = rgbToHSL(color);
-    hsl[0] += offset;
-    if (hsl[0] > 360) {
-        hsl[0] -= 360;
+    var hsv = RGBtoHSV(color[0],color[1],color[2]);
+    hsv[0] += offset/360;
+    if (hsv[0] > 1) {
+        hsv[0] -= 1;
     }
-    else if (hsl[0] < 0) {
-        hsl[0] += 360;
+    else if (hsv[0] < 0) {
+        hsv[0] += 1;
     }
-    return hslToRGB(hsl[0],hsl[1],hsl[2]/2);
+    return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 }
 
 function componentToHex(c) {
