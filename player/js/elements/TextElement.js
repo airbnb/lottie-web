@@ -4,7 +4,7 @@ ITextElement.prototype.init = function(){
     this.parent.init.call(this);
     this.lettersChangedFlag = false;
     var data = this.data;
-    this.renderedLetters = new Array(data.t.d.l.length);
+    this.renderedLetters = Array.apply(null,{length:data.t.d.l.length});
     this.viewData = {
         m:{
             a: PropertyFactory.getProp(this,data.t.m.a,1,0,this.dynamicProperties)
@@ -12,7 +12,7 @@ ITextElement.prototype.init = function(){
     };
     var textData = this.data.t;
     if(textData.a.length){
-        this.viewData.a = new Array(textData.a.length);
+        this.viewData.a = Array.apply(null,{length:textData.a.length});
         var i, len = textData.a.length, animatorData, animatorProps;
         for(i=0;i<len;i+=1){
             animatorProps = textData.a[i];
@@ -191,7 +191,7 @@ ITextElement.prototype.getMeasures = function(){
     var firstLine = true;
     var renderedData = this.viewData, animatorProps, animatorSelector;
     var j, jLen;
-    var lettersValue = new Array(len), letterValue;
+    var lettersValue = Array.apply(null,{length:len}), letterValue;
     this.lettersChangedFlag = false;
 
     jLen = renderedData.a.length;
@@ -429,7 +429,6 @@ ITextElement.prototype.getMeasures = function(){
                         }
                     }
                     if('fh' in animatorProps){
-
                         if(mult.length) {
                             fc = addHueToRGB(fc,animatorProps.fh.v*mult[0]);
                         } else {

@@ -113,17 +113,6 @@ var ExpressionManager = (function(){
         }
         return Math.min(Math.max(num, min), max);
     }
-    function random(min,max){
-        if(!max){
-            max = 0;
-        }
-        if(min > max){
-            var _m = max;
-            max = min;
-            min = _m;
-        }
-        return min + (Math.random()*(max-min));
-    }
 
     function radiansToDegrees(val) {
         return val/degToRads;
@@ -156,7 +145,9 @@ var ExpressionManager = (function(){
         return arr;
     }
 
-    function seedRandom(){};
+    function seedRandom(seed){
+        BMMath.seedrandom(seed);
+    };
     function random(min,max){
         if(max === undefined){
             if(min === undefined){
@@ -173,15 +164,17 @@ var ExpressionManager = (function(){
                 min = Array.apply(null,{length:len});
             }
             var arr = Array.apply(null,{length:len});
+            var rnd = BMMath.random();
             for(i=0;i<len;i+=1){
-                arr[i] = min[i] + Math.random()*(max[i]-min[i])
+                arr[i] = min[i] + rnd*(max[i]-min[i])
             }
             return arr;
         }
         if(min === undefined){
             min = 0;
         }
-        return min + Math.random()*(max-min);
+        var rndm = BMMath.random();
+        return min + rndm*(max-min);
     }
 
     function initiateExpression(elem,data){
@@ -196,6 +189,37 @@ var ExpressionManager = (function(){
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
+
+
+        var wiggle = function wiggle(freq,amp){
+            var i,j, len = this.pv.length ? this.pv.length : 1;
+            var addedAmps = Array.apply(null,{len:len});
+            for(j=0;j<len;j+=1){
+                addedAmps[j] = 0;
+            }
+            freq = 5;
+            var iterations = Math.floor(time*freq);
+            i = 0;
+            j = 0;
+            while(i<iterations){
+                //var rnd = BMMath.random();
+                for(j=0;j<len;j+=1){
+                    addedAmps[j] += -amp + amp*2*BMMath.random();
+                    //addedAmps[j] += -amp + amp*2*rnd;
+                }
+                i += 1;
+            }
+            //var rnd2 = BMMath.random();
+            var periods = time*freq;
+            var perc = periods - Math.floor(periods);
+            var arr = Array.apply({length:len});
+            for(j=0;j<len;j+=1){
+                arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
+                //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
+                //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+            }
+            return arr;
+        }.bind(this);
 
         var loopIn = function loopIn(type,duration, durationFlag) {
             if(!this.k){
@@ -376,9 +400,10 @@ var ExpressionManager = (function(){
         }
 
         Object.defineProperty(this, "hasParent", { get: hasParentGetter});
-        var time, value,textIndex,textTotal,selectorValue, index = 0;
+        var time, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
+            seedRandom(0);
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
