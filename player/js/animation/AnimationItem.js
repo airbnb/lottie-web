@@ -220,8 +220,8 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameMult = this.animationData.fr / 1000;
     /*
     this.firstFrame = 0;
-    this.totalFrames = 1;
-    this.animationData.tf = 1;
+    this.totalFrames = 2;
+    this.animationData.tf = 2;
     //this.frameMult = 1/100;
     //*/////
     this.trigger('config_ready');
