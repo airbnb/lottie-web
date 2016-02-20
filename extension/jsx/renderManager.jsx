@@ -40,6 +40,7 @@ var bm_renderManager = (function () {
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
             layerData = bm_layerElement.prepareLayer(layerInfo, i);
+            ob.renderData.exportData.ddd = layerData.ddd === 1 ? 1 : ob.renderData.exportData.ddd;
             if (layerData.td && prevLayerData && prevLayerData.td) {
                 prevLayerData.td = false;
                 if (prevLayerData.enabled === false) {
@@ -88,7 +89,8 @@ var bm_renderManager = (function () {
         exportData.assets = [];
         exportData.comps = [];
         exportData.fonts = [];
-        exportData.v = '4.0.4';
+        exportData.v = '4.0.9';
+        exportData.ddd = 0;
         exportData.layers = [];
         exportData.ip = comp.workAreaStart * comp.frameRate;
         exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;

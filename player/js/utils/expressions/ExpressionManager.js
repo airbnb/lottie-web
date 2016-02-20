@@ -2,18 +2,20 @@ var ExpressionManager = (function(){
     var ob = {};
 
     function sum(a,b) {
-        if(typeof a === 'number' && typeof b === 'number') {
+        var tOfA = typeof a;
+        var tOfB = typeof b;
+        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a + b;
         }
-        if(typeof a === 'object' && typeof b === 'number'){
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
             a[0] = a[0] + b;
             return a;
         }
-        if(typeof a === 'number' && typeof b === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
             b[0] = a + b[0];
             return b;
         }
-        if(typeof a === 'object' && typeof b === 'object'){
+        if(tOfA === 'object' && tOfB === 'object'){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -30,18 +32,20 @@ var ExpressionManager = (function(){
     }
 
     function sub(a,b) {
-        if(typeof a === 'number' && typeof b === 'number') {
+        var tOfA = typeof a;
+        var tOfB = typeof b;
+        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a - b;
         }
-        if(typeof a === 'object' && typeof b === 'number'){
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
             a[0] = a[0] - b;
             return a;
         }
-        if(typeof a === 'number' && typeof b === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
             b[0] = a - b[0];
             return b;
         }
-        if(typeof a === 'object' && typeof b === 'object'){
+        if(tOfA === 'object' && tOfB === 'object'){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -58,11 +62,14 @@ var ExpressionManager = (function(){
     }
 
     function mul(a,b) {
-        if(typeof a === 'number' && typeof b === 'number') {
+        var tOfA = typeof a;
+        var tOfB = typeof b;
+        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a * b;
         }
-        var i, len, arr;
-        if(typeof a === 'object' && typeof b === 'number'){
+
+        var i, len;
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -70,7 +77,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(typeof a === 'number' && typeof b === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -82,11 +89,13 @@ var ExpressionManager = (function(){
     }
 
     function div(a,b) {
-        if(typeof a === 'number' && typeof b === 'number') {
+        var tOfA = typeof a;
+        var tOfB = typeof b;
+        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a / b;
         }
-        var i, len, arr;
-        if(typeof a === 'object' && typeof b === 'number'){
+        var i, len;
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -94,7 +103,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(typeof a === 'number' && typeof b === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){

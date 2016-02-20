@@ -33,6 +33,7 @@
 #snapshot .animContainer{
     width: 100%;
     background-color: #6E6568;
+    position: relative;
 }
 
 #snapshot .controls{

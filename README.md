@@ -1,15 +1,8 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
-## V 4.0.1
-- separate dimensions fix
-
-## V 4.0.0
-- 3d animations! (see wiki for more info)
-- expressions! (see wiki)
-- text (wiki)
-= new renderer: html
-- star shape
+## V 4.0.9
+- html renderer shape fix
 
 ## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
 

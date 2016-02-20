@@ -1,3 +1,16 @@
+## V 4.0.9
+- html renderer shape fix
+
+## V 4.0.7
+- some expression fixes
+- trimmed closed shapes fix
+
+## V 4.0.5
+- more expressions supported
+- miter closed shapes fix
+- demo.html can be exported from AE for local playback
+- Snapshot button renamed to Preview
+
 ## V 4.0.1
 - separate dimensions fix
 

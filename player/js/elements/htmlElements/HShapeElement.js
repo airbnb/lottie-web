@@ -50,5 +50,8 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     this.hidden = false;
+    this.transformHelper.opacity = this.finalTransform.opacity;
+    this.transformHelper.matMdf = false;
+    this.transformHelper.opMdf = this.finalTransform.opMdf;
     this.renderShape(this.transformHelper,null,null,true);
 };

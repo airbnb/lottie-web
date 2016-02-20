@@ -22,7 +22,7 @@
             <div class='buttons'>
                 <button class='generalButton rightFloat settings'>Player</button>
                 <div class='buttonSeparator rightFloat'></div>
-                <button class='generalButton rightFloat snapshot'>Snapshot</button>
+                <button class='generalButton rightFloat snapshot'>Preview</button>
                 <button class='generalButton refresh'>Refresh</button>
                 <div class='buttonSeparator'></div>
                 <button class='generalButton highlightButton render disabled'>Render</button>
@@ -55,21 +55,30 @@
                         </div>
                         <div class='settingsSeparator'></div>
                     </div>
-                    <div class='standalone'>
-                        <div class='checkboxCombo'>
-                            <div class='checkbox'>
-                                <div class='circle'></div>
-                            </div>
-                            <div class='checkboxLabel'>Standalone</div>
-                        </div>
-                        <div class='settingsSeparator'></div>
-                    </div>
                     <div class='glyphs'>
                         <div class='checkboxCombo'>
                             <div class='checkbox'>
                                 <div class='circle'></div>
                             </div>
-                            <div class='checkboxLabel'>Glyphs (unchecked uses Fonts)</div>
+                            <div class='checkboxLabel'>Glyphs (Checked converts fonts to shapes.)</div>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
+                    <div class='standalone'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Standalone (Exports animation and player in single file.)</div>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
+                    <div class='demo'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Demo (Exports an html for local use)</div>
                         </div>
                         <div class='settingsSeparator'></div>
                     </div>
@@ -92,10 +101,10 @@
             <div class='header'>
                 <h1>Select animation</h1>
                 <div class='buttons'>
-                    <button class='generalButton rightFloat current'>Current renders</button>
-                    <div class='buttonSeparator rightFloat'></div>
-                    <button class='generalButton rightFloat browse'>Browse</button>
-                    <button class='generalButton return'>Back</button>
+                    <button class='generalButton current'>Current renders</button>
+                    <div class='buttonSeparator'></div>
+                    <button class='generalButton  browse'>Browse</button>
+                    <button class='generalButton return rightFloat'>Back</button>
                 </div>
             </div>
             <div class="animContainer"></div>
