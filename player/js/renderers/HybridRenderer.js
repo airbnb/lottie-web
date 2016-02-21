@@ -98,19 +98,28 @@ HybridRenderer.prototype.includeLayers = function(layers,parentContainer,element
     }
     var j, jLen = elements.length, elems, placeholder;
     for(i=0;i<len;i+=1){
-        j = 0;
-        while(j<jLen){
-            if(elements[j].data.id == layers[i].id){
-                placeholder = elements[j];
-                elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
-                if (layers[i].ty === 0) {
-                    elems = [];
-                    this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
-                    elements[j].setElements(elems);
-                }
-                break;
+        if(!layers[i].id){
+            var elem = this.createItem(layers[i],parentContainer, this);
+            elements.push(elem);
+            if (layers[i].ty === 0) {
+                elems = [];
+                this.buildItems(layers[i].layers,elem.getDomElement(),elems, elem);
+                elem.setElements(elems);
             }
-            j += 1;
+        }else {
+            j = 0;
+            while(j<jLen){
+                if(elements[j].data.id == layers[i].id){
+                    placeholder = elements[j];
+                    elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
+                    if (layers[i].ty === 0) {
+                        elems = [];
+                        this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
+                        elements[j].setElements(elems);
+                    }
+                }
+                j += 1;
+            }
         }
     }
     for(i=0;i<len;i+=1){
