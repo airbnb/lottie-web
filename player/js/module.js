@@ -1,5 +1,12 @@
-(function (window){
-
+(function (root, factory) {
+    if(typeof define === "function" && define.amd) {
+        define( factory);
+    } else if(typeof module === "object" && module.exports) {
+        module.exports = factory();
+    } else {
+        root.bodymovin = factory();
+    }
+}(window, function() {
     var bodymovinjs = {};
 
     function play(animation){
@@ -99,7 +106,7 @@
     function checkReady(){
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
-                searchAnimations();
+            searchAnimations();
         }
     }
 
@@ -112,10 +119,6 @@
             }
         }
     }
-
-    bodymovinjs.checkReady = checkReady;
-
-    window.bodymovin = bodymovinjs;
 
     var standalone = '__[STANDALONE]__';
     var animationData = '__[ANIMATIONDATA]__';
@@ -131,4 +134,5 @@
 
     var readyStateCheckInterval = setInterval(checkReady, 100);
 
-}(window));
+    return bodymovinjs;
+}));
