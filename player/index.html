@@ -94,8 +94,8 @@
         loop: false,
         prerender: false,
         autoplay: true,
-        animationData: anim2
-        //path: 'exports/render/data.json'
+        //animationData: anim2
+        path: 'exports/render/data.json'
     };
 
     var anim;
@@ -103,7 +103,7 @@
     anim = bodymovin.loadAnimation(animData);
 
     setTimeout(function(){
-        //anim.includeLayers(anim2);
+        anim.includeLayers(anim2);
     },500);
 
 </script>
