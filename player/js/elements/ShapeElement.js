@@ -15,7 +15,7 @@ IShapeElement.prototype.lcEnum = {
 }
 
 IShapeElement.prototype.ljEnum = {
-    '1': 'butt',
+    '1': 'miter',
     '2': 'round',
     '3': 'butt'
 }

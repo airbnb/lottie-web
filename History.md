@@ -1,3 +1,6 @@
+## V 4.0.10
+- miter join trim fix
+
 ## V 4.0.9
 - html renderer shape fix
 
