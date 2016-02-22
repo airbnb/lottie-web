@@ -67,6 +67,7 @@ AnimationItem.prototype.setParams = function(params) {
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
     this.prerenderFramesFlag = 'prerender' in params ? params.prerender : true;
+    this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     if(params.animationData){
         self.configAnimation(params.animationData);
     }else if(params.path){
@@ -133,6 +134,11 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
 };
 
 AnimationItem.prototype.includeLayers = function(data) {
+    if(data.op > this.animationData.op){
+        this.animationData.op = data.op;
+        this.totalFrames = Math.floor(data.op - this.animationData.ip);
+        this.animationData.tf = this.totalFrames;
+    }
     var layers = this.animationData.layers;
     var i, len = layers.length;
     var newLayers = data.layers;
@@ -147,12 +153,18 @@ AnimationItem.prototype.includeLayers = function(data) {
             i += 1;
         }
     }
+    if(data.chars || data.fonts){
+        this.renderer.globalData.fontManager.addChars(data.chars);
+        this.renderer.globalData.fontManager.addFonts(data.fonts, this.renderer.globalData.defs);
+    }
     if(data.assets){
         len = data.assets.length;
         for(i = 0; i < len; i += 1){
             this.animationData.assets.push(data.assets[i]);
         }
     }
+    //this.totalFrames = 50;
+    //this.animationData.tf = 50;
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
@@ -162,7 +174,7 @@ AnimationItem.prototype.includeLayers = function(data) {
 
 AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;
-    if(!segments || segments.length === 0){
+    if(!segments || segments.length === 0 || !this.autoloadSegments){
         this.trigger('data_ready');
         this.timeCompleted = this.animationData.tf;
         return;
@@ -218,7 +230,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
-    //*
+    /*
     this.firstFrame = 0;
     this.totalFrames = 50;
     this.animationData.tf = 50;

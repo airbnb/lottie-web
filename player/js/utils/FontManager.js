@@ -182,7 +182,6 @@ var FontManager = (function(){
     }
 
     function getFontByName(name){
-        console.log(this.fonts);
         var i = 0, len = this.fonts.length;
         while(i<len){
             if(this.fonts[i].fName === name) {
