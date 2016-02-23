@@ -7,6 +7,7 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**
 CC 2014 and up.
+
 If you need the latest latest version, you can still install it from here:
 
 ### Option 1:
