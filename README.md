@@ -4,7 +4,9 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 ## V 4.0.10
 - miter join trim fix
 
-## Installing extensions: Until I find a way to upload it to the Adobe Exchange store, there are two possible ways to install it.
+## Installing extension: Finally the plugin is on the Adobe add-ons.
+**Get it directly from the store!**  
+If you need the latest latest version, you can still install it from here:
 
 ### Option 1:
 
