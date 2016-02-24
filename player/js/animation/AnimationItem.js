@@ -231,9 +231,9 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     /*
-    this.firstFrame = 0;
-    this.totalFrames = 50;
-    this.animationData.tf = 50;
+    this.firstFrame = 77;
+    this.totalFrames = 1;
+    this.animationData.tf = 1;
     //this.frameMult = 1/100;
     //*/////
     this.trigger('config_ready');

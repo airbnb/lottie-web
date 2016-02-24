@@ -44,7 +44,8 @@ var PropertyFactory = (function(){
                 if(keyData.__fnct){
                     fnc = keyData.__fnct;
                 }else{
-                    fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
+                    //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
+                    fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n).get;
                     keyData.__fnct = fnc;
                 }
                 perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
@@ -107,14 +108,16 @@ var PropertyFactory = (function(){
                         if(keyData.__fnct[i]){
                             fnc = keyData.__fnct[i];
                         }else{
-                            fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            //fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
                             keyData.__fnct[i] = fnc;
                         }
                     }else{
                         if(keyData.__fnct){
                             fnc = keyData.__fnct;
                         }else{
-                            fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            //fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                            fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
                             keyData.__fnct = fnc;
                         }
                     }
@@ -147,6 +150,28 @@ var PropertyFactory = (function(){
         }
         return retVal;
     }
+
+    function getVelocityAtTime(frameNum) {
+        var delta = 0.01;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var velocity;
+        if(v1.length){
+            velocity = Array.apply(null,{length:v1.length});
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+            }
+            /*console.log('frameNum: ',frameNum);
+            console.log('v1: ',v1);
+            console.log('v2: ',v2);
+            console.log('v2[i] - v1[i]: ',v2[0] - v1[0]);
+            console.log('velocity: ',velocity);*/
+        } else {
+            velocity = (v2 - v1)/delta;
+        }
+        return velocity;
+    };
 
     function getValue(){
         if(this.elem.globalData.frameId === this.frameId){
@@ -202,7 +227,8 @@ var PropertyFactory = (function(){
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
                     }else{
-                        fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
+                        //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
+                        fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY,keyData.n).get;
                         keyData.__fnct = fnc;
                     }
                     perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
@@ -276,14 +302,16 @@ var PropertyFactory = (function(){
                             if(keyData.__fnct[i]){
                                 fnc = keyData.__fnct[i];
                             }else{
-                                fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
                                 keyData.__fnct[i] = fnc;
                             }
                         }else{
                             if(keyData.__fnct){
                                 fnc = keyData.__fnct;
                             }else{
-                                fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
+                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
                                 keyData.__fnct = fnc;
                             }
                         }
@@ -370,7 +398,8 @@ var PropertyFactory = (function(){
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
                     }else{
-                        fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
+                        //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
+                        fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y).get;
                         keyData.__fnct = fnc;
                     }
                     if(frameNum >= nextKeyData.t-this.offsetTime){
@@ -467,6 +496,7 @@ var PropertyFactory = (function(){
         this.pv = data.k[0].s[0];
         this.getValue = getValue;
         this.getValueAtTime = getValueAtTime;
+        this.getVelocityAtTime = getVelocityAtTime;
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -494,6 +524,7 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.getValue = getValue;
         this.getValueAtTime = getValueAtTime;
+        this.getVelocityAtTime = getVelocityAtTime;
         this.frameId = -1;
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
@@ -1558,7 +1589,8 @@ var PropertyFactory = (function(){
         }
 
         function getMult(ind){
-            var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+            //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+            var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
             var mult = 0;
             var s = this.finalS;
             var e = this.finalE;

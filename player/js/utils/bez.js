@@ -12,7 +12,7 @@ function bezFunction(){
         return pointOnLine2D(x1,y1, x2,y2, x3,y3) && pointOnLine2D(x1,z1, x2,z2, x3,z3);
     }
 
-    function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
+    /*function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
         if(!encodedFuncName){
             encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
         }
@@ -40,7 +40,7 @@ function bezFunction(){
             return polyB;
         };
         return easingFunctions[encodedFuncName];
-    }
+    }*/
     var getBezierLength = (function(){
         var storedBezierCurves = {};
 
@@ -197,7 +197,7 @@ function bezFunction(){
     }
 
     return {
-        getEasingCurve : getEasingCurve,
+        //getEasingCurve : getEasingCurve,
         getBezierLength : getBezierLength,
         getNewSegment : getNewSegment,
         buildBezierData : buildBezierData,

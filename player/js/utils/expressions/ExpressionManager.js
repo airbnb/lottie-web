@@ -366,6 +366,10 @@ var ExpressionManager = (function(){
             return this.getValueAtTime(t*thisComp.globalData.frameRate);
         }.bind(this);
 
+        var velocityAtTime = function velocityAtTime(t) {
+            return this.getVelocityAtTime(t*thisComp.globalData.frameRate);
+        }.bind(this);
+
         function effect(nm){
             return elem.effectsManager.getEffect(nm);
         }
