@@ -520,10 +520,8 @@ var bm_expressionHelper = (function () {
     }
     
     function correctEaseAndWizz(str){
-        bm_eventDispatcher.log(str);
-        var easeRegex = /Ease and Wizz\s[0-9. ]+: inOutQuad :/;
+        var easeRegex = /Ease and Wizz\s[0-9. ]+:/;
         if (easeRegex.test(str)) {
-            bm_eventDispatcher.log('entrotrotro');
             str = str.replace('key(1)[1];', 'key(1)[1].length;');
             str = str.replace('key(1)[2];', 'key(1)[2].length;');
         }
