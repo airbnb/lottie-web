@@ -45,6 +45,9 @@ SVGTextElement.prototype.createElements = function(){
 
     var letters = documentData.l;
     len = letters.length;
+    if(!len){
+        return;
+    }
     var tSpan;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
