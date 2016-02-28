@@ -1,3 +1,9 @@
+## V 4.1.0
+- UMD compatible
+- more expressions
+- improved bezier interpolation
+- fixes
+
 ## V 4.0.10
 - miter join trim fix
 

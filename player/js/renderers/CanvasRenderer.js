@@ -1,9 +1,9 @@
 function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.renderConfig = {
-        clearCanvas: (config && config.clearCanvas) || true,
-        context: (config && config.context) || null,
-        scaleMode: (config && config.scaleMode) || 'fit'
+        clearCanvas: (config && config.clearCanvas) || true,
+        context: (config && config.context) || null,
+        scaleMode: (config && config.scaleMode) || 'fit'
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {

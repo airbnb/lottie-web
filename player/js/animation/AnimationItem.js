@@ -107,7 +107,7 @@ AnimationItem.prototype.setParams = function(params) {
 AnimationItem.prototype.setData = function (wrapper, animationData) {
     var params = {
         wrapper: wrapper,
-        animationData: animationData ? JSON.parse(animationData) : null
+        animationData: animationData ? (typeof animationData  === "object") ? animationData : JSON.parse(animationData) : null
     };
     var wrapperAttributes = wrapper.attributes;
 
