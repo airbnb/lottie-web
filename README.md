@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.1.1
+- UMD fix
+
 ## V 4.1.0
 - UMD compatible
 - more expressions

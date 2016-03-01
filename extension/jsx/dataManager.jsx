@@ -216,8 +216,9 @@ var bm_dataManager = (function () {
         }
         if (config.standalone) {
             var bodymovinJsStr = bm_downloadManager.getStandaloneData();
-            string = bodymovinJsStr.replace('"__[ANIMATIONDATA]__"',  string );
-            string = string.replace('"__[STANDALONE]__"', 'true');
+            bm_eventDispatcher.log(bodymovinJsStr);
+            string = bodymovinJsStr.replace("'__[ANIMATIONDATA]__'",  string );
+            string = string.replace("'__[STANDALONE]__'", 'true');
         }
         ////
         try {
