@@ -294,3 +294,30 @@ function iterateDynamicProperties(num){
         this.dynamicProperties[i].getValue(num);
     }
 }
+
+function reversePath(paths, isClosed){
+    var newI = [], newO = [], newV = [];
+    var i, len, newPaths = {};
+    var init = 0;
+    if (isClosed) {
+        newI[0] = paths.o[0];
+        newO[0] = paths.i[0];
+        newV[0] = paths.v[0];
+        init = 1;
+    }
+    len = paths.i.length;
+    var cnt = len - 1;
+
+    for (i = init; i < len; i += 1) {
+        newI.push(paths.o[cnt]);
+        newO.push(paths.i[cnt]);
+        newV.push(paths.v[cnt]);
+        cnt -= 1;
+    }
+
+    newPaths.i = newI;
+    newPaths.o = newO;
+    newPaths.v = newV;
+
+    return newPaths;
+}

@@ -79,6 +79,7 @@ ITextElement.prototype.init = function(){
         this.viewData.p = {
             f: PropertyFactory.getProp(this,textData.p.f,0,0,this.dynamicProperties),
             l: PropertyFactory.getProp(this,textData.p.l,0,0,this.dynamicProperties),
+            r: textData.p.r,
             m: this.maskManager.getMaskProperty(textData.p.m)
         };
         this.maskPath = true;
@@ -119,6 +120,9 @@ ITextElement.prototype.getMeasures = function(){
         var mask = this.viewData.p.m;
         if(!this.viewData.p.n || this.viewData.p.mdf){
             var paths = mask.v;
+            if(this.viewData.p.r){
+                paths = reversePath(paths, mask.closed);
+            }
             var pathInfo = {
                 tLength: 0,
                 segments: []
