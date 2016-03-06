@@ -140,11 +140,11 @@ var FontManager = (function(){
     }
 
     function addChars(chars){
-        if(!this.chars){
-            this.chars = [];
-        }
         if(!chars){
             return;
+        }
+        if(!this.chars){
+            this.chars = [];
         }
         var i, len = chars.length;
         var j, jLen = this.chars.length, found;
