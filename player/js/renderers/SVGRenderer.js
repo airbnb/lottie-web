@@ -232,4 +232,12 @@ SVGRenderer.prototype.renderFrame = function(num){
     }
 };
 
+SVGRenderer.prototype.hide = function(){
+    this.animationItem.container.style.display = 'none';
+};
+
+SVGRenderer.prototype.show = function(){
+    this.animationItem.container.style.display = 'block';
+};
+
 extendPrototype(ExpressionComp,SVGRenderer);

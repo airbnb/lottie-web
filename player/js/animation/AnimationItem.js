@@ -508,6 +508,14 @@ AnimationItem.prototype.getAssetData = function (id) {
     }
 };
 
+AnimationItem.prototype.hide = function () {
+    this.renderer.hide();
+};
+
+AnimationItem.prototype.show = function () {
+    this.renderer.show();
+};
+
 AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };

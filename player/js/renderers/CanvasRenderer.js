@@ -342,4 +342,12 @@ CanvasRenderer.prototype.renderFrame = function(num){
     }
 };
 
+CanvasRenderer.prototype.hide = function(){
+    this.animationItem.container.style.display = 'none';
+};
+
+CanvasRenderer.prototype.show = function(){
+    this.animationItem.container.style.display = 'block';
+};
+
 extendPrototype(ExpressionComp,CanvasRenderer);

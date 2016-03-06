@@ -13,7 +13,7 @@ var watch = require('gulp-watch');
 var jshint = require('gulp-jshint');
 var rename = require('gulp-rename');
 
-var bm_version = '4.1.1';
+var bm_version = '4.1.2';
 
 gulp.task('gzipFile', function(){
   gulp.src('player/exports/render/data.json')
