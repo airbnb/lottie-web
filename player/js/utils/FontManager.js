@@ -93,6 +93,9 @@ var FontManager = (function(){
             tHelper.style.fontFamily = fontData.fFamily;
         }
         def.appendChild(tHelper);
+        var tCanvasHelper = document.createElement('canvas').getContext('2d');
+        tCanvasHelper.font = '100px '+ fontData.fFamily;
+        return tCanvasHelper;
         return tHelper;
     }
 
@@ -177,8 +180,9 @@ var FontManager = (function(){
     function measureText(char, fontName, size){
         var fontData = this.getFontByName(fontName);
         var tHelper = fontData.helper;
-        tHelper.textContent = char;
-        return tHelper.getComputedTextLength()*size/100;
+        //tHelper.textContent = char;
+        return tHelper.measureText(char).width*size/100;
+        //return tHelper.getComputedTextLength()*size/100;
     }
 
     function getFontByName(name){

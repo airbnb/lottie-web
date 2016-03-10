@@ -2,6 +2,7 @@
 <meta charset="UTF-8">
 <head>
     <style>
+         @import url(https://fonts.googleapis.com/css?family=Roboto:400,900italic,900);
         body{
             background-color:#ccc;
             margin: 0px;
@@ -27,6 +28,11 @@
 
         svg{
             /*border: 1px solid red;*/
+        }
+
+         .rbt-black{
+            font-weight: 900;
+            font-family: 'Roboto', sans-serif;
         }
 
     </style>
@@ -87,6 +93,8 @@
 <div id="bodymovin"></div>
 
 <script>
+    var bodymovinContainer = document.getElementById('bodymovin');
+    bodymovinContainer.style.display = 'none';
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
@@ -96,12 +104,15 @@
         autoplay: true,
         autoloadSegments: false,
         //animationData: anim2
-        path: 'exports/render/data.json'
+        path: 'exports/render/data2.json'
     };
 
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
+    anim.addEventListener('DOMLoaded',function(){
+        bodymovinContainer.style.display = 'inherit';
+    })
 
 </script>
 </body>
