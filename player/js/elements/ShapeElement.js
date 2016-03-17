@@ -328,12 +328,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
         for(i=0;i<len;i+=1){
             if(viewData.elements[i].ty === 'st'){
                 if(viewData.sh.mdf || this.firstFrame){
-                    //console.log(pathStringTransformed);
                     viewData.elements[i].el.setAttribute('d', pathStringTransformed);
-                }
-                if(groupTransform.matMdf || this.firstFrame) {
-                    //viewData.elements[i].el.setAttribute('transform',t);
-                    ////viewData.elements[i].el.style.transform = t;
                 }
             }else{
                 viewData.elements[i].st.mdf = redraw ? true : viewData.elements[i].st.mdf;

@@ -15,6 +15,9 @@ function CheckboxEffect(data,elem, dynamicProperties){
 }
 
 SliderEffect.prototype.proxyFunction = function(){
+    if(this.p.k){
+        this.p.getValue();
+    }
     return this.p.v;
 }
 

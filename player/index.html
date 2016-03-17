@@ -94,25 +94,21 @@
 
 <script>
     var bodymovinContainer = document.getElementById('bodymovin');
-    bodymovinContainer.style.display = 'none';
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: false,
+        loop: 2,
         prerender: false,
         autoplay: true,
         autoloadSegments: false,
         //animationData: anim2
-        path: 'exports/render/data2.json'
+        path: 'exports/render/data.json'
     };
 
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
-    anim.addEventListener('DOMLoaded',function(){
-        bodymovinContainer.style.display = 'inherit';
-    })
 
 </script>
 </body>

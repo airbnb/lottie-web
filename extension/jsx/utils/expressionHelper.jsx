@@ -445,6 +445,10 @@ var bm_expressionHelper = (function () {
             assignmentObject = createAssignmentObject();
             assignmentObject.expression.right = expressionStatement.expression;
             return assignmentObject;
+        } else if(expressionStatement.expression.type === 'UnaryExpression'){
+            assignmentObject = createAssignmentObject();
+            assignmentObject.expression.right = expressionStatement.expression;
+            return assignmentObject;
         }
         return expressionStatement;
     }
