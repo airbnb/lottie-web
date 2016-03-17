@@ -469,8 +469,8 @@ var ExpressionManager = (function(){
                 // Todo Improve validation for masks and shapes
                 this.mdf = true;
             }else{
-                if(!this.lastValue){
-                }
+                /*if(!this.lastValue){
+                }*/
                 len = this.v.length;
                 for(i = 0; i < len; i += 1){
                     if(this.v[i] !== this.lastValue[i]){
