@@ -92,7 +92,9 @@ var bm_keyframeHelper = (function () {
             return getPropertyValue(property.valueAtTime(0, true), true);
         }
         jLen = property.numKeys;
+        var isPrevHoldInterpolated = false;
         for (j = 1; j < jLen; j += 1) {
+            isPrevHoldInterpolated = false;
             var segmentOb = {};
             ///////
             var indexTime = j;
@@ -125,6 +127,7 @@ var bm_keyframeHelper = (function () {
                 }
             }
             if (interpolationType === 'hold') {
+                isPrevHoldInterpolated = true;
                 segmentOb.t = bm_generalUtils.roundNumber(lastKey.time * frameRate, 3);
                 segmentOb.s = getPropertyValue(property.keyValue(j), true);
                 if (!(segmentOb.s instanceof Array)) {
@@ -245,7 +248,7 @@ var bm_keyframeHelper = (function () {
             beziersArray.push(segmentOb);
         }
         beziersArray.push({t: property.keyTime(j) * frameRate});
-        if (property.keyOutInterpolationType(j) === KeyframeInterpolationType.HOLD) {
+        if (property.keyOutInterpolationType(j) === KeyframeInterpolationType.HOLD || isPrevHoldInterpolated) {
             var value = getPropertyValue(property.keyValue(j), true);
             if (!(value instanceof Array)) {
                 value = [value];
