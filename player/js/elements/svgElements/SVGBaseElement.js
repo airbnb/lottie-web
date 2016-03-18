@@ -98,6 +98,10 @@ SVGBaseElement.prototype.createElements = function(){
         }
         this.layerElement.setAttribute('id',this.data.ln);
     }
+    if(this.data.ty === 0 && (this.finalTransform.op.k || this.finalTransform.op.p !== 1) && this.layerElement === this.parentContainer){
+        this.layerElement = document.createElementNS(svgNS,'g');
+        this.appendNodeToParent(this.layerElement);
+    }
     if(this.layerElement !== this.parentContainer){
         this.placeholder = null;
     }
@@ -226,6 +230,9 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         if(this.finalTransform.opMdf){
             this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
         }
+    } else if(this.data.ty === 0 && this.finalTransform.opMdf && (this.finalTransform.op.k || this.finalTransform.op.p !== 1)){
+        this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
+        this.finalTransform.opacity = 1;
     }
     return this.isVisible;
 };
