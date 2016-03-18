@@ -1,3 +1,12 @@
+## V 4.1.3
+- Unary expressions
+- svg compositions opacity fix
+- data-bm-renderer tag fix
+- evaluating expression slider values before returning
+
+## V 4.1.1
+- UMD fix
+
 ## V 4.1.0
 - UMD compatible
 - more expressions
