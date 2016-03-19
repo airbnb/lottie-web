@@ -1,3 +1,6 @@
+## V 4.1.4
+- last hold keyframe fix
+
 ## V 4.1.3
 - Unary expressions
 - svg compositions opacity fix
