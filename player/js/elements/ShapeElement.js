@@ -327,7 +327,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
         len = viewData.elements.length;
         for(i=0;i<len;i+=1){
             if(viewData.elements[i].ty === 'st'){
-                if(viewData.sh.mdf || this.firstFrame){
+                if(groupTransform.matMdf || viewData.sh.mdf || this.firstFrame){
                     viewData.elements[i].el.setAttribute('d', pathStringTransformed);
                 }
             }else{
