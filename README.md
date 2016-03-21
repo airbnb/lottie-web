@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.1.5
+- stroke transform fix
+
 ## V 4.1.4
 - last hold keyframe fix
 
