@@ -52,6 +52,8 @@ var mainController = (function () {
         infoController.init(csInterface);
         mainViews.push({id: 'snapshot', controller: snapshotController});
         snapshotController.init(csInterface);
+        mainViews.push({id: 'importSVG', controller: importSVGController});
+        importSVGController.init(csInterface);
         loadJSX('initializer.jsx');
         
         loadCommands();

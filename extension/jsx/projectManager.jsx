@@ -54,6 +54,10 @@ var bm_projectManager = (function () {
         return arr;
     }
     
+    function importSVG(){
+        
+    }
+    
     var ob = {
         getCompositions: getCompositions,
         searchCommands: searchCommands,

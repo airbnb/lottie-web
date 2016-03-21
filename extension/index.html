@@ -23,6 +23,8 @@
                 <button class='generalButton rightFloat settings'>Player</button>
                 <div class='buttonSeparator rightFloat'></div>
                 <button class='generalButton rightFloat snapshot'>Preview</button>
+                <div class='buttonSeparator rightFloat'></div>
+                <button class='generalButton rightFloat import'>Import SVG</button>
                 <button class='generalButton refresh'>Refresh</button>
                 <div class='buttonSeparator'></div>
                 <button class='generalButton highlightButton render disabled'>Render</button>
@@ -164,6 +166,8 @@
     <svg width='10000' height='10000' style='position:absolute;bottom:0;left:-10000px' preserveAspectRatio='meet xMidYMid' viewBox='0 0 10000 10000'>
         <text id='textHelper' x='5000' y='5000' font-size='20' font-family='Grafolita Script' fill='#00ff00'>holala</text>
     </svg>
+    <div style='position:absolute;left:0;right:0;display:none;' id='svgContainer'>
+    </div>
     
     <script src="js/libs/CSInterface.js"></script>
     <script src="js/libs/jquery-2.0.2.min.js"></script>
@@ -185,6 +189,7 @@
     <script src="js/controllers/CompRenderController.js"></script>
     <script src="js/controllers/messageController.js"></script>
     <script src="js/controllers/InfoController.js"></script>
+    <script src="js/controllers/importSVGController.js"></script>
     <script src="js/utils/storage.js"></script>
     <script src="js/controllers/snapshotController.js"></script>
     <script src="js/main.js"></script>

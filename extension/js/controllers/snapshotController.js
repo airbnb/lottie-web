@@ -182,7 +182,6 @@ var snapshotController = (function () {
         listContainer = rendersSelection.find('.listContainer');
         rendersSelection.hide();
         $window = $(window);
-        csInterface.addEventListener('bm:file:uri', handleFileUri);
         $(window).on('resize', handleWindowResize);
         addSliderListeners();
         hideControls();
@@ -193,6 +192,7 @@ var snapshotController = (function () {
             showing = true;
             view.show();
             handleWindowResize();
+            csInterface.addEventListener('bm:file:uri', handleFileUri);
         }
     }
     
@@ -203,6 +203,7 @@ var snapshotController = (function () {
             $window.off('mouseup', sliderUp);
             $window.off('mousemove', sliderMove);
             slideBg.off('mousedown', sliderDown);
+            csInterface.addEventListener('bm:file:uri', handleFileUri);
         }
     }
     

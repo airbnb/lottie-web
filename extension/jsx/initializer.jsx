@@ -9,6 +9,7 @@ $.evalFile(extensionPath + 'compsManager.jsx');
 $.evalFile(extensionPath + 'renderManager.jsx');
 $.evalFile(extensionPath + 'downloadManager.jsx');
 $.evalFile(extensionPath + 'dataManager.jsx');
+$.evalFile(extensionPath + 'svgImporter.jsx');
 $.evalFile(extensionPath + 'elements/layerElement.jsx');
 $.evalFile(extensionPath + 'utils/generalUtils.jsx');
 $.evalFile(extensionPath + 'utils/sourceHelper.jsx');

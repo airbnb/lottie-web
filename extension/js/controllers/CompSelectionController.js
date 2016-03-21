@@ -320,6 +320,10 @@ var compSelectionController = (function () {
         mainController.showView('snapshot');
     }
     
+    function showImportView() {
+        mainController.showView('importSVG');
+    }
+    
     function init(csIntfc) {
         view = $('#compsSelection');
         compsListContainer = view.find('.compsList');
@@ -327,6 +331,7 @@ var compSelectionController = (function () {
         csInterface.addEventListener('bm:compositions:list', updateCompositionsList);
         view.find('.refresh').on('click', getCompositionsList);
         view.find('.snapshot').on('click', showSnapshotView);
+        view.find('.import').on('click', showImportView);
         renderButton = view.find('.render');
         renderButton.on('click', renderCompositions);
         view.find('.settings').on('click', showSettings);
