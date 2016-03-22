@@ -15,9 +15,110 @@ var importSVGController = (function () {
         csInterface.evalScript(eScript);
     }
     
+    
+    var hexDigits = new Array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"); 
+
+    //Function to convert hex format to a rgb color
+    function rgb2hex(rgb) {
+     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+
+    function hex(x) {
+      return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+     }
+    
+    function convertToHex(color){
+        var hexRegex = /^#(?:[0-9a-f]{3}){1,2}$/i;
+        if(hexRegex.test(color)){
+            if(color.length === 4){
+                var col1 = color.substr(1,1);
+                var col2 = color.substr(2,1);
+                var col3 = color.substr(3,1);
+                color = '#';
+                color += col1 + col1;
+                color += col2 + col2;
+                color += col3 + col3;
+            }   
+        } else{
+            if(color.indexOf('(') === -1){
+                svgContainer.css('color',color);
+                color = getComputedStyle(svgContainer[0], null).color;
+            }
+            color = rgb2hex(color);
+        }
+        return color;
+    }
+    
+    function getColor(elem){
+        var color = elem.getAttribute('fill');
+        if(color){
+            color = convertToHex(color);
+            return color;
+        }
+        return null;
+    }
+    
+    function getStrokeColor(elem){
+        var color = elem.getAttribute('stroke');
+        if(color){
+            color = convertToHex(color);
+            return color;
+        }
+        return null;
+    }
+    
+    function getStrokeWidth(elem){
+        var width = elem.getAttribute('stroke-width');
+        if(width){
+            return width;
+        }
+        return null;
+    }
+    
+    function getOpacity(elem){
+        var opacity = elem.getAttribute('fill-opacity');
+        if(opacity){
+            return opacity;
+        }
+        return null;
+    }
+    
+    function getStrokeOpacity(elem){
+        var opacity = elem.getAttribute('stroke-opacity');
+        if(opacity){
+            return opacity;
+        }
+        return null;
+    }
+    
     function exportG(elem){
         var ob = {};
         ob.ty = 'g';
+        ob.co = getColor(elem);
+        ob.op = getOpacity(elem);
+        ob.stOp = getStrokeOpacity(elem);
+        ob.stCo = getStrokeColor(elem);
+        ob.stW = getStrokeWidth(elem);
+        ob.elems = iterateElems(elem);
+        return ob;
+    }
+    
+    function exportPath(elem){
+        var ob = {};
+        ob.ty = 'path';
+        var segments = elem.pathSegList ;
+        var i, len = segments.length;
+        var segmentsData = [];
+        for (i = 0; i < len; i += 1) {
+            segmentsData.push(getSegmentData(segments[i]));
+        }
+        ob.segments = segmentsData;
+        ob.co = getColor(elem);
+        ob.op = getOpacity(elem);
+        ob.stOp = getStrokeOpacity(elem);
+        ob.stCo = getStrokeColor(elem);
+        ob.stW = getStrokeWidth(elem);
         ob.elems = iterateElems(elem);
         return ob;
     }
@@ -31,7 +132,6 @@ var importSVGController = (function () {
     }
     
     function exportCubicToSegment(elem){
-        console.log(elem);
         return {
             ty: elem.pathSegType,
             x: elem.x,
@@ -66,24 +166,10 @@ var importSVGController = (function () {
         return ob;
     }
     
-    function exportPath(elem){
-        var ob = {};
-        ob.ty = 'path';
-        var segments = elem.pathSegList ;
-        var i, len = segments.length;
-        var segmentsData = [];
-        for (i = 0; i < len; i += 1) {
-            segmentsData.push(getSegmentData(segments[i]));
-        }
-        ob.segments = segmentsData;
-        return ob;
-    }
-    
     function iterateElems(elem) {
         var arr = [];
         var children = elem.childNodes;
         var i, len = children.length, child, elemData;
-        console.log('iterateElems', elem);
         for( i = 0; i < len; i += 1) {
             child = children[i];
             elemData = null;
@@ -126,7 +212,6 @@ var importSVGController = (function () {
             elems: []
         };
         svgData.elems = iterateElems(svgElem);
-        console.log(svgData);
         var eScript = 'bm_svgImporter.createSvg(' + JSON.stringify(svgData) + ')';
         csInterface.evalScript(eScript);
     }
