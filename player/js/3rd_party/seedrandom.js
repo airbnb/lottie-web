@@ -225,15 +225,6 @@
 // Nodejs and AMD support: export the implementation as a module using
 // either convention.
 //
-    if ((typeof module) == 'object' && module.exports) {
-        module.exports = seedrandom;
-        // When in node.js, try using crypto package for autoseeding.
-        try {
-            nodecrypto = require('crypto');
-        } catch (ex) {}
-    } else if ((typeof define) == 'function' && define.amd) {
-        define(function() { return seedrandom; });
-    }
 
 // End anonymous scope, and pass initial values.
 })(
