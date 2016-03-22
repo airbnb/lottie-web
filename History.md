@@ -1,3 +1,6 @@
+## V 4.1.6
+- module definition fix
+
 ## V 4.1.5
 - stroke transform fix
 

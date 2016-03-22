@@ -2,7 +2,7 @@
 <ExtensionManifest Version="5.0" ExtensionBundleId="com.bodymovin.bodymovin" ExtensionBundleVersion="4.1.3"
 		ExtensionBundleName="bodymovin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ExtensionList>
-		<Extension Id="com.bodymovin.bodymovin" Version="4.1.5" />
+		<Extension Id="com.bodymovin.bodymovin" Version="4.1.6" />
 	</ExtensionList>
 	<ExecutionEnvironment>
 		<HostList>
