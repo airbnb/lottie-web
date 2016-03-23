@@ -92,35 +92,12 @@ var importSVGController = (function () {
         return null;
     }
     
-    function exportG(elem){
-        var ob = {};
-        ob.ty = 'g';
+    function exportStyleAttributes(elem, ob){
         ob.co = getColor(elem);
         ob.op = getOpacity(elem);
         ob.stOp = getStrokeOpacity(elem);
         ob.stCo = getStrokeColor(elem);
         ob.stW = getStrokeWidth(elem);
-        ob.elems = iterateElems(elem);
-        return ob;
-    }
-    
-    function exportPath(elem){
-        var ob = {};
-        ob.ty = 'path';
-        var segments = elem.pathSegList ;
-        var i, len = segments.length;
-        var segmentsData = [];
-        for (i = 0; i < len; i += 1) {
-            segmentsData.push(getSegmentData(segments[i]));
-        }
-        ob.segments = segmentsData;
-        ob.co = getColor(elem);
-        ob.op = getOpacity(elem);
-        ob.stOp = getStrokeOpacity(elem);
-        ob.stCo = getStrokeColor(elem);
-        ob.stW = getStrokeWidth(elem);
-        ob.elems = iterateElems(elem);
-        return ob;
     }
     
     function exportMoveToSegment(elem){
@@ -143,14 +120,96 @@ var importSVGController = (function () {
         }
     }
     
+    function exportQuadraticToSegment(elem){
+        return {
+            ty: elem.pathSegType,
+            x: elem.x,
+            y: elem.y,
+            x1: elem.x1,
+            y1: elem.y1
+        }
+    }
+    
+    function exportLinetoVertical(elem){
+        return {
+            ty: elem.pathSegType,
+            y: elem.y
+        }
+    }
+    
+    function exportLinetoHorizontal(elem){
+        return {
+            ty: elem.pathSegType,
+            x: elem.x
+        }
+    }
+    
+    function exportLineToSegment(elem){
+        return {
+            ty: elem.pathSegType,
+            x: elem.x,
+            y: elem.y
+        }
+    }
+    
     function exportCloseSegment(elem){
         return {
             ty: elem.pathSegType
         }
     }
     
+    function exportG(elem){
+        var ob = {};
+        ob.ty = 'g';
+        exportStyleAttributes(elem,ob);
+        ob.elems = iterateElems(elem);
+        return ob;
+    }
+    
+    function exportPath(elem){
+        var ob = {};
+        ob.ty = 'path';
+        var segments = elem.pathSegList ;
+        var i, len = segments.length;
+        var segmentsData = [];
+        for (i = 0; i < len; i += 1) {
+            segmentsData.push(getSegmentData(segments[i]));
+        }
+        ob.segments = segmentsData;
+        exportStyleAttributes(elem,ob);
+        return ob;
+    }
+    
+    function exportPolygon(elem){
+        var ob = {};
+        ob.ty = 'polygon';
+        var points = elem.getAttribute('points').trim();
+        var arr = points.split(' ');
+        var pointsArr = [];
+        var i, len = arr.length;
+        for (i = 0; i < len; i += 1) {
+            var pair = arr[i].split(',');
+            pointsArr.push(pair);
+        }
+        ob.points = pointsArr;
+        exportStyleAttributes(elem,ob);
+        return ob;
+    }
+    
+    function exportRect(elem){
+        var ob = {};
+        ob.ty = 'rect';
+        ob.x = elem.getAttribute('x') || 0;
+        ob.y = elem.getAttribute('y') || 0;
+        ob.width = elem.getAttribute('width');
+        ob.height = elem.getAttribute('height');
+        ob.rx = elem.getAttribute('rx') || elem.getAttribute('ry');
+        return ob;
+    }
+    
     function getSegmentData(elem){
         var ob = {};
+        console.log(elem.pathSegType);
         switch(elem.pathSegType) {
             case 1:
                 return exportCloseSegment(elem);
@@ -158,9 +217,25 @@ var importSVGController = (function () {
             case 2:
                 return exportMoveToSegment(elem);
                 break;
+            case 4:
+            case 5:
+                return exportLineToSegment(elem);
+                break;
             case 6:
             case 7:
                 return exportCubicToSegment(elem);
+                break;
+            case 12:
+            case 13:
+                return exportLinetoHorizontal(elem);
+                break;
+            case 14:
+            case 15:
+                return exportLinetoVertical(elem);
+                break;
+            case 8:
+            case 9:
+                return exportQuadraticToSegment(elem);
                 break;
         }
         return ob;
@@ -180,6 +255,12 @@ var importSVGController = (function () {
                     break;
                 case 'path':
                     elemData = exportPath(child);
+                    break;
+                case 'polygon':
+                    elemData = exportPolygon(child);
+                    break;
+                case 'rect':
+                    elemData = exportRect(child);
                     break;
             }
             if(elemData){
@@ -212,6 +293,7 @@ var importSVGController = (function () {
             elems: []
         };
         svgData.elems = iterateElems(svgElem);
+        console.log(svgData);
         var eScript = 'bm_svgImporter.createSvg(' + JSON.stringify(svgData) + ')';
         csInterface.evalScript(eScript);
     }
