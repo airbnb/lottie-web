@@ -17,10 +17,10 @@ var bm_svgImporter = (function () {
         var co = group.property("Contents").addProperty("ADBE Vector Graphic - Fill");
         var prop = co.property('Color');
         prop.setValue([R/255,G/255,B/255,1]);
-        var op = data.op || inherited.op;
+        var fop = data.fop || inherited.fop;
         var opacityProperty = co.property('Opacity');
-        opacityProperty.setValue(op*100);
-        if(data.stW || inherited.stW){
+        opacityProperty.setValue(fop*100);
+        if(data.st || inherited.st){
             var st = group.property("Contents").addProperty("ADBE Vector Graphic - Stroke");
             color = data.stCo || inherited.stCo;
             R = hexToR(color);
@@ -35,6 +35,14 @@ var bm_svgImporter = (function () {
             var stW = data.stW || inherited.stW;
             strokeWidthProperty.setValue(stW);
         }
+        addTransformAttributes(group, data, inherited);
+    }
+    
+    function addTransformAttributes(group, data, inherited) {
+        var transformProperty = group.property('Transform');
+        var trOp = transformProperty.property('Opacity');
+        var op = data.op || inherited.op;
+        trOp.setValue(op*100);
     }
     
     function addPath(group, element, offsetX, offsetY, inherited) {
@@ -131,6 +139,22 @@ var bm_svgImporter = (function () {
                 lastOb = segmentOb;
                 lastX = lastX + segmentOb.x;
                 lastY = lastY + segmentOb.y;
+            } else if (segmentOb.ty === 16) {
+                outPoints[count - 1] = [-inPoints[count - 1][0],-inPoints[count - 1][1]];
+                vertices[count] = [segmentOb.x - offsetX,segmentOb.y - offsetY];
+                inPoints[count] = [segmentOb.x2 - segmentOb.x,segmentOb.y2 - segmentOb.y];
+                count += 1;
+                lastOb = segmentOb;
+                lastX = segmentOb.x;
+                lastY =  segmentOb.y;
+            } else if(segmentOb.ty === 17) {
+                outPoints[count - 1] = [-inPoints[count - 1][0],-inPoints[count - 1][1]];
+                vertices[count] = [segmentOb.x + lastX - offsetX,segmentOb.y + lastY  - offsetY];
+                inPoints[count] = [lastX - (segmentOb.x + lastX) + segmentOb.x2, lastY - (segmentOb.y + lastY) + segmentOb.y2];
+                count += 1;
+                lastOb = segmentOb;
+                lastX = lastX + segmentOb.x;
+                lastY = lastY + segmentOb.y;
             } else if (segmentOb.ty === 6) {
                 outPoints[count - 1] = [segmentOb.x1 - lastX,segmentOb.y1 - lastY];
                 vertices[count] = [segmentOb.x - offsetX,segmentOb.y - offsetY];
@@ -205,7 +229,7 @@ var bm_svgImporter = (function () {
         myShape.vertices = vertices;
         myShape.inTangents = inPoints;
         myShape.outTangents = outPoints;
-        myShape.closed = true;
+        myShape.closed = element.ty === 'polygon';
         path.property('Path').setValue(myShape);
         addAttributes(gr, element, inherited);
     }
@@ -220,42 +244,81 @@ var bm_svgImporter = (function () {
         
     }
     
-    function addElements(group, data,offsetX,offsetY, inheritedData){
+    function addEllipse(group, element, offsetX, offsetY, inherited){
+        var gr = group.property("Contents").addProperty("ADBE Vector Group");
+        var ell = gr.property("Contents").addProperty("ADBE Vector Shape - Ellipse");
+        ell.property('Size').setValue([element.rx*2,element.ry*2]);
+        ell.property('Position').setValue([element.cx - offsetX,element.cy - offsetY]);
+        addAttributes(gr, element, inherited);
+        
+    }
+    
+    function addElements(group, data,offsetX,offsetY, inheritedData, isFirst){
         var inherited = {
             co: data.co || inheritedData.co,
-            op: data.op || inheritedData.op,
+            fop: data.fop || inheritedData.fop,
             stCo: data.stCo || inheritedData.stCo,
             stOp: data.stOp || inheritedData.stOp,
-            stW: data.stW || inheritedData.stW
+            stW: data.stW || inheritedData.stW,
+            st: data.st || inheritedData.st,
+            op: data.op || inheritedData.op
         }
         var elements = data.elems;
-        var gr = group.property("Contents").addProperty("ADBE Vector Group");
+        var gr;
         var i, len = elements.length;
-        for(i = 0; i < len; i += 1){
-            if(elements[i].ty === 'g'){
-                addElements(gr,elements[i],offsetX,offsetY, inherited);
-            } else if(elements[i].ty === 'path'){
-                addPath(gr,elements[i],offsetX,offsetY, inherited);
-            } else if(elements[i].ty === 'polygon'){
-                addPolygon(gr,elements[i],offsetX,offsetY, inherited);
-            } else if(elements[i].ty === 'rect'){
-                addRect(gr,elements[i],offsetX,offsetY, inherited);
+        if(!isFirst){
+            gr = group.property("Contents").addProperty("ADBE Vector Group");
+            for(i = len - 1; i >= 0; i -= 1){
+                if(isFirst){
+                    gr = group.layers.addShape();
+                }
+                if(elements[i].ty === 'g'){
+                    addElements(gr,elements[i],offsetX,offsetY, inherited, false);
+                } else if(elements[i].ty === 'path'){
+                    addPath(gr,elements[i],offsetX,offsetY, inherited);
+                } else if(elements[i].ty === 'polygon' || elements[i].ty === 'polyline'){
+                    addPolygon(gr,elements[i],offsetX,offsetY, inherited);
+                } else if(elements[i].ty === 'rect'){
+                    addRect(gr,elements[i],offsetX,offsetY, inherited);
+                } else if(elements[i].ty === 'ellipse'){
+                    addEllipse(gr,elements[i],offsetX,offsetY, inherited);
+                }
+            }
+            addTransformAttributes(gr, data, inherited);
+        } else {
+            for(i = 0; i < len; i += 1){
+                gr = group.layers.addShape();
+                if(elements[i].ty === 'g'){
+                    addElements(gr,elements[i],offsetX,offsetY, inherited, false);
+                } else if(elements[i].ty === 'path'){
+                    addPath(gr,elements[i],offsetX,offsetY, inherited);
+                } else if(elements[i].ty === 'polygon' || elements[i].ty === 'polyline'){
+                    addPolygon(gr,elements[i],offsetX,offsetY, inherited);
+                } else if(elements[i].ty === 'rect'){
+                    addRect(gr,elements[i],offsetX,offsetY, inherited);
+                } else if(elements[i].ty === 'ellipse'){
+                    addEllipse(gr,elements[i],offsetX,offsetY, inherited);
+                }
+                if(elements[i].id){
+                    gr.name = elements[i].id;
+                }
             }
         }
-        //addAttributes(gr, data, inherited);
     }
     
     function createSvg(data) {
         var comp = app.project.items.addComp('svg', data.w, data.h, 1, 1, 1);
-        var shapeLayer = comp.layers.addShape();
+        //var shapeLayer = comp.layers.addShape();
         var inheritedData = {
             co: "#000000",
-            op: 1,
+            fop: 1,
             stCo: "#000000",
-            stOp: 0,
-            stW: 0
+            stOp: 1,
+            stW: 1,
+            st: false,
+            op: 1,
         }
-        addElements(shapeLayer, data, data.w/2,data.h/2, inheritedData);
+        addElements(comp, data, data.w/2,data.h/2, inheritedData, true);
         
     }
     

@@ -1,0 +1,12 @@
+#svgImporter{
+}
+
+#svgContainer{
+    position:absolute;
+    left:0;
+    right:0;
+    display: none;
+    color: #876678;
+    stroke-width:0;
+    stroke-opacity:0;
+}

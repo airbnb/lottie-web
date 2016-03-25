@@ -3,7 +3,7 @@
 var importSVGController = (function () {
     'use strict';
     var ob = {};
-    var csInterface, svgContainer;
+    var csInterface, svgContainer, view;
     ob.importSVG = importSVG;
     ob.init = init;
     ob.show = show;
@@ -13,6 +13,38 @@ var importSVGController = (function () {
     function importSVG() {
         var eScript = 'bm_main.browseFile()';
         csInterface.evalScript(eScript);
+    }
+    
+    function deltaTransformPoint(matrix, point)  {
+
+        var dx = point.x * matrix.a + point.y * matrix.c + 0;
+        var dy = point.x * matrix.b + point.y * matrix.d + 0;
+        return { x: dx, y: dy };
+    }
+
+
+    function decomposeMatrix(matrix) {
+
+        // @see https://gist.github.com/2052247
+
+        // calculate delta transform point
+        var px = deltaTransformPoint(matrix, { x: 0, y: 1 });
+        var py = deltaTransformPoint(matrix, { x: 1, y: 0 });
+
+        // calculate skew
+        var skewX = ((180 / Math.PI) * Math.atan2(px.y, px.x) - 90);
+        var skewY = ((180 / Math.PI) * Math.atan2(py.y, py.x));
+
+        return {
+
+            translateX: matrix.e,
+            translateY: matrix.f,
+            scaleX: Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b),
+            scaleY: Math.sqrt(matrix.c * matrix.c + matrix.d * matrix.d),
+            skewX: skewX,
+            skewY: skewY,
+            rotation: skewX // rotation is the same as skew x
+        };        
     }
     
     
@@ -51,7 +83,8 @@ var importSVGController = (function () {
     }
     
     function getColor(elem){
-        var color = elem.getAttribute('fill');
+        //var color = elem.getAttribute('fill');
+        var color = getComputedStyle(elem, null).fill;
         if(color){
             color = convertToHex(color);
             return color;
@@ -60,7 +93,8 @@ var importSVGController = (function () {
     }
     
     function getStrokeColor(elem){
-        var color = elem.getAttribute('stroke');
+        //var color = elem.getAttribute('stroke');
+        var color = getComputedStyle(elem, null).stroke;
         if(color){
             color = convertToHex(color);
             return color;
@@ -69,15 +103,27 @@ var importSVGController = (function () {
     }
     
     function getStrokeWidth(elem){
-        var width = elem.getAttribute('stroke-width');
+        //var width = elem.getAttribute('stroke-width');
+        var width = getComputedStyle(elem, null).strokeWidth;
         if(width){
+            width = parseFloat(width);
             return width;
         }
         return null;
     }
     
+    function getFillOpacity(elem){
+        //var opacity = elem.getAttribute('fill-opacity');
+        var opacity = getComputedStyle(elem, null).fillOpacity;
+        if(opacity){
+            return opacity;
+        }
+        return null;
+    }
+    
     function getOpacity(elem){
-        var opacity = elem.getAttribute('fill-opacity');
+        //var opacity = elem.getAttribute('opacity');
+        var opacity = getComputedStyle(elem, null).opacity;
         if(opacity){
             return opacity;
         }
@@ -85,7 +131,8 @@ var importSVGController = (function () {
     }
     
     function getStrokeOpacity(elem){
-        var opacity = elem.getAttribute('stroke-opacity');
+        //var opacity = elem.getAttribute('stroke-opacity');
+        var opacity = getComputedStyle(elem, null).strokeOpacity;
         if(opacity){
             return opacity;
         }
@@ -94,10 +141,18 @@ var importSVGController = (function () {
     
     function exportStyleAttributes(elem, ob){
         ob.co = getColor(elem);
+        ob.fop = getFillOpacity(elem);
         ob.op = getOpacity(elem);
         ob.stOp = getStrokeOpacity(elem);
         ob.stCo = getStrokeColor(elem);
         ob.stW = getStrokeWidth(elem);
+        ob.id = elem.getAttribute('id');
+        if(ob.stCo !== "#876678"){
+            if(ob.stOp === 0) {
+                //ob.stOp = 1;
+            }
+            ob.st = true;
+        }
     }
     
     function exportMoveToSegment(elem){
@@ -120,6 +175,16 @@ var importSVGController = (function () {
         }
     }
     
+    function exportCubicSmoothSegment(elem){
+        return {
+            ty: elem.pathSegType,
+            x: elem.x,
+            y: elem.y,
+            x2: elem.x2,
+            y2: elem.y2
+        }
+    }
+    
     function exportQuadraticToSegment(elem){
         return {
             ty: elem.pathSegType,
@@ -127,6 +192,14 @@ var importSVGController = (function () {
             y: elem.y,
             x1: elem.x1,
             y1: elem.y1
+        }
+    }
+    
+    function exportQuadraticSmoothSegment(elem){
+        return {
+            ty: elem.pathSegType,
+            x: elem.x,
+            y: elem.y,
         }
     }
     
@@ -196,6 +269,34 @@ var importSVGController = (function () {
         return ob;
     }
     
+    function exportPolyline(elem){
+        var ob = {};
+        ob.ty = 'polyline';
+        var points = elem.getAttribute('points').trim();
+        var arr = points.split(' ');
+        var pointsArr = [];
+        var i, len = arr.length;
+        for (i = 0; i < len; i += 1) {
+            var pair = arr[i].split(',');
+            pointsArr.push(pair);
+        }
+        ob.points = pointsArr;
+        exportStyleAttributes(elem,ob);
+        return ob;
+    }
+    
+    function exportLine(elem){
+        var ob = {};
+        ob.ty = 'polyline';
+        var x1 = elem.getAttribute('x1');
+        var x2 = elem.getAttribute('x2');
+        var y1 = elem.getAttribute('y1');
+        var y2 = elem.getAttribute('y2');
+        ob.points = [[x1,y1],[x2,y2]];
+        exportStyleAttributes(elem,ob);
+        return ob;
+    }
+    
     function exportRect(elem){
         var ob = {};
         ob.ty = 'rect';
@@ -204,6 +305,29 @@ var importSVGController = (function () {
         ob.width = elem.getAttribute('width');
         ob.height = elem.getAttribute('height');
         ob.rx = elem.getAttribute('rx') || elem.getAttribute('ry');
+        exportStyleAttributes(elem,ob);
+        return ob;
+    }
+    
+    function exportEllipse(elem){
+        var ob = {};
+        ob.ty = 'ellipse';
+        ob.cx = elem.getAttribute('cx') || 0;
+        ob.cy = elem.getAttribute('cy') || 0;
+        ob.rx = elem.getAttribute('rx');
+        ob.ry = elem.getAttribute('ry');
+        exportStyleAttributes(elem,ob);
+        return ob;
+    }
+    
+    function exportCircle(elem){
+        var ob = {};
+        ob.ty = 'ellipse';
+        ob.cx = elem.getAttribute('cx') || 0;
+        ob.cy = elem.getAttribute('cy') || 0;
+        ob.rx = elem.getAttribute('r');
+        ob.ry = ob.rx;
+        exportStyleAttributes(elem,ob);
         return ob;
     }
     
@@ -233,6 +357,14 @@ var importSVGController = (function () {
             case 15:
                 return exportLinetoVertical(elem);
                 break;
+            case 16:
+            case 17:
+                return exportCubicSmoothSegment(elem);
+                break;
+            case 18:
+            case 19:
+                return exportQuadraticSmoothSegment(elem);
+                break;
             case 8:
             case 9:
                 return exportQuadraticToSegment(elem);
@@ -259,8 +391,20 @@ var importSVGController = (function () {
                 case 'polygon':
                     elemData = exportPolygon(child);
                     break;
+                case 'polyline':
+                    elemData = exportPolyline(child);
+                    break;
+                case 'line':
+                    elemData = exportLine(child);
+                    break;
                 case 'rect':
                     elemData = exportRect(child);
+                    break;
+                case 'ellipse':
+                    elemData = exportEllipse(child);
+                    break;
+                case 'circle':
+                    elemData = exportCircle(child);
                     break;
             }
             if(elemData){
@@ -271,6 +415,7 @@ var importSVGController = (function () {
     }
     
     function addToDOM(data) {
+        //data  = '<style type="text/css">*{opacity:0.91232123}</style>' + data;
         svgContainer.html(data);
         var svgSelector = svgContainer.find('svg');
         if (!svgSelector.length) {
@@ -323,15 +468,22 @@ var importSVGController = (function () {
     function show(){
         csInterface.addEventListener('bm:file:uri', handleFileUri);
         importSVG();
+        view.show();
     }
     
     function hide(){
         csInterface.removeEventListener('bm:file:uri', handleFileUri);
+        view.hide();
     }
     
     function init(csI) {
+        view = $("#svgImporter");
+        view.hide();
         csInterface = csI;
         svgContainer = $('#svgContainer');
+        svgContainer.on('click', function(){
+            svgContainer.html('');
+        })
         /*var button = $('#compsSelection .buttons .import');
         button.on('click', importSVG);*/
     }
