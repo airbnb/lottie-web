@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global $, alertData, successData, bodymovin */
+/*global $, alertData, successData, bodymovin, mainController */
 var importSVGController = (function () {
     'use strict';
     var ob = {};
@@ -139,6 +139,13 @@ var importSVGController = (function () {
         return null;
     }
     
+    function getTransformationMatrix(elem, matr){
+        var transform = getComputedStyle(elem, null).transform;
+        var transformAttr = elem.getAttribute('transform');
+        console.log('transformtransform: ',transform);
+        console.log('transformAttrtransformAttr: ',transformAttr);
+    }
+    
     function exportStyleAttributes(elem, ob){
         ob.co = getColor(elem);
         ob.fop = getFillOpacity(elem);
@@ -235,7 +242,13 @@ var importSVGController = (function () {
         var ob = {};
         ob.ty = 'g';
         exportStyleAttributes(elem,ob);
+        var m = new Matrix();
+        var transform = getComputedStyle(elem, null).transform;
+        var transformAttr = elem.getAttribute('transform');
+        console.log('transform: ',transform);
+        console.log('transformAttr: ',transformAttr);
         ob.elems = iterateElems(elem);
+        
         return ob;
     }
     
@@ -333,7 +346,6 @@ var importSVGController = (function () {
     
     function getSegmentData(elem){
         var ob = {};
-        console.log(elem.pathSegType);
         switch(elem.pathSegType) {
             case 1:
                 return exportCloseSegment(elem);
@@ -373,7 +385,7 @@ var importSVGController = (function () {
         return ob;
     }
     
-    function iterateElems(elem) {
+    function iterateElems(elem,m) {
         var arr = [];
         var children = elem.childNodes;
         var i, len = children.length, child, elemData;
@@ -408,13 +420,14 @@ var importSVGController = (function () {
                     break;
             }
             if(elemData){
+                elemData.tr = getTransformationMatrix(elem, m);
                 arr.push(elemData);   
             }
         }
         return arr;
     }
     
-    function addToDOM(data) {
+    function addToDOM(data, name) {
         //data  = '<style type="text/css">*{opacity:0.91232123}</style>' + data;
         svgContainer.html(data);
         var svgSelector = svgContainer.find('svg');
@@ -435,25 +448,26 @@ var importSVGController = (function () {
         var svgData = {
             w: w,
             h: h,
+            name: name,
             elems: []
         };
-        svgData.elems = iterateElems(svgElem);
-        console.log(svgData);
+        var mat = new Matrix();
+        svgData.elems = iterateElems(svgElem, mat);
         var eScript = 'bm_svgImporter.createSvg(' + JSON.stringify(svgData) + ')';
         csInterface.evalScript(eScript);
     }
     
-    function loadSVG(path) {
+    function loadSVG(path, name) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', path, true);
         xhr.send();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    addToDOM(xhr.responseText);
+                    addToDOM(xhr.responseText, name);
                 } else {
                     try {
-                        addToDOM(xhr.responseText);
+                        addToDOM(xhr.responseText, name);
                     } catch (err) {
                     }
                 }
@@ -462,18 +476,22 @@ var importSVGController = (function () {
     }
     
     function handleFileUri(ev) {
-        loadSVG(ev.data);
+        console.log(ev.data);
+        loadSVG(ev.data.path, ev.data.name);
     }
     
     function show(){
         csInterface.addEventListener('bm:file:uri', handleFileUri);
-        importSVG();
         view.show();
     }
     
     function hide(){
         csInterface.removeEventListener('bm:file:uri', handleFileUri);
         view.hide();
+    }
+    
+    function showSelection() {
+        mainController.showView('selection');
     }
     
     function init(csI) {
@@ -484,8 +502,10 @@ var importSVGController = (function () {
         svgContainer.on('click', function(){
             svgContainer.html('');
         })
-        /*var button = $('#compsSelection .buttons .import');
-        button.on('click', importSVG);*/
+        var button = $('#svgImporter .buttons .import');
+        button.on('click', importSVG);
+        var backButton = $('#svgImporter .buttons .return');
+        backButton.on('click', showSelection);
     }
     
     return ob;

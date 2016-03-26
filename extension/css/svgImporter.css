@@ -1,4 +1,29 @@
-#svgImporter{
+
+.references{
+    background-color: #484043;
+    background-color: rgb(72, 64, 67);
+    background-color: #6E6568;
+    background-color: rgb(110, 101, 104);
+    background-color: #EAD3A8;
+    background-color: rgb(234, 211, 168);
+    background-color: #D23641;
+    background-color: rgb(210, 54, 65);
+    background-color: #FFFFFF;
+    background-color: rgb(255, 255, 255);
+}
+
+#svgImporter .buttons{
+    margin-top: 10px;
+}
+
+
+#svgImporter .buttons.center{
+    text-align: center;
+}
+
+#svgImporter h1{
+    text-align: center;
+    color: #D23641;
 }
 
 #svgContainer{
@@ -9,4 +34,9 @@
     color: #876678;
     stroke-width:0;
     stroke-opacity:0;
+}
+
+#svgImporter .description{
+    text-align: center;
+    font-size: 12px;
 }

@@ -9,7 +9,7 @@ var bm_main = (function () {
         var f = new File(Folder.desktop.absoluteURI);
         var openFileData = f.openDlg();
         if (openFileData !== null) {
-            bm_eventDispatcher.sendEvent('bm:file:uri', openFileData.fsName);
+            bm_eventDispatcher.sendEvent('bm:file:uri', {path: openFileData.fsName, name: openFileData.name});
         }
 
     }

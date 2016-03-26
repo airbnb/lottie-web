@@ -308,6 +308,7 @@ var bm_svgImporter = (function () {
     
     function createSvg(data) {
         var comp = app.project.items.addComp('svg', data.w, data.h, 1, 1, 1);
+        comp.name = data.name;
         //var shapeLayer = comp.layers.addShape();
         var inheritedData = {
             co: "#000000",

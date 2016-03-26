@@ -103,7 +103,7 @@ var snapshotController = (function () {
     }
     
     function handleFileUri(ev) {
-        loadAnimation(ev.data);
+        loadAnimation(ev.data.path);
     }
     
     function frameChangeHandler() {
