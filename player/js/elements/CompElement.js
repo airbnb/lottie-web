@@ -7,7 +7,6 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     }
 }
 createElement(SVGBaseElement, ICompElement);
-extendPrototype(ExpressionComp,ICompElement);
 
 ICompElement.prototype.getComposingElement = function(){
     return this.layerElement;

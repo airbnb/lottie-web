@@ -110,6 +110,26 @@ var bm_generalUtils = (function () {
         }
     }
     
+    function findAttributes(name){
+        var ob = {
+            ln: null,
+            cl: ''
+        }
+        var regexElem = /[\.|#][a-zA-Z0-9\-]*/g;
+        var match,firstChar, matchString;
+        while(match = regexElem.exec(name)){
+            matchString = match[0];
+            firstChar = matchString.substring(0,1);
+            if (firstChar === '#') {
+                ob.ln = matchString.substring(1);
+            } else {
+                ob.cl += ob.cl === '' ? '' : ' ';
+                ob.cl += matchString.substring(1);
+            }
+        }
+        return ob;
+    }
+    
     ob.random = random;
     ob.roundNumber = roundNumber;
     ob.setTimeout = setTimeout;
@@ -117,6 +137,7 @@ var bm_generalUtils = (function () {
     ob.iterateProperty = iterateProperty;
     ob.iterateOwnProperties = iterateOwnProperties;
     ob.convertPathsToAbsoluteValues = convertPathsToAbsoluteValues;
+    ob.findAttributes = findAttributes;
     
     return ob;
     

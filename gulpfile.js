@@ -38,8 +38,29 @@ gulp.task('buildPlayer', function(){
         .pipe(gulp.dest('build/player/'));
 });
 
+gulp.task('buildReducedPlayer', function(){
+    gulp.src('./player/index.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
+        .pipe(wrap(moduleWrap))
+        .pipe(gulp.dest('build/player/'));
+});
+
 gulp.task('zipPlayer',['buildPlayer'], function(){
     gulp.src('./player/index.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
+        .pipe(wrap(moduleWrap))
+        .pipe(gzip({ append: true }))
+        .pipe(gulp.dest('build/player/'));
+});
+
+gulp.task('zipSVGPlayer',[], function(){
+    gulp.src('./player/svg.html')
         .pipe(usemin({
             js: [uglify()]
         }))

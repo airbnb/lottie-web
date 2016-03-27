@@ -369,4 +369,3 @@ CVShapeElement.prototype.destroy = function(){
     this.viewData.length = 0;
     this.parent.destroy.call();
 };
-extendPrototype(ShapeInterface,CVShapeElement);

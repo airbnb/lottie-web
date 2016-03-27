@@ -107,8 +107,12 @@ var bm_layerElement = (function () {
         layerData.ind = ind;
         layerData.ty = layerType;
         layerData.nm = layerInfo.name;
-        if (layerInfo.name.substring(0, 1) === '#') {
-            layerData.ln = layerInfo.name.substr(1);
+        var layerAttributes = bm_generalUtils.findAttributes(layerInfo.name);
+        if(layerAttributes.ln){
+            layerData.ln = layerAttributes.ln;
+        }
+        if(layerAttributes.cl){
+            layerData.cl = layerAttributes.cl;
         }
         if (layerInfo.parent !== null) {
             layerData.parent = layerInfo.parent.index - 1;

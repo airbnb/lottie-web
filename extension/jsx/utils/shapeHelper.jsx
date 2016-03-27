@@ -200,6 +200,13 @@ var bm_shapeHelper = (function () {
                 }
                 if (ob) {
                     ob.nm = prop.name;
+                    var layerAttributes = bm_generalUtils.findAttributes(prop.name);
+                    if(layerAttributes.ln){
+                        ob.ln = layerAttributes.ln;
+                    }
+                    if(layerAttributes.cl){
+                        ob.cl = layerAttributes.cl;
+                    }
                     array.push(ob);
                 }
             }

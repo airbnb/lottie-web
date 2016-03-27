@@ -442,8 +442,8 @@ var PropertyFactory = (function(){
     }
 
     function checkExpressions(elem,data){
-        this.getExpression = ExpressionManager.initiateExpression;
         if(data.x){
+            this.getExpression = ExpressionManager.initiateExpression;
             this.k = true;
             this.x = true;
             if(this.getValue) {

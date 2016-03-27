@@ -115,8 +115,6 @@ BaseElement.prototype.mask = function(nm){
     return this.maskManager.getMask(nm);
 }
 
-extendPrototype(LayerInterface,BaseElement);
-
 Object.defineProperty(BaseElement.prototype, "anchorPoint", {
     get: function anchorPoint() {
         return this.finalTransform.mProp.anchorPoint;

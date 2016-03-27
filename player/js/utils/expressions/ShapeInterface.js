@@ -228,3 +228,5 @@ ShapeInterface.prototype.groupInterface = function(shapes,view,container){
 ShapeInterface.prototype.buildExpressionInterface = function(){
     this.groupInterface(this.shapesData,this.viewData,this);
 }
+extendPrototype(ShapeInterface,IShapeElement);
+extendPrototype(ShapeInterface,CVShapeElement);
