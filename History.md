@@ -1,3 +1,6 @@
+## V 4.1.7
+- removing non ASCII chars from file that would break the extension in some languages.
+
 ## V 4.1.6
 - module definition fix
 
