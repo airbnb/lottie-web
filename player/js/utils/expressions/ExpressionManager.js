@@ -371,7 +371,7 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         function effect(nm){
-            return elem.effectsManager.getEffect(nm);
+            return elem.effectsManager(nm);
         }
 
         function nearestKey(time){

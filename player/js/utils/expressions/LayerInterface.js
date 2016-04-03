@@ -15,6 +15,7 @@ LayerInterface.prototype.toWorld = function(arr) {
 };
 
 LayerInterface.prototype.effect = function(num) {
+    console.log(this);
     console.log(this.effectsManager);
     console.log(num);
 }

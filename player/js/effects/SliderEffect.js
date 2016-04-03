@@ -14,6 +14,15 @@ function CheckboxEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
 }
 
+function groupEffectFunction(num){
+
+}
+
+function GroupEffect() {
+    var fn = groupEffectFunction;
+    return fn;
+}
+
 SliderEffect.prototype.proxyFunction = function(){
     if(this.p.k){
         this.p.getValue();
