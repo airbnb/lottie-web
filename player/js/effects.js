@@ -37,8 +37,12 @@ function EffectsManager(data,element,dynamicProperties){
     var fn = function(name){
         var effects = data.ef, i = 0, len = effects.length;
         while(i<len) {
-            if(effects[i].nm === name || i === name){
-                return effectElements[i];
+            if(name === effects[i].nm || name === i + 1){
+                if(effects[i].ty === 5){
+                    return effectElements[i];
+                } else{
+                    return effectElements[i]();
+                }
             }
             i += 1;
         }

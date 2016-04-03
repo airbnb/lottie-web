@@ -375,6 +375,8 @@ var ExpressionManager = (function(){
         }
 
         function lookAt(elem1,elem2){
+            console.log(elem1);
+            console.log(elem2);
             return [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
         }
 
