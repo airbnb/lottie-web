@@ -5,7 +5,6 @@ function EffectsManager(data,element,dynamicProperties){
     var effectElements = [];
     var i,len = effects.length;
     var eff;
-    console.log(effects);
     for(i=0;i<len;i++){
         switch(effects[i].ty){
             case 0:
@@ -36,7 +35,6 @@ function EffectsManager(data,element,dynamicProperties){
     }
 
     var fn = function(name){
-        console.log(data);
         var effects = data.ef, i = 0, len = effects.length;
         while(i<len) {
             if(effects[i].nm === name || i === name){

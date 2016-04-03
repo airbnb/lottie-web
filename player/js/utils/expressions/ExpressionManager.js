@@ -374,6 +374,10 @@ var ExpressionManager = (function(){
             return elem.effectsManager(nm);
         }
 
+        function lookAt(elem1,elem2){
+            return [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
+        }
+
         function nearestKey(time){
             var i, len = data.k.length,index;
             if(!data.k.length || typeof(data.k[0]) === 'number'){
