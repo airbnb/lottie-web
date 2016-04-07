@@ -13,6 +13,9 @@ function PointEffect(data,elem, dynamicProperties){
 function CheckboxEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
 }
+function NoValueEffect(data,elem, dynamicProperties){
+    this.p = {};
+}
 
 function groupEffectFunction(num){
 

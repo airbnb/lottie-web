@@ -15,6 +15,7 @@ BaseElement.prototype.checkMasks = function(){
 }
 
 BaseElement.prototype.prepareFrame = function(num){
+    console.log(this.data.nm);
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){

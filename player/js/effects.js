@@ -31,6 +31,10 @@ function EffectsManager(data,element,dynamicProperties){
                 eff = new EffectsManager(effects[i],element,dynamicProperties);
                 effectElements.push(eff);
                 break;
+            case 6:
+                eff = new NoValueEffect(effects[i],element,dynamicProperties);
+                effectElements.push(eff);
+                break;
         }
     }
 

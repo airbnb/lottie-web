@@ -9,7 +9,8 @@ var bm_effectsHelper = (function () {
         colorControl: 2,
         pointControl: 3,
         checkboxControl: 4,
-        group: 5
+        group: 5,
+        noValue: 6
     };
     
     function getEffectType(name) {
@@ -32,12 +33,23 @@ var bm_effectsHelper = (function () {
     
     function findEffectPropertyType(prop) {
         var propertyValueType = prop.propertyValueType;
-        if (propertyValueType === PropertyValueType.OneD) {
+        //Prop ertyValueType.NO_VALUE
+        if (propertyValueType === PropertyValueType.NO_VALUE) {
+            return effectTypes.noValue;
+        } else if (propertyValueType === PropertyValueType.OneD) {
             return effectTypes.sliderControl;
         } else {
             return effectTypes.pointControl;
         }
         return '';
+    }
+    
+    function exportNoValueControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.noValue;
+        ob.nm = effect.name;
+        ob.v = 0;
+        return ob;
     }
     
     function exportSliderControl(effect, frameRate) {
@@ -115,7 +127,10 @@ var bm_effectsHelper = (function () {
             prop = elem.property(i + 1);
             if(prop.propertyType === 6012){
                 var type = findEffectPropertyType(prop);
-                if(type === effectTypes.sliderControl) {
+                //effectTypes.noValue;
+                if (type === effectTypes.noValue) {
+                    ob.ef.push(exportNoValueControl(prop, frameRate));
+                } else if(type === effectTypes.sliderControl) {
                     ob.ef.push(exportSliderControl(prop, frameRate));
                 } else {
                     ob.ef.push(exportPointControl(prop, frameRate));
