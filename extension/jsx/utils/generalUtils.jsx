@@ -115,7 +115,7 @@ var bm_generalUtils = (function () {
             ln: null,
             cl: ''
         }
-        var regexElem = /[\.|#][a-zA-Z0-9\-]*/g;
+        var regexElem = /[\.|#][a-zA-Z0-9\-_]*/g;
         var match,firstChar, matchString;
         while(match = regexElem.exec(name)){
             matchString = match[0];
