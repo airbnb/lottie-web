@@ -91,7 +91,7 @@ var bm_layerElement = (function () {
     function prepareLayer(layerInfo, ind) {
         var layerData = {};
         var layerType = getLayerType(layerInfo);
-        if (layerType === ob.layerTypes.audio || layerType === ob.layerTypes.guide || layerType === ob.layerTypes.light || layerType === ob.layerTypes.adjustment || layerType === ob.layerTypes.pholderStill || layerType === ob.layerTypes.pholderVideo) {
+        if (layerType === ob.layerTypes.audio || layerType === ob.layerTypes.light || layerType === ob.layerTypes.adjustment || layerType === ob.layerTypes.pholderStill || layerType === ob.layerTypes.pholderVideo) {
             layerData.isValid = false;
             layerData.render = false;
         }
@@ -172,7 +172,9 @@ var bm_layerElement = (function () {
         }
         
         var lType = layerData.ty;
-        if (lType !== ob.layerTypes.camera) {
+        if (lType === ob.layerTypes.guide) {
+            bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);
+        } else if (lType !== ob.layerTypes.camera) {
             bm_transformHelper.exportTransform(layerInfo, layerData, frameRate);
             bm_maskHelper.exportMasks(layerInfo, layerData, frameRate);
             bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);
