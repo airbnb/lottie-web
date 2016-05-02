@@ -509,6 +509,7 @@ var bm_expressionHelper = (function () {
             doneBodies.length = 0;
             expressionStr = prop.expression;
             expressionStr = correctEaseAndWizz(expressionStr);
+            expressionStr = correctElseToken(expressionStr);
             searchUndeclaredVariables();
             var parsed = esprima.parse(expressionStr, options);
             var body = parsed.body;
@@ -521,6 +522,11 @@ var bm_expressionHelper = (function () {
             expressionStr = 'var $bm_rt;\n' + expressionStr;
             returnOb.x = expressionStr;
         }
+    }
+    
+    function correctElseToken(str){
+        var regElse = / else /g;
+        return str.replace(regElse,'\n else ');
     }
     
     function correctEaseAndWizz(str){

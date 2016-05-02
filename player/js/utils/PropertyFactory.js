@@ -227,8 +227,7 @@ var PropertyFactory = (function(){
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
                     }else{
-                        //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
-                        fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY,keyData.n).get;
+                        fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n).get;
                         keyData.__fnct = fnc;
                     }
                     perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
