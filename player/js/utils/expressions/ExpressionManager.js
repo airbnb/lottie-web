@@ -437,6 +437,10 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
             //seedRandom(0);
+            if(this.frameExpressionId === elem.globalData.frameId){
+                return;
+            }
+            this.frameExpressionId = elem.globalData.frameId;
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
@@ -455,11 +459,6 @@ var ExpressionManager = (function(){
             this.lock = true;
             if(this.getPreValue){
                 this.getPreValue();
-            } else {
-                if(this.frameId === elem.globalData.frameId){
-                    return;
-                }
-                this.frameId = elem.globalData.frameId;
             }
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
