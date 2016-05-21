@@ -1,7 +1,7 @@
 function IImageElement(data,parentContainer,globalData,comp,placeholder){
     this.assetData = globalData.getAssetData(data.refId);
     this.path = globalData.getPath();
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
 }
 createElement(SVGBaseElement, IImageElement);
 
@@ -20,7 +20,7 @@ IImageElement.prototype.createElements = function(){
 
     img.src = this.path+this.assetData.p;
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
 
     this.innerElem = document.createElementNS(svgNS,'image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
@@ -44,7 +44,7 @@ IImageElement.prototype.hide = function(){
 };
 
 IImageElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -67,6 +67,6 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
 };
 
 IImageElement.prototype.destroy = function(){
-    this.parent.destroy.call();
+    this._parent.destroy.call();
     this.innerElem =  null;
 };

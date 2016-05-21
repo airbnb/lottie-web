@@ -1,7 +1,7 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
 }
 ITextElement.prototype.init = function(){
-    this.parent.init.call(this);
+    this._parent.init.call(this);
     this.lettersChangedFlag = false;
     var data = this.data;
     this.renderedLetters = Array.apply(null,{length:data.t.d.l.length});

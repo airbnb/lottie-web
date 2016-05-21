@@ -24,6 +24,7 @@ function EffectsManager(data,element,dynamicProperties){
                 effectElements.push(eff.proxyFunction.bind(eff));
                 break;
             case 4:
+            case 7:
                 eff = new CheckboxEffect(effects[i],element,dynamicProperties);
                 effectElements.push(eff.proxyFunction.bind(eff));
                 break;

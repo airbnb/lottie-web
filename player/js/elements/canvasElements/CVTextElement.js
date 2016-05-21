@@ -15,7 +15,7 @@ function CVTextElement(data, comp, globalData){
         sWidth: 0,
         fValue: ''
     }
-    this.parent.constructor.call(this,data,comp, globalData);
+    this._parent.constructor.call(this,data,comp, globalData);
 }
 createElement(CVBaseElement, CVTextElement);
 
@@ -27,7 +27,7 @@ CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2
 
 CVTextElement.prototype.createElements = function(){
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
     //console.log('this.data: ',this.data);
     var documentData = this.data.t.d;
 
@@ -116,7 +116,7 @@ CVTextElement.prototype.createElements = function(){
 };
 
 CVTextElement.prototype.renderFrame = function(parentMatrix){
-    if(this.parent.renderFrame.call(this, parentMatrix)===false){
+    if(this._parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;

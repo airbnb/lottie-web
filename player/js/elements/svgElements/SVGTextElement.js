@@ -1,7 +1,7 @@
 function SVGTextElement(data,parentContainer,globalData,comp, placeholder){
     this.textSpans = [];
     this.renderType = 'svg';
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, SVGTextElement);
 
@@ -11,7 +11,7 @@ SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 
 SVGTextElement.prototype.createElements = function(){
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
     var documentData = this.data.t.d;
 
     this.innerElem = document.createElementNS(svgNS,'g');
@@ -141,7 +141,7 @@ SVGTextElement.prototype.hide = function(){
 
 SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -198,6 +198,6 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
 
 SVGTextElement.prototype.destroy = function(){
-    this.parent.destroy.call();
+    this._parent.destroy.call();
     this.innerElem =  null;
 };

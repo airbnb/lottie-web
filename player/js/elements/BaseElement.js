@@ -121,6 +121,35 @@ BaseElement.prototype.mask = function(nm){
 
 extendPrototype(LayerInterface,BaseElement);
 
+Object.defineProperty(BaseElement.prototype, "hasParent", {
+    get: function hasParent() {
+        return this.hierarchy && this.hierarchy.length;
+    }
+});
+Object.defineProperty(BaseElement.prototype, "parent", {
+    get: function parent() {
+        return this.hierarchy[0];
+    }
+});
+
+Object.defineProperty(BaseElement.prototype, "rotation", {
+    get: function rotation() {
+        return this.transform.rotation;
+    }
+});
+
+Object.defineProperty(BaseElement.prototype, "scale", {
+    get: function scale() {
+        return this.transform.scale;
+    }
+});
+
+Object.defineProperty(BaseElement.prototype, "position", {
+    get: function position() {
+        return this.transform.position;
+    }
+});
+
 Object.defineProperty(BaseElement.prototype, "anchorPoint", {
     get: function anchorPoint() {
         return this.finalTransform.mProp.anchorPoint;

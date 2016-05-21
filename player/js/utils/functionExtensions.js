@@ -2,7 +2,7 @@ function createElement(parent,child,params){
     if(child){
         child.prototype = Object.create(parent.prototype);
         child.prototype.constructor = child;
-        child.prototype.parent = parent.prototype;
+        child.prototype._parent = parent.prototype;
     }else{
         var instance = Object.create(parent.prototype,params);
         var getType = {};

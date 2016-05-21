@@ -1,5 +1,5 @@
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     this.isSvg = true;
     if(this.data.tm){
@@ -24,7 +24,7 @@ ICompElement.prototype.hide = function(){
 };
 
 ICompElement.prototype.prepareFrame = function(num){
-    this.parent.prepareFrame.call(this,num);
+    this._parent.prepareFrame.call(this,num);
     if(this.isVisible===false){
         return;
     }
@@ -43,7 +43,7 @@ ICompElement.prototype.prepareFrame = function(num){
 };
 
 ICompElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     var i,len = this.layers.length;
     if(renderParent===false){
         this.hide();
@@ -73,7 +73,7 @@ ICompElement.prototype.getElements = function(){
 };
 
 ICompElement.prototype.destroy = function(){
-    this.parent.destroy.call();
+    this._parent.destroy.call();
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
         this.elements[i].destroy();

@@ -448,15 +448,19 @@ var ExpressionManager = (function(){
             if(!content && elem.content){
                 content = elem.content.bind(elem);
             }
-            if(this.getPreValue){
-                this.getPreValue();
-            }
             if(this.lock){
-                console.log(this.elem);
                 this.v = this.pv;
-                return;
+                return true;
             }
             this.lock = true;
+            if(this.getPreValue){
+                this.getPreValue();
+            } else {
+                if(this.frameId === elem.globalData.frameId){
+                    return;
+                }
+                this.frameId = elem.globalData.frameId;
+            }
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             bindedFn();

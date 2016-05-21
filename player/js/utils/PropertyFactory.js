@@ -469,6 +469,7 @@ var PropertyFactory = (function(){
         this.mdf = false;
         this.comp = elem.comp;
         this.k = false;
+        this.frameId = -1;
         checkExpressions.bind(this)(elem,data);
         this.v = new Array(data.k.length);
         this.pv = new Array(data.k.length);
@@ -539,49 +540,49 @@ var PropertyFactory = (function(){
             if(this.p.k){
                 this.getValue();
             }
-            return this.p.pv;
+            return this.p.v;
         }
         function anchorGetter(){
             if(this.a.k){
                 this.getValue();
             }
-            return this.a.pv;
+            return this.a.v;
         }
         function orientationGetter(){
             if(this.or.k){
                 this.getValue();
             }
-            return this.or.pv;
+            return this.or.v;
         }
         function rotationGetter(){
             if(this.r.k){
                 this.getValue();
             }
-            return this.r.pv;
+            return this.r.v;
         }
         function scaleGetter(){
             if(this.s.k){
                 this.getValue();
             }
-            return this.s.pv;
+            return this.s.v;
         }
         function opacityGetter(){
             if(this.o.k){
                 this.o.getValue();
             }
-            return this.o.pv;
+            return this.o.v;
         }
         function skewGetter(){
             if(this.sk.k){
                 this.sk.getValue();
             }
-            return this.sk.pv;
+            return this.sk.v;
         }
         function skewAxisGetter(){
             if(this.sa.k){
                 this.sa.getValue();
             }
-            return this.sa.pv;
+            return this.sa.v;
         }
         function applyToMatrix(mat, processExpressions){
             var i, len = this.dynamicProperties.length;

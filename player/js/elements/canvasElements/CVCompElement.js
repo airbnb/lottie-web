@@ -1,5 +1,5 @@
 function CVCompElement(data, comp,globalData){
-    this.parent.constructor.call(this,data, comp,globalData);
+    this._parent.constructor.call(this,data, comp,globalData);
     this.layers = data.layers;
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -8,7 +8,7 @@ function CVCompElement(data, comp,globalData){
 createElement(CVBaseElement, CVCompElement);
 
 CVCompElement.prototype.prepareFrame = function(num){
-    this.parent.prepareFrame.call(this,num);
+    this._parent.prepareFrame.call(this,num);
     if(this.isVisible===false){
         return;
     }
@@ -27,7 +27,7 @@ CVCompElement.prototype.prepareFrame = function(num){
 };
 
 CVCompElement.prototype.renderFrame = function(parentMatrix){
-    if(this.parent.renderFrame.call(this,parentMatrix)===false){
+    if(this._parent.renderFrame.call(this,parentMatrix)===false){
         return;
     }
     var i,len = this.layers.length;
@@ -57,5 +57,5 @@ CVCompElement.prototype.destroy = function(){
     }
     this.layers = null;
     this.elements = null;
-    this.parent.destroy.call();
+    this._parent.destroy.call();
 };

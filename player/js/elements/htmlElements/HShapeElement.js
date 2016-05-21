@@ -3,12 +3,12 @@ function HShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.shapesData = data.shapes;
     this.stylesList = [];
     this.viewData = [];
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(HBaseElement, HShapeElement);
-var parent = HShapeElement.prototype.parent;
+var parent = HShapeElement.prototype._parent;
 extendPrototype(IShapeElement, HShapeElement);
-HShapeElement.prototype.parent = parent;
+HShapeElement.prototype._parent = parent;
 
 HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
@@ -44,7 +44,7 @@ HShapeElement.prototype.createElements = function(){
 };
 
 HShapeElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;

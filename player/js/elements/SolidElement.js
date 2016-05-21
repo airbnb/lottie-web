@@ -1,10 +1,10 @@
 function ISolidElement(data,parentContainer,globalData,comp, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, ISolidElement);
 
 ISolidElement.prototype.createElements = function(){
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
 
     var rect = document.createElementNS(svgNS,'rect');
     ////rect.style.width = this.data.sw;

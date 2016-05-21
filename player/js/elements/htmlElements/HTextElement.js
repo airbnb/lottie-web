@@ -9,7 +9,7 @@ function HTextElement(data,parentContainer,globalData,comp, placeholder){
     }
     this.renderType = 'svg';
     this.isMasked = false;
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 
 }
 createElement(HBaseElement, HTextElement);
@@ -167,7 +167,7 @@ HTextElement.prototype.hide = SVGTextElement.prototype.hide;
 
 HTextElement.prototype.renderFrame = function(parentMatrix){
 
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;

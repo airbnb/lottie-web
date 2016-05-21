@@ -10,7 +10,8 @@ var bm_effectsHelper = (function () {
         pointControl: 3,
         checkboxControl: 4,
         group: 5,
-        noValue: 6
+        noValue: 6,
+        dropDownControl: 7
     };
     
     function getEffectType(name) {
@@ -33,11 +34,19 @@ var bm_effectsHelper = (function () {
     
     function findEffectPropertyType(prop) {
         var propertyValueType = prop.propertyValueType;
+            bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
+            bm_eventDispatcher.log('PropertyValueType.COLOR: ' + PropertyValueType.COLOR);
+            bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);
         //Prop ertyValueType.NO_VALUE
         if (propertyValueType === PropertyValueType.NO_VALUE) {
             return effectTypes.noValue;
         } else if (propertyValueType === PropertyValueType.OneD) {
+             if (!prop.isInterpolationTypeValid(KeyframeInterpolationType.LINEAR)){
+                return effectTypes.dropDownControl;
+             }
             return effectTypes.sliderControl;
+        } else if (propertyValueType === PropertyValueType.COLOR) {
+            return effectTypes.colorControl;
         } else {
             return effectTypes.pointControl;
         }
@@ -92,6 +101,14 @@ var bm_effectsHelper = (function () {
         return ob;
     }
     
+    function exportDropDownControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.dropDownControl;
+        ob.nm = effect.name;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
+        return ob;
+    }
+    
     function iterateEffectProperties(effectElement) {
         var i, len = effectElement.numProperties;
         for (i = 0; i < len; i += 1) {
@@ -132,6 +149,10 @@ var bm_effectsHelper = (function () {
                     ob.ef.push(exportNoValueControl(prop, frameRate));
                 } else if(type === effectTypes.sliderControl) {
                     ob.ef.push(exportSliderControl(prop, frameRate));
+                } else if(type === effectTypes.colorControl) {
+                    ob.ef.push(exportColorControl(prop, frameRate));
+                } else if(type === effectTypes.dropDownControl) {
+                    ob.ef.push(exportDropDownControl(prop, frameRate));
                 } else {
                     ob.ef.push(exportPointControl(prop, frameRate));
                 }
