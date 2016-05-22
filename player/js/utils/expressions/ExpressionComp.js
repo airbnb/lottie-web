@@ -13,3 +13,9 @@ function ExpressionComp(){}
 
     ExpressionComp.prototype.pixelAspect = 1;
 }());
+
+extendPrototype(ExpressionComp,SVGRenderer);
+extendPrototype(ExpressionComp,HybridRenderer);
+extendPrototype(ExpressionComp,CanvasRenderer);
+extendPrototype(ExpressionComp,ICompElement);
+extendPrototype(ExpressionComp,HCompElement);

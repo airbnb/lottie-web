@@ -10,7 +10,6 @@ function HCompElement(data,parentContainer,globalData,comp, placeholder){
     }
 }
 createElement(HBaseElement, HCompElement);
-extendPrototype(ExpressionComp,HCompElement);
 
 HCompElement.prototype.getDomElement = function(){
     return this.composingElement;

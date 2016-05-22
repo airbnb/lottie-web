@@ -239,5 +239,3 @@ SVGRenderer.prototype.hide = function(){
 SVGRenderer.prototype.show = function(){
     this.animationItem.container.style.display = 'block';
 };
-
-extendPrototype(ExpressionComp,SVGRenderer);

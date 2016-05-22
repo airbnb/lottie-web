@@ -328,5 +328,3 @@ HybridRenderer.prototype.hide = function(){
 HybridRenderer.prototype.show = function(){
     this.animationItem.resizerElem.style.display = 'block';
 };
-
-extendPrototype(ExpressionComp,HybridRenderer);

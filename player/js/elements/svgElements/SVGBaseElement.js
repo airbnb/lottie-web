@@ -91,12 +91,17 @@ SVGBaseElement.prototype.createElements = function(){
     }else{
         this.layerElement = this.parentContainer;
     }
-    if(this.data.ln && (this.data.ty === 4 || this.data.ty === 0)){
+    if((this.data.ln || this.data.cl) && (this.data.ty === 4 || this.data.ty === 0)){
         if(this.layerElement === this.parentContainer){
             this.layerElement = document.createElementNS(svgNS,'g');
             this.appendNodeToParent(this.layerElement);
         }
-        this.layerElement.setAttribute('id',this.data.ln);
+        if(this.data.ln){
+            this.layerElement.setAttribute('id',this.data.ln);
+        }
+        if(this.data.cl){
+            this.layerElement.setAttribute('class',this.data.cl);
+        }
     }
     if(this.data.ty === 0 && (this.finalTransform.op.k || this.finalTransform.op.p !== 1) && this.layerElement === this.parentContainer){
         this.layerElement = document.createElementNS(svgNS,'g');

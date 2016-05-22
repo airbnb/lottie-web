@@ -119,8 +119,6 @@ BaseElement.prototype.mask = function(nm){
     return this.maskManager.getMask(nm);
 }
 
-extendPrototype(LayerInterface,BaseElement);
-
 Object.defineProperty(BaseElement.prototype, "hasParent", {
     get: function hasParent() {
         return this.hierarchy && this.hierarchy.length;
