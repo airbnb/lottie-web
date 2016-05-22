@@ -558,7 +558,7 @@ var PropertyFactory = (function(){
             if(this.r.k){
                 this.r.getValue();
             }
-            return this.r.v;
+            return this.r.v/degToRads;
         }
         function scaleGetter(){
             if(this.s.k){

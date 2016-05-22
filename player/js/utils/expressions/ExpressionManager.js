@@ -1,6 +1,21 @@
 var ExpressionManager = (function(){
     var ob = {};
 
+    function duplicatePropertyValue(value){
+        if(typeof value === 'number'){
+            return value;
+        }else if(value.i){
+            return JSON.parse(JSON.stringify(value));
+        }else{
+            var arr = Array.apply(null,{length:value.length});
+            var i, len = value.length;
+            for(i=0;i<len;i+=1){
+                arr[i]=value[i];
+            }
+            return arr;
+        }
+    }
+
     function sum(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
@@ -440,7 +455,10 @@ var ExpressionManager = (function(){
             if(this.frameExpressionId === elem.globalData.frameId){
                 return;
             }
-            this.frameExpressionId = elem.globalData.frameId;
+            if(this.lock){
+                this.v = duplicatePropertyValue(this.pv);
+                return true;
+            }
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
@@ -452,10 +470,6 @@ var ExpressionManager = (function(){
             if(!content && elem.content){
                 content = elem.content.bind(elem);
             }
-            if(this.lock){
-                this.v = this.pv;
-                return true;
-            }
             this.lock = true;
             if(this.getPreValue){
                 this.getPreValue();
@@ -463,6 +477,7 @@ var ExpressionManager = (function(){
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             bindedFn();
+            this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
                 if(typeof this.v === 'number'){
