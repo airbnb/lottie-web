@@ -201,6 +201,60 @@ var ExpressionManager = (function(){
         return min + rndm*(max-min);
     }
 
+    function createThisLayer(elem){
+        function _thisLayerFunction(name){
+            switch(name){
+                case "ADBE Root Vectors Group":
+                    return elem.groupInterface;
+                    //return elem.shapeData;
+                    break;
+            }
+            console.log(name);
+        }
+        var thisLayerFunction = _thisLayerFunction;
+        /*Object.defineProperty(thisLayerFunction.prototype, "hasParent", {
+            get: function hasParent() {
+                console.log('asdasds');
+                return elem.hierarchy && elem.hierarchy.length;
+            }
+        });
+        Object.defineProperty(thisLayerFunction.prototype, "parent", {
+            get: function parent() {
+                console.log('asdasds');
+                return elem.hierarchy[0];
+            }
+        });
+        Object.defineProperty(thisLayerFunction.prototype, "rotation", {
+            get: function rotation() {
+                console.log('asdasds');
+                return elem.transform.rotation;
+            }
+        });
+
+        Object.defineProperty(thisLayerFunction.prototype, "scale", {
+            get: function scale() {
+                console.log('asdasds');
+                return elem.transform.scale;
+            }
+        });
+
+        Object.defineProperty(thisLayerFunction.prototype, "position", {
+            get: function position() {
+                console.log('asdasds');
+                return elem.transform.position;
+            }
+        });*/
+
+        Object.defineProperty(_thisLayerFunction, "anchorPoint", {
+            get: function anchorPoint() {
+                console.log('asdasds',elem);
+                return elem.finalTransform.mProp.anchorPoint;
+            }
+        });
+        //Todo proxy all layer properties.
+        return thisLayerFunction;
+    }
+
     function initiateExpression(elem,data){
         var val = data.x;
         var transform,content,effect;
@@ -208,7 +262,10 @@ var ExpressionManager = (function(){
         elem.comp.frameDuration = 1/thisComp.globalData.frameRate;
         var inPoint = elem.data.ip/thisComp.globalData.frameRate;
         var outPoint = elem.data.op/thisComp.globalData.frameRate;
-        var thisLayer = elem;
+        //var thisLayer = elem;
+        //var thisLayer = createThisLayer(elem);
+        var thisLayer = elem.elemInterface;
+
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);

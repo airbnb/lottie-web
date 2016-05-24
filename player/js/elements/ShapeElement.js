@@ -32,6 +32,7 @@ IShapeElement.prototype.createElements = function(){
     styleUnselectableDiv(this.layerElement);
     styleUnselectableDiv(this.shapesContainer);
     this.buildExpressionInterface();
+    this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData));
     //this.mainShape = new ShapeItemElement(this.data,this.layerElement,this.parentContainer,this.placeholder,this.dynamicProperties,this.globalData);
 };
 

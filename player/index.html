@@ -9,9 +9,9 @@
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#ccc;
-            width:600px;
-            height:600px;
+            background-color:#000;
+            width:500px;
+            height:500px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -113,6 +113,44 @@
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
+
+    /*function reposition(){
+        //anim.animationData.layers[0].layers[0].ks.p.k[0].s = [200,200,0];
+        //anim.animationData.layers[0].layers[0].ks.p.k[0].e = [200,200,0];
+    }
+
+    var hand;
+    var initX,initY,handX,handY;
+
+    function handMove(ev){
+        var currentX = ev.clientX;
+        var currentY = ev.clientY;
+        anim.animationData.layers[0].layers[0].ks.p.k[0].s[0] = handX + (currentX - initX);
+        anim.animationData.layers[0].layers[0].ks.p.k[0].e[0] = handX + (currentX - initX);
+        anim.animationData.layers[0].layers[0].ks.p.k[0].s[1] = handY + (currentY - initY);
+        anim.animationData.layers[0].layers[0].ks.p.k[0].e[1] = handY + (currentY - initY);
+    }
+
+    function handUp(ev){
+        document.removeEventListener('mousemove',handMove);
+        document.removeEventListener('mouseup',handUp);
+    }
+
+    function handDown(ev){
+        document.addEventListener('mousemove',handMove);
+        document.addEventListener('mouseup',handUp);
+        initX = ev.clientX;
+        initY = ev.clientY;
+        handX = anim.animationData.layers[0].layers[0].ks.p.k[0].s[0];
+        handY = anim.animationData.layers[0].layers[0].ks.p.k[0].s[1];
+    }
+
+    function init(){
+        hand = document.getElementById('hand');
+        hand.addEventListener('mousedown',handDown);
+        setTimeout(reposition,2000);
+    }
+    anim.addEventListener('DOMLoaded',init);*/
 
 </script>
 </body>
