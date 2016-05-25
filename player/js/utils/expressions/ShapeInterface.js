@@ -62,6 +62,12 @@ ShapeInterface.prototype.shapeInterface = function(view) {
                 view.sh.getValue();
             }
             return view.sh.pv;
+        },
+        get path(){
+            if(view.sh.k){
+                view.sh.getValue();
+            }
+            return view.sh.pv;
         }
     }
     return ob;
