@@ -107,14 +107,22 @@ var bm_shapeHelper = (function () {
                     ob.sy = prop.property("Type").value;
                     ob.d = prop.property("Shape Direction").value;
                     ob.pt = bm_keyframeHelper.exportKeyframes(prop.property('Points'), frameRate);
+                    ob.pt.ix = prop.property('Points').propertyIndex;
                     ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
+                    ob.p.ix = prop.property('Position').propertyIndex;
                     ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Rotation'), frameRate);
+                    ob.r.ix = prop.property('Rotation').propertyIndex;
                     if(ob.sy === 1) {
                         ob.ir = bm_keyframeHelper.exportKeyframes(prop.property('Inner Radius'), frameRate);
+                        ob.ir.ix = prop.property('Inner Radius').propertyIndex;
                         ob.is = bm_keyframeHelper.exportKeyframes(prop.property('Inner Roundness'), frameRate);
+                        ob.is.ix = prop.property('Inner Roundness').propertyIndex;
                     }
                     ob.or = bm_keyframeHelper.exportKeyframes(prop.property('Outer Radius'), frameRate);
+                    ob.or.ix = prop.property('Outer Radius').propertyIndex;
                     ob.os = bm_keyframeHelper.exportKeyframes(prop.property('Outer Roundness'), frameRate);
+                    ob.os.ix = prop.property('Outer Roundness').propertyIndex;
+                    ob.ix = prop.propertyIndex;
                 } else if (itemType === shapeItemTypes.ellipse) {
                     ob = {};
                     ob.d = prop.property("Shape Direction").value;
@@ -172,9 +180,13 @@ var bm_shapeHelper = (function () {
                     ob = {};
                     ob.ty = itemType;
                     ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start'), frameRate);
+                    ob.s.ix = prop.property('Start').propertyIndex;
                     ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End'), frameRate);
+                    ob.e.ix = prop.property('End').propertyIndex;
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Offset'), frameRate);
+                    ob.o.ix = prop.property('Offset').propertyIndex;
                     ob.m = prop.property('Trim Multiple Shapes').value;
+                    ob.ix = prop.propertyIndex;
                 } else if (itemType === shapeItemTypes.group) {
                     ob = {
                         ty : itemType,
@@ -187,14 +199,22 @@ var bm_shapeHelper = (function () {
                         var transformProperty = prop.property('Transform');
                         trOb.ty = 'tr';
                         trOb.p = bm_keyframeHelper.exportKeyframes(transformProperty.property('Position'), frameRate);
+                        trOb.p.ix = transformProperty.property('Position').propertyIndex;
                         trOb.a = bm_keyframeHelper.exportKeyframes(transformProperty.property('Anchor Point'), frameRate);
+                        trOb.a.ix = transformProperty.property('Anchor Point').propertyIndex;
                         trOb.s = bm_keyframeHelper.exportKeyframes(transformProperty.property('Scale'), frameRate);
+                        trOb.s.ix = transformProperty.property('Scale').propertyIndex;
                         trOb.r = bm_keyframeHelper.exportKeyframes(transformProperty.property('Rotation'), frameRate);
+                        trOb.r.ix = transformProperty.property('Rotation').propertyIndex;
                         trOb.o = bm_keyframeHelper.exportKeyframes(transformProperty.property('Opacity'), frameRate);
+                        trOb.o.ix = transformProperty.property('Opacity').propertyIndex;
                         if(transformProperty.property('Skew').canSetExpression) {
                             trOb.sk = bm_keyframeHelper.exportKeyframes(transformProperty.property('Skew'), frameRate);
+                            trOb.sk.ix = transformProperty.property('Skew').propertyIndex;
                             trOb.sa = bm_keyframeHelper.exportKeyframes(transformProperty.property('Skew Axis'), frameRate);
+                            trOb.sa.ix = transformProperty.property('Skew Axis').propertyIndex;
                         }
+                        trOb.nm = transformProperty.name;
                         ob.it.push(trOb);
                     }
                 }

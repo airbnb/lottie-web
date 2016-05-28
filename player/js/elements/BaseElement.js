@@ -31,7 +31,7 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
+        this.dynamicProperties[i].getValue();
     }
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num);
@@ -54,6 +54,10 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.init = function(){
+    if(this.data.ef){
+        this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
+        this.effect = this.effectsManager.bind(this.effectsManager);
+    }
     this.elemInterface = buildLayerExpressionInterface(this);
     this.hidden = false;
     this.firstFrame = true;
@@ -61,10 +65,6 @@ BaseElement.prototype.init = function(){
     this.dynamicProperties = [];
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
-    if(this.data.ef){
-        this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
-        this.effect = this.effectsManager.bind(this.effectsManager);
-    }
     if(this.data.ty === 11){
 
     } else {
@@ -80,6 +80,7 @@ BaseElement.prototype.init = function(){
         this.createElements();
         if(this.data.hasMask){
             this.addMasks(this.data);
+            this.elemInterface.registerMaskInterface(this.maskManager);
         }
     }
 };
@@ -114,10 +115,4 @@ BaseElement.prototype.hide = function(){
 
 };
 
-
 BaseElement.prototype.mHelper = new Matrix();
-BaseElement.prototype.mask = function(nm){
-    return this.maskManager.getMask(nm);
-}
-
-

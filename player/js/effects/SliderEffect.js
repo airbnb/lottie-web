@@ -5,7 +5,7 @@ function AngleEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
 }
 function ColorEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,1/255,dynamicProperties);
+    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
 }
 function PointEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
@@ -30,7 +30,15 @@ SliderEffect.prototype.proxyFunction = function(){
     if(this.p.k){
         this.p.getValue();
     }
-    return this.p.v;
+    if(typeof this.p.v === 'number'){
+        return this.p.v;
+    }
+    var i, len = this.p.v.length;
+    var arr = Array.apply(null,{length:len});
+    for(i=0;i<len;i+=1){
+        arr[i] = this.p.v[i];
+    }
+    return arr;
 }
 
 AngleEffect.prototype.proxyFunction = SliderEffect.prototype.proxyFunction;

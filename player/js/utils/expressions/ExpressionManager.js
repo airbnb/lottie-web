@@ -19,6 +19,9 @@ var ExpressionManager = (function(){
     function sum(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
+        if(tOfA === 'string' || tOfB === 'string'){
+            return a + b;
+        }
         if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a + b;
         }
@@ -151,7 +154,60 @@ var ExpressionManager = (function(){
         return Math.sqrt(addedLength);
     }
 
+    function rgbToHsl(val){
+        //console.log(val);
+        var r = val[0]; var g = val[1]; var b = val[2];
+        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+        var h, s, l = (max + min) / 2;
+
+        if(max == min){
+            h = s = 0; // achromatic
+        }else{
+            var d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch(max){
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+
+        return [h, s, l,val[3]];
+    }
+    function hslToRgb(val){
+        var h = val[0];
+        var s = val[1];
+        var l = val[2];
+
+        var r, g, b;
+
+        if(s == 0){
+            r = g = b = l; // achromatic
+        }else{
+            function hue2rgb(p, q, t){
+                if(t < 0) t += 1;
+                if(t > 1) t -= 1;
+                if(t < 1/6) return p + (q - p) * 6 * t;
+                if(t < 1/2) return q;
+                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            }
+
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+
+        return [r, g , b, val[3]];
+    }
+
     function linear(t, tMin, tMax, value1, value2){
+        if(value1 === undefined || value2 === undefined){
+            return linear(t,0,1,tMin,tMax);
+        }
         if(t <= tMin) {
             return value1;
         }else if(t >= tMax){
@@ -201,69 +257,14 @@ var ExpressionManager = (function(){
         return min + rndm*(max-min);
     }
 
-    function createThisLayer(elem){
-        function _thisLayerFunction(name){
-            switch(name){
-                case "ADBE Root Vectors Group":
-                    return elem.groupInterface;
-                    //return elem.shapeData;
-                    break;
-            }
-            console.log(name);
-        }
-        var thisLayerFunction = _thisLayerFunction;
-        /*Object.defineProperty(thisLayerFunction.prototype, "hasParent", {
-            get: function hasParent() {
-                console.log('asdasds');
-                return elem.hierarchy && elem.hierarchy.length;
-            }
-        });
-        Object.defineProperty(thisLayerFunction.prototype, "parent", {
-            get: function parent() {
-                console.log('asdasds');
-                return elem.hierarchy[0];
-            }
-        });
-        Object.defineProperty(thisLayerFunction.prototype, "rotation", {
-            get: function rotation() {
-                console.log('asdasds');
-                return elem.transform.rotation;
-            }
-        });
-
-        Object.defineProperty(thisLayerFunction.prototype, "scale", {
-            get: function scale() {
-                console.log('asdasds');
-                return elem.transform.scale;
-            }
-        });
-
-        Object.defineProperty(thisLayerFunction.prototype, "position", {
-            get: function position() {
-                console.log('asdasds');
-                return elem.transform.position;
-            }
-        });*/
-
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", {
-            get: function anchorPoint() {
-                console.log('asdasds',elem);
-                return elem.finalTransform.mProp.anchorPoint;
-            }
-        });
-        //Todo proxy all layer properties.
-        return thisLayerFunction;
-    }
-
-    function initiateExpression(elem,data){
+    function initiateExpression(elem,data,property){
         var val = data.x;
         var transform,content,effect;
         var thisComp = elem.comp;
+        var thisProperty = property;
         elem.comp.frameDuration = 1/thisComp.globalData.frameRate;
         var inPoint = elem.data.ip/thisComp.globalData.frameRate;
         var outPoint = elem.data.op/thisComp.globalData.frameRate;
-        //var thisLayer = elem;
-        //var thisLayer = createThisLayer(elem);
         var thisLayer = elem.elemInterface;
 
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
@@ -525,7 +526,7 @@ var ExpressionManager = (function(){
                 transform = elem.transform;
             }
             if(!content && elem.content){
-                content = elem.content.bind(elem);
+                content = thisLayer("ADBE Root Vectors Group");
             }
             this.lock = true;
             if(this.getPreValue){
@@ -551,6 +552,9 @@ var ExpressionManager = (function(){
                         this.v[i] *= this.mult;
                     }
                 }
+            }
+            if(!this.v && typeof this.v !== 'number') {
+                console.log(val);
             }
             if(typeof this.v === 'number'){
                 if(this.lastValue !== this.v){

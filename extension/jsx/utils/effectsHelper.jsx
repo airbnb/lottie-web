@@ -34,9 +34,9 @@ var bm_effectsHelper = (function () {
     
     function findEffectPropertyType(prop) {
         var propertyValueType = prop.propertyValueType;
-            bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
+            /*bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
             bm_eventDispatcher.log('PropertyValueType.COLOR: ' + PropertyValueType.COLOR);
-            bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);
+            bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);*/
         //Prop ertyValueType.NO_VALUE
         if (propertyValueType === PropertyValueType.NO_VALUE) {
             return effectTypes.noValue;
@@ -57,6 +57,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.noValue;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = 0;
         return ob;
     }
@@ -65,6 +66,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.sliderControl;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
@@ -73,6 +75,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.angleControl;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
@@ -81,6 +84,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.colorControl;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
@@ -89,6 +93,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.pointControl;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
@@ -97,6 +102,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.checkboxControl;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
@@ -105,6 +111,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.dropDownControl;
         ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
         ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
@@ -117,7 +124,7 @@ var bm_effectsHelper = (function () {
             for (var s in prop) {
                 propsArray.push({key:s,value:''});
             }
-             bm_eventDispatcher.log(propsArray);
+            /* bm_eventDispatcher.log(propsArray);
             bm_eventDispatcher.log('prop.name: ' + prop.name);
             bm_eventDispatcher.log('prop.matchName: ' + prop.matchName);
             bm_eventDispatcher.log('prop.propertyType: ' + prop.propertyType);
@@ -130,7 +137,7 @@ var bm_effectsHelper = (function () {
             if(prop.hasMin){
                 bm_eventDispatcher.log('prop.minValue: ' + prop.minValue);
             }
-            bm_eventDispatcher.log('----------------');
+            bm_eventDispatcher.log('----------------');*/
         }
     }
     
@@ -138,6 +145,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.group;
         ob.nm = elem.name;
+        ob.ix = elem.propertyIndex;
         ob.ef = [];
         var i, len = elem.numProperties, prop;
         for (i = 0; i < len; i += 1) {
@@ -166,13 +174,14 @@ var bm_effectsHelper = (function () {
     }
     
     function exportEffects(layerInfo, layerData, frameRate) {
-        bm_eventDispatcher.log('PropertyType.PROPERTY' + PropertyType.PROPERTY);
-        bm_eventDispatcher.log('PropertyType.INDEXED_GROUP' + PropertyType.INDEXED_GROUP);
-        bm_eventDispatcher.log('PropertyType.NAMED_GROUP' + PropertyType.NAMED_GROUP);
+        //bm_eventDispatcher.log('PropertyType.PROPERTY' + PropertyType.PROPERTY);
+        //bm_eventDispatcher.log('PropertyType.INDEXED_GROUP' + PropertyType.INDEXED_GROUP);
+        //bm_eventDispatcher.log('PropertyType.NAMED_GROUP' + PropertyType.NAMED_GROUP);
         if (!(layerInfo.effect && layerInfo.effect.numProperties > 0)) {
             return;
         }
         var effects = layerInfo.effect;
+       
         var i, len = effects.numProperties, effectElement;
         var effectsArray = [];
         for (i = 0; i < len; i += 1) {

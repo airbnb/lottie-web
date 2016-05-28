@@ -19,3 +19,4 @@ extendPrototype(ExpressionComp,HybridRenderer);
 extendPrototype(ExpressionComp,CanvasRenderer);
 extendPrototype(ExpressionComp,ICompElement);
 extendPrototype(ExpressionComp,HCompElement);
+extendPrototype(ExpressionComp,CVCompElement);

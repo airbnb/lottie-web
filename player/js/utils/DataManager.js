@@ -99,7 +99,88 @@ function dataFunctionManager(){
         }
     }
 
+    function checkVersion(minimum,animVersionString){
+        var animVersion = animVersionString ? animVersionString.split('.') : [100,100,100];
+        if(minimum[0]>animVersion[0]){
+            return true;
+        } else if(animVersion[0] > minimum[0]){
+            return false;
+        }
+        if(minimum[1]>animVersion[1]){
+            return true;
+        } else if(animVersion[1] > minimum[1]){
+            return false;
+        }
+        if(minimum[2]>animVersion[2]){
+            return true;
+        } else if(animVersion[2] > minimum[2]){
+            return false;
+        }
+    }
+
+    var checkColors = (function(){
+        var minimumVersion = [4,1,5];
+
+        function iterateShapes(shapes){
+            var i, len = shapes.length;
+            var j, jLen;
+            for(i=0;i<len;i+=1){
+                if(shapes[i].ty === 'gr'){
+                    iterateShapes(shapes[i].it);
+                }else if(shapes[i].ty === 'fl' || shapes[i].ty === 'st'){
+                    if(shapes[i].c.k && shapes[i].c.k[0].i){
+                        jLen = shapes[i].c.k.length;
+                        for(j=0;j<jLen;j+=1){
+                            if(shapes[i].c.k[j].s){
+                                shapes[i].c.k[j].s[0] /= 255;
+                                shapes[i].c.k[j].s[1] /= 255;
+                                shapes[i].c.k[j].s[2] /= 255;
+                                shapes[i].c.k[j].s[3] /= 255;
+                            }
+                            if(shapes[i].c.k[j].e){
+                                shapes[i].c.k[j].e[0] /= 255;
+                                shapes[i].c.k[j].e[1] /= 255;
+                                shapes[i].c.k[j].e[2] /= 255;
+                                shapes[i].c.k[j].e[3] /= 255;
+                            }
+                        }
+                    } else {
+                        shapes[i].c.k[0] /= 255;
+                        shapes[i].c.k[1] /= 255;
+                        shapes[i].c.k[2] /= 255;
+                        shapes[i].c.k[3] /= 255;
+                    }
+                }
+            }
+        }
+
+        function iterateLayers(layers){
+            var i, len = layers.length;
+            for(i=0;i<len;i+=1){
+                if(layers[i].ty === 4){
+                    iterateShapes(layers[i].shapes);
+                }
+            }
+        }
+
+        return function (animationData){
+            if(checkVersion(minimumVersion,animationData.v)){
+                iterateLayers(animationData.layers);
+                if(animationData.assets){
+                    var i, len = animationData.assets.length;
+                    for(i=0;i<len;i+=1){
+                        if(animationData.assets[i].layers){
+                            iterateLayers(animationData.assets[i].layers);
+
+                        }
+                    }
+                }
+            }
+        }
+    }());
+
     function completeData(animationData, fontManager){
+        checkColors(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
     }
 

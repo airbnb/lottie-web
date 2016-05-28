@@ -12,35 +12,16 @@ var buildLayerExpressionInterface = (function (){
        }
        return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
    }
-    function _hasParent(){
-        return this._elem.hierarchy;
-    }
-    function _parent(){
-        return this._elem.hierarchy[0].elemInterface;
-    }
-    function _rotation() {
-        return this._elem.transform.rotation;
-    }
-    function _scale() {
-        return this._elem.transform.scale;
-    }
-    function _position() {
-        return this._elem.transform.position;
-    }
-    function _anchorPoint() {
-        return this._elem.transform.anchorPoint;
-    }
-    function _effect(nm){
-        return this._elem.effectsManager(nm);
-    }
-    function _layer(){
-    }
+
 
     return function(elem){
         var shapeInterface;
 
         function _registerShapeExpressionInterface(shInterface){
             shapeInterface = shInterface;
+        }
+        function _registerMaskInterface(maskManager){
+            _thisLayerFunction.mask = maskManager.getMask.bind(maskManager);
         }
 
         function _thisLayerFunction(name){
@@ -49,42 +30,55 @@ var buildLayerExpressionInterface = (function (){
                     return shapeInterface;
                     //
                     break;
+                case 4:
+                    return elem.effectsManager;
             }
-            console.log(name);
         }
         _thisLayerFunction.toWorld = toWorld;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction._elem = elem;
         Object.defineProperty(_thisLayerFunction, 'hasParent', {
-            get: _hasParent
+            get: function(){
+                return !!elem.hierarchy;
+            }
         });
         Object.defineProperty(_thisLayerFunction, 'parent', {
-            get: _parent
+            get: function(){
+                return elem.hierarchy[0].elemInterface;
+            }
         });
         Object.defineProperty(_thisLayerFunction, "rotation", {
-            get: _rotation
+            get: function(){
+                return elem.transform.rotation;
+            }
         });
         Object.defineProperty(_thisLayerFunction, "scale", {
-            get: _scale
+            get: function () {
+                return elem.transform.scale;
+            }
         });
 
         Object.defineProperty(_thisLayerFunction, "position", {
-            get: _position
+            get: function () {
+                    return elem.transform.position;
+                }
         });
 
         Object.defineProperty(_thisLayerFunction, "anchorPoint", {
-            get: _anchorPoint
+            get: function () {
+                return elem.transform.anchorPoint;
+            }
         });
-
         Object.defineProperty(_thisLayerFunction, "name", {
             get: function(){
                 return elem.data.nm;
             }
         });
 
-        _thisLayerFunction.effect = _effect;
-        _thisLayerFunction.layer = _layer;
+        _thisLayerFunction.effect = elem.effectsManager;
+        _thisLayerFunction.active = true;
         _thisLayerFunction.registerShapeExpressionInterface = _registerShapeExpressionInterface;
+        _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         return _thisLayerFunction;
     }
 }());

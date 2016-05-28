@@ -180,7 +180,7 @@ function bezFunction(){
 
     function getNewSegment(pt1,pt2,pt3,pt4,startPerc,endPerc, bezierData){
         var pts = new SegmentPoints();
-        startPerc = startPerc < 0 ? 0 : startPerc;
+        startPerc = startPerc < 0 ? 0 : startPerc > 1 ? 1 : startPerc;
         var t0 = getDistancePerc(startPerc,bezierData);
         endPerc = endPerc > 1 ? 1 : endPerc;
         var t1 = getDistancePerc(endPerc,bezierData);

@@ -42,7 +42,7 @@ function EffectsManager(data,element,dynamicProperties){
     var fn = function(name){
         var effects = data.ef, i = 0, len = effects.length;
         while(i<len) {
-            if(name === effects[i].nm || name === i + 1){
+            if(name === effects[i].nm || name === effects[i].ix){
                 if(effects[i].ty === 5){
                     return effectElements[i];
                 } else{

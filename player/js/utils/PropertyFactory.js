@@ -448,7 +448,21 @@ var PropertyFactory = (function(){
             if(this.getValue) {
                 this.getPreValue = this.getValue;
             }
-            this.getValue = this.getExpression(elem,data);
+            this.getValue = this.getExpression(elem,data,this);
+        }
+    }
+
+    function setGroupProperty(propertyGroup){
+        this.propertyGroup = propertyGroup;
+    }
+
+    function addPropertyIndex(prop,data){
+        if(data.ix !== undefined){
+            Object.defineProperty(prop,'propertyIndex',{
+                get: function(){
+                    return data.ix;
+                }
+            })
         }
     }
 
@@ -459,6 +473,8 @@ var PropertyFactory = (function(){
         this.mdf = false;
         this.comp = elem.comp;
         this.k = false;
+        this.setGroupProperty = setGroupProperty;
+        addPropertyIndex(this,data);
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -469,6 +485,8 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.k = false;
         this.frameId = -1;
+        this.setGroupProperty = setGroupProperty;
+        addPropertyIndex(this,data);
         checkExpressions.bind(this)(elem,data);
         this.v = new Array(data.k.length);
         this.pv = new Array(data.k.length);
@@ -497,6 +515,8 @@ var PropertyFactory = (function(){
         this.getValue = getValue;
         this.getValueAtTime = getValueAtTime;
         this.getVelocityAtTime = getVelocityAtTime;
+        this.setGroupProperty = setGroupProperty;
+        addPropertyIndex(this,data);
         checkExpressions.bind(this)(elem,data);
     }
 
@@ -525,6 +545,8 @@ var PropertyFactory = (function(){
         this.getValue = getValue;
         this.getValueAtTime = getValueAtTime;
         this.getVelocityAtTime = getVelocityAtTime;
+        this.setGroupProperty = setGroupProperty;
+        addPropertyIndex(this,data);
         this.frameId = -1;
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
@@ -796,6 +818,8 @@ var PropertyFactory = (function(){
         this.v = type === 3 ? data.pt.k : data.ks.k;
         var shapeData = type === 3 ? data.pt : data.ks;
         this.getValue = getShapeValue;
+        this.setGroupProperty = setGroupProperty;
+        addPropertyIndex(this,data);
         this.pv = this.v;
         checkExpressions.bind(this)(elem,shapeData);
     }
@@ -804,6 +828,8 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.offsetTime = elem.data.st;
         this.getValue = interpolateShape;
+        this.setGroupProperty = setGroupProperty;
+        addPropertyIndex(this,data);
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
         this.closed = type === 3 ? data.cl : data.closed;
@@ -1280,6 +1306,7 @@ var PropertyFactory = (function(){
                 var finalPaths = this.prop.v;
                 var j, jLen = this.trims.length, e, s, o, k, kLen;
                 for(j=0;j<jLen;j+=1){
+
                     if(!this.trims[j].isTrimming){
                         this.v.v = finalPaths.v;
                         this.v.o = finalPaths.o;
