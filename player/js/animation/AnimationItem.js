@@ -273,6 +273,9 @@ AnimationItem.prototype.elementLoaded = function () {
 AnimationItem.prototype.checkLoaded = function () {
     if (this.pendingElements === 0) {
         this.renderer.buildStage(this.container, this.layers);
+        if(expressionsPlugin){
+            expressionsPlugin.initExpressions(this);
+        }
         this.trigger('DOMLoaded');
         this.isLoaded = true;
         this.gotoFrame();

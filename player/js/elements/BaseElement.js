@@ -58,7 +58,7 @@ BaseElement.prototype.init = function(){
         this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
         this.effect = this.effectsManager.bind(this.effectsManager);
     }
-    this.elemInterface = buildLayerExpressionInterface(this);
+    //this.elemInterface = buildLayerExpressionInterface(this);
     this.hidden = false;
     this.firstFrame = true;
     this.isVisible = false;
@@ -80,7 +80,6 @@ BaseElement.prototype.init = function(){
         this.createElements();
         if(this.data.hasMask){
             this.addMasks(this.data);
-            this.elemInterface.registerMaskInterface(this.maskManager);
         }
     }
 };

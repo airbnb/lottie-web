@@ -84,6 +84,12 @@
         }
 
     }
+    function installPlugin(type,plugin){
+        if(type==='expressions'){
+            console.log(plugin);
+            expressionsPlugin = plugin;
+        }
+    }
 
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
@@ -101,6 +107,7 @@
     bodymovinjs.goToAndStop = goToAndStop;
     bodymovinjs.destroy = destroy;
     bodymovinjs.setQuality = setQuality;
+    bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.version = '4.1.9';
 
     function checkReady(){

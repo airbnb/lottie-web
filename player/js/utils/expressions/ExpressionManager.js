@@ -259,14 +259,15 @@ var ExpressionManager = (function(){
 
     function initiateExpression(elem,data,property){
         var val = data.x;
+        var elemType = elem.data.ty;
         var transform,content,effect;
         var thisComp = elem.comp;
         var thisProperty = property;
-        elem.comp.frameDuration = 1/thisComp.globalData.frameRate;
-        var inPoint = elem.data.ip/thisComp.globalData.frameRate;
-        var outPoint = elem.data.op/thisComp.globalData.frameRate;
-        var thisLayer = elem.elemInterface;
-
+        elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
+        var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
+        var outPoint = elem.data.op/elem.comp.globalData.frameRate;
+        var thisLayer,thisComp;
+        console.log(val, new Error().stack);
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
@@ -307,7 +308,7 @@ var ExpressionManager = (function(){
             if(!this.k){
                 return this.pv;
             }
-            var currentFrame = time*thisComp.globalData.frameRate;
+            var currentFrame = time*elem.comp.globalData.frameRate;
             var keyframes = this.keyframes;
             var firstKeyFrame = keyframes[0].t;
             if(currentFrame>=firstKeyFrame){
@@ -324,7 +325,7 @@ var ExpressionManager = (function(){
                     if(!duration){
                         cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
                     } else {
-                        cycleDuration = Math.abs(thisComp.globalData.frameRate*duration);
+                        cycleDuration = Math.abs(elem.comp.globalData.frameRate*duration);
                     }
                     lastKeyFrame = firstKeyFrame + cycleDuration;
                 }
@@ -373,7 +374,7 @@ var ExpressionManager = (function(){
             if(!this.k){
                 return this.pv;
             }
-            var currentFrame = time*thisComp.globalData.frameRate;
+            var currentFrame = time*elem.comp.globalData.frameRate;
             var keyframes = this.keyframes;
             var lastKeyFrame = keyframes[keyframes.length - 1].t;
             if(currentFrame<=lastKeyFrame){
@@ -390,7 +391,7 @@ var ExpressionManager = (function(){
                     if(!duration){
                         cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
                     } else {
-                        cycleDuration = Math.abs(lastKeyFrame - thisComp.globalData.frameRate*duration);
+                        cycleDuration = Math.abs(lastKeyFrame - elem.comp.globalData.frameRate*duration);
                     }
                     firstKeyFrame = lastKeyFrame - cycleDuration;
                 }
@@ -436,11 +437,11 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         var valueAtTime = function valueAtTime(t) {
-            return this.getValueAtTime(t*thisComp.globalData.frameRate);
+            return this.getValueAtTime(t*elem.comp.globalData.frameRate);
         }.bind(this);
 
         var velocityAtTime = function velocityAtTime(t) {
-            return this.getVelocityAtTime(t*thisComp.globalData.frameRate);
+            return this.getVelocityAtTime(t*elem.comp.globalData.frameRate);
         }.bind(this);
 
         function effect(nm){
@@ -487,7 +488,7 @@ var ExpressionManager = (function(){
             }
             ind -= 1;
             var ob = {
-                time: data.k[ind].t/thisComp.globalData.frameRate
+                time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
             if(ind === data.k.length - 1){
@@ -502,10 +503,6 @@ var ExpressionManager = (function(){
             return ob;
         }
 
-        function hasParentGetter(){
-        }
-
-        Object.defineProperty(this, "hasParent", { get: hasParentGetter});
         var time, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
@@ -525,7 +522,11 @@ var ExpressionManager = (function(){
             if(!transform){
                 transform = elem.transform;
             }
-            if(!content && elem.content){
+            if(!thisLayer){
+                thisLayer = elem.layerInterface;
+                thisComp = elem.comp.compInterface;
+            }
+            if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
             }
             this.lock = true;
@@ -535,6 +536,9 @@ var ExpressionManager = (function(){
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             bindedFn();
+            if(typeof this.v === 'object' && isNaN(this.v[0])){
+               // console.log(val);
+            }
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){

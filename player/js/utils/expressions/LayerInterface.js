@@ -1,4 +1,4 @@
-var buildLayerExpressionInterface = (function (){
+var LayerExpressionInterface = (function (){
    function toWorld(arr){
        var toWorldMat = new Matrix();
        toWorldMat.reset();
@@ -15,11 +15,7 @@ var buildLayerExpressionInterface = (function (){
 
 
     return function(elem){
-        var shapeInterface;
 
-        function _registerShapeExpressionInterface(shInterface){
-            shapeInterface = shInterface;
-        }
         function _registerMaskInterface(maskManager){
             _thisLayerFunction.mask = maskManager.getMask.bind(maskManager);
         }
@@ -27,7 +23,7 @@ var buildLayerExpressionInterface = (function (){
         function _thisLayerFunction(name){
             switch(name){
                 case "ADBE Root Vectors Group":
-                    return shapeInterface;
+                    return _thisLayerFunction.shapeInterface;
                     //
                     break;
                 case 4:
@@ -44,7 +40,7 @@ var buildLayerExpressionInterface = (function (){
         });
         Object.defineProperty(_thisLayerFunction, 'parent', {
             get: function(){
-                return elem.hierarchy[0].elemInterface;
+                return elem.hierarchy[0].layerInterface;
             }
         });
         Object.defineProperty(_thisLayerFunction, "rotation", {
@@ -77,7 +73,6 @@ var buildLayerExpressionInterface = (function (){
 
         _thisLayerFunction.effect = elem.effectsManager;
         _thisLayerFunction.active = true;
-        _thisLayerFunction.registerShapeExpressionInterface = _registerShapeExpressionInterface;
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         return _thisLayerFunction;
     }

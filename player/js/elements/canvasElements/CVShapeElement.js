@@ -27,8 +27,6 @@ CVShapeElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
-    this.buildExpressionInterface();
-    this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.elemInterface));
 };
 CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
     var i, len = arr.length - 1;

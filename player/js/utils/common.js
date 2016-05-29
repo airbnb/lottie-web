@@ -1,4 +1,5 @@
 var subframeEnabled = false;
+var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
 var bm_rounder = Math.round;
