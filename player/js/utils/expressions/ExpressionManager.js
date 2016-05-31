@@ -267,7 +267,6 @@ var ExpressionManager = (function(){
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var thisLayer,thisComp;
-        console.log(val, new Error().stack);
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
@@ -507,7 +506,7 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
             //seedRandom(0);
-            if(this.frameExpressionId === elem.globalData.frameId){
+            if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
                 return;
             }
             if(this.lock){

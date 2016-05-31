@@ -381,24 +381,47 @@ var ShapeExpressionInterface = (function(){
 
     var ellipseInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
-            view.sh.s.setGroupProperty(propertyGroup);
-            view.sh.p.setGroupProperty(propertyGroup);
-            var ob = {
-                get size(){
-                    if(view.sh.s.k){
-                        view.sh.s.getValue();
+            function _propertyGroup(val){
+                if(val == 1){
+                    return _propertyGroup;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            _propertyGroup.propertyIndex = shape.ix;
+            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+            prop.s.setGroupProperty(_propertyGroup);
+            prop.p.setGroupProperty(_propertyGroup);
+            function interfaceFunction(value){
+                if(shape.p.ix === value){
+                    return interfaceFunction.position;
+                }
+                if(shape.s.ix === value){
+                    return interfaceFunction.size;
+                }
+            }
+            Object.defineProperty(interfaceFunction, 'size', {
+                get: function(){
+                    if(prop.s.k){
+                        prop.s.getValue();
                     }
-                    return [view.sh.s.v[0],view.sh.s.v[1]];
-                },
-                get position(){
-                    if(view.sh.p.k){
-                        view.sh.p.getValue();
+                    return [prop.s.v[0],prop.s.v[1]];
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'position', {
+                get: function(){
+                    if(prop.p.k){
+                        prop.p.getValue();
                     }
-                    return [view.sh.p.v[0],view.sh.p.v[1]];
-                },
-                name: shape.nm
-            };
-            return ob;
+                    return [prop.p.v[0],prop.p.v[1]];
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'name', {
+                get: function(){
+                    return shape.nm;
+                }
+            });
+            return interfaceFunction;
         }
     }());
 

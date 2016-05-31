@@ -575,6 +575,9 @@ var PropertyFactory = (function(){
     }());
 
     function getProp(elem,data,type, mult, arr) {
+        if(!data){
+            console.log(new Error().stack);
+        }
         var p;
         if(type === 2){
             p = new TransformProperty(elem, data, arr);

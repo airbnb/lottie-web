@@ -170,6 +170,9 @@ AnimationItem.prototype.includeLayers = function(data) {
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     this.renderer.buildStage(this.container, this.layers);
+    if(expressionsPlugin){
+        expressionsPlugin.initExpressions(this);
+    }
     this.renderer.renderFrame(null);
     this.loadNextSegment();
 };

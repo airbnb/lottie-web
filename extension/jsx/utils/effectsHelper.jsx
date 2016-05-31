@@ -11,7 +11,8 @@ var bm_effectsHelper = (function () {
         checkboxControl: 4,
         group: 5,
         noValue: 6,
-        dropDownControl: 7
+        dropDownControl: 7,
+        customValue: 9
     };
     
     function getEffectType(name) {
@@ -34,6 +35,7 @@ var bm_effectsHelper = (function () {
     
     function findEffectPropertyType(prop) {
         var propertyValueType = prop.propertyValueType;
+        //customValue
             /*bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
             bm_eventDispatcher.log('PropertyValueType.COLOR: ' + PropertyValueType.COLOR);
             bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);*/
@@ -47,6 +49,8 @@ var bm_effectsHelper = (function () {
             return effectTypes.sliderControl;
         } else if (propertyValueType === PropertyValueType.COLOR) {
             return effectTypes.colorControl;
+        } else if (propertyValueType === PropertyValueType.CUSTOM_VALUE) {
+            return effectTypes.customValue;
         } else {
             return effectTypes.pointControl;
         }
@@ -116,6 +120,11 @@ var bm_effectsHelper = (function () {
         return ob;
     }
     
+    function exportCustomControl(effect, frameRate){
+        var ob = {};
+        return ob;
+    }
+    
     function iterateEffectProperties(effectElement) {
         var i, len = effectElement.numProperties;
         for (i = 0; i < len; i += 1) {
@@ -161,6 +170,10 @@ var bm_effectsHelper = (function () {
                     ob.ef.push(exportColorControl(prop, frameRate));
                 } else if(type === effectTypes.dropDownControl) {
                     ob.ef.push(exportDropDownControl(prop, frameRate));
+                } else if(type === effectTypes.dropDownControl) {
+                    ob.ef.push(exportDropDownControl(prop, frameRate));
+                } else if(type === effectTypes.customValue) {
+                    ob.ef.push(exportCustomControl(prop, frameRate));
                 } else {
                     ob.ef.push(exportPointControl(prop, frameRate));
                 }

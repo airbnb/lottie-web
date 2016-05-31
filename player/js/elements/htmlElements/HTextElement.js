@@ -44,7 +44,7 @@ HTextElement.prototype.createElements = function(){
     this.parentContainer.appendChild(parent);
 
     if(documentData.fc) {
-        this.innerElem.style.color = this.innerElem.style.fill = 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')';
+        this.innerElem.style.color = this.innerElem.style.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';
         ////this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
     }else{
         this.innerElem.style.color = this.innerElem.style.fill = 'rgba(0,0,0,0)';
@@ -52,7 +52,7 @@ HTextElement.prototype.createElements = function(){
     }
     if(documentData.sc){
         ////this.innerElem.setAttribute('stroke', 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')');
-        this.innerElem.style.stroke = 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')';
+        this.innerElem.style.stroke = 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')';
         ////this.innerElem.setAttribute('stroke-width', documentData.sw);
         this.innerElem.style.strokeWidth = documentData.sw+'px';
     }

@@ -86,7 +86,6 @@
     }
     function installPlugin(type,plugin){
         if(type==='expressions'){
-            console.log(plugin);
             expressionsPlugin = plugin;
         }
     }

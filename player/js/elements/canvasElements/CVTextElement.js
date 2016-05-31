@@ -34,7 +34,7 @@ CVTextElement.prototype.createElements = function(){
     var hasFill = false;
     if(documentData.fc) {
         hasFill = true;
-        this.values.fill = 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')';
+        this.values.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';
     }else{
         this.values.fill = 'rgba(0,0,0,0)';
     }
@@ -42,7 +42,7 @@ CVTextElement.prototype.createElements = function(){
     var hasStroke = false;
     if(documentData.sc){
         hasStroke = true;
-        this.values.stroke = 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')';
+        this.values.stroke = 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')';
         this.values.sWidth = documentData.sw;
     }
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);

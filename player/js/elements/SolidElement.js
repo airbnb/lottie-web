@@ -18,13 +18,13 @@ ISolidElement.prototype.createElements = function(){
     }else{
         this.layerElement.appendChild(rect);
     }
+    this.innerElem = rect;
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
     if(this.data.cl){
         this.innerElem.setAttribute('class',this.data.cl);
     }
-    this.innerElem = rect;
 };
 
 ISolidElement.prototype.hide = IImageElement.prototype.hide;

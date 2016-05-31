@@ -5,15 +5,19 @@ var Expressions = (function(){
     function addLayersInterface(layers){
         var i, len = layers.length;
         for(i=0;i<len;i+=1){
-            layers[i].layerInterface = LayerExpressionInterface(layers[i]);
-            if(layers[i].data.hasMask){
-                layers[i].layerInterface.registerMaskInterface(layers[i].maskManager);
+            if(!layers[i].layerInterface){
+                layers[i].layerInterface = LayerExpressionInterface(layers[i]);
+                if(layers[i].data.hasMask){
+                    layers[i].layerInterface.registerMaskInterface(layers[i].maskManager);
+                }
+                if(layers[i].data.ty === 0){
+                    layers[i].compInterface = CompExpressionInterface(layers[i]);
+                } else if(layers[i].data.ty === 4){
+                    layers[i].layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(layers[i].shapesData,layers[i].viewData,layers[i].layerInterface);
+                }
             }
             if(layers[i].data.ty === 0){
-                layers[i].compInterface = CompExpressionInterface(layers[i]);
                 addLayersInterface(layers[i].elements);
-            } else if(layers[i].data.ty === 4){
-                layers[i].layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(layers[i].shapesData,layers[i].viewData,layers[i].layerInterface);
             }
         }
     }
@@ -232,6 +236,9 @@ var Expressions = (function(){
 
     var propertyGetProp = PropertyFactory.getProp;
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
+        if(!arr){
+            console.log(new Error().stack);
+        }
         var prop = propertyGetProp(elem,data,type, mult, arr);
         prop.getVelocityAtTime = getVelocityAtTime;
         prop.getValueAtTime = getValueAtTime;

@@ -16,12 +16,12 @@ SVGTextElement.prototype.createElements = function(){
 
     this.innerElem = document.createElementNS(svgNS,'g');
     if(documentData.fc) {
-        this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
+        this.innerElem.setAttribute('fill', 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')');
     }else{
         this.innerElem.setAttribute('fill', 'rgba(0,0,0,0)');
     }
     if(documentData.sc){
-        this.innerElem.setAttribute('stroke', 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')');
+        this.innerElem.setAttribute('stroke', 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')');
         this.innerElem.setAttribute('stroke-width', documentData.sw);
     }
     this.innerElem.setAttribute('font-size', documentData.s);

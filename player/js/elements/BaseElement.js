@@ -54,6 +54,7 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.init = function(){
+    this.dynamicProperties = [];
     if(this.data.ef){
         this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
         this.effect = this.effectsManager.bind(this.effectsManager);
@@ -62,7 +63,6 @@ BaseElement.prototype.init = function(){
     this.hidden = false;
     this.firstFrame = true;
     this.isVisible = false;
-    this.dynamicProperties = [];
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
     if(this.data.ty === 11){
