@@ -41,7 +41,7 @@ function dataFunctionManager(){
                 layerData.layers = findCompLayers(layerData.refId, comps);
                 completeLayers(layerData.layers,comps, fontManager);
             }else if(layerData.ty === 4){
-                completeShapes(layerData.shapes, false);
+                completeShapes(layerData.shapes);
             }else if(layerData.ty == 5){
                 completeText(layerData, fontManager);
             }
@@ -58,16 +58,11 @@ function dataFunctionManager(){
         }
     }
 
-    function completeShapes(arr,trimmedFlag){
+    function completeShapes(arr){
         var i, len = arr.length;
         var j, jLen;
-        var isTrimmed = trimmedFlag ? trimmedFlag : false;
         for(i=len-1;i>=0;i-=1){
-            if(arr[i].ty == 'tm'){
-                isTrimmed = true;
-            }
             if(arr[i].ty == 'sh'){
-                arr[i].trimmed = isTrimmed;
                 if(arr[i].ks.k.i){
                     convertPathsToAbsoluteValues(arr[i].ks.k);
                 }else{
@@ -82,9 +77,7 @@ function dataFunctionManager(){
                     }
                 }
             }else if(arr[i].ty == 'gr'){
-                completeShapes(arr[i].it,isTrimmed);
-            }else if(arr[i].ty == 'el' || arr[i].ty == 'rc'){
-                arr[i].trimmed = isTrimmed;
+                completeShapes(arr[i].it);
             }
         }
     }

@@ -11,7 +11,8 @@ var bm_shapeHelper = (function () {
         stroke: 'st',
         merge: 'mm',
         trim: 'tm',
-        group: 'gr'
+        group: 'gr',
+        roundedCorners: 'rd'
     };
 
     function getItemType(matchName) {
@@ -34,6 +35,8 @@ var bm_shapeHelper = (function () {
         case 'ADBE Vector Graphic - Trim':
         case 'ADBE Vector Filter - Trim':
             return shapeItemTypes.trim;
+        case 'ADBE Vector Filter - RC':
+            return shapeItemTypes.roundedCorners;
         case 'ADBE Vector Group':
             return shapeItemTypes.group;
         default:
@@ -197,6 +200,13 @@ var bm_shapeHelper = (function () {
                         }
                         ob.it.push(trOb);
                     }
+                } else if (itemType === shapeItemTypes.roundedCorners) {
+                    ob = {
+                        ty : itemType,
+                        nm: prop.name
+                    };
+                    ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Radius'), frameRate);
+                    //bm_eventDispatcher.log(prop.property('ADBE Vector RoundCorner Radius'));
                 }
                 if (ob) {
                     ob.nm = prop.name;
