@@ -65,9 +65,20 @@ var LayerExpressionInterface = (function (){
                 return elem.transform.anchorPoint;
             }
         });
+
+        Object.defineProperty(_thisLayerFunction, "transform", {
+            get: function () {
+                return elem.transform;
+            }
+        });
         Object.defineProperty(_thisLayerFunction, "name", {
             get: function(){
                 return elem.data.nm;
+            }
+        });
+        Object.defineProperty(_thisLayerFunction, "content", {
+            get: function(){
+                return _thisLayerFunction.shapeInterface;
             }
         });
 

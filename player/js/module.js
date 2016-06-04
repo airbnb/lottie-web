@@ -90,6 +90,15 @@
         }
     }
 
+    function getFactory(name){
+        switch(name){
+            case "propertyFactory":
+                return PropertyFactory;
+            case "matrix":
+                return Matrix;
+        }
+    }
+
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
     bodymovinjs.togglePause = togglePause;
@@ -107,6 +116,7 @@
     bodymovinjs.destroy = destroy;
     bodymovinjs.setQuality = setQuality;
     bodymovinjs.installPlugin = installPlugin;
+    bodymovinjs.__getFactory = getFactory;
     bodymovinjs.version = '4.1.9';
 
     function checkReady(){

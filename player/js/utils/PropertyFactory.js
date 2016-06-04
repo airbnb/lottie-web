@@ -358,6 +358,24 @@ var PropertyFactory = (function(){
             }
             return this.p.v;
         }
+        function xPositionGetter(){
+            if(this.px.k){
+                this.px.getValue();
+            }
+            return this.px.v;
+        }
+        function yPositionGetter(){
+            if(this.py.k){
+                this.py.getValue();
+            }
+            return this.py.v;
+        }
+        function zPositionGetter(){
+            if(this.pz.k){
+                this.pz.getValue();
+            }
+            return this.pz.v;
+        }
         function anchorGetter(){
             if(this.a.k){
                 this.a.getValue();
@@ -564,6 +582,8 @@ var PropertyFactory = (function(){
                 }
             }
             Object.defineProperty(this, "position", { get: positionGetter});
+            Object.defineProperty(this, "xPosition", { get: xPositionGetter});
+            Object.defineProperty(this, "yPosition", { get: yPositionGetter});
             Object.defineProperty(this, "orientation", { get: orientationGetter});
             Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
             Object.defineProperty(this, "rotation", { get: rotationGetter});

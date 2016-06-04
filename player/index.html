@@ -9,7 +9,7 @@
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#333;
+            background-color:#ccc;
             width:960px;
             height:540px;
             /*width:800px;
@@ -58,8 +58,6 @@
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="js/renderers/HybridRenderer.js"></script>
     <script src="js/mask.js"></script>
-    <script src="js/effects/SliderEffect.js"></script>
-    <script src="js/effects.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
@@ -89,11 +87,13 @@
     <script src="js/module.js"></script>
     <!-- Expressions -->
     <script src="js/utils/expressions/Expressions.js"></script>
+    <script src="js/utils/expressions/ExpressionPropertyDecorator.js"></script>
     <script src="js/utils/expressions/ExpressionManager.js"></script>
-    <script src="js/utils/expressions/ExpressionComp.js"></script>
     <script src="js/utils/expressions/ShapeInterface.js"></script>
     <script src="js/utils/expressions/LayerInterface.js"></script>
     <script src="js/utils/expressions/CompInterface.js"></script>
+    <script src="js/effects/SliderEffect.js"></script>
+    <script src="js/effects.js"></script>
     <!-- end Expressions -->
     <!-- <script src="bodymovin.js"></script> -->
 </head>
@@ -111,7 +111,7 @@
         autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
-        path: 'exports/render/data.json'
+        path: 'exports/render/data2.json'
     };
 
     var anim;

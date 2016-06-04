@@ -430,6 +430,7 @@ var ExpressionManager = (function(){
                 return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
             }
         }.bind(this);
+        var loop_out = loopOut;
 
         var loopOutDuration = function loopOutDuration(type,duration){
             return loopOut(type,duration,true);
