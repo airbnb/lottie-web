@@ -4,7 +4,7 @@ function CVShapeElement(data, comp,globalData){
     this.viewData = [];
     this.shapesData = data.shapes;
     this.firstFrame = true;
-    this.parent.constructor.call(this,data, comp,globalData);
+    this._parent.constructor.call(this,data, comp,globalData);
 }
 createElement(CVBaseElement, CVShapeElement);
 
@@ -25,9 +25,8 @@ CVShapeElement.prototype.dashResetter = [];
 
 CVShapeElement.prototype.createElements = function(){
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
-    this.buildExpressionInterface();
 };
 CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
     var i, len = arr.length - 1;
@@ -122,6 +121,9 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                 closed: false,
                 trimProp: PropertyFactory.getProp(this,arr[i],7,null,dynamicProperties)
             };
+            data[i] = {
+                tr : trimOb.trimProp
+            };
             addedTrims.push(trimOb);
             ownTrims.push(trimOb);
         }
@@ -137,7 +139,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
 };
 
 CVShapeElement.prototype.renderFrame = function(parentMatrix){
-    if(this.parent.renderFrame.call(this, parentMatrix)===false){
+    if(this._parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     this.transformHelper.mat.reset();
@@ -367,5 +369,6 @@ CVShapeElement.prototype.destroy = function(){
     this.canvasContext = null;
     this.stylesList.length = 0;
     this.viewData.length = 0;
-    this.parent.destroy.call();
+    this._parent.destroy.call();
 };
+

@@ -9,9 +9,9 @@
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#fff;
-            width:100%;
-            height:100%;
+            background-color:#ccc;
+            width:960px;
+            height:540px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -58,8 +58,6 @@
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="js/renderers/HybridRenderer.js"></script>
     <script src="js/mask.js"></script>
-    <script src="js/effects/SliderEffect.js"></script>
-    <script src="js/effects.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
@@ -85,12 +83,18 @@
     <script src="js/elements/htmlElements/HCameraElement.js"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
-    <script src="js/utils/expressions/ExpressionManager.js"></script>
-    <script src="js/utils/expressions/ExpressionComp.js"></script>
-    <script src="js/utils/expressions/ShapeInterface.js"></script>
-    <script src="js/utils/expressions/LayerInterface.js"></script>
     <!-- endbuild -->
     <script src="js/module.js"></script>
+    <!-- Expressions -->
+    <script src="js/utils/expressions/Expressions.js"></script>
+    <script src="js/utils/expressions/ExpressionPropertyDecorator.js"></script>
+    <script src="js/utils/expressions/ExpressionManager.js"></script>
+    <script src="js/utils/expressions/ShapeInterface.js"></script>
+    <script src="js/utils/expressions/LayerInterface.js"></script>
+    <script src="js/utils/expressions/CompInterface.js"></script>
+    <script src="js/effects/SliderEffect.js"></script>
+    <script src="js/effects.js"></script>
+    <!-- end Expressions -->
     <!-- <script src="bodymovin.js"></script> -->
 </head>
 <body>
@@ -101,11 +105,11 @@
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'canvas',
-        loop: true,
+        renderer: 'svg',
+        loop: false,
         prerender: false,
         autoplay: true,
-        autoloadSegments: false,
+        autoloadSegments: true,
         //animationData: anim2
         path: 'exports/catrim/data.json'
     };
@@ -113,6 +117,44 @@
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
+
+    /*function reposition(){
+        //anim.animationData.layers[0].layers[0].ks.p.k[0].s = [200,200,0];
+        //anim.animationData.layers[0].layers[0].ks.p.k[0].e = [200,200,0];
+    }
+
+    var hand;
+    var initX,initY,handX,handY;
+
+    function handMove(ev){
+        var currentX = ev.clientX;
+        var currentY = ev.clientY;
+        anim.animationData.layers[0].layers[0].ks.p.k[0].s[0] = handX + (currentX - initX);
+        anim.animationData.layers[0].layers[0].ks.p.k[0].e[0] = handX + (currentX - initX);
+        anim.animationData.layers[0].layers[0].ks.p.k[0].s[1] = handY + (currentY - initY);
+        anim.animationData.layers[0].layers[0].ks.p.k[0].e[1] = handY + (currentY - initY);
+    }
+
+    function handUp(ev){
+        document.removeEventListener('mousemove',handMove);
+        document.removeEventListener('mouseup',handUp);
+    }
+
+    function handDown(ev){
+        document.addEventListener('mousemove',handMove);
+        document.addEventListener('mouseup',handUp);
+        initX = ev.clientX;
+        initY = ev.clientY;
+        handX = anim.animationData.layers[0].layers[0].ks.p.k[0].s[0];
+        handY = anim.animationData.layers[0].layers[0].ks.p.k[0].s[1];
+    }
+
+    function init(){
+        hand = document.getElementById('hand');
+        hand.addEventListener('mousedown',handDown);
+        setTimeout(reposition,2000);
+    }
+    anim.addEventListener('DOMLoaded',init);*/
 
 </script>
 </body>

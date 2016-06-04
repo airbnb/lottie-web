@@ -8,7 +8,11 @@ var bm_effectsHelper = (function () {
         angleControl: 1,
         colorControl: 2,
         pointControl: 3,
-        checkboxControl: 4
+        checkboxControl: 4,
+        group: 5,
+        noValue: 6,
+        dropDownControl: 7,
+        customValue: 9
     };
     
     function getEffectType(name) {
@@ -24,16 +28,50 @@ var bm_effectsHelper = (function () {
         case 'ADBE Checkbox Control':
             return effectTypes.checkboxControl;
         default:
-            //bm_eventDispatcher.log(name);
+            bm_eventDispatcher.log(name);
             return '';
         }
+    }
+    
+    function findEffectPropertyType(prop) {
+        var propertyValueType = prop.propertyValueType;
+        //customValue
+            /*bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
+            bm_eventDispatcher.log('PropertyValueType.COLOR: ' + PropertyValueType.COLOR);
+            bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);*/
+        //Prop ertyValueType.NO_VALUE
+        if (propertyValueType === PropertyValueType.NO_VALUE) {
+            return effectTypes.noValue;
+        } else if (propertyValueType === PropertyValueType.OneD) {
+             if (!prop.isInterpolationTypeValid(KeyframeInterpolationType.LINEAR)){
+                return effectTypes.dropDownControl;
+             }
+            return effectTypes.sliderControl;
+        } else if (propertyValueType === PropertyValueType.COLOR) {
+            return effectTypes.colorControl;
+        } else if (propertyValueType === PropertyValueType.CUSTOM_VALUE) {
+            return effectTypes.customValue;
+        } else {
+            return effectTypes.pointControl;
+        }
+        return '';
+    }
+    
+    function exportNoValueControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.noValue;
+        ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
+        ob.v = 0;
+        return ob;
     }
     
     function exportSliderControl(effect, frameRate) {
         var ob = {};
         ob.ty = effectTypes.sliderControl;
         ob.nm = effect.name;
-        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Slider'), frameRate);
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
     
@@ -41,7 +79,8 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.angleControl;
         ob.nm = effect.name;
-        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Angle'), frameRate);
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
     
@@ -49,7 +88,8 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.colorControl;
         ob.nm = effect.name;
-        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Color'), frameRate);
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
     
@@ -57,7 +97,8 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.pointControl;
         ob.nm = effect.name;
-        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Point'), frameRate);
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
         return ob;
     }
     
@@ -65,7 +106,22 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectTypes.checkboxControl;
         ob.nm = effect.name;
-        ob.v = bm_keyframeHelper.exportKeyframes(effect.property('Checkbox'), frameRate);
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
+        return ob;
+    }
+    
+    function exportDropDownControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.dropDownControl;
+        ob.nm = effect.name;
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
+        return ob;
+    }
+    
+    function exportCustomControl(effect, frameRate){
+        var ob = {};
         return ob;
     }
     
@@ -94,34 +150,77 @@ var bm_effectsHelper = (function () {
         }
     }
     
+    function exportCustomEffect(elem, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.group;
+        ob.nm = elem.name;
+        ob.ix = elem.propertyIndex;
+        ob.ef = [];
+        var i, len = elem.numProperties, prop;
+        for (i = 0; i < len; i += 1) {
+            prop = elem.property(i + 1);
+            if(prop.propertyType === 6012){
+                var type = findEffectPropertyType(prop);
+                //effectTypes.noValue;
+                if (type === effectTypes.noValue) {
+                    ob.ef.push(exportNoValueControl(prop, frameRate));
+                } else if(type === effectTypes.sliderControl) {
+                    ob.ef.push(exportSliderControl(prop, frameRate));
+                } else if(type === effectTypes.colorControl) {
+                    ob.ef.push(exportColorControl(prop, frameRate));
+                } else if(type === effectTypes.dropDownControl) {
+                    ob.ef.push(exportDropDownControl(prop, frameRate));
+                } else if(type === effectTypes.dropDownControl) {
+                    ob.ef.push(exportDropDownControl(prop, frameRate));
+                } else if(type === effectTypes.customValue) {
+                    ob.ef.push(exportCustomControl(prop, frameRate));
+                } else {
+                    ob.ef.push(exportPointControl(prop, frameRate));
+                }
+            } else {
+                if(prop.name !== 'Compositing Options' && prop.matchName !== 'ADBE Effect Built In Params') {
+                    ob.ef.push(exportCustomEffect(prop, frameRate));
+                }
+            }
+        }
+        return ob;
+    }
+    
     function exportEffects(layerInfo, layerData, frameRate) {
+        //bm_eventDispatcher.log('PropertyType.PROPERTY' + PropertyType.PROPERTY);
+        //bm_eventDispatcher.log('PropertyType.INDEXED_GROUP' + PropertyType.INDEXED_GROUP);
+        //bm_eventDispatcher.log('PropertyType.NAMED_GROUP' + PropertyType.NAMED_GROUP);
         if (!(layerInfo.effect && layerInfo.effect.numProperties > 0)) {
             return;
         }
         var effects = layerInfo.effect;
+       
         var i, len = effects.numProperties, effectElement;
         var effectsArray = [];
         for (i = 0; i < len; i += 1) {
             effectElement = effects(i + 1);
-            //iterateEffectProperties(effectElement);
-            var effectType = getEffectType(effectElement.matchName);
+            effectsArray.push(exportCustomEffect(effectElement, frameRate));
+            /*var effectType = getEffectType(effectElement.matchName);
             switch (effectType) {
             case effectTypes.sliderControl:
-                effectsArray.push(exportSliderControl(effectElement, frameRate));
+                effectsArray.push(exportSliderControl(effectElement.property('Slider'), frameRate));
                 break;
             case effectTypes.angleControl:
-                effectsArray.push(exportAngleControl(effectElement, frameRate));
+                effectsArray.push(exportAngleControl(effectElement.property('Angle'), frameRate));
                 break;
             case effectTypes.colorControl:
-                effectsArray.push(exportColorControl(effectElement, frameRate));
+                effectsArray.push(exportColorControl(effectElement.property('Color'), frameRate));
                 break;
             case effectTypes.pointControl:
-                effectsArray.push(exportPointControl(effectElement, frameRate));
+                effectsArray.push(exportPointControl(effectElement.property('Point'), frameRate));
                 break;
             case effectTypes.checkboxControl:
-                effectsArray.push(exportCheckboxControl(effectElement, frameRate));
+                effectsArray.push(exportCheckboxControl(effectElement.property('Checkbox'), frameRate));
                 break;
-            }
+            default:
+                //iterateEffectProperties(effectElement);
+                effectsArray.push(exportCustomEffect(effectElement, frameRate));
+            }*/
         }
         if (effectsArray.length) {
             layerData.ef = effectsArray;

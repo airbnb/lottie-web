@@ -2,7 +2,7 @@ function CVImageElement(data, comp,globalData){
     this.animationItem = globalData.renderer.animationItem;
     this.assetData = this.animationItem.getAssetData(data.refId);
     this.path = this.animationItem.getPath();
-    this.parent.constructor.call(this,data, comp,globalData);
+    this._parent.constructor.call(this,data, comp,globalData);
     this.animationItem.pendingElements += 1;
 }
 createElement(CVBaseElement, CVImageElement);
@@ -24,7 +24,7 @@ CVImageElement.prototype.createElements = function(){
     this.img.addEventListener('error', imageFailed, false);
     this.img.src = this.path+this.assetData.p;
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
 
 };
 
@@ -32,7 +32,7 @@ CVImageElement.prototype.renderFrame = function(parentMatrix){
     if(this.failed){
         return;
     }
-    if(this.parent.renderFrame.call(this,parentMatrix)===false){
+    if(this._parent.renderFrame.call(this,parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;
@@ -50,5 +50,5 @@ CVImageElement.prototype.renderFrame = function(parentMatrix){
 CVImageElement.prototype.destroy = function(){
     this.img = null;
     this.animationItem = null;
-    this.parent.destroy.call();
+    this._parent.destroy.call();
 };

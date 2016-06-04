@@ -219,15 +219,15 @@ SVGRenderer.prototype.renderFrame = function(num){
     }else{
         this.renderedFrame = num;
     }
-    //console.log('-------');
-    //console.log('FRAME ',num);
+    /*console.log('-------');
+    console.log('FRAME ',num);*/
     this.globalData.frameNum = num;
     this.globalData.frameId += 1;
     var i, len = this.layers.length;
-    for (i = 0; i < len; i++) {
+    for (i = len - 1; i >= 0; i--) {
         this.elements[i].prepareFrame(num - this.layers[i].st);
     }
-    for (i = 0; i < len; i++) {
+    for (i = len - 1; i >= 0; i--) {
         this.elements[i].renderFrame();
     }
 };

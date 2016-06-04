@@ -16,7 +16,8 @@ var bm_keyframeHelper = (function () {
         case PropertyValueType.COLOR:
             var i, len = value.length;
             for (i = 0; i < len; i += 1) {
-                value[i] = Math.round(value[i] * 255);
+                //value[i] = Math.round(value[i] * 255);
+                value[i] = Math.round(value[i]*100)/100;
             }
             return value;
         default:

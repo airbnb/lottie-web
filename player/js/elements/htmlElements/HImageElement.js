@@ -1,7 +1,7 @@
 function HImageElement(data,parentContainer,globalData,comp, placeholder){
     this.assetData = globalData.getAssetData(data.refId);
     this.path = globalData.getPath();
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(HBaseElement, HImageElement);
 

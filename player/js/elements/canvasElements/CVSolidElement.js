@@ -1,10 +1,10 @@
 function CVSolidElement(data, comp,globalData){
-    this.parent.constructor.call(this,data, comp,globalData);
+    this._parent.constructor.call(this,data, comp,globalData);
 }
 createElement(CVBaseElement, CVSolidElement);
 
 CVSolidElement.prototype.renderFrame = function(parentMatrix){
-    if(this.parent.renderFrame.call(this, parentMatrix)===false){
+    if(this._parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;

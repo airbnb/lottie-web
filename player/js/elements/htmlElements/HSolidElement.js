@@ -1,5 +1,5 @@
 function HSolidElement(data,parentContainer,globalData,comp, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(HBaseElement, HSolidElement);
 
@@ -36,7 +36,7 @@ HSolidElement.prototype.hide = function(){
 };
 
 HSolidElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -51,6 +51,6 @@ HSolidElement.prototype.renderFrame = function(parentMatrix){
 };
 
 HSolidElement.prototype.destroy = function(){
-    this.parent.destroy.call();
+    this._parent.destroy.call();
     this.innerElem =  null;
 };

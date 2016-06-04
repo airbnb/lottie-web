@@ -1,7 +1,7 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
 }
 ITextElement.prototype.init = function(){
-    this.parent.init.call(this);
+    this._parent.init.call(this);
     this.lettersChangedFlag = false;
     var data = this.data;
     this.renderedLetters = Array.apply(null,{length:data.t.d.l.length});
@@ -253,7 +253,7 @@ ITextElement.prototype.getMeasures = function(){
                     animatorProps = renderedData.a[j].a;
                     if ('p' in animatorProps) {
                         animatorSelector = renderedData.a[j].s;
-                        mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                        mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
                         if(mult.length){
                             animatorOffset += animatorProps.p.v[0] * mult[0];
                         } else{
@@ -311,7 +311,7 @@ ITextElement.prototype.getMeasures = function(){
                 animatorProps = renderedData.a[j].a;
                 if ('t' in animatorProps) {
                     animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
                     if(this.maskPath) {
                         if(mult.length) {
                             currentLength += animatorProps.t*mult[0];
@@ -345,7 +345,7 @@ ITextElement.prototype.getMeasures = function(){
                 animatorProps = renderedData.a[j].a;
                 if ('a' in animatorProps) {
                     animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
 
                     if(mult.length){
                         matrixHelper.translate(-animatorProps.a.v[0]*mult[0], -animatorProps.a.v[1]*mult[1], animatorProps.a.v[2]*mult[2]);
@@ -358,7 +358,7 @@ ITextElement.prototype.getMeasures = function(){
                 animatorProps = renderedData.a[j].a;
                 if ('s' in animatorProps) {
                     animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
                     if(mult.length){
                         matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult[0]),1+((animatorProps.s.v[1]-1)*mult[1]),1);
                     } else {
@@ -369,7 +369,7 @@ ITextElement.prototype.getMeasures = function(){
             for(j=0;j<jLen;j+=1) {
                 animatorProps = renderedData.a[j].a;
                 animatorSelector = renderedData.a[j].s;
-                mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
                 if ('sk' in animatorProps) {
                     if(mult.length) {
                         matrixHelper.skewFromAxis(-animatorProps.sk.v * mult[0], animatorProps.sa.v * mult[1]);
@@ -416,9 +416,9 @@ ITextElement.prototype.getMeasures = function(){
                 if (documentData.strokeColorAnim && 'sc' in animatorProps) {
                     for(k=0;k<3;k+=1){
                         if(mult.length) {
-                            sc[k] = Math.round(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]);
+                            sc[k] = Math.round(255*(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]));
                         } else {
-                            sc[k] = Math.round(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult);
+                            sc[k] = Math.round(255*(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult));
                         }
                     }
                 }
@@ -426,9 +426,11 @@ ITextElement.prototype.getMeasures = function(){
                     if('fc' in animatorProps){
                         for(k=0;k<3;k+=1){
                             if(mult.length) {
-                                fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0]);
+                                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0];
                             } else {
-                                fc[k] = Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult);
+                                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult;
+                                //console.log('mult',mult);
+                                //console.log(Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult));
                             }
                         }
                     }
@@ -461,7 +463,7 @@ ITextElement.prototype.getMeasures = function(){
 
                 if ('p' in animatorProps) {
                     animatorSelector = renderedData.a[j].s;
-                    mult = animatorSelector.getMult(letters[i].anIndexes[j]);
+                    mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
                     if(this.maskPath) {
                         if(mult.length) {
                             matrixHelper.translate(0, animatorProps.p.v[1] * mult[0], -animatorProps.p.v[2] * mult[1]);
@@ -482,10 +484,10 @@ ITextElement.prototype.getMeasures = function(){
                 letterSw = sw < 0 ? 0 : sw;
             }
             if(documentData.strokeColorAnim){
-                letterSc = 'rgb('+sc[0]+','+sc[1]+','+sc[2]+')';
+                letterSc = 'rgb('+Math.round(sc[0]*255)+','+Math.round(sc[1]*255)+','+Math.round(sc[2]*255)+')';
             }
             if(documentData.fillColorAnim){
-                letterFc = 'rgb('+fc[0]+','+fc[1]+','+fc[2]+')';
+                letterFc = 'rgb('+Math.round(fc[0]*255)+','+Math.round(fc[1]*255)+','+Math.round(fc[2]*255)+')';
             }
 
             if(this.maskPath) {

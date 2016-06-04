@@ -1,5 +1,5 @@
 function HCompElement(data,parentContainer,globalData,comp, placeholder){
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     this.isSvg = false;
     if(this.data.tm){
@@ -51,7 +51,7 @@ HCompElement.prototype.getElements = ICompElement.prototype.getElements;
 HCompElement.prototype.destroy = ICompElement.prototype.destroy;
 
 HCompElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     var i,len = this.layers.length;
     if(renderParent===false){
         this.hide();

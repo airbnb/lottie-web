@@ -1,7 +1,7 @@
 function SVGTextElement(data,parentContainer,globalData,comp, placeholder){
     this.textSpans = [];
     this.renderType = 'svg';
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, SVGTextElement);
 
@@ -11,17 +11,17 @@ SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 
 SVGTextElement.prototype.createElements = function(){
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
     var documentData = this.data.t.d;
 
     this.innerElem = document.createElementNS(svgNS,'g');
     if(documentData.fc) {
-        this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
+        this.innerElem.setAttribute('fill', 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')');
     }else{
         this.innerElem.setAttribute('fill', 'rgba(0,0,0,0)');
     }
     if(documentData.sc){
-        this.innerElem.setAttribute('stroke', 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')');
+        this.innerElem.setAttribute('stroke', 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')');
         this.innerElem.setAttribute('stroke-width', documentData.sw);
     }
     this.innerElem.setAttribute('font-size', documentData.s);
@@ -147,7 +147,7 @@ SVGTextElement.prototype.hide = function(){
 
 SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -204,6 +204,6 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
 
 SVGTextElement.prototype.destroy = function(){
-    this.parent.destroy.call();
+    this._parent.destroy.call();
     this.innerElem =  null;
 };

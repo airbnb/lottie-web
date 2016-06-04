@@ -4,7 +4,7 @@ function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.stylesList = [];
     this.viewData = [];
     this.shapesContainer = document.createElementNS(svgNS,'g');
-    this.parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, IShapeElement);
 
@@ -26,13 +26,12 @@ IShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:fal
 
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
     this.layerElement.appendChild(this.shapesContainer);
     styleUnselectableDiv(this.layerElement);
     styleUnselectableDiv(this.shapesContainer);
-    this.buildExpressionInterface();
-    //this.mainShape = new ShapeItemElement(this.data,this.layerElement,this.parentContainer,this.placeholder,this.dynamicProperties,this.globalData);
+    //this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.elemInterface));
 };
 
 IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
@@ -43,7 +42,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
             data[i] = {};
             var pathElement;
-            data[i].c = PropertyFactory.getProp(this,arr[i].c,1,null,dynamicProperties);
+            data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
             data[i].o = PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties);
             if(arr[i].ty == 'st') {
                 pathElement = document.createElementNS(svgNS, "g");
@@ -191,7 +190,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,added
 IShapeElement.prototype.renderFrame = function(parentMatrix){
 
 
-    var renderParent = this.parent.renderFrame.call(this,parentMatrix);
+    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
@@ -382,7 +381,7 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData, groupTransfo
 };
 
 IShapeElement.prototype.destroy = function(){
-    this.parent.destroy.call();
+    this._parent.destroy.call();
     this.shapeData = null;
     this.viewData = null;
     this.parentContainer = null;

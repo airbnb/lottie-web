@@ -1,9 +1,27 @@
 var ExpressionManager = (function(){
     var ob = {};
 
+    function duplicatePropertyValue(value){
+        if(typeof value === 'number'){
+            return value;
+        }else if(value.i){
+            return JSON.parse(JSON.stringify(value));
+        }else{
+            var arr = Array.apply(null,{length:value.length});
+            var i, len = value.length;
+            for(i=0;i<len;i+=1){
+                arr[i]=value[i];
+            }
+            return arr;
+        }
+    }
+
     function sum(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
+        if(tOfA === 'string' || tOfB === 'string'){
+            return a + b;
+        }
         if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a + b;
         }
@@ -128,7 +146,7 @@ var ExpressionManager = (function(){
     }
 
     function length(arr1,arr2){
-        var i,len = arr1.length;
+        var i,len = Math.min(arr1.length,arr2.length);
         var addedLength = 0;
         for(i=0;i<len;i+=1){
             addedLength += Math.pow(arr2[i]-arr1[i],2);
@@ -136,7 +154,60 @@ var ExpressionManager = (function(){
         return Math.sqrt(addedLength);
     }
 
+    function rgbToHsl(val){
+        //console.log(val);
+        var r = val[0]; var g = val[1]; var b = val[2];
+        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+        var h, s, l = (max + min) / 2;
+
+        if(max == min){
+            h = s = 0; // achromatic
+        }else{
+            var d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch(max){
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+
+        return [h, s, l,val[3]];
+    }
+    function hslToRgb(val){
+        var h = val[0];
+        var s = val[1];
+        var l = val[2];
+
+        var r, g, b;
+
+        if(s == 0){
+            r = g = b = l; // achromatic
+        }else{
+            function hue2rgb(p, q, t){
+                if(t < 0) t += 1;
+                if(t > 1) t -= 1;
+                if(t < 1/6) return p + (q - p) * 6 * t;
+                if(t < 1/2) return q;
+                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            }
+
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+
+        return [r, g , b, val[3]];
+    }
+
     function linear(t, tMin, tMax, value1, value2){
+        if(value1 === undefined || value2 === undefined){
+            return linear(t,0,1,tMin,tMax);
+        }
         if(t <= tMin) {
             return value1;
         }else if(t >= tMax){
@@ -186,14 +257,16 @@ var ExpressionManager = (function(){
         return min + rndm*(max-min);
     }
 
-    function initiateExpression(elem,data){
+    function initiateExpression(elem,data,property){
         var val = data.x;
+        var elemType = elem.data.ty;
         var transform,content,effect;
         var thisComp = elem.comp;
-        elem.comp.frameDuration = 1/thisComp.globalData.frameRate;
-        var inPoint = elem.data.ip/thisComp.globalData.frameRate;
-        var outPoint = elem.data.op/thisComp.globalData.frameRate;
-        var thisLayer = elem;
+        var thisProperty = property;
+        elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
+        var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
+        var outPoint = elem.data.op/elem.comp.globalData.frameRate;
+        var thisLayer,thisComp;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
@@ -234,7 +307,7 @@ var ExpressionManager = (function(){
             if(!this.k){
                 return this.pv;
             }
-            var currentFrame = time*thisComp.globalData.frameRate;
+            var currentFrame = time*elem.comp.globalData.frameRate;
             var keyframes = this.keyframes;
             var firstKeyFrame = keyframes[0].t;
             if(currentFrame>=firstKeyFrame){
@@ -251,7 +324,7 @@ var ExpressionManager = (function(){
                     if(!duration){
                         cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
                     } else {
-                        cycleDuration = Math.abs(thisComp.globalData.frameRate*duration);
+                        cycleDuration = Math.abs(elem.comp.globalData.frameRate*duration);
                     }
                     lastKeyFrame = firstKeyFrame + cycleDuration;
                 }
@@ -300,7 +373,7 @@ var ExpressionManager = (function(){
             if(!this.k){
                 return this.pv;
             }
-            var currentFrame = time*thisComp.globalData.frameRate;
+            var currentFrame = time*elem.comp.globalData.frameRate;
             var keyframes = this.keyframes;
             var lastKeyFrame = keyframes[keyframes.length - 1].t;
             if(currentFrame<=lastKeyFrame){
@@ -317,7 +390,7 @@ var ExpressionManager = (function(){
                     if(!duration){
                         cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
                     } else {
-                        cycleDuration = Math.abs(lastKeyFrame - thisComp.globalData.frameRate*duration);
+                        cycleDuration = Math.abs(lastKeyFrame - elem.comp.globalData.frameRate*duration);
                     }
                     firstKeyFrame = lastKeyFrame - cycleDuration;
                 }
@@ -357,21 +430,33 @@ var ExpressionManager = (function(){
                 return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
             }
         }.bind(this);
+        var loop_out = loopOut;
 
         var loopOutDuration = function loopOutDuration(type,duration){
             return loopOut(type,duration,true);
         }.bind(this);
 
         var valueAtTime = function valueAtTime(t) {
-            return this.getValueAtTime(t*thisComp.globalData.frameRate);
+            return this.getValueAtTime(t*elem.comp.globalData.frameRate);
         }.bind(this);
 
         var velocityAtTime = function velocityAtTime(t) {
-            return this.getVelocityAtTime(t*thisComp.globalData.frameRate);
+            return this.getVelocityAtTime(t*elem.comp.globalData.frameRate);
         }.bind(this);
 
         function effect(nm){
-            return elem.effectsManager.getEffect(nm);
+            return elem.effectsManager(nm);
+        }
+
+        function lookAt(elem1,elem2){
+            var fVec = [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
+            var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
+            var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
+            return [yaw,pitch,0];
+        }
+
+        function easeOut(t, val1, val2){
+            return -(val2-val1) * t*(t-2) + val1;
         }
 
         function nearestKey(time){
@@ -403,7 +488,7 @@ var ExpressionManager = (function(){
             }
             ind -= 1;
             var ob = {
-                time: data.k[ind].t/thisComp.globalData.frameRate
+                time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
             if(ind === data.k.length - 1){
@@ -418,14 +503,17 @@ var ExpressionManager = (function(){
             return ob;
         }
 
-        function hasParentGetter(){
-        }
-
-        Object.defineProperty(this, "hasParent", { get: hasParentGetter});
         var time, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){
-            seedRandom(0);
+            //seedRandom(0);
+            if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
+                return;
+            }
+            if(this.lock){
+                this.v = duplicatePropertyValue(this.pv);
+                return true;
+            }
             if(this.type === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
@@ -434,23 +522,32 @@ var ExpressionManager = (function(){
             if(!transform){
                 transform = elem.transform;
             }
-            if(!content && elem.content){
-                content = elem.content.bind(elem);
+            if(!thisLayer){
+                thisLayer = elem.layerInterface;
+                thisComp = elem.comp.compInterface;
             }
+            if(elemType === 4 && !content){
+                content = thisLayer("ADBE Root Vectors Group");
+            }
+            this.lock = true;
             if(this.getPreValue){
                 this.getPreValue();
             }
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             bindedFn();
+            if(typeof this.v === 'object' && isNaN(this.v[0])){
+               // console.log(val);
+            }
+            this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
                 if(typeof this.v === 'number'){
                     this.v *= this.mult;
                 }else{
-                    /*if(!this.v) {
-                        //console.log(val);
-                    }*/
+                    if(!this.v) {
+                        console.log(val);
+                    }
                     len = this.v.length;
                     if(value === this.v){
                         this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
@@ -459,6 +556,9 @@ var ExpressionManager = (function(){
                         this.v[i] *= this.mult;
                     }
                 }
+            }
+            if(!this.v && typeof this.v !== 'number') {
+                console.log(val);
             }
             if(typeof this.v === 'number'){
                 if(this.lastValue !== this.v){
@@ -479,6 +579,7 @@ var ExpressionManager = (function(){
                     }
                 }
             }
+            this.lock = false;
         }
         return execute;
     }

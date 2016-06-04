@@ -43,14 +43,14 @@ var bm_textHelper = (function () {
             len = textDocument.fillColor.length;
             ob.fc = [];
             for (i = 0; i < len; i += 1) {
-                ob.fc[i] = Math.round(textDocument.fillColor[i] * 255);
+                ob.fc[i] = Math.round(100*textDocument.fillColor[i])/100;
             }
         }
         if (textDocument.applyStroke) {
             len = textDocument.strokeColor.length;
             ob.sc = [];
             for (i = 0; i < len; i += 1) {
-                ob.sc[i] = Math.round(textDocument.strokeColor[i] * 255);
+                ob.sc[i] = Math.round(100*textDocument.strokeColor[i])/100;
             }
             ob.sw = textDocument.strokeWidth;
             if (textDocument.applyFill) {

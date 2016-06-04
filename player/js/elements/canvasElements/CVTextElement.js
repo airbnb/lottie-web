@@ -15,7 +15,7 @@ function CVTextElement(data, comp, globalData){
         sWidth: 0,
         fValue: ''
     }
-    this.parent.constructor.call(this,data,comp, globalData);
+    this._parent.constructor.call(this,data,comp, globalData);
 }
 createElement(CVBaseElement, CVTextElement);
 
@@ -27,14 +27,14 @@ CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2
 
 CVTextElement.prototype.createElements = function(){
 
-    this.parent.createElements.call(this);
+    this._parent.createElements.call(this);
     //console.log('this.data: ',this.data);
     var documentData = this.data.t.d;
 
     var hasFill = false;
     if(documentData.fc) {
         hasFill = true;
-        this.values.fill = 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')';
+        this.values.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';
     }else{
         this.values.fill = 'rgba(0,0,0,0)';
     }
@@ -42,7 +42,7 @@ CVTextElement.prototype.createElements = function(){
     var hasStroke = false;
     if(documentData.sc){
         hasStroke = true;
-        this.values.stroke = 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')';
+        this.values.stroke = 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')';
         this.values.sWidth = documentData.sw;
     }
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
@@ -116,7 +116,7 @@ CVTextElement.prototype.createElements = function(){
 };
 
 CVTextElement.prototype.renderFrame = function(parentMatrix){
-    if(this.parent.renderFrame.call(this, parentMatrix)===false){
+    if(this._parent.renderFrame.call(this, parentMatrix)===false){
         return;
     }
     var ctx = this.canvasContext;
