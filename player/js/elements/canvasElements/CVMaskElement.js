@@ -9,7 +9,7 @@ function CVMaskElement(data,element,globalData){
     this.viewData = new Array(this.masksProperties.length);
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        this.viewData[i] = PropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
+        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
     }
 }
 

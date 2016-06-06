@@ -218,9 +218,9 @@ var ShapeExpressionInterface = (function(){
             }
             _propertyGroup.propertyIndex = shape.ix;
 
-            view.tr.s.setGroupProperty(_propertyGroup);
-            view.tr.e.setGroupProperty(_propertyGroup);
-            view.tr.o.setGroupProperty(_propertyGroup);
+            view.s.setGroupProperty(_propertyGroup);
+            view.e.setGroupProperty(_propertyGroup);
+            view.o.setGroupProperty(_propertyGroup);
 
             function interfaceFunction(val){
                 if(val === shape.e.ix){
@@ -235,26 +235,26 @@ var ShapeExpressionInterface = (function(){
             }
             Object.defineProperty(interfaceFunction, 'start', {
                 get: function(){
-                    if(view.tr.s.k){
-                        view.tr.s.getValue();
+                    if(view.s.k){
+                        view.s.getValue();
                     }
-                    return view.tr.s.v/view.tr.s.mult;
+                    return view.s.v/view.s.mult;
                 }
             });
             Object.defineProperty(interfaceFunction, 'end', {
                 get: function(){
-                    if(view.tr.e.k){
-                        view.tr.e.getValue();
+                    if(view.e.k){
+                        view.e.getValue();
                     }
-                    return view.tr.e.v/view.tr.e.mult;
+                    return view.e.v/view.e.mult;
                 }
             });
             Object.defineProperty(interfaceFunction, 'offset', {
                 get: function(){
-                    if(view.tr.o.k){
-                        view.tr.o.getValue();
+                    if(view.o.k){
+                        view.o.getValue();
                     }
-                    return view.tr.o.v;
+                    return view.o.v;
                 }
             });
             Object.defineProperty(interfaceFunction, 'name', {

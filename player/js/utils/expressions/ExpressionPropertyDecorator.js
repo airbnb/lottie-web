@@ -229,8 +229,8 @@
         return prop;
     }
 
-    var propertyGetShapeProp = PropertyFactory.getShapeProp;
-    PropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
+    var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
+    ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         var shapeProp = prop.ty === 'tm' ? prop.prop : prop;
         shapeProp.setGroupProperty = setGroupProperty;

@@ -101,7 +101,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
             if(addedTrims.length){
                 arr[i].trimmed = true;
             }
-            data[i].sh = PropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims);
+            data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims);
             jLen = this.stylesList.length;
             var hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){

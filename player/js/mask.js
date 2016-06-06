@@ -40,7 +40,7 @@ function MaskElement(data,element,globalData) {
 
         if(properties[i].mode == 'n' || properties[i].cl === false) {
             this.viewData[i] = {
-                prop: PropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
+                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
             };
             continue;
         }
@@ -121,7 +121,7 @@ function MaskElement(data,element,globalData) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            prop:PropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
+            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
         };
         if(!this.viewData[i].prop.k){
             this.drawPath(properties[i],this.viewData[i].prop.v,this.viewData[i]);
