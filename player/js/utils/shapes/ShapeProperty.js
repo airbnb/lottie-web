@@ -107,7 +107,7 @@ var ShapePropertyFactory = (function(){
             }
             this.mdf = hasModified;
             this.paths.length = 0;
-            this.paths[0] = {path:this.v,closed:this.closed};
+            this.paths[0] = this.v;
         }
 
         this.lastFrame = frameNum;
@@ -115,6 +115,15 @@ var ShapePropertyFactory = (function(){
 
     function getShapeValue(){
         return this.v;
+    }
+
+    function resetShape(){
+        if(this.paths.length){
+            this.paths.length = 1;
+            this.paths[0] = this.v;
+        } else {
+            this.paths = [this.v];
+        }
     }
 
     var TrimTransformerProperty = (function(){
@@ -290,7 +299,7 @@ var ShapePropertyFactory = (function(){
             if(this.prop.numNodes){
                 len = this.prop.numNodes - 1;
                 len += this.prop.closed ? 1:0;
-                this.lengths = new Array(len);
+                this.lengths = Array.apply(null,{length:len});
             } else {
                 this.lengths = [];
             }
@@ -315,7 +324,9 @@ var ShapePropertyFactory = (function(){
         this.v = type === 3 ? data.pt.k : data.ks.k;
         this.getValue = getShapeValue;
         this.pv = this.v;
-        this.paths = [{path:this.v,closed:this.closed}];
+        this.v.c = this.closed;
+        this.paths = [this.v];
+        this.reset = resetShape;
     }
 
     function KeyframedShapeProperty(elem,data,type){
@@ -329,25 +340,27 @@ var ShapePropertyFactory = (function(){
         var jLen = this.keyframes[0].s[0].i[0].length;
         this.numNodes = len;
         this.v = {
-            i: new Array(len),
-            o: new Array(len),
-            v: new Array(len)
+            i: Array.apply(null,{length:len}),
+            o: Array.apply(null,{length:len}),
+            v: Array.apply(null,{length:len}),
+            c: this.closed
         };
         this.pv = {
-            i: new Array(len),
-            o: new Array(len),
-            v: new Array(len)
+            i: Array.apply(null,{length:len}),
+            o: Array.apply(null,{length:len}),
+            v: Array.apply(null,{length:len})
         };
         for(i=0;i<len;i+=1){
-            this.v.i[i] = new Array(jLen);
-            this.v.o[i] = new Array(jLen);
-            this.v.v[i] = new Array(jLen);
-            this.pv.i[i] = new Array(jLen);
-            this.pv.o[i] = new Array(jLen);
-            this.pv.v[i] = new Array(jLen);
+            this.v.i[i] = Array.apply(null,{length:jLen});
+            this.v.o[i] = Array.apply(null,{length:jLen});
+            this.v.v[i] = Array.apply(null,{length:jLen});
+            this.pv.i[i] = Array.apply(null,{length:jLen});
+            this.pv.o[i] = Array.apply(null,{length:jLen});
+            this.pv.v[i] = Array.apply(null,{length:jLen});
         }
         this.paths = [];
         this.lastFrame = initFrame;
+        this.reset = resetShape;
     }
 
     var EllShapeProperty = (function(){
@@ -401,19 +414,22 @@ var ShapePropertyFactory = (function(){
             }
             if(this.mdf){
                 this.convertEllToPath();
+                this.paths.length = 0;
+                this.paths[0] = this.v;
             }
         }
 
         return function EllShapeProperty(elem,data) {
             this.v = {
-                v: new Array(4),
-                i: new Array(4),
-                o: new Array(4),
+                v: Array.apply(null,{length:4}),
+                i: Array.apply(null,{length:4}),
+                o: Array.apply(null,{length:4}),
                 c: true
             };
             this.numNodes = 4;
             this.d = data.d;
             this.dynamicProperties = [];
+            this.paths = [];
             data.closed = true;
             this.closed = true;
             this.elem = elem;
@@ -422,6 +438,7 @@ var ShapePropertyFactory = (function(){
             this.mdf = false;
             this.getValue = processKeys;
             this.convertEllToPath = convertEllToPath;
+            this.reset = resetShape;
             this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
             this.s = PropertyFactory.getProp(elem,data.s,1,0,this.dynamicProperties);
             if(this.dynamicProperties.length){
@@ -459,6 +476,8 @@ var ShapePropertyFactory = (function(){
                 currentAng += angle*dir;
             }
             this.numNodes = numPts;
+            this.paths.length = 0;
+            this.paths[0] = this.v;
         }
 
         function convertStarToPath() {
@@ -494,6 +513,8 @@ var ShapePropertyFactory = (function(){
                 currentAng += angle*dir;
             }
             this.numNodes = numPts;
+            this.paths.length = 0;
+            this.paths[0] = this.v;
         }
 
         function processKeys() {
@@ -532,6 +553,7 @@ var ShapePropertyFactory = (function(){
             data.closed = true;
             this.closed = true;
             this.getValue = processKeys;
+            this.reset = resetShape;
             if(data.sy === 1){
                 this.ir = PropertyFactory.getProp(elem,data.ir,0,0,this.dynamicProperties);
                 this.is = PropertyFactory.getProp(elem,data.is,0,0.01,this.dynamicProperties);
@@ -544,6 +566,7 @@ var ShapePropertyFactory = (function(){
             this.r = PropertyFactory.getProp(elem,data.r,0,degToRads,this.dynamicProperties);
             this.or = PropertyFactory.getProp(elem,data.or,0,0,this.dynamicProperties);
             this.os = PropertyFactory.getProp(elem,data.os,0,0.01,this.dynamicProperties);
+            this.paths = [];
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
@@ -645,14 +668,14 @@ var ShapePropertyFactory = (function(){
                 this.v.i[7] = [p0+v0,p1+v1-cPoint];
             }
             this.paths.length = 0;
-            this.paths[0] = {path:this.v,closed:this.closed};
+            this.paths[0] = this.v;
         }
 
         return function RectShapeProperty(elem,data) {
             this.v = {
-                v: new Array(8),
-                i: new Array(8),
-                o: new Array(8),
+                v: Array.apply(null,{length:8}),
+                i: Array.apply(null,{length:8}),
+                o: Array.apply(null,{length:8}),
                 c: true
             };
             this.paths = [];
@@ -667,6 +690,7 @@ var ShapePropertyFactory = (function(){
             this.closed = true;
             this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
+            this.reset = resetShape;
             this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
             this.s = PropertyFactory.getProp(elem,data.s,1,0,this.dynamicProperties);
             this.r = PropertyFactory.getProp(elem,data.r,0,0,this.dynamicProperties);

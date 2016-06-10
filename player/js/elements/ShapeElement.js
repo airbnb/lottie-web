@@ -140,6 +140,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 ty = 7;
             }
             data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
+            this.shapes.push(data[i].sh);
             this.addShapeToModifiers(data[i].sh);
             jLen = this.stylesList.length;
             var element, hasStrokes = false, hasFills = false;
@@ -190,7 +191,17 @@ IShapeElement.prototype.addShapeToModifiers = function(shape) {
 }
 
 IShapeElement.prototype.renderModifiers = function() {
-    var i, len = this.shapeModifiers.length;
+    if(!this.shapeModifiers.length){
+        return;
+    }
+    var i, len = this.shapes.length;
+    for(i=0;i<len;i+=1){
+        this.shapes[i].reset();
+    }
+
+
+    len = this.shapeModifiers.length;
+
     for(i=0;i<len;i+=1){
         this.shapeModifiers[i].processShapes();
     }
@@ -313,7 +324,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
         jLen = paths.length;
         for(j=0;j<jLen;j+=1){
             var pathNodes = paths[j];
-            if(pathNodes.v){
+            if(pathNodes && pathNodes.v){
                 len = pathNodes.v.length;
                 for (i = 1; i < len; i += 1) {
                     if (i == 1) {
