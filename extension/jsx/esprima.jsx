@@ -4160,11 +4160,17 @@ var esprima = {};
         body = isolateCoverGrammar(parseStatement);
 
         state.inIteration = oldInIteration;
-
-        return (typeof left === 'undefined') ?
-            node.finishForStatement(init, test, update, body) :
-            forIn ? node.finishForInStatement(left, right, body) :
-                node.finishForOfStatement(left, right, body);
+        
+        bm_eventDispatcher.log('------');
+        bm_eventDispatcher.log(typeof left);
+        bm_eventDispatcher.log(left);
+        if(typeof left === 'undefined'){
+            return node.finishForStatement(init, test, update, body);
+        } else if(forIn){
+            return node.finishForInStatement(left, right, body);
+        } else {
+            return node.finishForOfStatement(left, right, body);
+        }
     }
 
 

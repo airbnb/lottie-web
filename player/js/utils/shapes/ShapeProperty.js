@@ -6,7 +6,6 @@ var ShapePropertyFactory = (function(){
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
-
         }else{
             var keyPropS,keyPropE,isHold;
             if(frameNum < this.keyframes[0].t-this.offsetTime){
@@ -365,7 +364,7 @@ var ShapePropertyFactory = (function(){
 
     var EllShapeProperty = (function(){
 
-        var cPoint = 0.5519;
+        var cPoint = roundCorner;
 
         function convertEllToPath(){
             var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
@@ -599,7 +598,7 @@ var ShapePropertyFactory = (function(){
         function convertRectToPath(){
             var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
             var round = bm_min(v0,v1,this.r.v);
-            var cPoint = round*(1-0.5519);
+            var cPoint = round*(1-roundCorner);
 
             if(this.d === 2 || this.d === 1) {
 

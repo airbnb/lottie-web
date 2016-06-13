@@ -516,6 +516,8 @@ var bm_expressionHelper = (function () {
             expressionStr = correctElseToken(expressionStr);
             searchUndeclaredVariables();
             var parsed = esprima.parse(expressionStr, options);
+            bm_eventDispatcher.log('poarassad: ');
+            bm_eventDispatcher.log(parsed);
             var body = parsed.body;
             replaceOperations(body);
             assignVariable(body);

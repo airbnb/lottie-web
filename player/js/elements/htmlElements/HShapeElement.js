@@ -1,5 +1,6 @@
 function HShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.shapes = [];
+    this.shapeModifiers = [];
     this.shapesData = data.shapes;
     this.stylesList = [];
     this.viewData = [];
@@ -53,5 +54,6 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
     this.transformHelper.opacity = this.finalTransform.opacity;
     this.transformHelper.matMdf = false;
     this.transformHelper.opMdf = this.finalTransform.opMdf;
+    this.renderModifiers();
     this.renderShape(this.transformHelper,null,null,true);
 };

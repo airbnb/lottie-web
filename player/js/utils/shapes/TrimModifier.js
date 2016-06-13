@@ -4,7 +4,7 @@ TrimModifier.prototype.processKeys = function(forceRender){
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;
     }
-    this.mdf = false;
+    this.mdf = forceRender ? true : false;
     this.frameId = this.elem.globalData.frameId;
     var i, len = this.dynamicProperties.length;
 
@@ -74,6 +74,7 @@ TrimModifier.prototype.processShapes = function(){
     var e = this.eValue;
     var pathsData,pathData, totalShapeLength, totalModifierLength = 0;
 
+
     if(e === s){
         for(i=0;i<len;i+=1){
             this.shapes[i].shape.paths = [];
@@ -83,55 +84,72 @@ TrimModifier.prototype.processShapes = function(){
         var segments = [], shapeData, newShapes = [];
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            shapePaths = shapeData.shape.paths;
-            shapeData.shape.mdf = true;
-            jLen = shapePaths.length;
-            pathsData = [];
-            totalShapeLength = 0;
-            for(j=0;j<jLen;j+=1){
-                pathData = this.getSegmentsLength(shapePaths[j]);
-                pathsData.push(pathData);
-                totalShapeLength += pathData.totalLength;
+            if(!shapeData.shape.mdf && !this.mdf){
+                shapeData.shape.paths = shapeData.last;
+            } else {
+                shapePaths = shapeData.shape.paths;
+                shapeData.shape.mdf = true;
+                jLen = shapePaths.length;
+                pathsData = [];
+                totalShapeLength = 0;
+                for(j=0;j<jLen;j+=1){
+                    pathData = this.getSegmentsLength(shapePaths[j]);
+                    pathsData.push(pathData);
+                    totalShapeLength += pathData.totalLength;
+                }
+                shapeData.totalShapeLength = totalShapeLength;
+                shapeData.pathsData = pathsData;
+                totalModifierLength += totalShapeLength;
             }
-            shapeData.totalShapeLength = totalShapeLength;
-            shapeData.pathsData = pathsData;
-            totalModifierLength += totalShapeLength;
         }
         for(i=0;i<len;i+=1){
-            segments.length = 0;
             shapeData = this.shapes[i];
-            if(e <= 1){
-                segments.push({
-                    s:shapeData.totalShapeLength*s,
-                    e:shapeData.totalShapeLength*e
-                })
-            }else if(s >= 1){
-                segments.push({
-                    s:shapeData.totalShapeLength*(s-1),
-                    e:shapeData.totalShapeLength*(e-1)
-                })
-            }else{
-                segments.push({
-                    s:shapeData.totalShapeLength*s,
-                    e:shapeData.totalShapeLength
-                })
-                segments.push({
-                    s:0,
-                    e:shapeData.totalShapeLength*(e-1)
-                })
-            }
-            var newShapeData = this.addShapes(shapeData,segments[0]);
-            newShapes.push(newShapeData);
-            if(segments.length > 1){
-                if(shapeData.shape.closed){
-                    this.addShapes(shapeData,segments[1], newShapeData);
-                } else {
-                    newShapeData = this.addShapes(shapeData,segments[1]);
-                    newShapes.push(newShapeData);
+            if(shapeData.shape.mdf){
+                segments.length = 0;
+                if(e <= 1){
+                    segments.push({
+                        s:shapeData.totalShapeLength*s,
+                        e:shapeData.totalShapeLength*e
+                    })
+                }else if(s >= 1){
+                    segments.push({
+                        s:shapeData.totalShapeLength*(s-1),
+                        e:shapeData.totalShapeLength*(e-1)
+                    })
+                }else{
+                    segments.push({
+                        s:shapeData.totalShapeLength*s,
+                        e:shapeData.totalShapeLength
+                    })
+                    segments.push({
+                        s:0,
+                        e:shapeData.totalShapeLength*(e-1)
+                    })
                 }
+                var newShapeData = this.addShapes(shapeData,segments[0]);
+                var lastPos;
+                newShapes.push(newShapeData);
+                if(segments.length > 1){
+                    if(shapeData.shape.closed){
+                        this.addShapes(shapeData,segments[1], newShapeData);
+                    } else {
+                        newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
+                        lastPos = newShapeData.v.length-1;
+                        newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
+                        newShapeData = this.addShapes(shapeData,segments[1]);
+                        newShapes.push(newShapeData);
+                    }
+                }
+                newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
+                lastPos = newShapeData.v.length-1;
+                newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
+                shapeData.last = newShapes;
+                shapeData.shape.paths = newShapes;
             }
-            shapeData.shape.paths = newShapes;
         }
+    }
+    if(!this.dynamicProperties.length){
+        this.mdf = false;
     }
 }
 
@@ -156,7 +174,7 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
             v:[],
             i:[],
             o:[]
-        }
+        };
         segmentCount = 0;
     } else {
         segmentCount = shapePath.v.length - 1;

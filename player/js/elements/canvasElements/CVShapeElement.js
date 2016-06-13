@@ -2,6 +2,7 @@ function CVShapeElement(data, comp,globalData){
     this.shapes = [];
     this.stylesList = [];
     this.viewData = [];
+    this.shapeModifiers = [];
     this.shapesData = data.shapes;
     this.firstFrame = true;
     this._parent.constructor.call(this,data, comp,globalData);
@@ -26,12 +27,12 @@ CVShapeElement.prototype.dashResetter = [];
 CVShapeElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
-    this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
+    this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties);
 };
-CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,addedTrims){
+CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownArrays = [], ownTrims = [], styleElem;
+    var ownArrays = [], ownModifiers = [], styleElem;
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
             styleElem = {
@@ -39,7 +40,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
                 elements: []
             };
             data[i] = {};
-            data[i].c = PropertyFactory.getProp(this,arr[i].c,1,null,dynamicProperties);
+            data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
             if(!data[i].c.k){
                 styleElem.co = 'rgb('+bm_floor(data[i].c.v[0])+','+bm_floor(data[i].c.v[1])+','+bm_floor(data[i].c.v[2])+')';
             }
@@ -71,7 +72,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
             data[i] = {
                 it: []
             };
-            this.searchShapes(arr[i].it,data[i].it,dynamicProperties,addedTrims);
+            this.searchShapes(arr[i].it,data[i].it,dynamicProperties);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
@@ -98,10 +99,9 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
             }else if(arr[i].ty == 'sr'){
                 ty = 7;
             }
-            if(addedTrims.length){
-                arr[i].trimmed = true;
-            }
-            data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties, addedTrims);
+            data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
+            this.shapes.push(data[i].sh);
+            this.addShapeToModifiers(data[i].sh);
             jLen = this.stylesList.length;
             var hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){
@@ -116,25 +116,45 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties,adde
             }
             data[i].st = hasStrokes;
             data[i].fl = hasFills;
-        }else if(arr[i].ty == 'tm'){
-            var trimOb = {
-                closed: false,
-                trimProp: PropertyFactory.getProp(this,arr[i],7,null,dynamicProperties)
-            };
-            data[i] = {
-                tr : trimOb.trimProp
-            };
-            addedTrims.push(trimOb);
-            ownTrims.push(trimOb);
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
+            var modifier = ShapeModifiers.getModifier(arr[i].ty);
+            modifier.init(this,arr[i],dynamicProperties);
+            this.shapeModifiers.push(modifier);
+            ownModifiers.push(modifier);
+            data[i] = modifier;
         }
     }
     len = ownArrays.length;
     for(i=0;i<len;i+=1){
         ownArrays[i].closed = true;
     }
-    len = ownTrims.length;
+    len = ownModifiers.length;
     for(i=0;i<len;i+=1){
-        ownTrims[i].closed = true;
+        ownModifiers[i].closed = true;
+    }
+};
+
+CVShapeElement.prototype.addShapeToModifiers = function(shape) {
+    var i, len = this.shapeModifiers.length;
+    for(i=0;i<len;i+=1){
+        this.shapeModifiers[i].addShape(shape);
+    }
+};
+
+CVShapeElement.prototype.renderModifiers = function() {
+    if(!this.shapeModifiers.length){
+        return;
+    }
+    var i, len = this.shapes.length;
+    for(i=0;i<len;i+=1){
+        this.shapes[i].reset();
+    }
+
+
+    len = this.shapeModifiers.length;
+
+    for(i=len-1;i>=0;i-=1){
+        this.shapeModifiers[i].processShapes();
     }
 };
 
@@ -146,6 +166,7 @@ CVShapeElement.prototype.renderFrame = function(parentMatrix){
     this.transformHelper.opacity = this.finalTransform.opacity;
     this.transformHelper.matMdf = false;
     this.transformHelper.opMdf = this.finalTransform.opMdf;
+    this.renderModifiers();
     this.renderShape(this.transformHelper,null,null,true);
     if(this.data.hasMask){
         this.globalData.renderer.restore(true);
@@ -267,65 +288,60 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
     }
 };
 CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
-    var len, i;
-    var pathNodes = viewData.sh.v;
-    if(pathNodes.v){
-        len = pathNodes.v.length;
-        var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
-        if(redraw) {
-            var pathStringTransformed = viewData.trNodes;
-            pathStringTransformed.length = 0;
-            var stops = pathNodes.s ? pathNodes.s : [];
-            for (i = 1; i < len; i += 1) {
-                if (stops[i - 1]) {
+    var len, i, j,jLen;
+    var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
+    if(redraw) {
+        var paths = viewData.sh.paths;
+        jLen = paths.length;
+        var pathStringTransformed = viewData.trNodes;
+        pathStringTransformed.length = 0;
+        for(j=0;j<jLen;j+=1){
+            var pathNodes = paths[j];
+            if(pathNodes && pathNodes.v){
+                len = pathNodes.v.length;
+                for (i = 1; i < len; i += 1) {
+                    if (i == 1) {
+                        pathStringTransformed.push({
+                            t: 'm',
+                            p: groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                        });
+                    }
                     pathStringTransformed.push({
-                        t:'m',
-                        p:groupTransform.mat.applyToPointArray(stops[i - 1][0], stops[i - 1][1], 0)
-                    });
-                } else if (i == 1) {
-                    pathStringTransformed.push({
-                        t:'m',
-                        p:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                    });
-                }
-                pathStringTransformed.push({
-                    t:'c',
-                    p1:groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0],pathNodes.o[i - 1][1], 0),
-                    p2:groupTransform.mat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
-                    p3:groupTransform.mat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
-                });
-            }
-            if (len == 1) {
-                if (stops[0]) {
-                    pathStringTransformed.push({
-                        t:'m',
-                        p:groupTransform.mat.applyToPointArray(stops[0][0], stops[0][1], 0)
-                    });
-                } else {
-                    pathStringTransformed.push({
-                        t:'m',
-                        p:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                        t: 'c',
+                        p1: groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
+                        p2: groupTransform.mat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
+                        p3: groupTransform.mat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
                     });
                 }
-            }
-            if (len && pathData.closed && !(pathData.trimmed && !pathNodes.c)) {
-                pathStringTransformed.push({
-                    t:'c',
-                    p1:groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                    p2:groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
-                    p3:groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                });
-                pathStringTransformed.push({
-                    t:'z'
-                });
-            }
-            if (viewData.st) {
-                for(i=0;i<16;i+=1){
-                    viewData.tr[i] = groupTransform.mat.props[i];
+                if (len == 1) {
+                    pathStringTransformed.push({
+                        t: 'm',
+                        p: groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                    });
                 }
+                if (pathNodes.c) {
+                    pathStringTransformed.push({
+                        t: 'c',
+                        p1: groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
+                        p2: groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
+                        p3: groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                    });
+                    pathStringTransformed.push({
+                        t: 'z'
+                    });
+                }
+                viewData.lStr = pathStringTransformed;
             }
-            viewData.trNodes = pathStringTransformed;
+
         }
+
+        if (viewData.st) {
+            for (i = 0; i < 16; i += 1) {
+                viewData.tr[i] = groupTransform.mat.props[i];
+            }
+        }
+        viewData.trNodes = pathStringTransformed;
+
     }
 };
 

@@ -1,4 +1,4 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
@@ -16,6 +16,7 @@ var BMMath = {
 };
 var defaultCurveSegments = 75;
 var degToRads = Math.PI/180;
+var roundCorner = 0.5519;
 
 function roundValues(flag){
     if(flag){

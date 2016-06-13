@@ -165,7 +165,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             data[i].st = hasStrokes;
             data[i].fl = hasFills;
-        }else if(arr[i].ty == 'tm'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties);
             this.shapeModifiers.push(modifier);
@@ -188,7 +188,7 @@ IShapeElement.prototype.addShapeToModifiers = function(shape) {
     for(i=0;i<len;i+=1){
         this.shapeModifiers[i].addShape(shape);
     }
-}
+};
 
 IShapeElement.prototype.renderModifiers = function() {
     if(!this.shapeModifiers.length){
@@ -202,10 +202,10 @@ IShapeElement.prototype.renderModifiers = function() {
 
     len = this.shapeModifiers.length;
 
-    for(i=0;i<len;i+=1){
+    for(i=len-1;i>=0;i-=1){
         this.shapeModifiers[i].processShapes();
     }
-}
+};
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
 
