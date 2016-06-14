@@ -3,13 +3,13 @@
 <head>
     <style>
         body{
-            background-color:#ccc;
+            background-color:#fff;
             margin: 0px;
             height: 100%;
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#ccc;
+            background-color:#fff;
             width:960px;
             height:540px;
             /*width:800px;
@@ -109,13 +109,13 @@
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'html',
-        loop: false,
+        renderer: 'svg',
+        loop: true,
         prerender: false,
         autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
-        path: 'exports/render/data.json'
+        path: 'exports/adrock/data.json'
     };
 
     var anim;
