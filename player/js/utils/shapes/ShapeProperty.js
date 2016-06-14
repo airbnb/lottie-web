@@ -206,6 +206,8 @@ var ShapePropertyFactory = (function(){
                 this.v.o[3] = [p0 + s0,p1 - s1*cPoint];
                 this.v.i[3] = [p0 + s0,p1 + s1*cPoint];
             }
+            this.paths.length = 0;
+            this.paths[0] = this.v;
         }
 
         function processKeys(frameNum){
