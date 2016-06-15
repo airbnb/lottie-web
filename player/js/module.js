@@ -94,6 +94,8 @@
         switch(name){
             case "propertyFactory":
                 return PropertyFactory;
+            case "shapePropertyFactory":
+                return ShapePropertyFactory;
             case "matrix":
                 return Matrix;
         }

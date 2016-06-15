@@ -1,10 +1,12 @@
 var PropertyFactory = bodymovin.__getFactory('propertyFactory');
 var Matrix = bodymovin.__getFactory('matrix');
+var ShapePropertyFactory = bodymovin.__getFactory('shapePropertyFactory');
 var degToRads = Math.PI/180;
 
 var Expressions = (function(){
     var ob = {};
     ob.initExpressions = initExpressions;
+    ob.getEffectsManager = getEffectsManager;
 
     function addLayersInterface(layers){
         var i, len = layers.length;
@@ -29,6 +31,10 @@ var Expressions = (function(){
     function initExpressions(animation){
         animation.renderer.compInterface = CompExpressionInterface(animation.renderer);
         addLayersInterface(animation.renderer.elements);
+    }
+
+    function getEffectsManager(data,element,dynamicProperties){
+        return new EffectsManager(data,element,dynamicProperties);
     }
    return ob;
 }());

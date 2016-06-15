@@ -55,8 +55,8 @@ BaseElement.prototype.prepareFrame = function(num){
 
 BaseElement.prototype.init = function(){
     this.dynamicProperties = [];
-    if(this.data.ef){
-        this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
+    if(this.data.ef && expressionsPlugin){
+        this.effectsManager = expressionsPlugin.getEffectsManager(this.data,this,this.dynamicProperties);
         this.effect = this.effectsManager.bind(this.effectsManager);
     }
     //this.elemInterface = buildLayerExpressionInterface(this);
