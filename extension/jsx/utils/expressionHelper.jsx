@@ -509,15 +509,15 @@ var bm_expressionHelper = (function () {
 
     function checkExpression(prop, returnOb) {
         if (prop.expressionEnabled && !prop.expressionError) {
+            //([.'"])name([\s'"]) replace .name
             pendingBodies.length = 0;
             doneBodies.length = 0;
             expressionStr = prop.expression;
             expressionStr = correctEaseAndWizz(expressionStr);
             expressionStr = correctElseToken(expressionStr);
+            expressionStr = renameNameProperty(expressionStr);
             searchUndeclaredVariables();
             var parsed = esprima.parse(expressionStr, options);
-            bm_eventDispatcher.log('poarassad: ');
-            bm_eventDispatcher.log(parsed);
             var body = parsed.body;
             replaceOperations(body);
             assignVariable(body);
@@ -528,6 +528,11 @@ var bm_expressionHelper = (function () {
             expressionStr = 'var $bm_rt;\n' + expressionStr;
             returnOb.x = expressionStr;
         }
+    }
+    
+    function renameNameProperty(str){
+        var regName = /([.'"])name([\s'";.])/g;
+        return str.replace(regName,'$1_name$2');
     }
     
     function correctElseToken(str){

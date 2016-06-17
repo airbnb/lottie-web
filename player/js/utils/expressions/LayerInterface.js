@@ -71,11 +71,7 @@ var LayerExpressionInterface = (function (){
                 return elem.transform;
             }
         });
-        Object.defineProperty(_thisLayerFunction, "name", {
-            get: function(){
-                return elem.data.nm;
-            }
-        });
+        Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
         Object.defineProperty(_thisLayerFunction, "content", {
             get: function(){
                 return _thisLayerFunction.shapeInterface;

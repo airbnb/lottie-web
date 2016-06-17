@@ -77,7 +77,7 @@ var ShapeExpressionInterface = (function(){
                 } else {
                     var i = 0, len = interfaces.length;
                     while(i<len){
-                        if(interfaces[i].name === value){
+                        if(interfaces[i]._name === value){
                             //console.log('interfaces[i]: ',interfaces[i]);
                             return interfaces[i];
                         }
@@ -112,7 +112,7 @@ var ShapeExpressionInterface = (function(){
                 } else {
                     var i = 0, len = interfaces.length;
                     while(i<len){
-                        if(interfaces[i].name === value){
+                        if(interfaces[i]._name === value){
                             return interfaces[i];
                         }
                         i+=1;
@@ -128,7 +128,7 @@ var ShapeExpressionInterface = (function(){
                 }
             };
             interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
-            Object.defineProperty(interfaceFunction, 'name', {
+            Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -157,7 +157,7 @@ var ShapeExpressionInterface = (function(){
                     }
                     return view.o.v;
                 },
-                name: shape.nm
+                _name: shape.nm
             };
             return ob;
         }
@@ -201,7 +201,7 @@ var ShapeExpressionInterface = (function(){
                     }
                     return this.dashOb;
                 },
-                name: shape.nm
+                _name: shape.nm
             };
             return ob;
         }
@@ -257,7 +257,7 @@ var ShapeExpressionInterface = (function(){
                     return view.o.v;
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
+            Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -369,7 +369,7 @@ var ShapeExpressionInterface = (function(){
                     return view.transform.mProps.sa.v;
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
+            Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -416,7 +416,7 @@ var ShapeExpressionInterface = (function(){
                     return [prop.p.v[0],prop.p.v[1]];
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
+            Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -534,7 +534,7 @@ var ShapeExpressionInterface = (function(){
                     return prop.is.v/prop.is.mult;
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
+            Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -560,7 +560,7 @@ var ShapeExpressionInterface = (function(){
                     }
                     return prop.v;
                 },
-                name: shape.nm
+                _name: shape.nm
             }
             return ob;
         }
