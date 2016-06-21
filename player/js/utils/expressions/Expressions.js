@@ -1,8 +1,3 @@
-var PropertyFactory = bodymovin.__getFactory('propertyFactory');
-var Matrix = bodymovin.__getFactory('matrix');
-var ShapePropertyFactory = bodymovin.__getFactory('shapePropertyFactory');
-var degToRads = Math.PI/180;
-
 var Expressions = (function(){
     var ob = {};
     ob.initExpressions = initExpressions;
