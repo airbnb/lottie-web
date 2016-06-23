@@ -159,7 +159,7 @@ var bm_effectsHelper = (function () {
         var i, len = elem.numProperties, prop;
         for (i = 0; i < len; i += 1) {
             prop = elem.property(i + 1);
-            if(prop.propertyType === 6012){
+            if(prop.propertyType === 6012 || prop.propertyType === 6212){
                 var type = findEffectPropertyType(prop);
                 //effectTypes.noValue;
                 if (type === effectTypes.noValue) {
@@ -178,7 +178,7 @@ var bm_effectsHelper = (function () {
                     ob.ef.push(exportPointControl(prop, frameRate));
                 }
             } else {
-                if(prop.name !== 'Compositing Options' && prop.matchName !== 'ADBE Effect Built In Params') {
+                if(prop.name !== 'Compositing Options' && prop.matchName !== 'ADBE Effect Built In Params' && prop.propertyType !== 6213) {
                     ob.ef.push(exportCustomEffect(prop, frameRate));
                 }
             }
