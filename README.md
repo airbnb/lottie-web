@@ -1,8 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.2.1
+- Expressions fix for AE 2015.3
+- Added bodymovin_light.js
+
 ## V 4.2.0
-- Much more expressions
+- More expressions support
 - Rounded corners supported on shapes
 - added goToAndPlay
 - Fixes
