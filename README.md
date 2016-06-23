@@ -1,14 +1,17 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.2.0
+- Much more expressions
+- Rounded corners supported on shapes
+- added goToAndPlay
+- Fixes
+
 ## V 4.1.8
 - Fixed easing bezier values for dimensional properties
 
 ## V 4.1.7
 - removing non ASCII chars from file that would break the extension in some languages.
-
-## V 4.1.6
-- module definition fix
 
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.

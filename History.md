@@ -1,3 +1,9 @@
+## V 4.2.0
+- Much more expressions
+- Rounded corners supported on shapes
+- added goToAndPlay
+- Fixes
+
 ## V 4.1.8
 - Fixed easing bezier values for dimensional properties
 
