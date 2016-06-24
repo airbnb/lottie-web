@@ -50,7 +50,6 @@ ICompElement.prototype.renderFrame = function(parentMatrix){
     }
 
     this.hidden = false;
-
     for( i = 0; i < len; i+=1 ){
         if(this.data.hasMask){
             this.elements[i].renderFrame();

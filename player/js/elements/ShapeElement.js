@@ -208,8 +208,6 @@ IShapeElement.prototype.renderModifiers = function() {
 };
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
-
-
     var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();

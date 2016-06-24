@@ -182,7 +182,7 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         return false;
     }
 
-    if(this.currentFrameNum === this.lastNum || !this.isVisible){
+    if(!this.isVisible){
         return this.isVisible;
     }
     this.lastNum = this.currentFrameNum;
