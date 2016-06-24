@@ -112,7 +112,7 @@ function dataFunctionManager(){
     }
 
     var checkColors = (function(){
-        var minimumVersion = [4,1,5];
+        var minimumVersion = [4,1,9];
 
         function iterateShapes(shapes){
             var i, len = shapes.length;
