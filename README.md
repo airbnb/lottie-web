@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.2.2
+- Compatibility fix for colors
+
 ## V 4.2.1
 - Expressions fix for AE 2015.3
 - Added bodymovin_light.js
@@ -50,7 +53,7 @@ open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with ke
 
 Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
-Jump directly to "Install third-party extensions"
+Skip directly to "Install third-party extensions"
 
 
 ### For both
@@ -146,6 +149,7 @@ animation instances have these main methods:
 **anim.pause()** <br/>
 **anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
 **anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
+**anim.goToAndPlay(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
 **anim.setDirection(direction)** -- one param direction (1 is normal direction.) <br/>
 **anim.playSegments(segments, forceFlag)** -- first param is a single array or multiple arrays of two values each(fromFrame,toFrame), second param is a boolean for forcing the new segment right away<br/>
 **anim.destroy()**<br/>

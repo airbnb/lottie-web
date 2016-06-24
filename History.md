@@ -1,3 +1,6 @@
+## V 4.2.2
+- Compatibility fix for colors
+
 ## V 4.2.1
 - Expressions fix for AE 2015.3
 - Added bodymovin_light.js
