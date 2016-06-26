@@ -204,6 +204,7 @@ var bm_layerElement = (function () {
         layerData.ip = layerInfo.inPoint * frameRate;
         layerData.op = layerInfo.outPoint * frameRate;
         layerData.st = layerInfo.startTime * frameRate;
+        layerData.sr = layerInfo.stretch/100;
         
         bm_renderManager.renderLayerComplete();
     }

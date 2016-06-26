@@ -19,10 +19,10 @@ CVCompElement.prototype.prepareFrame = function(num){
             timeRemapped = this.data.op - 1;
         }
     }
-    this.renderedFrame = timeRemapped;
+    this.renderedFrame = timeRemapped/this.data.sr;
     var i,len = this.elements.length;
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].prepareFrame(timeRemapped - this.layers[i].st);
+        this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
     }
 };
 

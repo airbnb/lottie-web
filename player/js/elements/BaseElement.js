@@ -34,7 +34,7 @@ BaseElement.prototype.prepareFrame = function(num){
         this.dynamicProperties[i].getValue();
     }
     if(this.data.hasMask){
-        this.maskManager.prepareFrame(num);
+        this.maskManager.prepareFrame(num*this.data.sr);
     }
     /* TODO check this
     if(this.data.sy){
@@ -49,7 +49,7 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     */
 
-    this.currentFrameNum = num;
+    this.currentFrameNum = num*this.data.sr;
     return this.isVisible;
 };
 
