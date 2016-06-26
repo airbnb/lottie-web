@@ -54,6 +54,9 @@ BaseElement.prototype.prepareFrame = function(num){
 };
 
 BaseElement.prototype.init = function(){
+    if(!this.data.sr){
+        this.data.sr = 1;
+    }
     this.dynamicProperties = [];
     if(this.data.ef && expressionsPlugin){
         this.effectsManager = expressionsPlugin.getEffectsManager(this.data,this,this.dynamicProperties);

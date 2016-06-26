@@ -10,8 +10,8 @@
         }
         #bodymovin{
             background-color:#000;
-            width:700px;
-            height:700px;
+            width:800px;
+            height:550px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -116,15 +116,15 @@
         autoplay: false,
         autoloadSegments: true,
         //animationData: anim2
-        path: 'exports/render/data.json'
+        path: 'exports/bm/data.json'
     };
 
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
-        //anim.play();
-        anim.goToAndStop(10,true);
+        anim.play();
+        //anim.goToAndStop(10,true);
     },500);
 
     /*function reposition(){
