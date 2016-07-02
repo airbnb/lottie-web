@@ -503,6 +503,23 @@ var ExpressionManager = (function(){
             return ob;
         }
 
+        function framesToTime(frames,fps){
+            if(!fps){
+                fps = elem.comp.globalData.frameRate;
+            }
+            return frames/fps;
+        }
+
+        function timeToFrames(t,fps){
+            if(!t){
+                t = time;
+            }
+            if(!fps){
+                fps = elem.comp.globalData.frameRate;
+            }
+            return t*fps;
+        }
+
         var time, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         function execute(){

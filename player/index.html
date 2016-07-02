@@ -10,8 +10,8 @@
         }
         #bodymovin{
             background-color:#000;
-            width:800px;
-            height:550px;
+            width:100%;
+            height:100%;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -113,57 +113,16 @@
         renderer: 'svg',
         loop: false,
         prerender: false,
-        autoplay: false,
+        autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
-        path: 'exports/bm/data.json'
+        path: 'exports/render/data.json'
     };
 
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
-    setTimeout(function(){
-        anim.play();
-        //anim.goToAndStop(10,true);
-    },500);
 
-    /*function reposition(){
-        //anim.animationData.layers[0].layers[0].ks.p.k[0].s = [200,200,0];
-        //anim.animationData.layers[0].layers[0].ks.p.k[0].e = [200,200,0];
-    }
-
-    var hand;
-    var initX,initY,handX,handY;
-
-    function handMove(ev){
-        var currentX = ev.clientX;
-        var currentY = ev.clientY;
-        anim.animationData.layers[0].layers[0].ks.p.k[0].s[0] = handX + (currentX - initX);
-        anim.animationData.layers[0].layers[0].ks.p.k[0].e[0] = handX + (currentX - initX);
-        anim.animationData.layers[0].layers[0].ks.p.k[0].s[1] = handY + (currentY - initY);
-        anim.animationData.layers[0].layers[0].ks.p.k[0].e[1] = handY + (currentY - initY);
-    }
-
-    function handUp(ev){
-        document.removeEventListener('mousemove',handMove);
-        document.removeEventListener('mouseup',handUp);
-    }
-
-    function handDown(ev){
-        document.addEventListener('mousemove',handMove);
-        document.addEventListener('mouseup',handUp);
-        initX = ev.clientX;
-        initY = ev.clientY;
-        handX = anim.animationData.layers[0].layers[0].ks.p.k[0].s[0];
-        handY = anim.animationData.layers[0].layers[0].ks.p.k[0].s[1];
-    }
-
-    function init(){
-        hand = document.getElementById('hand');
-        hand.addEventListener('mousedown',handDown);
-        setTimeout(reposition,2000);
-    }
-    anim.addEventListener('DOMLoaded',init);*/
 
 </script>
 </body>

@@ -18,7 +18,7 @@ var bm_renderManager = (function () {
         var layerData, parentData, i, len = layers.length, hasChangedState = false;
         for (i = 0; i < len; i += 1) {
             layerData = layers[i];
-            if (layerData.parent !== undefined) {
+            if (layerData.parent !== undefined && layerData.render) {
                 parentData = layers[layerData.parent];
                 if (parentData.render === false) {
                     parentData.ty = bm_layerElement.layerTypes.nullLayer;
