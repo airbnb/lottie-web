@@ -16,6 +16,9 @@ HSolidElement.prototype.createElements = function(){
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
+    if(this.data.bm !== 0){
+        this.setBlendMode();
+    }
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',this.data.sw);
     rect.setAttribute('height',this.data.sh);

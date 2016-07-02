@@ -10,6 +10,10 @@ function HBaseElement(data,parentContainer,globalData,comp, placeholder){
 };
 
 createElement(BaseElement, HBaseElement);
+HBaseElement.prototype.checkBlendMode = function(){
+
+};
+HBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
 HBaseElement.prototype.appendNodeToParent = function(node) {
     if(this.placeholder){
@@ -36,6 +40,7 @@ HBaseElement.prototype.createElements = function(){
         }
         this.layerElement.setAttribute('id',this.data.ln);
     }
+    this.setBlendMode();
     if(this.layerElement !== this.parentContainer){
         this.placeholder = null;
     }

@@ -21,6 +21,24 @@ var bm_layerElement = (function () {
         camera : 13,
         light : 14
     };
+    ob.blendModes = {
+        normal : 0,
+        multiply : 1,
+        screen : 2,
+        overlay : 3,
+        darken : 4,
+        lighten : 5,
+        colorDodge : 6,
+        colorBurn : 7,
+        hardLight : 8,
+        softLight : 9,
+        difference : 10,
+        exclusion : 11,
+        hue : 12,
+        saturation : 13,
+        color : 14,
+        luminosity :15
+    };
     
     var getLayerType = (function () {
         function avLayerType(lObj) {
@@ -166,6 +184,62 @@ var bm_layerElement = (function () {
         }
     }
     
+    function getBlendMode(value){
+        var blendModeValue = ob.blendModes.normal;
+        switch(value){
+            case BlendingMode.MULTIPLY:
+                blendModeValue = ob.blendModes.multiply;
+                break;
+            case BlendingMode.SCREEN:
+                blendModeValue = ob.blendModes.screen;
+                break;
+            case BlendingMode.OVERLAY:
+                blendModeValue = ob.blendModes.overlay;
+                break;
+            case BlendingMode.DARKEN:
+                blendModeValue = ob.blendModes.darken;
+                break;
+            case BlendingMode.LIGHTEN:
+                blendModeValue = ob.blendModes.lighten;
+                break;
+            case BlendingMode.CLASSIC_COLOR_DODGE:
+            case BlendingMode.COLOR_DODGE:
+                blendModeValue = ob.blendModes.colorDodge;
+                break;
+            case BlendingMode.CLASSIC_COLOR_BURN:
+            case BlendingMode.COLOR_BURN:
+                blendModeValue = ob.blendModes.colorBurn;
+                break;
+            case BlendingMode.HARD_LIGHT:
+                blendModeValue = ob.blendModes.hardLight;
+                break;
+            case BlendingMode.SOFT_LIGHT:
+                blendModeValue = ob.blendModes.softLight;
+                break;
+            case BlendingMode.DIFFERENCE:
+                blendModeValue = ob.blendModes.difference;
+                break;
+            case BlendingMode.EXCLUSION:
+                blendModeValue = ob.blendModes.exclusion;
+                break;
+            case BlendingMode.HUE:
+                blendModeValue = ob.blendModes.hue;
+                break;
+            case BlendingMode.SATURATION:
+                blendModeValue = ob.blendModes.saturation;
+                break;
+            case BlendingMode.COLOR:
+                blendModeValue = ob.blendModes.color;
+                break;
+            case BlendingMode.LUMINOSITY:
+                blendModeValue = ob.blendModes.luminosity;
+                break;
+            default:
+                blendModeValue = ob.blendModes.normal;
+        }
+        return blendModeValue;
+    }
+    
     function renderLayer(layerOb) {
         var layerInfo = layerOb.layer;
         var layerData = layerOb.data;
@@ -204,6 +278,7 @@ var bm_layerElement = (function () {
         layerData.ip = layerInfo.inPoint * frameRate;
         layerData.op = layerInfo.outPoint * frameRate;
         layerData.st = layerInfo.startTime * frameRate;
+        layerData.bm = getBlendMode(layerInfo.blendingMode);
         layerData.sr = layerInfo.stretch/100;
         
         bm_renderManager.renderLayerComplete();
