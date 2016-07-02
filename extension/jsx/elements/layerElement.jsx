@@ -188,7 +188,6 @@ var bm_layerElement = (function () {
         
         if (lType === ob.layerTypes.shape) {
             bm_shapeHelper.exportShape(layerInfo, layerData, frameRate);
-            //layerData.rectData = {l: 0, t: 0, b: 0, r: 0, w: 0, h: 0};
         } else if (lType === ob.layerTypes.solid) {
             layerData.sw = layerInfo.source.width;
             layerData.sh = layerInfo.source.height;
@@ -204,6 +203,7 @@ var bm_layerElement = (function () {
         layerData.ip = layerInfo.inPoint * frameRate;
         layerData.op = layerInfo.outPoint * frameRate;
         layerData.st = layerInfo.startTime * frameRate;
+        layerData.bm = layerInfo.blendingMode;
         layerData.sr = layerInfo.stretch/100;
         
         bm_renderManager.renderLayerComplete();

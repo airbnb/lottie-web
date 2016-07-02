@@ -1,3 +1,7 @@
+## V 4.2.3
+- Expressions framesToTime and timeToFrames
+- Layer stretching. Negative values not supported yet.
+
 ## V 4.2.2
 - Compatibility fix for colors
 
