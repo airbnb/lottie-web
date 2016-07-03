@@ -9,10 +9,8 @@ CVSolidElement.prototype.renderFrame = function(parentMatrix){
     }
     var ctx = this.canvasContext;
     this.globalData.renderer.save();
-    var finalMat = this.finalTransform.mat.props;
-    this.globalData.renderer.ctxTransform(finalMat);
+    this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
     this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
-
     ctx.fillStyle=this.data.sc;
     ctx.fillRect(0,0,this.data.sw,this.data.sh);
     this.globalData.renderer.restore(this.data.hasMask);

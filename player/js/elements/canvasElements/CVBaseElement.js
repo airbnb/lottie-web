@@ -12,10 +12,71 @@ CVBaseElement.prototype.createElements = function(){
 
 };
 
+CVBaseElement.prototype.checkBlendMode = function(globalData){
+    if(globalData.blendMode !== this.data.bm) {
+        globalData.blendMode = this.data.bm;
+
+        var blendModeValue = '';
+        switch (this.data.bm) {
+            case 0:
+                blendModeValue = 'normal';
+                break;
+            case 1:
+                blendModeValue = 'multiply';
+                break;
+            case 2:
+                blendModeValue = 'screen';
+                break;
+            case 3:
+                blendModeValue = 'overlay';
+                break;
+            case 4:
+                blendModeValue = 'darken';
+                break;
+            case 5:
+                blendModeValue = 'lighten';
+                break;
+            case 6:
+                blendModeValue = 'color-dodge';
+                break;
+            case 7:
+                blendModeValue = 'color-burn';
+                break;
+            case 8:
+                blendModeValue = 'hard-light';
+                break;
+            case 9:
+                blendModeValue = 'soft-light';
+                break;
+            case 10:
+                blendModeValue = 'difference';
+                break;
+            case 11:
+                blendModeValue = 'exclusion';
+                break;
+            case 12:
+                blendModeValue = 'hue';
+                break;
+            case 13:
+                blendModeValue = 'saturation';
+                break;
+            case 14:
+                blendModeValue = 'color';
+                break;
+            case 15:
+                blendModeValue = 'luminosity';
+                break;
+        }
+        globalData.canvasContext.globalCompositeOperation = blendModeValue;
+    }
+};
+
+
 CVBaseElement.prototype.renderFrame = function(parentTransform){
     if(this.data.ty === 3){
         return false;
     }
+        this.checkBlendMode(this.data.ty === 0?this.parentGlobalData:this.globalData);
 
     if(!this.isVisible){
         return this.isVisible;
@@ -55,15 +116,12 @@ CVBaseElement.prototype.renderFrame = function(parentTransform){
 
     if(this.data.hasMask){
         this.globalData.renderer.save(true);
-        this.maskManager.renderFrame(finalMat);
+        this.maskManager.renderFrame(this.data.ty === 0?null:finalMat);
     }
     return this.isVisible;
 
 };
 
-CVBaseElement.prototype.getCurrentAnimData = function(){
-    return this.currentAnimData;
-};
 CVBaseElement.prototype.addMasks = function(data){
     this.maskManager = new CVMaskElement(data,this,this.globalData);
 };

@@ -18,6 +18,7 @@ BaseElement.prototype.prepareFrame = function(num){
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){
+            this.globalData.mdf = true;
             this.isVisible = true;
             this.firstFrame = true;
             if(this.data.hasMask){
@@ -26,12 +27,16 @@ BaseElement.prototype.prepareFrame = function(num){
         }
     }else{
         if(this.isVisible !== false){
+            this.globalData.mdf = true;
             this.isVisible = false;
         }
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
+        if(this.dynamicProperties[i].mdf){
+            this.globalData.mdf = true;
+        }
     }
     if(this.data.hasMask){
         this.maskManager.prepareFrame(num*this.data.sr);
