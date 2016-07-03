@@ -10,8 +10,8 @@
         }
         #bodymovin{
             background-color:#000;
-            width:100%;
-            height:100%;
+            width:1820px;
+            height:275px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -110,8 +110,8 @@
     var count = 0;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'svg',
-        loop: false,
+        renderer: 'canvas',
+        loop: true,
         prerender: false,
         autoplay: true,
         autoloadSegments: true,
@@ -122,6 +122,7 @@
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
+
 
 
 </script>
