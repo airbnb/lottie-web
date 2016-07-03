@@ -319,6 +319,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.globalData.frameId += 1;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
+        this.canvasContext.save();
         //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
         this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
     }else{
@@ -341,6 +342,8 @@ CanvasRenderer.prototype.renderFrame = function(num){
     }
     if(this.renderConfig.clearCanvas !== true){
         this.restore();
+    } else {
+        this.canvasContext.restore();
     }
 };
 
