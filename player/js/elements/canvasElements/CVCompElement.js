@@ -26,6 +26,7 @@ function CVCompElement(data, comp,globalData){
     this.transformMat = new Matrix();
     this.parentGlobalData = this.globalData;
     var cv = document.createElement('canvas');
+    //document.body.appendChild(cv);
     compGlobalData.canvasContext = cv.getContext('2d');
     this.canvasContext = compGlobalData.canvasContext;
     cv.width = this.data.w;
@@ -43,6 +44,28 @@ CVCompElement.prototype.ctxTransform = CanvasRenderer.prototype.ctxTransform;
 CVCompElement.prototype.ctxOpacity = CanvasRenderer.prototype.ctxOpacity;
 CVCompElement.prototype.save = CanvasRenderer.prototype.save;
 CVCompElement.prototype.restore = CanvasRenderer.prototype.restore;
+CVCompElement.prototype.reset =  function(){
+    this.contextData.cArrPos = 0;
+    this.contextData.cTr.reset();
+    this.contextData.cO = 1;
+};
+CVCompElement.prototype.resize = function(transformCanvas){
+    var maxScale = Math.max(transformCanvas.sx,transformCanvas.sy);
+    this.canvas.width = this.data.w*maxScale;
+    this.canvas.height = this.data.h*maxScale;
+    this.transformCanvas = {
+        sc:maxScale,
+        w:this.data.w*maxScale,
+        h:this.data.h*maxScale,
+        props:[maxScale,0,0,0,0,maxScale,0,0,0,0,1,0,0,0,0,1]
+    }
+    var i,len = this.elements.length;
+    for( i = 0; i < len; i+=1 ){
+        if(this.elements[i].data.ty === 0){
+            this.elements[i].resize(transformCanvas);
+        }
+    }
+};
 
 CVCompElement.prototype.prepareFrame = function(num){
     this.globalData.frameId = this.parentGlobalData.frameId;
@@ -68,6 +91,7 @@ CVCompElement.prototype.prepareFrame = function(num){
     }
     if(this.globalData.mdf){
         this.canvasContext.clearRect(0, 0, this.data.w, this.data.h);
+        this.ctxTransform(this.transformCanvas.props);
     }
 };
 
@@ -80,18 +104,22 @@ CVCompElement.prototype.renderFrame = function(parentMatrix){
         for( i = len - 1; i >= 0; i -= 1 ){
             this.elements[i].renderFrame();
         }
-        if(this.data.hasMask){
-            this.globalData.renderer.restore(true);
-        }
+    }
+    if(this.data.hasMask){
+        this.globalData.renderer.restore(true);
     }
     if(this.firstFrame){
         this.firstFrame = false;
     }
-    this.parentGlobalData.renderer.save(true);
+    this.parentGlobalData.renderer.save();
     this.parentGlobalData.renderer.ctxTransform(this.finalTransform.mat.props);
     this.parentGlobalData.renderer.ctxOpacity(this.finalTransform.opacity);
-    this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0);
-    this.parentGlobalData.renderer.restore(true);
+    this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0,this.data.w,this.data.h);
+    this.parentGlobalData.renderer.restore();
+
+    if(this.globalData.mdf){
+        this.reset();
+    }
 };
 
 CVCompElement.prototype.setElements = function(elems){

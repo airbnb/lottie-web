@@ -224,7 +224,6 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.transformCanvas = {};
     this.transformCanvas.w = animData.w;
     this.transformCanvas.h = animData.h;
-    this.updateContainerSize();
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,document);
@@ -262,6 +261,12 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
+    var i, len = this.elements.length;
+    for(i=0;i<len;i+=1){
+        if(this.elements[i].data.ty === 0){
+            this.elements[i].resize(this.transformCanvas);
+        }
+    }
 };
 
 CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
@@ -278,6 +283,7 @@ CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
             this.buildStage(null, layerData.layers, elements[i].getElements());
         }
     }
+    this.updateContainerSize();
 };
 
 CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements,resetHierarchyFlag) {
@@ -321,7 +327,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
         this.reset();
         this.canvasContext.save();
         //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-        this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
+        this.canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w*this.transformCanvas.sx, this.transformCanvas.h*this.transformCanvas.sy);
     }else{
         this.save();
     }
