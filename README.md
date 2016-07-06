@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.2.3
+- Expressions framesToTime and timeToFrames
+- Layer stretching. Negative values not supported yet.
+- Firefox canvas save/restore performance fix
+- Blend Modes (read blend modes page for specifications here https://github.com/bodymovin/bodymovin/wiki/Blend-Modes)
+
 ## V 4.2.2
 - Compatibility fix for colors
 

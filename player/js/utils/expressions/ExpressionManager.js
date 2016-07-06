@@ -562,9 +562,6 @@ var ExpressionManager = (function(){
                 if(typeof this.v === 'number'){
                     this.v *= this.mult;
                 }else{
-                    if(!this.v) {
-                        console.log(val);
-                    }
                     len = this.v.length;
                     if(value === this.v){
                         this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
@@ -573,9 +570,6 @@ var ExpressionManager = (function(){
                         this.v[i] *= this.mult;
                     }
                 }
-            }
-            if(!this.v && typeof this.v !== 'number') {
-                console.log(val);
             }
             if(typeof this.v === 'number'){
                 if(this.lastValue !== this.v){

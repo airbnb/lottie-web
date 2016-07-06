@@ -206,9 +206,6 @@
 
     var propertyGetProp = PropertyFactory.getProp;
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
-        if(!arr){
-            console.log(new Error().stack);
-        }
         var prop = propertyGetProp(elem,data,type, mult, arr);
         prop.getVelocityAtTime = getVelocityAtTime;
         prop.getValueAtTime = getValueAtTime;

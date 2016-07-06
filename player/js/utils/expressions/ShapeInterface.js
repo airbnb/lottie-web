@@ -118,7 +118,6 @@ var ShapeExpressionInterface = (function(){
                         i+=1;
                     }
                 }
-                console.log('returning null', value);
             }
             interfaceFunction.propertyGroup = function(val){
                 if(val === 1){
@@ -468,8 +467,6 @@ var ShapeExpressionInterface = (function(){
                 if(shape.is && shape.is.ix === value){
                     return interfaceFunction.innerRoundness;
                 }
-                console.log('value: ',value);
-                //ADBE Vector Star Outer Radius
 
             }
             Object.defineProperty(interfaceFunction, 'position', {

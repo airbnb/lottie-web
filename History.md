@@ -2,6 +2,7 @@
 - Expressions framesToTime and timeToFrames
 - Layer stretching. Negative values not supported yet.
 - Firefox canvas save/restore performance fix
+- Blend Modes (read blend modes page for specifications here https://github.com/bodymovin/bodymovin/wiki/Blend-Modes)
 
 ## V 4.2.2
 - Compatibility fix for colors
