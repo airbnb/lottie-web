@@ -14,6 +14,7 @@ var CompExpressionInterface = (function (){
         _thisLayerFunction.height = comp.globalData.compSize.h;
         _thisLayerFunction.width = comp.globalData.compSize.w;
         _thisLayerFunction.pixelAspect = 1;
+        _thisLayerFunction.frameDuration = 1/comp.globalData.frameRate;
         return _thisLayerFunction;
     }
 }());
