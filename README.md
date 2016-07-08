@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.3.1
+- Expression frameDuration prorperty added
+
 ## V 4.2.3
 - Expressions framesToTime and timeToFrames
 - Layer stretching. Negative values not supported yet.
