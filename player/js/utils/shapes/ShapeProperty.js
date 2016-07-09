@@ -33,9 +33,13 @@ var ShapePropertyFactory = (function(){
                         flag = false;
                     }
                 }
+                isHold = keyData.h === 1;
+                if(isHold && i === len - 1){
+                    keyData = nextKeyData;
+                }
 
                 var perc;
-                if(keyData.h !== 1){
+                if(!isHold){
                     var fnc;
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
@@ -54,7 +58,6 @@ var ShapePropertyFactory = (function(){
                     keyPropE = keyData.e[0];
                 }
                 keyPropS = keyData.s[0];
-                isHold = keyData.h === 1;
             }
 
             jLen = this.v.i.length;
