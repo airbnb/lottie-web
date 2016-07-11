@@ -3,6 +3,7 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 
 ## V 4.3.1
 - Expression frameDuration prorperty added
+- shape last hold keyframe fix
 
 ## V 4.2.3
 - Expressions framesToTime and timeToFrames
