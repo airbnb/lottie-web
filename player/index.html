@@ -10,8 +10,8 @@
         }
         #bodymovin{
             background-color:#000;
-            width:909px;
-            height:500px;
+            width:800px;
+            height:600px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -57,6 +57,7 @@
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
+    <script src="js/utils/shapes/MouseModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
@@ -107,11 +108,13 @@
 
 <script>
 
+    var bmContainer = document.getElementById('bodymovin');
+
     var count = 0;
     var animData = {
-        container: document.getElementById('bodymovin'),
+        container: bmContainer,
         renderer: 'svg',
-        loop: false,
+        loop: 100,
         autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
@@ -121,7 +124,11 @@
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
-
+    bmContainer.addEventListener('mousemove',function(ev){
+        //offsetX,offsetY
+        anim.renderer.globalData.mouseX = ev.layerX;
+        anim.renderer.globalData.mouseY = ev.layerY;
+    })
 
 
 </script>

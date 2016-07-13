@@ -30,7 +30,6 @@ var ShapePropertyFactory = (function(){
                     if(i < len - 1 && dir == 1 || i > 0 && dir == -1){
                         i += dir;
                     }else{
-                        console.log('pasosos');
                         flag = false;
                     }
                 }

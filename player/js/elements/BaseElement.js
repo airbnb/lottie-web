@@ -57,6 +57,29 @@ BaseElement.prototype.prepareFrame = function(num){
     this.currentFrameNum = num*this.data.sr;
     return this.isVisible;
 };
+
+BaseElement.prototype.globalToLocal = function(pt){
+    var transforms = [];
+    transforms.push(this.finalTransform);
+    var flag = true;
+    var comp = this.comp;
+    while(flag){
+        if(comp.finalTransform){
+            if(comp.data.hasMask){
+                transforms.splice(0,0,comp.finalTransform);
+            }
+            comp = comp.comp;
+        } else {
+            flag = false;
+        }
+    }
+    var i, len = transforms.length;
+    for(i=0;i<len;i+=1){
+        pt = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
+    }
+    return pt;
+};
+
 BaseElement.prototype.setBlendMode = function(){
     var blendModeValue = '';
     switch(this.data.bm){
