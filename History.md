@@ -1,5 +1,8 @@
+## V 4.3.2
+- preserveAspectRatio editable
+
 ## V 4.3.1
-- Expression frameDuration prorperty added
+- Expression frameDuration property added
 - shape last hold keyframe fix
 
 ## V 4.2.3
