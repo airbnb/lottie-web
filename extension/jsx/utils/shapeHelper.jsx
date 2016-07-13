@@ -412,7 +412,7 @@ var bm_shapeHelper = (function () {
         /*if (!isText) {
             getShapeBounds(layerOb);
         }*/
-        getShapeBounds(layerOb);
+        //getShapeBounds(layerOb);
     }
     
     ob.exportShape = exportShape;
