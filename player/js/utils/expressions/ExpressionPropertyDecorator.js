@@ -1,5 +1,9 @@
 (function addPropertyDecorator(){
 
+    function getStaticValueAtTime(){
+        return this.pv;
+    }
+
     function getValueAtTime(frameNum) {
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
@@ -150,7 +154,11 @@
     }
 
     function getVelocityAtTime(frameNum) {
+        if(this.vel !== undefined){
+            return this.vel;
+        }
         var delta = 0.01;
+        frameNum *= this.elem.globalData.frameRate;
         var v1 = this.getValueAtTime(frameNum);
         var v2 = this.getValueAtTime(frameNum + delta);
         var velocity;
@@ -208,7 +216,11 @@
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
         var prop = propertyGetProp(elem,data,type, mult, arr);
         prop.getVelocityAtTime = getVelocityAtTime;
-        prop.getValueAtTime = getValueAtTime;
+        if(prop.kf){
+            prop.getValueAtTime = getValueAtTime;
+        } else {
+            prop.getValueAtTime = getStaticValueAtTime;
+        }
         prop.setGroupProperty = setGroupProperty;
         var isAdded = prop.k;
         if(data.ix !== undefined){
