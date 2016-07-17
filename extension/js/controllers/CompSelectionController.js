@@ -3,15 +3,25 @@
 var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
-    var compositions = [];
+    var compositions;
     var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td settingsTd"><div class="hideExtra settings"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
+    var stateData;
 
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
     }
     
     function checkCompositions() {
-        var i = 0, len = compositions.length;
+        var i = 0, len = compositions.length, comp, elem;
+        for(i=0;i<len;i+=1){
+            comp = compositions[i];
+            elem = comp.elem;
+            if(stateData.filterValue && comp.name.indexOf(stateData.filterValue) === -1){
+                elem.hide();
+            } else {
+                elem.show();
+            }
+        }
         var flag = false;
         while (i < len) {
             if (compositions[i].selected && compositions[i].destination) {
@@ -27,121 +37,7 @@ var compSelectionController = (function () {
         }
     }
     
-    var settingsManager = (function () {
-        
-        var ob = {}, settingsView, compData, tempData = {}, callback;
-        var segments, segmentsCheckbox, segmentsTextBox;
-        var standalone, standaloneCheckbox;
-        var demo, demoCheckbox;
-        var glyphs, glyphsCheckbox;
-        
-        function updateSegmentsData() {
-            if (tempData.segmented) {
-                segments.addClass('active');
-                segmentsCheckbox.addClass('selected');
-                segmentsTextBox.prop('disabled', '');
-            } else {
-                segments.removeClass('active');
-                segmentsCheckbox.removeClass('selected');
-                segmentsTextBox.prop('disabled', 'disabled');
-            }
-            segmentsTextBox.val(tempData.segmentTime);
-        }
-        
-        function updateStandaloneData() {
-            if (tempData.standalone) {
-                standaloneCheckbox.addClass('selected');
-            } else {
-                standaloneCheckbox.removeClass('selected');
-            }
-        }
-        
-        function updateDemoData() {
-            if (tempData.demo) {
-                demoCheckbox.addClass('selected');
-            } else {
-                demoCheckbox.removeClass('selected');
-            }
-        }
-        
-        function updateGlyphsData() {
-            if (tempData.glyphs) {
-                glyphsCheckbox.addClass('selected');
-            } else {
-                glyphsCheckbox.removeClass('selected');
-            }
-        }
-        
-        function handleSegmentCheckboxClick() {
-            tempData.segmented = !tempData.segmented;
-            updateSegmentsData();
-        }
-        
-        function handleStandaloneCheckboxClick() {
-            tempData.standalone = !tempData.standalone;
-            updateStandaloneData();
-        }
-        
-        function handleDemoCheckboxClick() {
-            tempData.demo = !tempData.demo;
-            updateDemoData();
-        }
-        
-        function handleGlyphsCheckboxClick() {
-            tempData.glyphs = !tempData.glyphs;
-            updateGlyphsData();
-        }
-        
-        function cancelSettings() {
-            settingsView.hide();
-        }
-        
-        function saveSettings() {
-            tempData.segmentTime = segmentsTextBox.val();
-            compData = JSON.parse(JSON.stringify(tempData));
-            callback.apply(null, [compData]);
-            settingsView.hide();
-        }
-        
-        function init() {
-            settingsView = view.find('.settingsView');
-            settingsView.hide();
-            segments = settingsView.find('.segments');
-            segments.find('.checkboxCombo').on('click', handleSegmentCheckboxClick);
-            segmentsCheckbox = segments.find('.checkbox');
-            segmentsTextBox = segments.find('.inputText');
-            standalone = settingsView.find('.standalone');
-            standalone.find('.checkboxCombo').on('click', handleStandaloneCheckboxClick);
-            standaloneCheckbox = standalone.find('.checkbox');
-            demo = settingsView.find('.demo');
-            demo.find('.checkboxCombo').on('click', handleDemoCheckboxClick);
-            demoCheckbox = demo.find('.checkbox');
-            glyphs = settingsView.find('.glyphs');
-            glyphs.find('.checkboxCombo').on('click', handleGlyphsCheckboxClick);
-            glyphsCheckbox = glyphs.find('.checkbox');
-            settingsView.find('.buttons .cancel').on('click', cancelSettings);
-            settingsView.find('.buttons .return').on('click', saveSettings);
-            updateSegmentsData();
-            updateStandaloneData();
-            updateDemoData();
-            updateGlyphsData();
-        }
-        
-        function show(data, cb) {
-            settingsView.show();
-            compData = data;
-            tempData = JSON.parse(JSON.stringify(compData));
-            callback = cb;
-            updateSegmentsData();
-            updateStandaloneData();
-            updateDemoData();
-            updateGlyphsData();
-        }
-        
-        ob.init = init;
-        ob.show = show;
-        return ob;
-    }());
+    var settingsManager;
     
     function addElemListeners(comp) {
         var elem = comp.elem;
@@ -320,8 +216,20 @@ var compSelectionController = (function () {
         mainController.showView('snapshot');
     }
     
-    function init(csIntfc) {
+    function updateFilter(ev){
+        stateData.filterValue = ev.target.value;
+        checkCompositions();
+    }
+    
+    function init(csIntfc,data) {
+        if(!data.compositions){
+            data.compositions = [];
+            data.filterValue = "";
+        }
+        stateData = data;
+        compositions = data.compositions;
         view = $('#compsSelection');
+        settingsManager = SelectionSettings(view);
         compsListContainer = view.find('.compsList');
         csInterface = csIntfc;
         csInterface.addEventListener('bm:compositions:list', updateCompositionsList);
@@ -330,6 +238,8 @@ var compSelectionController = (function () {
         renderButton = view.find('.render');
         renderButton.on('click', renderCompositions);
         view.find('.settings').on('click', showSettings);
+        var filterInput = view.find('#compsFilter');
+        filterInput.on('input change',updateFilter);
         view.hide();
         settingsManager.init();
     }

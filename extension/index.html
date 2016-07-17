@@ -15,7 +15,7 @@
 <title></title>
 </head>
 
-<body class="hostElt">
+<body class="hostElt scrollable">
 
     <div id="content">
         <div id='compsSelection'>
@@ -35,22 +35,30 @@
                     <th class='th name'>Name</th>
                     <th class='th destination'>Destination Folder</th>
                 </tr>
+                <tr>
+                    <th class='th state'></th>
+                    <th class='th settings'></th>
+                    <th class='th name'>
+                        <input id="compsFilter" class="textInput" type="text" />
+                    </th>
+                    <th class='th destination'></th>
+                </tr>
             </thead>
             <tbody class='compsList'>
             </tbody>
             </table>
-            <div class='settingsView'>
+            <div class='settingsView scrollable'>
                 <div class='settingsBox'>
                     <div class='segments'>
-                        <h3>Segments</h3>
+                        <h3>Files</h3>
                         <div class='checkboxCombo'>
                             <div class='checkbox'>
                                 <div class='circle'></div>
                             </div>
-                            <div class='checkboxLabel'>Split animation in segments</div>
+                            <div class='checkboxLabel'>Split animation in multiple files</div>
                         </div>
                         <div class='segmentsTime'>
-                            <div>Time for each segment (in seconds)</div>
+                            <div>Time for each file (in seconds)</div>
                             <input class='inputText' type="text" />
                         </div>
                         <div class='settingsSeparator'></div>
@@ -64,12 +72,30 @@
                         </div>
                         <div class='settingsSeparator'></div>
                     </div>
+                    <div class='hiddens'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Hidden (Check if you need HIDDEN layers to be exported.)</div>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
+                    <div class='guideds'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Guides (Check if you need GUIDED layers to be exported.)</div>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
                     <div class='standalone'>
                         <div class='checkboxCombo'>
                             <div class='checkbox'>
                                 <div class='circle'></div>
                             </div>
-                            <div class='checkboxLabel'>Standalone (Exports animation and player in single file.)</div>
+                            <div class='checkboxLabel'>Standalone (Exports animation and player bundled in a single file)</div>
                         </div>
                         <div class='settingsSeparator'></div>
                     </div>
@@ -181,6 +207,7 @@
     <script src="js/animations/gear.js"></script>
 
     <script src="js/themeManager.js"></script>
+    <script src="js/controllers/compsSelection/CompsSelectionSettingsController.js"></script>
     <script src="js/controllers/CompSelectionController.js"></script>
     <script src="js/controllers/CompRenderController.js"></script>
     <script src="js/controllers/messageController.js"></script>
@@ -251,13 +278,6 @@
                 <input class="fontStyle" type="text" value="{{fontData.style}}"/>
             </div>
         </div>
-    </script>
-    
-    <script type='text/javascript'>
-        /*var view = {testVar:'llll123132'};
-      var template = document.getElementById('template').innerHTML;
-      var output = Mustache.render(template, view);
-      document.getElementById('message').innerHTML = output;*/
     </script>
 
         

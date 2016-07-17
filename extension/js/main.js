@@ -4,6 +4,9 @@
 var mainController = (function () {
     'use strict';
     var ob = {};
+    var stateData = {
+        compsSelection: {}
+    };
 
     var csInterface = new CSInterface();
     var mainViews = [];
@@ -43,7 +46,7 @@ var mainController = (function () {
     
     function init() {
         themeManager.init();
-        compSelectionController.init(csInterface);
+        compSelectionController.init(csInterface, stateData.compsSelection);
         mainViews.push({id: 'selection', controller: compSelectionController});
         compRenderController.init(csInterface);
         mainViews.push({id: 'render', controller: compRenderController});

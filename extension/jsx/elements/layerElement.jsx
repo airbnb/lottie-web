@@ -250,9 +250,7 @@ var bm_layerElement = (function () {
         }
         
         var lType = layerData.ty;
-        if (lType === ob.layerTypes.guide) {
-            bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);
-        } else if (lType !== ob.layerTypes.camera) {
+        if (lType !== ob.layerTypes.camera) {
             bm_transformHelper.exportTransform(layerInfo, layerData, frameRate);
             bm_maskHelper.exportMasks(layerInfo, layerData, frameRate);
             bm_effectsHelper.exportEffects(layerInfo, layerData, frameRate);

@@ -26,7 +26,9 @@ var bm_compsManager = (function () {
                     segmentTime: 10,
                     standalone: false,
                     demo: false,
-                    glyphs: true
+                    glyphs: true,
+                    hiddens: false,
+                    guideds: false
                 }
             };
         }
