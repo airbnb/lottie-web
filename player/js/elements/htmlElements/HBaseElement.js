@@ -16,6 +16,9 @@ HBaseElement.prototype.checkBlendMode = function(){
 HBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
 HBaseElement.prototype.appendNodeToParent = function(node) {
+    if(this.data.hd){
+        return;
+    }
     if(this.placeholder){
         var g = this.placeholder.phElement;
         g.parentNode.insertBefore(node, g);

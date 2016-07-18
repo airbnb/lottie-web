@@ -11,7 +11,7 @@ HSolidElement.prototype.createElements = function(){
     cont.setAttribute('height',this.data.sh);
     parent.appendChild(cont);
     this.layerElement = parent;
-    this.parentContainer.appendChild(parent);
+    this.appendNodeToParent(parent);
     this.innerElem = parent;
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);

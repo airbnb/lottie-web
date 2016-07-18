@@ -34,7 +34,9 @@ HShapeElement.prototype.createElements = function(){
         this.shapesContainer = document.createElementNS(svgNS,'g');
         this.layerElement.appendChild(this.shapesContainer);
     }
-    this.parentContainer.appendChild(parent);
+    if(!this.data.hd){
+        this.parentContainer.appendChild(parent);
+    }
     this.innerElem = parent;
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
