@@ -29,9 +29,11 @@ IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this._parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties);
-    this.layerElement.appendChild(this.shapesContainer);
-    styleUnselectableDiv(this.layerElement);
-    styleUnselectableDiv(this.shapesContainer);
+    if(!this.data.hd){
+        this.layerElement.appendChild(this.shapesContainer);
+        styleUnselectableDiv(this.layerElement);
+        styleUnselectableDiv(this.shapesContainer);
+    }
     //this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.elemInterface));
 };
 
