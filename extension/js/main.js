@@ -4,9 +4,7 @@
 var mainController = (function () {
     'use strict';
     var ob = {};
-    var stateData = {
-        compsSelection: {}
-    };
+    var stateData;
 
     var csInterface = new CSInterface();
     var mainViews = [];
@@ -44,9 +42,34 @@ var mainController = (function () {
         csInterface.evalScript('$.evalFile("' + extensionRoot + fileName + '")', cb);
     }
     
+    function getAppData(id) {
+        
+    }
+    
+    function setApplicationId(ev){
+        var response = messageParser.parse(ev.data);
+        var id = response.id;
+        var storedData = LocalStorageManager.getItem(id+'_appData');
+        if(storedData){
+            stateData = storedData;
+        } else {
+            stateData = {
+                compsSelection: {}
+            };
+        }
+        stateData.appId = response.id;
+        compSelectionController.setData(stateData);
+        saveData();
+    }
+    
+    function saveData(){
+        LocalStorageManager.setItem(stateData.appId+'_appData',stateData);
+    }
+    
     function init() {
+        csInterface.addEventListener('bm:project:id', setApplicationId);
         themeManager.init();
-        compSelectionController.init(csInterface, stateData.compsSelection);
+        compSelectionController.init(csInterface);
         mainViews.push({id: 'selection', controller: compSelectionController});
         compRenderController.init(csInterface);
         mainViews.push({id: 'render', controller: compRenderController});
@@ -64,6 +87,7 @@ var mainController = (function () {
     }
     
     ob.showView = showView;
+    ob.saveData = saveData;
     ob.init = init;
         
     return ob;
