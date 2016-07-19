@@ -601,11 +601,15 @@ var PropertyFactory = (function(){
         var max = Math.max;
         var min = Math.min;
         var floor = Math.floor;
+        this.mdf = false;
         function updateRange(){
             if(this.dynamicProperties.length){
                 var i, len = this.dynamicProperties.length;
                 for(i=0;i<len;i+=1){
                     this.dynamicProperties[i].getValue();
+                    if(this.dynamicProperties[i].mdf){
+                        this.mdf = true;
+                    }
                 }
             }
             var totalChars = this.data.totalChars;
