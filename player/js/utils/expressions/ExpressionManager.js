@@ -591,6 +591,7 @@ var ExpressionManager = (function(){
                     }
                 }
             }
+
             if(typeof this.v === 'number'){
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;

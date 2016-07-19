@@ -197,8 +197,8 @@ var bm_expressionHelper = (function () {
             } else if (body[i].type === 'SwitchStatement') {
                 handleSwitchStatement(body[i]);
             } else {
-                bm_eventDispatcher.log(body[i].type);
-                bm_eventDispatcher.log(body[i]);
+                //bm_eventDispatcher.log(body[i].type);
+                //bm_eventDispatcher.log(body[i]);
             }
         }
     }
@@ -220,7 +220,7 @@ var bm_expressionHelper = (function () {
             case "UnaryExpression":
                 return element;
             default:
-                bm_eventDispatcher.log('es: ', element);
+                //bm_eventDispatcher.log('es: ', element);
                 return element;
         }
     }
@@ -478,9 +478,11 @@ var bm_expressionHelper = (function () {
 
     function assignVariable(body){
         var len = body.length - 1;
-        var flag = true;
+        var flag = len >= 0 ? true : false;
         var lastElem;
+        bm_eventDispatcher.log('len:' + len);
         while (flag) {
+            bm_eventDispatcher.log('len in while:' + len);
             lastElem = body[len];
             if(lastElem.type === 'IfStatement'){
                 assignVariableToIfStatement(lastElem);
@@ -520,6 +522,7 @@ var bm_expressionHelper = (function () {
             pendingBodies.length = 0;
             doneBodies.length = 0;
             expressionStr = prop.expression;
+            bm_eventDispatcher.log('expressionStr: ' + expressionStr);
             expressionStr = correctEaseAndWizz(expressionStr);
             expressionStr = correctElseToken(expressionStr);
             expressionStr = renameNameProperty(expressionStr);

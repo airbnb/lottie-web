@@ -81,6 +81,7 @@ var bm_shapeHelper = (function () {
         var i, len = iteratable.numProperties, ob, prop, itemType;
         for (i = 0; i < len; i += 1) {
             prop = iteratable.property(i + 1);
+            bm_eventDispatcher.log('prop.name:' + prop.name);
             if (prop.enabled) {
                 itemType = getItemType(prop.matchName);
                 if (isText && itemType !== shapeItemTypes.shape && itemType !== shapeItemTypes.group && itemType !== shapeItemTypes.merge) {

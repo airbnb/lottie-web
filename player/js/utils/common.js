@@ -22,7 +22,6 @@ var BMMath = {};
 
 BMMath.random = Math.random;
 BMMath.abs = function(val){
-    console.log('val:',val);
     var tOfVal = typeof val;
     if(tOfVal === 'object' && val.length){
         var absArr = Array.apply(null,{length:val.length});
