@@ -18,16 +18,16 @@ body{
     min-width: 250px;
 }
 
-body::-webkit-scrollbar {
+.scrollable::-webkit-scrollbar {
     width: .8em;
     height: .8em;
 }
  
-body::-webkit-scrollbar-track {
+.scrollable::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 }
  
-body::-webkit-scrollbar-thumb {
+.scrollable::-webkit-scrollbar-thumb {
     background-color: #484043;
     border: 1px solid #EAD3A8;
     width: 10px;

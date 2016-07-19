@@ -56,6 +56,15 @@ var bm_renderManager = (function () {
                     layerData.tt = false;
                 }
             }
+            if(currentCompSettings.hiddens && layerData.enabled === false){
+                layerData.render = true;
+                layerData.hd = true;
+            }
+            if(currentCompSettings.guideds && layerData.isValid === false){
+                layerData.render = true;
+                layerData.isValid = true;
+                layerData.hd = true;
+            }
             layers.push(layerData);
             pendingLayers.push({data: layerData, layer: layerInfo, framerate: framerate});
             prevLayerData = layerData;

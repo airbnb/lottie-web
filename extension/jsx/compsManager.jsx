@@ -6,6 +6,7 @@ var bm_compsManager = (function () {
     
     var compositions = [], tmpCompositions = [], renderingCompositions = [], currentRenderingComposition = 0, projectComps, ob;
     
+    
     function getCompositionData(comp) {
         var i = 0, len = compositions.length, compData;
         while (i < len) {
@@ -26,7 +27,9 @@ var bm_compsManager = (function () {
                     segmentTime: 10,
                     standalone: false,
                     demo: false,
-                    glyphs: true
+                    glyphs: true,
+                    hiddens: false,
+                    guideds: false
                 }
             };
         }
@@ -42,6 +45,30 @@ var bm_compsManager = (function () {
             compData = compositions[i];
             if (compData.id === id) {
                 compData.settings = data;
+                if (compData.destination) {
+                    var lastInd = compData.destination.lastIndexOf('.');
+                    compData.destination = compData.destination.substr(0, lastInd);
+                    compData.destination += compData.settings.standalone ? '.js' : '.json';
+                    lastInd = compData.absoluteURI.lastIndexOf('.');
+                    compData.absoluteURI = compData.absoluteURI.substr(0, lastInd);
+                    compData.absoluteURI += compData.settings.standalone ? '.js' : '.json';
+                    bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
+                }
+                break;
+            }
+            i += 1;
+        }
+    }
+    
+    function syncCompositionData(id, data) {
+        var i = 0, len = compositions.length, compData;
+        while (i < len) {
+            compData = compositions[i];
+            if (compData.id === id) {
+                compData.selected = data.selected;
+                compData.destination = data.destination;
+                compData.absoluteURI = data.absoluteURI;
+                compData.settings = data.settings;
                 if (compData.destination) {
                     var lastInd = compData.destination.lastIndexOf('.');
                     compData.destination = compData.destination.substr(0, lastInd);
@@ -88,7 +115,6 @@ var bm_compsManager = (function () {
         var saveFileData = f.saveDlg();
         if (saveFileData !== null) {
             compData.absoluteURI = saveFileData.absoluteURI;
-            compData.settings.fsName = saveFileData.fsName;
             compData.destination = saveFileData.fsName;
         }
         bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
@@ -115,6 +141,11 @@ var bm_compsManager = (function () {
             }
             i += 1;
         }
+    }
+    
+    function updateData(){
+        bm_projectManager.checkProject();
+        getCompositions();
     }
     
     function getCompositions() {
@@ -188,10 +219,11 @@ var bm_compsManager = (function () {
     }
     
     ob = {
-        getCompositions : getCompositions,
+        updateData : updateData,
         setCompositionSelectionState : setCompositionSelectionState,
         setCompositionDestinationFolder : setCompositionDestinationFolder,
         setCompositionSettings : setCompositionSettings,
+        syncCompositionData : syncCompositionData,
         searchCompositionDestination : searchCompositionDestination,
         renderComplete : renderComplete,
         browseFolder : browseFolder,

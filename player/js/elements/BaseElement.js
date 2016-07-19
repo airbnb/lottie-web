@@ -124,22 +124,20 @@ BaseElement.prototype.init = function(){
     this.isVisible = false;
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
-    if(this.data.ty === 11){
-
-    } else {
-        this.finalTransform = {
-            mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
-            matMdf: false,
-            opMdf: false,
-            mat: new Matrix(),
-            opacity: 1
-        };
-        this.finalTransform.op = this.finalTransform.mProp.o;
-        this.transform = this.finalTransform.mProp;
+    this.finalTransform = {
+        mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
+        matMdf: false,
+        opMdf: false,
+        mat: new Matrix(),
+        opacity: 1
+    };
+    this.finalTransform.op = this.finalTransform.mProp.o;
+    this.transform = this.finalTransform.mProp;
+    if(this.data.ty !== 11){
         this.createElements();
-        if(this.data.hasMask){
-            this.addMasks(this.data);
-        }
+    }
+    if(this.data.hasMask){
+        this.addMasks(this.data);
     }
 };
 BaseElement.prototype.getType = function(){
