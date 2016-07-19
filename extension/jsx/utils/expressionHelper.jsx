@@ -482,29 +482,36 @@ var bm_expressionHelper = (function () {
         var lastElem;
         while (flag) {
             lastElem = body[len];
-            if ((lastElem.type !== 'EmptyStatement' && lastElem.type !== 'FunctionDeclaration') || len === 0) {
+            if(lastElem.type === 'IfStatement'){
+                assignVariableToIfStatement(lastElem);
+                body[len] = lastElem;
+                len -= 1;
+            } else if (lastElem.type === 'ExpressionStatement') {
+                lastElem = convertExpressionStatementToVariableDeclaration(lastElem);
+                body[len] = lastElem;
+                flag = false;
+            } else if (lastElem.type === 'TryStatement') {
+                if (lastElem.block) {
+                    if (lastElem.block.type === 'BlockStatement') {
+                        assignVariable(lastElem.block.body);
+                    }
+                }
+                if (lastElem.handler) {
+                    if (lastElem.handler.body.type === 'BlockStatement') {
+                        assignVariable(lastElem.handler.body.body);
+                    }
+                }
+                body[len] = lastElem;
+                flag = false;
+            }else if ((lastElem.type !== 'EmptyStatement' && lastElem.type !== 'FunctionDeclaration') || len === 0) {
                 flag = false;
             } else {
                 len -= 1;
             }
-        }
-        if (lastElem.type === 'ExpressionStatement') {
-            lastElem = convertExpressionStatementToVariableDeclaration(lastElem);
-        } else if (lastElem.type === 'TryStatement') {
-            if (lastElem.block) {
-                if (lastElem.block.type === 'BlockStatement') {
-                    assignVariable(lastElem.block.body);
-                }
+            if(len < 0){
+                flag = false;
             }
-            if (lastElem.handler) {
-                if (lastElem.handler.body.type === 'BlockStatement') {
-                    assignVariable(lastElem.handler.body.body);
-                }
-            }
-        } else if (lastElem.type === 'IfStatement') {
-            assignVariableToIfStatement(lastElem);
         }
-        body[len] = lastElem;
     }
 
     function checkExpression(prop, returnOb) {
