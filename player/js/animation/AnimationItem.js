@@ -256,6 +256,10 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
     }
 }());
 
+AnimationItem.prototype.addPendingElement = function () {
+    this.pendingElements += 1;
+}
+
 AnimationItem.prototype.elementLoaded = function () {
     this.pendingElements--;
     this.checkLoaded();

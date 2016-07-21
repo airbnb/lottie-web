@@ -4,7 +4,7 @@ var bm_XMPHelper = (function(){
     ob.created = true;
     ob.setMetadata = setMetadata;
     ob.getMetadata = getMetadata;
-    var namespace = 'Bodymovin15';
+    var namespace = 'bodymovin';
     
     function init(){
         var proj = app.project;

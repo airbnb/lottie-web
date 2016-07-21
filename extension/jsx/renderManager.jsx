@@ -88,6 +88,7 @@ var bm_renderManager = (function () {
         hasExpressionsFlag = false;
         currentCompID = comp.id;
         currentCompSettings = compSettings;
+        bm_eventDispatcher.log('currentCompSettings.hiddens: ' + currentCompSettings.hiddens);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
