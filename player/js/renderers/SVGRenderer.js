@@ -202,7 +202,7 @@ SVGRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
     this.animationItem.container = null;
     this.globalData.defs = null;
-    var i, len = this.layers.length;
+    var i, len = this.layers ? this.layers.length : 0;
     for (i = 0; i < len; i++) {
         this.elements[i].destroy();
     }

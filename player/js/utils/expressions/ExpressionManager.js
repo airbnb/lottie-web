@@ -504,7 +504,6 @@ var ExpressionManager = (function(){
             if(!data.k.length || typeof(data.k[0]) === 'number'){
                 return {time:0};
             }
-            console.log(data.k);
             ind -= 1;
             var ob = {
                 time: data.k[ind].t/elem.comp.globalData.frameRate

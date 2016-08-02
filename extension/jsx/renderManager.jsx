@@ -88,7 +88,6 @@ var bm_renderManager = (function () {
         hasExpressionsFlag = false;
         currentCompID = comp.id;
         currentCompSettings = compSettings;
-        bm_eventDispatcher.log('currentCompSettings.hiddens: ' + currentCompSettings.hiddens);
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
         bm_sourceHelper.reset();
@@ -99,7 +98,7 @@ var bm_renderManager = (function () {
         exportData.assets = [];
         exportData.comps = [];
         exportData.fonts = [];
-        exportData.v = '4.3.2';
+        exportData.v = '4.3.3';
         exportData.ddd = 0;
         exportData.layers = [];
         exportData.ip = comp.workAreaStart * comp.frameRate;

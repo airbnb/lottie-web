@@ -310,7 +310,7 @@ CanvasRenderer.prototype.destroy = function () {
     if(this.renderConfig.clearCanvas) {
         this.animationItem.wrapper.innerHTML = '';
     }
-    var i, len = this.layers.length;
+    var i, len = this.layers ? this.layers.length : 0;
     for (i = len - 1; i >= 0; i-=1) {
         this.elements[i].destroy();
     }
