@@ -33,7 +33,7 @@ gulp.task('lint', function() {
 gulp.task('buildPlayer', function(){
     gulp.src('./player/index.html')
         .pipe(usemin({
-            //js: [uglify()]
+            js: [uglify()]
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap(moduleWrap))

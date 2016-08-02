@@ -169,12 +169,13 @@ var bm_compsManager = (function () {
             return;
         }
         projectComps = bm_projectManager.getCompositions();
-        var comp, destination;
+        var comp, destination, fsDestination;
         var i = 0, len = projectComps.length;
         while (i < len) {
             if (projectComps[i].id === renderingCompositions[currentRenderingComposition].id) {
                 comp = projectComps[i];
                 destination = renderingCompositions[currentRenderingComposition].absoluteURI;
+                fsDestination = renderingCompositions[currentRenderingComposition].destination;
                 break;
             }
             i += 1;
@@ -184,7 +185,7 @@ var bm_compsManager = (function () {
             renderNextComposition();
             return;
         }
-        bm_renderManager.render(comp, destination, renderingCompositions[currentRenderingComposition].settings);
+        bm_renderManager.render(comp, destination, fsDestination, renderingCompositions[currentRenderingComposition].settings);
     }
     
     function render() {

@@ -74,6 +74,7 @@ var compRenderController = (function () {
     }
     
     function renderUpdateHandler(ev) {
+        console.log('renderUpdateHandler:', ev);
         var messageData = ev.data;
         var id = messageData.compId.toString();
         var i = 0, len = compositions.length;
