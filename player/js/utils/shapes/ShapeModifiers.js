@@ -19,9 +19,11 @@ var ShapeModifiers = (function(){
 
 function ShapeModifier(){}
 ShapeModifier.prototype.initModifierProperties = function(){};
+ShapeModifier.prototype.addShapeToModifier = function(){};
 ShapeModifier.prototype.addShape = function(shape){
     if(!this.closed){
         this.shapes.push({shape:shape,last:[]});
+        this.addShapeToModifier(shape);
     }
 }
 ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
