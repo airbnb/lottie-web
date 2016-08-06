@@ -219,6 +219,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     }else{
         this.renderedFrame = num;
     }
+    clearPoints();
     /*console.log('-------');
     console.log('FRAME ',num);*/
     this.globalData.frameNum = num;

@@ -18,11 +18,94 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
     var dist;
     //console.log(mouseCoords);
     var theta, x,y;
+    //// OPTION A
     for(i=0;i<len;i+=1){
         if(!positions.v[i]){
             positions.v[i] = [path.v[i][0],path.v[i][1]];
             positions.o[i] = [path.o[i][0],path.o[i][1]];
             positions.i[i] = [path.i[i][0],path.i[i][1]];
+            positions.distV[i] = 0;
+            positions.distO[i] = 0;
+            positions.distI[i] = 0;
+
+        }
+        theta = Math.atan2(
+            path.v[i][1] - mouseCoords[1],
+            path.v[i][0] - mouseCoords[0]
+        );
+
+        x = mouseCoords[0] - positions.v[i][0];
+        y = mouseCoords[1] - positions.v[i][1];
+        var distance = Math.sqrt( (x * x) + (y * y) );
+        positions.distV[i] += (distance - positions.distV[i]) * this.data.dc;
+
+        positions.v[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][0]);
+        positions.v[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
+
+
+        theta = Math.atan2(
+            path.o[i][1] - mouseCoords[1],
+            path.o[i][0] - mouseCoords[0]
+        );
+
+        x = mouseCoords[0] - positions.o[i][0];
+        y = mouseCoords[1] - positions.o[i][1];
+        var distance = Math.sqrt( (x * x) + (y * y) );
+        positions.distO[i] += (distance - positions.distO[i]) * this.data.dc;
+
+        positions.o[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][0]);
+        positions.o[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
+
+
+        theta = Math.atan2(
+            path.i[i][1] - mouseCoords[1],
+            path.i[i][0] - mouseCoords[0]
+        );
+
+        x = mouseCoords[0] - positions.i[i][0];
+        y = mouseCoords[1] - positions.i[i][1];
+        var distance = Math.sqrt( (x * x) + (y * y) );
+        positions.distI[i] += (distance - positions.distI[i]) * this.data.dc;
+
+        positions.i[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
+        positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
+
+        /////OPTION 1
+        vValues.push(positions.v[i]);
+         oValues.push(positions.o[i]);
+         iValues.push(positions.i[i]);
+
+
+
+        /////OPTION 2
+        //vValues.push(positions.v[i]);
+        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
+        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
+
+
+
+        /////OPTION 3
+        //vValues.push(positions.v[i]);
+        //iValues.push(path.i[i]);
+        //oValues.push(path.o[i]);
+
+
+        /////OPTION 4
+        //vValues.push(path.v[i]);
+         //oValues.push(positions.o[i]);
+         //iValues.push(positions.i[i]);
+    }
+
+
+
+    //// OPTION B
+    /*for(i=0;i<len;i+=1){
+        if(!positions.v[i]){
+            positions.v[i] = [path.v[i][0],path.v[i][1]];
+            positions.o[i] = [path.o[i][0],path.o[i][1]];
+            positions.i[i] = [path.i[i][0],path.i[i][1]];
+            positions.distV[i] = 0;
+
         }
         theta = Math.atan2(
             positions.v[i][1] - mouseCoords[1],
@@ -42,7 +125,7 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
         );
         x = mouseCoords[0] - positions.o[i][0];
         y = mouseCoords[1] - positions.o[i][1];
-        var distance = this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
+        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
 
         positions.o[i][0] += Math.cos(theta) * distance + (path.o[i][0] - positions.o[i][0]) * this.data.dc;
         positions.o[i][1] += Math.sin(theta) * distance + (path.o[i][1] - positions.o[i][1]) * this.data.dc;
@@ -54,48 +137,38 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
         );
         x = mouseCoords[0] - positions.i[i][0];
         y = mouseCoords[1] - positions.i[i][1];
-        var distance = this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
+        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
 
         positions.i[i][0] += Math.cos(theta) * distance + (path.i[i][0] - positions.i[i][0]) * this.data.dc;
         positions.i[i][1] += Math.sin(theta) * distance + (path.i[i][1] - positions.i[i][1]) * this.data.dc;
 
-        vValues.push(positions.v[i]);
-        oValues.push(positions.o[i]);
-        iValues.push(positions.i[i]);
-        /*iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
-        oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);*/
-        /*iValues.push(path.i[i]);
-        oValues.push(path.o[i]);*/
+        /////OPTION 1
+        //vValues.push(positions.v[i]);
+        // oValues.push(positions.o[i]);
+        // iValues.push(positions.i[i]);
 
 
-        /*dist = Math.sqrt(Math.pow(path.v[i][0]-mouseCoords[0],2)+Math.pow(path.v[i][1]-mouseCoords[1],2));
-        if(dist>this.data.mx){
-            vValues.push(path.v[i]);
-            iValues.push(path.i[i]);
-            oValues.push(path.o[i]);
-        } else {
-            //vValues.push(path.v[i]);
-            vValues.push([path.v[i][0]+((mouseCoords[0]-path.v[i][0])/(this.data.mx-dist))*this.data.mx,path.v[i][1]+((mouseCoords[1]-path.v[i][1])/(this.data.mx-dist))*this.data.mx]);
-            iValues.push([path.i[i][0]+((mouseCoords[0]-path.v[i][0])/(this.data.mx-dist))*this.data.mx,path.i[i][1]+((mouseCoords[1]-path.v[i][1])/(this.data.mx-dist))*this.data.mx]);
-            oValues.push([path.o[i][0]+((mouseCoords[0]-path.v[i][0])/(this.data.mx-dist))*this.data.mx,path.o[i][1]+((mouseCoords[1]-path.v[i][1])/(this.data.mx-dist))*this.data.mx]);
-        }*/
-        /*dist = Math.sqrt(Math.pow(path.i[i][0]-mouseCoords[0],2)+Math.pow(path.i[i][1]-mouseCoords[1],2));
-        if(dist>this.data.mx){
-            iValues.push(path.i[i]);
-        } else {
-            iValues.push(path.i[i]);
-            //iValues.push([path.i[i][0]+((mouseCoords[0]-path.i[i][0])/(this.data.mx-dist))*this.data.mx,path.i[i][1]+((mouseCoords[1]-path.i[i][1])/(this.data.mx-dist))*this.data.mx]);
-            //iValues.push(path.i[i]);
-        }
-        dist = Math.sqrt(Math.pow(path.o[i][0]-mouseCoords[0],2)+Math.pow(path.o[i][1]-mouseCoords[1],2));
-        if(dist>this.data.mx){
-            oValues.push(path.o[i]);
-        } else {
-            oValues.push([mouseCoords[0],mouseCoords[1]]);
-            //oValues.push([path.o[i][0]+((mouseCoords[0]-path.o[i][0])/(this.data.mx-dist))*this.data.mx,path.o[i][1]+((mouseCoords[1]-path.o[i][1])/(this.data.mx-dist))*this.data.mx]);
-            //oValues.push(path.o[i]);
-        }*/
-    }
+
+        /////OPTION 2
+        //vValues.push(positions.v[i]);
+        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
+        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
+
+
+
+        /////OPTION 3
+        //vValues.push(positions.v[i]);
+        //iValues.push(path.i[i]);
+        //oValues.push(path.o[i]);
+
+
+        /////OPTION 4
+        //vValues.push(path.v[i]);
+        // oValues.push(positions.o[i]);
+        // iValues.push(positions.i[i]);
+    }*/
+
+
     return {
         v:vValues,
         o:oValues,
@@ -128,7 +201,10 @@ MouseModifier.prototype.processShapes = function(){
                         this.positions[i][j] = {
                             v:[],
                             o:[],
-                            i:[]
+                            i:[],
+                            distV:[],
+                            distO:[],
+                            distI:[]
                         };
                     }
                     newPaths.push(this.processPath(shapePaths[j],localMouseCoords, this.positions[i][j]));

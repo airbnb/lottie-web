@@ -10,8 +10,10 @@
         }
         #bodymovin{
             background-color:#999;
-            width:600px;
-            height:338px;
+            width:900px;
+            height:506px;
+            width:1920px;
+            height:1080px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -124,11 +126,33 @@
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
+    var pointsContainer = document.createElementNS(svgNS,'g');
+    pointsContainer.setAttribute('stroke','#ff0000');
+    anim.addEventListener('DOMLoaded',function(){
+        bmContainer.getElementsByTagName('svg')[0].appendChild(pointsContainer);
+    });
     bmContainer.addEventListener('mousemove',function(ev){
         //offsetX,offsetY
         anim.renderer.globalData.mouseX = ev.layerX;
         anim.renderer.globalData.mouseY = ev.layerY;
     })
+
+    function drawPoint(pt){
+        //console.log(pt);
+        var path = document.createElementNS(svgNS,'path');
+        var dStr = '';
+        dStr += ' M'+(pt[0]-10)+','+(pt[1]);
+        dStr += ' h'+20;
+        dStr += ' M'+(pt[0])+','+(pt[1]-10);
+        dStr += ' v'+20;
+        path.setAttribute('d',dStr);
+        pointsContainer.appendChild(path);
+    }
+    function clearPoints(){
+        while(pointsContainer.children.length){
+            pointsContainer.removeChild(pointsContainer.children[0]);
+        }
+    }
 
 
 </script>

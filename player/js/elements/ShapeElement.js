@@ -325,7 +325,13 @@ IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
             var pathNodes = paths[j];
             if(pathNodes && pathNodes.v){
                 len = pathNodes.v.length;
+                /*drawPoint(pathNodes.v[0]);
+                drawPoint(pathNodes.i[0]);
+                drawPoint(pathNodes.o[0]);*/
                 for (i = 1; i < len; i += 1) {
+                    /*drawPoint(pathNodes.v[i]);
+                    drawPoint(pathNodes.i[i]);
+                    drawPoint(pathNodes.o[i]);*/
                     if (i == 1) {
                         pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                     }

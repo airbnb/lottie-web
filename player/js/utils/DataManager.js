@@ -90,7 +90,8 @@ function dataFunctionManager(){
                 "ty": "ms",
                 "mx":20,
                 "ss":10,
-                 "dc":0.25
+                 "dc":0.001,
+                "maxDist":200
             });
         }
     }
