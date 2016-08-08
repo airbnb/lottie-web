@@ -85,6 +85,7 @@ var bm_renderManager = (function () {
     }
     
     function render(comp, destination, fsDestination, compSettings) {
+        bm_ProjectHelper.init();
         hasExpressionsFlag = false;
         currentCompID = comp.id;
         currentCompSettings = compSettings;
@@ -118,6 +119,7 @@ var bm_renderManager = (function () {
         pendingLayers.length = 0;
         pendingComps.length = 0;
         currentCompSettings = null;
+        bm_ProjectHelper.end();
     }
     
     function saveData() {
@@ -159,6 +161,7 @@ var bm_renderManager = (function () {
     
     function removeExtraData() {
         clearUnrenderedLayers(ob.renderData.exportData.layers);
+        bm_ProjectHelper.end();
         /* Todo check if "clearNames" it changes filesize significantly */
         //clearNames(ob.renderData.exportData.layers);
     }

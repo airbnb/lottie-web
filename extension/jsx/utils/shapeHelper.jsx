@@ -8,12 +8,14 @@ var bm_shapeHelper = (function () {
         ellipse: 'el',
         star: 'sr',
         fill: 'fl',
+        gfill: 'gf',
         stroke: 'st',
         merge: 'mm',
         trim: 'tm',
         group: 'gr',
         roundedCorners: 'rd'
     };
+    var navigationShapeTree = [];
 
     function getItemType(matchName) {
         switch (matchName) {
@@ -39,7 +41,10 @@ var bm_shapeHelper = (function () {
             return shapeItemTypes.roundedCorners;
         case 'ADBE Vector Group':
             return shapeItemTypes.group;
+        case 'ADBE Vector Graphic - G-Fill':
+            return shapeItemTypes.gfill;
         default:
+            bm_eventDispatcher.log(matchName);
             return '';
         }
     }
@@ -139,6 +144,10 @@ var bm_shapeHelper = (function () {
                     ob.fillEnabled = prop.enabled;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                } else if (itemType === shapeItemTypes.gfill) {
+                    ob = {};
+                    ob.ty = itemType;
+                    var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
                     ob.ty = itemType;
@@ -196,6 +205,7 @@ var bm_shapeHelper = (function () {
                         it: [],
                         nm: prop.name
                     };
+                    navigationShapeTree.push(prop.name);
                     iterateProperties(prop.property('Contents'), ob.it, frameRate, isText);
                     if (!isText) {
                         var trOb = {};
@@ -220,6 +230,7 @@ var bm_shapeHelper = (function () {
                         trOb.nm = transformProperty.name;
                         ob.it.push(trOb);
                     }
+                    navigationShapeTree.pop();
                 } else if (itemType === shapeItemTypes.roundedCorners) {
                     ob = {
                         ty : itemType,
@@ -406,6 +417,11 @@ var bm_shapeHelper = (function () {
     
     
     function exportShape(layerInfo, layerOb, frameRate, isText) {
+        var containingComp = layerInfo.containingComp;
+        navigationShapeTree.length = 0;
+        navigationShapeTree.push(containingComp.name);
+        navigationShapeTree.push(layerInfo.name);
+        //bm_eventDispatcher.log('iddd: ' + layerInfo.id);
         var shapes = [], contents = layerInfo.property('Contents');
         layerOb.shapes = shapes;
         iterateProperties(contents, shapes, frameRate, isText);

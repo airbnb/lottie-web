@@ -25,6 +25,7 @@ $.evalFile(extensionPath + 'utils/layerStylesHelper.jsx');
 $.evalFile(extensionPath + 'utils/expressionHelper.jsx');
 $.evalFile(extensionPath + 'utils/cameraHelper.jsx');
 $.evalFile(extensionPath + 'utils/XMPParser.jsx');
+$.evalFile(extensionPath + 'utils/ProjectParser.jsx');
 $.evalFile(extensionPath + 'esprima.jsx');
 $.evalFile(extensionPath + 'escodegen.jsx');
 $.evalFile(extensionPath + 'utils/markerHelper.jsx');
