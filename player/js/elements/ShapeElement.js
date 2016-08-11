@@ -42,10 +42,12 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     var j, jLen;
     var ownArrays = [], ownModifiers = [];
     for(i=len;i>=0;i-=1){
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+        if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf'){
             data[i] = {};
             var pathElement;
-            data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
+            if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+                data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
+            }
             data[i].o = PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties);
             if(arr[i].ty == 'st') {
                 pathElement = document.createElementNS(svgNS, "g");
@@ -83,6 +85,32 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                     data[i].d = d;
                 }
 
+            }else if(arr[i].ty == 'gf'){
+                var clipperElem = document.createElementNS(svgNS,"clipPath");
+                    pathElement = document.createElementNS(svgNS, "path");
+                clipperElem.appendChild(pathElement);
+                var gfill = document.createElementNS(svgNS,'linearGradient');
+                var gradientId = 'gr_'+randomString(10);
+                gfill.setAttribute('id',gradientId);
+                gfill.setAttribute('spreadMethod','pad');
+                gfill.setAttribute('gradientUnits','userSpaceOnUse');
+                gfill.setAttribute('x1','0%');
+                gfill.setAttribute('y1','0%');
+                gfill.setAttribute('x2','100%');
+                gfill.setAttribute('y2','0%');
+                var stop;
+                jLen = arr[i].c.length;
+                for(j=0;j<jLen;j+=1){
+                    stop = document.createElementNS(svgNS,'stop');
+                    stop.setAttribute('offset',Math.round(arr[i].c[j][0]*100)+'%');
+                    stop.setAttribute('style','stop-color:rgb('+Math.round(arr[i].c[j][2]*255)+','+Math.round(arr[i].c[j][3]*255)+','+Math.round(arr[i].c[j][4]*255)+');stop-opacity:1');
+                    gfill.appendChild(stop);
+                }
+                pathElement.setAttribute('fill','url(#'+gradientId+')');
+                this.globalData.defs.appendChild(gfill);
+                data[i].s = PropertyFactory.getProp(this,arr[i].s,0,null,dynamicProperties);
+                data[i].e = PropertyFactory.getProp(this,arr[i].e,0,null,dynamicProperties);
+                data[i].g = gfill;
             }else{
                 pathElement = document.createElementNS(svgNS, "path");
                 if(!data[i].c.k) {
@@ -162,6 +190,8 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                             ty:this.stylesList[j].type,
                             st: this.stylesList[j]
                         });
+                        if(this.stylesList[j].type === 'gf'){
+                        }
                     }
                 }
             }
@@ -285,6 +315,8 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],groupTransform);
+        }else if(items[i].ty == 'gf'){
+            this.renderGFill(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'st'){
             this.renderStroke(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'gr'){
@@ -303,7 +335,7 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             this.stylesList[i].pathElement.style.display = 'block';
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pathElement);
         }
-        if(this.stylesList[i].type === 'fl'){
+        if(this.stylesList[i].type === 'fl' || this.stylesList[i].type === 'gf'){
             if(this.stylesList[i].mdf || this.firstFrame){
                 this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
             }
@@ -368,6 +400,24 @@ IShapeElement.prototype.renderFill = function(styleData,viewData, groupTransform
     }
     if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
         styleElem.pathElement.setAttribute('fill-opacity',viewData.o.v*groupTransform.opacity);
+        ////styleElem.pathElement.style.fillOpacity = viewData.o.v*groupTransform.opacity;
+    }
+};
+
+IShapeElement.prototype.renderGFill = function(styleData,viewData, groupTransform){
+    var styleElem = viewData.style;
+
+    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
+        styleElem.pathElement.setAttribute('fill-opacity',viewData.o.v*groupTransform.opacity);
+        ////styleElem.pathElement.style.fillOpacity = viewData.o.v*groupTransform.opacity;
+    }
+    /*var gfill = viewData.g;
+    gfill.setAttribute('x1',viewData.s.v[0]);
+    gfill.setAttribute('y1',viewData.s.v[1]);
+    gfill.setAttribute('x2',viewData.e.v[0]);
+    gfill.setAttribute('y2',viewData.e.v[1]);*/
+    if(viewData.s.mdf || 1 === 1){
+        styleElem.pathElement.setAttribute('offset','');
         ////styleElem.pathElement.style.fillOpacity = viewData.o.v*groupTransform.opacity;
     }
 };

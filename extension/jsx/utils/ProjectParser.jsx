@@ -40,6 +40,7 @@ var bm_ProjectHelper = (function(){
         }
         //var regEx = /<prop.map>/g;
         gradientIndex = fileString.indexOf('<prop.map',gradientIndex);
+        var gradientData = {};
         if(gradientIndex > limitIndex){
 
         } else {
@@ -83,6 +84,8 @@ var bm_ProjectHelper = (function(){
             }
             bm_eventDispatcher.log(opacitiesArr);
             bm_eventDispatcher.log(colorsArr);
+            gradientData.c = colorsArr;
+            gradientData.o = opacitiesArr;
             //var jsonData = bm_xml2json(XML_Ob);
             //bm_eventDispatcher.log(jsonData);
         }
@@ -97,7 +100,7 @@ var bm_ProjectHelper = (function(){
             bm_eventDispatcher.log('no match: ');
         }
         bm_eventDispatcher.log('gradientIndex: ' + gradientIndex);*/
-        return '';
+        return gradientData;
     }
     
     return ob;

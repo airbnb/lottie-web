@@ -148,6 +148,13 @@ var bm_shapeHelper = (function () {
                     ob = {};
                     ob.ty = itemType;
                     var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
+                    ob.c = gradientData.c;
+                    ob.y = gradientData.o;
+                    ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
+                    ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
+                    ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.t = prop.property('Type').value;
+
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
                     ob.ty = itemType;
