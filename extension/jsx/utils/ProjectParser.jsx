@@ -38,9 +38,7 @@ var bm_ProjectHelper = (function(){
         if(limitIndex === -1){
             limitIndex = Number.MAX_VALUE;
         }
-        bm_eventDispatcher.log('limitIndexlimitIndex:'+limitIndex);
         //var regEx = /<prop.map>/g;
-        bm_eventDispatcher.log('gradientIndex:'+gradientIndex);
         gradientIndex = fileString.indexOf('<prop.map',gradientIndex);
         if(gradientIndex > limitIndex){
 
@@ -49,7 +47,44 @@ var bm_ProjectHelper = (function(){
             var lastIndex = fileString.indexOf(endMatch,gradientIndex);
             var xmlString = fileString.substr(gradientIndex,lastIndex+endMatch.length-gradientIndex);
             xmlString = xmlString.replace(/\n/g,'');
-            bm_eventDispatcher.log('xmlStringxmlString:'+xmlString);
+            //bm_eventDispatcher.log('xmlStringxmlString:'+xmlString);
+            var XML_Ob = new XML(xmlString);
+            //bm_eventDispatcher.log(XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'].toString());
+            //bm_eventDispatcher.log(XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'].length());
+            var stops = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
+            var colors = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][1]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
+            bm_eventDispatcher.log(colors.toString());
+            i = 0;
+            len = stops.length();
+            var opacitiesArr = [],op, floats;
+            while(i<len){
+                floats = stops[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                op = [];
+                op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[1].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
+                opacitiesArr.push(op);
+                i += 1;
+            }
+            i = 0;
+            len = colors.length();
+            var colorsArr = [];
+            while(i<len){
+                floats = colors[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                op = [];
+                op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[1].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[3].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[4].toString()),3));
+                op.push(bm_generalUtils.roundNumber(Number(floats[5].toString()),3));
+                colorsArr.push(op);
+                i += 1;
+            }
+            bm_eventDispatcher.log(opacitiesArr);
+            bm_eventDispatcher.log(colorsArr);
+            //var jsonData = bm_xml2json(XML_Ob);
+            //bm_eventDispatcher.log(jsonData);
         }
         //var regEx = /<prop\.map[\w\s\W\D\S]+map>/;
         //var match = regEx.exec(fileString);
