@@ -86,31 +86,47 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 }
 
             }else if(arr[i].ty == 'gf'){
-                var clipperElem = document.createElementNS(svgNS,"clipPath");
-                    pathElement = document.createElementNS(svgNS, "path");
-                clipperElem.appendChild(pathElement);
-                var gfill = document.createElementNS(svgNS,'linearGradient');
+                pathElement = document.createElementNS(svgNS, "path");
+                var mask = document.createElementNS(svgNS,"mask");
+                var maskElement = document.createElementNS(svgNS, "path");
+                mask.appendChild(maskElement);
                 var gradientId = 'gr_'+randomString(10);
+                var opacityId = 'op_'+randomString(10);
+                var maskId = 'mk_'+randomString(10);
+                mask.setAttribute('id',maskId);
+                pathElement.setAttribute('mask','url(#'+maskId+')');
+                var gfill = document.createElementNS(svgNS,'linearGradient');
                 gfill.setAttribute('id',gradientId);
                 gfill.setAttribute('spreadMethod','pad');
                 gfill.setAttribute('gradientUnits','userSpaceOnUse');
-                gfill.setAttribute('x1','0%');
-                gfill.setAttribute('y1','0%');
-                gfill.setAttribute('x2','100%');
-                gfill.setAttribute('y2','0%');
                 var stop;
                 jLen = arr[i].c.length;
                 for(j=0;j<jLen;j+=1){
                     stop = document.createElementNS(svgNS,'stop');
                     stop.setAttribute('offset',Math.round(arr[i].c[j][0]*100)+'%');
-                    stop.setAttribute('style','stop-color:rgb('+Math.round(arr[i].c[j][2]*255)+','+Math.round(arr[i].c[j][3]*255)+','+Math.round(arr[i].c[j][4]*255)+');stop-opacity:1');
+                    stop.setAttribute('style','stop-color:rgb('+Math.round(arr[i].c[j][1]*255)+','+Math.round(arr[i].c[j][2]*255)+','+Math.round(arr[i].c[j][3]*255)+')');
                     gfill.appendChild(stop);
                 }
+                var opFill = document.createElementNS(svgNS,'linearGradient');
+                opFill.setAttribute('id',opacityId);
+                opFill.setAttribute('spreadMethod','pad');
+                opFill.setAttribute('gradientUnits','userSpaceOnUse');
+                jLen = arr[i].y.length;
+                for(j=0;j<jLen;j+=1){
+                    stop = document.createElementNS(svgNS,'stop');
+                    stop.setAttribute('offset',Math.round(arr[i].y[j][0]*100)+'%');
+                    stop.setAttribute('style','stop-color:rgb(255,255,255);stop-opacity:'+arr[i].y[j][1]);
+                    opFill.appendChild(stop);
+                }
                 pathElement.setAttribute('fill','url(#'+gradientId+')');
+                maskElement.setAttribute('fill','url(#'+opacityId+')');
                 this.globalData.defs.appendChild(gfill);
+                this.globalData.defs.appendChild(opFill);
+                this.globalData.defs.appendChild(mask);
                 data[i].s = PropertyFactory.getProp(this,arr[i].s,0,null,dynamicProperties);
                 data[i].e = PropertyFactory.getProp(this,arr[i].e,0,null,dynamicProperties);
-                data[i].g = gfill;
+                data[i].gf = gfill;
+                data[i].of = opFill;
             }else{
                 pathElement = document.createElementNS(svgNS, "path");
                 if(!data[i].c.k) {
@@ -136,6 +152,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 ld: '',
                 mdf: false
             });
+            if(maskElement){
+                this.stylesList[this.stylesList.length - 1].maskElement = maskElement;
+            }
             data[i].style = this.stylesList[this.stylesList.length - 1];
             ownArrays.push(data[i].style);
         }else if(arr[i].ty == 'gr'){
@@ -338,6 +357,9 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
         if(this.stylesList[i].type === 'fl' || this.stylesList[i].type === 'gf'){
             if(this.stylesList[i].mdf || this.firstFrame){
                 this.stylesList[i].pathElement.setAttribute('d',this.stylesList[i].d);
+                if(this.stylesList[i].maskElement){
+                    this.stylesList[i].maskElement.setAttribute('d',this.stylesList[i].d);
+                }
             }
         }
     }
@@ -411,14 +433,19 @@ IShapeElement.prototype.renderGFill = function(styleData,viewData, groupTransfor
         styleElem.pathElement.setAttribute('fill-opacity',viewData.o.v*groupTransform.opacity);
         ////styleElem.pathElement.style.fillOpacity = viewData.o.v*groupTransform.opacity;
     }
-    /*var gfill = viewData.g;
-    gfill.setAttribute('x1',viewData.s.v[0]);
-    gfill.setAttribute('y1',viewData.s.v[1]);
-    gfill.setAttribute('x2',viewData.e.v[0]);
-    gfill.setAttribute('y2',viewData.e.v[1]);*/
-    if(viewData.s.mdf || 1 === 1){
-        styleElem.pathElement.setAttribute('offset','');
-        ////styleElem.pathElement.style.fillOpacity = viewData.o.v*groupTransform.opacity;
+    var gfill = viewData.gf;
+    var opFill = viewData.of;
+    if(viewData.s.mdf || this.firstFrame){
+        gfill.setAttribute('x1',viewData.s.v[0]);
+        gfill.setAttribute('y1',viewData.s.v[1]);
+        opFill.setAttribute('x1',viewData.s.v[0]);
+        opFill.setAttribute('y1',viewData.s.v[1]);
+    }
+    if(viewData.e.mdf || this.firstFrame){
+        gfill.setAttribute('x2',viewData.e.v[0]);
+        gfill.setAttribute('y2',viewData.e.v[1]);
+        opFill.setAttribute('x2',viewData.e.v[0]);
+        opFill.setAttribute('y2',viewData.e.v[1]);
     }
 };
 

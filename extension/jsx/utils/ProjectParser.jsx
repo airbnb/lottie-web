@@ -57,14 +57,23 @@ var bm_ProjectHelper = (function(){
             bm_eventDispatcher.log(colors.toString());
             i = 0;
             len = stops.length();
-            var opacitiesArr = [],op, floats;
+            var opacitiesArr = [],op, floats, nextFloats, midPoint, midPosition;
             while(i<len){
                 floats = stops[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
                 op = [];
                 op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[1].toString()),3));
                 op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
                 opacitiesArr.push(op);
+                midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
+                if(i<len-1 && midPosition !== 0.5){
+                    op = [];
+                    nextFloats = stops[i+1]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                    midPoint = Number(floats[0].toString()) + (Number(nextFloats[0].toString())-Number(floats[0].toString()))*midPosition;
+                    var midPointValue = Number(floats[2].toString()) + (Number(nextFloats[2].toString())-Number(floats[2].toString()))*0.5;
+                    op.push(bm_generalUtils.roundNumber(midPoint,3));
+                    op.push(bm_generalUtils.roundNumber(midPointValue,3));
+                    opacitiesArr.push(op);
+                }
                 i += 1;
             }
             i = 0;
@@ -74,12 +83,24 @@ var bm_ProjectHelper = (function(){
                 floats = colors[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
                 op = [];
                 op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[1].toString()),3));
                 op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
                 op.push(bm_generalUtils.roundNumber(Number(floats[3].toString()),3));
                 op.push(bm_generalUtils.roundNumber(Number(floats[4].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[5].toString()),3));
                 colorsArr.push(op);
+                midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
+                if(i<len-1 && midPosition !== 0.5){
+                    op = [];
+                    nextFloats = colors[i+1]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                    midPoint = Number(floats[0].toString()) + (Number(nextFloats[0].toString())-Number(floats[0].toString()))*midPosition;
+                    var midPointValueR = Number(floats[2].toString()) + (Number(nextFloats[2].toString())-Number(floats[2].toString()))*0.5;
+                    var midPointValueG = Number(floats[3].toString()) + (Number(nextFloats[3].toString())-Number(floats[3].toString()))*0.5;
+                    var midPointValueB = Number(floats[4].toString()) + (Number(nextFloats[4].toString())-Number(floats[4].toString()))*0.5;
+                    op.push(bm_generalUtils.roundNumber(midPoint,3));
+                    op.push(bm_generalUtils.roundNumber(midPointValueR,3));
+                    op.push(bm_generalUtils.roundNumber(midPointValueG,3));
+                    op.push(bm_generalUtils.roundNumber(midPointValueB,3));
+                    colorsArr.push(op);
+                }
                 i += 1;
             }
             bm_eventDispatcher.log(opacitiesArr);
