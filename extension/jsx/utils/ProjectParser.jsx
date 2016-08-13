@@ -54,15 +54,17 @@ var bm_ProjectHelper = (function(){
             //bm_eventDispatcher.log(XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'].length());
             var stops = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
             var colors = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][1]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
-            bm_eventDispatcher.log(colors.toString());
             i = 0;
             len = stops.length();
-            var opacitiesArr = [],op, floats, nextFloats, midPoint, midPosition;
+            var opacitiesArr = [],op, floats, nextFloats, midPoint, midPosition, hasOpacity = false;
             while(i<len){
                 floats = stops[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
                 op = [];
                 op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
                 op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
+                if(op[1] !== 1){
+                    hasOpacity = true;
+                }
                 opacitiesArr.push(op);
                 midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
                 if(i<len-1 && midPosition !== 0.5){
@@ -75,6 +77,9 @@ var bm_ProjectHelper = (function(){
                     opacitiesArr.push(op);
                 }
                 i += 1;
+            }
+            if(!hasOpacity){
+                opacitiesArr.length = 0;
             }
             i = 0;
             len = colors.length();
@@ -103,8 +108,6 @@ var bm_ProjectHelper = (function(){
                 }
                 i += 1;
             }
-            bm_eventDispatcher.log(opacitiesArr);
-            bm_eventDispatcher.log(colorsArr);
             gradientData.c = colorsArr;
             gradientData.o = opacitiesArr;
             //var jsonData = bm_xml2json(XML_Ob);

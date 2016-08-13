@@ -9,6 +9,7 @@ var bm_shapeHelper = (function () {
         star: 'sr',
         fill: 'fl',
         gfill: 'gf',
+        gStroke: 'sf',
         stroke: 'st',
         merge: 'mm',
         trim: 'tm',
@@ -43,6 +44,8 @@ var bm_shapeHelper = (function () {
             return shapeItemTypes.group;
         case 'ADBE Vector Graphic - G-Fill':
             return shapeItemTypes.gfill;
+        case 'ADBE Vector Graphic - G-Stroke':
+            return shapeItemTypes.gStroke;
         default:
             bm_eventDispatcher.log(matchName);
             return '';
@@ -154,6 +157,28 @@ var bm_shapeHelper = (function () {
                     ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
                     ob.t = prop.property('Type').value;
+                    if(ob.t === 2){
+                        ob.h = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Length'), frameRate);
+                        ob.a = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Angle'), frameRate);
+                    }
+
+                } else if (itemType === shapeItemTypes.gStroke) {
+                    ob = {};
+                    ob.ty = itemType;
+                    var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
+                    ob.c = gradientData.c;
+                    ob.y = gradientData.o;
+                    ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
+                    ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
+                    ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);
+                    ob.lc = prop.property('Line Cap').value;
+                    ob.lj = prop.property('Line Join').value;
+                    ob.t = prop.property('Type').value;
+                    if(ob.t === 2){
+                        ob.h = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Length'), frameRate);
+                        ob.a = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Angle'), frameRate);
+                    }
 
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
