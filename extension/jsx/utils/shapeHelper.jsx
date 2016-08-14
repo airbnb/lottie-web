@@ -8,12 +8,15 @@ var bm_shapeHelper = (function () {
         ellipse: 'el',
         star: 'sr',
         fill: 'fl',
+        gfill: 'gf',
+        gStroke: 'gs',
         stroke: 'st',
         merge: 'mm',
         trim: 'tm',
         group: 'gr',
         roundedCorners: 'rd'
     };
+    var navigationShapeTree = [];
 
     function getItemType(matchName) {
         switch (matchName) {
@@ -39,7 +42,12 @@ var bm_shapeHelper = (function () {
             return shapeItemTypes.roundedCorners;
         case 'ADBE Vector Group':
             return shapeItemTypes.group;
+        case 'ADBE Vector Graphic - G-Fill':
+            return shapeItemTypes.gfill;
+        case 'ADBE Vector Graphic - G-Stroke':
+            return shapeItemTypes.gStroke;
         default:
+            bm_eventDispatcher.log(matchName);
             return '';
         }
     }
@@ -139,6 +147,29 @@ var bm_shapeHelper = (function () {
                     ob.fillEnabled = prop.enabled;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                } else if (itemType === shapeItemTypes.gfill) {
+                    ob = {};
+                    ob.ty = itemType;
+                    ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    navigationShapeTree.push(prop.name);
+                    exportGradientData(ob,prop,frameRate, navigationShapeTree);
+                    navigationShapeTree.pop();
+
+                } else if (itemType === shapeItemTypes.gStroke) {
+                    ob = {};
+                    ob.ty = itemType;
+                    ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);
+                    navigationShapeTree.push(prop.name);
+                    exportGradientData(ob,prop,frameRate, navigationShapeTree);
+                    navigationShapeTree.pop();
+                    ob.lc = prop.property('Line Cap').value;
+                    ob.lj = prop.property('Line Join').value;
+                    if (ob.lj === 1) {
+                        ob.ml = prop.property('Miter Limit').value;
+                    }
+                    getDashData(ob,prop, frameRate);
+
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
                     ob.ty = itemType;
@@ -151,30 +182,8 @@ var bm_shapeHelper = (function () {
                     if (ob.lj === 1) {
                         ob.ml = prop.property('Miter Limit').value;
                     }
-                    var j, jLen = prop.property('Dashes').numProperties;
-                    var dashesData = [];
-                    var changed = false;
-                    for (j = 0; j < jLen; j += 1) {
-                        if (prop.property('Dashes').property(j + 1).canSetExpression) {
-                            changed = true;
-                            var dashData = {};
-                            var name = '';
-                            if (prop.property('Dashes').property(j + 1).name.indexOf('Dash') !== -1) {
-                                name = 'd';
-                            } else if (prop.property('Dashes').property(j + 1).name.indexOf('Gap') !== -1) {
-                                name = 'g';
-                            } else if (prop.property('Dashes').property(j + 1).name === 'Offset') {
-                                name = 'o';
-                            }
-                            dashData.n = name;
-                            dashData.nm = prop.property('Dashes').property(j + 1).name.toLowerCase().split(' ').join('');
-                            dashData.v = bm_keyframeHelper.exportKeyframes(prop.property('Dashes').property(j + 1), frameRate);
-                            dashesData.push(dashData);
-                        }
-                    }
-                    if (changed) {
-                        ob.d = dashesData;
-                    }
+                    getDashData(ob,prop, frameRate);
+
                 } else if (itemType === shapeItemTypes.merge) {
                     ob = {};
                     ob.ty = itemType;
@@ -196,6 +205,7 @@ var bm_shapeHelper = (function () {
                         it: [],
                         nm: prop.name
                     };
+                    navigationShapeTree.push(prop.name);
                     iterateProperties(prop.property('Contents'), ob.it, frameRate, isText);
                     if (!isText) {
                         var trOb = {};
@@ -220,13 +230,13 @@ var bm_shapeHelper = (function () {
                         trOb.nm = transformProperty.name;
                         ob.it.push(trOb);
                     }
+                    navigationShapeTree.pop();
                 } else if (itemType === shapeItemTypes.roundedCorners) {
                     ob = {
                         ty : itemType,
                         nm: prop.name
                     };
                     ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Radius'), frameRate);
-                    //bm_eventDispatcher.log(prop.property('ADBE Vector RoundCorner Radius'));
                 }
                 if (ob) {
                     ob.nm = prop.name;
@@ -243,8 +253,49 @@ var bm_shapeHelper = (function () {
             
         }
     }
+
+    function exportGradientData(ob,prop,frameRate, navigationShapeTree){
+        var property = prop.property('Colors');
+        var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree, property.numKeys);
+        ob.g = {
+            p:gradientData.p,
+            k:bm_keyframeHelper.exportKeyframes(property, frameRate, gradientData.m)
+        };
+        ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
+        ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
+        ob.t = prop.property('Type').value;
+        if(ob.t === 2){
+            ob.h = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Length'), frameRate);
+            ob.a = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Angle'), frameRate);
+        }
+    }
     
-    
+    function getDashData(ob,prop, frameRate){
+        var j, jLen = prop.property('Dashes').numProperties;
+        var dashesData = [];
+        var changed = false;
+        for (j = 0; j < jLen; j += 1) {
+            if (prop.property('Dashes').property(j + 1).canSetExpression) {
+                changed = true;
+                var dashData = {};
+                var name = '';
+                if (prop.property('Dashes').property(j + 1).matchName.indexOf('ADBE Vector Stroke Dash') !== -1) {
+                    name = 'd';
+                } else if (prop.property('Dashes').property(j + 1).matchName.indexOf('ADBE Vector Stroke Gap') !== -1) {
+                    name = 'g';
+                } else if (prop.property('Dashes').property(j + 1).matchName === 'ADBE Vector Stroke Offset') {
+                    name = 'o';
+                }
+                dashData.n = name;
+                dashData.nm = prop.property('Dashes').property(j + 1).name.toLowerCase().split(' ').join('');
+                dashData.v = bm_keyframeHelper.exportKeyframes(prop.property('Dashes').property(j + 1), frameRate);
+                dashesData.push(dashData);
+            }
+        }
+        if (changed) {
+            ob.d = dashesData;
+        }
+    }
     
     
     
@@ -406,6 +457,10 @@ var bm_shapeHelper = (function () {
     
     
     function exportShape(layerInfo, layerOb, frameRate, isText) {
+        var containingComp = layerInfo.containingComp;
+        navigationShapeTree.length = 0;
+        navigationShapeTree.push(containingComp.name);
+        navigationShapeTree.push(layerInfo.name);
         var shapes = [], contents = layerInfo.property('Contents');
         layerOb.shapes = shapes;
         iterateProperties(contents, shapes, frameRate, isText);

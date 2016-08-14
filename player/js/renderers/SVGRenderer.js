@@ -1,9 +1,12 @@
-function SVGRenderer(animationItem){
+function SVGRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1
+    };
+    this.renderConfig = {
+        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet'
     };
     this.elements = [];
     this.destroyed = false;
@@ -121,7 +124,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.animationItem.container.setAttribute('width',animData.w);
     this.animationItem.container.setAttribute('height',animData.h);
     this.animationItem.container.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
-    this.animationItem.container.setAttribute('preserveAspectRatio','xMidYMid meet');
+    this.animationItem.container.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     this.animationItem.container.style.width = '100%';
     this.animationItem.container.style.height = '100%';
     this.animationItem.container.style.transform = 'translate3d(0,0,0)';
@@ -199,7 +202,7 @@ SVGRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
     this.animationItem.container = null;
     this.globalData.defs = null;
-    var i, len = this.layers.length;
+    var i, len = this.layers ? this.layers.length : 0;
     for (i = 0; i < len; i++) {
         this.elements[i].destroy();
     }

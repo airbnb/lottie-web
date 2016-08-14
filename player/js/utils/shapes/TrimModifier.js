@@ -81,7 +81,7 @@ TrimModifier.prototype.processShapes = function(){
             this.shapes[i].shape.mdf = true;
         }
     } else {
-        var segments = [], shapeData, newShapes = [];
+        var segments = [], shapeData, newShapes;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
             if(!shapeData.shape.mdf && !this.mdf){
@@ -103,6 +103,7 @@ TrimModifier.prototype.processShapes = function(){
             }
         }
         for(i=0;i<len;i+=1){
+            newShapes = [];
             shapeData = this.shapes[i];
             if(shapeData.shape.mdf){
                 segments.length = 0;

@@ -3,16 +3,30 @@
 var compSelectionController = (function () {
     'use strict';
     var view, compsListContainer, csInterface, renderButton;
-    var compositions = [];
+    var compositions;
+    var compElements = {};
+    var isDataSynced = false;
     var elementTemplate = '<tr><td class="td stateTd"><div class="hideExtra state"></div></td><td class="td settingsTd"><div class="hideExtra settings"></div></td><td class="td"><div class="hideExtra name"></div></td><td class="td destinationTd"><div class="hideExtra destination"></div></td></tr>';
+    var stateData;
+    var filterInput;
 
     function formatStringForEval(str) {
         return '"' + str.replace(/\\/g, '\\\\') + '"';
     }
     
     function checkCompositions() {
-        var i = 0, len = compositions.length;
+        var i = 0, len = compositions.length, comp, elem;
+        for(i=0;i<len;i+=1){
+            comp = compositions[i];
+            elem = compElements[comp.id].elem;
+            if(stateData.filterValue && comp.name.indexOf(stateData.filterValue) === -1){
+                elem.hide();
+            } else {
+                elem.show();
+            }
+        }
         var flag = false;
+        i = 0;
         while (i < len) {
             if (compositions[i].selected && compositions[i].destination) {
                 flag = true;
@@ -27,137 +41,24 @@ var compSelectionController = (function () {
         }
     }
     
-    var settingsManager = (function () {
-        
-        var ob = {}, settingsView, compData, tempData = {}, callback;
-        var segments, segmentsCheckbox, segmentsTextBox;
-        var standalone, standaloneCheckbox;
-        var demo, demoCheckbox;
-        var glyphs, glyphsCheckbox;
-        
-        function updateSegmentsData() {
-            if (tempData.segmented) {
-                segments.addClass('active');
-                segmentsCheckbox.addClass('selected');
-                segmentsTextBox.prop('disabled', '');
-            } else {
-                segments.removeClass('active');
-                segmentsCheckbox.removeClass('selected');
-                segmentsTextBox.prop('disabled', 'disabled');
-            }
-            segmentsTextBox.val(tempData.segmentTime);
-        }
-        
-        function updateStandaloneData() {
-            if (tempData.standalone) {
-                standaloneCheckbox.addClass('selected');
-            } else {
-                standaloneCheckbox.removeClass('selected');
-            }
-        }
-        
-        function updateDemoData() {
-            if (tempData.demo) {
-                demoCheckbox.addClass('selected');
-            } else {
-                demoCheckbox.removeClass('selected');
-            }
-        }
-        
-        function updateGlyphsData() {
-            if (tempData.glyphs) {
-                glyphsCheckbox.addClass('selected');
-            } else {
-                glyphsCheckbox.removeClass('selected');
-            }
-        }
-        
-        function handleSegmentCheckboxClick() {
-            tempData.segmented = !tempData.segmented;
-            updateSegmentsData();
-        }
-        
-        function handleStandaloneCheckboxClick() {
-            tempData.standalone = !tempData.standalone;
-            updateStandaloneData();
-        }
-        
-        function handleDemoCheckboxClick() {
-            tempData.demo = !tempData.demo;
-            updateDemoData();
-        }
-        
-        function handleGlyphsCheckboxClick() {
-            tempData.glyphs = !tempData.glyphs;
-            updateGlyphsData();
-        }
-        
-        function cancelSettings() {
-            settingsView.hide();
-        }
-        
-        function saveSettings() {
-            tempData.segmentTime = segmentsTextBox.val();
-            compData = JSON.parse(JSON.stringify(tempData));
-            callback.apply(null, [compData]);
-            settingsView.hide();
-        }
-        
-        function init() {
-            settingsView = view.find('.settingsView');
-            settingsView.hide();
-            segments = settingsView.find('.segments');
-            segments.find('.checkboxCombo').on('click', handleSegmentCheckboxClick);
-            segmentsCheckbox = segments.find('.checkbox');
-            segmentsTextBox = segments.find('.inputText');
-            standalone = settingsView.find('.standalone');
-            standalone.find('.checkboxCombo').on('click', handleStandaloneCheckboxClick);
-            standaloneCheckbox = standalone.find('.checkbox');
-            demo = settingsView.find('.demo');
-            demo.find('.checkboxCombo').on('click', handleDemoCheckboxClick);
-            demoCheckbox = demo.find('.checkbox');
-            glyphs = settingsView.find('.glyphs');
-            glyphs.find('.checkboxCombo').on('click', handleGlyphsCheckboxClick);
-            glyphsCheckbox = glyphs.find('.checkbox');
-            settingsView.find('.buttons .cancel').on('click', cancelSettings);
-            settingsView.find('.buttons .return').on('click', saveSettings);
-            updateSegmentsData();
-            updateStandaloneData();
-            updateDemoData();
-            updateGlyphsData();
-        }
-        
-        function show(data, cb) {
-            settingsView.show();
-            compData = data;
-            tempData = JSON.parse(JSON.stringify(compData));
-            callback = cb;
-            updateSegmentsData();
-            updateStandaloneData();
-            updateDemoData();
-            updateGlyphsData();
-        }
-        
-        ob.init = init;
-        ob.show = show;
-        return ob;
-    }());
+    var settingsManager;
     
     function addElemListeners(comp) {
-        var elem = comp.elem;
+        var elem = compElements[comp.id].elem;
         
         function handleStateClick() {
             comp.selected = !comp.selected;
             if (comp.selected) {
                 elem.addClass('selected');
-                comp.anim.play();
+                compElements[comp.id].anim.play();
             } else {
-                comp.anim.goToAndStop(0);
+                compElements[comp.id].anim.goToAndStop(0);
                 elem.removeClass('selected');
             }
             var eScript = 'bm_compsManager.setCompositionSelectionState(' + comp.id + ',' + comp.selected + ')';
             csInterface.evalScript(eScript);
             checkCompositions();
+            mainController.saveData();
         }
         
         function handleDestination() {
@@ -172,6 +73,7 @@ var compSelectionController = (function () {
             comp.settings = data;
             var eScript = 'bm_compsManager.setCompositionSettings(' + comp.id + ',' + JSON.stringify(comp.settings) + ')';
             csInterface.evalScript(eScript);
+            mainController.saveData();
         }
         
         function showElemSetings() {
@@ -179,11 +81,11 @@ var compSelectionController = (function () {
         }
         
         function overElemSetings() {
-            comp.gearAnim.play();
+            compElements[comp.id].gearAnim.play();
         }
         
         function outElemSetings() {
-            comp.gearAnim.goToAndStop(0);
+            compElements[comp.id].gearAnim.goToAndStop(0);
         }
         
         elem.find('.stateTd').on('click', handleStateClick);
@@ -204,23 +106,36 @@ var compSelectionController = (function () {
         if (!comp) {
             comp = {
                 id: item.id,
-                elem: $(elementTemplate),
                 settings: {}
             };
-            var animContainer = comp.elem.find('.state')[0];
+            compositions.push(comp);
+        } else if(!isDataSynced) {
+            var eScript = 'bm_compsManager.syncCompositionData(' + comp.id + ',' + JSON.stringify(comp) + ')';
+            csInterface.evalScript(eScript);
+            
+        }
+        if(!compElements[comp.id]){
+            isAppended = false;
+            var compElementsData = {};
+            compElementsData.elem = $(elementTemplate);
+            var autoplay = false;
+            if(!isDataSynced && comp.selected) {
+                autoplay = true;
+            }
+            var animContainer = compElementsData.elem.find('.state')[0];
             var animData = JSON.parse(radioData);
             var params = {
                 animType: 'svg',
                 wrapper: animContainer,
                 loop: false,
-                autoplay: false,
+                autoplay: autoplay,
                 prerender: true,
                 animationData: animData
             };
             var anim = bodymovin.loadAnimation(params);
-            comp.anim = anim;
+            compElementsData.anim = anim;
 
-            animContainer = comp.elem.find('.settings')[0];
+            animContainer = compElementsData.elem.find('.settings')[0];
             animData = JSON.parse(gearData);
             params = {
                 animType: 'svg',
@@ -231,19 +146,17 @@ var compSelectionController = (function () {
                 animationData: animData
             };
             anim = bodymovin.loadAnimation(params);
-            comp.gearAnim = anim;
-
-            comp.resized = false;
-            compositions.push(comp);
+            compElementsData.gearAnim = anim;
+            compElements[comp.id] = compElementsData;
             addElemListeners(comp);
-            isAppended = false;
         }
         comp.active = true;
         comp.name = item.name;
         comp.selected = item.selected;
         comp.destination = item.destination;
+        comp.absoluteURI = item.absoluteURI;
         comp.settings = item.settings;
-        var elem = comp.elem;
+        var elem = compElements[comp.id].elem;
         elem.find('.name').html(comp.name);
         elem.find('.destination').html(comp.destination ? comp.destination.replace(/\\/g, '/')  : '...');
         if (comp.selected) {
@@ -258,10 +171,6 @@ var compSelectionController = (function () {
                 compsListContainer.find("tr").eq(pos - 1).after(elem);
             }
         }
-        /*if (!comp.resized) {
-            //comp.anim.resize();
-            //comp.resized = true;
-        }*/
     }
     
     function markCompsForRemoval() {
@@ -275,8 +184,12 @@ var compSelectionController = (function () {
         var i, len = compositions.length;
         for (i = 0; i < len; i += 1) {
             if (!compositions[i].active) {
-                compositions[i].elem.detach();
-                compositions[i].anim.destroy();
+                if(compElements[compositions[i].id]){
+                    compElements[compositions[i].id].elem.detach();
+                    compElements[compositions[i].id].anim.destroy();
+                    compElements[compositions[i].id].gearAnim.destroy();
+                }
+                compElements[compositions[i].id] = null;
                 compositions.splice(i, 1);
                 i -= 1;
                 len -= 1;
@@ -286,22 +199,22 @@ var compSelectionController = (function () {
     
     function updateCompositionsList(ev) {
         markCompsForRemoval();
-        var list;
-        if ((typeof ev.data) === 'string') {
-            list = JSON.parse(ev.data);
-        } else {
-            list = JSON.parse(JSON.stringify(ev.data));
-        }
+        var list = messageParser.parse(ev.data);
         var i, len = list.length;
         for (i = 0; i < len; i += 1) {
             setCompositionData(list[i], i);
         }
+        if(!isDataSynced) {
+            isDataSynced = true;
+            getCompositionsList();
+        }
         clearRemovedComps();
         checkCompositions();
+        mainController.saveData();
     }
     
     function getCompositionsList() {
-        csInterface.evalScript('bm_compsManager.getCompositions()');
+        csInterface.evalScript('bm_compsManager.updateData()');
     }
     
     function renderCompositions() {
@@ -320,8 +233,44 @@ var compSelectionController = (function () {
         mainController.showView('snapshot');
     }
     
+    function updateFilter(ev){
+        stateData.filterValue = ev.target.value;
+        mainController.saveData();
+        checkCompositions();
+    }
+    
+    function removeAllCompositions(){
+        if(!compositions){
+            return;
+        }
+        var i, len = compositions.length;
+        for (i = 0; i < len; i += 1) {
+            if(compElements[compositions[i].id]){
+                compElements[compositions[i].id].elem.detach();
+                compElements[compositions[i].id].anim.destroy();
+                compElements[compositions[i].id].gearAnim.destroy();
+                compElements[compositions[i].id] = null;
+            }
+        }
+    }
+    
+    function setData(data) {
+        removeAllCompositions();
+        if(!data.compsSelection.compositions){
+            data.compsSelection.compositions = [];
+            data.compsSelection.filterValue = "";
+            isDataSynced = true;
+        } else {
+            isDataSynced = false;
+        }
+        stateData = data.compsSelection;
+        compositions = stateData.compositions;
+        filterInput.val(data.compsSelection.filterValue);
+    }
+    
     function init(csIntfc) {
         view = $('#compsSelection');
+        settingsManager = SelectionSettings(view);
         compsListContainer = view.find('.compsList');
         csInterface = csIntfc;
         csInterface.addEventListener('bm:compositions:list', updateCompositionsList);
@@ -330,6 +279,8 @@ var compSelectionController = (function () {
         renderButton = view.find('.render');
         renderButton.on('click', renderCompositions);
         view.find('.settings').on('click', showSettings);
+        filterInput = view.find('#compsFilter');
+        filterInput.on('input change',updateFilter);
         view.hide();
         settingsManager.init();
     }
@@ -356,6 +307,7 @@ var compSelectionController = (function () {
     
     var ob = {};
     ob.init = init;
+    ob.setData = setData;
     ob.show = show;
     ob.hide = hide;
     

@@ -197,8 +197,8 @@ var bm_expressionHelper = (function () {
             } else if (body[i].type === 'SwitchStatement') {
                 handleSwitchStatement(body[i]);
             } else {
-                bm_eventDispatcher.log(body[i].type);
-                bm_eventDispatcher.log(body[i]);
+                //bm_eventDispatcher.log(body[i].type);
+                //bm_eventDispatcher.log(body[i]);
             }
         }
     }
@@ -220,7 +220,7 @@ var bm_expressionHelper = (function () {
             case "UnaryExpression":
                 return element;
             default:
-                bm_eventDispatcher.log('es: ', element);
+                //bm_eventDispatcher.log('es: ', element);
                 return element;
         }
     }
@@ -478,33 +478,40 @@ var bm_expressionHelper = (function () {
 
     function assignVariable(body){
         var len = body.length - 1;
-        var flag = true;
+        var flag = len >= 0 ? true : false;
         var lastElem;
         while (flag) {
             lastElem = body[len];
-            if ((lastElem.type !== 'EmptyStatement' && lastElem.type !== 'FunctionDeclaration') || len === 0) {
+            if(lastElem.type === 'IfStatement'){
+                assignVariableToIfStatement(lastElem);
+                body[len] = lastElem;
+                len -= 1;
+            } else if (lastElem.type === 'ExpressionStatement') {
+                lastElem = convertExpressionStatementToVariableDeclaration(lastElem);
+                body[len] = lastElem;
+                flag = false;
+            } else if (lastElem.type === 'TryStatement') {
+                if (lastElem.block) {
+                    if (lastElem.block.type === 'BlockStatement') {
+                        assignVariable(lastElem.block.body);
+                    }
+                }
+                if (lastElem.handler) {
+                    if (lastElem.handler.body.type === 'BlockStatement') {
+                        assignVariable(lastElem.handler.body.body);
+                    }
+                }
+                body[len] = lastElem;
+                flag = false;
+            }else if ((lastElem.type !== 'EmptyStatement' && lastElem.type !== 'FunctionDeclaration') || len === 0) {
                 flag = false;
             } else {
                 len -= 1;
             }
-        }
-        if (lastElem.type === 'ExpressionStatement') {
-            lastElem = convertExpressionStatementToVariableDeclaration(lastElem);
-        } else if (lastElem.type === 'TryStatement') {
-            if (lastElem.block) {
-                if (lastElem.block.type === 'BlockStatement') {
-                    assignVariable(lastElem.block.body);
-                }
+            if(len < 0){
+                flag = false;
             }
-            if (lastElem.handler) {
-                if (lastElem.handler.body.type === 'BlockStatement') {
-                    assignVariable(lastElem.handler.body.body);
-                }
-            }
-        } else if (lastElem.type === 'IfStatement') {
-            assignVariableToIfStatement(lastElem);
         }
-        body[len] = lastElem;
     }
 
     function checkExpression(prop, returnOb) {

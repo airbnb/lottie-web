@@ -34,6 +34,7 @@ var bm_generalUtils = (function () {
     }
     
     function roundNumber(num, decimals) {
+        num = num || 0;
         if (typeof num === 'number') {
             return parseFloat(num.toFixed(decimals));
         } else {

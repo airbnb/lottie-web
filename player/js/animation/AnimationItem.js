@@ -36,7 +36,7 @@ AnimationItem.prototype.setParams = function(params) {
     if(params.wrapper || params.container){
         this.wrapper = params.wrapper || params.container;
     }
-    var animType = params.animType ? params.animType : params.renderer ? params.renderer : 'canvas';
+    var animType = params.animType ? params.animType : params.renderer ? params.renderer : 'svg';
     switch(animType){
         case 'canvas':
             this.renderer = new CanvasRenderer(this, params.rendererSettings);
@@ -78,7 +78,7 @@ AnimationItem.prototype.setParams = function(params) {
         if(params.path.lastIndexOf('\\') != -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
         }else{
-        this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
+            this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
@@ -256,6 +256,10 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
     }
 }());
 
+AnimationItem.prototype.addPendingElement = function () {
+    this.pendingElements += 1;
+}
+
 AnimationItem.prototype.elementLoaded = function () {
     this.pendingElements--;
     this.checkLoaded();
@@ -412,6 +416,22 @@ AnimationItem.prototype.adjustSegment = function(arr){
     }
     this.trigger('segmentStart');
 };
+AnimationItem.prototype.setSegment = function (init,end) {
+    var pendingFrame = -1;
+    if(this.isPaused) {
+        if (this.currentRawFrame + this.firstFrame < init) {
+            pendingFrame = init;
+        } else if (this.currentRawFrame + this.firstFrame > end) {
+            pendingFrame = end - init - 0.01;
+        }
+    }
+
+    this.firstFrame = init;
+    this.totalFrames = end - init;
+    if(pendingFrame !== -1) {
+        this.goToAndStop(pendingFrame,true);
+    }
+}
 
 AnimationItem.prototype.playSegments = function (arr,forceFlag) {
     if(typeof arr[0] === 'object'){

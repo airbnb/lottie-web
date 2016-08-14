@@ -1,5 +1,15 @@
+## V 4.3.3
+- Hidden layer and Guided layers are now exportable if configured (could be needed for expressions)
+- Config is remembered
+- Filter for Comps
+- Trim path fix
+- Canvas images fix
+
+## V 4.3.2
+- preserveAspectRatio editable
+
 ## V 4.3.1
-- Expression frameDuration prorperty added
+- Expression frameDuration property added
 - shape last hold keyframe fix
 
 ## V 4.2.3

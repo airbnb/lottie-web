@@ -9,11 +9,9 @@
             overflow: hidden;
         }
         #bodymovin{
-            background-color:#999;
-            width:900px;
-            height:506px;
-            width:1920px;
-            height:1080px;
+            background-color:#ddd;
+            width:1000px;
+            height:400px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -59,7 +57,6 @@
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
-    <script src="js/utils/shapes/MouseModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
@@ -102,7 +99,7 @@
     <!-- end Expressions -->
     <!-- endbuild -->
     <script src="js/module.js"></script>
-    <!-- <script src="bodymovin.js"></script>
+    <!-- <script src="bodymovin.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
 </head>
 <body>
@@ -110,49 +107,21 @@
 
 <script>
 
-    var bmContainer = document.getElementById('bodymovin');
-
     var count = 0;
     var animData = {
-        container: bmContainer,
+        container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
-        path: 'exports/render/bicho.json'
+        path: 'exports/render/data.json'
     };
 
     var anim;
 
     anim = bodymovin.loadAnimation(animData);
-    var pointsContainer = document.createElementNS(svgNS,'g');
-    pointsContainer.setAttribute('stroke','#ff0000');
-    anim.addEventListener('DOMLoaded',function(){
-        bmContainer.getElementsByTagName('svg')[0].appendChild(pointsContainer);
-    });
-    bmContainer.addEventListener('mousemove',function(ev){
-        //offsetX,offsetY
-        anim.renderer.globalData.mouseX = ev.layerX;
-        anim.renderer.globalData.mouseY = ev.layerY;
-    })
 
-    function drawPoint(pt){
-        //console.log(pt);
-        var path = document.createElementNS(svgNS,'path');
-        var dStr = '';
-        dStr += ' M'+(pt[0]-10)+','+(pt[1]);
-        dStr += ' h'+20;
-        dStr += ' M'+(pt[0])+','+(pt[1]-10);
-        dStr += ' v'+20;
-        path.setAttribute('d',dStr);
-        pointsContainer.appendChild(path);
-    }
-    function clearPoints(){
-        while(pointsContainer.children.length){
-            pointsContainer.removeChild(pointsContainer.children[0]);
-        }
-    }
 
 
 </script>

@@ -202,7 +202,6 @@ var snapshotController = (function () {
             view.hide();
             $window.off('mouseup', sliderUp);
             $window.off('mousemove', sliderMove);
-            slideBg.off('mousedown', sliderDown);
         }
     }
     

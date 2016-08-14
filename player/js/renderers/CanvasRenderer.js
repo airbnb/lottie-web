@@ -227,6 +227,10 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,document);
+    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
+    this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
+    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
+    this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
 };
 
 CanvasRenderer.prototype.updateContainerSize = function () {
@@ -306,7 +310,7 @@ CanvasRenderer.prototype.destroy = function () {
     if(this.renderConfig.clearCanvas) {
         this.animationItem.wrapper.innerHTML = '';
     }
-    var i, len = this.layers.length;
+    var i, len = this.layers ? this.layers.length : 0;
     for (i = len - 1; i >= 0; i-=1) {
         this.elements[i].destroy();
     }

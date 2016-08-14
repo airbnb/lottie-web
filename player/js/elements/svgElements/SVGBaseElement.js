@@ -12,6 +12,9 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.appendNodeToParent = function(node) {
+    if(this.data.hd){
+        return;
+    }
     if(this.placeholder){
         var g = this.placeholder.phElement;
         g.parentNode.insertBefore(node, g);

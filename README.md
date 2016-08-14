@@ -1,35 +1,19 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.3.3
+- Hidden layer and Guided layers are now exportable if configured (could be needed for expressions)
+- Config is remembered
+- Filter for Comps
+- Trim path fix
+- Canvas images fix
+
+## V 4.3.2
+- preserveAspectRatio editable
+
 ## V 4.3.1
-- Expression frameDuration prorperty added
+- Expression frameDuration property added
 - shape last hold keyframe fix
-
-## V 4.2.3
-- Expressions framesToTime and timeToFrames
-- Layer stretching. Negative values not supported yet.
-- Firefox canvas save/restore performance fix
-- Blend Modes (read blend modes page for specifications here https://github.com/bodymovin/bodymovin/wiki/Blend-Modes)
-
-## V 4.2.2
-- Compatibility fix for colors
-
-## V 4.2.1
-- Expressions fix for AE 2015.3
-- Added bodymovin_light.js
-
-## V 4.2.0
-- More expressions support
-- Rounded corners supported on shapes
-- added goToAndPlay
-- Fixes
-
-## V 4.1.8
-- Fixed easing bezier values for dimensional properties
-
-## V 4.1.7
-- removing non ASCII chars from file that would break the extension in some languages.
-
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**

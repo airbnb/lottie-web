@@ -4,7 +4,7 @@
 var bm_renderManager = (function () {
     'use strict';
     
-    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
+    var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, fsDestinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
 
     function verifyTrackLayer(layerData, comp, pos) {
         var nextLayerInfo = comp.layers[pos + 2];
@@ -56,6 +56,15 @@ var bm_renderManager = (function () {
                     layerData.tt = false;
                 }
             }
+            if(currentCompSettings.hiddens && layerData.enabled === false){
+                layerData.render = true;
+                layerData.hd = true;
+            }
+            if(currentCompSettings.guideds && layerData.isValid === false){
+                layerData.render = true;
+                layerData.isValid = true;
+                layerData.hd = true;
+            }
             layers.push(layerData);
             pendingLayers.push({data: layerData, layer: layerInfo, framerate: framerate});
             prevLayerData = layerData;
@@ -75,12 +84,14 @@ var bm_renderManager = (function () {
         }
     }
     
-    function render(comp, destination, compSettings) {
+    function render(comp, destination, fsDestination, compSettings) {
+        bm_ProjectHelper.init();
         hasExpressionsFlag = false;
         currentCompID = comp.id;
         currentCompSettings = compSettings;
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Starting Render', compId: currentCompID, progress: 0});
         destinationPath = destination;
+        fsDestinationPath = fsDestination;
         bm_sourceHelper.reset();
         bm_textShapeHelper.reset();
         pendingLayers.length = 0;
@@ -89,7 +100,7 @@ var bm_renderManager = (function () {
         exportData.assets = [];
         exportData.comps = [];
         exportData.fonts = [];
-        exportData.v = '4.3.1';
+        exportData.v = '4.3.3';
         exportData.ddd = 0;
         exportData.layers = [];
         exportData.ip = comp.workAreaStart * comp.frameRate;
@@ -108,12 +119,13 @@ var bm_renderManager = (function () {
         pendingLayers.length = 0;
         pendingComps.length = 0;
         currentCompSettings = null;
+        bm_ProjectHelper.end();
     }
     
     function saveData() {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Saving data ', compId: currentCompID, progress: 1});
         bm_dataManager.saveData(ob.renderData.exportData, destinationPath, currentCompSettings);
-        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, fsPath: currentCompSettings.fsName});
+        bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Render finished ', compId: currentCompID, progress: 1, isFinished: true, fsPath: fsDestinationPath});
         reset();
         bm_textShapeHelper.removeComps();
         bm_compsManager.renderComplete();
@@ -149,6 +161,7 @@ var bm_renderManager = (function () {
     
     function removeExtraData() {
         clearUnrenderedLayers(ob.renderData.exportData.layers);
+        bm_ProjectHelper.end();
         /* Todo check if "clearNames" it changes filesize significantly */
         //clearNames(ob.renderData.exportData.layers);
     }
