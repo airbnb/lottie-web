@@ -184,6 +184,8 @@ var PropertyFactory = (function(){
         this.frameId = this.elem.globalData.frameId;
     }
 
+    function getNoValue(){}
+
     function ValueProperty(elem,data, mult){
         this.mult = mult;
         this.v = mult ? data.k * mult : data.k;
@@ -193,6 +195,7 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.vel = 0;
+        this.getValue = getNoValue;
     }
 
     function MultiDimensionalProperty(elem,data, mult){
@@ -213,6 +216,7 @@ var PropertyFactory = (function(){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
             this.pv[i] = data.k[i];
         }
+        this.getValue = getNoValue;
     }
 
     function KeyframedValueProperty(elem, data, mult){
@@ -534,6 +538,61 @@ var PropertyFactory = (function(){
         return p;
     }
 
+    var getGradientProp = (function(){
+
+        function getValue(forceRender){
+            this.prop.getValue();
+            this.cmdf = false;
+            this.omdf = false;
+            if(this.prop.mdf || forceRender){
+                var i, len = this.data.p*4;
+                var mult, val;
+                for(i=0;i<len;i+=1){
+                    mult = i%4 === 0 ? 100 : 255;
+                    val = Math.round(this.prop.v[i]*mult);
+                    if(this.c[i] !== val){
+                        this.c[i] = val;
+                        this.cmdf = true;
+                    }
+                }
+                if(this.o.length){
+                    len = this.prop.v.length;
+                    for(i=this.data.p*4;i<len;i+=1){
+                        mult = i%2 === 0 ? 100 : 1;
+                        val = i%2 === 0 ?  Math.round(this.prop.v[i]*100):this.prop.v[i];
+                        if(this.o[i-this.data.p*4] !== val){
+                            this.o[i-this.data.p*4] = val;
+                            this.omdf = true;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        function gradientProp(elem,data,arr){
+            this.prop = getProp(elem,data.k,1,null,[]);
+            this.data = data;
+            this.k = this.prop.k;
+            this.c = Array.apply(null,{length:data.p*4});
+            var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
+            this.o = Array.apply(null,{length:cLength});
+            this.cmdf = false;
+            this.omdf = false;
+            this.getValue = getValue;
+            if(this.prop.k){
+                arr.push(this);
+            }
+            this.getValue(true);
+        }
+
+        return function getGradientProp(elem,data,arr){
+            return new gradientProp(elem,data,arr);
+        }
+    }());
+
+
+
 
     var DashProperty = (function(){
 
@@ -728,5 +787,6 @@ var PropertyFactory = (function(){
     ob.getProp = getProp;
     ob.getDashProp = getDashProp;
     ob.getTextSelectorProp = getTextSelectorProp;
+    ob.getGradientProp = getGradientProp;
     return ob;
 }());

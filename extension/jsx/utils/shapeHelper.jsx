@@ -151,14 +151,18 @@ var bm_shapeHelper = (function () {
                     ob = {};
                     ob.ty = itemType;
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    navigationShapeTree.push(prop.name);
                     exportGradientData(ob,prop,frameRate, navigationShapeTree);
+                    navigationShapeTree.pop();
 
                 } else if (itemType === shapeItemTypes.gStroke) {
                     ob = {};
                     ob.ty = itemType;
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
                     ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);
+                    navigationShapeTree.push(prop.name);
                     exportGradientData(ob,prop,frameRate, navigationShapeTree);
+                    navigationShapeTree.pop();
                     ob.lc = prop.property('Line Cap').value;
                     ob.lj = prop.property('Line Join').value;
                     if (ob.lj === 1) {
@@ -233,7 +237,6 @@ var bm_shapeHelper = (function () {
                         nm: prop.name
                     };
                     ob.r = bm_keyframeHelper.exportKeyframes(prop.property('Radius'), frameRate);
-                    //bm_eventDispatcher.log(prop.property('ADBE Vector RoundCorner Radius'));
                 }
                 if (ob) {
                     ob.nm = prop.name;
@@ -252,9 +255,12 @@ var bm_shapeHelper = (function () {
     }
 
     function exportGradientData(ob,prop,frameRate, navigationShapeTree){
-        var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
-        ob.c = gradientData.c;
-        ob.y = gradientData.o;
+        var property = prop.property('Colors');
+        var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree, property.numKeys);
+        ob.g = {
+            p:gradientData.p,
+            k:bm_keyframeHelper.exportKeyframes(property, frameRate, gradientData.m)
+        };
         ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
         ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
         ob.t = prop.property('Type').value;
@@ -455,7 +461,6 @@ var bm_shapeHelper = (function () {
         navigationShapeTree.length = 0;
         navigationShapeTree.push(containingComp.name);
         navigationShapeTree.push(layerInfo.name);
-        //bm_eventDispatcher.log('iddd: ' + layerInfo.id);
         var shapes = [], contents = layerInfo.property('Contents');
         layerOb.shapes = shapes;
         iterateProperties(contents, shapes, frameRate, isText);

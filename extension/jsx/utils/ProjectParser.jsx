@@ -23,108 +23,169 @@ var bm_ProjectHelper = (function(){
         fileString = demoFile.read(demoFile.length);
     }
 
-    function getGradientData(shapeNavigation){
+    function getGradientData(shapeNavigation, numKeys){
         if(!fileString){
             getProjectData();
         }
-        var gradientIndex = 0;
+        numKeys = numKeys ? numKeys : 1;
+        var gradientIndex = 0, navigationIndex = 0;
+        bm_eventDispatcher.log('--- getGradientData ---');
         var i = 0, len = shapeNavigation.length;
         while(i<len){
-            gradientIndex = fileString.indexOf(shapeNavigation[i],gradientIndex);
+            navigationIndex = fileString.indexOf(shapeNavigation[i],navigationIndex);
+            bm_eventDispatcher.log('shapeNavigation[i]:' + shapeNavigation[i]);
             i += 1;
         }
-        gradientIndex = fileString.indexOf('ADBE Vector Grad Colors',gradientIndex);
-        var limitIndex = fileString.indexOf('ADBE Vector Grad Colors',gradientIndex+1);
+        bm_eventDispatcher.log('navigationIndex:' + navigationIndex);
+        gradientIndex = fileString.indexOf('ADBE Vector Grad Colors',navigationIndex);
+        var gradFillIndex = fileString.indexOf('ADBE Vector Graphic - G-Fill',navigationIndex);
+        var gradStrokeIndex = fileString.indexOf('ADBE Vector Graphic - G-Stroke',navigationIndex);
+        bm_eventDispatcher.log('gradFillIndex:' + gradFillIndex);
+        bm_eventDispatcher.log('gradStrokeIndex:' + gradStrokeIndex);
+        var limitIndex;
+        if(gradStrokeIndex !== -1 && gradFillIndex !== -1){
+            limitIndex = Math.min(gradFillIndex,gradStrokeIndex);
+        } else {
+            limitIndex = Math.max(gradFillIndex,gradStrokeIndex);
+        }
+        bm_eventDispatcher.log('gradientIndex:' + gradientIndex);
+        bm_eventDispatcher.log('limitIndex:' + limitIndex);
         if(limitIndex === -1){
             limitIndex = Number.MAX_VALUE;
         }
         //var regEx = /<prop.map>/g;
-        gradientIndex = fileString.indexOf('<prop.map',gradientIndex);
-        var gradientData = {};
-        if(gradientIndex > limitIndex){
-
-        } else {
-            var endMatch = '</prop.map>';
-            var lastIndex = fileString.indexOf(endMatch,gradientIndex);
-            var xmlString = fileString.substr(gradientIndex,lastIndex+endMatch.length-gradientIndex);
-            xmlString = xmlString.replace(/\n/g,'');
-            //bm_eventDispatcher.log('xmlStringxmlString:'+xmlString);
-            var XML_Ob = new XML(xmlString);
-            //bm_eventDispatcher.log(XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'].toString());
-            //bm_eventDispatcher.log(XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'].length());
-            var stops = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
-            var colors = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][1]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
-            i = 0;
-            len = stops.length();
-            var opacitiesArr = [],op, floats, nextFloats, midPoint, midPosition, hasOpacity = false;
-            while(i<len){
-                floats = stops[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
-                op = [];
-                op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
-                if(op[1] !== 1){
-                    hasOpacity = true;
-                }
-                opacitiesArr.push(op);
-                midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
-                if(i<len-1 && midPosition !== 0.5){
+        var currentKey = 0, keyframes = [], hasOpacity = false, maxOpacities = 0, maxColors = 0;
+        while(currentKey < numKeys){
+            var gradientData = {};
+            gradientIndex = fileString.indexOf('<prop.map',gradientIndex);
+            if(gradientIndex > limitIndex){
+                gradientData.c = [[0,1,1,1],[1,0,0,0]];
+                maxColors = Math.max(maxColors,2);
+            } else {
+                var endMatch = '</prop.map>';
+                var lastIndex = fileString.indexOf(endMatch,gradientIndex);
+                var xmlString = fileString.substr(gradientIndex,lastIndex+endMatch.length-gradientIndex);
+                xmlString = xmlString.replace(/\n/g,'');
+                var XML_Ob = new XML(xmlString);
+                var stops = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
+                var colors = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][1]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
+                i = 0;
+                len = stops.length();
+                var opacitiesArr = [],op, floats, nextFloats, midPoint, midPosition;
+                while(i<len){
+                    floats = stops[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
                     op = [];
-                    nextFloats = stops[i+1]['prop.list'][0]['prop.pair'][0]['array'][0].float;
-                    midPoint = Number(floats[0].toString()) + (Number(nextFloats[0].toString())-Number(floats[0].toString()))*midPosition;
-                    var midPointValue = Number(floats[2].toString()) + (Number(nextFloats[2].toString())-Number(floats[2].toString()))*0.5;
-                    op.push(bm_generalUtils.roundNumber(midPoint,3));
-                    op.push(bm_generalUtils.roundNumber(midPointValue,3));
+                    op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
+                    op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
+                    if(op[1] !== 1){
+                        hasOpacity = true;
+                    }
                     opacitiesArr.push(op);
+                    midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
+                    if(i<len-1 /*&& midPosition !== 0.5*/){
+                        op = [];
+                        nextFloats = stops[i+1]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                        midPoint = Number(floats[0].toString()) + (Number(nextFloats[0].toString())-Number(floats[0].toString()))*midPosition;
+                        var midPointValue = Number(floats[2].toString()) + (Number(nextFloats[2].toString())-Number(floats[2].toString()))*0.5;
+                        op.push(bm_generalUtils.roundNumber(midPoint,3));
+                        op.push(bm_generalUtils.roundNumber(midPointValue,3));
+                        opacitiesArr.push(op);
+                    }
+                    i += 1;
                 }
-                i += 1;
+                i = 0;
+                len = colors.length();
+                var colorsArr = [];
+                while(i<len){
+                    floats = colors[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                    op = [];
+                    op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
+                    op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
+                    op.push(bm_generalUtils.roundNumber(Number(floats[3].toString()),3));
+                    op.push(bm_generalUtils.roundNumber(Number(floats[4].toString()),3));
+                    colorsArr.push(op);
+                    midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
+                    if(i<len-1 /*&& midPosition !== 0.5*/){
+                        op = [];
+                        nextFloats = colors[i+1]['prop.list'][0]['prop.pair'][0]['array'][0].float;
+                        midPoint = Number(floats[0].toString()) + (Number(nextFloats[0].toString())-Number(floats[0].toString()))*midPosition;
+                        var midPointValueR = Number(floats[2].toString()) + (Number(nextFloats[2].toString())-Number(floats[2].toString()))*0.5;
+                        var midPointValueG = Number(floats[3].toString()) + (Number(nextFloats[3].toString())-Number(floats[3].toString()))*0.5;
+                        var midPointValueB = Number(floats[4].toString()) + (Number(nextFloats[4].toString())-Number(floats[4].toString()))*0.5;
+                        op.push(bm_generalUtils.roundNumber(midPoint,3));
+                        op.push(bm_generalUtils.roundNumber(midPointValueR,3));
+                        op.push(bm_generalUtils.roundNumber(midPointValueG,3));
+                        op.push(bm_generalUtils.roundNumber(midPointValueB,3));
+                        colorsArr.push(op);
+                    }
+                    i += 1;
+                }
+                gradientData.c = colorsArr;
+                gradientData.o = opacitiesArr;
+                maxOpacities = Math.max(maxOpacities,opacitiesArr.length);
+                maxColors = Math.max(maxColors,colorsArr.length);
+            }
+
+            gradientIndex = lastIndex;
+
+            keyframes.push(gradientData);
+            currentKey += 1;
+        }
+        i = 0;
+        var arr, arrayLength,count,lastValue,offsetValue, mergedKeys = [], mergedArr, j;
+        while(i<numKeys){
+            mergedArr = [];
+            if(keyframes[i].c.length < maxColors){
+                arr = keyframes[i].c;
+                arrayLength = arr.length;
+                lastValue = arr[arrayLength - 1];
+                offsetValue = lastValue[0];
+                count = 0;
+                while(arrayLength + count<maxColors){
+                    offsetValue -= 0.001;
+                    arr.splice(arrayLength-1,0,[offsetValue,lastValue[1],lastValue[2],lastValue[3]]);
+                    count += 1;
+                }
+            }
+            for(j=0;j<maxColors;j+=1){
+                for(var k = 0; k < 4; k += 1){
+                    mergedArr.push(keyframes[i].c[j][k]);
+                }
             }
             if(!hasOpacity){
-                opacitiesArr.length = 0;
-            }
-            i = 0;
-            len = colors.length();
-            var colorsArr = [];
-            while(i<len){
-                floats = colors[i]['prop.list'][0]['prop.pair'][0]['array'][0].float;
-                op = [];
-                op.push(bm_generalUtils.roundNumber(Number(floats[0].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[2].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[3].toString()),3));
-                op.push(bm_generalUtils.roundNumber(Number(floats[4].toString()),3));
-                colorsArr.push(op);
-                midPosition = bm_generalUtils.roundNumber(Number(floats[1].toString()),3);
-                if(i<len-1 && midPosition !== 0.5){
-                    op = [];
-                    nextFloats = colors[i+1]['prop.list'][0]['prop.pair'][0]['array'][0].float;
-                    midPoint = Number(floats[0].toString()) + (Number(nextFloats[0].toString())-Number(floats[0].toString()))*midPosition;
-                    var midPointValueR = Number(floats[2].toString()) + (Number(nextFloats[2].toString())-Number(floats[2].toString()))*0.5;
-                    var midPointValueG = Number(floats[3].toString()) + (Number(nextFloats[3].toString())-Number(floats[3].toString()))*0.5;
-                    var midPointValueB = Number(floats[4].toString()) + (Number(nextFloats[4].toString())-Number(floats[4].toString()))*0.5;
-                    op.push(bm_generalUtils.roundNumber(midPoint,3));
-                    op.push(bm_generalUtils.roundNumber(midPointValueR,3));
-                    op.push(bm_generalUtils.roundNumber(midPointValueG,3));
-                    op.push(bm_generalUtils.roundNumber(midPointValueB,3));
-                    colorsArr.push(op);
+                delete keyframes[i].o;
+            } else {
+                if(keyframes[i].o.length < maxOpacities){
+                    arr = keyframes[i].o;
+                    arrayLength = arr.length;
+                    lastValue = arr[arrayLength - 1];
+                    offsetValue = lastValue[0];
+                    count = 0;
+                    while(arrayLength + count<maxOpacities){
+                        offsetValue -= 0.001;
+                        arr.splice(arrayLength-1,0,[offsetValue,lastValue[1],lastValue[2],lastValue[3]]);
+                        count += 1;
+                    }
                 }
-                i += 1;
+                for(j=0;j<maxOpacities;j+=1){
+                    for(var k = 0; k < 2; k += 1){
+                        mergedArr.push(keyframes[i].o[j][k]);
+                    }
+                }
             }
-            gradientData.c = colorsArr;
-            gradientData.o = opacitiesArr;
-            //var jsonData = bm_xml2json(XML_Ob);
-            //bm_eventDispatcher.log(jsonData);
+            if(numKeys <= 1){
+                mergedKeys = mergedArr;
+            } else {
+                mergedKeys.push(mergedArr);
+            }
+            i += 1;
         }
-        //var regEx = /<prop\.map[\w\s\W\D\S]+map>/;
-        //var match = regEx.exec(fileString);
-        /*var regEx = /<prop\.map[\w\s\W\D\S]+map>/;
-        regEx.lastIndex = gradientIndex;
-        var match = regEx.exec(fileString);
-        if(match.length){
-            bm_eventDispatcher.log('match: ' + match[0]);
-        } else {
-            bm_eventDispatcher.log('no match: ');
-        }
-        bm_eventDispatcher.log('gradientIndex: ' + gradientIndex);*/
-        return gradientData;
+
+        return {
+            m:mergedKeys,
+            p: maxColors
+        };
+
     }
     
     return ob;

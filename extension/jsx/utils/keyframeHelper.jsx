@@ -62,6 +62,7 @@ var bm_keyframeHelper = (function () {
         case PropertyValueType.ThreeD_SPATIAL:
         case PropertyValueType.TwoD_SPATIAL:
         case PropertyValueType.SHAPE:
+        case PropertyValueType.NO_VALUE:
             key.easeIn = {
                 influence : property.keyInTemporalEase(indexTime + 1)[0].influence,
                 speed : property.keyInTemporalEase(indexTime + 1)[0].speed
@@ -84,12 +85,16 @@ var bm_keyframeHelper = (function () {
         }
     }
     
-    function exportKeys(prop, frRate) {
+    function exportKeys(prop, frRate, keyframeValues) {
         property = prop;
+        var propertyValueType = property.propertyValueType;
         
         frameRate = frRate;
         beziersArray = [];
         if (property.numKeys <= 1) {
+            if(propertyValueType === PropertyValueType.NO_VALUE){
+                return keyframeValues;
+            }
             return getPropertyValue(property.valueAtTime(0, true), true);
         }
         jLen = property.numKeys;
@@ -106,11 +111,16 @@ var bm_keyframeHelper = (function () {
             var interpolationType = '';
             key.time = property.keyTime(indexTime + 1);
             lastKey.time = property.keyTime(indexTime);
-            key.value = getPropertyValue(property.keyValue(indexTime + 1), false);
-            lastKey.value = getPropertyValue(property.keyValue(indexTime), false);
-            if (!(key.value instanceof Array)) {
-                key.value = [key.value];
-                lastKey.value = [lastKey.value];
+            if(propertyValueType !== PropertyValueType.NO_VALUE){
+                key.value = getPropertyValue(property.keyValue(indexTime + 1), false);
+                lastKey.value = getPropertyValue(property.keyValue(indexTime), false);
+                if (!(key.value instanceof Array)) {
+                    key.value = [key.value];
+                    lastKey.value = [lastKey.value];
+                }
+            } else {
+                key.value = keyframeValues[j];
+                lastKey.value = keyframeValues[j-1];
             }
             if (property.keyOutInterpolationType(indexTime) === KeyframeInterpolationType.HOLD) {
                 interpolationType = 'hold';
@@ -130,14 +140,18 @@ var bm_keyframeHelper = (function () {
             if (interpolationType === 'hold') {
                 isPrevHoldInterpolated = true;
                 segmentOb.t = bm_generalUtils.roundNumber(lastKey.time * frameRate, 3);
-                segmentOb.s = getPropertyValue(property.keyValue(j), true);
-                if (!(segmentOb.s instanceof Array)) {
-                    segmentOb.s = [segmentOb.s];
+                if(propertyValueType !== PropertyValueType.NO_VALUE){
+                    segmentOb.s = getPropertyValue(property.keyValue(j), true);
+                    if (!(segmentOb.s instanceof Array)) {
+                        segmentOb.s = [segmentOb.s];
+                    }
+                } else {
+                    segmentOb.s = keyframeValues[j-1];
                 }
                 segmentOb.h = 1;
             } else {
                 duration = key.time - lastKey.time;
-                len = key.value.length;
+                len = propertyValueType === PropertyValueType.NO_VALUE ? 0 : key.value.length;
                 bezierIn = {};
                 bezierOut = {};
                 averageSpeed = 0;
@@ -158,6 +172,7 @@ var bm_keyframeHelper = (function () {
                     bezierOut.x = infOut / 100;
                     break;
                 case PropertyValueType.SHAPE:
+                case PropertyValueType.NO_VALUE:
                     averageSpeed = 1;
                     infOut = Math.min(100 / lastKey.easeOut.speed, lastKey.easeOut.influence);
                     infIn = Math.min(100 / key.easeIn.speed, key.easeIn.influence);
@@ -189,6 +204,7 @@ var bm_keyframeHelper = (function () {
                     case PropertyValueType.ThreeD_SPATIAL:
                     case PropertyValueType.TwoD_SPATIAL:
                     case PropertyValueType.SHAPE:
+                    case PropertyValueType.NO_VALUE:
                         if (interpolationType === 'linear') {
                             bezierIn.y = bezierIn.x;
                             bezierOut.y = bezierOut.x;
@@ -233,11 +249,17 @@ var bm_keyframeHelper = (function () {
                     segmentOb.n = (bezierIn.x.toString() + '_' + bezierIn.y.toString() + '_' + bezierOut.x.toString() + '_' + bezierOut.y.toString()).replace(/\./g, 'p');
                 }
                 segmentOb.t = bm_generalUtils.roundNumber(lastKey.time * frameRate, 3);
-                segmentOb.s = getPropertyValue(property.keyValue(j), true);
-                segmentOb.e = getPropertyValue(property.keyValue(j + 1), true);
-                if (!(segmentOb.s instanceof Array)) {
-                    segmentOb.s = [segmentOb.s];
-                    segmentOb.e = [segmentOb.e];
+                if(propertyValueType !== PropertyValueType.NO_VALUE) {
+                    segmentOb.s = getPropertyValue(property.keyValue(j), true);
+                    segmentOb.e = getPropertyValue(property.keyValue(j + 1), true);
+                    if (!(segmentOb.s instanceof Array)) {
+                        segmentOb.s = [segmentOb.s];
+                        segmentOb.e = [segmentOb.e];
+                    }
+                } else {
+                    segmentOb.s = keyframeValues[j-1];
+                    segmentOb.e = keyframeValues[j];
+
                 }
                 if (property.propertyValueType === PropertyValueType.ThreeD_SPATIAL || property.propertyValueType === PropertyValueType.TwoD_SPATIAL) {
                     segmentOb.to = lastKey.to;
@@ -250,19 +272,23 @@ var bm_keyframeHelper = (function () {
         }
         beziersArray.push({t: property.keyTime(j) * frameRate});
         if (property.keyOutInterpolationType(j) === KeyframeInterpolationType.HOLD || isPrevHoldInterpolated) {
-            var value = getPropertyValue(property.keyValue(j), true);
-            if (!(value instanceof Array)) {
-                value = [value];
+            if(propertyValueType !== PropertyValueType.NO_VALUE) {
+                var value = getPropertyValue(property.keyValue(j), true);
+                if (!(value instanceof Array)) {
+                    value = [value];
+                } else {
+                    value = keyframeValues[j-1];
+                }
+                beziersArray[beziersArray.length - 1].s = value;
             }
-            beziersArray[beziersArray.length - 1].s = value;
             beziersArray[beziersArray.length - 1].h = 1;
         }
         return beziersArray;
     }
     
-    function exportKeyframes(prop, frRate) {
+    function exportKeyframes(prop, frRate, keyframeValues) {
         var returnOb = {
-            k: exportKeys(prop, frRate)
+            k: exportKeys(prop, frRate, keyframeValues)
         };
         bm_expressionHelper.checkExpression(prop, returnOb);
         return returnOb;
