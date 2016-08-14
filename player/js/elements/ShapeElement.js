@@ -67,7 +67,7 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data,styleOb){
         var opFill;
         var stop, j, jLen;
         var mask = document.createElementNS(svgNS,"mask");
-        var maskElement = document.createElementNS(svgNS, arr.ty === 'gf' ? 'path':'g');
+        var maskElement = document.createElementNS(svgNS, arr.ty === 'gf' ? 'path':'path');
         mask.appendChild(maskElement);
         var opacityId = 'op_'+randomString(10);
         var maskId = 'mk_'+randomString(10);
@@ -156,7 +156,6 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 }
 
             }else if(arr[i].ty == 'fl'){
-                pathElement = document.createElementNS(svgNS, "path");
                 if(!data[i].c.k) {
                     pathElement.setAttribute('fill','rgb('+data[i].c.v[0]+','+data[i].c.v[1]+','+data[i].c.v[2]+')');
                     ////pathElement.style.fill = 'rgb('+data[i].c.v[0]+','+data[i].c.v[1]+','+data[i].c.v[2]+')';
