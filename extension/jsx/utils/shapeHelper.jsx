@@ -9,7 +9,7 @@ var bm_shapeHelper = (function () {
         star: 'sr',
         fill: 'fl',
         gfill: 'gf',
-        gStroke: 'sf',
+        gStroke: 'gs',
         stroke: 'st',
         merge: 'mm',
         trim: 'tm',
@@ -150,35 +150,21 @@ var bm_shapeHelper = (function () {
                 } else if (itemType === shapeItemTypes.gfill) {
                     ob = {};
                     ob.ty = itemType;
-                    var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
-                    ob.c = gradientData.c;
-                    ob.y = gradientData.o;
-                    ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
-                    ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
-                    ob.t = prop.property('Type').value;
-                    if(ob.t === 2){
-                        ob.h = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Length'), frameRate);
-                        ob.a = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Angle'), frameRate);
-                    }
+                    exportGradientData(ob,prop,frameRate, navigationShapeTree);
 
                 } else if (itemType === shapeItemTypes.gStroke) {
                     ob = {};
                     ob.ty = itemType;
-                    var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
-                    ob.c = gradientData.c;
-                    ob.y = gradientData.o;
-                    ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
-                    ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
                     ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);
+                    exportGradientData(ob,prop,frameRate, navigationShapeTree);
                     ob.lc = prop.property('Line Cap').value;
                     ob.lj = prop.property('Line Join').value;
-                    ob.t = prop.property('Type').value;
-                    if(ob.t === 2){
-                        ob.h = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Length'), frameRate);
-                        ob.a = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Angle'), frameRate);
+                    if (ob.lj === 1) {
+                        ob.ml = prop.property('Miter Limit').value;
                     }
+                    getDashData(ob,prop, frameRate);
 
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
@@ -192,30 +178,8 @@ var bm_shapeHelper = (function () {
                     if (ob.lj === 1) {
                         ob.ml = prop.property('Miter Limit').value;
                     }
-                    var j, jLen = prop.property('Dashes').numProperties;
-                    var dashesData = [];
-                    var changed = false;
-                    for (j = 0; j < jLen; j += 1) {
-                        if (prop.property('Dashes').property(j + 1).canSetExpression) {
-                            changed = true;
-                            var dashData = {};
-                            var name = '';
-                            if (prop.property('Dashes').property(j + 1).name.indexOf('Dash') !== -1) {
-                                name = 'd';
-                            } else if (prop.property('Dashes').property(j + 1).name.indexOf('Gap') !== -1) {
-                                name = 'g';
-                            } else if (prop.property('Dashes').property(j + 1).name === 'Offset') {
-                                name = 'o';
-                            }
-                            dashData.n = name;
-                            dashData.nm = prop.property('Dashes').property(j + 1).name.toLowerCase().split(' ').join('');
-                            dashData.v = bm_keyframeHelper.exportKeyframes(prop.property('Dashes').property(j + 1), frameRate);
-                            dashesData.push(dashData);
-                        }
-                    }
-                    if (changed) {
-                        ob.d = dashesData;
-                    }
+                    getDashData(ob,prop, frameRate);
+
                 } else if (itemType === shapeItemTypes.merge) {
                     ob = {};
                     ob.ty = itemType;
@@ -286,8 +250,46 @@ var bm_shapeHelper = (function () {
             
         }
     }
+
+    function exportGradientData(ob,prop,frameRate, navigationShapeTree){
+        var gradientData = bm_ProjectHelper.getGradientData(navigationShapeTree);
+        ob.c = gradientData.c;
+        ob.y = gradientData.o;
+        ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Start Point'), frameRate);
+        ob.e = bm_keyframeHelper.exportKeyframes(prop.property('End Point'), frameRate);
+        ob.t = prop.property('Type').value;
+        if(ob.t === 2){
+            ob.h = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Length'), frameRate);
+            ob.a = bm_keyframeHelper.exportKeyframes(prop.property('Highlight Angle'), frameRate);
+        }
+    }
     
-    
+    function getDashData(ob,prop, frameRate){
+        var j, jLen = prop.property('Dashes').numProperties;
+        var dashesData = [];
+        var changed = false;
+        for (j = 0; j < jLen; j += 1) {
+            if (prop.property('Dashes').property(j + 1).canSetExpression) {
+                changed = true;
+                var dashData = {};
+                var name = '';
+                if (prop.property('Dashes').property(j + 1).matchName.indexOf('ADBE Vector Stroke Dash') !== -1) {
+                    name = 'd';
+                } else if (prop.property('Dashes').property(j + 1).matchName.indexOf('ADBE Vector Stroke Gap') !== -1) {
+                    name = 'g';
+                } else if (prop.property('Dashes').property(j + 1).matchName === 'ADBE Vector Stroke Offset') {
+                    name = 'o';
+                }
+                dashData.n = name;
+                dashData.nm = prop.property('Dashes').property(j + 1).name.toLowerCase().split(' ').join('');
+                dashData.v = bm_keyframeHelper.exportKeyframes(prop.property('Dashes').property(j + 1), frameRate);
+                dashesData.push(dashData);
+            }
+        }
+        if (changed) {
+            ob.d = dashesData;
+        }
+    }
     
     
     
