@@ -5,13 +5,6 @@ var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, fsDestinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
-
-    function verifyTrackLayer(layerData, comp, pos) {
-        var nextLayerInfo = comp.layers[pos + 2];
-        if (nextLayerInfo.isTrackMatte) {
-            layerData.td = 0;
-        }
-    }
     
     function restoreParents(layers) {
         
@@ -27,6 +20,12 @@ var bm_renderManager = (function () {
                     if (!parentData.isValid) {
                         parentData.isValid = true;
                     }
+                    if(parentData.tt){
+                        delete parentData.tt;
+                    }
+                    if(parentData.td){
+                        delete parentData.td;
+                    }
                 }
             }
         }
@@ -37,6 +36,7 @@ var bm_renderManager = (function () {
     
     function createLayers(comp, layers, framerate) {
         var i, len = comp.layers.length, layerInfo, layerData, prevLayerData;
+        bm_eventDispatcher.log('createLayers');
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
             layerData = bm_layerElement.prepareLayer(layerInfo, i);
@@ -51,9 +51,10 @@ var bm_renderManager = (function () {
                     if (prevLayerData.enabled === false) {
                         prevLayerData.render = false;
                     }
-                    prevLayerData.td = false;
+                    delete prevLayerData.td;
+                    delete layerData.tt;
                 } else if (prevLayerData.render === false) {
-                    layerData.tt = false;
+                    delete layerData.tt;
                 }
             }
             if(currentCompSettings.hiddens && layerData.enabled === false){

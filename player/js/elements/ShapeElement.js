@@ -29,7 +29,7 @@ IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this._parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties);
-    if(!this.data.hd){
+    if(!this.data.hd || this.data.td){
         this.layerElement.appendChild(this.shapesContainer);
         styleUnselectableDiv(this.layerElement);
         styleUnselectableDiv(this.shapesContainer);

@@ -12,7 +12,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.appendNodeToParent = function(node) {
-    if(this.data.hd){
+    if(this.data.hd && !this.data.td){
         return;
     }
     if(this.placeholder){
