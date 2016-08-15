@@ -276,11 +276,11 @@ var bm_keyframeHelper = (function () {
                 var value = getPropertyValue(property.keyValue(j), true);
                 if (!(value instanceof Array)) {
                     value = [value];
-                } else {
-                    value = keyframeValues[j-1];
                 }
-                beziersArray[beziersArray.length - 1].s = value;
+            } else {
+                value = keyframeValues[j-1];
             }
+            beziersArray[beziersArray.length - 1].s = value;
             beziersArray[beziersArray.length - 1].h = 1;
         }
         return beziersArray;

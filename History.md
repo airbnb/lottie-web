@@ -1,3 +1,6 @@
+## V 4.4.1
+- hold keyframes fix
+
 ## V 4.4.0
 - Gradients! for svg and html renderer
 - hidden track matte layers fix
