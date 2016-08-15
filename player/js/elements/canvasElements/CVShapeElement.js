@@ -34,7 +34,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     var j, jLen;
     var ownArrays = [], ownModifiers = [], styleElem;
     for(i=len;i>=0;i-=1){
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf'){
+        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
             styleElem = {
                 type: arr[i].ty,
                 elements: []
@@ -65,15 +65,6 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                         styleElem.do = data[i].d.dashoffset;
                     }
                 }
-
-            } else if(arr[i].ty == 'gf') {
-                data[i].s = PropertyFactory.getProp(this,arr[i].s,1,null,dynamicProperties);
-                data[i].e = PropertyFactory.getProp(this,arr[i].e,1,null,dynamicProperties);
-                if(arr[i].t === 2){
-                    data[i].h = PropertyFactory.getProp(this,arr[i].h,1,0.01,dynamicProperties);
-                    data[i].a = PropertyFactory.getProp(this,arr[i].a,1,degToRads,dynamicProperties);
-                }
-                styleElem.c = arr[i].c;
 
             }
             this.stylesList.push(styleElem);
@@ -224,8 +215,6 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             this.renderPath(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'gf'){
-            this.renderGFill(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'st'){
             this.renderStroke(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'gr'){
@@ -243,10 +232,6 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
     renderer.ctxTransform(this.finalTransform.mat.props);
     for(i=0;i<len;i+=1){
         type = this.stylesList[i].type;
-        if(type === 'gf'){
-            ctx.save();
-
-        }
         if(type === 'st' && this.stylesList[i].wi === 0){
             continue;
         }
@@ -258,15 +243,6 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             ctx.lineCap = this.stylesList[i].lc;
             ctx.lineJoin = this.stylesList[i].lj;
             ctx.miterLimit = this.stylesList[i].ml || 0;
-        }else if(type === 'gf'){
-            var grad = ctx.createLinearGradient(this.stylesList[i].x1,this.stylesList[i].y1,this.stylesList[i].x2,this.stylesList[i].y2);
-            jLen = this.stylesList[i].c.length;
-            j = 0;
-            while(j<jLen){
-                grad.addColorStop(this.stylesList[i].c[j][0],"rgb("+Math.round(this.stylesList[i].c[j][1]*255)+","+Math.round(this.stylesList[i].c[j][2]*255)+","+Math.round(this.stylesList[i].c[j][3]*255)+")");
-                j += 1;
-            }
-            ctx.fillStyle = grad;
         }else{
             ctx.fillStyle = this.stylesList[i].co;
         }
@@ -305,29 +281,6 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
         }
         if(type !== 'st'){
             ctx.fill();
-        }
-        if(type === 'gf'){
-            ctx.globalCompositeOperation = 'destination-in';
-            jLen = elems.length;
-            for(j=0;j<jLen;j+=1){
-                nodes = elems[j].trNodes;
-                kLen = nodes.length;
-
-                for(k=0;k<kLen;k+=1){
-                    if(nodes[k].t == 'm'){
-                        ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
-                    }else if(nodes[k].t == 'c'){
-                        ctx.bezierCurveTo(nodes[k].p1[0],nodes[k].p1[1],nodes[k].p2[0],nodes[k].p2[1],nodes[k].p3[0],nodes[k].p3[1]);
-                    }else{
-                        ctx.closePath();
-                    }
-                }
-                if(type === 'st'){
-                    ctx.stroke();
-                }
-            }
-            ctx.restore();
-
         }
         renderer.restore();
     }
@@ -405,17 +358,6 @@ CVShapeElement.prototype.renderFill = function(styleData,viewData, groupTransfor
     if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
         styleElem.coOp = viewData.o.v*groupTransform.opacity;
     }
-};
-
-CVShapeElement.prototype.renderGFill = function(styleData,viewData, groupTransform){
-    var styleElem = viewData.style;
-    if(viewData.s.mdf || viewData.e.mdf || this.firstFrame){
-        styleElem.x1 = viewData.s.v[0];
-        styleElem.y1 = viewData.s.v[1];
-        styleElem.x2 = viewData.e.v[0];
-        styleElem.y2 = viewData.e.v[1];
-    }
-
 };
 
 CVShapeElement.prototype.renderStroke = function(styleData,viewData, groupTransform){

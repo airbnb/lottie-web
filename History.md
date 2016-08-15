@@ -1,3 +1,8 @@
+## V 4.4.0
+- Gradients! for svg and html renderer
+- hidden track matte layers fix
+- shape stroke performance and fix improvements
+
 ## V 4.3.3
 - Hidden layer and Guided layers are now exportable if configured (could be needed for expressions)
 - Config is remembered
