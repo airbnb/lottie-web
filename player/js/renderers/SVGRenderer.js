@@ -33,8 +33,10 @@ SVGRenderer.prototype.createItem = function(layer,parentContainer,comp, placehol
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
     var  i, len = layers.length;
     if(!elements){
+        this.elements = Array.call(null,{length:layers.length});
         elements = this.elements;
     }
+    return;
     if(!parentContainer){
         parentContainer = this.animationItem.container;
     }
@@ -45,14 +47,13 @@ SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp
     for (i = len - 1; i >= 0; i--) {
         elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
         if (layers[i].ty === 0) {
-            elems = [];
+            elems = Array.call(null,{length:layers[i].layers.length});
             this.buildItems(layers[i].layers,elements[i].getDomElement(),elems,elements[i], elements[i].placeholder);
             elements[i].setElements(elems);
         }
         if(layers[i].td){
             elements[i+1].setMatte(elements[i].layerId);
         }
-        //NullLayer
     }
 };
 
@@ -72,7 +73,7 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
                 placeholder = elements[j];
                 elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
                 if (layers[i].ty === 0) {
-                    elems = [];
+                    elems = Array.call(null,{length:layers[i].layers.length});
                     this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
                     elements[j].setElements(elems);
                 }
@@ -213,6 +214,23 @@ SVGRenderer.prototype.destroy = function () {
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
+SVGRenderer.prototype.buildItem = function(pos){
+    var elements = this.elements;
+    elements[pos] = this.createItem(this.layers[pos],this.animationItem.container,this);
+    /*if(layers[i].td){
+        elements[i+1].setMatte(elements[i].layerId);
+    }*/
+};
+
+SVGRenderer.prototype.checkLayer = function (pos, num) {
+    console.log('data:',data);
+    var data = this.layers[pos];
+    if(data.ip - data.st <= num && data.op - data.st > num)
+    {
+        this.buildItem(pos);
+    }
+};
+
 SVGRenderer.prototype.renderFrame = function(num){
     if(this.renderedFrame == num || this.destroyed){
         return;
@@ -228,10 +246,17 @@ SVGRenderer.prototype.renderFrame = function(num){
     this.globalData.frameId += 1;
     var i, len = this.layers.length;
     for (i = len - 1; i >= 0; i--) {
-        this.elements[i].prepareFrame(num - this.layers[i].st);
+        if(!this.elements[i]){
+            this.checkLayer(i, num);
+        }
+        if(this.elements[i]){
+            this.elements[i].prepareFrame(num - this.layers[i].st);
+        }
     }
     for (i = len - 1; i >= 0; i--) {
-        this.elements[i].renderFrame();
+        if(this.elements[i]){
+            this.elements[i].renderFrame();
+        }
     }
 };
 

@@ -23,6 +23,10 @@ var Expressions = (function(){
         }
     }
 
+    function addLayerInterface(layer){
+
+    }
+
     function initExpressions(animation){
         animation.renderer.compInterface = CompExpressionInterface(animation.renderer);
         addLayersInterface(animation.renderer.elements);
