@@ -25,6 +25,7 @@ IImageElement.prototype.createElements = function(){
     this.innerElem = document.createElementNS(svgNS,'image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
+    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
     if(this.layerElement === this.parentContainer){
         this.appendNodeToParent(this.innerElem);
     }else{
