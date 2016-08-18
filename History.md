@@ -1,3 +1,6 @@
+## V 4.4.2
+- shape color interpolation fix
+
 ## V 4.4.1
 - hold keyframes fix
 

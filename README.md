@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.2
+- shape color interpolation fix
+
 ## V 4.4.1
 - hold keyframes fix
 
