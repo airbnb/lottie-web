@@ -63,7 +63,7 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
     data.cst = stops;
 }
 
-IShapeElement.prototype.setGradientOpacity = function(arr, data,styleOb){
+IShapeElement.prototype.setGradientOpacity = function(arr, data){
     if((arr.g.k.k[0].s && arr.g.k.k[0].s.length > arr.g.p*4) || arr.g.k.k.length > arr.g.p*4){
         var opFill;
         var stop, j, jLen;
@@ -96,7 +96,7 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data,styleOb){
         this.globalData.defs.appendChild(mask);
         data.of = opFill;
         data.ost = stops;
-        styleOb.mElem = maskElement;
+        data.msElem = maskElement;
         return maskId;
     }
 };
@@ -143,6 +143,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
                 data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
+                this.shapesContainer.appendChild(pathElement);
             } else {
                 data[i].g = PropertyFactory.getGradientProp(this,arr[i].g,dynamicProperties);
                 if(arr[i].t == 2){
@@ -151,11 +152,24 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 }
                 data[i].s = PropertyFactory.getProp(this,arr[i].s,1,null,dynamicProperties);
                 data[i].e = PropertyFactory.getProp(this,arr[i].e,1,null,dynamicProperties);
-                this.setGradientData(pathElement,arr[i],data[i], styleOb);
-                var maskId = this.setGradientOpacity(arr[i],data[i], styleOb);
+                var clippedElement = document.createElementNS(svgNS,'path');
+                data[i].cElem = clippedElement;
+                var compSize = this.comp.globalData.compSize;
+                var clippedG = document.createElementNS(svgNS,'g');
+                clippedElement.setAttribute('d','M0,0 h'+compSize.w+' v'+compSize.h+' h-'+compSize.w + 'v-'+compSize.h+'z');
+                clippedG.appendChild(clippedElement);
+                this.setGradientData(clippedG,arr[i],data[i], styleOb);
+                var clipId = 'cp_'+randomString(10);
+                clippedG.setAttribute('clip-path','url(#'+clipId+')');
+                var maskId = this.setGradientOpacity(arr[i],data[i]);
                 if(maskId){
-                    pathElement.setAttribute('mask','url(#'+maskId+')');
+                    clippedElement.setAttribute('mask','url(#'+maskId+')');
                 }
+                var clippingElement = document.createElementNS(svgNS,'clipPath');
+                clippingElement.setAttribute('id',clipId);
+                clippingElement.appendChild(pathElement);
+                this.globalData.defs.appendChild(clippingElement);
+                this.shapesContainer.appendChild(clippedG);
             }
 
             if(arr[i].ln){
@@ -164,7 +178,6 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             if(arr[i].cl){
                 pathElement.setAttribute('class',arr[i].cl);
             }
-            this.shapesContainer.appendChild(pathElement);
             styleOb.pElem = pathElement;
             this.stylesList.push(styleOb);
             data[i].style = styleOb;
@@ -355,9 +368,6 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             }
             if (this.stylesList[i].mdf || this.firstFrame) {
                 this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
-                if (this.stylesList[i].mElem) {
-                    this.stylesList[i].mElem.setAttribute('d', this.stylesList[i].d);
-                }
             }
         }
         if (this.firstFrame) {
@@ -428,14 +438,39 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
     }
     var gfill = viewData.gf;
     var opFill = viewData.of;
-    if(viewData.s.mdf || this.firstFrame){
+    var pt1 = viewData.s.v,pt2 = viewData.e.v;
+    if(groupTransform.matMdf || this.firstFrame){
+        viewData.cElem.setAttribute('transform',groupTransform.mat.to2dCSS());
+        var compSize = this.comp.globalData.compSize;
+        var pts = groupTransform.mat.inversePoints([[0,0],[compSize.w,0],[compSize.w,compSize.h],[0,compSize.h]]);
+        var newPoints = 'M'+ (pts[0][0])+','+ (pts[0][1]);
+        newPoints += ' L'+pts[1][0]+','+pts[1][1];
+        newPoints += ' L'+pts[2][0]+','+pts[2][1];
+        newPoints += ' L'+pts[3][0]+','+pts[3][1];
+        newPoints += 'z';
+        viewData.cElem.setAttribute('d',newPoints);
+        if(viewData.msElem){
+            viewData.msElem.setAttribute('d',newPoints);
+        }
+        //viewData.cElem.setAttribute();
+        //console.log(groupTransform.mat.props);
+        /*var mtt = new Matrix();
+        mtt.translate(100,100);
+        var compPt = mtt.inversePoint(0,0,0);*/
+    }
+    if(groupTransform.opMdf || this.firstFrame){
+        viewData.cElem.setAttribute('opacity',groupTransform.opacity);
+    }
+    //clippedElement.setAttribute('transform','matrix(1,0,0,1,-100,0)');
+    if(viewData.s.mdf || groupTransform.matMdf || this.firstFrame){
         var attr1 = styleData.t === 1 ? 'x1':'cx';
         var attr2 = attr1 === 'x1' ? 'y1':'cy';
-        gfill.setAttribute(attr1,viewData.s.v[0]);
-        gfill.setAttribute(attr2,viewData.s.v[1]);
+        //pt1 =  groupTransform.mat.applyToPointArray(viewData.s.v[0],viewData.s.v[1],0);
+        gfill.setAttribute(attr1,pt1[0]);
+        gfill.setAttribute(attr2,pt1[1]);
         if(opFill){
-            opFill.setAttribute(attr1,viewData.s.v[0]);
-            opFill.setAttribute(attr2,viewData.s.v[1]);
+            opFill.setAttribute(attr1,pt1[0]);
+            opFill.setAttribute(attr2,pt1[1]);
         }
     }
     var stops, i, len, stop;
@@ -460,33 +495,36 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
         }
     }
     if(styleData.t === 1){
-        if(viewData.e.mdf || this.firstFrame){
-            gfill.setAttribute('x2',viewData.e.v[0]);
-            gfill.setAttribute('y2',viewData.e.v[1]);
+        if(viewData.e.mdf || groupTransform.matMdf  || this.firstFrame){
+            //pt2 =  groupTransform.mat.applyToPointArray(viewData.e.v[0],viewData.e.v[1],0);
+            gfill.setAttribute('x2',pt2[0]);
+            gfill.setAttribute('y2',pt2[1]);
             if(opFill){
-                opFill.setAttribute('x2',viewData.e.v[0]);
-                opFill.setAttribute('y2',viewData.e.v[1]);
+                opFill.setAttribute('x2',pt2[0]);
+                opFill.setAttribute('y2',pt2[1]);
             }
         }
     } else {
         var rad;
-        if(viewData.s.mdf || viewData.e.mdf || this.firstFrame){
-            rad = Math.sqrt(Math.pow(viewData.s.v[0]-viewData.e.v[0],2)+Math.pow(viewData.s.v[1]-viewData.e.v[1],2));
+        if(viewData.s.mdf || viewData.e.mdf || groupTransform.matMdf || this.firstFrame){
+            //pt1 =  pt1 || groupTransform.mat.applyToPointArray(viewData.s.v[0],viewData.s.v[1],0);
+            //pt2 =  pt2 || groupTransform.mat.applyToPointArray(viewData.e.v[0],viewData.e.v[1],0);
+            rad = Math.sqrt(Math.pow(pt1[0]-pt2[0],2)+Math.pow(pt1[1]-pt2[1],2));
             gfill.setAttribute('r',rad);
             if(opFill){
                 opFill.setAttribute('r',rad);
             }
         }
-        if(viewData.e.mdf || viewData.h.mdf || viewData.a.mdf || this.firstFrame){
+        if(viewData.e.mdf || viewData.h.mdf || viewData.a.mdf || groupTransform.matMdf || this.firstFrame){
             if(!rad){
-                rad = Math.sqrt(Math.pow(viewData.s.v[0]-viewData.e.v[0],2)+Math.pow(viewData.s.v[1]-viewData.e.v[1],2));
+                rad = Math.sqrt(Math.pow(pt1[0]-pt2[0],2)+Math.pow(pt1[1]-pt2[1],2));
             }
-            var ang = Math.atan2(viewData.e.v[1]-viewData.s.v[1], viewData.e.v[0]-viewData.s.v[0]);
+            var ang = Math.atan2(pt2[1]-pt1[1], pt2[0]-pt1[0]);
 
-            var percent = viewData.h.v >= 1 ? 0.99 : viewData.h.v;
+            var percent = viewData.h.v >= 1 ? 0.99 : viewData.h.v <= -1 ? -0.99:viewData.h.v;
             var dist = rad*percent;
-            var x = Math.cos(ang + viewData.a.v)*dist + viewData.s.v[0];
-            var y = Math.sin(ang + viewData.a.v)*dist + viewData.s.v[1];
+            var x = Math.cos(ang + viewData.a.v)*dist + pt1[0];
+            var y = Math.sin(ang + viewData.a.v)*dist + pt1[1];
             gfill.setAttribute('fx',x);
             gfill.setAttribute('fy',y);
             if(opFill){

@@ -13,28 +13,28 @@ var ShapePropertyFactory = (function(){
                 isHold = true;
             }else if(frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
                 if(this.keyframes[this.keyframes.length - 2].h === 1){
-                    keyPropS = this.keyframes[this.keyframes.length - 2].s[0];
+                    //keyPropS = this.keyframes[this.keyframes.length - 1].s ? this.keyframes[this.keyframes.length - 1].s[0] : this.keyframes[this.keyframes.length - 2].s[0];
+                    keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
                 }else{
                     keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
                 }
                 isHold = true;
             }else{
-                var i = 0,len = this.keyframes.length- 1, dir = 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
-
+                var i = 0,len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
                 while(flag){
                     keyData = this.keyframes[i];
                     nextKeyData = this.keyframes[i+1];
-                    if((nextKeyData.t - this.offsetTime) > frameNum && dir == 1){
+                    if((nextKeyData.t - this.offsetTime) > frameNum){
                         break;
                     }
-                    if(i < len - 1 && dir == 1 || i > 0 && dir == -1){
-                        i += dir;
+                    if(i < len - 1){
+                        i += 1;
                     }else{
                         flag = false;
                     }
                 }
                 isHold = keyData.h === 1;
-                if(isHold && i === len - 1){
+                if(isHold && i === len){
                     keyData = nextKeyData;
                 }
 
