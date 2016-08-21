@@ -439,10 +439,11 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
     var gfill = viewData.gf;
     var opFill = viewData.of;
     var pt1 = viewData.s.v,pt2 = viewData.e.v;
-    if(groupTransform.matMdf || this.firstFrame){
+    if(groupTransform.matMdf || this.finalTransform.matMdf || this.firstFrame){
         viewData.cElem.setAttribute('transform',groupTransform.mat.to2dCSS());
         var compSize = this.comp.globalData.compSize;
         var pts = groupTransform.mat.inversePoints([[0,0],[compSize.w,0],[compSize.w,compSize.h],[0,compSize.h]]);
+        pts = this.finalTransform.mat.inversePoints(pts);
         var newPoints = 'M'+ (pts[0][0])+','+ (pts[0][1]);
         newPoints += ' L'+pts[1][0]+','+pts[1][1];
         newPoints += ' L'+pts[2][0]+','+pts[2][1];
