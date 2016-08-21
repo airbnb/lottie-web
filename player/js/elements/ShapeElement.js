@@ -272,9 +272,6 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     }
 
     this.hidden = false;
-    this.transformHelper.opacity = this.finalTransform.opacity;
-    this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = this.finalTransform.opMdf;
     this.renderModifiers();
     this.renderShape(this.transformHelper,null,null,true);
 };
@@ -423,7 +420,6 @@ IShapeElement.prototype.renderFill = function(styleData,viewData, groupTransform
 };
 
 IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTransform){
-    var styleElem = viewData.style;
     var gfill = viewData.gf;
     var opFill = viewData.of;
     var pt1 = viewData.s.v,pt2 = viewData.e.v;
