@@ -18,7 +18,6 @@ var PropertyFactory = (function(){
                 keyData = this.keyframes[i];
                 nextKeyData = this.keyframes[i+1];
                 if(i == len-1 && frameNum >= nextKeyData.t - this.offsetTime){
-                    console.log('aaa');
                     if(keyData.h){
                         keyData = nextKeyData;
                     }

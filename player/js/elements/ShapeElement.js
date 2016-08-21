@@ -4,7 +4,6 @@ function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.stylesList = [];
     this.viewData = [];
     this.shapeModifiers = [];
-    this.shapesContainer = document.createElementNS(svgNS,'g');
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, IShapeElement);
@@ -30,9 +29,7 @@ IShapeElement.prototype.createElements = function(){
     this._parent.createElements.call(this);
     this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties);
     if(!this.data.hd || this.data.td){
-        this.layerElement.appendChild(this.shapesContainer);
         styleUnselectableDiv(this.layerElement);
-        styleUnselectableDiv(this.shapesContainer);
     }
     //this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.elemInterface));
 };
@@ -143,7 +140,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
                 data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
-                this.shapesContainer.appendChild(pathElement);
+                this.layerElement.appendChild(pathElement);
             } else {
                 data[i].g = PropertyFactory.getGradientProp(this,arr[i].g,dynamicProperties);
                 if(arr[i].t == 2){
@@ -169,7 +166,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 clippingElement.setAttribute('id',clipId);
                 clippingElement.appendChild(pathElement);
                 this.globalData.defs.appendChild(clippingElement);
-                this.shapesContainer.appendChild(clippedG);
+                this.layerElement.appendChild(clippedG);
             }
 
             if(arr[i].ln){
@@ -275,9 +272,6 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     }
 
     this.hidden = false;
-    if(this.finalTransform.matMdf && !this.data.hasMask){
-        this.shapesContainer.setAttribute('transform',this.finalTransform.mat.to2dCSS());
-    }
     this.transformHelper.opacity = this.finalTransform.opacity;
     this.transformHelper.matMdf = false;
     this.transformHelper.opMdf = this.finalTransform.opMdf;
@@ -430,12 +424,6 @@ IShapeElement.prototype.renderFill = function(styleData,viewData, groupTransform
 
 IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTransform){
     var styleElem = viewData.style;
-
-    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        var attr = styleData.ty === 'gf' ? 'fill-opacity':'stroke-opacity';
-        styleElem.pElem.setAttribute(attr,viewData.o.v*groupTransform.opacity);
-        ////styleElem.pElem.style.fillOpacity = viewData.o.v*groupTransform.opacity;
-    }
     var gfill = viewData.gf;
     var opFill = viewData.of;
     var pt1 = viewData.s.v,pt2 = viewData.e.v;
@@ -459,8 +447,11 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
         mtt.translate(100,100);
         var compPt = mtt.inversePoint(0,0,0);*/
     }
-    if(groupTransform.opMdf || this.firstFrame){
-        viewData.cElem.setAttribute('opacity',groupTransform.opacity);
+
+    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
+        var attr = styleData.ty === 'gf' ? 'fill-opacity':'stroke-opacity';
+        viewData.cElem.setAttribute(attr,viewData.o.v*groupTransform.opacity);
+        ////styleElem.pElem.style.fillOpacity = viewData.o.v*groupTransform.opacity;
     }
     //clippedElement.setAttribute('transform','matrix(1,0,0,1,-100,0)');
     if(viewData.s.mdf || groupTransform.matMdf || this.firstFrame){

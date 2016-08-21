@@ -447,6 +447,7 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         var velocityAtTime = function velocityAtTime(t) {
+            console.log(this);
             return this.getVelocityAtTime(t);
         }.bind(this);
 
