@@ -132,11 +132,6 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
             //interfaceFunction.name = shape.nm;
             interfaceFunction.content = interfaceFunction;
             interfaceFunction.nm = shape.nm;
@@ -161,8 +156,7 @@ var ShapeExpressionInterface = (function(){
                     }
                     return view.o.v;
                 },
-                _name: shape.nm,
-                name: shape.nm
+                _name: shape.nm
             };
             return ob;
         }
@@ -206,8 +200,7 @@ var ShapeExpressionInterface = (function(){
                     }
                     return this.dashOb;
                 },
-                _name: shape.nm,
-                name: shape.nm
+                _name: shape.nm
             };
             return ob;
         }
@@ -264,11 +257,6 @@ var ShapeExpressionInterface = (function(){
                 }
             });
             Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -385,11 +373,6 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
             interfaceFunction.ty = 'tr';
             return interfaceFunction;
         }
@@ -433,11 +416,6 @@ var ShapeExpressionInterface = (function(){
                 }
             });
             Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'name', {
                 get: function(){
                     return shape.nm;
                 }
@@ -558,11 +536,6 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
-            Object.defineProperty(interfaceFunction, 'name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
             return interfaceFunction;
         }
     }());
@@ -584,8 +557,7 @@ var ShapeExpressionInterface = (function(){
                     }
                     return prop.v;
                 },
-                _name: shape.nm,
-                name: shape.nm
+                _name: shape.nm
             }
             return ob;
         }

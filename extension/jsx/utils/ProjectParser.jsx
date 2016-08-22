@@ -29,27 +29,20 @@ var bm_ProjectHelper = (function(){
         }
         numKeys = numKeys ? numKeys : 1;
         var gradientIndex = 0, navigationIndex = 0;
-        bm_eventDispatcher.log('--- getGradientData ---');
         var i = 0, len = shapeNavigation.length;
         while(i<len){
             navigationIndex = fileString.indexOf(shapeNavigation[i],navigationIndex);
-            bm_eventDispatcher.log('shapeNavigation[i]:' + shapeNavigation[i]);
             i += 1;
         }
-        bm_eventDispatcher.log('navigationIndex:' + navigationIndex);
         gradientIndex = fileString.indexOf('ADBE Vector Grad Colors',navigationIndex);
         var gradFillIndex = fileString.indexOf('ADBE Vector Graphic - G-Fill',navigationIndex);
         var gradStrokeIndex = fileString.indexOf('ADBE Vector Graphic - G-Stroke',navigationIndex);
-        bm_eventDispatcher.log('gradFillIndex:' + gradFillIndex);
-        bm_eventDispatcher.log('gradStrokeIndex:' + gradStrokeIndex);
         var limitIndex;
         if(gradStrokeIndex !== -1 && gradFillIndex !== -1){
             limitIndex = Math.min(gradFillIndex,gradStrokeIndex);
         } else {
             limitIndex = Math.max(gradFillIndex,gradStrokeIndex);
         }
-        bm_eventDispatcher.log('gradientIndex:' + gradientIndex);
-        bm_eventDispatcher.log('limitIndex:' + limitIndex);
         if(limitIndex === -1){
             limitIndex = Number.MAX_VALUE;
         }
