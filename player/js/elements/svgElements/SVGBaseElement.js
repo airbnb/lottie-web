@@ -76,7 +76,7 @@ SVGBaseElement.prototype.createElements = function(){
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;
         }
-    }else if(this.data.hasMask){
+    }else if(this.data.hasMask || this.data.tt){
         this.layerElement = document.createElementNS(svgNS,'g');
         if(this.data.tt){
             this.matteElement = document.createElementNS(svgNS,'g');
@@ -85,12 +85,9 @@ SVGBaseElement.prototype.createElements = function(){
         }else{
             this.appendNodeToParent(this.layerElement);
         }
-        this.maskedElement = this.layerElement;
-    }else if(this.data.tt){
-        this.matteElement = document.createElementNS(svgNS,'g');
-        this.matteElement.setAttribute('id',this.layerId);
-        this.appendNodeToParent(this.matteElement);
-        this.layerElement = this.matteElement;
+        if(this.data.hasMask){
+            this.maskedElement = this.layerElement;
+        }
     }else{
         this.layerElement = document.createElementNS(svgNS,'g');
         this.appendNodeToParent(this.layerElement);
