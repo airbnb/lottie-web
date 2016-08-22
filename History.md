@@ -1,3 +1,6 @@
+## V 4.4.5
+- Alpha masks fix
+
 ## V 4.4.4
 - performance improvement on redrawing svg
 
