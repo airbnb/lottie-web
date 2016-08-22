@@ -506,7 +506,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
             }
         }
         viewData.elements[l].st.d += pathStringTransformed;
-        viewData.elements[l].st.mdf = true;
+        viewData.elements[l].st.mdf = redraw || viewData.elements[l].st.mdf;
     }
 
 };
