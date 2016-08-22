@@ -214,7 +214,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.globalData.defs = defs;
     //Mask animation
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
+    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
     this.globalData.frameId = 0;
     this.globalData.compSize = {

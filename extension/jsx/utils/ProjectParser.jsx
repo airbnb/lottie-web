@@ -32,6 +32,7 @@ var bm_ProjectHelper = (function(){
         var i = 0, len = shapeNavigation.length;
         while(i<len){
             navigationIndex = fileString.indexOf(shapeNavigation[i],navigationIndex);
+            bm_eventDispatcher.log('shapeNavigation[i]: ' + shapeNavigation[i]);
             i += 1;
         }
         gradientIndex = fileString.indexOf('ADBE Vector Grad Colors',navigationIndex);

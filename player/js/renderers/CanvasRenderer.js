@@ -228,7 +228,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,document);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
+    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
     this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
 };
