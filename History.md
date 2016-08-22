@@ -1,3 +1,6 @@
+## V 4.4.4
+- performance improvement on redrawing svg
+
 ## V 4.4.3
 - gradient fixes
 - transparency fixes
