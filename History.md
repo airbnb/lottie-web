@@ -1,3 +1,9 @@
+## V 4.4.3
+- gradient fixes
+- transparency fixes
+- more fixes
+- assetsPath param to set where to look for assets
+
 ## V 4.4.2
 - shape color interpolation fix
 
