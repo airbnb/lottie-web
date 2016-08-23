@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.6
+- Nested gradient fix
+
 ## V 4.4.5
 - Alpha masks fix
 

@@ -1,3 +1,6 @@
+## V 4.4.6
+- Nested gradient fix
+
 ## V 4.4.5
 - Alpha masks fix
 
