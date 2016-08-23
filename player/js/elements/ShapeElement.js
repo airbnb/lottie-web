@@ -529,7 +529,7 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, addedTrans
     var opFill = viewData.of;
     var pt1 = viewData.s.v,pt2 = viewData.e.v;
     if(addedTransforms.mdf || this.firstFrame){
-        var compSize = this.comp.globalData.compSize;
+        var compSize = this.comp.data ? this.comp.data : this.comp.globalData.compSize;
         var pts = [[0,0],[compSize.w,0],[compSize.w,compSize.h],[0,compSize.h]];
         var i, len = addedTransforms.mats.length;
         for(i=0;i<len;i+=1){
