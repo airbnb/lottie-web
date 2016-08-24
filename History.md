@@ -1,3 +1,7 @@
+## V 4.4.7
+- Performance improvement
+- Stroke gradient support
+
 ## V 4.4.6
 - Nested gradient fix
 
