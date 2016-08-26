@@ -33,12 +33,12 @@ SVGRenderer.prototype.createItem = function(layer,parentContainer,comp, placehol
 SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
     var  i, len = layers.length;
     if(!elements){
-        this.elements = Array.call(null,{length:layers.length});
+        this.elements = Array.apply(null,{length:layers.length});
         elements = this.elements;
     }
     return;
     if(!parentContainer){
-        parentContainer = this.animationItem.container;
+        parentContainer = this.layerElement;
     }
     if(!comp){
         comp = this;
@@ -63,7 +63,7 @@ SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
         elements = this.elements;
     }
     if(!parentContainer){
-        parentContainer = this.animationItem.container;
+        parentContainer = this.layerElement;
     }
     var j, jLen = elements.length, elems, placeholder;
     for(i=0;i<len;i+=1){
@@ -120,24 +120,23 @@ SVGRenderer.prototype.createSolid = function (data,parentContainer,comp, placeho
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
-    this.animationItem.container = document.createElementNS(svgNS,'svg');
-    this.animationItem.container.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.animationItem.container.setAttribute('width',animData.w);
-    this.animationItem.container.setAttribute('height',animData.h);
-    this.animationItem.container.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
-    this.animationItem.container.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
-    this.animationItem.container.style.width = '100%';
-    this.animationItem.container.style.height = '100%';
-    this.animationItem.container.style.transform = 'translate3d(0,0,0)';
-    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this.animationItem.container);
+    this.layerElement = document.createElementNS(svgNS,'svg');
+    this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    this.layerElement.setAttribute('width',animData.w);
+    this.layerElement.setAttribute('height',animData.h);
+    this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    this.layerElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
+    this.layerElement.style.width = '100%';
+    this.layerElement.style.height = '100%';
+    this.layerElement.style.transform = 'translate3d(0,0,0)';
+    this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
+    this.animationItem.wrapper.appendChild(this.layerElement);
     //Mask animation
     var defs = document.createElementNS(svgNS, 'defs');
     this.globalData.defs = defs;
-    this.animationItem.container.appendChild(defs);
+    this.layerElement.appendChild(defs);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getPath = this.animationItem.getPath.bind(this.animationItem);
-    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
+    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.frameId = 0;
     this.globalData.compSize = {
         w: animData.w,
@@ -155,44 +154,29 @@ SVGRenderer.prototype.configAnimation = function(animData){
     maskElement.appendChild(rect);
     var maskedElement = document.createElementNS(svgNS,'g');
     maskedElement.setAttribute("clip-path", "url(#"+maskId+")");
-    this.animationItem.container.appendChild(maskedElement);
+    this.layerElement.appendChild(maskedElement);
     defs.appendChild(maskElement);
-    this.animationItem.container = maskedElement;
+    this.layerElement = maskedElement;
     this.layers = animData.layers;
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,defs);
 };
 
-SVGRenderer.prototype.buildStage = function (container, layers,elements) {
-    var i, len = layers.length, layerData;
-    if(!elements){
-        elements = this.elements;
-    }
-    for (i = len - 1; i >= 0; i--) {
-        layerData = layers[i];
-        if (layerData.parent !== undefined) {
-            this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements, true);
-        }
 
-        if (layerData.ty === 0) {
-            this.buildStage(elements[i].getComposingElement(), layerData.layers, elements[i].getElements());
-        }
-    }
-};
-SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,parentName,elements, resetHierarchyFlag) {
-    if(!layerData.parents){
-        layerData.parents = [];
-    }
-    if(resetHierarchyFlag){
-        element.resetHierarchy();
-    }
+
+SVGRenderer.prototype.buildElementParenting = function(element, parentName){
+    var elements = this.elements;
+    var layers = this.layers;
     var i=0, len = layers.length;
     while(i<len){
         if(layers[i].ind == parentName){
+            if(!elements[i]){
+                this.buildItem(i, this.layerElement);
+            }
             element.getHierarchy().push(elements[i]);
             if(layers[i].parent !== undefined){
-                this.buildItemParenting(layerData,element,layers,layers[i].parent,elements, false);
+                this.buildElementParenting(element,layers[i].parent);
             }
         }
         i += 1;
@@ -201,7 +185,7 @@ SVGRenderer.prototype.buildItemParenting = function (layerData,element,layers,pa
 
 SVGRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
-    this.animationItem.container = null;
+    this.layerElement = null;
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
     for (i = 0; i < len; i++) {
@@ -214,22 +198,7 @@ SVGRenderer.prototype.destroy = function () {
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.buildItem = function(pos){
-    var elements = this.elements;
-    elements[pos] = this.createItem(this.layers[pos],this.animationItem.container,this);
-    /*if(layers[i].td){
-        elements[i+1].setMatte(elements[i].layerId);
-    }*/
-};
-
-SVGRenderer.prototype.checkLayer = function (pos, num) {
-    console.log('data:',data);
-    var data = this.layers[pos];
-    if(data.ip - data.st <= num && data.op - data.st > num)
-    {
-        this.buildItem(pos);
-    }
-};
+SVGRenderer.prototype.buildItem = BaseRenderer.prototype.buildItem;
 
 SVGRenderer.prototype.renderFrame = function(num){
     if(this.renderedFrame == num || this.destroyed){
@@ -247,7 +216,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     var i, len = this.layers.length;
     for (i = len - 1; i >= 0; i--) {
         if(!this.elements[i]){
-            this.checkLayer(i, num);
+            this.checkLayer(i, num - this.layers[i].st, this.layerElement);
         }
         if(this.elements[i]){
             this.elements[i].prepareFrame(num - this.layers[i].st);
@@ -260,10 +229,34 @@ SVGRenderer.prototype.renderFrame = function(num){
     }
 };
 
+SVGRenderer.prototype.appendElementInPos = function(element, pos){
+    var newElement = element.getBaseElement();
+    if(!newElement){
+        return;
+    }
+    var i = 0;
+    var nextElement;
+    while(i<pos){
+        if(this.elements[i] && this.elements[i].getBaseElement()){
+            nextElement = this.elements[i].getBaseElement();
+        }
+        i += 1;
+    }
+    if(nextElement){
+        this.layerElement.insertBefore(newElement, nextElement);
+    } else {
+        this.layerElement.appendChild(newElement);
+    }
+}
+
+SVGRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
+
+SVGRenderer.prototype.buildItem = BaseRenderer.prototype.buildItem;
+
 SVGRenderer.prototype.hide = function(){
-    this.animationItem.container.style.display = 'none';
+    this.layerElement.style.display = 'none';
 };
 
 SVGRenderer.prototype.show = function(){
-    this.animationItem.container.style.display = 'block';
+    this.layerElement.style.display = 'block';
 };

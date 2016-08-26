@@ -1,6 +1,28 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.7
+- Performance improvement
+- Stroke gradient support
+
+## V 4.4.6
+- Nested gradient fix
+
+## V 4.4.5
+- Alpha masks fix
+
+## V 4.4.4
+- performance improvement on redrawing svg
+
+## V 4.4.3
+- gradient fixes
+- transparency fixes
+- more fixes
+- assetsPath param to set where to look for assets
+
+## V 4.4.2
+- shape color interpolation fix
+
 ## V 4.4.1
 - hold keyframes fix
 
@@ -15,9 +37,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - Filter for Comps
 - Trim path fix
 - Canvas images fix
-
-## V 4.3.2
-- preserveAspectRatio editable
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**

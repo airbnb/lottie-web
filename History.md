@@ -1,3 +1,25 @@
+## V 4.4.7
+- Performance improvement
+- Stroke gradient support
+
+## V 4.4.6
+- Nested gradient fix
+
+## V 4.4.5
+- Alpha masks fix
+
+## V 4.4.4
+- performance improvement on redrawing svg
+
+## V 4.4.3
+- gradient fixes
+- transparency fixes
+- more fixes
+- assetsPath param to set where to look for assets
+
+## V 4.4.2
+- shape color interpolation fix
+
 ## V 4.4.1
 - hold keyframes fix
 

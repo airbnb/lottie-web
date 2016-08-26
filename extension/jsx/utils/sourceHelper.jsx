@@ -68,7 +68,8 @@ var bm_sourceHelper = (function () {
             id: currentSourceData.id,
             w: currentSourceData.width,
             h: currentSourceData.height,
-            p: 'images/img_' + currentExportingImage + '.png'
+            u: 'images/',
+            p: 'img_' + currentExportingImage + '.png'
         });
         var helperComp = app.project.items.addComp('tempConverterComp', Math.max(4, currentSource.width), Math.max(4, currentSource.height), 1, 1, 1);
         helperComp.layers.add(currentSource);

@@ -192,7 +192,11 @@ var bm_keyframeHelper = (function () {
                     }
                     averageSpeed = [];
                     for (i = 0; i < len; i += 1) {
-                        averageSpeed[i] =  (key.value[i] - lastKey.value[i]) / duration;
+                        if(property.propertyValueType === PropertyValueType.COLOR){
+                            averageSpeed[i] =  255*(key.value[i] - lastKey.value[i]) / duration;
+                        } else {
+                            averageSpeed[i] =  (key.value[i] - lastKey.value[i]) / duration;
+                        }
                     }
                     break;
                 }

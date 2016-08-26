@@ -1,24 +1,12 @@
 function IImageElement(data,parentContainer,globalData,comp,placeholder){
     this.assetData = globalData.getAssetData(data.refId);
-    this.path = globalData.getPath();
     this._parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
 }
 createElement(SVGBaseElement, IImageElement);
 
 IImageElement.prototype.createElements = function(){
 
-    var self = this;
-
-    var imageLoaded = function(){
-        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
-        self.maskedElement = self.innerElem;
-    };
-
-    var img = new Image();
-    img.addEventListener('load', imageLoaded, false);
-    img.addEventListener('error', imageLoaded, false);
-
-    img.src = this.path+this.assetData.p;
+    var assetPath = this.globalData.getAssetsPath(this.assetData);
 
     this._parent.createElements.call(this);
 
@@ -26,11 +14,9 @@ IImageElement.prototype.createElements = function(){
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
     this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
-    if(this.layerElement === this.parentContainer){
-        this.appendNodeToParent(this.innerElem);
-    }else{
-        this.layerElement.appendChild(this.innerElem);
-    }
+    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+    this.maskedElement = this.innerElem;
+    this.layerElement.appendChild(this.innerElem);
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
@@ -56,14 +42,6 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
     if(this.hidden){
         this.hidden = false;
         this.innerElem.setAttribute('visibility', 'visible');
-    }
-    if(!this.data.hasMask){
-        if(this.finalTransform.matMdf || this.firstFrame){
-            this.innerElem.setAttribute('transform',this.finalTransform.mat.to2dCSS());
-        }
-        if(this.finalTransform.opMdf || this.firstFrame){
-            this.innerElem.setAttribute('opacity',this.finalTransform.opacity);
-        }
     }
     if(this.firstFrame){
         this.firstFrame = false;

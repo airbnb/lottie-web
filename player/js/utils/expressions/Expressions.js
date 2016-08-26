@@ -3,7 +3,7 @@ var Expressions = (function(){
     ob.initExpressions = initExpressions;
     ob.getEffectsManager = getEffectsManager;
 
-    function addLayersInterface(layers){
+    /*function addLayersInterface(layers){
         var i, len = layers.length;
         for(i=0;i<len;i+=1){
             if(!layers[i].layerInterface){
@@ -21,15 +21,11 @@ var Expressions = (function(){
                 addLayersInterface(layers[i].elements);
             }
         }
-    }
-
-    function addLayerInterface(layer){
-
-    }
+    }*/
 
     function initExpressions(animation){
         animation.renderer.compInterface = CompExpressionInterface(animation.renderer);
-        addLayersInterface(animation.renderer.elements);
+        //addLayersInterface(animation.renderer.elements);
     }
 
     function getEffectsManager(data,element,dynamicProperties){

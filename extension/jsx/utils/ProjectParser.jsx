@@ -32,6 +32,7 @@ var bm_ProjectHelper = (function(){
         var i = 0, len = shapeNavigation.length;
         while(i<len){
             navigationIndex = fileString.indexOf(shapeNavigation[i],navigationIndex);
+            bm_eventDispatcher.log('shapeNavigation[i]: ' + shapeNavigation[i]);
             i += 1;
         }
         gradientIndex = fileString.indexOf('ADBE Vector Grad Colors',navigationIndex);
@@ -51,7 +52,9 @@ var bm_ProjectHelper = (function(){
         while(currentKey < numKeys){
             var gradientData = {};
             gradientIndex = fileString.indexOf('<prop.map',gradientIndex);
-            if(gradientIndex > limitIndex){
+            bm_eventDispatcher.log('gradientIndex: ' + gradientIndex);
+            bm_eventDispatcher.log('limitIndex: ' + limitIndex);
+            if(gradientIndex > limitIndex || (gradientIndex == -1 && limitIndex == Number.MAX_VALUE)){
                 gradientData.c = [[0,1,1,1],[1,0,0,0]];
                 maxColors = Math.max(maxColors,2);
             } else {
@@ -59,6 +62,7 @@ var bm_ProjectHelper = (function(){
                 var lastIndex = fileString.indexOf(endMatch,gradientIndex);
                 var xmlString = fileString.substr(gradientIndex,lastIndex+endMatch.length-gradientIndex);
                 xmlString = xmlString.replace(/\n/g,'');
+                bm_eventDispatcher.log('xmlString:',xmlString);
                 var XML_Ob = new XML(xmlString);
                 var stops = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
                 var colors = XML_Ob['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'][1]['prop.list'][0]['prop.pair'][0]['prop.list'][0]['prop.pair'];
