@@ -11,13 +11,15 @@ var bm_renderManager = (function () {
         var layerData, parentData, i, len = layers.length, hasChangedState = false;
         for (i = 0; i < len; i += 1) {
             layerData = layers[i];
-            if (layerData.parent !== undefined && layerData.render) {
+            if (layerData.parent){
+            }
+            if (layerData.parent !== undefined && layerData.render !== false) {
                 parentData = layers[layerData.parent];
                 if (parentData.render === false) {
                     parentData.ty = bm_layerElement.layerTypes.nullLayer;
                     hasChangedState = true;
                     parentData.render = true;
-                    if (!parentData.isValid) {
+                    if (parentData.isValid === false || parentData.isGuide === false) {
                         parentData.isValid = true;
                     }
                     if(parentData.tt){
@@ -36,19 +38,29 @@ var bm_renderManager = (function () {
     
     function createLayers(comp, layers, framerate) {
         var i, len = comp.layers.length, layerInfo, layerData, prevLayerData;
-        bm_eventDispatcher.log('createLayers');
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
             layerData = bm_layerElement.prepareLayer(layerInfo, i);
             ob.renderData.exportData.ddd = layerData.ddd === 1 ? 1 : ob.renderData.exportData.ddd;
+            if(currentCompSettings.hiddens && layerData.enabled === false){
+                layerData.render = true;
+                layerData.enabled = true;
+                if(!layerData.td){
+                    layerData.hd = true;
+                }
+            }
+            if(currentCompSettings.guideds && layerData.isGuide === true){
+                layerData.render = true;
+                layerData.hd = true;
+            }
             if (layerData.td && prevLayerData && prevLayerData.td) {
                 prevLayerData.td = false;
-                if (prevLayerData.enabled === false) {
+                if (prevLayerData.enabled === false && !currentCompSettings.hiddens) {
                     prevLayerData.render = false;
                 }
             } else if (layerData.tt) {
                 if (layerData.render === false) {
-                    if (prevLayerData.enabled === false) {
+                    if (prevLayerData.enabled === false && !currentCompSettings.hiddens) {
                         prevLayerData.render = false;
                     }
                     delete prevLayerData.td;
@@ -56,15 +68,6 @@ var bm_renderManager = (function () {
                 } else if (prevLayerData.render === false) {
                     delete layerData.tt;
                 }
-            }
-            if(currentCompSettings.hiddens && layerData.enabled === false){
-                layerData.render = true;
-                layerData.hd = true;
-            }
-            if(currentCompSettings.guideds && layerData.isValid === false){
-                layerData.render = true;
-                layerData.isValid = true;
-                layerData.hd = true;
             }
             layers.push(layerData);
             pendingLayers.push({data: layerData, layer: layerInfo, framerate: framerate});
