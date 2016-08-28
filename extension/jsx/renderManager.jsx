@@ -100,18 +100,20 @@ var bm_renderManager = (function () {
         bm_textShapeHelper.reset();
         pendingLayers.length = 0;
         pendingComps.length = 0;
-        var exportData = ob.renderData.exportData;
-        exportData.assets = [];
-        exportData.comps = [];
-        exportData.fonts = [];
-        exportData.v = '4.4.7';
-        exportData.ddd = 0;
-        exportData.layers = [];
-        exportData.ip = comp.workAreaStart * comp.frameRate;
-        exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
-        exportData.fr = comp.frameRate;
-        exportData.w = comp.width;
-        exportData.h = comp.height;
+        var exportData = {
+            assets : [],
+            comps : [],
+            fonts : [],
+            layers : [],
+            v : '4.4.7',
+            ddd : 0,
+            ip : comp.workAreaStart * comp.frameRate,
+            op : (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate,
+            fr : comp.frameRate,
+            w : comp.width,
+            h : comp.height
+        };
+        ob.renderData.exportData = exportData;
         ob.renderData.firstFrame = exportData.ip * comp.frameRate;
         createLayers(comp, exportData.layers, exportData.fr);
         totalLayers = pendingLayers.length;
