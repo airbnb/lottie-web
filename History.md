@@ -1,3 +1,7 @@
+## V 4.4.8
+- hidden guided layers and parenting restore
+- split animations export resetting segments
+
 ## V 4.4.7
 - Performance improvement
 - Stroke gradient support
