@@ -53,7 +53,7 @@ If you need the latest latest version, you can still install it from here:
 ### Option 1:
 
 - Close After Effects<br/>
-- Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:<br/>
+- Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
 WINDOWS:<br/>
 C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or<br/>
 C:\<username>\AppData\Roaming\Adobe\CEP\extensions<br/>
