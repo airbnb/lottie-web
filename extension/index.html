@@ -90,6 +90,24 @@
                         </div>
                         <div class='settingsSeparator'></div>
                     </div>
+                    <div class='extraComps'>
+                        <div class='checkboxCombo'>
+                            <div class='checkbox'>
+                                <div class='circle'></div>
+                            </div>
+                            <div class='checkboxLabel'>Extra Comps (Check if expressions are pointing to external comps)</div>
+                        </div>
+                        <div class="extraCompositions">
+                            <table>
+                                <thead>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class='settingsSeparator'></div>
+                    </div>
                     <div class='standalone'>
                         <div class='checkboxCombo'>
                             <div class='checkbox'>
@@ -187,7 +205,7 @@
         </div>
     </div>
     
-    <svg width='10000' height='10000' style='position:absolute;bottom:0;left:-10000px' preserveAspectRatio='meet xMidYMid' viewBox='0 0 10000 10000'>
+    <svg width='10000' height='10000' style='position:absolute;bottom:0;left:-10000px' preserveAspectRatio='xMidYMid meet' viewBox='0 0 10000 10000'>
         <text id='textHelper' x='5000' y='5000' font-size='20' font-family='Grafolita Script' fill='#00ff00'>holala</text>
     </svg>
     
@@ -208,6 +226,7 @@
 
     <script src="js/themeManager.js"></script>
     <script src="js/controllers/compsSelection/CompsSelectionSettingsController.js"></script>
+    <script src="js/controllers/compsSelection/ExtraCompsSelectionSettingsController.js"></script>
     <script src="js/utils/messageParser.js"></script>
     <script src="js/controllers/CompSelectionController.js"></script>
     <script src="js/controllers/CompRenderController.js"></script>
@@ -280,7 +299,11 @@
             </div>
         </div>
     </script>
-
+    <script id="extraCompsSelectionTemplate" type="text/html">
+        <tr class="extraCompElement">
+            <td class="name"></td>
+        </tr>
+    </script>
         
 </body>
 </html>

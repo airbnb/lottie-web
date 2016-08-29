@@ -1,10 +1,10 @@
 var SelectionSettings = function (view) {
         
     var ob = {}, settingsView, compData, tempData = {}, callback;
-    var segments, segmentsCheckbox, segmentsTextBox;
+    var segments, segmentsCheckbox, segmentsTextBox, compositions;
     var standalone, standaloneCheckbox;
     var demo, demoCheckbox;
-    var glyphs,hiddens,guideds, glyphsCheckbox,guidedsCheckbox,hiddensCheckbox;
+    var glyphs,hiddens,guideds,extraComps, glyphsCheckbox,guidedsCheckbox,hiddensCheckbox, extraCompsCheckbox;
 
     function updateSegmentsData() {
         if (tempData.segmented) {
@@ -50,6 +50,16 @@ var SelectionSettings = function (view) {
             hiddensCheckbox.removeClass('selected');
         }
     }
+    function updateExtraCompsData() {
+        if (tempData.extraComps && tempData.extraComps.active) {
+            extraCompsCheckbox.addClass('selected');
+            ExtraCompsSelectionSettingsController.show();
+            ExtraCompsSelectionSettingsController.updateList(compositions,tempData.extraComps.list);
+        } else {
+            extraCompsCheckbox.removeClass('selected');
+            ExtraCompsSelectionSettingsController.hide();
+        }
+    }
 
     function updateGuidedsData() {
         if (tempData.guideds) {
@@ -89,6 +99,12 @@ var SelectionSettings = function (view) {
         mainController.saveData();
     }
 
+    function handleExtraCompsCheckboxClick() {
+        tempData.extraComps.active = !tempData.extraComps.active;
+        updateExtraCompsData();
+        mainController.saveData();
+    }
+
     function handleGuidedsCheckboxClick() {
         tempData.guideds = !tempData.guideds;
         updateGuidedsData();
@@ -123,13 +139,17 @@ var SelectionSettings = function (view) {
         glyphs.find('.checkboxCombo').on('click', handleGlyphsCheckboxClick);
         hiddens = settingsView.find('.hiddens');
         hiddens.find('.checkboxCombo').on('click', handleHiddensCheckboxClick);
+        extraComps = settingsView.find('.extraComps');
+        extraComps.find('.checkboxCombo').on('click', handleExtraCompsCheckboxClick);
         guideds = settingsView.find('.guideds');
         guideds.find('.checkboxCombo').on('click', handleGuidedsCheckboxClick);
         glyphsCheckbox = glyphs.find('.checkbox');
         hiddensCheckbox = hiddens.find('.checkbox');
+        extraCompsCheckbox = extraComps.find('.checkbox');
         guidedsCheckbox = guideds.find('.checkbox');
         settingsView.find('.buttons .cancel').on('click', cancelSettings);
         settingsView.find('.buttons .return').on('click', saveSettings);
+        ExtraCompsSelectionSettingsController.init(settingsView);
         updateAllData();
     }
     
@@ -139,14 +159,16 @@ var SelectionSettings = function (view) {
         updateDemoData();
         updateGlyphsData();
         updateHiddensData();
+        updateExtraCompsData();
         updateGuidedsData();
     }
 
-    function show(data, cb) {
+    function show(data, cb, comps) {
         settingsView.show();
         compData = data;
         tempData = JSON.parse(JSON.stringify(compData));
         callback = cb;
+        compositions = comps;
         updateAllData();
     }
 

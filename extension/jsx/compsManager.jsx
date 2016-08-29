@@ -29,9 +29,19 @@ var bm_compsManager = (function () {
                     demo: false,
                     glyphs: true,
                     hiddens: false,
+                    extraComps: {
+                        active: false,
+                        list:[]
+                    },
                     guideds: false
                 }
             };
+        }
+        if(!compData.settings.extraComps){
+            compData.settings.extraComps = {
+                active: false,
+                list:[]
+            }
         }
         
         compData.name = comp.name;
