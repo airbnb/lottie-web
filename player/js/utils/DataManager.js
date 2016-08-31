@@ -86,13 +86,13 @@ function dataFunctionManager(){
             //mx: distance
             //ss: sensitivity
             //dc: decay
-            arr.push({
+            /*arr.push({
                 "ty": "ms",
                 "mx":20,
                 "ss":10,
                  "dc":0.001,
                 "maxDist":200
-            });
+            });*/
         }
     }
 
