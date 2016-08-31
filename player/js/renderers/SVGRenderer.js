@@ -242,3 +242,8 @@ SVGRenderer.prototype.hide = function(){
 SVGRenderer.prototype.show = function(){
     this.animationItem.container.style.display = 'block';
 };
+
+SVGRenderer.prototype.setProjectInterface = function(pInterface){
+    console.log('setProjectInterfacesetProjectInterface');
+    this.globalData.projectInterface = pInterface;
+};
