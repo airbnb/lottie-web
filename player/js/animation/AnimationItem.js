@@ -25,6 +25,7 @@ var AnimationItem = function () {
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
+    this.subframeEnabled = subframeEnabled;
     this.segments = [];
     this.pendingSegment = false;
 };
@@ -286,8 +287,12 @@ AnimationItem.prototype.resize = function () {
     this.renderer.updateContainerSize();
 };
 
+AnimationItem.prototype.setSubframe = function(flag){
+    this.subframeEnabled = flag ? true : false;
+}
+
 AnimationItem.prototype.gotoFrame = function () {
-    if(subframeEnabled){
+    if(this.subframeEnabled){
         this.currentFrame = this.currentRawFrame;
     }else{
         this.currentFrame = Math.floor(this.currentRawFrame);
