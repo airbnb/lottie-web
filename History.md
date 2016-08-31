@@ -1,3 +1,38 @@
+## V 4.4.8
+- animation new method "setSubframe" to enable subframe rendering (true by default).
+- hidden guided layers and parenting restore
+- split animations export resetting segments
+
+## V 4.4.7
+- Performance improvement
+- Stroke gradient support
+
+## V 4.4.6
+- Nested gradient fix
+
+## V 4.4.5
+- Alpha masks fix
+
+## V 4.4.4
+- performance improvement on redrawing svg
+
+## V 4.4.3
+- gradient fixes
+- transparency fixes
+- more fixes
+- assetsPath param to set where to look for assets
+
+## V 4.4.2
+- shape color interpolation fix
+
+## V 4.4.1
+- hold keyframes fix
+
+## V 4.4.0
+- Gradients! for svg and html renderer
+- hidden track matte layers fix
+- shape stroke performance and fix improvements
+
 ## V 4.3.3
 - Hidden layer and Guided layers are now exportable if configured (could be needed for expressions)
 - Config is remembered

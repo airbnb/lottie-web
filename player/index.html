@@ -6,12 +6,14 @@
             background-color:#ccc;
             margin: 0px;
             height: 100%;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
-        #bodymovin{
-            background-color:#ddd;
-            width:1000px;
-            height:400px;
+        #bodymovin,#bodymovin2{
+            background-color:#333;
+            width:1500px;
+            height:700px;
+
             /*width:800px;
             height:500px;*/
             display:block;
@@ -107,20 +109,19 @@
 
 <script>
 
-    var count = 0;
+    var anim;
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
         path: 'exports/render/data.json'
     };
-
-    var anim;
-
     anim = bodymovin.loadAnimation(animData);
+
+
 
 
 

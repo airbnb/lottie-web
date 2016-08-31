@@ -5,6 +5,10 @@ function HShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.stylesList = [];
     this.viewData = [];
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this.addedTransforms = {
+        mdf: false,
+        mats: [this.finalTransform.mat]
+    };
 }
 createElement(HBaseElement, HShapeElement);
 var parent = HShapeElement.prototype._parent;
@@ -41,7 +45,7 @@ HShapeElement.prototype.createElements = function(){
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
-    this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties,[]);
+    this.searchShapes(this.shapesData,this.viewData,this.layerElement,this.dynamicProperties,0);
     this.buildExpressionInterface();
     this.layerElement = parent;
     if(this.data.bm !== 0){
@@ -56,9 +60,9 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     this.hidden = false;
-    this.transformHelper.opacity = this.finalTransform.opacity;
-    this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = this.finalTransform.opMdf;
     this.renderModifiers();
-    this.renderShape(this.transformHelper,null,null,true);
+    this.addedTransforms.mdf = this.finalTransform.matMdf;
+    this.addedTransforms.mats.length = 1;
+    this.addedTransforms.mats[0] = this.finalTransform.mat;
+    this.renderShape(this.transformHelper,null,null,true, null);
 };

@@ -12,7 +12,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.appendNodeToParent = function(node) {
-    if(this.data.hd){
+    if(this.data.hd && !this.data.td){
         return;
     }
     if(this.placeholder){
@@ -76,7 +76,7 @@ SVGBaseElement.prototype.createElements = function(){
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;
         }
-    }else if(this.data.hasMask){
+    }else if(this.data.hasMask || this.data.tt){
         this.layerElement = document.createElementNS(svgNS,'g');
         if(this.data.tt){
             this.matteElement = document.createElementNS(svgNS,'g');
@@ -85,20 +85,14 @@ SVGBaseElement.prototype.createElements = function(){
         }else{
             this.appendNodeToParent(this.layerElement);
         }
-        this.maskedElement = this.layerElement;
-    }else if(this.data.tt){
-        this.matteElement = document.createElementNS(svgNS,'g');
-        this.matteElement.setAttribute('id',this.layerId);
-        this.appendNodeToParent(this.matteElement);
-        this.layerElement = this.matteElement;
+        if(this.data.hasMask){
+            this.maskedElement = this.layerElement;
+        }
     }else{
-        this.layerElement = this.parentContainer;
+        this.layerElement = document.createElementNS(svgNS,'g');
+        this.appendNodeToParent(this.layerElement);
     }
     if((this.data.ln || this.data.cl) && (this.data.ty === 4 || this.data.ty === 0)){
-        if(this.layerElement === this.parentContainer){
-            this.layerElement = document.createElementNS(svgNS,'g');
-            this.appendNodeToParent(this.layerElement);
-        }
         if(this.data.ln){
             this.layerElement.setAttribute('id',this.data.ln);
         }
@@ -106,15 +100,17 @@ SVGBaseElement.prototype.createElements = function(){
             this.layerElement.setAttribute('class',this.data.cl);
         }
     }
-    if(this.data.ty === 0 && (this.finalTransform.op.k || this.finalTransform.op.p !== 1) && this.layerElement === this.parentContainer){
-        this.layerElement = document.createElementNS(svgNS,'g');
-        this.appendNodeToParent(this.layerElement);
+    if(this.data.ty === 0 && !this.checkMasks()){
+        var cp = document.createElementNS(svgNS, 'clipPath');
+        var pt = document.createElementNS(svgNS,'path');
+        pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
+        var clipId = 'cp_'+randomString(8);
+        cp.setAttribute('id',clipId);
+        this.layerElement.setAttribute('clip-path','url(#'+clipId+')');
+        cp.appendChild(pt);
+        this.globalData.defs.appendChild(cp);
     }
     if(this.data.bm !== 0){
-        if(this.layerElement === this.parentContainer){
-            this.layerElement = document.createElementNS(svgNS,'g');
-            this.appendNodeToParent(this.layerElement);
-        }
         this.setBlendMode();
     }
     if(this.layerElement !== this.parentContainer){
@@ -240,16 +236,11 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
         this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf;
     }
-    if(this.data.hasMask){
-        if(this.finalTransform.matMdf){
-            this.layerElement.setAttribute('transform',finalMat.to2dCSS());
-        }
-        if(this.finalTransform.opMdf){
-            this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
-        }
-    } else if(this.data.ty === 0 && this.finalTransform.opMdf && (this.finalTransform.op.k || this.finalTransform.op.p !== 1)){
+    if(this.finalTransform.matMdf && this.layerElement){
+        this.layerElement.setAttribute('transform',finalMat.to2dCSS());
+    }
+    if(this.finalTransform.opMdf && this.layerElement){
         this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
-        this.finalTransform.opacity = 1;
     }
     return this.isVisible;
 };

@@ -22,8 +22,10 @@ var AnimationItem = function () {
     this.renderer = null;
     this.animationID = randomString(10);
     this.scaleMode = 'fit';
+    this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
+    this.subframeEnabled = subframeEnabled;
     this.segments = [];
     this.pendingSegment = false;
 };
@@ -80,6 +82,7 @@ AnimationItem.prototype.setParams = function(params) {
         }else{
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
+        this.assetsPath = params.assetsPath;
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
         xhr.open('GET', params.path, true);
@@ -284,8 +287,12 @@ AnimationItem.prototype.resize = function () {
     this.renderer.updateContainerSize();
 };
 
+AnimationItem.prototype.setSubframe = function(flag){
+    this.subframeEnabled = flag ? true : false;
+}
+
 AnimationItem.prototype.gotoFrame = function () {
-    if(subframeEnabled){
+    if(this.subframeEnabled){
         this.currentFrame = this.currentRawFrame;
     }else{
         this.currentFrame = Math.floor(this.currentRawFrame);
@@ -541,6 +548,22 @@ AnimationItem.prototype.updaFrameModifier = function () {
 
 AnimationItem.prototype.getPath = function () {
     return this.path;
+};
+
+AnimationItem.prototype.getAssetsPath = function (assetData) {
+    var path = '';
+    if(this.assetsPath){
+        var imagePath = assetData.p;
+        if(imagePath.indexOf('images/') !== -1){
+            imagePath = imagePath.split('/')[1];
+        }
+        path = this.assetsPath + imagePath;
+    } else {
+        path = this.path;
+        path += assetData.u ? assetData.u : '';
+        path += assetData.p;
+    }
+    return path;
 };
 
 AnimationItem.prototype.getAssetData = function (id) {

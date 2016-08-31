@@ -152,7 +152,7 @@ var Matrix = (function(){
     }
 
     function translate(tx, ty, tz) {
-        tz = isNaN(tz) ? 0 : tz;
+        tz = tz || 0;
         if(tx !== 0 || ty !== 0 || tz !== 0){
             return this._t(1,0,0,0,0,1,0,0,0,0,1,0,tx,ty,tz,1);
         }
@@ -253,6 +253,22 @@ var Matrix = (function(){
         return x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14];
     }
 
+    function inversePoints(pts){
+        //var determinant = this.a * this.d - this.b * this.c;
+        var determinant = this.props[0] * this.props[5] - this.props[1] * this.props[4];
+        var a = this.props[5]/determinant;
+        var b = - this.props[1]/determinant;
+        var c = - this.props[4]/determinant;
+        var d = this.props[0]/determinant;
+        var e = (this.props[4] * this.props[13] - this.props[5] * this.props[12])/determinant;
+        var f = - (this.props[0] * this.props[13] - this.props[1] * this.props[12])/determinant;
+        var i, len = pts.length, retPts = [];
+        for(i=0;i<len;i+=1){
+            retPts[i] = [pts[i][0] * a + pts[i][1] * c + e, pts[i][0] * b + pts[i][1] * d + f, 0]
+        }
+        return retPts;
+    }
+
     function applyToPointArray(x,y,z){
         return [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
     }
@@ -306,6 +322,7 @@ var Matrix = (function(){
         this.toString = toString;
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
+        this.inversePoints = inversePoints;
         this._t = this.transform;
 
         this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];

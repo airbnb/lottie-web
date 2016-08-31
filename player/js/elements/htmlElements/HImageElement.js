@@ -1,6 +1,5 @@
 function HImageElement(data,parentContainer,globalData,comp, placeholder){
     this.assetData = globalData.getAssetData(data.refId);
-    this.path = globalData.getPath();
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(HBaseElement, HImageElement);
@@ -8,7 +7,7 @@ createElement(HBaseElement, HImageElement);
 HImageElement.prototype.createElements = function(){
 
     var imageLoaded = function(){
-        this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',this.path+this.assetData.p);
+        this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
     };
 
     var img = new Image();
@@ -37,7 +36,8 @@ HImageElement.prototype.createElements = function(){
         this.appendNodeToParent(img);
         this.innerElem = img;
     }
-    img.src = this.path+this.assetData.p;
+    var assetPath = this.globalData.getAssetsPath(this.assetData);
+    img.src = assetPath;
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }

@@ -5,27 +5,28 @@ var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, fsDestinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
-
-    function verifyTrackLayer(layerData, comp, pos) {
-        var nextLayerInfo = comp.layers[pos + 2];
-        if (nextLayerInfo.isTrackMatte) {
-            layerData.td = 0;
-        }
-    }
     
     function restoreParents(layers) {
         
         var layerData, parentData, i, len = layers.length, hasChangedState = false;
         for (i = 0; i < len; i += 1) {
             layerData = layers[i];
-            if (layerData.parent !== undefined && layerData.render) {
+            if (layerData.parent){
+            }
+            if (layerData.parent !== undefined && layerData.render !== false) {
                 parentData = layers[layerData.parent];
                 if (parentData.render === false) {
                     parentData.ty = bm_layerElement.layerTypes.nullLayer;
                     hasChangedState = true;
                     parentData.render = true;
-                    if (!parentData.isValid) {
+                    if (parentData.isValid === false || parentData.isGuide === false) {
                         parentData.isValid = true;
+                    }
+                    if(parentData.tt){
+                        delete parentData.tt;
+                    }
+                    if(parentData.td){
+                        delete parentData.td;
                     }
                 }
             }
@@ -41,29 +42,32 @@ var bm_renderManager = (function () {
             layerInfo = comp.layers[i + 1];
             layerData = bm_layerElement.prepareLayer(layerInfo, i);
             ob.renderData.exportData.ddd = layerData.ddd === 1 ? 1 : ob.renderData.exportData.ddd;
+            if(currentCompSettings.hiddens && layerData.enabled === false){
+                layerData.render = true;
+                layerData.enabled = true;
+                if(!layerData.td){
+                    layerData.hd = true;
+                }
+            }
+            if(currentCompSettings.guideds && layerData.isGuide === true){
+                layerData.render = true;
+                layerData.hd = true;
+            }
             if (layerData.td && prevLayerData && prevLayerData.td) {
                 prevLayerData.td = false;
-                if (prevLayerData.enabled === false) {
+                if (prevLayerData.enabled === false && !currentCompSettings.hiddens) {
                     prevLayerData.render = false;
                 }
             } else if (layerData.tt) {
                 if (layerData.render === false) {
-                    if (prevLayerData.enabled === false) {
+                    if (prevLayerData.enabled === false && !currentCompSettings.hiddens) {
                         prevLayerData.render = false;
                     }
-                    prevLayerData.td = false;
+                    delete prevLayerData.td;
+                    delete layerData.tt;
                 } else if (prevLayerData.render === false) {
-                    layerData.tt = false;
+                    delete layerData.tt;
                 }
-            }
-            if(currentCompSettings.hiddens && layerData.enabled === false){
-                layerData.render = true;
-                layerData.hd = true;
-            }
-            if(currentCompSettings.guideds && layerData.isValid === false){
-                layerData.render = true;
-                layerData.isValid = true;
-                layerData.hd = true;
             }
             layers.push(layerData);
             pendingLayers.push({data: layerData, layer: layerInfo, framerate: framerate});
@@ -96,18 +100,20 @@ var bm_renderManager = (function () {
         bm_textShapeHelper.reset();
         pendingLayers.length = 0;
         pendingComps.length = 0;
-        var exportData = ob.renderData.exportData;
-        exportData.assets = [];
-        exportData.comps = [];
-        exportData.fonts = [];
-        exportData.v = '4.3.3';
-        exportData.ddd = 0;
-        exportData.layers = [];
-        exportData.ip = comp.workAreaStart * comp.frameRate;
-        exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
-        exportData.fr = comp.frameRate;
-        exportData.w = comp.width;
-        exportData.h = comp.height;
+        var exportData = {
+            assets : [],
+            comps : [],
+            fonts : [],
+            layers : [],
+            v : '4.4.8',
+            ddd : 0,
+            ip : comp.workAreaStart * comp.frameRate,
+            op : (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate,
+            fr : comp.frameRate,
+            w : comp.width,
+            h : comp.height
+        };
+        ob.renderData.exportData = exportData;
         ob.renderData.firstFrame = exportData.ip * comp.frameRate;
         createLayers(comp, exportData.layers, exportData.fr);
         totalLayers = pendingLayers.length;

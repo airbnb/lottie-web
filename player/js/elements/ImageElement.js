@@ -1,6 +1,5 @@
 function IImageElement(data,parentContainer,globalData,comp,placeholder){
     this.assetData = globalData.getAssetData(data.refId);
-    this.path = globalData.getPath();
     this._parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
 }
 createElement(SVGBaseElement, IImageElement);
@@ -10,7 +9,7 @@ IImageElement.prototype.createElements = function(){
     var self = this;
 
     var imageLoaded = function(){
-        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',self.path+self.assetData.p);
+        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
         self.maskedElement = self.innerElem;
     };
 
@@ -18,7 +17,8 @@ IImageElement.prototype.createElements = function(){
     img.addEventListener('load', imageLoaded, false);
     img.addEventListener('error', imageLoaded, false);
 
-    img.src = this.path+this.assetData.p;
+    var assetPath = this.globalData.getAssetsPath(this.assetData);
+    img.src = assetPath;
 
     this._parent.createElements.call(this);
 
@@ -55,14 +55,6 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
     if(this.hidden){
         this.hidden = false;
         this.innerElem.setAttribute('visibility', 'visible');
-    }
-    if(!this.data.hasMask){
-        if(this.finalTransform.matMdf || this.firstFrame){
-            this.innerElem.setAttribute('transform',this.finalTransform.mat.to2dCSS());
-        }
-        if(this.finalTransform.opMdf || this.firstFrame){
-            this.innerElem.setAttribute('opacity',this.finalTransform.opacity);
-        }
     }
     if(this.firstFrame){
         this.firstFrame = false;

@@ -4,7 +4,6 @@ function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.stylesList = [];
     this.viewData = [];
     this.shapeModifiers = [];
-    this.shapesContainer = document.createElementNS(svgNS,'g');
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, IShapeElement);
@@ -23,16 +22,12 @@ IShapeElement.prototype.ljEnum = {
 
 IShapeElement.prototype.buildExpressionInterface = function(){};
 
-IShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
-
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this._parent.createElements.call(this);
-    this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties);
-    if(!this.data.hd){
-        this.layerElement.appendChild(this.shapesContainer);
+    this.searchShapes(this.shapesData,this.viewData,this.layerElement,this.dynamicProperties, 0);
+    if(!this.data.hd || this.data.td){
         styleUnselectableDiv(this.layerElement);
-        styleUnselectableDiv(this.shapesContainer);
     }
     //this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.elemInterface));
 };
@@ -63,7 +58,7 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
     data.cst = stops;
 }
 
-IShapeElement.prototype.setGradientOpacity = function(arr, data,styleOb){
+IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
     if((arr.g.k.k[0].s && arr.g.k.k[0].s.length > arr.g.p*4) || arr.g.k.k.length > arr.g.p*4){
         var opFill;
         var stop, j, jLen;
@@ -96,15 +91,15 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data,styleOb){
         this.globalData.defs.appendChild(mask);
         data.of = opFill;
         data.ost = stops;
-        styleOb.mElem = maskElement;
+        styleOb.msElem = maskElement;
         return maskId;
     }
 };
 
-IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
+IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProperties, level){
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownArrays = [], ownModifiers = [], styleOb;
+    var ownArrays = [], ownModifiers = [], styleOb, currentTransform;
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
             data[i] = {};
@@ -112,6 +107,8 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 type: arr[i].ty,
                 d: '',
                 ld: '',
+                lvl: level,
+                transformers:[],
                 mdf: false
             };
             var pathElement = document.createElementNS(svgNS, "path");
@@ -143,6 +140,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
                 data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
+                container.appendChild(pathElement);
             } else {
                 data[i].g = PropertyFactory.getGradientProp(this,arr[i].g,dynamicProperties);
                 if(arr[i].t == 2){
@@ -156,6 +154,8 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 if(maskId){
                     pathElement.setAttribute('mask','url(#'+maskId+')');
                 }
+                data[i].elem = pathElement;
+                container.appendChild(pathElement);
             }
 
             if(arr[i].ln){
@@ -164,7 +164,6 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             if(arr[i].cl){
                 pathElement.setAttribute('class',arr[i].cl);
             }
-            this.shapesContainer.appendChild(pathElement);
             styleOb.pElem = pathElement;
             this.stylesList.push(styleOb);
             data[i].style = styleOb;
@@ -173,22 +172,29 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             data[i] = {
                 it: []
             };
-            this.searchShapes(arr[i].it,data[i].it,dynamicProperties);
+            var g = document.createElementNS(svgNS,'g');
+            container.appendChild(g);
+            data[i].gr = g;
+            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
-                    mat: new Matrix(),
-                    opacity: 1,
-                    matMdf:false,
-                    opMdf:false,
                     op: PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties),
                     mProps: PropertyFactory.getProp(this,arr[i],2,null,dynamicProperties)
                 },
                 elements: []
             };
+            currentTransform = data[i].transform;
+            jLen = this.stylesList.length;
+            for(j=0;j<jLen;j+=1){
+                if(!this.stylesList[j].closed){
+                    this.stylesList[j].transformers.push(currentTransform);
+                }
+            }
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             data[i] = {
                 elements : [],
+                caches:[],
                 styles : [],
                 lStr: ''
             };
@@ -201,6 +207,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                 ty = 7;
             }
             data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
+            data[i].lvl = level;
             this.shapes.push(data[i].sh);
             this.addShapeToModifiers(data[i].sh);
             jLen = this.stylesList.length;
@@ -263,14 +270,8 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     this.globalToLocal([0,0,0]);
 
     this.hidden = false;
-    if(this.finalTransform.matMdf && !this.data.hasMask){
-        this.shapesContainer.setAttribute('transform',this.finalTransform.mat.to2dCSS());
-    }
-    this.transformHelper.opacity = this.finalTransform.opacity;
-    this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = this.finalTransform.opMdf;
     this.renderModifiers();
-    this.renderShape(this.transformHelper,null,null,true);
+    this.renderShape(null,null,true, null);
 };
 
 IShapeElement.prototype.hide = function(){
@@ -290,7 +291,7 @@ IShapeElement.prototype.hide = function(){
     }
 };
 
-IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain){
+IShapeElement.prototype.renderShape = function(items,data,isMain, container){
     var i, len;
     if(!items){
         items = this.shapesData;
@@ -306,42 +307,29 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
     ///
     ///
     len = items.length - 1;
-    var groupTransform,groupMatrix;
-    groupTransform = parentTransform;
     var ty;
     for(i=len;i>=0;i-=1){
         ty = items[i].ty;
         if(ty == 'tr'){
-            groupTransform = data[i].transform;
-            var mtArr = data[i].transform.mProps.v.props;
-            groupTransform.matMdf = groupTransform.mProps.mdf;
-            groupTransform.opMdf = groupTransform.op.mdf;
-            groupMatrix = groupTransform.mat;
-            groupMatrix.cloneFromProps(mtArr);
-            if(parentTransform){
-                var props = parentTransform.mat.props;
-                groupTransform.opacity = parentTransform.opacity;
-                groupTransform.opacity *= data[i].transform.op.v;
-                groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
-                groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-
-            }else{
-                groupTransform.opacity = groupTransform.op.o;
+            if(this.firstFrame || data[i].transform.op.mdf && container){
+                container.setAttribute('opacity',data[i].transform.op.v);
+            }
+            if(this.firstFrame || data[i].transform.mProps.mdf && container){
+                container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
             }
         }else if(ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr'){
-            this.renderPath(items[i],data[i],groupTransform);
+            this.renderPath(items[i],data[i]);
         }else if(ty == 'fl'){
-            this.renderFill(items[i],data[i],groupTransform);
+            this.renderFill(items[i],data[i]);
         }else if(ty == 'gf'){
-            this.renderGradient(items[i],data[i],groupTransform);
+            this.renderGradient(items[i],data[i]);
         }else if(ty == 'gs'){
-            this.renderGradient(items[i],data[i],groupTransform);
-            this.renderStroke(items[i],data[i],groupTransform);
+            this.renderGradient(items[i],data[i]);
+            this.renderStroke(items[i],data[i]);
         }else if(ty == 'st'){
-            this.renderStroke(items[i],data[i],groupTransform);
+            this.renderStroke(items[i],data[i]);
         }else if(ty == 'gr'){
-            this.renderShape(groupTransform,items[i].it,data[i].it);
+            this.renderShape(items[i].it,data[i].it,false, data[i].gr);
         }else if(ty == 'tm'){
             //
         }
@@ -356,8 +344,8 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
             }
             if (this.stylesList[i].mdf || this.firstFrame) {
                 this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
-                if (this.stylesList[i].mElem) {
-                    this.stylesList[i].mElem.setAttribute('d', this.stylesList[i].d);
+                if(this.stylesList[i].msElem){
+                    this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
                 }
             }
         }
@@ -368,81 +356,112 @@ IShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain
 
 };
 
-IShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
-    var len, i, j, jLen;
-    var pathStringTransformed = '';
-    var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
-    if(redraw){
+IShapeElement.prototype.renderPath = function(pathData,viewData){
+    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = viewData.elements.length;
+    var lvl = viewData.lvl;
+    for(l=0;l<lLen;l+=1){
+        redraw = viewData.sh.mdf || this.firstFrame;
+        pathStringTransformed = '';
         var paths = viewData.sh.paths;
         jLen = paths.length;
-        for(j=0;j<jLen;j+=1){
-            var pathNodes = paths[j];
-            if(pathNodes && pathNodes.v){
-                len = pathNodes.v.length;
-                /*drawPoint(pathNodes.v[0]);
-                drawPoint(pathNodes.i[0]);
-                drawPoint(pathNodes.o[0]);*/
-                for (i = 1; i < len; i += 1) {
-                    /*drawPoint(pathNodes.v[i]);
-                    drawPoint(pathNodes.i[i]);
-                    drawPoint(pathNodes.o[i]);*/
-                    if (i == 1) {
-                        pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+        if(viewData.elements[l].st.lvl < lvl){
+            var mat = this.mHelper.reset(), props;
+            var k, kLen = viewData.elements[l].st.lvl;
+            for(k=lvl-1;k>=kLen;k-=1){
+                redraw = viewData.elements[l].st.transformers[k - kLen].mProps.mdf || redraw;
+                props = viewData.elements[l].st.transformers[k - kLen].mProps.v.props;
+                mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+            }
+            if(redraw){
+                for(j=0;j<jLen;j+=1){
+                    pathNodes = paths[j];
+                    if(pathNodes && pathNodes.v){
+                        len = pathNodes.v.length;
+                        for (i = 1; i < len; i += 1) {
+                            if (i == 1) {
+                                pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                            }
+                            pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+                        }
+                        if (len == 1) {
+                            pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                        }
+                        if (pathNodes.c) {
+                            pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                            pathStringTransformed += 'z';
+                        }
                     }
-                    pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
                 }
-                if (len == 1) {
-                    pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                viewData.caches[l] = pathStringTransformed;
+            } else {
+                pathStringTransformed = viewData.caches[l];
+            }
+        } else {
+            if(redraw){
+                for(j=0;j<jLen;j+=1){
+                    pathNodes = paths[j];
+                    if(pathNodes && pathNodes.v){
+                        len = pathNodes.v.length;
+                        for (i = 1; i < len; i += 1) {
+                            if (i == 1) {
+                                //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                                pathStringTransformed += " M" + pathNodes.v[0].join(',');
+                            }
+                            //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+                            pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[i].join(',') + " " + pathNodes.v[i].join(',');
+                        }
+                        if (len == 1) {
+                            //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                            pathStringTransformed += " M" + pathNodes.v[0].join(',');
+                        }
+                        if (pathNodes.c) {
+                            //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                            pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[0].join(',') + " " + pathNodes.v[0].join(',');
+                            pathStringTransformed += 'z';
+                        }
+                    }
                 }
-                if (pathNodes.c) {
-                    pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                    pathStringTransformed += 'z';
-                }
-                viewData.lStr = pathStringTransformed;
+                viewData.caches[l] = pathStringTransformed;
+            } else {
+                pathStringTransformed = viewData.caches[l];
             }
         }
-    } else {
-        pathStringTransformed = viewData.lStr;
-    }
-    len = viewData.elements.length;
-    for(i=0;i<len;i+=1){
-        viewData.elements[i].st.mdf = redraw ? true : viewData.elements[i].st.mdf;
-        viewData.elements[i].st.d += pathStringTransformed;
+        viewData.elements[l].st.d += pathStringTransformed;
+        viewData.elements[l].st.mdf = redraw || viewData.elements[l].st.mdf;
     }
 
 };
 
-IShapeElement.prototype.renderFill = function(styleData,viewData, groupTransform){
+IShapeElement.prototype.renderFill = function(styleData,viewData){
     var styleElem = viewData.style;
 
     if(viewData.c.mdf || this.firstFrame){
         styleElem.pElem.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
         ////styleElem.pElem.style.fill = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
     }
-    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill-opacity',viewData.o.v*groupTransform.opacity);
-        ////styleElem.pElem.style.fillOpacity = viewData.o.v*groupTransform.opacity;
+    if(viewData.o.mdf || this.firstFrame){
+        styleElem.pElem.setAttribute('fill-opacity',viewData.o.v);
     }
 };
 
-IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTransform){
-    var styleElem = viewData.style;
-
-    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        var attr = styleData.ty === 'gf' ? 'fill-opacity':'stroke-opacity';
-        styleElem.pElem.setAttribute(attr,viewData.o.v*groupTransform.opacity);
-        ////styleElem.pElem.style.fillOpacity = viewData.o.v*groupTransform.opacity;
-    }
+IShapeElement.prototype.renderGradient = function(styleData,viewData){
     var gfill = viewData.gf;
     var opFill = viewData.of;
+    var pt1 = viewData.s.v,pt2 = viewData.e.v;
+
+    if(viewData.o.mdf || this.firstFrame){
+        var attr = styleData.ty === 'gf' ? 'fill-opacity':'stroke-opacity';
+        viewData.elem.setAttribute(attr,viewData.o.v);
+    }
+    //clippedElement.setAttribute('transform','matrix(1,0,0,1,-100,0)');
     if(viewData.s.mdf || this.firstFrame){
         var attr1 = styleData.t === 1 ? 'x1':'cx';
         var attr2 = attr1 === 'x1' ? 'y1':'cy';
-        gfill.setAttribute(attr1,viewData.s.v[0]);
-        gfill.setAttribute(attr2,viewData.s.v[1]);
+        gfill.setAttribute(attr1,pt1[0]);
+        gfill.setAttribute(attr2,pt1[1]);
         if(opFill){
-            opFill.setAttribute(attr1,viewData.s.v[0]);
-            opFill.setAttribute(attr2,viewData.s.v[1]);
+            opFill.setAttribute(attr1,pt1[0]);
+            opFill.setAttribute(attr2,pt1[1]);
         }
     }
     var stops, i, len, stop;
@@ -467,18 +486,18 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
         }
     }
     if(styleData.t === 1){
-        if(viewData.e.mdf || this.firstFrame){
-            gfill.setAttribute('x2',viewData.e.v[0]);
-            gfill.setAttribute('y2',viewData.e.v[1]);
+        if(viewData.e.mdf  || this.firstFrame){
+            gfill.setAttribute('x2',pt2[0]);
+            gfill.setAttribute('y2',pt2[1]);
             if(opFill){
-                opFill.setAttribute('x2',viewData.e.v[0]);
-                opFill.setAttribute('y2',viewData.e.v[1]);
+                opFill.setAttribute('x2',pt2[0]);
+                opFill.setAttribute('y2',pt2[1]);
             }
         }
     } else {
         var rad;
         if(viewData.s.mdf || viewData.e.mdf || this.firstFrame){
-            rad = Math.sqrt(Math.pow(viewData.s.v[0]-viewData.e.v[0],2)+Math.pow(viewData.s.v[1]-viewData.e.v[1],2));
+            rad = Math.sqrt(Math.pow(pt1[0]-pt2[0],2)+Math.pow(pt1[1]-pt2[1],2));
             gfill.setAttribute('r',rad);
             if(opFill){
                 opFill.setAttribute('r',rad);
@@ -486,14 +505,14 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
         }
         if(viewData.e.mdf || viewData.h.mdf || viewData.a.mdf || this.firstFrame){
             if(!rad){
-                rad = Math.sqrt(Math.pow(viewData.s.v[0]-viewData.e.v[0],2)+Math.pow(viewData.s.v[1]-viewData.e.v[1],2));
+                rad = Math.sqrt(Math.pow(pt1[0]-pt2[0],2)+Math.pow(pt1[1]-pt2[1],2));
             }
-            var ang = Math.atan2(viewData.e.v[1]-viewData.s.v[1], viewData.e.v[0]-viewData.s.v[0]);
+            var ang = Math.atan2(pt2[1]-pt1[1], pt2[0]-pt1[0]);
 
-            var percent = viewData.h.v >= 1 ? 0.99 : viewData.h.v;
+            var percent = viewData.h.v >= 1 ? 0.99 : viewData.h.v <= -1 ? -0.99:viewData.h.v;
             var dist = rad*percent;
-            var x = Math.cos(ang + viewData.a.v)*dist + viewData.s.v[0];
-            var y = Math.sin(ang + viewData.a.v)*dist + viewData.s.v[1];
+            var x = Math.cos(ang + viewData.a.v)*dist + pt1[0];
+            var y = Math.sin(ang + viewData.a.v)*dist + pt1[1];
             gfill.setAttribute('fx',x);
             gfill.setAttribute('fy',y);
             if(opFill){
@@ -505,7 +524,7 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData, groupTrans
     }
 };
 
-IShapeElement.prototype.renderStroke = function(styleData,viewData, groupTransform){
+IShapeElement.prototype.renderStroke = function(styleData,viewData){
     var styleElem = viewData.style;
     //TODO fix dashes
     var d = viewData.d;
@@ -520,14 +539,13 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData, groupTransfo
         styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
         ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
     }
-    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-opacity',viewData.o.v*groupTransform.opacity);
-        ////styleElem.pElem.style.strokeOpacity =viewData.o.v*groupTransform.opacity;
+    if(viewData.o.mdf || this.firstFrame){
+        styleElem.pElem.setAttribute('stroke-opacity',viewData.o.v);
     }
     if(viewData.w.mdf || this.firstFrame){
         styleElem.pElem.setAttribute('stroke-width',viewData.w.v);
-        if(styleElem.mElem){
-            styleElem.mElem.setAttribute('stroke-width',viewData.w.v);
+        if(styleElem.msElem){
+            styleElem.msElem.setAttribute('stroke-width',viewData.w.v);
         }
         ////styleElem.pElem.style.strokeWidth = viewData.w.v;
     }

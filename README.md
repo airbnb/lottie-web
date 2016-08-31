@@ -1,19 +1,47 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.8
+- animation new method "setSubframe" to enable subframe rendering (true by default).
+- hidden guided layers and parenting restore
+- split animations export resetting segments
+
+## V 4.4.7
+- Performance improvement
+- Stroke gradient support
+
+## V 4.4.6
+- Nested gradient fix
+
+## V 4.4.5
+- Alpha masks fix
+
+## V 4.4.4
+- performance improvement on redrawing svg
+
+## V 4.4.3
+- gradient fixes
+- transparency fixes
+- more fixes
+- assetsPath param to set where to look for assets
+
+## V 4.4.2
+- shape color interpolation fix
+
+## V 4.4.1
+- hold keyframes fix
+
+## V 4.4.0
+- Gradients! for svg and html renderer
+- hidden track matte layers fix
+- shape stroke performance and fix improvements
+
 ## V 4.3.3
 - Hidden layer and Guided layers are now exportable if configured (could be needed for expressions)
 - Config is remembered
 - Filter for Comps
 - Trim path fix
 - Canvas images fix
-
-## V 4.3.2
-- preserveAspectRatio editable
-
-## V 4.3.1
-- Expression frameDuration property added
-- shape last hold keyframe fix
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**
@@ -25,7 +53,7 @@ If you need the latest latest version, you can still install it from here:
 ### Option 1:
 
 - Close After Effects<br/>
-- Extract the zipped file on build/extension/bodymovin.zip to the adobe CEP folder:<br/>
+- Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
 WINDOWS:<br/>
 C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or<br/>
 C:\<username>\AppData\Roaming\Adobe\CEP\extensions<br/>
