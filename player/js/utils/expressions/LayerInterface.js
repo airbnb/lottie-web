@@ -1,20 +1,22 @@
 var LayerExpressionInterface = (function (){
-   function toWorld(arr){
-       var toWorldMat = new Matrix();
-       toWorldMat.reset();
-       this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
-       if(this._elem.hierarchy && this._elem.hierarchy.length){
-           var i, len = this._elem.hierarchy.length;
-           for(i=0;i<len;i+=1){
-               this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-           }
-           return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-       }
-       return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-   }
+    function toWorld(arr){
+        var toWorldMat = new Matrix();
+        toWorldMat.reset();
+        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
+        if(this._elem.hierarchy && this._elem.hierarchy.length){
+            var i, len = this._elem.hierarchy.length;
+            for(i=0;i<len;i+=1){
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+            }
+            return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
+        }
+        return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
+    }
 
 
     return function(elem){
+
+        var transformInterface = TransformExpressionInterface(elem.transform);
 
         function _registerMaskInterface(maskManager){
             _thisLayerFunction.mask = maskManager.getMask.bind(maskManager);
@@ -24,8 +26,9 @@ var LayerExpressionInterface = (function (){
             switch(name){
                 case "ADBE Root Vectors Group":
                     return _thisLayerFunction.shapeInterface;
-                    //
-                    break;
+                case "Transform":
+                case "transform":
+                    return transformInterface;
                 case 4:
                     return elem.effectsManager;
             }
@@ -45,30 +48,30 @@ var LayerExpressionInterface = (function (){
         });
         Object.defineProperty(_thisLayerFunction, "rotation", {
             get: function(){
-                return elem.transform.rotation;
+                return transformInterface.rotation;
             }
         });
         Object.defineProperty(_thisLayerFunction, "scale", {
             get: function () {
-                return elem.transform.scale;
+                return transformInterface.scale;
             }
         });
 
         Object.defineProperty(_thisLayerFunction, "position", {
             get: function () {
-                    return elem.transform.position;
-                }
+                return transformInterface.position;
+            }
         });
 
         Object.defineProperty(_thisLayerFunction, "anchorPoint", {
             get: function () {
-                return elem.transform.anchorPoint;
+                return transformInterface.anchorPoint;
             }
         });
 
         Object.defineProperty(_thisLayerFunction, "transform", {
             get: function () {
-                return elem.transform;
+                return transformInterface;
             }
         });
         Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
