@@ -274,6 +274,13 @@ SVGBaseElement.prototype.setMatte = function(id){
     this.matteElement.setAttribute("mask", "url(#" + id + ")");
 };
 
+SVGBaseElement.prototype.setMatte = function(id){
+    if(!this.matteElement){
+        return;
+    }
+    this.matteElement.setAttribute("mask", "url(#" + id + ")");
+};
+
 SVGBaseElement.prototype.hide = function(){
 
 };
