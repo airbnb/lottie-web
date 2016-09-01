@@ -228,6 +228,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
         animData.assets = animData.assets.concat(animData.comps);
         animData.comps = null;
     }
+    this.renderer.searchExtraCompositions(animData.assets);
 
     this.layers = this.animationData.layers;
     this.assets = this.animationData.assets;

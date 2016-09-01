@@ -244,6 +244,21 @@ SVGRenderer.prototype.show = function(){
 };
 
 SVGRenderer.prototype.setProjectInterface = function(pInterface){
-    console.log('setProjectInterfacesetProjectInterface');
     this.globalData.projectInterface = pInterface;
+};
+
+SVGRenderer.prototype.searchExtraCompositions = function(assets){
+    var i, len = assets.length;
+    var floatingContainer = document.createElementNS(svgNS,'g');
+    for(i=0;i<len;i+=1){
+        if(assets[i].xt){
+            var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
+            var elems = [];
+            this.buildItems(assets[i].layers,comp.getDomElement(),elems,comp, comp.placeholder);
+            comp.setElements(elems);
+            comp.compInterface = CompExpressionInterface(comp);
+            Expressions.addLayersInterface(comp.elements, this.globalData.projectInterface);
+            this.globalData.projectInterface.registerComposition(comp);
+        }
+    }
 };
