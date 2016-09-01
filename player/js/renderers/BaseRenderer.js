@@ -6,6 +6,12 @@ BaseRenderer.prototype.checkLayer = function(pos, num, container){
         this.buildItem(pos, container);
     }
 };
+BaseRenderer.prototype.buildAllItems = function(){
+    var i, len = this.layers.length;
+    for(i=0;i<len;i+=1){
+        this.buildItem(i, this.layerElement);
+    }
+};
 
 BaseRenderer.prototype.buildItem = function(pos, container){
     var elements = this.elements;

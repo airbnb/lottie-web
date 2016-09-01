@@ -170,4 +170,17 @@
     border-bottom: 1px solid red;
     padding: 4px;
 }
-    
+
+#compsSelection .settingsSeparator{
+    border-bottom: 1px solid red;
+    padding: 4px;
+}
+
+#compsSelection .extraCompositions .extraCompElement{
+    width: 100%;
+}
+
+#compsSelection .extraCompositions .extraCompElement.selected {
+    background-color: #D23641;
+    color: #EAD3A8;
+}

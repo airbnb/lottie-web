@@ -6,8 +6,10 @@
             background-color:#ccc;
             margin: 0px;
             height: 100%;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
+
         #bodymovin{
             background-color:#000;
             width:1000px;
@@ -96,6 +98,7 @@
     <script src="js/utils/expressions/ShapeInterface.js"></script>
     <script src="js/utils/expressions/LayerInterface.js"></script>
     <script src="js/utils/expressions/CompInterface.js"></script>
+    <script src="js/utils/expressions/ProjectInterface.js"></script>
     <script src="js/effects/SliderEffect.js"></script>
     <script src="js/effects.js"></script>
     <!-- end Expressions -->
@@ -109,7 +112,7 @@
 
 <script>
 
-    var count = 0;
+    var anim;
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
@@ -119,10 +122,9 @@
         //animationData: anim2
         path: 'exports/render/data.json'
     };
-
-    var anim;
-
     anim = bodymovin.loadAnimation(animData);
+
+
 
 
 

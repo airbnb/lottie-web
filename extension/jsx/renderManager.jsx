@@ -1,23 +1,26 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, bm_markerHelper, app, File, bm_dataManager*/
+/*global bm_layerElement,bm_projectManager, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, bm_markerHelper, app, File, bm_dataManager*/
 
 var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, fsDestinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
+    var currentExportedComps = [];
     
     function restoreParents(layers) {
         
         var layerData, parentData, i, len = layers.length, hasChangedState = false;
         for (i = 0; i < len; i += 1) {
             layerData = layers[i];
-            if (layerData.parent !== undefined && layerData.render) {
+            if (layerData.parent){
+            }
+            if (layerData.parent !== undefined && layerData.render !== false) {
                 parentData = layers[layerData.parent];
                 if (parentData.render === false) {
                     parentData.ty = bm_layerElement.layerTypes.nullLayer;
                     hasChangedState = true;
                     parentData.render = true;
-                    if (!parentData.isValid) {
+                    if (parentData.isValid === false || parentData.isGuide === false) {
                         parentData.isValid = true;
                     }
                     if(parentData.tt){
@@ -34,21 +37,31 @@ var bm_renderManager = (function () {
         }
     }
     
-    function createLayers(comp, layers, framerate) {
+    function createLayers(comp, layers, framerate, deepTraversing) {
         var i, len = comp.layers.length, layerInfo, layerData, prevLayerData;
-        bm_eventDispatcher.log('createLayers');
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
             layerData = bm_layerElement.prepareLayer(layerInfo, i);
             ob.renderData.exportData.ddd = layerData.ddd === 1 ? 1 : ob.renderData.exportData.ddd;
+            if(currentCompSettings.hiddens && layerData.enabled === false){
+                layerData.render = true;
+                layerData.enabled = true;
+                if(!layerData.td){
+                    layerData.hd = true;
+                }
+            }
+            if(currentCompSettings.guideds && layerData.isGuide === true){
+                layerData.render = true;
+                layerData.hd = true;
+            }
             if (layerData.td && prevLayerData && prevLayerData.td) {
                 prevLayerData.td = false;
-                if (prevLayerData.enabled === false) {
+                if (prevLayerData.enabled === false && !currentCompSettings.hiddens) {
                     prevLayerData.render = false;
                 }
             } else if (layerData.tt) {
                 if (layerData.render === false) {
-                    if (prevLayerData.enabled === false) {
+                    if (prevLayerData.enabled === false && !currentCompSettings.hiddens) {
                         prevLayerData.render = false;
                     }
                     delete prevLayerData.td;
@@ -56,15 +69,6 @@ var bm_renderManager = (function () {
                 } else if (prevLayerData.render === false) {
                     delete layerData.tt;
                 }
-            }
-            if(currentCompSettings.hiddens && layerData.enabled === false){
-                layerData.render = true;
-                layerData.hd = true;
-            }
-            if(currentCompSettings.guideds && layerData.isValid === false){
-                layerData.render = true;
-                layerData.isValid = true;
-                layerData.hd = true;
             }
             layers.push(layerData);
             pendingLayers.push({data: layerData, layer: layerInfo, framerate: framerate});
@@ -79,13 +83,17 @@ var bm_renderManager = (function () {
                 bm_textShapeHelper.addComps();
             }
             if (layerData.ty === bm_layerElement.layerTypes.precomp && layerData.render !== false && layerData.compId) {
-                layerData.layers = [];
-                createLayers(layerInfo.source, layerData.layers, framerate);
+                currentExportedComps.push(layerData.compId);
+                if(deepTraversing){
+                    layerData.layers = [];
+                    createLayers(layerInfo.source, layerData.layers, framerate, deepTraversing);
+                }
             }
         }
     }
     
     function render(comp, destination, fsDestination, compSettings) {
+        currentExportedComps = [];
         bm_ProjectHelper.init();
         hasExpressionsFlag = false;
         currentCompID = comp.id;
@@ -97,23 +105,54 @@ var bm_renderManager = (function () {
         bm_textShapeHelper.reset();
         pendingLayers.length = 0;
         pendingComps.length = 0;
-        var exportData = ob.renderData.exportData;
-        exportData.assets = [];
-        exportData.comps = [];
-        exportData.fonts = [];
-        exportData.v = '4.4.7';
-        exportData.ddd = 0;
-        exportData.layers = [];
-        exportData.ip = comp.workAreaStart * comp.frameRate;
-        exportData.op = (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate;
-        exportData.fr = comp.frameRate;
-        exportData.w = comp.width;
-        exportData.h = comp.height;
+        var exportData = {
+            assets : [],
+            comps : [],
+            fonts : [],
+            layers : [],
+            v : '4.4.8',
+            ddd : 0,
+            ip : comp.workAreaStart * comp.frameRate,
+            op : (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate,
+            fr : comp.frameRate,
+            w : comp.width,
+            h : comp.height
+        };
+        currentExportedComps.push(currentCompID);
+        ob.renderData.exportData = exportData;
         ob.renderData.firstFrame = exportData.ip * comp.frameRate;
-        createLayers(comp, exportData.layers, exportData.fr);
+        createLayers(comp, exportData.layers, exportData.fr, true);
+        exportExtraComps(exportData);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
         app.scheduleTask('bm_renderManager.renderNextLayer();', 20, false);
+    }
+
+    function exportExtraComps(exportData){
+        var list = currentCompSettings.extraComps.list;
+        var i, len = list.length, compData;
+        bm_eventDispatcher.log(currentExportedComps);
+        var j, jLen = currentExportedComps.length;
+        for(i=0;i<len;i+=1){
+            j = 0;
+            while(j<jLen){
+                if(currentExportedComps[j] === list[i]){
+                    break;
+                }
+                j += 1;
+            }
+            if(j===jLen){
+                var comp = bm_projectManager.getCompositionById(list[i]);
+                compData = {
+                    layers: [],
+                    id: comp.id,
+                    nm: comp.name,
+                    xt: 1
+                };
+                createLayers(comp, compData.layers, exportData.fr, false);
+                exportData.comps.push(compData);
+            }
+        }
     }
     
     function reset() {
@@ -177,6 +216,7 @@ var bm_renderManager = (function () {
             bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Rendering layer: ' + nextLayerData.layer.name, compId: currentCompID, progress: currentLayer / totalLayers});
             bm_layerElement.renderLayer(nextLayerData);
         } else {
+            bm_eventDispatcher.log(currentCompSettings.extraComps.list.length);
             removeExtraData();
             bm_sourceHelper.exportImages(destinationPath, ob.renderData.exportData.assets, currentCompID);
         }

@@ -6,6 +6,10 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
+    if(this.data.xt){
+        this.layerElement = document.createElementNS(svgNS,'g');
+        this.buildAllItems();
+    }
 }
 createElement(SVGBaseElement, ICompElement);
 
@@ -27,7 +31,7 @@ ICompElement.prototype.hide = function(){
 
 ICompElement.prototype.prepareFrame = function(num){
     this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false){
+    if(this.isVisible===false && !this.data.xt){
         return;
     }
     var timeRemapped = num;
@@ -86,6 +90,7 @@ ICompElement.prototype.destroy = function(){
 
 ICompElement.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
 ICompElement.prototype.buildItem = BaseRenderer.prototype.buildItem;
+ICompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
 ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
 ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;

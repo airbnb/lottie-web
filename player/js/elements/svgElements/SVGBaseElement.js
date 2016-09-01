@@ -240,10 +240,10 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
         this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf;
     }
-    if(this.finalTransform.matMdf){
+    if(this.finalTransform.matMdf && this.layerElement){
         this.layerElement.setAttribute('transform',finalMat.to2dCSS());
     }
-    if(this.finalTransform.opMdf){
+    if(this.finalTransform.opMdf && this.layerElement){
         this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
     }
     return this.isVisible;

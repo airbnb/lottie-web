@@ -213,6 +213,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     console.log('FRAME ',num);*/
     this.globalData.frameNum = num;
     this.globalData.frameId += 1;
+    this.globalData.projectInterface.currentFrame = num;
     var i, len = this.layers.length;
     for (i = len - 1; i >= 0; i--) {
         if(!this.elements[i]){
@@ -252,6 +253,7 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
 SVGRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
 
 SVGRenderer.prototype.buildItem = BaseRenderer.prototype.buildItem;
+SVGRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 
 SVGRenderer.prototype.hide = function(){
     this.layerElement.style.display = 'none';
@@ -259,4 +261,22 @@ SVGRenderer.prototype.hide = function(){
 
 SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
+};
+
+SVGRenderer.prototype.setProjectInterface = function(pInterface){
+    this.globalData.projectInterface = pInterface;
+};
+
+SVGRenderer.prototype.searchExtraCompositions = function(assets){
+    var i, len = assets.length;
+    var floatingContainer = document.createElementNS(svgNS,'g');
+    for(i=0;i<len;i+=1){
+        if(assets[i].xt){
+            var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
+            comp.initExpressions();
+            //comp.compInterface = CompExpressionInterface(comp);
+            //Expressions.addLayersInterface(comp.elements, this.globalData.projectInterface);
+            this.globalData.projectInterface.registerComposition(comp);
+        }
+    }
 };

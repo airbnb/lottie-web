@@ -135,6 +135,7 @@ var bm_dataManager = (function () {
         var i, len = layers.length;
         for (i = 0; i < len; i += 1) {
             delete layers[i].isValid;
+            delete layers[i].isGuide;
             delete layers[i].render;
             delete layers[i].enabled;
             if (layers[i].ty === bm_layerElement.layerTypes.precomp && layers[i].layers) {
@@ -202,7 +203,7 @@ var bm_dataManager = (function () {
             } else {
                 demoStr = demoStr.replace('__[[RENDERER]]__', "svg");
             }
-            var demoDestinationPath = destinationPath.replace('data.json','demo.html').replace('data.js','demo.html')
+            var demoDestinationPath = destinationPath.replace('data.json','demo.html').replace('data.js','demo.html');
             var demoFile = new File(demoDestinationPath);
             demoFile.open('w', 'TEXT', '????');
             demoFile.encoding = 'UTF-8';
