@@ -48,46 +48,7 @@ CanvasRenderer.prototype.createItem = function(layer, comp, globalData){
     return this.createBase(layer,comp, globalData);
 };
 
-CanvasRenderer.prototype.buildItems = function(layers,elements, comp){
-    if(!elements){
-        elements = this.elements;
-    }
-    if(!comp){
-        comp = this;
-    }
-    var i, len = layers.length;
-    for (i = 0; i < len; i++) {
-        elements[i] = this.createItem(layers[i], comp,comp.globalData);
-        if (layers[i].ty === 0) {
-            var elems = [];
-            this.buildItems(layers[i].layers,elems,elements[i],comp.globalData);
-            elements[elements.length - 1].setElements(elems);
-        }
-    }
-};
-
-CanvasRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
-    var i, len = layers.length;
-    if(!elements){
-        elements = this.elements;
-    }
-    var j, jLen = elements.length, elems;
-    for(i=0;i<len;i+=1){
-        j = 0;
-        while(j<jLen){
-            if(elements[j].data.id == layers[i].id){
-                elements[j] = this.createItem(layers[i],this);
-                if (layers[i].ty === 0) {
-                    elems = [];
-                    this.buildItems(layers[i].layers,elems, elements[j]);
-                    elements[j].setElements(elems);
-                }
-                break;
-            }
-            j += 1;
-        }
-    }
-};
+CanvasRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
 
 CanvasRenderer.prototype.createBase = function (data, comp, globalData) {
     return new CVBaseElement(data, comp, globalData);
@@ -231,6 +192,10 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
     this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
+    this.globalData.transformCanvas = this.transformCanvas;
+    this.elements = Array.apply(null,{length:animData.layers.length});
+
+    this.updateContainerSize();
 };
 
 CanvasRenderer.prototype.updateContainerSize = function () {
@@ -267,39 +232,24 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
     var i, len = this.elements.length;
     for(i=0;i<len;i+=1){
-        if(this.elements[i].data.ty === 0){
-            this.elements[i].resize(this.transformCanvas);
+        if(this.elements[i] && this.elements[i].data.ty === 0){
+            this.elements[i].resize(this.globalData.transformCanvas);
         }
     }
 };
 
-CanvasRenderer.prototype.buildStage = function (container, layers, elements) {
-    if(!elements){
-        elements = this.elements;
-    }
-    var i, len = layers.length, layerData;
-    for (i = len - 1; i >= 0; i--) {
-        layerData = layers[i];
-        if (layerData.parent !== undefined) {
-            this.buildItemHierarchy(layerData,elements[i], layers, layerData.parent,elements, true);
-        }
-        if (layerData.ty == 0) {
-            this.buildStage(null, layerData.layers, elements[i].getElements());
-        }
-    }
-    this.updateContainerSize();
-};
-
-CanvasRenderer.prototype.buildItemHierarchy = function (data,element, layers, parentName,elements,resetHierarchyFlag) {
+CanvasRenderer.prototype.buildElementParenting = function(element, parentName){
+    var elements = this.elements;
+    var layers = this.layers;
     var i=0, len = layers.length;
-    if(resetHierarchyFlag){
-        element.resetHierarchy();
-    }
     while(i<len){
-        if(layers[i].ind === parentName){
+        if(layers[i].ind == parentName){
+            if(!elements[i]){
+                this.buildItem(i);
+            }
             element.getHierarchy().push(elements[i]);
-            if (layers[i].parent !== undefined) {
-                this.buildItemHierarchy(data,element, layers, layers[i].parent,elements, false);
+            if(layers[i].parent !== undefined){
+                this.buildElementParenting(element,layers[i].parent);
             }
         }
         i += 1;
@@ -344,16 +294,39 @@ CanvasRenderer.prototype.renderFrame = function(num){
     //console.log('--------');
     //console.log('NEW: ',num);
     var i, len = this.layers.length;
+
     for (i = 0; i < len; i++) {
-        this.elements[i].prepareFrame(num - this.layers[i].st);
+        if(!this.elements[i]){
+            this.checkLayer(i, num - this.layers[i].st, this.layerElement);
+        }
+        if(this.elements[i]){
+            this.elements[i].prepareFrame(num - this.layers[i].st);
+        }
     }
     for (i = len - 1; i >= 0; i-=1) {
-        this.elements[i].renderFrame();
+        if(this.elements[i]){
+            this.elements[i].renderFrame();
+        }
     }
     if(this.renderConfig.clearCanvas !== true){
         this.restore();
     } else {
         this.canvasContext.restore();
+    }
+};
+
+CanvasRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
+
+CanvasRenderer.prototype.buildItem = function(pos){
+    var elements = this.elements;
+    if(elements[pos]){
+        return;
+    }
+    var element = this.createItem(this.layers[pos], this,this.globalData);
+    elements[pos] = element;
+    element.initExpressions();
+    if(this.layers[pos].ty === 0){
+        element.resize(this.globalData.transformCanvas);
     }
 };
 
@@ -363,4 +336,20 @@ CanvasRenderer.prototype.hide = function(){
 
 CanvasRenderer.prototype.show = function(){
     this.animationItem.container.style.display = 'block';
+};
+
+CanvasRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
+
+CanvasRenderer.prototype.searchExtraCompositions = function(assets){
+    var i, len = assets.length;
+    var floatingContainer = document.createElementNS(svgNS,'g');
+    for(i=0;i<len;i+=1){
+        if(assets[i].xt){
+            var comp = this.createComp(assets[i],this.globalData.comp,this.globalData);
+            comp.initExpressions();
+            //comp.compInterface = CompExpressionInterface(comp);
+            //Expressions.addLayersInterface(comp.elements, this.globalData.projectInterface);
+            this.globalData.projectInterface.registerComposition(comp);
+        }
+    }
 };

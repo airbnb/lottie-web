@@ -27,3 +27,29 @@ BaseRenderer.prototype.buildItem = function(pos, container){
         element.setMatte(elements[pos - 1].layerId);
     }
 };
+
+
+BaseRenderer.prototype.includeLayers = function(newLayers,parentContainer,elements){
+    var i, len = newLayers.length;
+    var j, jLen = this.layers.length;
+    for(i=0;i<len;i+=1){
+        j = 0;
+        while(j<jLen){
+            if(this.layers[j].id == newLayers[i].id){
+                this.layers[j] = newLayers[i];
+                break;
+            }
+            j += 1;
+        }
+    }
+};
+
+BaseRenderer.prototype.setProjectInterface = function(pInterface){
+    this.globalData.projectInterface = pInterface;
+};
+
+BaseRenderer.prototype.initItems = function(){
+    if(!this.globalData.progressiveLoad){
+        this.buildAllItems();
+    }
+};

@@ -9,7 +9,7 @@ function CVBaseElement(data, comp,globalData){
 createElement(BaseElement, CVBaseElement);
 
 CVBaseElement.prototype.createElements = function(){
-
+    this.checkParenting();
 };
 
 CVBaseElement.prototype.checkBlendMode = function(globalData){

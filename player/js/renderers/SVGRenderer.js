@@ -6,7 +6,8 @@ function SVGRenderer(animationItem, config){
         frameNum: -1
     };
     this.renderConfig = {
-        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet'
+        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
+        progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.elements = [];
     this.destroyed = false;
@@ -30,64 +31,7 @@ SVGRenderer.prototype.createItem = function(layer,parentContainer,comp, placehol
     return this.createBase(layer,parentContainer,comp);
 };
 
-SVGRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
-    var  i, len = layers.length;
-    if(!elements){
-        this.elements = Array.apply(null,{length:layers.length});
-        elements = this.elements;
-    }
-    return;
-    if(!parentContainer){
-        parentContainer = this.layerElement;
-    }
-    if(!comp){
-        comp = this;
-    }
-    var elems;
-    for (i = len - 1; i >= 0; i--) {
-        elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
-        if (layers[i].ty === 0) {
-            elems = Array.call(null,{length:layers[i].layers.length});
-            this.buildItems(layers[i].layers,elements[i].getDomElement(),elems,elements[i], elements[i].placeholder);
-            elements[i].setElements(elems);
-        }
-        if(layers[i].td){
-            elements[i+1].setMatte(elements[i].layerId);
-        }
-    }
-};
-
-SVGRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
-    var i, len = layers.length;
-    if(!elements){
-        elements = this.elements;
-    }
-    if(!parentContainer){
-        parentContainer = this.layerElement;
-    }
-    var j, jLen = elements.length, elems, placeholder;
-    for(i=0;i<len;i+=1){
-        j = 0;
-        while(j<jLen){
-            if(elements[j].data.id == layers[i].id){
-                placeholder = elements[j];
-                elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
-                if (layers[i].ty === 0) {
-                    elems = Array.call(null,{length:layers[i].layers.length});
-                    this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
-                    elements[j].setElements(elems);
-                }
-                break;
-            }
-            j += 1;
-        }
-    }
-    for(i=0;i<len;i+=1){
-        if(layers[i].td){
-            elements[i+1].setMatte(elements[i].layerId);
-        }
-    }
-};
+SVGRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
 
 SVGRenderer.prototype.createBase = function (data,parentContainer,comp, placeholder) {
     return new SVGBaseElement(data, parentContainer,this.globalData,comp, placeholder);
@@ -137,6 +81,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.layerElement.appendChild(defs);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
+    this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.globalData.frameId = 0;
     this.globalData.compSize = {
         w: animData.w,
@@ -161,6 +106,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,defs);
+    this.elements = Array.apply(null,{length:animData.layers.length});
 };
 
 
@@ -254,6 +200,7 @@ SVGRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
 
 SVGRenderer.prototype.buildItem = BaseRenderer.prototype.buildItem;
 SVGRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
+SVGRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
 
 SVGRenderer.prototype.hide = function(){
     this.layerElement.style.display = 'none';
@@ -263,9 +210,7 @@ SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
 
-SVGRenderer.prototype.setProjectInterface = function(pInterface){
-    this.globalData.projectInterface = pInterface;
-};
+SVGRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
 
 SVGRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;

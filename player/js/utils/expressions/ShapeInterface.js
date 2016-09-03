@@ -40,7 +40,7 @@ var ShapeExpressionInterface = (function(){
 
     function iterateElements(shapes,view, propertyGroup){
         var arr = [];
-        var i, len = shapes.length;
+        var i, len = shapes ? shapes.length : 0;
         for(i=0;i<len;i+=1){
             if(shapes[i].ty == 'gr'){
                 arr.push(ShapeExpressionInterface.createGroupInterface(shapes[i],view[i],propertyGroup));

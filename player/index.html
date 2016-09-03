@@ -11,9 +11,9 @@
         }
 
         #bodymovin{
-            background-color:#000;
+            background-color:#fff;
             width:1000px;
-            height:300px;
+            height:800px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -119,6 +119,9 @@
         loop: false,
         autoplay: true,
         autoloadSegments: true,
+        rendererSettings:{
+            progressiveLoad: false
+        },
         //animationData: anim2
         path: 'exports/render/data.json'
     };

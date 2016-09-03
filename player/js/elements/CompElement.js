@@ -9,6 +9,8 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     if(this.data.xt){
         this.layerElement = document.createElementNS(svgNS,'g');
         this.buildAllItems();
+    } else if(!globalData.progressiveLoad){
+        this.buildAllItems();
     }
 }
 createElement(SVGBaseElement, ICompElement);

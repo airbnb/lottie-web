@@ -253,7 +253,7 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
     function checkFontsLoaded(){
         if(this.renderer.globalData.fontManager.loaded){
             dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-            this.renderer.buildItems(this.animationData.layers);
+            //this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
             setTimeout(checkFontsLoaded.bind(this),20);
@@ -279,6 +279,7 @@ AnimationItem.prototype.checkLoaded = function () {
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
+        this.renderer.initItems();
         this.trigger('DOMLoaded');
         this.isLoaded = true;
         this.gotoFrame();

@@ -4,7 +4,7 @@ ITextElement.prototype.init = function(){
     this._parent.init.call(this);
     this.lettersChangedFlag = false;
     var data = this.data;
-    this.renderedLetters = Array.apply(null,{length:data.t.d.l.length});
+    this.renderedLetters = Array.apply(null,{length:data.t.d.l ? data.t.d.l.length : 0});
     this.viewData = {
         m:{
             a: PropertyFactory.getProp(this,data.t.m.a,1,0,this.dynamicProperties)
