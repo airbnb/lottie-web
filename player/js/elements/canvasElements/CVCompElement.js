@@ -159,6 +159,5 @@ CVCompElement.prototype.createComp = CanvasRenderer.prototype.createComp;
 CVCompElement.prototype.createSolid = CanvasRenderer.prototype.createSolid;
 CVCompElement.prototype.createShape = CanvasRenderer.prototype.createShape;
 CVCompElement.prototype.createText = CanvasRenderer.prototype.createText;
-CVCompElement.prototype.createPlaceHolder = CanvasRenderer.prototype.createPlaceHolder;
 CVCompElement.prototype.createBase = CanvasRenderer.prototype.createBase;
 CVCompElement.prototype.buildElementParenting = CanvasRenderer.prototype.buildElementParenting;

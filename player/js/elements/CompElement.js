@@ -82,7 +82,9 @@ ICompElement.prototype.destroy = function(){
     this._parent.destroy.call();
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].destroy();
+        if(this.elements[i]){
+            this.elements[i].destroy();
+        }
     }
 };
 
@@ -96,6 +98,5 @@ ICompElement.prototype.createComp = SVGRenderer.prototype.createComp;
 ICompElement.prototype.createSolid = SVGRenderer.prototype.createSolid;
 ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
-ICompElement.prototype.createPlaceHolder = SVGRenderer.prototype.createPlaceHolder;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;

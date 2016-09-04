@@ -6,6 +6,24 @@ BaseRenderer.prototype.checkLayer = function(pos, num){
         this.buildItem(pos);
     }
 };
+
+BaseRenderer.prototype.createItem = function(layer){
+    switch(layer.ty){
+        case 2:
+            return this.createImage(layer);
+        case 0:
+            return this.createComp(layer);
+        case 1:
+            return this.createSolid(layer);
+        case 4:
+            return this.createShape(layer);
+        case 5:
+            return this.createText(layer);
+        case 99:
+            return null;
+    }
+    return this.createBase(layer);
+};
 BaseRenderer.prototype.buildAllItems = function(){
     var i, len = this.layers.length;
     for(i=0;i<len;i+=1){
@@ -13,7 +31,7 @@ BaseRenderer.prototype.buildAllItems = function(){
     }
 };
 
-BaseRenderer.prototype.includeLayers = function(newLayers,parentContainer,elements){
+BaseRenderer.prototype.includeLayers = function(newLayers){
     var i, len = newLayers.length;
     var j, jLen = this.layers.length;
     for(i=0;i<len;i+=1){

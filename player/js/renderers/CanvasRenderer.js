@@ -29,54 +29,32 @@ function CanvasRenderer(animationItem, config){
     this.transformMat = new Matrix();
 }
 
-CanvasRenderer.prototype.createItem = function(layer, comp, globalData){
-    switch(layer.ty){
-        case 0:
-            return this.createComp(layer, comp, globalData);
-        case 1:
-            return this.createSolid(layer, comp, globalData);
-        case 2:
-            return this.createImage(layer, comp, globalData);
-        case 4:
-            return this.createShape(layer, comp, globalData);
-        case 5:
-            return this.createText(layer, comp, globalData);
-        case 99:
-            return this.createPlaceHolder(layer, comp, globalData);
-        default:
-            return this.createBase(layer, comp, globalData);
-    }
-    return this.createBase(layer,comp, globalData);
-};
+CanvasRenderer.prototype.createItem = BaseRenderer.prototype.createItem;
 
 CanvasRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
 
-CanvasRenderer.prototype.createBase = function (data, comp, globalData) {
-    return new CVBaseElement(data, comp, globalData);
+CanvasRenderer.prototype.createBase = function (data) {
+    return new CVBaseElement(data, this, this.globalData);
 };
 
-CanvasRenderer.prototype.createShape = function (data, comp, globalData) {
-    return new CVShapeElement(data, comp, globalData);
+CanvasRenderer.prototype.createShape = function (data) {
+    return new CVShapeElement(data, this, this.globalData);
 };
 
-CanvasRenderer.prototype.createText = function (data, comp, globalData) {
-    return new CVTextElement(data, comp, globalData);
+CanvasRenderer.prototype.createText = function (data) {
+    return new CVTextElement(data, this, this.globalData);
 };
 
-CanvasRenderer.prototype.createPlaceHolder = function (data, globalData) {
-    return new PlaceHolderElement(data, null,globalData);
+CanvasRenderer.prototype.createImage = function (data) {
+    return new CVImageElement(data, this, this.globalData);
 };
 
-CanvasRenderer.prototype.createImage = function (data, comp, globalData) {
-    return new CVImageElement(data, comp, globalData);
+CanvasRenderer.prototype.createComp = function (data) {
+    return new CVCompElement(data, this, this.globalData);
 };
 
-CanvasRenderer.prototype.createComp = function (data, comp, globalData) {
-    return new CVCompElement(data, comp, globalData);
-};
-
-CanvasRenderer.prototype.createSolid = function (data, comp, globalData) {
-    return new CVSolidElement(data, comp, globalData);
+CanvasRenderer.prototype.createSolid = function (data) {
+    return new CVSolidElement(data, this, this.globalData);
 };
 
 CanvasRenderer.prototype.ctxTransform = function(props){
@@ -240,23 +218,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     }
 };
 
-CanvasRenderer.prototype.buildElementParenting = function(element, parentName){
-    var elements = this.elements;
-    var layers = this.layers;
-    var i=0, len = layers.length;
-    while(i<len){
-        if(layers[i].ind == parentName){
-            if(!elements[i]){
-                this.buildItem(i);
-            }
-            element.getHierarchy().push(elements[i]);
-            if(layers[i].parent !== undefined){
-                this.buildElementParenting(element,layers[i].parent);
-            }
-        }
-        i += 1;
-    }
-};
+CanvasRenderer.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
 
 CanvasRenderer.prototype.destroy = function () {
     if(this.renderConfig.clearCanvas) {
@@ -279,6 +241,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem.firstFrame;
     this.globalData.frameId += 1;
+    this.globalData.projectInterface.currentFrame = num;
     if(this.renderConfig.clearCanvas === true){
         this.reset();
         this.canvasContext.save();
@@ -321,7 +284,7 @@ CanvasRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
 
 CanvasRenderer.prototype.buildItem = function(pos){
     var elements = this.elements;
-    if(elements[pos]){
+    if(elements[pos] || this.layers[pos].ty == 99){
         return;
     }
     var element = this.createItem(this.layers[pos], this,this.globalData);

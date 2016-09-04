@@ -13,35 +13,17 @@ function HybridRenderer(animationItem){
 
 }
 
-HybridRenderer.prototype.createItem = function(layer,parentContainer,comp, placeholder){
-    switch(layer.ty){
-        case 2:
-            return this.createImage(layer,parentContainer,comp, placeholder);
-        case 0:
-            return this.createComp(layer,parentContainer,comp, placeholder);
-        case 1:
-            return this.createSolid(layer,parentContainer,comp, placeholder);
-        case 4:
-            return this.createShape(layer,parentContainer,comp, placeholder);
-        case 5:
-            return this.createText(layer,parentContainer,comp, placeholder);
-        case 13:
-            return this.createCamera(layer,parentContainer,comp, placeholder);
-        case 99:
-            return this.createPlaceHolder(layer,parentContainer);
-    }
-    return this.createBase(layer,parentContainer,comp);
-};
+HybridRenderer.prototype.createItem = BaseRenderer.prototype.createItem;
 
 HybridRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 
-HybridRenderer.prototype.buildItem = function(pos, container){
+HybridRenderer.prototype.buildItem = function(pos){
     var elements = this.elements;
-    if(elements[pos]){
+    if(elements[pos] || this.layers[pos].ty == 99){
         return;
     }
 
-    var element = this.createItem(this.layers[pos],container,this);
+    var element = this.createItem(this.layers[pos]);
     elements[pos] = element;
     element.initExpressions();
     this.appendElementInPos(element,pos);
@@ -84,53 +66,49 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
 
 HybridRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
 
-HybridRenderer.prototype.createBase = function (data,parentContainer,comp, placeholder) {
-    return new SVGBaseElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createBase = function (data) {
+    return new SVGBaseElement(data, this.layerElement,this.globalData,this);
 };
 
-HybridRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
-    return new PlaceHolderElement(data, parentContainer,this.globalData);
-};
-
-HybridRenderer.prototype.createShape = function (data,parentContainer,comp, placeholder) {
-    if(!comp.supports3d){
-        return new IShapeElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createShape = function (data) {
+    if(!this.supports3d){
+        return new IShapeElement(data, this.layerElement,this.globalData,this);
     }
-    return new HShapeElement(data, parentContainer,this.globalData,comp, placeholder);
+    return new HShapeElement(data, this.layerElement,this.globalData,this);
 };
 
-HybridRenderer.prototype.createText = function (data,parentContainer,comp, placeholder) {
-    if(!comp.supports3d){
-        return new SVGTextElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createText = function (data) {
+    if(!this.supports3d){
+        return new SVGTextElement(data, this.layerElement,this.globalData,this);
     }
-    return new HTextElement(data, parentContainer,this.globalData,comp, placeholder);
+    return new HTextElement(data, this.layerElement,this.globalData,this);
 };
 
-HybridRenderer.prototype.createCamera = function (data,parentContainer,comp, placeholder) {
-    this.camera = new HCameraElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createCamera = function (data) {
+    this.camera = new HCameraElement(data, this.layerElement,this.globalData,this);
     return this.camera;
 };
 
-HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
-    if(!comp.supports3d){
-        return new IImageElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createImage = function (data) {
+    if(!this.supports3d){
+        return new IImageElement(data, this.layerElement,this.globalData,this);
     }
-    return new HImageElement(data, parentContainer,this.globalData,comp, placeholder);
+    return new HImageElement(data, this.layerElement,this.globalData,this);
 };
 
-HybridRenderer.prototype.createComp = function (data,parentContainer,comp, placeholder) {
-    if(!comp.supports3d){
-        return new ICompElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createComp = function (data) {
+    if(!this.supports3d){
+        return new ICompElement(data, this.layerElement,this.globalData,this);
     }
-    return new HCompElement(data, parentContainer,this.globalData,comp, placeholder);
+    return new HCompElement(data, this.layerElement,this.globalData,this);
 
 };
 
-HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, placeholder) {
-    if(!comp.supports3d){
-        return new ISolidElement(data, parentContainer,this.globalData,comp, placeholder);
+HybridRenderer.prototype.createSolid = function (data) {
+    if(!this.supports3d){
+        return new ISolidElement(data, this.layerElement,this.globalData,this);
     }
-    return new HSolidElement(data, parentContainer,this.globalData,comp, placeholder);
+    return new HSolidElement(data, this.layerElement,this.globalData,this);
 };
 
 HybridRenderer.prototype.getThreeDContainer = function(pos){
@@ -277,10 +255,14 @@ HybridRenderer.prototype.renderFrame = function(num){
     this.globalData.frameId += 1;
     var i, len = this.layers.length;
     for (i = 0; i < len; i++) {
-        this.elements[i].prepareFrame(num - this.layers[i].st);
+        if(this.elements[i]){
+            this.elements[i].prepareFrame(num - this.layers[i].st);
+        }
     }
     for (i = 0; i < len; i++) {
-        this.elements[i].renderFrame();
+        if(this.elements[i]){
+            this.elements[i].renderFrame();
+        }
     }
 };
 
