@@ -28,10 +28,7 @@ function CanvasRenderer(animationItem, config){
     this.elements = [];
     this.transformMat = new Matrix();
 }
-
-CanvasRenderer.prototype.createItem = BaseRenderer.prototype.createItem;
-
-CanvasRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
+extendPrototype(BaseRenderer,CanvasRenderer);
 
 CanvasRenderer.prototype.createBase = function (data) {
     return new CVBaseElement(data, this, this.globalData);
@@ -218,8 +215,6 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     }
 };
 
-CanvasRenderer.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
-
 CanvasRenderer.prototype.destroy = function () {
     if(this.renderConfig.clearCanvas) {
         this.animationItem.wrapper.innerHTML = '';
@@ -280,8 +275,6 @@ CanvasRenderer.prototype.renderFrame = function(num){
     }
 };
 
-CanvasRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
-
 CanvasRenderer.prototype.buildItem = function(pos){
     var elements = this.elements;
     if(elements[pos] || this.layers[pos].ty == 99){
@@ -302,10 +295,6 @@ CanvasRenderer.prototype.hide = function(){
 CanvasRenderer.prototype.show = function(){
     this.animationItem.container.style.display = 'block';
 };
-
-CanvasRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
-CanvasRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
-CanvasRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 
 CanvasRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;

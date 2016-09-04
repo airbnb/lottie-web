@@ -116,19 +116,15 @@
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         autoloadSegments: true,
         rendererSettings:{
-            progressiveLoad: true
+            progressiveLoad: false
         },
         //animationData: anim2
         path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
-
-    setTimeout(function(){
-        anim.play();
-    },2000)
 
 
 

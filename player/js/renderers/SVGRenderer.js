@@ -13,9 +13,7 @@ function SVGRenderer(animationItem, config){
     this.destroyed = false;
 }
 
-SVGRenderer.prototype.createItem = BaseRenderer.prototype.createItem;
-
-SVGRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
+extendPrototype(BaseRenderer,SVGRenderer);
 
 SVGRenderer.prototype.createBase = function (data) {
     return new SVGBaseElement(data, this.layerElement,this.globalData,this);
@@ -89,7 +87,6 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.elements = Array.apply(null,{length:animData.layers.length});
 };
 
-SVGRenderer.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
 
 SVGRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
@@ -171,11 +168,7 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
     } else {
         this.layerElement.appendChild(newElement);
     }
-}
-
-SVGRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
-SVGRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
-SVGRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
+};
 
 SVGRenderer.prototype.hide = function(){
     this.layerElement.style.display = 'none';
@@ -184,8 +177,6 @@ SVGRenderer.prototype.hide = function(){
 SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
-
-SVGRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
 
 SVGRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;

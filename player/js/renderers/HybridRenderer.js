@@ -13,9 +13,7 @@ function HybridRenderer(animationItem){
 
 }
 
-HybridRenderer.prototype.createItem = BaseRenderer.prototype.createItem;
-
-HybridRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
+extendPrototype(BaseRenderer,HybridRenderer);
 
 HybridRenderer.prototype.buildItem = function(pos){
     var elements = this.elements;
@@ -32,8 +30,6 @@ HybridRenderer.prototype.buildItem = function(pos){
         element.setMatte(elements[pos - 1].layerId);
     }
 };
-
-HybridRenderer.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
 
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();
@@ -62,9 +58,8 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
     } else {
         this.addTo3dContainer(newElement,pos);
     }
-}
+};
 
-HybridRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
 
 HybridRenderer.prototype.createBase = function (data) {
     return new SVGBaseElement(data, this.layerElement,this.globalData,this);
@@ -240,31 +235,7 @@ HybridRenderer.prototype.updateContainerSize = function () {
     this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
 };
 
-HybridRenderer.prototype.renderFrame = function(num){
-    if(this.renderedFrame == num || this.destroyed){
-        return;
-    }
-    if(num === null){
-        num = this.renderedFrame;
-    }else{
-        this.renderedFrame = num;
-    }
-    //console.log('-------');
-    //console.log('FRAME ',num);
-    this.globalData.frameNum = num;
-    this.globalData.frameId += 1;
-    var i, len = this.layers.length;
-    for (i = 0; i < len; i++) {
-        if(this.elements[i]){
-            this.elements[i].prepareFrame(num - this.layers[i].st);
-        }
-    }
-    for (i = 0; i < len; i++) {
-        if(this.elements[i]){
-            this.elements[i].renderFrame();
-        }
-    }
-};
+HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
 
 HybridRenderer.prototype.hide = function(){
     this.resizerElem.style.display = 'none';
@@ -273,7 +244,8 @@ HybridRenderer.prototype.hide = function(){
 HybridRenderer.prototype.show = function(){
     this.resizerElem.style.display = 'block';
 };
-HybridRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
+
+
 HybridRenderer.prototype.initItems = function(){
     this.buildAllItems();
     if(this.camera){
@@ -287,7 +259,6 @@ HybridRenderer.prototype.initItems = function(){
         }
     }
 };
-HybridRenderer.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
 
 HybridRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;
