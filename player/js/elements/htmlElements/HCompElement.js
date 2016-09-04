@@ -11,10 +11,8 @@ function HCompElement(data,parentContainer,globalData,comp, placeholder){
     }
     if(this.data.xt){
         this.layerElement = document.createElement('div');
-        this.buildAllItems();
-    } else if(!globalData.progressiveLoad){
-        this.buildAllItems();
     }
+    this.buildAllItems();
 
 }
 createElement(HBaseElement, HCompElement);

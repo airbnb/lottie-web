@@ -41,7 +41,7 @@ HTextElement.prototype.createElements = function(){
         this.renderType = 'html';
         this.innerElem = parent;
     }
-    this.parentContainer.appendChild(parent);
+    this.baseElement = parent;
 
     if(documentData.fc) {
         this.innerElem.style.color = this.innerElem.style.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';

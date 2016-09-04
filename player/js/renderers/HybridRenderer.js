@@ -33,62 +33,6 @@ HybridRenderer.prototype.createItem = function(layer,parentContainer,comp, place
     return this.createBase(layer,parentContainer,comp);
 };
 
-HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,comp, placeholder){
-    var  i, len = layers.length;
-    if(!elements){
-        elements = this.elements;
-    }
-    if(!comp){
-        comp = this;
-    }
-
-    var currentContainer, is3d = false;
-
-    var elems;
-
-    for (i = len - 1; i >= 0; i--) {
-        if(!parentContainer) {
-            if(layers[i].ddd && this.supports3d) {
-                if(!is3d){
-                    is3d = true;
-                    currentContainer = this.getThreeDContainer();
-                }
-                elements[i] = this.createItem(layers[i],currentContainer,comp, placeholder);
-            } else {
-                is3d = false;
-                elements[i] = this.createItem(layers[i],this.resizerElem,comp, placeholder);
-            }
-        } else{
-            elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
-        }
-        if (layers[i].ty === 0) {
-            elems = [];
-            this.buildItems(layers[i].layers,elements[i].getDomElement(),elems,elements[i], elements[i].placeholder);
-            elements[i].setElements(elems);
-        }
-        if(layers[i].td){
-            elements[i+1].setMatte(elements[i].layerId);
-        }
-        //NullLayer
-    }
-    this.currentContainer = this.resizerElem;
-    if(!parentContainer){
-        if(this.threeDElements.length){
-            if(!this.camera){
-                var cWidth = this.globalData.compSize.w;
-                var cHeight = this.globalData.compSize.h;
-                len = this.threeDElements.length;
-                for(i=0;i<len;i+=1){
-                    this.threeDElements[0][i].style.perspective = this.threeDElements[0][i].style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
-                }
-
-            } else {
-                this.camera.setup();
-            }
-        }
-    }
-};
-
 HybridRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 
 HybridRenderer.prototype.buildItem = function(pos, container){
@@ -138,46 +82,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
     }
 }
 
-HybridRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
-    var i, len = layers.length;
-    if(!elements){
-        elements = this.elements;
-    }
-    if(!parentContainer){
-        parentContainer = this.currentContainer;
-    }
-    var j, jLen = elements.length, elems, placeholder;
-    for(i=0;i<len;i+=1){
-        if(!layers[i].id){
-            var elem = this.createItem(layers[i],parentContainer, this);
-            elements.push(elem);
-            if (layers[i].ty === 0) {
-                elems = [];
-                this.buildItems(layers[i].layers,elem.getDomElement(),elems, elem);
-                elem.setElements(elems);
-            }
-        }else {
-            j = 0;
-            while(j<jLen){
-                if(elements[j].data.id == layers[i].id){
-                    placeholder = elements[j];
-                    elements[j] = this.createItem(layers[i],parentContainer,this, placeholder);
-                    if (layers[i].ty === 0) {
-                        elems = [];
-                        this.buildItems(layers[i].layers,elements[j].getDomElement(),elems,elements[j], elements[i].placeholder);
-                        elements[j].setElements(elems);
-                    }
-                }
-                j += 1;
-            }
-        }
-    }
-    for(i=0;i<len;i+=1){
-        if(layers[i].td){
-            elements[i+1].setMatte(elements[i].layerId);
-        }
-    }
-};
+HybridRenderer.prototype.includeLayers = BaseRenderer.prototype.includeLayers;
 
 HybridRenderer.prototype.createBase = function (data,parentContainer,comp, placeholder) {
     return new SVGBaseElement(data, parentContainer,this.globalData,comp, placeholder);
@@ -268,7 +173,19 @@ HybridRenderer.prototype.addTo3dContainer = function(elem,pos){
     var i = 0, len = this.threeDElements.length;
     while(i<len){
         if(pos <= this.threeDElements[i].endPos){
-            this.threeDElements[i].container.appendChild(elem);
+            var j = this.threeDElements[i].startPos;
+            var nextElement;
+            while(j<pos){
+                if(this.elements[j] && this.elements[j].getBaseElement()){
+                    nextElement = this.elements[j].getBaseElement();
+                }
+                j += 1;
+            }
+            if(nextElement){
+                this.threeDElements[i].container.insertBefore(elem, nextElement);
+            } else {
+                this.threeDElements[i].container.appendChild(elem);
+            }
             break;
         }
         i += 1;
@@ -375,7 +292,19 @@ HybridRenderer.prototype.show = function(){
     this.resizerElem.style.display = 'block';
 };
 HybridRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
-HybridRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
+HybridRenderer.prototype.initItems = function(){
+    this.buildAllItems();
+    if(this.camera){
+        this.camera.setup();
+    } else {
+        var cWidth = this.globalData.compSize.w;
+        var cHeight = this.globalData.compSize.h;
+        var i, len = this.threeDElements.length;
+        for(i=0;i<len;i+=1){
+            this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
+        }
+    }
+};
 HybridRenderer.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
 
 HybridRenderer.prototype.searchExtraCompositions = function(assets){
