@@ -28,6 +28,7 @@ HSolidElement.prototype.createElements = function(){
     if(this.data.hasMask){
         this.maskedElement = rect;
     }
+    this.checkParenting();
 };
 
 

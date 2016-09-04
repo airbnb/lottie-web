@@ -161,6 +161,7 @@ HTextElement.prototype.createElements = function(){
         }
         this.textPaths.push(tSpan);
     }
+    this.checkParenting();
 };
 
 HTextElement.prototype.hide = SVGTextElement.prototype.hide;

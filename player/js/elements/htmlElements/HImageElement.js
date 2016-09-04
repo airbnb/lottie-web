@@ -41,6 +41,7 @@ HImageElement.prototype.createElements = function(){
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
+    this.checkParenting();
 };
 
 

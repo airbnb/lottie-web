@@ -39,6 +39,7 @@ HCompElement.prototype.createElements = function(){
         this.baseElement = this.layerElement;
     }
     //this.appendNodeToParent(this.layerElement);
+    this.checkParenting();
 };
 
 HCompElement.prototype.hide = ICompElement.prototype.hide;
