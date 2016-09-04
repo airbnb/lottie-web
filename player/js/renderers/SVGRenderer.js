@@ -109,25 +109,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.elements = Array.apply(null,{length:animData.layers.length});
 };
 
-
-
-SVGRenderer.prototype.buildElementParenting = function(element, parentName){
-    var elements = this.elements;
-    var layers = this.layers;
-    var i=0, len = layers.length;
-    while(i<len){
-        if(layers[i].ind == parentName){
-            if(!elements[i]){
-                this.buildItem(i, this.layerElement);
-            }
-            element.getHierarchy().push(elements[i]);
-            if(layers[i].parent !== undefined){
-                this.buildElementParenting(element,layers[i].parent);
-            }
-        }
-        i += 1;
-    }
-};
+SVGRenderer.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
 
 SVGRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
@@ -144,7 +126,20 @@ SVGRenderer.prototype.destroy = function () {
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.buildItem = BaseRenderer.prototype.buildItem;
+SVGRenderer.prototype.buildItem  = function(pos){
+    var elements = this.elements;
+    if(elements[pos]){
+        return;
+    }
+    var element = this.createItem(this.layers[pos],this.layerElement,this);
+    elements[pos] = element;
+    element.initExpressions();
+    this.appendElementInPos(element,pos);
+    if(this.layers[pos].tt){
+        this.buildItem(pos - 1);
+        element.setMatte(elements[pos - 1].layerId);
+    }
+};
 
 SVGRenderer.prototype.renderFrame = function(num){
     if(this.renderedFrame == num || this.destroyed){
@@ -197,8 +192,6 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
 }
 
 SVGRenderer.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
-
-SVGRenderer.prototype.buildItem = BaseRenderer.prototype.buildItem;
 SVGRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 SVGRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
 

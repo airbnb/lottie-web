@@ -9,6 +9,7 @@ function HybridRenderer(animationItem){
     this.threeDElements = [];
     this.destroyed = false;
     this.camera = null;
+    this.supports3d = true;
 
 }
 
@@ -47,7 +48,7 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
 
     for (i = len - 1; i >= 0; i--) {
         if(!parentContainer) {
-            if(layers[i].ddd) {
+            if(layers[i].ddd && this.supports3d) {
                 if(!is3d){
                     is3d = true;
                     currentContainer = this.getThreeDContainer();
@@ -55,7 +56,7 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
                 elements[i] = this.createItem(layers[i],currentContainer,comp, placeholder);
             } else {
                 is3d = false;
-                elements[i] = this.createItem(layers[i],this.animationItem.resizerElem,comp, placeholder);
+                elements[i] = this.createItem(layers[i],this.resizerElem,comp, placeholder);
             }
         } else{
             elements[i] = this.createItem(layers[i],parentContainer,comp, placeholder);
@@ -70,7 +71,7 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
         }
         //NullLayer
     }
-    this.currentContainer = this.animationItem.resizerElem;
+    this.currentContainer = this.resizerElem;
     if(!parentContainer){
         if(this.threeDElements.length){
             if(!this.camera){
@@ -87,6 +88,55 @@ HybridRenderer.prototype.buildItems = function(layers,parentContainer,elements,c
         }
     }
 };
+
+HybridRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
+
+HybridRenderer.prototype.buildItem = function(pos, container){
+    var elements = this.elements;
+    if(elements[pos]){
+        return;
+    }
+
+    var element = this.createItem(this.layers[pos],container,this);
+    elements[pos] = element;
+    element.initExpressions();
+    this.appendElementInPos(element,pos);
+    if(this.layers[pos].tt){
+        this.buildItem(pos - 1);
+        element.setMatte(elements[pos - 1].layerId);
+    }
+};
+
+HybridRenderer.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
+
+HybridRenderer.prototype.appendElementInPos = function(element, pos){
+    var newElement = element.getBaseElement();
+    if(!newElement){
+        return;
+    }
+    var layer = this.layers[pos];
+    if(!layer.ddd || !this.supports3d){
+        var i = 0;
+        var nextElement;
+        while(i<pos){
+            if(this.elements[i] && this.elements[i].getBaseElement()){
+                nextElement = this.elements[i].getBaseElement();
+            }
+            i += 1;
+        }
+        if(nextElement){
+            if(!layer.ddd || !this.supports3d){
+                this.layerElement.insertBefore(newElement, nextElement);
+            }
+        } else {
+            if(!layer.ddd || !this.supports3d){
+                this.layerElement.appendChild(newElement);
+            }
+        }
+    } else {
+        this.addTo3dContainer(newElement,pos);
+    }
+}
 
 HybridRenderer.prototype.includeLayers = function(layers,parentContainer,elements){
     var i, len = layers.length;
@@ -138,14 +188,14 @@ HybridRenderer.prototype.createPlaceHolder = function (data,parentContainer) {
 };
 
 HybridRenderer.prototype.createShape = function (data,parentContainer,comp, placeholder) {
-    if(comp.isSvg){
+    if(!comp.supports3d){
         return new IShapeElement(data, parentContainer,this.globalData,comp, placeholder);
     }
     return new HShapeElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
 HybridRenderer.prototype.createText = function (data,parentContainer,comp, placeholder) {
-    if(comp.isSvg){
+    if(!comp.supports3d){
         return new SVGTextElement(data, parentContainer,this.globalData,comp, placeholder);
     }
     return new HTextElement(data, parentContainer,this.globalData,comp, placeholder);
@@ -157,14 +207,14 @@ HybridRenderer.prototype.createCamera = function (data,parentContainer,comp, pla
 };
 
 HybridRenderer.prototype.createImage = function (data,parentContainer,comp, placeholder) {
-    if(comp.isSvg){
+    if(!comp.supports3d){
         return new IImageElement(data, parentContainer,this.globalData,comp, placeholder);
     }
     return new HImageElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
 HybridRenderer.prototype.createComp = function (data,parentContainer,comp, placeholder) {
-    if(comp.isSvg){
+    if(!comp.supports3d){
         return new ICompElement(data, parentContainer,this.globalData,comp, placeholder);
     }
     return new HCompElement(data, parentContainer,this.globalData,comp, placeholder);
@@ -172,13 +222,13 @@ HybridRenderer.prototype.createComp = function (data,parentContainer,comp, place
 };
 
 HybridRenderer.prototype.createSolid = function (data,parentContainer,comp, placeholder) {
-    if(comp.isSvg){
+    if(!comp.supports3d){
         return new ISolidElement(data, parentContainer,this.globalData,comp, placeholder);
     }
     return new HSolidElement(data, parentContainer,this.globalData,comp, placeholder);
 };
 
-HybridRenderer.prototype.getThreeDContainer = function(){
+HybridRenderer.prototype.getThreeDContainer = function(pos){
     var perspectiveElem = document.createElement('div');
     styleDiv(perspectiveElem);
     perspectiveElem.style.width = this.globalData.compSize.w+'px';
@@ -188,17 +238,49 @@ HybridRenderer.prototype.getThreeDContainer = function(){
     styleDiv(container);
     container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     perspectiveElem.appendChild(container);
-    this.animationItem.resizerElem.appendChild(perspectiveElem);
-    this.threeDElements.push([perspectiveElem,container]);
-    return container;
-}
+    this.resizerElem.appendChild(perspectiveElem);
+    var threeDContainerData = {
+        container:container,
+        perspectiveElem:perspectiveElem,
+        startPos: pos,
+        endPos: pos
+    };
+    this.threeDElements.push(threeDContainerData);
+    return threeDContainerData;
+};
+
+HybridRenderer.prototype.build3dContainers = function(){
+    var i, len = this.layers.length;
+    var lastThreeDContainerData;
+    for(i=0;i<len;i+=1){
+        if(this.layers[i].ddd){
+            if(!lastThreeDContainerData){
+                lastThreeDContainerData = this.getThreeDContainer(i);
+            }
+            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);;
+        } else {
+            lastThreeDContainerData = null;
+        }
+    }
+};
+
+HybridRenderer.prototype.addTo3dContainer = function(elem,pos){
+    var i = 0, len = this.threeDElements.length;
+    while(i<len){
+        if(pos <= this.threeDElements[i].endPos){
+            this.threeDElements[i].container.appendChild(elem);
+            break;
+        }
+        i += 1;
+    }
+};
 
 HybridRenderer.prototype.configAnimation = function(animData){
     var resizerElem = document.createElement('div');
     var wrapper = this.animationItem.wrapper;
     resizerElem.style.width = animData.w+'px';
     resizerElem.style.height = animData.h+'px';
-    this.animationItem.resizerElem = resizerElem;
+    this.resizerElem = resizerElem;
     styleDiv(resizerElem);
     resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
     wrapper.appendChild(resizerElem);
@@ -208,7 +290,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
     styleDiv(svg);
-    this.animationItem.resizerElem.appendChild(svg);
+    this.resizerElem.appendChild(svg);
     var defs = document.createElementNS(svgNS,'defs');
     svg.appendChild(defs);
     this.globalData.defs = defs;
@@ -226,45 +308,9 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,svg);
+    this.layerElement = this.resizerElem;
+    this.build3dContainers();
     this.updateContainerSize();
-};
-
-HybridRenderer.prototype.buildStage = function (container, layers,elements) {
-    var i, len = layers.length, layerData;
-    if(!elements){
-        elements = this.elements;
-    }
-    for (i = len - 1; i >= 0; i--) {
-        layerData = layers[i];
-        if (layerData.parent !== undefined) {
-            this.buildItemParenting(layerData,elements[i],layers,layerData.parent,elements, true);
-        }
-
-        if (layerData.ty === 0) {
-            this.buildStage(elements[i].getComposingElement(), layerData.layers, elements[i].getElements());
-        }
-    }
-};
-HybridRenderer.prototype.buildItemParenting = function (layerData,element,layers,parentName,elements, resetHierarchyFlag) {
-    if(!layerData.parents){
-        layerData.parents = [];
-    }
-    if(resetHierarchyFlag){
-        element.resetHierarchy();
-    }
-    var i=0, len = layers.length;
-    while(i<len){
-        if(layers[i].ind == parentName){
-            element.getHierarchy().push(elements[i]);
-            if(element.data.ty === 13){
-                elements[i].finalTransform.mProp.setInverted();
-            }
-            if(layers[i].parent !== undefined){
-                this.buildItemParenting(layerData,element,layers,layers[i].parent,elements, false);
-            }
-        }
-        i += 1;
-    }
 };
 
 HybridRenderer.prototype.destroy = function () {
@@ -296,7 +342,7 @@ HybridRenderer.prototype.updateContainerSize = function () {
         tx = (elementWidth-this.globalData.compSize.w*(elementHeight/this.globalData.compSize.h))/2;
         ty = 0;
     }
-    this.animationItem.resizerElem.style.transform = this.animationItem.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
+    this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
 };
 
 HybridRenderer.prototype.renderFrame = function(num){
@@ -322,9 +368,24 @@ HybridRenderer.prototype.renderFrame = function(num){
 };
 
 HybridRenderer.prototype.hide = function(){
-    this.animationItem.resizerElem.style.display = 'none';
+    this.resizerElem.style.display = 'none';
 };
 
 HybridRenderer.prototype.show = function(){
-    this.animationItem.resizerElem.style.display = 'block';
+    this.resizerElem.style.display = 'block';
+};
+HybridRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
+HybridRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
+HybridRenderer.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
+
+HybridRenderer.prototype.searchExtraCompositions = function(assets){
+    var i, len = assets.length;
+    var floatingContainer = document.createElement('div');
+    for(i=0;i<len;i+=1){
+        if(assets[i].xt){
+            var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
+            comp.initExpressions();
+            this.globalData.projectInterface.registerComposition(comp);
+        }
+    }
 };

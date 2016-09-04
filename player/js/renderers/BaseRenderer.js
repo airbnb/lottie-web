@@ -1,33 +1,17 @@
 function BaseRenderer(){}
-BaseRenderer.prototype.checkLayer = function(pos, num, container){
+BaseRenderer.prototype.checkLayer = function(pos, num){
     var data = this.layers[pos];
     if(data.ip - data.st <= num && data.op - data.st > num)
     {
-        this.buildItem(pos, container);
+        this.buildItem(pos);
     }
 };
 BaseRenderer.prototype.buildAllItems = function(){
     var i, len = this.layers.length;
     for(i=0;i<len;i+=1){
-        this.buildItem(i, this.layerElement);
+        this.buildItem(i);
     }
 };
-
-BaseRenderer.prototype.buildItem = function(pos, container){
-    var elements = this.elements;
-    if(elements[pos]){
-        return;
-    }
-    var element = this.createItem(this.layers[pos],container,this);
-    elements[pos] = element;
-    element.initExpressions();
-    this.appendElementInPos(element,pos);
-    if(this.layers[pos].tt){
-        this.buildItem(pos - 1, container);
-        element.setMatte(elements[pos - 1].layerId);
-    }
-};
-
 
 BaseRenderer.prototype.includeLayers = function(newLayers,parentContainer,elements){
     var i, len = newLayers.length;
@@ -51,5 +35,22 @@ BaseRenderer.prototype.setProjectInterface = function(pInterface){
 BaseRenderer.prototype.initItems = function(){
     if(!this.globalData.progressiveLoad){
         this.buildAllItems();
+    }
+};
+BaseRenderer.prototype.buildElementParenting = function(element, parentName){
+    var elements = this.elements;
+    var layers = this.layers;
+    var i=0, len = layers.length;
+    while(i<len){
+        if(layers[i].ind == parentName){
+            if(!elements[i]){
+                this.buildItem(i);
+            }
+            element.getHierarchy().push(elements[i]);
+            if(layers[i].parent !== undefined){
+                this.buildElementParenting(element,layers[i].parent);
+            }
+        }
+        i += 1;
     }
 };

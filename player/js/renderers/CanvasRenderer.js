@@ -3,7 +3,8 @@ function CanvasRenderer(animationItem, config){
     this.renderConfig = {
         clearCanvas: (config && config.clearCanvas) || true,
         context: (config && config.context) || null,
-        scaleMode: (config && config.scaleMode) || 'fit'
+        scaleMode: (config && config.scaleMode) || 'fit',
+        progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {
@@ -181,6 +182,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         w: animData.w,
         h: animData.h
     };
+    this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.layers = animData.layers;
     this.transformCanvas = {};
     this.transformCanvas.w = animData.w;
@@ -339,6 +341,8 @@ CanvasRenderer.prototype.show = function(){
 };
 
 CanvasRenderer.prototype.setProjectInterface = BaseRenderer.prototype.setProjectInterface;
+CanvasRenderer.prototype.initItems =  BaseRenderer.prototype.initItems;
+CanvasRenderer.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 
 CanvasRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;

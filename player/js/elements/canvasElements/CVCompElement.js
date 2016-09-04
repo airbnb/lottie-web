@@ -38,6 +38,9 @@ function CVCompElement(data, comp,globalData){
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
+    if(this.data.xt || !globalData.progressiveLoad){
+        this.buildAllItems();
+    }
 }
 createElement(CVBaseElement, CVCompElement);
 
@@ -158,5 +161,4 @@ CVCompElement.prototype.createShape = CanvasRenderer.prototype.createShape;
 CVCompElement.prototype.createText = CanvasRenderer.prototype.createText;
 CVCompElement.prototype.createPlaceHolder = CanvasRenderer.prototype.createPlaceHolder;
 CVCompElement.prototype.createBase = CanvasRenderer.prototype.createBase;
-CVCompElement.prototype.buildItemParenting = CanvasRenderer.prototype.buildItemParenting;
 CVCompElement.prototype.buildElementParenting = CanvasRenderer.prototype.buildElementParenting;

@@ -1,7 +1,7 @@
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
-    this.isSvg = true;
+    this.supports3d = true;
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -14,10 +14,6 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     }
 }
 createElement(SVGBaseElement, ICompElement);
-
-ICompElement.prototype.getComposingElement = function(){
-    return this.layerElement;
-};
 
 ICompElement.prototype.hide = function(){
     if(!this.hidden){
@@ -91,9 +87,8 @@ ICompElement.prototype.destroy = function(){
 };
 
 ICompElement.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
-ICompElement.prototype.buildItem = BaseRenderer.prototype.buildItem;
+ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
 ICompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
-ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
 ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
 ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
 ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;
@@ -103,5 +98,4 @@ ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
 ICompElement.prototype.createPlaceHolder = SVGRenderer.prototype.createPlaceHolder;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
-ICompElement.prototype.buildItemParenting = SVGRenderer.prototype.buildItemParenting;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;

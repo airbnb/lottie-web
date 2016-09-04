@@ -15,7 +15,7 @@ HBaseElement.prototype.checkBlendMode = function(){
 };
 HBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
-HBaseElement.prototype.appendNodeToParent = function(node) {
+/*HBaseElement.prototype.appendNodeToParent = function(node) {
     if(this.data.hd){
         return;
     }
@@ -26,12 +26,18 @@ HBaseElement.prototype.appendNodeToParent = function(node) {
     }else{
         this.parentContainer.appendChild(node);
     }
+};*/
+
+
+HBaseElement.prototype.getBaseElement = function(){
+    return this.baseElement;
 };
 
 HBaseElement.prototype.createElements = function(){
     if(this.data.hasMask){
         this.layerElement = document.createElementNS(svgNS,'svg');
-        this.appendNodeToParent(this.layerElement);
+        //this.appendNodeToParent(this.layerElement);
+        this.baseElement = this.layerElement;
         this.maskedElement = this.layerElement;
     }else{
         this.layerElement = this.parentContainer;
@@ -39,7 +45,8 @@ HBaseElement.prototype.createElements = function(){
     if(this.data.ln && (this.data.ty === 4 || this.data.ty === 0)){
         if(this.layerElement === this.parentContainer){
             this.layerElement = document.createElementNS(svgNS,'g');
-            this.appendNodeToParent(this.layerElement);
+            //this.appendNodeToParent(this.layerElement);
+            this.baseElement = this.layerElement;
         }
         this.layerElement.setAttribute('id',this.data.ln);
     }
@@ -47,6 +54,7 @@ HBaseElement.prototype.createElements = function(){
     if(this.layerElement !== this.parentContainer){
         this.placeholder = null;
     }
+    this.checkParenting();
 };
 
 HBaseElement.prototype.renderFrame = function(parentTransform){
@@ -137,3 +145,5 @@ HBaseElement.prototype.hide = function(){
 HBaseElement.prototype.setMatte = function(){
 
 }
+
+HBaseElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
