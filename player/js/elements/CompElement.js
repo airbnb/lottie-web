@@ -88,9 +88,9 @@ ICompElement.prototype.destroy = function(){
     }
 };
 
-ICompElement.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
+ICompElement.prototype.checkLayer = SVGRenderer.prototype.checkLayer;
 ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
-ICompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
+ICompElement.prototype.buildAllItems = SVGRenderer.prototype.buildAllItems;
 ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
 ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
 ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;

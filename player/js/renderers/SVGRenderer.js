@@ -100,6 +100,7 @@ SVGRenderer.prototype.destroy = function () {
     }
     this.elements.length = 0;
     this.destroyed = true;
+    this.animationItem = null;
 };
 
 SVGRenderer.prototype.updateContainerSize = function () {

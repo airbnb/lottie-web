@@ -15,21 +15,7 @@ function HybridRenderer(animationItem){
 
 extendPrototype(BaseRenderer,HybridRenderer);
 
-HybridRenderer.prototype.buildItem = function(pos){
-    var elements = this.elements;
-    if(elements[pos] || this.layers[pos].ty == 99){
-        return;
-    }
-
-    var element = this.createItem(this.layers[pos]);
-    elements[pos] = element;
-    element.initExpressions();
-    this.appendElementInPos(element,pos);
-    if(this.layers[pos].tt){
-        this.buildItem(pos - 1);
-        element.setMatte(elements[pos - 1].layerId);
-    }
-};
+HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();
@@ -135,7 +121,7 @@ HybridRenderer.prototype.build3dContainers = function(){
             if(!lastThreeDContainerData){
                 lastThreeDContainerData = this.getThreeDContainer(i);
             }
-            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);;
+            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
         } else {
             lastThreeDContainerData = null;
         }
@@ -213,6 +199,7 @@ HybridRenderer.prototype.destroy = function () {
     }
     this.elements.length = 0;
     this.destroyed = true;
+    this.animationItem = null;
 };
 
 HybridRenderer.prototype.updateContainerSize = function () {
@@ -244,7 +231,6 @@ HybridRenderer.prototype.hide = function(){
 HybridRenderer.prototype.show = function(){
     this.resizerElem.style.display = 'block';
 };
-
 
 HybridRenderer.prototype.initItems = function(){
     this.buildAllItems();
