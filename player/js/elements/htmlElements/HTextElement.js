@@ -161,7 +161,6 @@ HTextElement.prototype.createElements = function(){
         }
         this.textPaths.push(tSpan);
     }
-    this.checkParenting();
 };
 
 HTextElement.prototype.hide = SVGTextElement.prototype.hide;
@@ -225,7 +224,6 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
     if(this.isMasked){
-
         var boundingBox = this.innerElem.getBBox();
         if(this.currentBBox.w !== boundingBox.width){
             this.currentBBox.w = boundingBox.width;

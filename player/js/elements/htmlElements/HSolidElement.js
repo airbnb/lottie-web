@@ -33,29 +33,6 @@ HSolidElement.prototype.createElements = function(){
 
 
 
-HSolidElement.prototype.hide = function(){
-    if(!this.hidden){
-        this.innerElem.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
-HSolidElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.hidden = false;
-        this.innerElem.style.display = 'block';
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-
-HSolidElement.prototype.destroy = function(){
-    this._parent.destroy.call();
-    this.innerElem =  null;
-};
+HSolidElement.prototype.hide = IImageElement.prototype.hide;
+HSolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
+HSolidElement.prototype.destroy = IImageElement.prototype.destroy;
