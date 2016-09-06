@@ -11,6 +11,7 @@ function SVGRenderer(animationItem, config){
     };
     this.elements = [];
     this.destroyed = false;
+
 }
 
 extendPrototype(BaseRenderer,SVGRenderer);
@@ -136,16 +137,16 @@ SVGRenderer.prototype.renderFrame = function(num){
     this.globalData.frameId += 1;
     this.globalData.projectInterface.currentFrame = num;
     var i, len = this.layers.length;
+    if(!this.completeLayers){
+        this.checkLayers(num);
+    }
     for (i = len - 1; i >= 0; i--) {
-        if(!this.elements[i]){
-            this.checkLayer(i, num - this.layers[i].st, this.layerElement);
-        }
-        if(this.elements[i]){
+        if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
     for (i = len - 1; i >= 0; i--) {
-        if(this.elements[i]){
+        if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
     }

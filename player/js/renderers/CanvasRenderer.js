@@ -27,6 +27,7 @@ function CanvasRenderer(animationItem, config){
     }
     this.elements = [];
     this.transformMat = new Matrix();
+    this.completeLayers = false;
 }
 extendPrototype(BaseRenderer,CanvasRenderer);
 
@@ -254,17 +255,17 @@ CanvasRenderer.prototype.renderFrame = function(num){
     //console.log('--------');
     //console.log('NEW: ',num);
     var i, len = this.layers.length;
+    if(!this.completeLayers){
+        this.checkLayers(num);
+    }
 
     for (i = 0; i < len; i++) {
-        if(!this.elements[i]){
-            this.checkLayer(i, num - this.layers[i].st, this.layerElement);
-        }
-        if(this.elements[i]){
+        if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
     for (i = len - 1; i >= 0; i-=1) {
-        if(this.elements[i]){
+        if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
     }

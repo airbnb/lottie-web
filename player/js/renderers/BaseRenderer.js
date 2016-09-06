@@ -1,9 +1,16 @@
 function BaseRenderer(){}
-BaseRenderer.prototype.checkLayer = function(pos, num){
-    var data = this.layers[pos];
-    if(data.ip - data.st <= num && data.op - data.st > num)
-    {
-        this.buildItem(pos);
+BaseRenderer.prototype.checkLayers = function(num){
+    var i, len = this.layers.length, data;
+    this.completeLayers = true;
+    for (i = len - 1; i >= 0; i--) {
+        if (!this.elements[i]) {
+            data = this.layers[i];
+            if(data.ip - data.st <= (num - this.layers[i].st) && data.op - data.st > (num - this.layers[i].st))
+            {
+                this.buildItem(i);
+            }
+        }
+        this.completeLayers = this.elements[i] ? this.completeLayers:false;
     }
 };
 
@@ -32,6 +39,7 @@ BaseRenderer.prototype.buildAllItems = function(){
 };
 
 BaseRenderer.prototype.includeLayers = function(newLayers){
+    this.completeLayers = false;
     var i, len = newLayers.length;
     var j, jLen = this.layers.length;
     for(i=0;i<len;i+=1){

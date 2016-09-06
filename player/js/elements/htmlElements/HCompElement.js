@@ -2,6 +2,7 @@ function HCompElement(data,parentContainer,globalData,comp, placeholder){
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     this.supports3d = true;
+    this.completeLayers = false;
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -59,14 +60,16 @@ HCompElement.prototype.renderFrame = function(parentMatrix){
     this.hidden = false;
 
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].renderFrame();
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].renderFrame();
+        }
     }
     if(this.firstFrame){
         this.firstFrame = false;
     }
 };
 
-HCompElement.prototype.checkLayer = BaseRenderer.prototype.checkLayer;
+HCompElement.prototype.checkLayers = BaseRenderer.prototype.checkLayers;
 HCompElement.prototype.buildItem = HybridRenderer.prototype.buildItem;
 HCompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 HCompElement.prototype.createItem = HybridRenderer.prototype.createItem;

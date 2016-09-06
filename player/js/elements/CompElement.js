@@ -2,6 +2,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
     this.supports3d = true;
+    this.completeLayers = false;
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -41,11 +42,14 @@ ICompElement.prototype.prepareFrame = function(num){
     }
     this.renderedFrame = timeRemapped/this.data.sr;
     var i,len = this.elements.length;
+    if(!this.completeLayers){
+        this.checkLayers(this.renderedFrame);
+    }
     for( i = 0; i < len; i+=1 ){
-        if(!this.elements[i]){
+        /*if(!this.elements[i]){
             this.checkLayer(i, this.renderedFrame - this.layers[i].st, this.layerElement);
-        }
-        if(this.elements[i]){
+        }*/
+        if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
         }
     }
@@ -61,7 +65,7 @@ ICompElement.prototype.renderFrame = function(parentMatrix){
 
     this.hidden = false;
     for( i = 0; i < len; i+=1 ){
-        if(this.elements[i]){
+        if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
     }
@@ -88,7 +92,7 @@ ICompElement.prototype.destroy = function(){
     }
 };
 
-ICompElement.prototype.checkLayer = SVGRenderer.prototype.checkLayer;
+ICompElement.prototype.checkLayers = SVGRenderer.prototype.checkLayers;
 ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
 ICompElement.prototype.buildAllItems = SVGRenderer.prototype.buildAllItems;
 ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;

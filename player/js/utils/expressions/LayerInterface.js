@@ -23,6 +23,7 @@ var LayerExpressionInterface = (function (){
         function _thisLayerFunction(name){
             switch(name){
                 case "ADBE Root Vectors Group":
+                case 2:
                     return _thisLayerFunction.shapeInterface;
                     //
                     break;

@@ -538,7 +538,7 @@ var bm_expressionHelper = (function () {
     }
     
     function renameNameProperty(str){
-        var regName = /([.'"])name([\s'";.])/g;
+        var regName = /([.'"])name([\s'";.\)\]])/g;
         return str.replace(regName,'$1_name$2');
     }
     
