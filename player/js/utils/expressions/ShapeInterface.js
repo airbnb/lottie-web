@@ -175,6 +175,7 @@ var ShapeExpressionInterface = (function(){
 
     var fillInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
+
             view.c.setGroupProperty(propertyGroup);
             view.o.setGroupProperty(propertyGroup);
             var ob = {
@@ -198,9 +199,16 @@ var ShapeExpressionInterface = (function(){
 
     var strokeInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
-            view.c.setGroupProperty(propertyGroup);
-            view.o.setGroupProperty(propertyGroup);
-            view.w.setGroupProperty(propertyGroup);
+            function _propertyGroup(val){
+                if(val === 1){
+                    return ob;
+                } else{
+                    return propertyGroup(val-1);
+                }
+            };
+            view.c.setGroupProperty(_propertyGroup);
+            view.o.setGroupProperty(_propertyGroup);
+            view.w.setGroupProperty(_propertyGroup);
             var ob = {
                 get color(){
                     if(view.c.k){
@@ -244,7 +252,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }
@@ -266,6 +274,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.offset;
                 }
             }
+            interfaceFunction.propertyIndex = shape.ix;
             Object.defineProperty(interfaceFunction, 'start', {
                 get: function(){
                     if(view.s.k){
