@@ -1,7 +1,7 @@
 function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.renderConfig = {
-        clearCanvas: (config && config.clearCanvas) || true,
+        clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
         context: (config && config.context) || null,
         scaleMode: (config && config.scaleMode) || 'fit',
         progressiveLoad: (config && config.progressiveLoad) || false
