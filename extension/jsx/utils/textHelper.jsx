@@ -30,15 +30,17 @@ var bm_textHelper = (function () {
             ob.sz = textDocument.boxTextSize;
             ob.ps = textDocument.boxTextPos;
         }
+
         var i, len;
         ob.s = textDocument.fontSize;
         ob.f = textDocument.font;
         bm_sourceHelper.addFont(textDocument.font, textDocument.fontFamily, textDocument.fontStyle);
-        ob.t = textDocument.text;
+        ob.t = textDocument.allCaps ? textDocument.text.toUpperCase() : textDocument.text; // text to caps if needed
         len = ob.t.length;
         bm_textShapeHelper.addTextLayer(layerInfo);
         ob.j = getJustification(textDocument.justification);
         ob.tr = textDocument.tracking;
+        ob.lh = textDocument.baselineLocs[5] - textDocument.baselineLocs[1]; // assume line height is same for each line of text
         if (textDocument.applyFill) {
             len = textDocument.fillColor.length;
             ob.fc = [];

@@ -370,7 +370,7 @@ function dataFunctionManager(){
         if(jLen === 0 && !('m' in data.t.p)){
             data.singleShape = true;
         }
-        documentData.yOffset = documentData.s*1.2;
+        documentData.yOffset = documentData.lh;
         documentData.ascent = fontData.ascent*documentData.s/100;
     }
 
