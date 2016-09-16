@@ -1,3 +1,6 @@
+## V 4.4.10
+- fix on canvas nested compositions if only element animated was a mask
+
 ## V 4.4.9
 - included preserveAspectRatio for canvas 'xMidYMid' and 'none' supported for now
 
