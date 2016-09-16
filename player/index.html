@@ -112,12 +112,12 @@
     var anim;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'svg',
-        loop: true,
+        renderer: 'canvas',
+        loop: false,
         autoplay: true,
         autoloadSegments: true,
         //animationData: anim2
-        path: 'exports/bm/data.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
