@@ -3,8 +3,8 @@ function CanvasRenderer(animationItem, config){
     this.renderConfig = {
         clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
         context: (config && config.context) || null,
-        scaleMode: (config && config.scaleMode) || 'fit',
-        progressiveLoad: (config && config.progressiveLoad) || false
+        progressiveLoad: (config && config.progressiveLoad) || false,
+        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet'
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {
@@ -187,7 +187,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
         elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
     }
-    if(this.renderConfig.scaleMode == 'fit'){
+    if(this.renderConfig.preserveAspectRatio == 'xMidYMid meet'){
         var elementRel = elementWidth/elementHeight;
         var animationRel = this.transformCanvas.w/this.transformCanvas.h;
         if(animationRel>elementRel){
@@ -201,6 +201,11 @@ CanvasRenderer.prototype.updateContainerSize = function () {
             this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
             this.transformCanvas.ty = 0;
         }
+    }else if(this.renderConfig.preserveAspectRatio == 'none'){
+        this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
+        this.transformCanvas.sy = elementHeight/(this.transformCanvas.h/this.renderConfig.dpr);
+        this.transformCanvas.tx = 0;
+        this.transformCanvas.ty = 0;
     }else{
         this.transformCanvas.sx = this.renderConfig.dpr;
         this.transformCanvas.sy = this.renderConfig.dpr;
