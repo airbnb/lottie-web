@@ -64,5 +64,5 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
     this.addedTransforms.mdf = this.finalTransform.matMdf;
     this.addedTransforms.mats.length = 1;
     this.addedTransforms.mats[0] = this.finalTransform.mat;
-    this.renderShape(this.transformHelper,null,null,true, null);
+    this.renderShape(null,null,true, null);
 };
