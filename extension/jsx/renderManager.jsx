@@ -1,10 +1,11 @@
 /*jslint vars: true , plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global bm_layerElement, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, bm_markerHelper, app, File, bm_dataManager*/
+/*global bm_layerElement,bm_projectManager, bm_eventDispatcher, bm_sourceHelper, bm_generalUtils, bm_compsManager, bm_downloadManager, bm_textShapeHelper, bm_markerHelper, app, File, bm_dataManager*/
 
 var bm_renderManager = (function () {
     'use strict';
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, fsDestinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
+    var currentExportedComps = [];
     
     function restoreParents(layers) {
         
@@ -36,7 +37,7 @@ var bm_renderManager = (function () {
         }
     }
     
-    function createLayers(comp, layers, framerate) {
+    function createLayers(comp, layers, framerate, deepTraversing) {
         var i, len = comp.layers.length, layerInfo, layerData, prevLayerData;
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
@@ -82,13 +83,17 @@ var bm_renderManager = (function () {
                 bm_textShapeHelper.addComps();
             }
             if (layerData.ty === bm_layerElement.layerTypes.precomp && layerData.render !== false && layerData.compId) {
-                layerData.layers = [];
-                createLayers(layerInfo.source, layerData.layers, framerate);
+                currentExportedComps.push(layerData.compId);
+                if(deepTraversing){
+                    layerData.layers = [];
+                    createLayers(layerInfo.source, layerData.layers, framerate, deepTraversing);
+                }
             }
         }
     }
     
     function render(comp, destination, fsDestination, compSettings) {
+        currentExportedComps = [];
         bm_ProjectHelper.init();
         hasExpressionsFlag = false;
         currentCompID = comp.id;
@@ -105,7 +110,7 @@ var bm_renderManager = (function () {
             comps : [],
             fonts : [],
             layers : [],
-            v : '4.4.8',
+            v : '4.4.10',
             ddd : 0,
             ip : comp.workAreaStart * comp.frameRate,
             op : (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate,
@@ -113,12 +118,41 @@ var bm_renderManager = (function () {
             w : comp.width,
             h : comp.height
         };
+        currentExportedComps.push(currentCompID);
         ob.renderData.exportData = exportData;
         ob.renderData.firstFrame = exportData.ip * comp.frameRate;
-        createLayers(comp, exportData.layers, exportData.fr);
+        createLayers(comp, exportData.layers, exportData.fr, true);
+        exportExtraComps(exportData);
         totalLayers = pendingLayers.length;
         currentLayer = 0;
         app.scheduleTask('bm_renderManager.renderNextLayer();', 20, false);
+    }
+
+    function exportExtraComps(exportData){
+        var list = currentCompSettings.extraComps.list;
+        var i, len = list.length, compData;
+        bm_eventDispatcher.log(currentExportedComps);
+        var j, jLen = currentExportedComps.length;
+        for(i=0;i<len;i+=1){
+            j = 0;
+            while(j<jLen){
+                if(currentExportedComps[j] === list[i]){
+                    break;
+                }
+                j += 1;
+            }
+            if(j===jLen){
+                var comp = bm_projectManager.getCompositionById(list[i]);
+                compData = {
+                    layers: [],
+                    id: comp.id,
+                    nm: comp.name,
+                    xt: 1
+                };
+                createLayers(comp, compData.layers, exportData.fr, false);
+                exportData.comps.push(compData);
+            }
+        }
     }
     
     function reset() {
@@ -182,6 +216,7 @@ var bm_renderManager = (function () {
             bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Rendering layer: ' + nextLayerData.layer.name, compId: currentCompID, progress: currentLayer / totalLayers});
             bm_layerElement.renderLayer(nextLayerData);
         } else {
+            bm_eventDispatcher.log(currentCompSettings.extraComps.list.length);
             removeExtraData();
             bm_sourceHelper.exportImages(destinationPath, ob.renderData.exportData.assets, currentCompID);
         }

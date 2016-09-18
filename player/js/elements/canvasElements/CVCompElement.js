@@ -19,6 +19,7 @@ function CVCompElement(data, comp,globalData){
         cTr : new Matrix(),
         cO : 1
     };
+    this.completeLayers = false;
     var i, len = 15;
     for(i=0;i<len;i+=1){
         this.contextData.saved[i] = Array.apply(null,{length:16});
@@ -34,8 +35,12 @@ function CVCompElement(data, comp,globalData){
     this.canvas = cv;
     this.globalData = compGlobalData;
     this.layers = data.layers;
+    this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
+    }
+    if(this.data.xt || !globalData.progressiveLoad){
+        this.buildAllItems();
     }
 }
 createElement(CVBaseElement, CVCompElement);
@@ -61,7 +66,7 @@ CVCompElement.prototype.resize = function(transformCanvas){
     }
     var i,len = this.elements.length;
     for( i = 0; i < len; i+=1 ){
-        if(this.elements[i].data.ty === 0){
+        if(this.elements[i] && this.elements[i].data.ty === 0){
             this.elements[i].resize(transformCanvas);
         }
     }
@@ -71,7 +76,7 @@ CVCompElement.prototype.prepareFrame = function(num){
     this.globalData.frameId = this.parentGlobalData.frameId;
     this.globalData.mdf = false;
     this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false){
+    if(this.isVisible===false && !this.data.xt){
         return;
     }
     var timeRemapped = num;
@@ -83,13 +88,20 @@ CVCompElement.prototype.prepareFrame = function(num){
     }
     this.renderedFrame = timeRemapped/this.data.sr;
     var i,len = this.elements.length;
+
+    if(!this.completeLayers){
+        this.checkLayers(num);
+    }
+
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
-        if(this.elements[i].data.ty === 0 && this.elements[i].globalData.mdf){
-            this.globalData.mdf = true;
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
+            if(this.elements[i].data.ty === 0 && this.elements[i].globalData.mdf){
+                this.globalData.mdf = true;
+            }
         }
     }
-    if(this.globalData.mdf){
+    if(this.globalData.mdf && !this.data.xt){
         this.canvasContext.clearRect(0, 0, this.data.w, this.data.h);
         this.ctxTransform(this.transformCanvas.props);
     }
@@ -102,7 +114,9 @@ CVCompElement.prototype.renderFrame = function(parentMatrix){
     if(this.globalData.mdf){
         var i,len = this.layers.length;
         for( i = len - 1; i >= 0; i -= 1 ){
-            this.elements[i].renderFrame();
+            if(this.completeLayers || this.elements[i]){
+                this.elements[i].renderFrame();
+            }
         }
     }
     if(this.data.hasMask){
@@ -139,3 +153,14 @@ CVCompElement.prototype.destroy = function(){
     this.elements = null;
     this._parent.destroy.call();
 };
+CVCompElement.prototype.checkLayers = CanvasRenderer.prototype.checkLayers;
+CVCompElement.prototype.buildItem = CanvasRenderer.prototype.buildItem;
+CVCompElement.prototype.buildAllItems = CanvasRenderer.prototype.buildAllItems;
+CVCompElement.prototype.createItem = CanvasRenderer.prototype.createItem;
+CVCompElement.prototype.createImage = CanvasRenderer.prototype.createImage;
+CVCompElement.prototype.createComp = CanvasRenderer.prototype.createComp;
+CVCompElement.prototype.createSolid = CanvasRenderer.prototype.createSolid;
+CVCompElement.prototype.createShape = CanvasRenderer.prototype.createShape;
+CVCompElement.prototype.createText = CanvasRenderer.prototype.createText;
+CVCompElement.prototype.createBase = CanvasRenderer.prototype.createBase;
+CVCompElement.prototype.buildElementParenting = CanvasRenderer.prototype.buildElementParenting;

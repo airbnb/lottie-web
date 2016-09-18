@@ -19,8 +19,6 @@ HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
     var cont = document.createElementNS(svgNS,'svg');
-    if(this.data.bounds.l === 999999){
-    }
     cont.setAttribute('width',this.data.bounds.r - this.data.bounds.l);
     cont.setAttribute('height',this.data.bounds.b - this.data.bounds.t);
     cont.setAttribute('viewBox',this.data.bounds.l+' '+this.data.bounds.t+' '+(this.data.bounds.r - this.data.bounds.l)+' '+(this.data.bounds.b - this.data.bounds.t));
@@ -39,7 +37,8 @@ HShapeElement.prototype.createElements = function(){
         this.layerElement.appendChild(this.shapesContainer);
     }
     if(!this.data.hd){
-        this.parentContainer.appendChild(parent);
+        //this.parentContainer.appendChild(parent);
+        this.baseElement = parent;
     }
     this.innerElem = parent;
     if(this.data.ln){
@@ -51,6 +50,7 @@ HShapeElement.prototype.createElements = function(){
     if(this.data.bm !== 0){
         this.setBlendMode();
     }
+    this.checkParenting();
 };
 
 HShapeElement.prototype.renderFrame = function(parentMatrix){
@@ -64,5 +64,5 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
     this.addedTransforms.mdf = this.finalTransform.matMdf;
     this.addedTransforms.mats.length = 1;
     this.addedTransforms.mats[0] = this.finalTransform.mat;
-    this.renderShape(this.transformHelper,null,null,true, null);
+    this.renderShape(null,null,true, null);
 };

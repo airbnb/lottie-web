@@ -19,6 +19,9 @@ CVMaskElement.prototype.prepareFrame = function(num){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue(num);
+        if(this.dynamicProperties[i].mdf){
+            this.element.globalData.mdf = true;
+        }
     }
 };
 

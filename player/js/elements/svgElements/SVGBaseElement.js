@@ -55,8 +55,8 @@ SVGBaseElement.prototype.createElements = function(){
             feCTr.appendChild(feFunc);
             this.globalData.defs.appendChild(fil);
             var alphaRect = document.createElementNS(svgNS,'rect');
-            alphaRect.setAttribute('width','100%');
-            alphaRect.setAttribute('height','100%');
+            alphaRect.setAttribute('width',this.comp.data.w);
+            alphaRect.setAttribute('height',this.comp.data.h);
             alphaRect.setAttribute('x','0');
             alphaRect.setAttribute('y','0');
             alphaRect.setAttribute('fill','#ffffff');
@@ -81,16 +81,19 @@ SVGBaseElement.prototype.createElements = function(){
         if(this.data.tt){
             this.matteElement = document.createElementNS(svgNS,'g');
             this.matteElement.appendChild(this.layerElement);
-            this.appendNodeToParent(this.matteElement);
+            this.baseElement = this.matteElement;
+            //this.appendNodeToParent(this.matteElement);
         }else{
-            this.appendNodeToParent(this.layerElement);
+            this.baseElement = this.layerElement;
+            //this.appendNodeToParent(this.layerElement);
         }
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;
         }
     }else{
         this.layerElement = document.createElementNS(svgNS,'g');
-        this.appendNodeToParent(this.layerElement);
+        this.baseElement = this.layerElement;
+        //this.appendNodeToParent(this.layerElement);
     }
     if((this.data.ln || this.data.cl) && (this.data.ty === 4 || this.data.ty === 0)){
         if(this.data.ln){
@@ -181,12 +184,13 @@ SVGBaseElement.prototype.createElements = function(){
             }
         }
     }*/
+    this.checkParenting();
 };
 
 SVGBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
 SVGBaseElement.prototype.renderFrame = function(parentTransform){
-    if(this.data.ty === 3){
+    if(this.data.ty === 3 || this.data.hd){
         return false;
     }
 
@@ -256,11 +260,18 @@ SVGBaseElement.prototype.destroy = function(){
     }
 };
 
-SVGBaseElement.prototype.getDomElement = function(){
-    return this.layerElement;
+SVGBaseElement.prototype.getBaseElement = function(){
+    return this.baseElement;
 };
 SVGBaseElement.prototype.addMasks = function(data){
     this.maskManager = new MaskElement(data,this,this.globalData);
+};
+
+SVGBaseElement.prototype.setMatte = function(id){
+    if(!this.matteElement){
+        return;
+    }
+    this.matteElement.setAttribute("mask", "url(#" + id + ")");
 };
 
 SVGBaseElement.prototype.setMatte = function(id){

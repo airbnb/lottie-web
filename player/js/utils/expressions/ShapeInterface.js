@@ -40,7 +40,7 @@ var ShapeExpressionInterface = (function(){
 
     function iterateElements(shapes,view, propertyGroup){
         var arr = [];
-        var i, len = shapes.length;
+        var i, len = shapes ? shapes.length : 0;
         for(i=0;i<len;i+=1){
             if(shapes[i].ty == 'gr'){
                 arr.push(ShapeExpressionInterface.createGroupInterface(shapes[i],view[i],propertyGroup));
@@ -51,7 +51,7 @@ var ShapeExpressionInterface = (function(){
             }else if(shapes[i].ty == 'tm'){
                 arr.push(ShapeExpressionInterface.createTrimInterface(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'tr'){
-                arr.push(ShapeExpressionInterface.createTransformInterface(shapes[i],view[i],propertyGroup));
+                //arr.push(ShapeExpressionInterface.createTransformInterface(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'el'){
                 arr.push(ShapeExpressionInterface.createEllipseInterface(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'sr'){
@@ -67,18 +67,14 @@ var ShapeExpressionInterface = (function(){
 
     var shapeInterfaceFactory = (function(){
         return function(shapes,view,propertyGroup){
-            //console.log('shapes',shapes);
-            // console.log('view',view);
             var interfaces;
             function _interfaceFunction(value){
-                //console.log('shapeInterfaceFactory::value: ',value);
                 if(typeof value === 'number'){
                     return interfaces[value-1];
                 } else {
                     var i = 0, len = interfaces.length;
                     while(i<len){
                         if(interfaces[i]._name === value){
-                            //console.log('interfaces[i]: ',interfaces[i]);
                             return interfaces[i];
                         }
                         i+=1;
@@ -91,13 +87,49 @@ var ShapeExpressionInterface = (function(){
         }
     }());
 
+    var contentsInterfaceFactory = (function(){
+       return function(shape,view, propertyGroup){
+           var interfaces;
+           var interfaceFunction = function _interfaceFunction(value){
+               if(typeof value === 'number'){
+                   return interfaces[value-1];
+               }
+               var i = 0, len = interfaces.length;
+               while(i<len){
+                   if(interfaces[i]._name === value){
+                       return interfaces[i];
+                   }
+                   i+=1;
+               }
+           };
+           interfaceFunction.propertyGroup = function(val){
+               if(val === 1){
+                   return interfaceFunction;
+               } else{
+                   return propertyGroup(val-1);
+               }
+           };
+
+           interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
+
+           return interfaceFunction;
+       }
+    }());
+
     var groupInterfaceFactory = (function(){
         return function(shape,view, propertyGroup){
-            var interfaces;
             var interfaceFunction = function _interfaceFunction(value){
-                if(value === 'ADBE Vectors Group'){
-                    return interfaceFunction;
-                } else if(value === 'ADBE Vector Transform Group'){
+                switch(value){
+                    case 'ADBE Vectors Group':
+                    case 2:
+                        return interfaceFunction.content;
+                    case 'ADBE Vector Transform Group':
+                    case 3:
+                    default:
+                        return interfaceFunction.transform;
+                }
+                /*if(value === 'ADBE Vector Transform Group'){
+                    return interfaceFunction.transform;
                     var i = 0, len = interfaces.length;
                     while(i<len){
                         if(interfaces[i].ty === 'tr'){
@@ -117,7 +149,7 @@ var ShapeExpressionInterface = (function(){
                         }
                         i+=1;
                     }
-                }
+                }*/
             }
             interfaceFunction.propertyGroup = function(val){
                 if(val === 1){
@@ -126,14 +158,16 @@ var ShapeExpressionInterface = (function(){
                     return propertyGroup(val-1);
                 }
             };
-            interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
+            var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
+            var transformInterface = ShapeExpressionInterface.createTransformInterface(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
+            interfaceFunction.content = content;
+            interfaceFunction.transform = transformInterface;
             Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
                 }
             });
-            //interfaceFunction.name = shape.nm;
-            interfaceFunction.content = interfaceFunction;
+            //interfaceFunction.content = interfaceFunction;
             interfaceFunction.nm = shape.nm;
             return interfaceFunction;
         }
@@ -141,6 +175,7 @@ var ShapeExpressionInterface = (function(){
 
     var fillInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
+
             view.c.setGroupProperty(propertyGroup);
             view.o.setGroupProperty(propertyGroup);
             var ob = {
@@ -164,9 +199,16 @@ var ShapeExpressionInterface = (function(){
 
     var strokeInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
-            view.c.setGroupProperty(propertyGroup);
-            view.o.setGroupProperty(propertyGroup);
-            view.w.setGroupProperty(propertyGroup);
+            function _propertyGroup(val){
+                if(val === 1){
+                    return ob;
+                } else{
+                    return propertyGroup(val-1);
+                }
+            };
+            view.c.setGroupProperty(_propertyGroup);
+            view.o.setGroupProperty(_propertyGroup);
+            view.w.setGroupProperty(_propertyGroup);
             var ob = {
                 get color(){
                     if(view.c.k){
@@ -210,7 +252,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }
@@ -232,6 +274,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.offset;
                 }
             }
+            interfaceFunction.propertyIndex = shape.ix;
             Object.defineProperty(interfaceFunction, 'start', {
                 get: function(){
                     if(view.s.k){
@@ -269,7 +312,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }
@@ -314,7 +357,7 @@ var ShapeExpressionInterface = (function(){
                     if(view.transform.mProps.o.k){
                         view.transform.mProps.o.getValue();
                     }
-                    return view.transform.mProps.o.v;
+                    return view.transform.mProps.o.v/view.transform.mProps.o.mult;
                 }
             });
             Object.defineProperty(interfaceFunction, 'position', {

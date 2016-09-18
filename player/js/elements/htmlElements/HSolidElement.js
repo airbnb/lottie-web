@@ -11,7 +11,8 @@ HSolidElement.prototype.createElements = function(){
     cont.setAttribute('height',this.data.sh);
     parent.appendChild(cont);
     this.layerElement = parent;
-    this.appendNodeToParent(parent);
+    //this.appendNodeToParent(parent);
+    this.baseElement = parent;
     this.innerElem = parent;
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
@@ -27,33 +28,11 @@ HSolidElement.prototype.createElements = function(){
     if(this.data.hasMask){
         this.maskedElement = rect;
     }
+    this.checkParenting();
 };
 
 
 
-HSolidElement.prototype.hide = function(){
-    if(!this.hidden){
-        this.innerElem.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
-HSolidElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.hidden = false;
-        this.innerElem.style.display = 'block';
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-
-HSolidElement.prototype.destroy = function(){
-    this._parent.destroy.call();
-    this.innerElem =  null;
-};
+HSolidElement.prototype.hide = IImageElement.prototype.hide;
+HSolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
+HSolidElement.prototype.destroy = IImageElement.prototype.destroy;

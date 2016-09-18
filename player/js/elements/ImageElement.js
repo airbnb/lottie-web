@@ -6,30 +6,17 @@ createElement(SVGBaseElement, IImageElement);
 
 IImageElement.prototype.createElements = function(){
 
-    var self = this;
-
-    var imageLoaded = function(){
-        self.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
-        self.maskedElement = self.innerElem;
-    };
-
-    var img = new Image();
-    img.addEventListener('load', imageLoaded, false);
-    img.addEventListener('error', imageLoaded, false);
-
     var assetPath = this.globalData.getAssetsPath(this.assetData);
-    img.src = assetPath;
 
     this._parent.createElements.call(this);
 
     this.innerElem = document.createElementNS(svgNS,'image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
-    if(this.layerElement === this.parentContainer){
-        this.appendNodeToParent(this.innerElem);
-    }else{
-        this.layerElement.appendChild(this.innerElem);
-    }
+    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
+    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+    this.maskedElement = this.innerElem;
+    this.layerElement.appendChild(this.innerElem);
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
@@ -41,7 +28,7 @@ IImageElement.prototype.createElements = function(){
 
 IImageElement.prototype.hide = function(){
     if(!this.hidden){
-        this.innerElem.setAttribute('visibility','hidden');
+        this.innerElem.style.display = 'none';
         this.hidden = true;
     }
 };
@@ -54,7 +41,7 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
     }
     if(this.hidden){
         this.hidden = false;
-        this.innerElem.setAttribute('visibility', 'visible');
+        this.innerElem.style.display = 'block';
     }
     if(this.firstFrame){
         this.firstFrame = false;

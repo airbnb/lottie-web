@@ -31,11 +31,11 @@ function MaskElement(data,element,globalData) {
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
             rect = document.createElementNS(svgNS, 'rect');
             rect.setAttribute('fill', '#ffffff');
-            rect.setAttribute('x', '0');
-            rect.setAttribute('y', '0');
-            rect.setAttribute('width', '100%');
-            rect.setAttribute('height', '100%');
+            rect.setAttribute('width', this.element.comp.data.w);
+            rect.setAttribute('height', this.element.comp.data.h);
             currentMasks.push(rect);
+        } else {
+            rect = null;
         }
 
         if(properties[i].mode == 'n' || properties[i].cl === false) {
@@ -123,6 +123,9 @@ function MaskElement(data,element,globalData) {
             lastPath: '',
             prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
         };
+        if(rect){
+            this.viewData[i].invRect = rect;
+        }
         if(!this.viewData[i].prop.k){
             this.drawPath(properties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
@@ -161,6 +164,10 @@ MaskElement.prototype.renderFrame = function () {
         if(this.masksProperties[i].mode !== 'n' && this.masksProperties[i].cl !== false){
             if(this.viewData[i].prop.mdf || this.firstFrame){
                 this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
+            }
+            if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
+                this.viewData[i].invRect.setAttribute('x', -this.element.finalTransform.mProp.v.props[12]);
+                this.viewData[i].invRect.setAttribute('y', -this.element.finalTransform.mProp.v.props[13]);
             }
             if(this.storedData[i].x && (this.storedData[i].x.mdf || this.firstFrame)){
                 var feMorph = this.storedData[i].expan;

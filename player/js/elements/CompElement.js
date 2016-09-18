@@ -1,22 +1,28 @@
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
-    this.isSvg = true;
+    this.supports3d = true;
+    this.completeLayers = false;
+    this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
+    if(this.data.xt){
+        this.layerElement = document.createElementNS(svgNS,'g');
+        this.buildAllItems();
+    } else if(!globalData.progressiveLoad){
+        this.buildAllItems();
+    }
 }
 createElement(SVGBaseElement, ICompElement);
-
-ICompElement.prototype.getComposingElement = function(){
-    return this.layerElement;
-};
 
 ICompElement.prototype.hide = function(){
     if(!this.hidden){
         var i,len = this.elements.length;
         for( i = 0; i < len; i+=1 ){
-            this.elements[i].hide();
+            if(this.elements[i]){
+                this.elements[i].hide();
+            }
         }
         this.hidden = true;
     }
@@ -24,7 +30,7 @@ ICompElement.prototype.hide = function(){
 
 ICompElement.prototype.prepareFrame = function(num){
     this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false){
+    if(this.isVisible===false && !this.data.xt){
         return;
     }
     var timeRemapped = num;
@@ -36,8 +42,16 @@ ICompElement.prototype.prepareFrame = function(num){
     }
     this.renderedFrame = timeRemapped/this.data.sr;
     var i,len = this.elements.length;
+    if(!this.completeLayers){
+        this.checkLayers(this.renderedFrame);
+    }
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
+        /*if(!this.elements[i]){
+            this.checkLayer(i, this.renderedFrame - this.layers[i].st, this.layerElement);
+        }*/
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
+        }
     }
 };
 
@@ -51,7 +65,9 @@ ICompElement.prototype.renderFrame = function(parentMatrix){
 
     this.hidden = false;
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].renderFrame();
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].renderFrame();
+        }
     }
     if(this.firstFrame){
         this.firstFrame = false;
@@ -70,6 +86,21 @@ ICompElement.prototype.destroy = function(){
     this._parent.destroy.call();
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
-        this.elements[i].destroy();
+        if(this.elements[i]){
+            this.elements[i].destroy();
+        }
     }
 };
+
+ICompElement.prototype.checkLayers = SVGRenderer.prototype.checkLayers;
+ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
+ICompElement.prototype.buildAllItems = SVGRenderer.prototype.buildAllItems;
+ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
+ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
+ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;
+ICompElement.prototype.createComp = SVGRenderer.prototype.createComp;
+ICompElement.prototype.createSolid = SVGRenderer.prototype.createSolid;
+ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
+ICompElement.prototype.createText = SVGRenderer.prototype.createText;
+ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
+ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;

@@ -171,7 +171,7 @@ var bm_textShapeHelper = (function () {
             var fontFamily = textDocument.fontFamily;
             var fontStyle = textDocument.fontStyle;
             var fontSize = textDocument.fontSize;
-            var text = textDocument.text;
+            var text = textDocument.allCaps ? textDocument.text.toUpperCase() : textDocument.text;
             var j, jLen = text.length;
             
             if (currentFont !== font) {

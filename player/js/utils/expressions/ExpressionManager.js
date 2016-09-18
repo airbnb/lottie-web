@@ -17,6 +17,21 @@ var ExpressionManager = (function(){
         }
     }
 
+    function $bm_neg(a){
+        var tOfA = typeof a;
+        if(tOfA === 'number' || tOfA === 'boolean'){
+            return -a;
+        }
+        if(tOfA === 'object'){
+            var i, lenA = a.length;
+            var retArr = [];
+            for(i=0;i<lenA;i+=1){
+                retArr[i] = -a[i];
+            }
+            return retArr;
+        }
+    }
+
     function sum(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
@@ -41,7 +56,7 @@ var ExpressionManager = (function(){
                 if(typeof a[i] === 'number' && typeof b[i] === 'number'){
                     retArr[i] = a[i] + b[i];
                 }else{
-                    retArr[i] = a[i] || b[i];
+                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
                 }
                 i += 1;
             }
@@ -71,7 +86,7 @@ var ExpressionManager = (function(){
                 if(typeof a[i] === 'number' && typeof b[i] === 'number'){
                     retArr[i] = a[i] - b[i];
                 }else{
-                    retArr[i] = a[i] || b[i];
+                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
                 }
                 i += 1;
             }
@@ -146,6 +161,10 @@ var ExpressionManager = (function(){
         return val/degToRads;
     }
 
+    function degreesToRadians(val) {
+        return val*degToRads;
+    }
+
     var helperLengthArray = [0,0,0,0,0,0];
 
     function length(arr1,arr2){
@@ -161,7 +180,6 @@ var ExpressionManager = (function(){
     }
 
     function rgbToHsl(val){
-        //console.log(val);
         var r = val[0]; var g = val[1]; var b = val[2];
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
         var h, s, l = (max + min) / 2;
@@ -219,7 +237,7 @@ var ExpressionManager = (function(){
         }else if(t >= tMax){
             return value2;
         }
-        var perc = t/(tMax-tMin);
+        var perc = tMax === tMin ? 0 : t/(tMax-tMin);
         if(!value1.length){
             return value1 + (value2-value1)*perc;
         }
@@ -265,6 +283,7 @@ var ExpressionManager = (function(){
 
     function initiateExpression(elem,data,property){
         var val = data.x;
+        var needsVelocity = val.indexOf('velocity') !== -1;
         var elemType = elem.data.ty;
         var transform,content,effect;
         var thisComp = elem.comp;
@@ -277,7 +296,6 @@ var ExpressionManager = (function(){
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
-
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
@@ -450,6 +468,8 @@ var ExpressionManager = (function(){
             return this.getVelocityAtTime(t);
         }.bind(this);
 
+        var comp = elem.comp.globalData.projectInterface.bind(elem.comp.globalData.projectInterface);
+
         function effect(nm){
             return elem.effectsManager(nm);
         }
@@ -570,11 +590,10 @@ var ExpressionManager = (function(){
             }
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
-            velocity = velocityAtTime(time);
-            bindedFn();
-            if(typeof this.v === 'object' && isNaN(this.v[0])){
-               // console.log(val);
+            if(needsVelocity){
+                velocity = velocityAtTime(time);
             }
+            bindedFn();
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
@@ -590,6 +609,7 @@ var ExpressionManager = (function(){
                     }
                 }
             }
+
 
             if(typeof this.v === 'number'){
                 if(this.lastValue !== this.v){

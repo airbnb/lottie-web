@@ -37,7 +37,7 @@ SVGTextElement.prototype.createElements = function(){
 
 
 
-    var letters = documentData.l;
+    var letters = documentData.l || [];
     len = letters.length;
     if(!len){
         return;

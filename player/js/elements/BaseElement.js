@@ -14,6 +14,12 @@ BaseElement.prototype.checkMasks = function(){
     return false;
 }
 
+BaseElement.prototype.checkParenting = function(){
+    if(this.data.parent !== undefined){
+        this.comp.buildElementParenting(this, this.data.parent);
+    }
+}
+
 BaseElement.prototype.prepareFrame = function(num){
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
@@ -82,6 +88,20 @@ BaseElement.prototype.globalToLocal = function(pt){
     return pt;
 };
 
+BaseElement.prototype.initExpressions = function(){
+    this.layerInterface = LayerExpressionInterface(this);
+    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
+    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
+    if(this.data.hasMask){
+        this.layerInterface.registerMaskInterface(this.maskManager);
+    }
+    if(this.data.ty === 0 || this.data.xt){
+        this.compInterface = CompExpressionInterface(this);
+    } else if(this.data.ty === 4){
+        this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.layerInterface);
+    }
+}
+
 BaseElement.prototype.setBlendMode = function(){
     var blendModeValue = '';
     switch(this.data.bm){
@@ -149,20 +169,22 @@ BaseElement.prototype.init = function(){
     this.isVisible = false;
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
-    this.finalTransform = {
-        mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
-        matMdf: false,
-        opMdf: false,
-        mat: new Matrix(),
-        opacity: 1
-    };
-    this.finalTransform.op = this.finalTransform.mProp.o;
-    this.transform = this.finalTransform.mProp;
-    if(this.data.ty !== 11){
-        this.createElements();
-    }
-    if(this.data.hasMask){
-        this.addMasks(this.data);
+    if(this.data.ks){
+        this.finalTransform = {
+            mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
+            matMdf: false,
+            opMdf: false,
+            mat: new Matrix(),
+            opacity: 1
+        };
+        this.finalTransform.op = this.finalTransform.mProp.o;
+        this.transform = this.finalTransform.mProp;
+        if(this.data.ty !== 11){
+            this.createElements();
+        }
+        if(this.data.hasMask){
+            this.addMasks(this.data);
+        }
     }
 };
 BaseElement.prototype.getType = function(){

@@ -71,10 +71,22 @@ var bm_projectManager = (function () {
         }
         return arr;
     }
+
+    function getCompositionById(id){
+        var i, numItems = project.numItems;
+        for (i = 0; i < numItems; i += 1) {
+            if (getItemType(project.item(i + 1)) === 'Comp') {
+                if(project.item(i + 1).id == id){
+                    return project.item(i + 1);
+                }
+            }
+        }
+    }
     
     var ob = {
         checkProject: checkProject,
         getCompositions: getCompositions,
+        getCompositionById: getCompositionById,
         searchCommands: searchCommands,
         getCommandID: getCommandID
     };
