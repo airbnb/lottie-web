@@ -55,8 +55,8 @@ SVGBaseElement.prototype.createElements = function(){
             feCTr.appendChild(feFunc);
             this.globalData.defs.appendChild(fil);
             var alphaRect = document.createElementNS(svgNS,'rect');
-            alphaRect.setAttribute('width',this.comp.data.w);
-            alphaRect.setAttribute('height',this.comp.data.h);
+            alphaRect.setAttribute('width',this.comp.data ? this.comp.data.w : this.globalData.compSize.w);
+            alphaRect.setAttribute('height',this.comp.data ? this.comp.data.h : this.globalData.compSize.h);
             alphaRect.setAttribute('x','0');
             alphaRect.setAttribute('y','0');
             alphaRect.setAttribute('fill','#ffffff');

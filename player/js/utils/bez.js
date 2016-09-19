@@ -42,7 +42,6 @@ function bezFunction(){
         return easingFunctions[encodedFuncName];
     }*/
     var getBezierLength = (function(){
-        var storedBezierCurves = {};
 
         function Segment(l,p){
             this.l = l;
@@ -50,10 +49,6 @@ function bezFunction(){
         }
 
         return function(pt1,pt2,pt3,pt4){
-            var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
-            if(storedBezierCurves[bezierName]){
-                return storedBezierCurves[bezierName];
-            }
             var curveSegments = defaultCurveSegments;
             var k;
             var i, len;
@@ -83,7 +78,6 @@ function bezFunction(){
                 lengthData.segments.push(new Segment(addedLength,perc));
             }
             lengthData.addedLength = addedLength;
-            storedBezierCurves[bezierName] = lengthData;
             return lengthData;
         };
     }());

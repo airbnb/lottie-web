@@ -23,23 +23,8 @@
             opacity: 1;
         }
 
-        rect{
-           /* opacity: .5!important;*/
-        }
-
-        svg{
-            /*border: 1px solid red;*/
-        }
-
-         .rbt-black{
-            font-weight: 900;
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .strokeClase1, .fillClase1{
-            fill: red;
-            stroke:aquamarine;
-            stroke-opacity: 0;
+        .botas_loop_1,.botas_loop_2{
+            display:none
         }
 
     </style>
@@ -120,10 +105,10 @@
         autoplay: true,
         autoloadSegments: true,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:false
         },
         //animationData: anim2
-        path: 'exports/render/data.json'
+        path: 'exports/navidad/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

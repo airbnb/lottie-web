@@ -88,19 +88,24 @@ TrimModifier.prototype.processShapes = function(){
                 shapeData.shape.paths = shapeData.last;
             } else {
                 shapePaths = shapeData.shape.paths;
-                shapeData.shape.mdf = true;
                 jLen = shapePaths.length;
-                pathsData = [];
                 totalShapeLength = 0;
-                for(j=0;j<jLen;j+=1){
-                    pathData = this.getSegmentsLength(shapePaths[j]);
-                    pathsData.push(pathData);
-                    totalShapeLength += pathData.totalLength;
+                if(!shapeData.shape.mdf && shapeData.pathsData){
+                    totalShapeLength = shapeData.totalShapeLength;
+                } else {
+                    pathsData = [];
+                    for(j=0;j<jLen;j+=1){
+                        pathData = this.getSegmentsLength(shapePaths[j]);
+                        pathsData.push(pathData);
+                        totalShapeLength += pathData.totalLength;
+                    }
+                    shapeData.totalShapeLength = totalShapeLength;
+                    shapeData.pathsData = pathsData;
                 }
-                shapeData.totalShapeLength = totalShapeLength;
-                shapeData.pathsData = pathsData;
+
                 totalModifierLength += totalShapeLength;
             }
+            shapeData.shape.mdf = true;
         }
         for(i=0;i<len;i+=1){
             newShapes = [];
