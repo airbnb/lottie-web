@@ -198,10 +198,6 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         return this.isVisible;
     }
     this.lastNum = this.currentFrameNum;
-
-    if(this.data.hasMask){
-        this.maskManager.renderFrame();
-    }
     this.finalTransform.opMdf = this.finalTransform.op.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;
@@ -245,6 +241,10 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
     }
     if(this.finalTransform.opMdf && this.layerElement){
         this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
+    }
+
+    if(this.data.hasMask){
+        this.maskManager.renderFrame(finalMat);
     }
     return this.isVisible;
 };

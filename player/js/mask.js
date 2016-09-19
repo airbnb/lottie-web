@@ -9,7 +9,6 @@ function MaskElement(data,element,globalData) {
     this.viewData = new Array(this.masksProperties.length);
     this.maskElement = null;
     this.firstFrame = true;
-    var maskedElement = this.element.maskedElement;
     var defs = this.globalData.defs;
     var i, len = this.masksProperties.length;
 
@@ -158,7 +157,7 @@ MaskElement.prototype.prepareFrame = function(){
     }
 };
 
-MaskElement.prototype.renderFrame = function () {
+MaskElement.prototype.renderFrame = function (finalMat) {
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
         if(this.masksProperties[i].mode !== 'n' && this.masksProperties[i].cl !== false){
@@ -166,8 +165,8 @@ MaskElement.prototype.renderFrame = function () {
                 this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
             }
             if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
-                this.viewData[i].invRect.setAttribute('x', -this.element.finalTransform.mProp.v.props[12]);
-                this.viewData[i].invRect.setAttribute('y', -this.element.finalTransform.mProp.v.props[13]);
+                this.viewData[i].invRect.setAttribute('x', -finalMat.props[12]);
+                this.viewData[i].invRect.setAttribute('y', -finalMat.props[13]);
             }
             if(this.storedData[i].x && (this.storedData[i].x.mdf || this.firstFrame)){
                 var feMorph = this.storedData[i].expan;
