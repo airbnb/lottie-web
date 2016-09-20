@@ -165,7 +165,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.transformCanvas.h = animData.h;
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,document);
+    this.globalData.fontManager.addFonts(animData.fonts,document.body);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);

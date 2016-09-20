@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.11
+- html and canvas renderer fixes
+- more expressions supported
+- better subtracted mask support on the svg renderer
+- trim paths memory management corrected. If you're using Trim paths with animated strokes please update to this build!
+
 ## V 4.4.10
 - fix on canvas nested compositions if only element animated was a mask
 
@@ -41,13 +47,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - Gradients! for svg and html renderer
 - hidden track matte layers fix
 - shape stroke performance and fix improvements
-
-## V 4.3.3
-- Hidden layer and Guided layers are now exportable if configured (could be needed for expressions)
-- Config is remembered
-- Filter for Comps
-- Trim path fix
-- Canvas images fix
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**

@@ -112,6 +112,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
 
     if(this.finalTransform.matMdf){
         this.layerElement.style.transform = this.layerElement.style.webkitTransform = finalMat.toCSS();
+        this.finalMat = finalMat;
     }
     if(this.finalTransform.opMdf){
         this.layerElement.style.opacity = this.finalTransform.opacity;

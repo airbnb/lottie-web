@@ -24,6 +24,7 @@ BaseElement.prototype.prepareFrame = function(num){
     if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){
+            this.elemMdf = true;
             this.globalData.mdf = true;
             this.isVisible = true;
             this.firstFrame = true;
@@ -33,6 +34,7 @@ BaseElement.prototype.prepareFrame = function(num){
         }
     }else{
         if(this.isVisible !== false){
+            this.elemMdf = true;
             this.globalData.mdf = true;
             this.isVisible = false;
         }
@@ -41,6 +43,7 @@ BaseElement.prototype.prepareFrame = function(num){
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
         if(this.dynamicProperties[i].mdf){
+            this.elemMdf = true;
             this.globalData.mdf = true;
         }
     }
@@ -59,6 +62,7 @@ BaseElement.prototype.prepareFrame = function(num){
         }
     }
     */
+
 
     this.currentFrameNum = num*this.data.sr;
     return this.isVisible;
@@ -186,6 +190,7 @@ BaseElement.prototype.init = function(){
             this.addMasks(this.data);
         }
     }
+    this.elemMdf = false;
 };
 BaseElement.prototype.getType = function(){
     return this.type;

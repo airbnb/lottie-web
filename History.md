@@ -1,3 +1,9 @@
+## V 4.4.11
+- html and canvas renderer fixes
+- more expressions supported
+- better subtracted mask support on the svg renderer
+- trim paths memory management corrected. If you're using Trim paths with animated strokes please update to this build!
+
 ## V 4.4.10
 - fix on canvas nested compositions if only element animated was a mask
 

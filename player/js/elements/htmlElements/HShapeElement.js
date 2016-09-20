@@ -9,6 +9,12 @@ function HShapeElement(data,parentContainer,globalData,comp, placeholder){
         mdf: false,
         mats: [this.finalTransform.mat]
     };
+    this.currentBBox = {
+        x:999999,
+        y: -999999,
+        h: 0,
+        w: 0
+    };
 }
 createElement(HBaseElement, HShapeElement);
 var parent = HShapeElement.prototype._parent;
@@ -19,10 +25,9 @@ HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
     var cont = document.createElementNS(svgNS,'svg');
-    cont.setAttribute('width',this.data.bounds.r - this.data.bounds.l);
-    cont.setAttribute('height',this.data.bounds.b - this.data.bounds.t);
-    cont.setAttribute('viewBox',this.data.bounds.l+' '+this.data.bounds.t+' '+(this.data.bounds.r - this.data.bounds.l)+' '+(this.data.bounds.b - this.data.bounds.t));
-    cont.style.transform = cont.style.webkitTransform = 'translate('+this.data.bounds.l+'px,'+this.data.bounds.t+'px)';
+    var size = this.comp.data ? this.comp.data : this.globalData.compSize;
+    cont.setAttribute('width',size.w);
+    cont.setAttribute('height',size.h);
     if(this.data.hasMask){
         var g = document.createElementNS(svgNS,'g');
         parent.appendChild(cont);
@@ -47,6 +52,7 @@ HShapeElement.prototype.createElements = function(){
     this.searchShapes(this.shapesData,this.viewData,this.layerElement,this.dynamicProperties,0);
     this.buildExpressionInterface();
     this.layerElement = parent;
+    this.shapeCont = cont;
     if(this.data.bm !== 0){
         this.setBlendMode();
     }
@@ -59,10 +65,33 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
         this.hide();
         return;
     }
+
     this.hidden = false;
     this.renderModifiers();
     this.addedTransforms.mdf = this.finalTransform.matMdf;
     this.addedTransforms.mats.length = 1;
     this.addedTransforms.mats[0] = this.finalTransform.mat;
     this.renderShape(null,null,true, null);
+
+    if(this.isVisible && (this.elemMdf || this.firstFrame)){
+        var boundingBox = this.shapeCont.getBBox();
+        if(this.currentBBox.w !== boundingBox.width){
+            this.currentBBox.w = boundingBox.width;
+            this.shapeCont.setAttribute('width',boundingBox.width);
+        }
+        if(this.currentBBox.h !== boundingBox.height){
+            this.currentBBox.h = boundingBox.height;
+            this.shapeCont.setAttribute('height',boundingBox.height);
+        }
+        if(this.currentBBox.w !== boundingBox.width || this.currentBBox.h !== boundingBox.height  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
+            this.currentBBox.w = boundingBox.width;
+            this.currentBBox.h = boundingBox.height;
+            this.currentBBox.x = boundingBox.x;
+            this.currentBBox.y = boundingBox.y;
+
+            this.shapeCont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+        }
+    }
+
 };

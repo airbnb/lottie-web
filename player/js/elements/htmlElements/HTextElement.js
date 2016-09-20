@@ -88,7 +88,6 @@ HTextElement.prototype.createElements = function(){
             if(!this.isMasked){
                 tParent = document.createElement('div');
                 tCont = document.createElementNS(svgNS,'svg');
-                tParent.appendChild(tCont);
                 tCont.appendChild(tSpan);
                 styleDiv(tParent);
             }
@@ -124,9 +123,20 @@ HTextElement.prototype.createElements = function(){
             }
             if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
-                var scale = documentData.s/100;
                 if(shapeData && shapeData.shapes){
-                    var rBound = Math.ceil(shapeData.bounds.r*scale);
+                    document.body.appendChild(tCont);
+
+                    var boundingBox = tCont.getBBox();
+                    tCont.setAttribute('width',boundingBox.width);
+                    tCont.setAttribute('height',boundingBox.height);
+                    tCont.setAttribute('viewBox',boundingBox.x+' '+ boundingBox.y+' '+ boundingBox.width+' '+ boundingBox.height);
+                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + boundingBox.x + 'px,' + boundingBox.y + 'px)';
+
+                    letters[i].yOffset = boundingBox.y;
+                    tParent.appendChild(tCont);
+
+
+                    /*var rBound = Math.ceil(shapeData.bounds.r*scale);
                     var tBound = Math.floor(shapeData.bounds.t*scale);
                     var lBound = Math.floor(shapeData.bounds.l*scale);
                     var bBound = Math.ceil(shapeData.bounds.b*scale);
@@ -134,7 +144,7 @@ HTextElement.prototype.createElements = function(){
                     tCont.setAttribute('height',bBound - tBound);
                     tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
                     tCont.style.transform = tCont.style.webkitTransform = 'translate('+lBound+'px,'+ tBound+'px)';
-                    letters[i].yOffset = tBound;
+                    letters[i].yOffset = tBound;*/
                 } else{
                     tCont.setAttribute('width',1);
                     tCont.setAttribute('height',1);
@@ -223,24 +233,27 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
             this.textPaths[i].style.color = renderedLetter.fc;
         }
     }
-    if(this.isMasked){
-        var boundingBox = this.innerElem.getBBox();
-        if(this.currentBBox.w !== boundingBox.width){
-            this.currentBBox.w = boundingBox.width;
-            this.cont.setAttribute('width',boundingBox.width);
-        }
-        if(this.currentBBox.h !== boundingBox.height){
-            this.currentBBox.h = boundingBox.height;
-            this.cont.setAttribute('height',boundingBox.height);
-        }
-        if(this.currentBBox.w !== boundingBox.width || this.currentBBox.h !== boundingBox.height  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
-            this.currentBBox.w = boundingBox.width;
-            this.currentBBox.h = boundingBox.height;
-            this.currentBBox.x = boundingBox.x;
-            this.currentBBox.y = boundingBox.y;
+    if(this.isVisible && (this.elemMdf || this.firstFrame)){
+        if(this.innerElem.getBBox){
+            var boundingBox = this.innerElem.getBBox();
 
-            this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-            this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+            if(this.currentBBox.w !== boundingBox.width){
+                this.currentBBox.w = boundingBox.width;
+                this.cont.setAttribute('width',boundingBox.width);
+            }
+            if(this.currentBBox.h !== boundingBox.height){
+                this.currentBBox.h = boundingBox.height;
+                this.cont.setAttribute('height',boundingBox.height);
+            }
+            if(this.currentBBox.w !== boundingBox.width || this.currentBBox.h !== boundingBox.height  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
+                this.currentBBox.w = boundingBox.width;
+                this.currentBBox.h = boundingBox.height;
+                this.currentBBox.x = boundingBox.x;
+                this.currentBBox.y = boundingBox.y;
+
+                this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+                this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+            }
         }
     }
     if(this.firstFrame){

@@ -34,13 +34,15 @@ var bm_textHelper = (function () {
         ob.s = textDocument.fontSize;
         ob.f = textDocument.font;
         bm_sourceHelper.addFont(textDocument.font, textDocument.fontFamily, textDocument.fontStyle);
-        ob.t = textDocument.allCaps ? textDocument.text.toUpperCase() : textDocument.text; // text to caps if needed
+        if(textDocument.allCaps){
+            ob.t = textDocument.text.toUpperCase();
+        } else {
+            ob.t = textDocument.text;
+        }
         len = ob.t.length;
         bm_textShapeHelper.addTextLayer(layerInfo);
         ob.j = getJustification(textDocument.justification);
         ob.tr = textDocument.tracking;
-        bm_eventDispatcher.log(textDocument.baselineLocs);
-        bm_eventDispatcher.log(textDocument.baselineLocs.length);
         if(textDocument.baselineLocs && textDocument.baselineLocs.length > 5){
             ob.lh = textDocument.baselineLocs[5] - textDocument.baselineLocs[1];
         } else {

@@ -11,9 +11,9 @@
         }
 
         #bodymovin{
-            background-color:#333;
-            width:1200px;
-            height:900px;
+            background-color:#fff;
+            width:1066px;
+            height:600px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -105,10 +105,10 @@
         autoplay: true,
         autoloadSegments: true,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:true
         },
         //animationData: anim2
-        path: 'exports/navidad/data.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
