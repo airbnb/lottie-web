@@ -84,6 +84,172 @@ var bm_shapeHelper = (function () {
             }
         }
     }
+
+    function sliceBezier(pt1,pt2,pt3,pt4, t){
+        var x1 = pt1[0], y1 = pt1[1];
+        var x2 = pt2[0]+pt1[0], y2 = pt2[1]+pt1[1];
+        var x3 = pt3[0]+pt4[0], y3 = pt3[1]+pt4[1];
+        var x4 = pt4[0], y4 = pt4[1];
+        var x12 = (x2-x1)*t+x1;
+        var y12 = (y2-y1)*t+y1;
+
+        var x23 = (x3-x2)*t+x2;
+        var y23 = (y3-y2)*t+y2;
+
+        var x34 = (x4-x3)*t+x3;
+        var y34 = (y4-y3)*t+y3;
+
+        var x123 = (x23-x12)*t+x12;
+        var y123 = (y23-y12)*t+y12;
+
+        var x234 = (x34-x23)*t+x23;
+        var y234 = (y34-y23)*t+y23;
+
+        var x1234 = (x234-x123)*t+x123;
+        var y1234 = (y234-y123)*t+y123;
+
+        return [[x1, y1], [x12, y12], [x123, y123], [x1234, y1234]];
+
+    }
+
+    function getCurvesAtPerc(pt1,pt2,pt3,pt4, t){
+        var A = [pt1[0],pt1[1]];
+        var B = [pt2[0],pt2[1]];
+        var C = [pt3[0],pt3[1]];
+        var D = [pt4[0],pt4[1]];
+        var E = [A[0]+(B[0]-A[0])*t, A[1]+(B[1]-A[1])*t];
+        var F = [B[0]+(C[0]-B[0])*t, B[1]+(C[1]-B[1])*t];
+        var G = [C[0]+(D[0]-C[0])*t, C[1]+(D[1]-C[1])*t];
+        var H = [E[0]+(F[0]-E[0])*t, E[1]+(F[1]-E[1])*t];
+        var I = [F[0]+(G[0]-F[0])*t, F[1]+(G[1]-F[1])*t];
+        var J = [H[0]+(I[0]-H[0])*t, H[1]+(I[1]-H[1])*t];
+        if(A[0] === B[0] && A[1] === B[1] && C[0] === D[0] && C[1] === D[1]){
+            return {
+                c1: [A,A,J,J],
+                c2:[J,J,D,D]
+            }
+        } else {
+            return {
+                c1: [A,E,H,J],
+                c2: [J,I,G,D]
+            };
+        }
+    }
+
+    function addVertices(shape, closed, totalVertices){
+        var iterations = [1,2,4,7,14, 28, 56, 112, 224, 448];
+        var shapeVertices = shape.i.length;
+        var sides = shapeVertices;
+        var interpolatableSides = closed ? sides : sides - 1;
+        var missingVertices = totalVertices - shapeVertices;
+        var i;
+        var currentIteration = 0;
+        var nodesPerSide = [];
+        for(i=0;i<sides;i+=1){
+            nodesPerSide[i] = 0;
+        }
+        while(missingVertices>0){
+            for(i=0;i<interpolatableSides;i+=1){
+                if(missingVertices>0){
+                    nodesPerSide[i] += Math.min(missingVertices,iterations[currentIteration]);
+                }
+                missingVertices -= iterations[currentIteration];
+            }
+            currentIteration += 1;
+        }
+
+        var count = 0;
+        var newV = [];
+        var newI = [];
+        var newO = [];
+
+        var pt1, pt2, pt3, pt4, curves;
+        var j;
+        for(i = 0; i < sides; i +=1){
+            if(nodesPerSide[i] === 0){
+                newV[count] = [shape.v[i][0],shape.v[i][1]];
+                newO[count] = [shape.o[i][0],shape.o[i][1]];
+                if(i === sides - 1){
+                    newI[0] = [shape.i[0][0],shape.i[0][1]];
+                } else {
+                    newI[count+1] = [shape.i[i+1][0],shape.i[i+1][1]];
+                }
+                count += 1;
+            } else {
+                if(i === sides - 1 && closed){
+                    pt1 = [shape.v[i][0],shape.v[i][1]];
+                    pt2 = [shape.o[i][0] + shape.v[i][0],shape.o[i][1] + shape.v[i][1]];
+                    pt3 = [shape.i[0][0] + shape.v[0][0],shape.i[0][1] + shape.v[0][1]];
+                    pt4 = [shape.v[0][0],shape.v[0][1]];
+                } else {
+                    pt1 = [shape.v[i][0],shape.v[i][1]];
+                    pt2 = [shape.o[i][0] + shape.v[i][0],shape.o[i][1] + shape.v[i][1]];
+                    pt3 = [shape.i[i+1][0] + shape.v[i+1][0],shape.i[i+1][1] + shape.v[i+1][1]];
+                    pt4 = [shape.v[i+1][0],shape.v[i+1][1]];
+                }
+
+                var sideNodes = nodesPerSide[i] + 1;
+
+                for(j=0;j<sideNodes;j+=1){
+                    if(j<sideNodes - 1){
+                        curves = getCurvesAtPerc(pt1,pt2,pt3,pt4, 1/(sideNodes-j));
+                        newV[count] = [curves.c1[0][0],curves.c1[0][1]];
+                        newO[count] = [curves.c1[1][0]-curves.c1[0][0],curves.c1[1][1] - curves.c1[0][1]];
+                        if(count === totalVertices - 1){
+                            newI[0] = [curves.c2[2][0]-curves.c2[0][0],curves.c2[2][1] - curves.c2[0][1]];
+                        } else {
+                            newI[count+1] = [curves.c1[2][0]-curves.c1[3][0],curves.c1[2][1] - curves.c1[3][1]];
+                        }
+                        pt1 = [curves.c2[0][0],curves.c2[0][1]];
+                        pt2 = [curves.c2[1][0],curves.c2[1][1]];
+                        pt3 = [curves.c2[2][0],curves.c2[2][1]];
+                        pt4 = [curves.c2[3][0],curves.c2[3][1]];
+                    } else {
+                        newV[count] = [curves.c2[0][0],curves.c2[0][1]];
+                        newO[count] = [curves.c2[1][0]-curves.c2[0][0],curves.c2[1][1] - curves.c2[0][1]];
+                        if(count === totalVertices - 1){
+                            newI[0] = [curves.c2[2][0]-curves.c2[3][0],curves.c2[2][1] - curves.c2[3][1]];
+                            bm_eventDispatcher.log('C: ' );
+                            bm_eventDispatcher.log(newI[0]);
+                        } else {
+                            newI[count+1] = [curves.c2[2][0]-curves.c2[3][0],curves.c2[2][1] - curves.c2[3][1]];
+                        }
+                    }
+                    count += 1;
+                }
+            }
+        }
+        shape.v = newV;
+        shape.o = newO;
+        shape.i = newI;
+    }
+
+    function checkVertexCount(shape, closed){
+        if(shape.i){
+            return;
+        }
+        var i, len = shape.length;
+        var maxVertextCount = shape[0].s[0].i.length;
+        var variesCount = false;
+        for (i = 0; i < len - 1; i += 1) {
+            if(maxVertextCount !== shape[i].s[0].i.length){
+                maxVertextCount = Math.max(maxVertextCount, shape[i].s[0].i.length);
+                variesCount = true;
+            }
+            if(maxVertextCount !== shape[i].e[0].i.length){
+                maxVertextCount = Math.max(maxVertextCount, shape[i].e[0].i.length);
+                variesCount = true;
+            }
+        }
+        for (i = 0; i < len - 1; i += 1) {
+            if(maxVertextCount !== shape[i].s[0].i.length){
+                addVertices(shape[i].s[0], closed, maxVertextCount);
+            }
+            if(maxVertextCount !== shape[i].e[0].i.length){
+                addVertices(shape[i].e[0], closed, maxVertextCount);
+            }
+        }
+    }
     
     function iterateProperties(iteratable, array, frameRate, isText) {
         var i, len = iteratable.numProperties, ob, prop, itemType;
@@ -100,6 +266,7 @@ var bm_shapeHelper = (function () {
                     ob.ty = itemType;
                     ob.closed = prop.property('Path').value.closed;
                     ob.ks = bm_keyframeHelper.exportKeyframes(prop.property('Path'), frameRate);
+                    checkVertexCount(ob.ks.k, ob.closed);
                     if (prop.property("Shape Direction").value === 3) {
                         reverseShape(ob.ks.k, ob.closed);
                     }

@@ -218,6 +218,7 @@ AnimationItem.prototype.loadSegments = function() {
 AnimationItem.prototype.configAnimation = function (animData) {
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
+    console.log(JSON.parse(JSON.stringify(animData)));
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
