@@ -11,19 +11,6 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 
 createElement(BaseElement, SVGBaseElement);
 
-SVGBaseElement.prototype.appendNodeToParent = function(node) {
-    if(this.data.hd && !this.data.td){
-        return;
-    }
-    if(this.placeholder){
-        var g = this.placeholder.phElement;
-        g.parentNode.insertBefore(node, g);
-        //g.parentNode.removeChild(g);
-    }else{
-        this.parentContainer.appendChild(node);
-    }
-};
-
 SVGBaseElement.prototype.createElements = function(){
     if(this.data.td){
         if(this.data.td == 3){
@@ -184,8 +171,12 @@ SVGBaseElement.prototype.createElements = function(){
             }
         }
     }*/
+    if(this.data.ef){
+        this.effectsManager = new SVGEffects(this);
+    }
     this.checkParenting();
 };
+
 
 SVGBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
@@ -245,6 +236,9 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
 
     if(this.data.hasMask){
         this.maskManager.renderFrame(finalMat);
+    }
+    if(this.effectsManager){
+        this.effectsManager.renderFrame();
     }
     return this.isVisible;
 };

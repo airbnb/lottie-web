@@ -12,24 +12,17 @@ var bm_effectsHelper = (function () {
         group: 5,
         noValue: 6,
         dropDownControl: 7,
-        customValue: 9
+        customValue: 9,
+        tint: 20
     };
     
     function getEffectType(name) {
         switch (name) {
-        case 'ADBE Slider Control':
-            return effectTypes.sliderControl;
-        case 'ADBE Angle Control':
-            return effectTypes.angleControl;
-        case 'ADBE Color Control':
-            return effectTypes.colorControl;
-        case 'ADBE Point Control':
-            return effectTypes.pointControl;
-        case 'ADBE Checkbox Control':
-            return effectTypes.checkboxControl;
+        case 'ADBE Tint':
+            return effectTypes.tint;
         default:
             //bm_eventDispatcher.log(name);
-            return '';
+            return effectTypes.group;
         }
     }
     
@@ -150,9 +143,9 @@ var bm_effectsHelper = (function () {
         }
     }
     
-    function exportCustomEffect(elem, frameRate) {
+    function exportCustomEffect(elem,effectType, frameRate) {
         var ob = {};
-        ob.ty = effectTypes.group;
+        ob.ty = effectType;
         ob.nm = elem.name;
         ob.ix = elem.propertyIndex;
         ob.ef = [];
@@ -199,7 +192,13 @@ var bm_effectsHelper = (function () {
         var effectsArray = [];
         for (i = 0; i < len; i += 1) {
             effectElement = effects(i + 1);
-            effectsArray.push(exportCustomEffect(effectElement, frameRate));
+            var effectType = getEffectType(effectElement.matchName);
+            //If the effect is not a Slider Control and is not enabled, it won't be exported.
+            if(effectType !== effectTypes.group && !effects(i + 1).enabled){
+                bm_eventDispatcher.log('PASO');
+                continue;
+            }
+            effectsArray.push(exportCustomEffect(effectElement ,effectType, frameRate));
             /*var effectType = getEffectType(effectElement.matchName);
             switch (effectType) {
             case effectTypes.sliderControl:

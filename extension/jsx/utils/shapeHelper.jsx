@@ -231,21 +231,25 @@ var bm_shapeHelper = (function () {
         var i, len = shape.length;
         var maxVertextCount = shape[0].s[0].i.length;
         var variesCount = false;
-        for (i = 0; i < len - 1; i += 1) {
-            if(maxVertextCount !== shape[i].s[0].i.length){
-                maxVertextCount = Math.max(maxVertextCount, shape[i].s[0].i.length);
-                variesCount = true;
+        for (i = 0; i < len; i += 1) {
+            if(shape[i].s && shape[i].s[0]){
+                if(maxVertextCount !== shape[i].s[0].i.length){
+                    maxVertextCount = Math.max(maxVertextCount, shape[i].s[0].i.length);
+                    variesCount = true;
+                }
             }
-            if(maxVertextCount !== shape[i].e[0].i.length){
-                maxVertextCount = Math.max(maxVertextCount, shape[i].e[0].i.length);
-                variesCount = true;
+            if(shape[i].e && shape[i].e[0]){
+                if(maxVertextCount !== shape[i].e[0].i.length){
+                    maxVertextCount = Math.max(maxVertextCount, shape[i].e[0].i.length);
+                    variesCount = true;
+                }
             }
         }
-        for (i = 0; i < len - 1; i += 1) {
-            if(maxVertextCount !== shape[i].s[0].i.length){
+        for (i = 0; i < len; i += 1) {
+            if(shape[i].s && shape[i].s[0] && maxVertextCount !== shape[i].s[0].i.length){
                 addVertices(shape[i].s[0], closed, maxVertextCount);
             }
-            if(maxVertextCount !== shape[i].e[0].i.length){
+            if(shape[i].e && shape[i].e[0] && maxVertextCount !== shape[i].e[0].i.length){
                 addVertices(shape[i].e[0], closed, maxVertextCount);
             }
         }

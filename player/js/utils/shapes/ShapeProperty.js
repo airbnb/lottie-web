@@ -59,28 +59,11 @@ var ShapePropertyFactory = (function(){
                 }
                 keyPropS = keyData.s[0];
             }
-
-            if(this.v.i.length !== keyPropS.i.length){
-                this.v.i.length = keyPropS.i.length;
-                this.v.o.length = keyPropS.o.length;
-                this.v.v.length = keyPropS.v.length;
-                this.pv.i.length = keyPropS.i.length;
-                this.pv.o.length = keyPropS.o.length;
-                this.pv.v.length = keyPropS.v.length;
-            }
             jLen = this.v.i.length;
             kLen = keyPropS.i[0].length;
             var hasModified = false;
             var vertexValue;
             for(j=0;j<jLen;j+=1){
-                if(!this.v.i[j]){
-                    this.v.i[j] = Array.apply(null,{length:kLen});
-                    this.v.o[j] = Array.apply(null,{length:kLen});
-                    this.v.v[j] = Array.apply(null,{length:kLen});
-                    this.pv.i[j] = Array.apply(null,{length:kLen});
-                    this.pv.o[j] = Array.apply(null,{length:kLen});
-                    this.pv.v[j] = Array.apply(null,{length:kLen});
-                }
                 for(k=0;k<kLen;k+=1){
                     if(isHold){
                         vertexValue = keyPropS.i[j][k];

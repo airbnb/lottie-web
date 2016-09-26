@@ -99,6 +99,9 @@ BaseElement.prototype.initExpressions = function(){
     if(this.data.hasMask){
         this.layerInterface.registerMaskInterface(this.maskManager);
     }
+    var effectsInterface = EffectsExpressionInterface.createEffectsInterface(this,this.layerInterface);
+    this.layerInterface.registerEffectsInterface(effectsInterface);
+
     if(this.data.ty === 0 || this.data.xt){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
@@ -163,9 +166,9 @@ BaseElement.prototype.init = function(){
         this.data.sr = 1;
     }
     this.dynamicProperties = [];
-    if(this.data.ef && expressionsPlugin){
-        this.effectsManager = expressionsPlugin.getEffectsManager(this.data,this,this.dynamicProperties);
-        this.effect = this.effectsManager.bind(this.effectsManager);
+    if(this.data.ef){
+        this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
+        //this.effect = this.effectsManager.bind(this.effectsManager);
     }
     //this.elemInterface = buildLayerExpressionInterface(this);
     this.hidden = false;
