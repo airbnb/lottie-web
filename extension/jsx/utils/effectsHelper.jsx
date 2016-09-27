@@ -14,7 +14,8 @@ var bm_effectsHelper = (function () {
         dropDownControl: 7,
         customValue: 9,
         tint: 20,
-        fill: 21
+        fill: 21,
+        stroke: 22
     };
     
     function getEffectType(name) {
@@ -23,6 +24,8 @@ var bm_effectsHelper = (function () {
             return effectTypes.tint;
         case 'ADBE Fill':
             return effectTypes.fill;
+        case 'ADBE Stroke':
+            return effectTypes.stroke;
         default:
             bm_eventDispatcher.log(name);
             return effectTypes.group;

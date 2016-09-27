@@ -14,6 +14,9 @@ function SVGEffects(elem){
             count += 1;
             filterManager = new SVGFillFilter(fil, elem.effects.effectElements[i]);
             this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 22){
+            filterManager = new SVGStrokeEffect(elem, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
         }
     }
     if(count){
@@ -72,7 +75,7 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
         var opacity = this.filterManager.effectElements[2].p.v/100;
         this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
-}
+};
 
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
@@ -89,4 +92,35 @@ SVGFillFilter.prototype.renderFrame = function(forceRender){
         var opacity = this.filterManager.effectElements[6].p.v;
         this.matrixFilter.setAttribute('values','0 0 0 0 '+color[0]+' 0 0 0 0 '+color[1]+' 0 0 0 0 '+color[2]+' 0 0 0 '+opacity+' 0');
     }
+};
+
+function SVGStrokeEffect(elem, filterManager){
+    this.initialized = false;
+    this.filterManager = filterManager;
+    this.elem = elem;
 }
+
+SVGStrokeEffect.prototype.initialize = function(){
+
+    var elemChildren = this.elem.layerElement.children;
+    var mask = document.createElementNS(svgNS,'mask');
+    var id = 'stms_' + randomString(10);
+    mask.setAttribute('id',id);
+    mask.setAttribute('mask-type','alpha');
+    this.elem.globalData.defs.appendChild(mask);
+    var g = document.createElementNS(svgNS,'g');
+    g.setAttribute('mask','url(#'+id+')');
+    g.appendChild(elemChildren[0]);
+    this.elem.layerElement.appendChild(g);
+    this.initialized = true;
+    this.masker = mask;
+}
+
+SVGStrokeEffect.prototype.renderFrame = function(forceRender){
+    if(!this.initialized){
+        this.initialize();
+    }
+    if(forceRender || this.filterManager.mdf){
+        console.log(this.filterManager.effectElements);
+    }
+};
