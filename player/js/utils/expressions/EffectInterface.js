@@ -38,7 +38,7 @@ var EffectsExpressionInterface = (function (){
         return function(name){
             var effects = data.ef, i = 0, len = effects.length;
             while(i<len) {
-                if(name === effects[i].nm || name === effects[i].ix){
+                if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                     if(effects[i].ty === 5){
                         return effectElements[i];
                     } else {
@@ -47,6 +47,7 @@ var EffectsExpressionInterface = (function (){
                 }
                 i += 1;
             }
+            return effectElements[0]();
         }
     }
 

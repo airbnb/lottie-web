@@ -10,6 +10,10 @@ function SVGEffects(elem){
             count += 1;
             filterManager = new SVGTintFilter(fil, elem.effects.effectElements[i]);
             this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 21){
+            count += 1;
+            filterManager = new SVGFillFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
         }
     }
     if(count){
@@ -55,9 +59,6 @@ function SVGTintFilter(filter, filterManager){
         feMergeNode = document.createElementNS(svgNS,'feMergeNode');
         feMergeNode.setAttribute('in','SourceGraphic');
         feMerge.appendChild(feMergeNode);
-        /*feMergeNode = document.createElementNS(svgNS,'feMergeNode');
-        feMergeNode.setAttribute('in','f1');
-        feMerge.appendChild(feMergeNode);*/
         feMergeNode = document.createElementNS(svgNS,'feMergeNode');
         feMergeNode.setAttribute('in','f2');
         feMerge.appendChild(feMergeNode);
@@ -68,6 +69,24 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
     if(forceRender || this.filterManager.mdf){
         var colorBlack = this.filterManager.effectElements[0].p.v;
         var colorWhite = this.filterManager.effectElements[1].p.v;
-        this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + this.filterManager.effectElements[2].p.v/100 + ' 0');
+        var opacity = this.filterManager.effectElements[2].p.v/100;
+        this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
+    }
+}
+
+function SVGFillFilter(filter, filterManager){
+    this.filterManager = filterManager;
+    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    feColorMatrix.setAttribute('type','matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
+    feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
+    filter.appendChild(feColorMatrix);
+    this.matrixFilter = feColorMatrix;
+}
+SVGFillFilter.prototype.renderFrame = function(forceRender){
+    if(forceRender || this.filterManager.mdf){
+        var color = this.filterManager.effectElements[2].p.v;
+        var opacity = this.filterManager.effectElements[6].p.v;
+        this.matrixFilter.setAttribute('values','0 0 0 0 '+color[0]+' 0 0 0 0 '+color[1]+' 0 0 0 0 '+color[2]+' 0 0 0 '+opacity+' 0');
     }
 }
