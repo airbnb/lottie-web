@@ -12,8 +12,8 @@
 
         #bodymovin{
             background-color:#fff;
-            width:1066px;
-            height:600px;
+            width:500px;
+            height:400px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -100,15 +100,16 @@
     var anim;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
         autoplay: true,
         autoloadSegments: true,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:true,
+            preserveAspectRatio:'xMinYMid meet'
         },
         //animationData: anim2
-        path: 'exports/render/data.json'
+        path: 'exports/bm/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
