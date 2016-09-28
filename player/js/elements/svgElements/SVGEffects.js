@@ -107,6 +107,11 @@ SVGStrokeEffect.prototype.initialize = function(){
     var id = 'stms_' + randomString(10);
     mask.setAttribute('id',id);
     mask.setAttribute('mask-type','alpha');
+    var path = document.createElementNS(svgNS,'path');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke-linecap','round');
+    path.setAttribute('stroke-dashoffset',1);
+    mask.appendChild(path);
     this.elem.globalData.defs.appendChild(mask);
     var g = document.createElementNS(svgNS,'g');
     g.setAttribute('mask','url(#'+id+')');
@@ -114,13 +119,49 @@ SVGStrokeEffect.prototype.initialize = function(){
     this.elem.layerElement.appendChild(g);
     this.initialized = true;
     this.masker = mask;
+    this.pathMasker = path;
+    path.setAttribute('stroke','#fff');
 }
 
 SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     if(!this.initialized){
         this.initialize();
     }
-    if(forceRender || this.filterManager.mdf){
+    var mask = this.elem.maskManager.viewData[this.filterManager.effectElements[0].p.v - 1];
+    console.log(mask);
+    if(forceRender || this.filterManager.mdf || mask.prop.mdf){
         console.log(this.filterManager.effectElements);
+        this.pathMasker.setAttribute('d',mask.lastPath);
+        console.log(mask);
+        //this.pathMasker
+    }
+    if(forceRender || this.filterManager.effectElements[9].p.mdf || this.filterManager.effectElements[4].p.mdf || this.filterManager.effectElements[7].p.mdf || this.filterManager.effectElements[8].p.mdf || mask.prop.mdf){
+        var dasharrayValue;
+        if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100){
+            var s = Math.min(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
+            var e = Math.max(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
+            var l = mask.elem.getTotalLength();
+            dasharrayValue = '0 0 0 ' + l*s + ' ';
+            var lineLength = l*(e-s);
+            var segment = 1+this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
+            var units = Math.floor(lineLength/segment);
+            console.log(lineLength,segment,units);
+            var i;
+            for(i=0;i<units;i+=1){
+                dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100 + ' ';
+            }
+            dasharrayValue += '0 ' + l*10 + ' 0 0';
+            console.log(dasharrayValue);
+        } else {
+            dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
+        }
+        if(this.filterManager.effectElements[8].p.v !== 100){
+            console.log(this.filterManager.effectElements[8].p.v);
+        }
+        this.pathMasker.setAttribute('stroke-width',this.filterManager.effectElements[4].p.v*2);
+        this.pathMasker.setAttribute('stroke-dasharray',dasharrayValue);
+    }
+    if(forceRender || this.filterManager.effectElements[6].p.mdf){
+        this.pathMasker.setAttribute('opacity',this.filterManager.effectElements[6].p.v);
     }
 };
