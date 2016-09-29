@@ -66,7 +66,7 @@ TrimModifier.prototype.getSegmentsLength = function(keyframes){
     return {lengths:lengths,totalLength:totalLength};
 }
 
-TrimModifier.prototype.processShapes = function(){
+TrimModifier.prototype.processShapes = function(firstFrame){
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -84,7 +84,7 @@ TrimModifier.prototype.processShapes = function(){
         var segments = [], shapeData, newShapes;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf){
+            if(!shapeData.shape.mdf && !this.mdf && !firstFrame){
                 shapeData.shape.paths = shapeData.last;
             } else {
                 shapePaths = shapeData.shape.paths;

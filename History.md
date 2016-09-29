@@ -1,3 +1,9 @@
+## V 4.4.13
+- preserveAspectRatio all values for canvas
+
+## V 4.4.12
+- Trim path fix on offsetted shapes
+
 ## V 4.4.11
 - html and canvas renderer fixes
 - more expressions supported

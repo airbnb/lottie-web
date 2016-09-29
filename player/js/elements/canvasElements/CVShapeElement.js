@@ -136,29 +136,8 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
     }
 };
 
-CVShapeElement.prototype.addShapeToModifiers = function(shape) {
-    var i, len = this.shapeModifiers.length;
-    for(i=0;i<len;i+=1){
-        this.shapeModifiers[i].addShape(shape);
-    }
-};
-
-CVShapeElement.prototype.renderModifiers = function() {
-    if(!this.shapeModifiers.length){
-        return;
-    }
-    var i, len = this.shapes.length;
-    for(i=0;i<len;i+=1){
-        this.shapes[i].reset();
-    }
-
-
-    len = this.shapeModifiers.length;
-
-    for(i=len-1;i>=0;i-=1){
-        this.shapeModifiers[i].processShapes();
-    }
-};
+CVShapeElement.prototype.addShapeToModifiers = IShapeElement.prototype.addShapeToModifiers;
+CVShapeElement.prototype.renderModifiers = IShapeElement.prototype.renderModifiers;
 
 CVShapeElement.prototype.renderFrame = function(parentMatrix){
     if(this._parent.renderFrame.call(this, parentMatrix)===false){

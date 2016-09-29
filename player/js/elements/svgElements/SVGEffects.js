@@ -125,7 +125,10 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     if(!this.initialized){
         this.initialize();
     }
-    var mask = this.elem.maskManager.viewData[this.filterManager.effectElements[0].p.v - 1];
+    var mask = this.elem.maskManager.viewData[Math.max(this.filterManager.effectElements[0].p.v,1) - 1];
+    if(!mask){
+        console.log(this.filterManager.effectElements);
+    }
     if(forceRender || this.filterManager.mdf || mask.prop.mdf){
         this.pathMasker.setAttribute('d',mask.lastPath);
         //this.pathMasker
