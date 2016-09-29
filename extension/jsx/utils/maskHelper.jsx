@@ -40,6 +40,7 @@ var bm_maskHelper = (function () {
                 mode: getMaskMode(maskElement.maskMode)
             };
             shapeData.pt = bm_keyframeHelper.exportKeyframes(maskElement.property('maskShape'), frameRate);
+            bm_shapeHelper.checkVertexCount(shapeData.pt.k, shapeData.cl);
             //bm_generalUtils.convertPathsToAbsoluteValues(shapeData.pt.k);
             shapeData.o = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Opacity'), frameRate);
             shapeData.x = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Expansion'), frameRate);

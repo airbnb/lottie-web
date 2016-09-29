@@ -642,6 +642,7 @@ var bm_shapeHelper = (function () {
     }
     
     ob.exportShape = exportShape;
-    
+    ob.checkVertexCount = checkVertexCount;
+
     return ob;
 }());

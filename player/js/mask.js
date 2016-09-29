@@ -37,14 +37,16 @@ function MaskElement(data,element,globalData) {
             rect = null;
         }
 
+        path = document.createElementNS(svgNS, 'path');
         if(properties[i].mode == 'n' || properties[i].cl === false) {
             this.viewData[i] = {
-                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
+                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null),
+                elem: path
             };
+            defs.appendChild(path);
             continue;
         }
         count += 1;
-        path = document.createElementNS(svgNS, 'path');
         if (properties[i].cl) {
             if(properties[i].mode == 's'){
                 path.setAttribute('fill', '#000000');
@@ -160,10 +162,10 @@ MaskElement.prototype.prepareFrame = function(){
 MaskElement.prototype.renderFrame = function (finalMat) {
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
+        if(this.viewData[i].prop.mdf || this.firstFrame){
+            this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
+        }
         if(this.masksProperties[i].mode !== 'n' && this.masksProperties[i].cl !== false){
-            if(this.viewData[i].prop.mdf || this.firstFrame){
-                this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
-            }
             if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
                 this.viewData[i].invRect.setAttribute('x', -finalMat.props[12]);
                 this.viewData[i].invRect.setAttribute('y', -finalMat.props[13]);
@@ -223,10 +225,12 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
 
 
     if(viewData.lastPath !== pathString){
-        if(pathData.inv){
-            viewData.elem.setAttribute('d',this.solidPath + pathString);
-        }else{
-            viewData.elem.setAttribute('d',pathString);
+        if(viewData.elem){
+            if(pathData.inv){
+                viewData.elem.setAttribute('d',this.solidPath + pathString);
+            }else{
+                viewData.elem.setAttribute('d',pathString);
+            }
         }
         viewData.lastPath = pathString;
     }

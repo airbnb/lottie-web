@@ -238,7 +238,7 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         this.maskManager.renderFrame(finalMat);
     }
     if(this.effectsManager){
-        this.effectsManager.renderFrame();
+        this.effectsManager.renderFrame(this.firstFrame);
     }
     return this.isVisible;
 };

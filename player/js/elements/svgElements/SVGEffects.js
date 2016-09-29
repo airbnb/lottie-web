@@ -3,7 +3,6 @@ function SVGEffects(elem){
     var fil = document.createElementNS(svgNS,'filter');
     var count = 0;
     this.filters = [];
-    this.firstFrame = true;
     var filterManager;
     for(i=0;i<len;i+=1){
         if(elem.data.ef[i].ty === 20){
@@ -32,12 +31,11 @@ function SVGEffects(elem){
     }
 }
 
-SVGEffects.prototype.renderFrame = function(){
+SVGEffects.prototype.renderFrame = function(firstFrame){
     var i, len = this.filters.length;
     for(i=0;i<len;i+=1){
-        this.filters[i].renderFrame(this.firstFrame);
+        this.filters[i].renderFrame(firstFrame);
     }
-    this.firstFrame = false;
 };
 
 function SVGTintFilter(filter, filterManager){
@@ -128,11 +126,8 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
         this.initialize();
     }
     var mask = this.elem.maskManager.viewData[this.filterManager.effectElements[0].p.v - 1];
-    console.log(mask);
     if(forceRender || this.filterManager.mdf || mask.prop.mdf){
-        console.log(this.filterManager.effectElements);
         this.pathMasker.setAttribute('d',mask.lastPath);
-        console.log(mask);
         //this.pathMasker
     }
     if(forceRender || this.filterManager.effectElements[9].p.mdf || this.filterManager.effectElements[4].p.mdf || this.filterManager.effectElements[7].p.mdf || this.filterManager.effectElements[8].p.mdf || mask.prop.mdf){
@@ -145,18 +140,13 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
             var lineLength = l*(e-s);
             var segment = 1+this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
             var units = Math.floor(lineLength/segment);
-            console.log(lineLength,segment,units);
             var i;
             for(i=0;i<units;i+=1){
                 dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100 + ' ';
             }
             dasharrayValue += '0 ' + l*10 + ' 0 0';
-            console.log(dasharrayValue);
         } else {
             dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
-        }
-        if(this.filterManager.effectElements[8].p.v !== 100){
-            console.log(this.filterManager.effectElements[8].p.v);
         }
         this.pathMasker.setAttribute('stroke-width',this.filterManager.effectElements[4].p.v*2);
         this.pathMasker.setAttribute('stroke-dasharray',dasharrayValue);
