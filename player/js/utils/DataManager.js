@@ -338,8 +338,12 @@ function dataFunctionManager(){
     }*/
 
     function completeData(animationData, fontManager){
+        if(animationData.__complete){
+            return;
+        }
         checkColors(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
+        animationData.__complete = true;
         //blitAnimation(animationData, animationData.assets, fontManager);
     }
 

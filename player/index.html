@@ -105,58 +105,19 @@
 
 <script>
 
-    var keycodes = {
-        65:'exports/franchise/lowercase_a.json',
-        66:'exports/franchise/lowercase_b.json',
-        67:'exports/franchise/lowercase_c.json',
-        68:'exports/franchise/lowercase_d.json',
-        69:'exports/franchise/lowercase_e.json',
-        70:'exports/franchise/lowercase_e.json',
-        71:'exports/franchise/lowercase_e.json',
-        72:'exports/franchise/lowercase_e.json',
-        73:'exports/franchise/lowercase_e.json',
-        74:'exports/franchise/uppercase_j.json'
-    }
-
     var anim;
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         autoloadSegments: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/franchise/punctuation_backSlash.json'
+        path: 'exports/render/data.json'
     };
-
-    function keydownHandler(ev){
-        var elem = keycodes[ev.keyCode];
-        if(elem){
-            if(anim){
-                anim.destroy();
-            }
-            var animData = {
-                container: document.getElementById('bodymovin'),
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                autoloadSegments: true,
-                rendererSettings: {
-                    progressiveLoad:false
-                },
-                path: elem
-            };
-            anim = bodymovin.loadAnimation(animData);
-        }
-    }
-
-    document.addEventListener('keydown',keydownHandler);
-
-
-
-
+    anim = bodymovin.loadAnimation(animData);
 
 </script>
 </body>
