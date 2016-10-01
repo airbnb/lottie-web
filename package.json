@@ -20,6 +20,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-gzip": "^1.2.0",
     "gulp-jshint": "^1.11.2",
+    "gulp-jsoncombine": "^1.0.3",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-uglify": "^1.4.1",
