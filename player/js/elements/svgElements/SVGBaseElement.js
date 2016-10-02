@@ -212,12 +212,7 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         }
     }else{
         if(this.isVisible){
-            if(!parentTransform){
-                finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
-            }else{
-                mat = this.finalTransform.mProp.v.props;
-                finalMat.cloneFromProps(mat);
-            }
+            finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
         }
     }
     if(parentTransform){

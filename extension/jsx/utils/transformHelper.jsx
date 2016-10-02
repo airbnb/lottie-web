@@ -37,6 +37,11 @@ var bm_transformHelper = (function () {
         if (layerInfo.transform.Scale) {
             data.ks.s = bm_keyframeHelper.exportKeyframes(layerInfo.transform.Scale, frameRate);
         }
+        if(layerInfo.autoOrient === AutoOrientType.ALONG_PATH){
+            data.ao = 1;
+        } else {
+            data.ao = 0;
+        }
     }
     
     ob.exportTransform = exportTransform;

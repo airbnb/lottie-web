@@ -184,6 +184,9 @@ BaseElement.prototype.init = function(){
             mat: new Matrix(),
             opacity: 1
         };
+        if(this.data.ao){
+            this.finalTransform.mProp.autoOriented = true;
+        }
         this.finalTransform.op = this.finalTransform.mProp.o;
         this.transform = this.finalTransform.mProp;
         if(this.data.ty !== 11){

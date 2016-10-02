@@ -369,6 +369,7 @@ var PropertyFactory = (function(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
             }
+
             this.mdf = false;
             var i, len = this.dynamicProperties.length;
 
@@ -393,6 +394,21 @@ var PropertyFactory = (function(){
                     this.v.rotate(-this.r.v);
                 }else{
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+                }
+                if(this.autoOriented && this.p.keyframes){
+                    var v1,v2;
+                    if(this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t){
+                        v1 = this.p.getValueAtTime(this.p.keyframes[0].t-this.p.offsetTime+0.01, this.p.offsetTime);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t-this.p.offsetTime, this.p.offsetTime);
+                    }else if(this.p.lastFrame+this.p.offsetTime > this.p.keyframes[this.p.keyframes.length - 1].t){
+                        v1 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t-this.p.offsetTime, this.p.offsetTime);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t-this.p.offsetTime-0.01, this.p.offsetTime);
+                    } else {
+                        v1 = this.p.pv;
+                        v2 = this.p.getValueAtTime(this.p.lastFrame - 0.01, this.p.offsetTime);
+                    }
+                    //var prevV = this.p.getValueAtTime(this.p.lastFrame - 0.01, true);
+                    this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
                 }
                 if(this.data.p.s){
                     if(this.data.p.z) {
@@ -430,6 +446,11 @@ var PropertyFactory = (function(){
             }
         }
 
+        function autoOrient(){
+            //
+            //var prevP = this.getValueAtTime();
+        }
+
         return function TransformProperty(elem,data,arr){
             this.elem = elem;
             this.frameId = -1;
@@ -439,6 +460,7 @@ var PropertyFactory = (function(){
             this.getValue = processKeys;
             this.applyToMatrix = applyToMatrix;
             this.setInverted = setInverted;
+            this.autoOrient = autoOrient;
             this.v = new Matrix();
             if(data.p.s){
                 this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this.dynamicProperties);

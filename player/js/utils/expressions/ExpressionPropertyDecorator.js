@@ -4,10 +4,10 @@
         return this.pv;
     }
 
-    function getValueAtTime(frameNum) {
+    function getValueAtTime(frameNum, offsetTime) {
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
-        var offsetTime = 0;
+        offsetTime = this.offsetTime || 0;
         var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
 
         while(flag){
