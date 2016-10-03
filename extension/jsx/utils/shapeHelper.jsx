@@ -209,8 +209,6 @@ var bm_shapeHelper = (function () {
                         newO[count] = [curves.c2[1][0]-curves.c2[0][0],curves.c2[1][1] - curves.c2[0][1]];
                         if(count === totalVertices - 1){
                             newI[0] = [curves.c2[2][0]-curves.c2[3][0],curves.c2[2][1] - curves.c2[3][1]];
-                            bm_eventDispatcher.log('C: ' );
-                            bm_eventDispatcher.log(newI[0]);
                         } else {
                             newI[count+1] = [curves.c2[2][0]-curves.c2[3][0],curves.c2[2][1] - curves.c2[3][1]];
                         }

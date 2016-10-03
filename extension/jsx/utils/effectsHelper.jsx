@@ -27,7 +27,6 @@ var bm_effectsHelper = (function () {
         case 'ADBE Stroke':
             return effectTypes.stroke;
         default:
-            bm_eventDispatcher.log(name);
             return effectTypes.group;
         }
     }

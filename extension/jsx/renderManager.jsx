@@ -131,7 +131,6 @@ var bm_renderManager = (function () {
     function exportExtraComps(exportData){
         var list = currentCompSettings.extraComps.list;
         var i, len = list.length, compData;
-        bm_eventDispatcher.log(currentExportedComps);
         var j, jLen = currentExportedComps.length;
         for(i=0;i<len;i+=1){
             j = 0;
@@ -216,7 +215,6 @@ var bm_renderManager = (function () {
             bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Rendering layer: ' + nextLayerData.layer.name, compId: currentCompID, progress: currentLayer / totalLayers});
             bm_layerElement.renderLayer(nextLayerData);
         } else {
-            bm_eventDispatcher.log(currentCompSettings.extraComps.list.length);
             removeExtraData();
             bm_sourceHelper.exportImages(destinationPath, ob.renderData.exportData.assets, currentCompID);
         }
