@@ -4,17 +4,19 @@ var TransformExpressionInterface = (function (){
             switch(name){
                 case "scale":
                 case "Scale":
-                    console.log('transformtransform', transform);
-                    console.log('_thisFunction', _thisFunction.scale);
+                case "ADBE Scale":
                     return _thisFunction.scale;
                 case "rotation":
                 case "Rotation":
+                case "ADBE Rotation":
                     return _thisFunction.rotation;
                 case "position":
                 case "Position":
-                    return _thisFunction.position;
+                case "ADBE Position":
+                    return transform.position;
                 case "anchorPoint":
                 case "AnchorPoint":
+                case "ADBE AnchorPoint":
                     return _thisFunction.anchorPoint;
             }
         }
@@ -26,7 +28,13 @@ var TransformExpressionInterface = (function (){
         });
         Object.defineProperty(_thisFunction, "scale", {
             get: function () {
-                return transform.scale;
+                var s = transform.scale;
+                var i, len = s.length;
+                var transformedS = Array.apply(null,{length:len});
+                for(i=0;i<len;i+=1){
+                    transformedS[i] = s[i]*100;
+                }
+                return transformedS;
             }
         });
 

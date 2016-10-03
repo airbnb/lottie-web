@@ -14,7 +14,6 @@ var ProjectInterface = (function (){
                 }
                 i+=1;
             }
-            console.log(this.compositions);
         }
 
         _thisProjectFunction.compositions = [];

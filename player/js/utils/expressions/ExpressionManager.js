@@ -160,10 +160,12 @@ var ExpressionManager = (function(){
     function radiansToDegrees(val) {
         return val/degToRads;
     }
+    var radians_to_degrees = radiansToDegrees;
 
     function degreesToRadians(val) {
         return val*degToRads;
     }
+    var degrees_to_radians = radiansToDegrees;
 
     var helperLengthArray = [0,0,0,0,0,0];
 
@@ -556,6 +558,7 @@ var ExpressionManager = (function(){
 
         var time,velocity, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
+        var parent;
         function execute(){
             //seedRandom(0);
             if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
@@ -583,6 +586,10 @@ var ExpressionManager = (function(){
             if(!effect){
                 effect = thisLayer(4);
             }
+            hasParent = !!(elem.hierarchy && elem.hierarchy.length);
+            if(hasParent && !parent){
+                parent = elem.hierarchy[elem.hierarchy.length - 1].layerInterface;
+            }
             this.lock = true;
             if(this.getPreValue){
                 this.getPreValue();
@@ -593,6 +600,7 @@ var ExpressionManager = (function(){
                 velocity = velocityAtTime(time);
             }
             bindedFn();
+            //console.log(val,this.v);
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){

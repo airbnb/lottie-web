@@ -216,6 +216,7 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
+    //console.log(JSON.parse(JSON.stringify(animData)));
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;

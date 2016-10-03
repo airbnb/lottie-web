@@ -274,6 +274,21 @@ var PropertyFactory = (function(){
             if(this.p.k){
                 this.p.getValue();
             }
+            if(!this.p.v.key){
+                this.p.v.key = function(pos){
+                    if(!this.p.v.numKeys){
+                        return 0;
+                    } else {
+                        return this.p.keyframes[pos-1].t;
+                    }
+                }.bind(this);
+            }
+            if(!this.p.v.numKeys){
+                this.p.v.numKeys = this.p.keyframes ? this.p.keyframes.length : 0;
+            }
+            if(!this.p.v.valueAtTime){
+                this.p.v.valueAtTime = this.p.getValueAtTime.bind(this.p);
+            }
             return this.p.v;
         }
         function xPositionGetter(){

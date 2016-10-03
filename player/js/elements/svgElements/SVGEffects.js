@@ -100,7 +100,7 @@ function SVGStrokeEffect(elem, filterManager){
 
 SVGStrokeEffect.prototype.initialize = function(){
 
-    var elemChildren = this.elem.layerElement.children;
+    var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
     var mask = document.createElementNS(svgNS,'mask');
     var id = 'stms_' + randomString(10);
     mask.setAttribute('id',id);
@@ -126,9 +126,9 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
         this.initialize();
     }
     var mask = this.elem.maskManager.viewData[Math.max(this.filterManager.effectElements[0].p.v,1) - 1];
-    if(!mask){
+    /*if(!mask){
         console.log(this.filterManager.effectElements);
-    }
+    }*/
     if(forceRender || this.filterManager.mdf || mask.prop.mdf){
         this.pathMasker.setAttribute('d',mask.lastPath);
         //this.pathMasker

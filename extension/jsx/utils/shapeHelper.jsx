@@ -258,6 +258,7 @@ var bm_shapeHelper = (function () {
     function iterateProperties(iteratable, array, frameRate, isText) {
         var i, len = iteratable.numProperties, ob, prop, itemType;
         for (i = 0; i < len; i += 1) {
+            ob = null;
             prop = iteratable.property(i + 1);
             if (prop.enabled) {
                 itemType = getItemType(prop.matchName);

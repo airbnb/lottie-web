@@ -95,3 +95,26 @@ gulp.task('copy-extension', function() {
     gulp.src(extensionSource+'/**/*')
         .pipe(gulp.dest(extensionDestination));
 });
+
+gulp.task('zipFranchise', function(){
+    gulp.src('./player/tests/franchise/index.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
+        .pipe(gzip({ append: true }))
+        .pipe(gulp.dest('./player/tests/franchise/build/'));
+});
+gulp.task('buildFranchise', function(){
+    gulp.src('./player/tests/franchise/index.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        .pipe(gulp.dest('./player/tests/franchise/build/'));
+});
+
+gulp.task('gzipFranchiseJsons', function(){
+    gulp.src('./player/tests/franchise/animations/*')
+        .pipe(gzip({ append: false }))
+        .pipe(gulp.dest('./player/tests/franchise/build/animations/'));
+});

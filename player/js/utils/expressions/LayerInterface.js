@@ -32,6 +32,7 @@ var LayerExpressionInterface = (function (){
                     return _thisLayerFunction.shapeInterface;
                 case "Transform":
                 case "transform":
+                case "ADBE Transform Group":
                     return transformInterface;
                 case 4:
                     return _thisLayerFunction.effect;
