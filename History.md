@@ -1,5 +1,9 @@
 ## V 4.4.13
 - preserveAspectRatio all values for canvas
+- Different vertices between keyframes supported
+- New expressions
+- First effects: Stroke, Fill, Tint.
+- Orient along path
 
 ## V 4.4.12
 - Trim path fix on offsetted shapes
