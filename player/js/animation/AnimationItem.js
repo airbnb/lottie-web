@@ -328,6 +328,7 @@ AnimationItem.prototype.play = function (name) {
         return;
     }
     if(this.isPaused === true){
+        this.trigger('play');
         this.isPaused = false;
     }
 };

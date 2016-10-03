@@ -3,6 +3,7 @@ var animationManager = (function(){
     var registeredAnimations = [];
     var initTime = 0;
     var isPaused = true;
+    var isRequestingFrames = false;
     var len = 0;
 
     function removeElement(ev){
@@ -33,6 +34,7 @@ var animationManager = (function(){
         var animItem = new AnimationItem();
         animItem.setData(element, animationData);
         animItem.addEventListener('destroy',removeElement);
+        animItem.addEventListener('play',resumePlaying);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
         return animItem;
@@ -42,6 +44,7 @@ var animationManager = (function(){
         var animItem = new AnimationItem();
         animItem.setParams(params);
         animItem.addEventListener('destroy',removeElement);
+        animItem.addEventListener('play',resumePlaying);
         registeredAnimations.push({elem: null,animation:animItem});
         len += 1;
         return animItem;
@@ -78,22 +81,39 @@ var animationManager = (function(){
         }
     }
 
-    function resume(nowTime) {
+    function resumePlaying() {
+        if (isRequestingFrames) {
+            return false;
+        }
+        else {
+            isRequestingFrames = true;
+            requestAnimationFrame(start);
+        }
+    }
 
+    function resume(nowTime) {
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        requestAnimationFrame(resume);
-
-
+        requestAnimationFrameIfNeeded(resume);
     }
 
     function first(nowTime){
         initTime = nowTime;
-        requestAnimationFrame(resume);
+        requestAnimationFrameIfNeeded(resume);
+    }
+
+    function requestAnimationFrameIfNeeded(cb) {
+        for(i=0;i<len;i+=1){
+            if (!registeredAnimations[i].animation.isPaused) {
+                return requestAnimationFrame(cb);
+            }
+        }
+        isRequestingFrames = false;
+        return false;
     }
 
     function pause(animation) {
@@ -163,7 +183,7 @@ var animationManager = (function(){
     }
 
     function start(){
-        requestAnimationFrame(first);
+        requestAnimationFrameIfNeeded(first);
     }
     //start();
 
