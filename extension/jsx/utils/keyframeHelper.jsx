@@ -26,7 +26,7 @@ var bm_keyframeHelper = (function () {
     }
 
     function getCurveLength(initPos, endPos, outBezier, inBezier) {
-        var k, curveSegments = 2, point, lastPoint = null, ptDistance, absToCoord, absTiCoord, triCoord1, triCoord2, triCoord3, liCoord1, liCoord2, ptCoord, perc, addedLength = 0, i, len;
+        var k, curveSegments = 200, point, lastPoint = null, ptDistance, absToCoord, absTiCoord, triCoord1, triCoord2, triCoord3, liCoord1, liCoord2, ptCoord, perc, addedLength = 0, i, len;
         for (k = 0; k < curveSegments; k += 1) {
             point = [];
             perc = k / (curveSegments - 1);
