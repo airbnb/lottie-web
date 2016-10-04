@@ -409,7 +409,7 @@ var PropertyFactory = (function(){
                 }else{
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
-                if(this.autoOriented && this.p.keyframes){
+                if(this.autoOriented && this.p.keyframes && this.p.getValueAtTime){
                     var v1,v2;
                     if(this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t){
                         v1 = this.p.getValueAtTime(this.p.keyframes[0].t-this.p.offsetTime+0.01, this.p.offsetTime);

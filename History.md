@@ -1,3 +1,7 @@
+## V 4.4.14
+- fixed bodymovin_light
+- fixed translations with same origin and destination
+
 ## V 4.4.13
 - preserveAspectRatio all values for canvas
 - Different vertices between keyframes supported
