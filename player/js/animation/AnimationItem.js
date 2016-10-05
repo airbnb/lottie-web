@@ -47,6 +47,9 @@ AnimationItem.prototype.setParams = function(params) {
         case 'svg':
             this.renderer = new SVGRenderer(this, params.rendererSettings);
             break;
+        case 'pixi':
+            this.renderer = new PIXIRenderer(this, params.rendererSettings);
+            break;
         case 'hybrid':
         case 'html':
         default:

@@ -254,7 +254,8 @@ var rgbToHex = (function(){
         colorMap[i] = hex.length == 1 ? '0' + hex : hex;
     }
 
-    return function(r, g, b) {
+    return function(r, g, b, prefix) {
+        prefix = prefix || '#';
         if(r<0){
             r = 0;
         }
@@ -264,7 +265,7 @@ var rgbToHex = (function(){
         if(b<0){
             b = 0;
         }
-        return '#' + colorMap[r] + colorMap[g] + colorMap[b];
+        return prefix + colorMap[r] + colorMap[g] + colorMap[b];
     };
 }());
 
