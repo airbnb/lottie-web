@@ -170,8 +170,10 @@ PIXIRenderer.prototype.renderFrame = function(num){
 
 PIXIRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();
-    console.log(element);
     var newPIXIElement = element.getPBaseElement();
+    if(!newPIXIElement){
+        console.log(element);
+    }
     if(!newElement){
         return;
     }

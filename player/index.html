@@ -12,14 +12,13 @@
 
         #bodymovin{
             background-color:#ccc;
-            width:1066px;
-            height:600px;
+            width:750px;
+            height:275px;
             /*width:800px;
             height:500px;*/
             display:block;
-            overflow: hidden;
             transform: translate3d(0,0,0);
-            margin: auto;
+            /*margin: auto;*/
             opacity: 1;
         }
 
@@ -77,9 +76,11 @@
     <script src="js/elements/htmlElements/HImageElement.js"></script>
     <script src="js/elements/htmlElements/HCameraElement.js"></script>
     <script src="js/elements/pixiElements/PIXIBaseElement.js"></script>
+    <script src="js/elements/pixiElements/PIXIImageElement.js"></script>
     <script src="js/elements/pixiElements/PIXISolidElement.js"></script>
     <script src="js/elements/pixiElements/PIXIShapeElement.js"></script>
     <script src="js/elements/pixiElements/PIXICompElement.js"></script>
+    <script src="js/elements/pixiElements/PIXIMask.js"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -108,14 +109,14 @@
     var anim;
     var animData = {
         container: document.getElementById('bodymovin'),
-        renderer: 'pixi',
+        renderer: 'svg',
         loop: false,
         autoplay: true,
         autoloadSegments: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/rubberhose/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

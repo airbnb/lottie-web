@@ -295,13 +295,6 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var thisLayer,thisComp;
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        var funci = new Function(val+';this.v = $bm_rt;');
-        var functiStr = funci.toString()
-        var newFunctiStr = functiStr.replace('name','_name');
-        console.log(eval(fnStr),fn);
-        if(functiStr !== newFunctiStr){
-        }
-        fnStr = 'var fn = '+ functiStr;
         eval(fnStr);
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;

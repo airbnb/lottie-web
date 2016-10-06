@@ -107,6 +107,7 @@ PIXIShapeElement.prototype.searchShapes = function(arr,data,container,PContainer
             styleOb = {
                 type: arr[i].ty,
                 d: '',
+                PD:[],
                 ld: '',
                 lvl: level,
                 transformers:[],
@@ -278,6 +279,7 @@ PIXIShapeElement.prototype.renderFrame = function(parentMatrix){
         this.hide();
         return;
     }
+    this.PLayerElement.visible = true;
     this.globalToLocal([0,0,0]);
 
     this.hidden = false;
@@ -287,6 +289,7 @@ PIXIShapeElement.prototype.renderFrame = function(parentMatrix){
 
 PIXIShapeElement.prototype.hide = function(){
     if(!this.hidden){
+        this.PLayerElement.visible = false;
         var i, len = this.stylesList.length;
         for(i=len-1;i>=0;i-=1){
             if(this.stylesList[i].ld !== '0'){
@@ -302,13 +305,14 @@ PIXIShapeElement.prototype.hide = function(){
     }
 };
 
-PIXIShapeElement.prototype.renderShape = function(items,data,isMain, container){
+PIXIShapeElement.prototype.renderShape = function(items,data,isMain, container,PContainer){
     var i, len;
     if(!items){
         items = this.shapesData;
         len = this.stylesList.length;
         for(i=0;i<len;i+=1){
             this.stylesList[i].d = '';
+            this.stylesList[i].PD.length = 0;
             this.stylesList[i].mdf = false;
         }
     }
@@ -324,9 +328,19 @@ PIXIShapeElement.prototype.renderShape = function(items,data,isMain, container){
         if(ty == 'tr'){
             if(this.firstFrame || data[i].transform.op.mdf && container){
                 container.setAttribute('opacity',data[i].transform.op.v);
+                PContainer.alpha = data[i].transform.op.v;
             }
             if(this.firstFrame || data[i].transform.mProps.mdf && container){
                 container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
+                var props = data[i].transform.mProps.v.props;
+                var mt = new PIXI.Matrix();
+                mt.a = props[0];
+                mt.b = props[1];
+                mt.c = props[4];
+                mt.d = props[5];
+                mt.tx = props[12];
+                mt.ty = props[13];
+                PContainer.transform.setFromMatrix(mt);
             }
         }else if(ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr'){
             this.renderPath(items[i],data[i]);
@@ -340,7 +354,7 @@ PIXIShapeElement.prototype.renderShape = function(items,data,isMain, container){
         }else if(ty == 'st'){
             this.renderStroke(items[i],data[i]);
         }else if(ty == 'gr'){
-            this.renderShape(items[i].it,data[i].it,false, data[i].gr);
+            this.renderShape(items[i].it,data[i].it,false, data[i].gr, data[i].PGr);
         }else if(ty == 'tm'){
             //
         }
@@ -493,8 +507,14 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
                 PPathString = viewData.PCaches[l];
             }
         }
+        if(PPathString.length === 2 && PPathString[0].c[0] === PPathString[1].c[0] && PPathString[0].c[1] === PPathString[1].c[1]
+            && PPathString[0].c[0] === PPathString[1].c[2] && PPathString[0].c[1] === PPathString[1].c[3]
+            && PPathString[0].c[0] === PPathString[1].c[4] && PPathString[0].c[1] === PPathString[1].c[5]){
+            PPathString[1].c[4] += 0.1;
+            PPathString[1].c[5] += 0.1;
+        }
         viewData.elements[l].st.d += pathStringTransformed;
-        viewData.elements[l].st.PD = PPathString;
+        viewData.elements[l].st.PD = viewData.elements[l].st.PD.concat(PPathString);
         viewData.elements[l].st.mdf = redraw || viewData.elements[l].st.mdf;
     }
 
@@ -605,7 +625,9 @@ PIXIShapeElement.prototype.renderStroke = function(styleData,viewData){
         styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
         ////styleElem.pElem.style.strokeDashoffset = d.dashoffset;
     }
+    styleElem.PPElem.clear();
     if(viewData.c && (viewData.c.mdf || this.firstFrame)){
+        //styleElem.PPElem.beginFill(rgbToHex(bm_floor(viewData.c.v[0]),bm_floor(viewData.c.v[1]),bm_floor(viewData.c.v[2]),'0x'));
         styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
         ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
     }
@@ -619,6 +641,7 @@ PIXIShapeElement.prototype.renderStroke = function(styleData,viewData){
         }
         ////styleElem.pElem.style.strokeWidth = viewData.w.v;
     }
+    styleElem.PPElem.lineStyle(viewData.w.v,rgbToHex(bm_floor(viewData.c.v[0]),bm_floor(viewData.c.v[1]),bm_floor(viewData.c.v[2]),'0x'));
 };
 
 PIXIShapeElement.prototype.destroy = function(){

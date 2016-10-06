@@ -65,6 +65,7 @@ PIXIBaseElement.prototype.createElements = function(){
         }
     }else if(this.data.hasMask || this.data.tt){
         this.layerElement = document.createElementNS(svgNS,'g');
+        this.PLayerElement = new PIXI.DisplayObjectContainer();
         if(this.data.tt){
             this.matteElement = document.createElementNS(svgNS,'g');
             this.matteElement.appendChild(this.layerElement);
@@ -72,10 +73,12 @@ PIXIBaseElement.prototype.createElements = function(){
             //this.appendNodeToParent(this.matteElement);
         }else{
             this.baseElement = this.layerElement;
+            this.PBaseElement = this.PLayerElement;
             //this.appendNodeToParent(this.layerElement);
         }
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;
+            this.PMaskedElement = this.PLayerElement;
         }
     }else{
         this.layerElement = document.createElementNS(svgNS,'g');
@@ -226,17 +229,20 @@ PIXIBaseElement.prototype.renderFrame = function(parentTransform){
     if(this.finalTransform.matMdf && this.layerElement){
         this.layerElement.setAttribute('transform',finalMat.to2dCSS());
         ///
-        var mt = new PIXI.Matrix();
-        mt.a = finalMat.props[0];
-        mt.b = finalMat.props[1];
-        mt.c = finalMat.props[4];
-        mt.d = finalMat.props[5];
-        mt.tx = finalMat.props[12];
-        mt.ty = finalMat.props[13];
-        this.PLayerElement.transform.setFromMatrix(mt);
     }
+    var mt = new PIXI.Matrix();
+    mt.a = finalMat.props[0];
+    mt.b = finalMat.props[1];
+    mt.c = finalMat.props[4];
+    mt.d = finalMat.props[5];
+    mt.tx = finalMat.props[12];
+    mt.ty = finalMat.props[13];
+    this.PLayerElement.transform.setFromMatrix(mt);
+    var trMat = this.finalTransform.mProp;
+    //this.PLayerElement.setTransform(trMat.p.v[0],trMat.p.v[1],trMat.s.v[0],trMat.s.v[1],trMat.r.v,trMat.r.v*degToRads,0,0,trMat.a.v[0],trMat.a.v[1]);
     if(this.finalTransform.opMdf && this.layerElement){
         this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
+        this.PLayerElement.alpha = this.finalTransform.opacity;
     }
 
     if(this.data.hasMask){
@@ -267,7 +273,7 @@ PIXIBaseElement.prototype.getPBaseElement = function(){
     return this.PBaseElement;
 };
 PIXIBaseElement.prototype.addMasks = function(data){
-    this.maskManager = new MaskElement(data,this,this.globalData);
+    this.maskManager = new PIXIMaskElement(data,this,this.globalData);
 };
 
 PIXIBaseElement.prototype.setMatte = function(id){

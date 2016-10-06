@@ -28,6 +28,6 @@ PIXISolidElement.prototype.createElements = function(){
     this.PLayerElement.addChild(graphics);
 };
 
-PIXISolidElement.prototype.hide = IImageElement.prototype.hide;
-PIXISolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
-PIXISolidElement.prototype.destroy = IImageElement.prototype.destroy;
+PIXISolidElement.prototype.hide = PIXIImageElement.prototype.hide;
+PIXISolidElement.prototype.renderFrame = PIXIImageElement.prototype.renderFrame;
+PIXISolidElement.prototype.destroy = PIXIImageElement.prototype.destroy;
