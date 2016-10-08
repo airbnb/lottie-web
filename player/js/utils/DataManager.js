@@ -382,38 +382,85 @@ function dataFunctionManager(){
         documentData.fStyle = fStyle;
         len = documentData.t.length;
         if(documentData.sz){
+            var fit = false;
             var boxWidth = documentData.sz[0];
-            var lastSpaceIndex = -1;
-            for(i=0;i<len;i+=1){
-                newLineFlag = false;
-                if(documentData.t.charAt(i) === ' '){
-                    lastSpaceIndex = i;
-                }else if(documentData.t.charCodeAt(i) === 13){
-                    lineWidth = 0;
-                    newLineFlag = true;
-                }
-                if(fontManager.chars){
-                    charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
-                    cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
-                }else{
-                    //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
-                    cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
-                }
-                if(lineWidth + cLength > boxWidth){
-                    if(lastSpaceIndex === -1){
-                       //i -= 1;
-                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i);
-                        len += 1;
-                    } else {
-                        i = lastSpaceIndex;
-                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
+            var boxHeight = documentData.sz[1];
+            var fontSize = documentData.s;
+            var lineH = documentData.lh || 1.2*fontSize;
+            var tmpCnt = fontSize;
+            documentData.mf = documentData.mf || 20;
+            var minFontSize = Math.min(documentData.mf,fontSize);
+            while(!fit){
+                tmpCnt += 1;
+                var lastSpaceIndex = -1;
+                var totalHeight = 0;
+                var documentText = documentData.t;
+                len = documentText.length;
+                for(i=0;i<len;i+=1){
+                    newLineFlag = false;
+                    if(documentData.t.charAt(i) === ' '){
+                        lastSpaceIndex = i;
+                    }else if(documentData.t.charCodeAt(i) === 13){
+                        lineWidth = 0;
+                        newLineFlag = true;
+                        totalHeight += lineH;
                     }
-                    lastSpaceIndex = -1;
-                    lineWidth = 0;
-                }else {
-                    lineWidth += cLength;
+                    if(fontManager.chars){
+                        charData = fontManager.getCharData(documentText.charAt(i), fontData.fStyle, fontData.fFamily);
+                        cLength = newLineFlag ? 0 : charData.w*fontSize/100;
+                    }else{
+                        //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
+                        cLength = fontManager.measureText(documentText.charAt(i), documentData.f, fontSize);
+                    }
+                    if(lineWidth + cLength > boxWidth){
+                        if(fontSize === minFontSize && totalHeight + lineH > boxHeight){
+                            var charTimes = 1;
+                            var ellipsisString = '…';
+                            var ellipsisData = fontManager.getCharData('…', fontData.fStyle, fontData.fFamily);
+                            if(!ellipsisData){
+                                ellipsisData = fontManager.getCharData('.', fontData.fStyle, fontData.fFamily);
+                                charTimes = 3;
+                                ellipsisString = '...';
+                            }
+                            var ellipsisLength = ellipsisData ? charTimes*ellipsisData.w*fontSize/100 : 0;
+                            ellipsisString = ellipsisData ? ellipsisString : '';
+                            var lastChar = i;
+                            while(lineWidth + ellipsisLength > boxWidth){
+                                charData = fontManager.getCharData(documentText.charAt(lastChar), fontData.fStyle, fontData.fFamily);
+                                cLength = charData.w*fontSize/100;
+                                lineWidth -= cLength;
+                                lastChar -= 1;
+                            }
+                            documentText = documentText.substr(0,lastChar) + ellipsisString;
+                            break;
+                        }
+                        if(lastSpaceIndex === -1){
+                           //i -= 1;
+                            documentText = documentText.substr(0,i) + "\r" + documentText.substr(i);
+                            len += 1;
+                        } else {
+                            i = lastSpaceIndex;
+                            documentText = documentText.substr(0,i) + "\r" + documentText.substr(i+1);
+                        }
+                        lastSpaceIndex = -1;
+                        lineWidth = 0;
+                        totalHeight += lineH;
+                    }else {
+                        lineWidth += cLength;
+                    }
+                }
+                totalHeight += fontSize;
+                if(totalHeight < boxHeight || fontSize<=minFontSize){
+                    fit = true;
+                } else {
+                    documentText = documentData.t;
+                    fontSize -= 1;
+                    lineH -= 1;
                 }
             }
+            documentData.s = fontSize;
+            documentData.lh = lineH;
+            documentData.t = documentText;
             len = documentData.t.length;
         }
         lineWidth = 0;

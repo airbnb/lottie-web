@@ -29,6 +29,7 @@ var bm_textHelper = (function () {
         if (textDocument.boxText) {
             ob.sz = textDocument.boxTextSize;
             ob.ps = textDocument.boxTextPos;
+            ob.mf = 20;
         }
         var i, len;
         ob.s = textDocument.fontSize;
