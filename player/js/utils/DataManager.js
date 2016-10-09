@@ -390,8 +390,6 @@ function dataFunctionManager(){
             var tmpCnt = fontSize;
             documentData.mf = documentData.mf || 20;
             var minFontSize = Math.min(documentData.mf,fontSize);
-            console.log('fontSize::', fontSize);
-            console.log('lineH::', lineH);
             var lineHPerc = lineH/fontSize;
             while(!fit){
                 lineWidth = 0;
@@ -465,8 +463,6 @@ function dataFunctionManager(){
             documentData.s = fontSize;
             documentData.lh = fontSize*lineHPerc;
             documentData.t = documentText;
-            console.log('fontSize*lineHPerc', fontSize*lineHPerc);
-            console.log('fontSize', fontSize);
             len = documentData.t.length;
         }
         lineWidth = 0;
