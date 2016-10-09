@@ -390,7 +390,12 @@ function dataFunctionManager(){
             var tmpCnt = fontSize;
             documentData.mf = documentData.mf || 20;
             var minFontSize = Math.min(documentData.mf,fontSize);
+            console.log('fontSize::', fontSize);
+            console.log('lineH::', lineH);
+            var lineHPerc = lineH/fontSize;
             while(!fit){
+                lineWidth = 0;
+                maxLineWidth = 0;
                 tmpCnt += 1;
                 var lastSpaceIndex = -1;
                 var totalHeight = 0;
@@ -398,12 +403,12 @@ function dataFunctionManager(){
                 len = documentText.length;
                 for(i=0;i<len;i+=1){
                     newLineFlag = false;
-                    if(documentData.t.charAt(i) === ' '){
+                    if(documentText.charAt(i) === ' '){
                         lastSpaceIndex = i;
-                    }else if(documentData.t.charCodeAt(i) === 13){
+                    }else if(documentText.charCodeAt(i) === 13){
                         lineWidth = 0;
                         newLineFlag = true;
-                        totalHeight += lineH;
+                        totalHeight += fontSize*lineHPerc;
                     }
                     if(fontManager.chars){
                         charData = fontManager.getCharData(documentText.charAt(i), fontData.fStyle, fontData.fFamily);
@@ -413,7 +418,7 @@ function dataFunctionManager(){
                         cLength = fontManager.measureText(documentText.charAt(i), documentData.f, fontSize);
                     }
                     if(lineWidth + cLength > boxWidth){
-                        if(fontSize === minFontSize && totalHeight + lineH > boxHeight){
+                        if(fontSize === minFontSize && totalHeight + fontSize*lineHPerc > boxHeight){
                             var charTimes = 1;
                             var ellipsisString = '…';
                             var ellipsisData = fontManager.getCharData('…', fontData.fStyle, fontData.fFamily);
@@ -438,13 +443,13 @@ function dataFunctionManager(){
                            //i -= 1;
                             documentText = documentText.substr(0,i) + "\r" + documentText.substr(i);
                             len += 1;
-                        } else {
+                        }else {
                             i = lastSpaceIndex;
                             documentText = documentText.substr(0,i) + "\r" + documentText.substr(i+1);
                         }
                         lastSpaceIndex = -1;
                         lineWidth = 0;
-                        totalHeight += lineH;
+                        totalHeight += fontSize*lineHPerc;
                     }else {
                         lineWidth += cLength;
                     }
@@ -455,12 +460,13 @@ function dataFunctionManager(){
                 } else {
                     documentText = documentData.t;
                     fontSize -= 1;
-                    lineH -= 1;
                 }
             }
             documentData.s = fontSize;
-            documentData.lh = lineH;
+            documentData.lh = fontSize*lineHPerc;
             documentData.t = documentText;
+            console.log('fontSize*lineHPerc', fontSize*lineHPerc);
+            console.log('fontSize', fontSize);
             len = documentData.t.length;
         }
         lineWidth = 0;
