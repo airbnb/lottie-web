@@ -2,16 +2,18 @@ var ExpressionManager = (function(){
     var ob = {};
     var Math = BMMath;
 
-    function duplicatePropertyValue(value){
+    function duplicatePropertyValue(value, mult){
+        mult = mult || 1;
+
         if(typeof value === 'number'){
-            return value;
+            return value*mult;
         }else if(value.i){
             return JSON.parse(JSON.stringify(value));
         }else{
             var arr = Array.apply(null,{length:value.length});
             var i, len = value.length;
             for(i=0;i<len;i+=1){
-                arr[i]=value[i];
+                arr[i]=value[i]*mult;
             }
             return arr;
         }
@@ -565,7 +567,7 @@ var ExpressionManager = (function(){
                 return;
             }
             if(this.lock){
-                this.v = duplicatePropertyValue(this.pv);
+                this.v = duplicatePropertyValue(this.pv,this.mult);
                 return true;
             }
             if(this.type === 'textSelector'){
