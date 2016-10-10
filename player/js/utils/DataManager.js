@@ -399,6 +399,7 @@ function dataFunctionManager(){
                 var totalHeight = 0;
                 var documentText = documentData.t;
                 len = documentText.length;
+                var tryagain = false;
                 for(i=0;i<len;i+=1){
                     newLineFlag = false;
                     if(documentText.charAt(i) === ' '){
@@ -438,9 +439,13 @@ function dataFunctionManager(){
                             break;
                         }
                         if(lastSpaceIndex === -1){
-                           //i -= 1;
-                            documentText = documentText.substr(0,i) + "\r" + documentText.substr(i);
-                            len += 1;
+                            if(fontSize>minFontSize){
+                                tryagain = true;
+                                break;
+                            }else{
+                                documentText = documentText.substr(0,i) + "\r" + documentText.substr(i);
+                                len += 1;
+                            }
                         }else {
                             i = lastSpaceIndex;
                             documentText = documentText.substr(0,i) + "\r" + documentText.substr(i+1);
@@ -453,7 +458,7 @@ function dataFunctionManager(){
                     }
                 }
                 totalHeight += fontSize;
-                if(totalHeight < boxHeight || fontSize<=minFontSize){
+                if(!tryagain && (totalHeight < boxHeight || fontSize<=minFontSize)){
                     fit = true;
                 } else {
                     documentText = documentData.t;
