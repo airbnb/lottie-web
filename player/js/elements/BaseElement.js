@@ -158,7 +158,7 @@ BaseElement.prototype.setBlendMode = function(){
             blendModeValue = 'luminosity';
             break;
     }
-    this.layerElement.style['mix-blend-mode'] = blendModeValue;
+    this.baseElement.style['mix-blend-mode'] = blendModeValue;
 }
 
 BaseElement.prototype.init = function(){

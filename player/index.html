@@ -11,9 +11,9 @@
         }
 
         #bodymovin{
-            background-color:#ccc;
-            width:1066px;
-            height:600px;
+            background-color:#000;
+            width:1280px;
+            height:720px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -111,7 +111,13 @@
         },
         path: 'exports/render/data.json'
     };
-    anim = bodymovin.loadAnimation(animData);
+
+    /*anim = bodymovin.loadAnimation(animData);
+     anim.addEventListener('DOMLoaded',function(){
+     var animationJson = anim.animationData;
+     animationJson.layers[4].layers[2].layers[0].ef[0].ef[0].v.k[0].s[0] = 0;
+     animationJson.layers[4].layers[2].layers[0].ef[0].ef[0].v.k[1].s[0] = 60;
+     })*/
 
 </script>
 </body>
