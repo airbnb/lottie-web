@@ -465,7 +465,7 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         var valueAtTime = function valueAtTime(t) {
-            return this.getValueAtTime(t*elem.comp.globalData.frameRate);
+            return this.getValueAtTime(t*elem.comp.globalData.frameRate, 0);
         }.bind(this);
 
         var velocityAtTime = function velocityAtTime(t) {

@@ -7,7 +7,8 @@
     function getValueAtTime(frameNum, offsetTime) {
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
-        offsetTime = this.offsetTime || 0;
+        offsetTime = offsetTime === undefined ? this.offsetTime : 0;
+        //console.log(this.offsetTime);
         var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
 
         while(flag){
@@ -157,10 +158,11 @@
         if(this.vel !== undefined){
             return this.vel;
         }
-        var delta = 0.01;
+        var delta = -0.01;
         frameNum *= this.elem.globalData.frameRate;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
+        //frameNum += this.elem.data.st;
+        var v1 = this.getValueAtTime(frameNum,0);
+        var v2 = this.getValueAtTime(frameNum + delta,0);
         var velocity;
         if(v1.length){
             velocity = Array.apply(null,{length:v1.length});
