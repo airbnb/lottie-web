@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.15
+- new expressions
+- blend mode fix
+
 ## V 4.4.14
 - fixed bodymovin_light
 - fixed translations with same origin and destination
