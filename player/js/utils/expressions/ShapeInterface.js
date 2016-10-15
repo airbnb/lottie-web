@@ -7,6 +7,7 @@ var ShapeExpressionInterface = (function(){
         createTransformInterface:createTransformInterface,
         createEllipseInterface:createEllipseInterface,
         createStarInterface:createStarInterface,
+        createRectInterface:createRectInterface,
         createPathInterface:createPathInterface,
         createFillInterface:createFillInterface
     };
@@ -34,6 +35,9 @@ var ShapeExpressionInterface = (function(){
     function createStarInterface(shape,view,propertyGroup){
         return starInterfaceFactory(shape,view,propertyGroup);
     }
+    function createRectInterface(shape,view,propertyGroup){
+        return rectInterfaceFactory(shape,view,propertyGroup);
+    }
     function createPathInterface(shape,view,propertyGroup){
         return pathInterfaceFactory(shape,view,propertyGroup);
     }
@@ -58,6 +62,8 @@ var ShapeExpressionInterface = (function(){
                 arr.push(ShapeExpressionInterface.createStarInterface(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'sh'){
                 arr.push(ShapeExpressionInterface.createPathInterface(shapes[i],view[i],propertyGroup));
+            } else if(shapes[i].ty == 'rc'){
+                arr.push(ShapeExpressionInterface.createRectInterface(shapes[i],view[i],propertyGroup));
             } else{
                 //console.log(shapes[i].ty);
             }
@@ -574,6 +580,80 @@ var ShapeExpressionInterface = (function(){
                     return prop.is.v/prop.is.mult;
                 }
             });
+            Object.defineProperty(interfaceFunction, '_name', {
+                get: function(){
+                    return shape.nm;
+                }
+            });
+            return interfaceFunction;
+        }
+    }());
+
+    var rectInterfaceFactory = (function(){
+        return function(shape,view,propertyGroup){
+            function _propertyGroup(val){
+                if(val == 1){
+                    return _propertyGroup;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+            _propertyGroup.propertyIndex = shape.ix;
+            prop.p.setGroupProperty(_propertyGroup);
+            prop.s.setGroupProperty(_propertyGroup);
+            prop.r.setGroupProperty(_propertyGroup);
+
+            function interfaceFunction(value){
+                console.log(value);
+                if(shape.p.ix === value){
+                    return interfaceFunction.position;
+                }
+                if(shape.r.ix === value){
+                    return interfaceFunction.rotation;
+                }
+                if(shape.pt.ix === value){
+                    return interfaceFunction.points;
+                }
+                if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
+                    return interfaceFunction.outerRadius;
+                }
+                if(shape.os.ix === value){
+                    return interfaceFunction.outerRoundness;
+                }
+                if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
+                    return interfaceFunction.innerRadius;
+                }
+                if(shape.is && shape.is.ix === value){
+                    return interfaceFunction.innerRoundness;
+                }
+
+            }
+            Object.defineProperty(interfaceFunction, 'position', {
+                get: function(){
+                    if(prop.p.k){
+                        prop.p.getValue();
+                    }
+                    return prop.p.v;
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'roundness', {
+                get: function(){
+                    if(prop.r.k){
+                        prop.r.getValue();
+                    }
+                    return prop.r.v;
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'size', {
+                get: function(){
+                    if(prop.s.k){
+                        prop.s.getValue();
+                    }
+                    return prop.s.v;
+                }
+            });
+
             Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;
