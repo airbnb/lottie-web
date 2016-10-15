@@ -35,6 +35,7 @@ function CVCompElement(data, comp,globalData){
     this.canvas = cv;
     this.globalData = compGlobalData;
     this.layers = data.layers;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -155,6 +156,8 @@ CVCompElement.prototype.destroy = function(){
 };
 CVCompElement.prototype.checkLayers = CanvasRenderer.prototype.checkLayers;
 CVCompElement.prototype.buildItem = CanvasRenderer.prototype.buildItem;
+CVCompElement.prototype.checkPendingElements = CanvasRenderer.prototype.checkPendingElements;
+CVCompElement.prototype.addPendingElement = CanvasRenderer.prototype.addPendingElement;
 CVCompElement.prototype.buildAllItems = CanvasRenderer.prototype.buildAllItems;
 CVCompElement.prototype.createItem = CanvasRenderer.prototype.createItem;
 CVCompElement.prototype.createImage = CanvasRenderer.prototype.createImage;

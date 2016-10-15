@@ -5,6 +5,7 @@ function HybridRenderer(animationItem){
     this.globalData = {
         frameNum: -1
     };
+    this.pendingElements = [];
     this.elements = [];
     this.threeDElements = [];
     this.destroyed = false;
@@ -16,6 +17,13 @@ function HybridRenderer(animationItem){
 extendPrototype(BaseRenderer,HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
+
+HybridRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+    }
+};
 
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();

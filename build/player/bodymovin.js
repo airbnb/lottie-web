@@ -3940,6 +3940,7 @@ BaseRenderer.prototype.checkLayers = function(num){
         }
         this.completeLayers = this.elements[i] ? this.completeLayers:false;
     }
+    this.checkPendingElements();
 };
 
 BaseRenderer.prototype.createItem = function(layer){
@@ -3964,6 +3965,7 @@ BaseRenderer.prototype.buildAllItems = function(){
     for(i=0;i<len;i+=1){
         this.buildItem(i);
     }
+    this.checkPendingElements();
 };
 
 BaseRenderer.prototype.includeLayers = function(newLayers){
@@ -3991,22 +3993,32 @@ BaseRenderer.prototype.initItems = function(){
         this.buildAllItems();
     }
 };
-BaseRenderer.prototype.buildElementParenting = function(element, parentName){
+BaseRenderer.prototype.buildElementParenting = function(element, parentName, hierarchy){
+    hierarchy = hierarchy || [];
     var elements = this.elements;
     var layers = this.layers;
     var i=0, len = layers.length;
     while(i<len){
         if(layers[i].ind == parentName){
-            if(!elements[i]){
+            if(!elements[i] || elements[i] === true){
                 this.buildItem(i);
+                this.addPendingElement(element);
+            } else if(layers[i].parent !== undefined){
+                hierarchy.push(elements[i]);
+                this.buildElementParenting(element,layers[i].parent, hierarchy);
+            } else {
+                hierarchy.push(elements[i]);
+                element.setHierarchy(hierarchy);
             }
-            element.getHierarchy().push(elements[i]);
-            if(layers[i].parent !== undefined){
-                this.buildElementParenting(element,layers[i].parent);
-            }
+
+
         }
         i += 1;
     }
+};
+
+BaseRenderer.prototype.addPendingElement = function(element){
+    this.pendingElements.push(element);
 };
 function SVGRenderer(animationItem, config){
     this.animationItem = animationItem;
@@ -4020,6 +4032,7 @@ function SVGRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.elements = [];
+    this.pendingElements = [];
     this.destroyed = false;
 
 }
@@ -4122,6 +4135,7 @@ SVGRenderer.prototype.buildItem  = function(pos){
     if(elements[pos] || this.layers[pos].ty == 99){
         return;
     }
+    elements[pos] = true;
     var element = this.createItem(this.layers[pos]);
 
     elements[pos] = element;
@@ -4133,8 +4147,29 @@ SVGRenderer.prototype.buildItem  = function(pos){
     }
     this.appendElementInPos(element,pos);
     if(this.layers[pos].tt){
-        this.buildItem(pos - 1);
-        element.setMatte(elements[pos - 1].layerId);
+        if(!this.elements[pos - 1] || this.elements[pos - 1] === true){
+            this.buildItem(pos - 1);
+            this.addPendingElement(element);
+        } else {
+            element.setMatte(elements[pos - 1].layerId);
+        }
+    }
+};
+
+SVGRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+        if(element.data.tt){
+            var i = 0, len = this.elements.length;
+            while(i<len){
+                if(this.elements[i] === element){
+                    element.setMatte(this.elements[i - 1].layerId);
+                    break;
+                }
+                i += 1;
+            }
+        }
     }
 };
 
@@ -4177,7 +4212,7 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
     var i = 0;
     var nextElement;
     while(i<pos){
-        if(this.elements[i] && this.elements[i].getBaseElement()){
+        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
             nextElement = this.elements[i].getBaseElement();
         }
         i += 1;
@@ -4688,6 +4723,10 @@ BaseElement.prototype.getHierarchy = function(){
         this.hierarchy = [];
     }
     return this.hierarchy;
+};
+
+BaseElement.prototype.setHierarchy = function(hierarchy){
+    this.hierarchy = hierarchy;
 };
 
 BaseElement.prototype.getLayerSize = function(){
@@ -5898,6 +5937,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -5999,6 +6039,8 @@ ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
+ICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
+ICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;
 function IImageElement(data,parentContainer,globalData,comp,placeholder){
     this.assetData = globalData.getAssetData(data.refId);
     this._parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
@@ -7502,6 +7544,7 @@ function CanvasRenderer(animationItem, config){
         this.contextData.saved[i] = Array.apply(null,{length:16});
     }
     this.elements = [];
+    this.pendingElements = [];
     this.transformMat = new Matrix();
     this.completeLayers = false;
 }
@@ -7788,6 +7831,13 @@ CanvasRenderer.prototype.buildItem = function(pos){
     }
 };
 
+CanvasRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+    }
+};
+
 CanvasRenderer.prototype.hide = function(){
     this.animationItem.container.style.display = 'none';
 };
@@ -7816,6 +7866,7 @@ function HybridRenderer(animationItem){
     this.globalData = {
         frameNum: -1
     };
+    this.pendingElements = [];
     this.elements = [];
     this.threeDElements = [];
     this.destroyed = false;
@@ -7827,6 +7878,13 @@ function HybridRenderer(animationItem){
 extendPrototype(BaseRenderer,HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
+
+HybridRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+    }
+};
 
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();
@@ -8248,6 +8306,7 @@ function CVCompElement(data, comp,globalData){
     this.canvas = cv;
     this.globalData = compGlobalData;
     this.layers = data.layers;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -8368,6 +8427,8 @@ CVCompElement.prototype.destroy = function(){
 };
 CVCompElement.prototype.checkLayers = CanvasRenderer.prototype.checkLayers;
 CVCompElement.prototype.buildItem = CanvasRenderer.prototype.buildItem;
+CVCompElement.prototype.checkPendingElements = CanvasRenderer.prototype.checkPendingElements;
+CVCompElement.prototype.addPendingElement = CanvasRenderer.prototype.addPendingElement;
 CVCompElement.prototype.buildAllItems = CanvasRenderer.prototype.buildAllItems;
 CVCompElement.prototype.createItem = CanvasRenderer.prototype.createItem;
 CVCompElement.prototype.createImage = CanvasRenderer.prototype.createImage;
@@ -9337,6 +9398,7 @@ function HCompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -9405,6 +9467,8 @@ HCompElement.prototype.renderFrame = function(parentMatrix){
 
 HCompElement.prototype.checkLayers = BaseRenderer.prototype.checkLayers;
 HCompElement.prototype.buildItem = HybridRenderer.prototype.buildItem;
+HCompElement.prototype.checkPendingElements = HybridRenderer.prototype.checkPendingElements;
+HCompElement.prototype.addPendingElement = HybridRenderer.prototype.addPendingElement;
 HCompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 HCompElement.prototype.createItem = HybridRenderer.prototype.createItem;
 HCompElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
@@ -10866,6 +10930,7 @@ var ShapeExpressionInterface = (function(){
         createTransformInterface:createTransformInterface,
         createEllipseInterface:createEllipseInterface,
         createStarInterface:createStarInterface,
+        createRectInterface:createRectInterface,
         createPathInterface:createPathInterface,
         createFillInterface:createFillInterface
     };
@@ -10893,6 +10958,9 @@ var ShapeExpressionInterface = (function(){
     function createStarInterface(shape,view,propertyGroup){
         return starInterfaceFactory(shape,view,propertyGroup);
     }
+    function createRectInterface(shape,view,propertyGroup){
+        return rectInterfaceFactory(shape,view,propertyGroup);
+    }
     function createPathInterface(shape,view,propertyGroup){
         return pathInterfaceFactory(shape,view,propertyGroup);
     }
@@ -10917,6 +10985,8 @@ var ShapeExpressionInterface = (function(){
                 arr.push(ShapeExpressionInterface.createStarInterface(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'sh'){
                 arr.push(ShapeExpressionInterface.createPathInterface(shapes[i],view[i],propertyGroup));
+            } else if(shapes[i].ty == 'rc'){
+                arr.push(ShapeExpressionInterface.createRectInterface(shapes[i],view[i],propertyGroup));
             } else{
                 //console.log(shapes[i].ty);
             }
@@ -11433,6 +11503,80 @@ var ShapeExpressionInterface = (function(){
                     return prop.is.v/prop.is.mult;
                 }
             });
+            Object.defineProperty(interfaceFunction, '_name', {
+                get: function(){
+                    return shape.nm;
+                }
+            });
+            return interfaceFunction;
+        }
+    }());
+
+    var rectInterfaceFactory = (function(){
+        return function(shape,view,propertyGroup){
+            function _propertyGroup(val){
+                if(val == 1){
+                    return _propertyGroup;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+            _propertyGroup.propertyIndex = shape.ix;
+            prop.p.setGroupProperty(_propertyGroup);
+            prop.s.setGroupProperty(_propertyGroup);
+            prop.r.setGroupProperty(_propertyGroup);
+
+            function interfaceFunction(value){
+                console.log(value);
+                if(shape.p.ix === value){
+                    return interfaceFunction.position;
+                }
+                if(shape.r.ix === value){
+                    return interfaceFunction.rotation;
+                }
+                if(shape.pt.ix === value){
+                    return interfaceFunction.points;
+                }
+                if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
+                    return interfaceFunction.outerRadius;
+                }
+                if(shape.os.ix === value){
+                    return interfaceFunction.outerRoundness;
+                }
+                if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
+                    return interfaceFunction.innerRadius;
+                }
+                if(shape.is && shape.is.ix === value){
+                    return interfaceFunction.innerRoundness;
+                }
+
+            }
+            Object.defineProperty(interfaceFunction, 'position', {
+                get: function(){
+                    if(prop.p.k){
+                        prop.p.getValue();
+                    }
+                    return prop.p.v;
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'roundness', {
+                get: function(){
+                    if(prop.r.k){
+                        prop.r.getValue();
+                    }
+                    return prop.r.v;
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'size', {
+                get: function(){
+                    if(prop.s.k){
+                        prop.s.getValue();
+                    }
+                    return prop.s.v;
+                }
+            });
+
             Object.defineProperty(interfaceFunction, '_name', {
                 get: function(){
                     return shape.nm;

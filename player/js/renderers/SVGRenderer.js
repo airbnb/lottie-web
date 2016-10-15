@@ -10,6 +10,7 @@ function SVGRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.elements = [];
+    this.pendingElements = [];
     this.destroyed = false;
 
 }
@@ -112,6 +113,7 @@ SVGRenderer.prototype.buildItem  = function(pos){
     if(elements[pos] || this.layers[pos].ty == 99){
         return;
     }
+    elements[pos] = true;
     var element = this.createItem(this.layers[pos]);
 
     elements[pos] = element;
@@ -123,8 +125,29 @@ SVGRenderer.prototype.buildItem  = function(pos){
     }
     this.appendElementInPos(element,pos);
     if(this.layers[pos].tt){
-        this.buildItem(pos - 1);
-        element.setMatte(elements[pos - 1].layerId);
+        if(!this.elements[pos - 1] || this.elements[pos - 1] === true){
+            this.buildItem(pos - 1);
+            this.addPendingElement(element);
+        } else {
+            element.setMatte(elements[pos - 1].layerId);
+        }
+    }
+};
+
+SVGRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+        if(element.data.tt){
+            var i = 0, len = this.elements.length;
+            while(i<len){
+                if(this.elements[i] === element){
+                    element.setMatte(this.elements[i - 1].layerId);
+                    break;
+                }
+                i += 1;
+            }
+        }
     }
 };
 
@@ -167,7 +190,7 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
     var i = 0;
     var nextElement;
     while(i<pos){
-        if(this.elements[i] && this.elements[i].getBaseElement()){
+        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
             nextElement = this.elements[i].getBaseElement();
         }
         i += 1;

@@ -3,6 +3,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -104,3 +105,5 @@ ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
+ICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
+ICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;

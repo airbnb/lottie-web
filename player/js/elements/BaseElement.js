@@ -219,6 +219,10 @@ BaseElement.prototype.getHierarchy = function(){
     return this.hierarchy;
 };
 
+BaseElement.prototype.setHierarchy = function(hierarchy){
+    this.hierarchy = hierarchy;
+};
+
 BaseElement.prototype.getLayerSize = function(){
     if(this.data.ty === 5){
         return {w:this.data.textData.width,h:this.data.textData.height};

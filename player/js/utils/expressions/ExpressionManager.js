@@ -241,7 +241,7 @@ var ExpressionManager = (function(){
         }else if(t >= tMax){
             return value2;
         }
-        var perc = tMax === tMin ? 0 : t/(tMax-tMin);
+        var perc = tMax === tMin ? 0 : (t-tMin)/(tMax-tMin);
         if(!value1.length){
             return value1 + (value2-value1)*perc;
         }

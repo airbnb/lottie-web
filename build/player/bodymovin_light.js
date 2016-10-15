@@ -3940,6 +3940,7 @@ BaseRenderer.prototype.checkLayers = function(num){
         }
         this.completeLayers = this.elements[i] ? this.completeLayers:false;
     }
+    this.checkPendingElements();
 };
 
 BaseRenderer.prototype.createItem = function(layer){
@@ -3964,6 +3965,7 @@ BaseRenderer.prototype.buildAllItems = function(){
     for(i=0;i<len;i+=1){
         this.buildItem(i);
     }
+    this.checkPendingElements();
 };
 
 BaseRenderer.prototype.includeLayers = function(newLayers){
@@ -3991,22 +3993,32 @@ BaseRenderer.prototype.initItems = function(){
         this.buildAllItems();
     }
 };
-BaseRenderer.prototype.buildElementParenting = function(element, parentName){
+BaseRenderer.prototype.buildElementParenting = function(element, parentName, hierarchy){
+    hierarchy = hierarchy || [];
     var elements = this.elements;
     var layers = this.layers;
     var i=0, len = layers.length;
     while(i<len){
         if(layers[i].ind == parentName){
-            if(!elements[i]){
+            if(!elements[i] || elements[i] === true){
                 this.buildItem(i);
+                this.addPendingElement(element);
+            } else if(layers[i].parent !== undefined){
+                hierarchy.push(elements[i]);
+                this.buildElementParenting(element,layers[i].parent, hierarchy);
+            } else {
+                hierarchy.push(elements[i]);
+                element.setHierarchy(hierarchy);
             }
-            element.getHierarchy().push(elements[i]);
-            if(layers[i].parent !== undefined){
-                this.buildElementParenting(element,layers[i].parent);
-            }
+
+
         }
         i += 1;
     }
+};
+
+BaseRenderer.prototype.addPendingElement = function(element){
+    this.pendingElements.push(element);
 };
 function SVGRenderer(animationItem, config){
     this.animationItem = animationItem;
@@ -4020,6 +4032,7 @@ function SVGRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.elements = [];
+    this.pendingElements = [];
     this.destroyed = false;
 
 }
@@ -4122,6 +4135,7 @@ SVGRenderer.prototype.buildItem  = function(pos){
     if(elements[pos] || this.layers[pos].ty == 99){
         return;
     }
+    elements[pos] = true;
     var element = this.createItem(this.layers[pos]);
 
     elements[pos] = element;
@@ -4133,8 +4147,29 @@ SVGRenderer.prototype.buildItem  = function(pos){
     }
     this.appendElementInPos(element,pos);
     if(this.layers[pos].tt){
-        this.buildItem(pos - 1);
-        element.setMatte(elements[pos - 1].layerId);
+        if(!this.elements[pos - 1] || this.elements[pos - 1] === true){
+            this.buildItem(pos - 1);
+            this.addPendingElement(element);
+        } else {
+            element.setMatte(elements[pos - 1].layerId);
+        }
+    }
+};
+
+SVGRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+        if(element.data.tt){
+            var i = 0, len = this.elements.length;
+            while(i<len){
+                if(this.elements[i] === element){
+                    element.setMatte(this.elements[i - 1].layerId);
+                    break;
+                }
+                i += 1;
+            }
+        }
     }
 };
 
@@ -4177,7 +4212,7 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
     var i = 0;
     var nextElement;
     while(i<pos){
-        if(this.elements[i] && this.elements[i].getBaseElement()){
+        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
             nextElement = this.elements[i].getBaseElement();
         }
         i += 1;
@@ -4688,6 +4723,10 @@ BaseElement.prototype.getHierarchy = function(){
         this.hierarchy = [];
     }
     return this.hierarchy;
+};
+
+BaseElement.prototype.setHierarchy = function(hierarchy){
+    this.hierarchy = hierarchy;
 };
 
 BaseElement.prototype.getLayerSize = function(){
@@ -5898,6 +5937,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -5999,6 +6039,8 @@ ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
+ICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
+ICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;
 function IImageElement(data,parentContainer,globalData,comp,placeholder){
     this.assetData = globalData.getAssetData(data.refId);
     this._parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
