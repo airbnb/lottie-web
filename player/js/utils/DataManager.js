@@ -349,7 +349,13 @@ function dataFunctionManager(){
 
     function completeText(data, fontManager){
         var letters = [];
-        var documentData = data.t.d;
+        var keys = data.t.d.k;
+        var k, kLen = keys.length;
+        for(k=0;k<kLen;k+=1){
+
+        }
+        var documentData = data.t.d.k[0].s;
+        console.log(documentData);
         var i, len;
         var newLineFlag, index = 0, val;
         var anchorGrouping = data.t.m.g;

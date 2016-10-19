@@ -164,38 +164,53 @@ var bm_textShapeHelper = (function () {
         comp.openInViewer();
         var layerCollection = comp.layers;
         var i, len = layers.length, layerInfo;
+        var k, kLen;
         for (i = 0; i < len; i += 1) {
             layerInfo = layers[i];
             var textProp = layerInfo.property("Source Text");
-            var textDocument = textProp.value;
-            var font = textDocument.font;
-            var fontFamily = textDocument.fontFamily;
-            var fontStyle = textDocument.fontStyle;
-            var fontSize = textDocument.fontSize;
-            var text = textDocument.allCaps ? textDocument.text.toUpperCase() : textDocument.text;
-            var j, jLen = text.length;
-            
-            if (currentFont !== font) {
-                currentFont = font;
-                createNewChar(layerInfo, '[]', {});
+            kLen = textProp.numKeys;
+            var keysFlag = true;
+            if(kLen === 0){
+                kLen = 1;
+                keysFlag = false;
             }
-            var l, lLen;
-            for (j = 0; j < jLen; j += 1) {
-                var ch = text.substr(j, 1);
-                var charData = addChar(ch, fontSize, font, fontStyle);
-                if (charData !== false) {
-                    createNewChar(layerInfo, ch, charData);
-                    l = 0;
-                    lLen = fonts.list.length;
-                    while (l < lLen) {
-                        if (fonts.list[l].fName === charData.font) {
-                            charData.fFamily = fonts.list[l].fFamily;
-                            break;
+            var textDocument;
+            for(k=0;k<kLen;k+=1){
+                if(!keysFlag){
+                    textDocument = textProp.value;
+                } else {
+                    textDocument = textProp.keyValue(k + 1);
+                }
+                var font = textDocument.font;
+                var fontFamily = textDocument.fontFamily;
+                var fontStyle = textDocument.fontStyle;
+                var fontSize = textDocument.fontSize;
+                var text = textDocument.allCaps ? textDocument.text.toUpperCase() : textDocument.text;
+                var j, jLen = text.length;
+
+                if (currentFont !== font) {
+                    currentFont = font;
+                    createNewChar(layerInfo, '[]', {});
+                }
+                var l, lLen;
+                for (j = 0; j < jLen; j += 1) {
+                    var ch = text.substr(j, 1);
+                    var charData = addChar(ch, fontSize, font, fontStyle);
+                    if (charData !== false) {
+                        createNewChar(layerInfo, ch, charData);
+                        l = 0;
+                        lLen = fonts.list.length;
+                        while (l < lLen) {
+                            if (fonts.list[l].fName === charData.font) {
+                                charData.fFamily = fonts.list[l].fFamily;
+                                break;
+                            }
+                            l += 1;
                         }
-                        l += 1;
                     }
                 }
             }
+
         }
         
         bm_renderManager.setChars(chars);
