@@ -94,7 +94,7 @@ var bm_textShapeHelper = (function () {
         resetProp(textLayer.transform.rotation, 0);
     }
     
-    function createNewChar(layerInfo, ch, charData) {
+    function createNewChar(layerInfo, originalTextDocument, ch, charData) {
             //"allCaps","applyFill","applyStroke","baselineLocs","baselineShift","boxText","boxTextPos","boxTextSize","fauxBold","fauxItalic","fillColor","font","fontFamily","fontLocation","fontSize","fontStyle","horizontalScale","justification","pointText","resetCharStyle","resetParagraphStyle","smallCaps","strokeColor","strokeOverFill","strokeWidth","subscript","superscript","text","tracking","tsume","verticalScale"
         if (ch.charCodeAt(0) === 13) {
             return;
@@ -103,7 +103,6 @@ var bm_textShapeHelper = (function () {
         var l, lLen;
         var cmdID = bm_projectManager.getCommandID('shapesFromText');
         layerInfo.copyToComp(comp);
-        var originalTextDocument = layerInfo.property('Source Text').value;
         //var dupl = comp.layers[1];
         //var dupl = comp.layers.addText();
         //removeLayerAnimators(dupl);
@@ -162,7 +161,6 @@ var bm_textShapeHelper = (function () {
     function exportChars(fonts) {
         
         comp.openInViewer();
-        var layerCollection = comp.layers;
         var i, len = layers.length, layerInfo;
         var k, kLen;
         for (i = 0; i < len; i += 1) {
@@ -190,14 +188,14 @@ var bm_textShapeHelper = (function () {
 
                 if (currentFont !== font) {
                     currentFont = font;
-                    createNewChar(layerInfo, '[]', {});
+                    createNewChar(layerInfo, textDocument, '[]', {});
                 }
                 var l, lLen;
                 for (j = 0; j < jLen; j += 1) {
                     var ch = text.substr(j, 1);
                     var charData = addChar(ch, fontSize, font, fontStyle);
                     if (charData !== false) {
-                        createNewChar(layerInfo, ch, charData);
+                        createNewChar(layerInfo, textDocument, ch, charData);
                         l = 0;
                         lLen = fonts.list.length;
                         while (l < lLen) {

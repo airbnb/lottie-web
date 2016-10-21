@@ -23,7 +23,7 @@ var bm_textHelper = (function () {
         }
     }
     
-    function exportTextDocumentData(layerInfo, data) {
+    function exportTextDocumentData(layerInfo, data, frameRate) {
 
         var sourceTextProp = layerInfo.property("Source Text");
         bm_expressionHelper.checkExpression(sourceTextProp, data);
@@ -58,7 +58,6 @@ var bm_textHelper = (function () {
                 ob.t = textDocument.text;
             }
             len = ob.t.length;
-            bm_textShapeHelper.addTextLayer(layerInfo);
             ob.j = getJustification(textDocument.justification);
             ob.tr = textDocument.tracking;
             if(textDocument.baselineLocs && textDocument.baselineLocs.length > 5){
@@ -84,8 +83,9 @@ var bm_textHelper = (function () {
                     ob.of = textDocument.strokeOverFill;
                 }
             }
-            arr.push({s:ob,t:time});
+            arr.push({s:ob,t:time*frameRate});
         }
+        bm_textShapeHelper.addTextLayer(layerInfo);
 
     }
     
@@ -124,7 +124,7 @@ var bm_textHelper = (function () {
             p: {},
             m: {}
         };
-        exportTextDocumentData(layerInfo, layerOb.t.d);
+        exportTextDocumentData(layerInfo, layerOb.t.d, frameRate);
         var textProperty = layerInfo.property("Text");
         
         var i, len = textProperty.numProperties;

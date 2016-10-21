@@ -348,12 +348,12 @@ function dataFunctionManager(){
     }
 
     function completeText(data, fontManager){
-        var letters = [];
+        var letters;
         var keys = data.t.d.k;
         var k, kLen = keys.length;
         for(k=0;k<kLen;k+=1){
             var documentData = data.t.d.k[k].s;
-            console.log(documentData);
+            letters = [];
             var i, len;
             var newLineFlag, index = 0, val;
             var anchorGrouping = data.t.m.g;
@@ -387,7 +387,6 @@ function dataFunctionManager(){
             len = documentData.t.length;
             if(documentData.sz){
                 var boxWidth = documentData.sz[0];
-                console.log(boxWidth);
                 var lastSpaceIndex = -1;
                 for(i=0;i<len;i+=1){
                     newLineFlag = false;
@@ -490,18 +489,18 @@ function dataFunctionManager(){
             lineWidths.push(lineWidth);
             if(documentData.sz){
                 documentData.boxWidth = documentData.sz[0];
-                data.t.d.justifyOffset = 0;
+                documentData.justifyOffset = 0;
             }else{
                 documentData.boxWidth = maxLineWidth;
                 switch(documentData.j){
                     case 1:
-                        data.t.d.justifyOffset = - documentData.boxWidth;
+                        documentData.justifyOffset = - documentData.boxWidth;
                         break;
                     case 2:
-                        data.t.d.justifyOffset = - documentData.boxWidth/2;
+                        documentData.justifyOffset = - documentData.boxWidth/2;
                         break;
                     default:
-                        data.t.d.justifyOffset = 0;
+                        documentData.justifyOffset = 0;
                 }
             }
             documentData.lineWidths = lineWidths;
