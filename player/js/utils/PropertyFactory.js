@@ -758,7 +758,7 @@ var PropertyFactory = (function(){
                     if(mult<.5){
                         mult *= 2;
                     }else{
-                        mult = 1 - mult;
+                        mult = 1 - 2*(mult-0.5);
                     }
                 }
             }else if(type == 5){
