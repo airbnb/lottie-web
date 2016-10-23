@@ -22,6 +22,7 @@ createElement(CVBaseElement, CVTextElement);
 CVTextElement.prototype.init = ITextElement.prototype.init;
 CVTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 CVTextElement.prototype.getMult = ITextElement.prototype.getMult;
+CVTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 
 CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2d');
 
@@ -29,7 +30,12 @@ CVTextElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
     //console.log('this.data: ',this.data);
-    var documentData = this.data.t.d;
+
+};
+
+CVTextElement.prototype.buildNewText = function(){
+    var documentData = this.currentTextDocumentData;
+    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
 
     var hasFill = false;
     if(documentData.fc) {
@@ -57,6 +63,7 @@ CVTextElement.prototype.createElements = function(){
     if (singleShape) {
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
     }
+    var cnt = 0;
     for (i = 0;i < len ;i += 1) {
         charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
         var shapeData;
@@ -111,9 +118,14 @@ CVTextElement.prototype.createElements = function(){
         if(singleShape){
             xPos += letters[i].l;
         }
-        this.textSpans.push({elem: commands});
+        if(this.textSpans[cnt]){
+            this.textSpans[cnt].elem = commands;
+        } else {
+            this.textSpans[cnt] = {elem: commands};
+        }
+        cnt +=1;
     }
-};
+}
 
 CVTextElement.prototype.renderFrame = function(parentMatrix){
     if(this._parent.renderFrame.call(this, parentMatrix)===false){
@@ -136,7 +148,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
     var  i,len, j, jLen, k, kLen;
     var renderedLetters = this.renderedLetters;
 
-    var letters = this.data.t.d.l;
+    var letters = this.currentTextDocumentData.l;
 
     len = letters.length;
     var renderedLetter;

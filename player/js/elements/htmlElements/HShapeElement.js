@@ -75,15 +75,18 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
 
     if(this.isVisible && (this.elemMdf || this.firstFrame)){
         var boundingBox = this.shapeCont.getBBox();
+        var changed = false;
         if(this.currentBBox.w !== boundingBox.width){
             this.currentBBox.w = boundingBox.width;
             this.shapeCont.setAttribute('width',boundingBox.width);
+            changed = true;
         }
         if(this.currentBBox.h !== boundingBox.height){
             this.currentBBox.h = boundingBox.height;
             this.shapeCont.setAttribute('height',boundingBox.height);
+            changed = true;
         }
-        if(this.currentBBox.w !== boundingBox.width || this.currentBBox.h !== boundingBox.height  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
+        if(changed  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
             this.currentBBox.w = boundingBox.width;
             this.currentBBox.h = boundingBox.height;
             this.currentBBox.x = boundingBox.x;

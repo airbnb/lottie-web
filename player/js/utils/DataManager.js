@@ -125,6 +125,46 @@ function dataFunctionManager(){
         }
     }
 
+    var checkText = (function(){
+        var minimumVersion = [4,4,14];
+
+        function updateTextLayer(textLayer){
+            var documentData = textLayer.t.d;
+            textLayer.t.d = {
+                k: [
+                    {
+                        s:documentData,
+                        t:0
+                    }
+                ]
+            }
+        }
+
+        function iterateLayers(layers){
+            var i, len = layers.length;
+            for(i=0;i<len;i+=1){
+                if(layers[i].ty === 5){
+                    updateTextLayer(layers[i]);
+                }
+            }
+        }
+
+        return function (animationData){
+            if(checkVersion(minimumVersion,animationData.v)){
+                iterateLayers(animationData.layers);
+                if(animationData.assets){
+                    var i, len = animationData.assets.length;
+                    for(i=0;i<len;i+=1){
+                        if(animationData.assets[i].layers){
+                            iterateLayers(animationData.assets[i].layers);
+
+                        }
+                    }
+                }
+            }
+        }
+    }())
+
     var checkColors = (function(){
         var minimumVersion = [4,1,9];
 
@@ -342,6 +382,7 @@ function dataFunctionManager(){
             return;
         }
         checkColors(animationData);
+        checkText(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
         //blitAnimation(animationData, animationData.assets, fontManager);

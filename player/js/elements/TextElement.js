@@ -90,7 +90,8 @@ ITextElement.prototype.init = function(){
 };
 ITextElement.prototype.prepareFrame = function(num) {
     var i = 0, len = this.data.t.d.k.length;
-    var textDocumentData;
+    var textDocumentData = this.data.t.d.k[i].s;
+    i += 1;
     while(i<len){
         if(this.data.t.d.k[i].t > num){
             break;
