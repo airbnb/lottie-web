@@ -605,7 +605,6 @@ var ShapeExpressionInterface = (function(){
             prop.r.setGroupProperty(_propertyGroup);
 
             function interfaceFunction(value){
-                console.log(value);
                 if(shape.p.ix === value){
                     return interfaceFunction.position;
                 }

@@ -758,23 +758,35 @@ var PropertyFactory = (function(){
                     if(mult<.5){
                         mult *= 2;
                     }else{
-                        mult = 1 - mult;
+                        mult = 1 - 2*(mult-0.5);
                     }
                 }
+                mult = easer(mult);
             }else if(type == 5){
                 if(e === s){
                     mult = ind >= e ? 0 : 1;
                 }else{
                     var tot = e - s;
-
-                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;
+                    /*ind += 0.5;
+                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
+                    ind = min(max(0,ind+0.5-s),e-s);
+                    var x = -tot/2+ind;
+                    var a = tot/2;
+                    mult = Math.sqrt(1 - (x*x)/(a*a));
                 }
+                mult = easer(mult);
             }else if(type == 6){
                 if(e === s){
                     mult = ind >= e ? 0 : 1;
                 }else{
-                    mult = (1+(Math.cos(Math.PI+Math.PI*2*(ind-s)/(e-s))+0))/2;
+                    ind = min(max(0,ind+0.5-s),e-s);
+                    mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
+                    /*
+                     ind = Math.min(Math.max(s,ind),e-1);
+                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
+                     mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
                 }
+                mult = easer(mult);
             }else {
                 if(ind >= floor(s)){
                     if(ind-s < 0){
@@ -783,6 +795,7 @@ var PropertyFactory = (function(){
                         mult = max(0,min(e-ind,1));
                     }
                 }
+                mult = easer(mult);
             }
             return mult*this.a.v;
         }

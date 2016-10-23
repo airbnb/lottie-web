@@ -23,49 +23,70 @@ var bm_textHelper = (function () {
         }
     }
     
-    function exportTextDocumentData(layerInfo, ob) {
-        
-        var textDocument = layerInfo.property("Source Text").value;
-        if (textDocument.boxText) {
-            ob.sz = textDocument.boxTextSize;
-            ob.ps = textDocument.boxTextPos;
+    function exportTextDocumentData(layerInfo, data, frameRate) {
+
+        var sourceTextProp = layerInfo.property("Source Text");
+        bm_expressionHelper.checkExpression(sourceTextProp, data);
+        var arr = [];
+        data.k = arr;
+        var numKeys = sourceTextProp.numKeys;
+        var j, jLen = numKeys ? numKeys : 1;
+        if(jLen === 0){
+            jLen = 1;
         }
-        var i, len;
-        ob.s = textDocument.fontSize;
-        ob.f = textDocument.font;
-        bm_sourceHelper.addFont(textDocument.font, textDocument.fontFamily, textDocument.fontStyle);
-        if(textDocument.allCaps){
-            ob.t = textDocument.text.toUpperCase();
-        } else {
-            ob.t = textDocument.text;
-        }
-        len = ob.t.length;
-        bm_textShapeHelper.addTextLayer(layerInfo);
-        ob.j = getJustification(textDocument.justification);
-        ob.tr = textDocument.tracking;
-        if(textDocument.baselineLocs && textDocument.baselineLocs.length > 5){
-            ob.lh = textDocument.baselineLocs[5] - textDocument.baselineLocs[1];
-        } else {
-            ob.lh = ob.s*1.2;
-        }
-        if (textDocument.applyFill) {
-            len = textDocument.fillColor.length;
-            ob.fc = [];
-            for (i = 0; i < len; i += 1) {
-                ob.fc[i] = Math.round(100*textDocument.fillColor[i])/100;
+        for(j=0;j<jLen;j+=1){
+            var ob = {};
+            var textDocument, time;
+            if(numKeys === 0){
+                time = 0;
+                textDocument = sourceTextProp.value;
+            } else {
+                time = sourceTextProp.keyTime(j + 1);
+                textDocument = sourceTextProp.keyValue(j + 1);
             }
-        }
-        if (textDocument.applyStroke) {
-            len = textDocument.strokeColor.length;
-            ob.sc = [];
-            for (i = 0; i < len; i += 1) {
-                ob.sc[i] = Math.round(100*textDocument.strokeColor[i])/100;
+            if (textDocument.boxText) {
+                ob.sz = textDocument.boxTextSize;
+                ob.ps = textDocument.boxTextPos;
             }
-            ob.sw = textDocument.strokeWidth;
+            var i, len;
+            ob.s = textDocument.fontSize;
+            ob.f = textDocument.font;
+            bm_sourceHelper.addFont(textDocument.font, textDocument.fontFamily, textDocument.fontStyle);
+            if(textDocument.allCaps){
+                ob.t = textDocument.text.toUpperCase();
+            } else {
+                ob.t = textDocument.text;
+            }
+            len = ob.t.length;
+            ob.j = getJustification(textDocument.justification);
+            ob.tr = textDocument.tracking;
+            if(textDocument.baselineLocs && textDocument.baselineLocs.length > 5){
+                ob.lh = textDocument.baselineLocs[5] - textDocument.baselineLocs[1];
+            } else {
+                ob.lh = ob.s*1.2;
+            }
             if (textDocument.applyFill) {
-                ob.of = textDocument.strokeOverFill;
+                len = textDocument.fillColor.length;
+                ob.fc = [];
+                for (i = 0; i < len; i += 1) {
+                    ob.fc[i] = Math.round(100*textDocument.fillColor[i])/100;
+                }
             }
+            if (textDocument.applyStroke) {
+                len = textDocument.strokeColor.length;
+                ob.sc = [];
+                for (i = 0; i < len; i += 1) {
+                    ob.sc[i] = Math.round(100*textDocument.strokeColor[i])/100;
+                }
+                ob.sw = textDocument.strokeWidth;
+                if (textDocument.applyFill) {
+                    ob.of = textDocument.strokeOverFill;
+                }
+            }
+            arr.push({s:ob,t:time*frameRate});
         }
+        bm_textShapeHelper.addTextLayer(layerInfo);
+
     }
     
     function exportTextPathData(pathOptions, ob, masksProperties, frameRate) {
@@ -103,7 +124,7 @@ var bm_textHelper = (function () {
             p: {},
             m: {}
         };
-        exportTextDocumentData(layerInfo, layerOb.t.d);
+        exportTextDocumentData(layerInfo, layerOb.t.d, frameRate);
         var textProperty = layerInfo.property("Text");
         
         var i, len = textProperty.numProperties;
