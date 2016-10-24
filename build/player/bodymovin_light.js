@@ -1469,6 +1469,46 @@ function dataFunctionManager(){
         }
     }
 
+    var checkText = (function(){
+        var minimumVersion = [4,4,14];
+
+        function updateTextLayer(textLayer){
+            var documentData = textLayer.t.d;
+            textLayer.t.d = {
+                k: [
+                    {
+                        s:documentData,
+                        t:0
+                    }
+                ]
+            }
+        }
+
+        function iterateLayers(layers){
+            var i, len = layers.length;
+            for(i=0;i<len;i+=1){
+                if(layers[i].ty === 5){
+                    updateTextLayer(layers[i]);
+                }
+            }
+        }
+
+        return function (animationData){
+            if(checkVersion(minimumVersion,animationData.v)){
+                iterateLayers(animationData.layers);
+                if(animationData.assets){
+                    var i, len = animationData.assets.length;
+                    for(i=0;i<len;i+=1){
+                        if(animationData.assets[i].layers){
+                            iterateLayers(animationData.assets[i].layers);
+
+                        }
+                    }
+                }
+            }
+        }
+    }())
+
     var checkColors = (function(){
         var minimumVersion = [4,1,9];
 
@@ -1686,206 +1726,213 @@ function dataFunctionManager(){
             return;
         }
         checkColors(animationData);
+        checkText(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
         //blitAnimation(animationData, animationData.assets, fontManager);
     }
 
     function completeText(data, fontManager){
-        var letters = [];
-        var documentData = data.t.d;
-        var i, len;
-        var newLineFlag, index = 0, val;
-        var anchorGrouping = data.t.m.g;
-        var currentSize = 0, currentPos = 0, currentLine = 0, lineWidths = [];
-        var lineWidth = 0;
-        var maxLineWidth = 0;
-        var j, jLen;
-        var fontData = fontManager.getFontByName(documentData.f);
-        var charData, cLength = 0;
-        var styles = fontData.fStyle.split(' ');
+        var letters;
+        var keys = data.t.d.k;
+        var k, kLen = keys.length;
+        for(k=0;k<kLen;k+=1){
+            var documentData = data.t.d.k[k].s;
+            letters = [];
+            var i, len;
+            var newLineFlag, index = 0, val;
+            var anchorGrouping = data.t.m.g;
+            var currentSize = 0, currentPos = 0, currentLine = 0, lineWidths = [];
+            var lineWidth = 0;
+            var maxLineWidth = 0;
+            var j, jLen;
+            var fontData = fontManager.getFontByName(documentData.f);
+            var charData, cLength = 0;
+            var styles = fontData.fStyle.split(' ');
 
-        var fWeight = 'normal', fStyle = 'normal';
-        len = styles.length;
-        for(i=0;i<len;i+=1){
-            if (styles[i].toLowerCase() === 'italic') {
-                fStyle = 'italic';
-            }else if (styles[i].toLowerCase() === 'bold') {
-                fWeight = '700';
-            } else if (styles[i].toLowerCase() === 'black') {
-                fWeight = '900';
-            } else if (styles[i].toLowerCase() === 'medium') {
-                fWeight = '500';
-            } else if (styles[i].toLowerCase() === 'regular' || styles[i].toLowerCase() === 'normal') {
-                fWeight = '400';
-            } else if (styles[i].toLowerCase() === 'light' || styles[i].toLowerCase() === 'thin') {
-                fWeight = '200';
-            }
-        }
-        documentData.fWeight = fWeight;
-        documentData.fStyle = fStyle;
-        len = documentData.t.length;
-        if(documentData.sz){
-            var boxWidth = documentData.sz[0];
-            var lastSpaceIndex = -1;
+            var fWeight = 'normal', fStyle = 'normal';
+            len = styles.length;
             for(i=0;i<len;i+=1){
+                if (styles[i].toLowerCase() === 'italic') {
+                    fStyle = 'italic';
+                }else if (styles[i].toLowerCase() === 'bold') {
+                    fWeight = '700';
+                } else if (styles[i].toLowerCase() === 'black') {
+                    fWeight = '900';
+                } else if (styles[i].toLowerCase() === 'medium') {
+                    fWeight = '500';
+                } else if (styles[i].toLowerCase() === 'regular' || styles[i].toLowerCase() === 'normal') {
+                    fWeight = '400';
+                } else if (styles[i].toLowerCase() === 'light' || styles[i].toLowerCase() === 'thin') {
+                    fWeight = '200';
+                }
+            }
+            documentData.fWeight = fWeight;
+            documentData.fStyle = fStyle;
+            len = documentData.t.length;
+            if(documentData.sz){
+                var boxWidth = documentData.sz[0];
+                var lastSpaceIndex = -1;
+                for(i=0;i<len;i+=1){
+                    newLineFlag = false;
+                    if(documentData.t.charAt(i) === ' '){
+                        lastSpaceIndex = i;
+                    }else if(documentData.t.charCodeAt(i) === 13){
+                        lineWidth = 0;
+                        newLineFlag = true;
+                    }
+                    if(fontManager.chars){
+                        charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
+                        cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                    }else{
+                        //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
+                        cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
+                    }
+                    if(lineWidth + cLength > boxWidth){
+                        if(lastSpaceIndex === -1){
+                            //i -= 1;
+                            documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i);
+                            len += 1;
+                        } else {
+                            i = lastSpaceIndex;
+                            documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
+                        }
+                        lastSpaceIndex = -1;
+                        lineWidth = 0;
+                    }else {
+                        lineWidth += cLength;
+                    }
+                }
+                len = documentData.t.length;
+            }
+            lineWidth = 0;
+            cLength = 0;
+            for (i = 0;i < len ;i += 1) {
                 newLineFlag = false;
                 if(documentData.t.charAt(i) === ' '){
-                    lastSpaceIndex = i;
+                    val = '\u00A0';
                 }else if(documentData.t.charCodeAt(i) === 13){
+                    lineWidths.push(lineWidth);
+                    maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
                     lineWidth = 0;
+                    val = '';
                     newLineFlag = true;
+                    currentLine += 1;
+                }else{
+                    val = documentData.t.charAt(i);
                 }
                 if(fontManager.chars){
-                    charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
+                    charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
                     cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
                 }else{
-                    //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
-                    cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
+                    //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
+                    //tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
+                    cLength = fontManager.measureText(val, documentData.f, documentData.s);
                 }
-                if(lineWidth + cLength > boxWidth){
-                    if(lastSpaceIndex === -1){
-                       //i -= 1;
-                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i);
-                        len += 1;
-                    } else {
-                        i = lastSpaceIndex;
-                        documentData.t = documentData.t.substr(0,i) + "\r" + documentData.t.substr(i+1);
-                    }
-                    lastSpaceIndex = -1;
-                    lineWidth = 0;
-                }else {
-                    lineWidth += cLength;
-                }
-            }
-            len = documentData.t.length;
-        }
-        lineWidth = 0;
-        cLength = 0;
-        for (i = 0;i < len ;i += 1) {
-            newLineFlag = false;
-            if(documentData.t.charAt(i) === ' '){
-                val = '\u00A0';
-            }else if(documentData.t.charCodeAt(i) === 13){
-                lineWidths.push(lineWidth);
-                maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
-                lineWidth = 0;
-                val = '';
-                newLineFlag = true;
-                currentLine += 1;
-            }else{
-                val = documentData.t.charAt(i);
-            }
-            if(fontManager.chars){
-                charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
-                cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
-            }else{
-                //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
-                //tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-                cLength = fontManager.measureText(val, documentData.f, documentData.s);
-            }
 
-            //
-            lineWidth += cLength;
-            letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
-            if(anchorGrouping == 2){
-                currentSize += cLength;
-                if(val == '' || val == '\u00A0' || i == len - 1){
-                    if(val == '' || val == '\u00A0'){
-                        currentSize -= cLength;
+                //
+                lineWidth += cLength;
+                letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
+                if(anchorGrouping == 2){
+                    currentSize += cLength;
+                    if(val == '' || val == '\u00A0' || i == len - 1){
+                        if(val == '' || val == '\u00A0'){
+                            currentSize -= cLength;
+                        }
+                        while(currentPos<=i){
+                            letters[currentPos].an = currentSize;
+                            letters[currentPos].ind = index;
+                            letters[currentPos].extra = cLength;
+                            currentPos += 1;
+                        }
+                        index += 1;
+                        currentSize = 0;
                     }
-                    while(currentPos<=i){
-                        letters[currentPos].an = currentSize;
-                        letters[currentPos].ind = index;
-                        letters[currentPos].extra = cLength;
-                        currentPos += 1;
+                }else if(anchorGrouping == 3){
+                    currentSize += cLength;
+                    if(val == '' || i == len - 1){
+                        if(val == ''){
+                            currentSize -= cLength;
+                        }
+                        while(currentPos<=i){
+                            letters[currentPos].an = currentSize;
+                            letters[currentPos].ind = index;
+                            letters[currentPos].extra = cLength;
+                            currentPos += 1;
+                        }
+                        currentSize = 0;
+                        index += 1;
                     }
-                    index += 1;
-                    currentSize = 0;
-                }
-            }else if(anchorGrouping == 3){
-                currentSize += cLength;
-                if(val == '' || i == len - 1){
-                    if(val == ''){
-                        currentSize -= cLength;
-                    }
-                    while(currentPos<=i){
-                        letters[currentPos].an = currentSize;
-                        letters[currentPos].ind = index;
-                        letters[currentPos].extra = cLength;
-                        currentPos += 1;
-                    }
-                    currentSize = 0;
+                }else{
+                    letters[index].ind = index;
+                    letters[index].extra = 0;
                     index += 1;
                 }
+            }
+            documentData.l = letters;
+            maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
+            lineWidths.push(lineWidth);
+            if(documentData.sz){
+                documentData.boxWidth = documentData.sz[0];
+                documentData.justifyOffset = 0;
             }else{
-                letters[index].ind = index;
-                letters[index].extra = 0;
-                index += 1;
+                documentData.boxWidth = maxLineWidth;
+                switch(documentData.j){
+                    case 1:
+                        documentData.justifyOffset = - documentData.boxWidth;
+                        break;
+                    case 2:
+                        documentData.justifyOffset = - documentData.boxWidth/2;
+                        break;
+                    default:
+                        documentData.justifyOffset = 0;
+                }
             }
-        }
-        documentData.l = letters;
-        maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
-        lineWidths.push(lineWidth);
-        if(documentData.sz){
-            documentData.boxWidth = documentData.sz[0];
-            data.t.d.justifyOffset = 0;
-        }else{
-            documentData.boxWidth = maxLineWidth;
-            switch(documentData.j){
-                case 1:
-                    data.t.d.justifyOffset = - documentData.boxWidth;
-                    break;
-                case 2:
-                    data.t.d.justifyOffset = - documentData.boxWidth/2;
-                    break;
-                default:
-                    data.t.d.justifyOffset = 0;
-            }
-        }
-        documentData.lineWidths = lineWidths;
+            documentData.lineWidths = lineWidths;
 
-        var animators = data.t.a;
-        jLen = animators.length;
-        var based, ind, indexes = [];
-        for(j=0;j<jLen;j+=1){
-            if(animators[j].a.sc){
-                documentData.strokeColorAnim = true;
-            }
-            if(animators[j].a.sw){
-                documentData.strokeWidthAnim = true;
-            }
-            if(animators[j].a.fc || animators[j].a.fh || animators[j].a.fs || animators[j].a.fb){
-                documentData.fillColorAnim = true;
-            }
-            ind = 0;
-            based = animators[j].s.b;
-            for(i=0;i<len;i+=1){
-                letters[i].anIndexes[j] = ind;
-                if((based == 1 && letters[i].val != '') || (based == 2 && letters[i].val != '' && letters[i].val != '\u00A0') || (based == 3 && (letters[i].n || letters[i].val == '\u00A0' || i == len - 1)) || (based == 4 && (letters[i].n || i == len - 1))){
-                    if(animators[j].s.rn === 1){
-                        indexes.push(ind);
+            var animators = data.t.a;
+            jLen = animators.length;
+            var based, ind, indexes = [];
+            for(j=0;j<jLen;j+=1){
+                if(animators[j].a.sc){
+                    documentData.strokeColorAnim = true;
+                }
+                if(animators[j].a.sw){
+                    documentData.strokeWidthAnim = true;
+                }
+                if(animators[j].a.fc || animators[j].a.fh || animators[j].a.fs || animators[j].a.fb){
+                    documentData.fillColorAnim = true;
+                }
+                ind = 0;
+                based = animators[j].s.b;
+                for(i=0;i<len;i+=1){
+                    letters[i].anIndexes[j] = ind;
+                    if((based == 1 && letters[i].val != '') || (based == 2 && letters[i].val != '' && letters[i].val != '\u00A0') || (based == 3 && (letters[i].n || letters[i].val == '\u00A0' || i == len - 1)) || (based == 4 && (letters[i].n || i == len - 1))){
+                        if(animators[j].s.rn === 1){
+                            indexes.push(ind);
+                        }
+                        ind += 1;
                     }
-                    ind += 1;
+                }
+                data.t.a[j].s.totalChars = ind;
+                var currentInd = -1, newInd;
+                if(animators[j].s.rn === 1){
+                    for(i = 0; i < len; i += 1){
+                        if(currentInd != letters[i].anIndexes[j]){
+                            currentInd = letters[i].anIndexes[j];
+                            newInd = indexes.splice(Math.floor(Math.random()*indexes.length),1)[0];
+                        }
+                        letters[i].anIndexes[j] = newInd;
+                    }
                 }
             }
-            data.t.a[j].s.totalChars = ind;
-            var currentInd = -1, newInd;
-            if(animators[j].s.rn === 1){
-                for(i = 0; i < len; i += 1){
-                    if(currentInd != letters[i].anIndexes[j]){
-                        currentInd = letters[i].anIndexes[j];
-                        newInd = indexes.splice(Math.floor(Math.random()*indexes.length),1)[0];
-                    }
-                    letters[i].anIndexes[j] = newInd;
-                }
+            if(jLen === 0 && !('m' in data.t.p)){
+                data.singleShape = true;
             }
+            documentData.yOffset = documentData.lh || documentData.s*1.2;
+            documentData.ascent = fontData.ascent*documentData.s/100;
         }
-        if(jLen === 0 && !('m' in data.t.p)){
-            data.singleShape = true;
-        }
-        documentData.yOffset = documentData.lh || documentData.s*1.2;
-        documentData.ascent = fontData.ascent*documentData.s/100;
+
     }
 
     var moduleOb = {};
@@ -2869,23 +2916,35 @@ var PropertyFactory = (function(){
                     if(mult<.5){
                         mult *= 2;
                     }else{
-                        mult = 1 - mult;
+                        mult = 1 - 2*(mult-0.5);
                     }
                 }
+                mult = easer(mult);
             }else if(type == 5){
                 if(e === s){
                     mult = ind >= e ? 0 : 1;
                 }else{
                     var tot = e - s;
-
-                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;
+                    /*ind += 0.5;
+                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
+                    ind = min(max(0,ind+0.5-s),e-s);
+                    var x = -tot/2+ind;
+                    var a = tot/2;
+                    mult = Math.sqrt(1 - (x*x)/(a*a));
                 }
+                mult = easer(mult);
             }else if(type == 6){
                 if(e === s){
                     mult = ind >= e ? 0 : 1;
                 }else{
-                    mult = (1+(Math.cos(Math.PI+Math.PI*2*(ind-s)/(e-s))+0))/2;
+                    ind = min(max(0,ind+0.5-s),e-s);
+                    mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
+                    /*
+                     ind = Math.min(Math.max(s,ind),e-1);
+                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
+                     mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
                 }
+                mult = easer(mult);
             }else {
                 if(ind >= floor(s)){
                     if(ind-s < 0){
@@ -2894,6 +2953,7 @@ var PropertyFactory = (function(){
                         mult = max(0,min(e-ind,1));
                     }
                 }
+                mult = easer(mult);
             }
             return mult*this.a.v;
         }
@@ -5022,9 +5082,10 @@ function ITextElement(data, animationItem,parentContainer,globalData){
 }
 ITextElement.prototype.init = function(){
     this._parent.init.call(this);
+
     this.lettersChangedFlag = false;
+    this.currentTextDocumentData = {};
     var data = this.data;
-    this.renderedLetters = Array.apply(null,{length:data.t.d.l ? data.t.d.l.length : 0});
     this.viewData = {
         m:{
             a: PropertyFactory.getProp(this,data.t.m.a,1,0,this.dynamicProperties)
@@ -5107,6 +5168,25 @@ ITextElement.prototype.init = function(){
         this.maskPath = false;
     }
 };
+ITextElement.prototype.prepareFrame = function(num) {
+    var i = 0, len = this.data.t.d.k.length;
+    var textDocumentData = this.data.t.d.k[i].s;
+    i += 1;
+    while(i<len){
+        if(this.data.t.d.k[i].t > num){
+            break;
+        }
+        textDocumentData = this.data.t.d.k[i].s;
+        i += 1;
+    }
+    this.lettersChangedFlag = false;
+    if(textDocumentData !== this.currentTextDocumentData){
+        this.currentTextDocumentData = textDocumentData;
+        this.lettersChangedFlag = true;
+        this.buildNewText();
+    }
+    this._parent.prepareFrame.call(this, num);
+}
 
 ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
     var j,jLen = shapes.length;
@@ -5134,7 +5214,7 @@ ITextElement.prototype.getMeasures = function(){
     var data = this.data;
     var xPos,yPos;
     var i, len;
-    var documentData = data.t.d;
+    var documentData = this.currentTextDocumentData;
     var letters = documentData.l;
     if(this.maskPath) {
         var mask = this.viewData.p.m;
@@ -5211,12 +5291,11 @@ ITextElement.prototype.getMeasures = function(){
     len = letters.length;
     xPos = 0;
     yPos = 0;
-    var yOff = data.t.d.s*1.2*.714;
+    var yOff = documentData.s*1.2*.714;
     var firstLine = true;
     var renderedData = this.viewData, animatorProps, animatorSelector;
     var j, jLen;
     var lettersValue = Array.apply(null,{length:len}), letterValue;
-    this.lettersChangedFlag = false;
 
     jLen = renderedData.a.length;
     var lastLetter;
@@ -5349,17 +5428,17 @@ ITextElement.prototype.getMeasures = function(){
             }
             lineLength += letters[i].l/2;
             if(documentData.strokeWidthAnim) {
-                sw = data.t.d.sw || 0;
+                sw = documentData.sw || 0;
             }
             if(documentData.strokeColorAnim) {
-                if(data.t.d.sc){
-                    sc = [data.t.d.sc[0], data.t.d.sc[1], data.t.d.sc[2]];
+                if(documentData.sc){
+                    sc = [documentData.sc[0], documentData.sc[1], documentData.sc[2]];
                 }else{
                     sc = [0,0,0];
                 }
             }
             if(documentData.fillColorAnim) {
-                fc = [data.t.d.fc[0], data.t.d.fc[1], data.t.d.fc[2]];
+                fc = [documentData.fc[0], documentData.fc[1], documentData.fc[2]];
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
@@ -5524,7 +5603,7 @@ ITextElement.prototype.getMeasures = function(){
                 currentLength -= renderedData.m.a.v[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
-                    currentLength += documentData.tr/1000*data.t.d.s;
+                    currentLength += documentData.tr/1000*documentData.s;
                 }
             }else{
 
@@ -5544,7 +5623,7 @@ ITextElement.prototype.getMeasures = function(){
                 }
                 matrixHelper.translate(offf,0,0);
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200,renderedData.m.a.v[1]*yOff/100,0);
-                xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
+                xPos += letters[i].l + documentData.tr/1000*documentData.s;
             }
             if(renderType === 'html'){
                 letterM = matrixHelper.toCSS();
@@ -5570,7 +5649,6 @@ ITextElement.prototype.getMeasures = function(){
                     letterValue = lastLetter;
                 }
             }
-
             this.renderedLetters[i] = letterValue;
         }
     }
@@ -5588,12 +5666,26 @@ createElement(SVGBaseElement, SVGTextElement);
 SVGTextElement.prototype.init = ITextElement.prototype.init;
 SVGTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
+SVGTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 
 SVGTextElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
-    var documentData = this.data.t.d;
 
+
+    if(this.data.ln){
+        this.layerElement.setAttribute('id',this.data.ln);
+    }
+    if(this.data.cl){
+        this.layerElement.setAttribute('class',this.data.cl);
+    }
+};
+
+SVGTextElement.prototype.buildNewText = function(){
+    var i, len;
+
+    var documentData = this.currentTextDocumentData;
+    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
     if(documentData.fc) {
         this.layerElement.setAttribute('fill', 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')');
     }else{
@@ -5613,7 +5705,6 @@ SVGTextElement.prototype.createElements = function(){
         this.layerElement.setAttribute('font-style', fStyle);
         this.layerElement.setAttribute('font-weight', fWeight);
     }
-    var i, len;
 
 
 
@@ -5628,14 +5719,16 @@ SVGTextElement.prototype.createElements = function(){
     if (singleShape) {
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
     }
+    var cnt = 0;
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
             if(!singleShape || i === 0){
-                tSpan = document.createElementNS(svgNS,'path');
+                tSpan = this.textSpans[cnt] ? this.textSpans[cnt] : document.createElementNS(svgNS,'path');
             }
         }else{
-            tSpan = document.createElementNS(svgNS,'text');
+            tSpan = this.textSpans[cnt] ? this.textSpans[cnt] : document.createElementNS(svgNS,'text');
         }
+        tSpan.style.display = 'inherit';
         tSpan.setAttribute('stroke-linecap', 'butt');
         tSpan.setAttribute('stroke-linejoin','round');
         tSpan.setAttribute('stroke-miterlimit','4');
@@ -5698,19 +5791,18 @@ SVGTextElement.prototype.createElements = function(){
             xPos += letters[i].l;
         }
         //
-        this.textSpans.push(tSpan);
+        this.textSpans[cnt] = tSpan;
+        cnt += 1;
     }
-    if(this.data.ln){
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    if(this.data.cl){
-        this.layerElement.setAttribute('class',this.data.cl);
+    while(cnt < this.textSpans.length){
+        this.textSpans[cnt].style.display = 'none';
+        cnt += 1;
     }
     if(singleShape && this.globalData.fontManager.chars){
         tSpan.setAttribute('d',shapeStr);
         this.layerElement.appendChild(tSpan);
     }
-};
+}
 
 SVGTextElement.prototype.hide = function(){
     if(!this.hidden){
@@ -5734,7 +5826,6 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     if(this.data.singleShape){
         return;
     }
-
     this.getMeasures();
     if(!this.lettersChangedFlag){
         return;
@@ -5742,7 +5833,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     var  i,len;
     var renderedLetters = this.renderedLetters;
 
-    var letters = this.data.t.d.l;
+    var letters = this.currentTextDocumentData.l;
 
     len = letters.length;
     var renderedLetter;
@@ -7515,4 +7606,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.15'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.16'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  

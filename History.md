@@ -1,3 +1,9 @@
+## V 4.4.16
+- support for text source keyframes
+- fix parented masked layers
+- new expressions
+- rect shape expressions interface
+
 ## V 4.4.15
 - new expressions
 - blend mode fix
