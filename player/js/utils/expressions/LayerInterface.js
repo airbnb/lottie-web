@@ -35,6 +35,7 @@ var LayerExpressionInterface = (function (){
                 case "ADBE Transform Group":
                     return transformInterface;
                 case 4:
+                case "ADBE Effect Parade":
                     return _thisLayerFunction.effect;
             }
         }

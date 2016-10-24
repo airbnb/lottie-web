@@ -159,6 +159,7 @@ var bm_effectsHelper = (function () {
         var ob = {};
         ob.ty = effectType;
         ob.nm = elem.name;
+        ob.mn = elem.matchName;
         ob.ix = elem.propertyIndex;
         ob.ef = [];
         var i, len = elem.numProperties, prop;
