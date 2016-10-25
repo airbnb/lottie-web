@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.18
+- standalone export fix
+
 ## V 4.4.17
 - expression support for effect and effect group match name
 
