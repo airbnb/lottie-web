@@ -57,35 +57,8 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 https://creative.adobe.com/addons/products/12557
 CC 2014 and up.
 
-If you need the latest latest version, you can still install it from here:
-
-### Option 1:
-
-- Close After Effects<br/>
-- Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
-WINDOWS:<br/>
-C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or<br/>
-C:\<username>\AppData\Roaming\Adobe\CEP\extensions<br/>
-MAC:<br/>
-/Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
-(you can open the terminal and type:<br/>
-cp -R YOURUNZIPEDFOLDERPATH/extension /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
-then type:<br/>
-ls /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
-to make sure it was copied correctly type)<br/>
-
-- Edit the registry key:<br/>
-WINDOWS:<br/>
-open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.<br/>
-MAC:<br/>
-open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
-
-### Option 2:
-
-Install the zxp manually following the instructions here:
-https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
-Skip directly to "Install third-party extensions"
-
+**Manual installation**  
+If you need the latest latest version, you can still install it from this repo by downloading the ZIP. Navigate to `/build/extension` and use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
 
 ### For both
 - Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
