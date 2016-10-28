@@ -631,6 +631,7 @@ var ExpressionManager = (function(){
                 this.mdf = true;
                 this.paths.length = 0;
                 this.paths[0] = this.v;
+                this.v.c = this.closed;
             }else{
                 /*if(!this.lastValue){
                 }*/
