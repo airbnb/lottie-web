@@ -253,12 +253,18 @@
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         var shapeProp = prop.ty === 'tm' ? prop.prop : prop;
         shapeProp.setGroupProperty = setGroupProperty;
+        var isAdded = prop.k;
         if(data.ix !== undefined){
             Object.defineProperty(shapeProp,'propertyIndex',{
                 get: function(){
                     return data.ix;
                 }
             })
+        }
+        var keys = type === 3 ? data.pt : data.ks;
+        searchExpressions(elem,keys,prop);
+        if(!isAdded && prop.x){
+            arr.push(prop);
         }
         return prop;
     }

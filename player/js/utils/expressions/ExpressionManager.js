@@ -602,7 +602,6 @@ var ExpressionManager = (function(){
                 velocity = velocityAtTime(time);
             }
             bindedFn();
-            //console.log(val,this.v);
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
@@ -630,6 +629,8 @@ var ExpressionManager = (function(){
             }else if(this.v.i){
                 // Todo Improve validation for masks and shapes
                 this.mdf = true;
+                this.paths.length = 0;
+                this.paths[0] = this.v;
             }else{
                 /*if(!this.lastValue){
                 }*/

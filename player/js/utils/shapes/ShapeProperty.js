@@ -3,6 +3,9 @@ var ShapePropertyFactory = (function(){
     var initFrame = -999999;
 
     function interpolateShape() {
+        if(this.elem.globalData.frameId === this.frameId){
+            return;
+        }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
@@ -112,6 +115,7 @@ var ShapePropertyFactory = (function(){
         }
 
         this.lastFrame = frameNum;
+        this.frameId = this.elem.globalData.frameId;
     }
 
     function getShapeValue(){
@@ -143,6 +147,7 @@ var ShapePropertyFactory = (function(){
 
     function KeyframedShapeProperty(elem,data,type){
         this.comp = elem.comp;
+        this.elem = elem;
         this.offsetTime = elem.data.st;
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
