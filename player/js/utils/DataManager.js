@@ -226,6 +226,84 @@ function dataFunctionManager(){
         }
     }());
 
+    var checkShapes = (function(){
+        var minimumVersion = [4,4,18];
+
+
+
+        function completeShapes(arr){
+            var i, len = arr.length;
+            var j, jLen;
+            var hasPaths = false;
+            for(i=len-1;i>=0;i-=1){
+                if(arr[i].ty == 'sh'){
+                    if(arr[i].ks.k.i){
+                        arr[i].ks.k.c = arr[i].closed;
+                    }else{
+                        jLen = arr[i].ks.k.length;
+                        for(j=0;j<jLen;j+=1){
+                            if(arr[i].ks.k[j].s){
+                                arr[i].ks.k[j].s[0].c = arr[i].closed;
+                            }
+                            if(arr[i].ks.k[j].e){
+                                arr[i].ks.k[j].e[0].c = arr[i].closed;
+                            }
+                        }
+                    }
+                    hasPaths = true;
+                }else if(arr[i].ty == 'gr'){
+                    completeShapes(arr[i].it);
+                }
+            }
+        }
+
+        function iterateLayers(layers){
+            var layerData;
+            var i, len = layers.length;
+            var j, jLen, k, kLen;
+            for(i=0;i<len;i+=1){
+                layerData = layers[i];
+                if(layerData.hasMask){
+                    var maskProps = layerData.masksProperties;
+                    jLen = maskProps.length;
+                    for(j=0;j<jLen;j+=1){
+                        if(maskProps[j].pt.k.i){
+                            maskProps[j].pt.k.c = maskProps[j].cl;
+                        }else{
+                            kLen = maskProps[j].pt.k.length;
+                            for(k=0;k<kLen;k+=1){
+                                if(maskProps[j].pt.k[k].s){
+                                    maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
+                                }
+                                if(maskProps[j].pt.k[k].e){
+                                    maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(layerData.ty === 4){
+                    completeShapes(layerData.shapes);
+                }
+            }
+        }
+
+        return function (animationData){
+            if(checkVersion(minimumVersion,animationData.v)){
+                iterateLayers(animationData.layers);
+                if(animationData.assets){
+                    var i, len = animationData.assets.length;
+                    for(i=0;i<len;i+=1){
+                        if(animationData.assets[i].layers){
+                            iterateLayers(animationData.assets[i].layers);
+
+                        }
+                    }
+                }
+            }
+        }
+    }());
+
     /*function blitPaths(path){
         var i, len = path.i.length;
         for(i=0;i<len;i+=1){
@@ -383,6 +461,7 @@ function dataFunctionManager(){
         }
         checkColors(animationData);
         checkText(animationData);
+        checkShapes(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
         //blitAnimation(animationData, animationData.assets, fontManager);

@@ -52,11 +52,13 @@ var bm_shapeHelper = (function () {
         }
     }
     
-    function reverseShape(ks, isClosed) {
+    function reverseShape(ks) {
         var newI = [], newO = [], newV = [];
-        var i, len;
+        var i, len,isClosed;
         if (ks.i) {
             var init = 0;
+            isClosed = ks.c;
+
             if (isClosed) {
                 newI[0] = ks.o[0];
                 newO[0] = ks.i[0];
@@ -79,8 +81,8 @@ var bm_shapeHelper = (function () {
         } else {
             len = ks.length;
             for (i = 0; i < len - 1; i += 1) {
-                reverseShape(ks[i].s[0], isClosed);
-                reverseShape(ks[i].e[0], isClosed);
+                reverseShape(ks[i].s[0]);
+                reverseShape(ks[i].e[0]);
             }
         }
     }
@@ -136,9 +138,10 @@ var bm_shapeHelper = (function () {
         }
     }
 
-    function addVertices(shape, closed, totalVertices){
+    function addVertices(shape, totalVertices){
         var iterations = [1,2,4,7,14, 28, 56, 112, 224, 448];
         var shapeVertices = shape.i.length;
+        var closed = shape.c;
         var sides = shapeVertices;
         var interpolatableSides = closed ? sides : sides - 1;
         var missingVertices = totalVertices - shapeVertices;
@@ -222,7 +225,7 @@ var bm_shapeHelper = (function () {
         shape.i = newI;
     }
 
-    function checkVertexCount(shape, closed){
+    function checkVertexCount(shape){
         if(shape.i){
             return;
         }
@@ -245,10 +248,10 @@ var bm_shapeHelper = (function () {
         }
         for (i = 0; i < len; i += 1) {
             if(shape[i].s && shape[i].s[0] && maxVertextCount !== shape[i].s[0].i.length){
-                addVertices(shape[i].s[0], closed, maxVertextCount);
+                addVertices(shape[i].s[0], maxVertextCount);
             }
             if(shape[i].e && shape[i].e[0] && maxVertextCount !== shape[i].e[0].i.length){
-                addVertices(shape[i].e[0], closed, maxVertextCount);
+                addVertices(shape[i].e[0], maxVertextCount);
             }
         }
     }
@@ -267,11 +270,10 @@ var bm_shapeHelper = (function () {
                     ob = {};
                     ob.ind = i;
                     ob.ty = itemType;
-                    ob.closed = prop.property('Path').value.closed;
                     ob.ks = bm_keyframeHelper.exportKeyframes(prop.property('Path'), frameRate);
-                    checkVertexCount(ob.ks.k, ob.closed);
+                    checkVertexCount(ob.ks.k);
                     if (prop.property("Shape Direction").value === 3) {
-                        reverseShape(ob.ks.k, ob.closed);
+                        reverseShape(ob.ks.k);
                     }
                     //bm_generalUtils.convertPathsToAbsoluteValues(ob.ks.k);
                 } else if (itemType === shapeItemTypes.rect && !isText) {

@@ -261,8 +261,11 @@
                 }
             })
         }
-        var keys = type === 3 ? data.pt : data.ks;
-        searchExpressions(elem,keys,prop);
+        if(type === 3){
+            searchExpressions(elem,data.pt,prop);
+        } else if(type === 4){
+            searchExpressions(elem,data.ks,prop);
+        }
         if(!isAdded && prop.x){
             arr.push(prop);
         }

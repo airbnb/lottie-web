@@ -10,7 +10,8 @@ var bm_keyframeHelper = (function () {
             var elem = {
                 i : roundFlag ? bm_generalUtils.roundNumber(value.inTangents, 3) :  value.inTangents,
                 o : roundFlag ? bm_generalUtils.roundNumber(value.outTangents, 3) : value.outTangents,
-                v : roundFlag ? bm_generalUtils.roundNumber(value.vertices, 3) : value.vertices
+                v : roundFlag ? bm_generalUtils.roundNumber(value.vertices, 3) : value.vertices,
+                c: value.closed
             };
             return elem;
         case PropertyValueType.COLOR:

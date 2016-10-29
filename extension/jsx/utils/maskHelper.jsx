@@ -35,12 +35,11 @@ var bm_maskHelper = (function () {
             maskElement = masks(i + 1);
             maskShape = maskElement.property('maskShape').value;
             var shapeData = {
-                cl: maskShape.closed,
                 inv: maskElement.inverted,
                 mode: getMaskMode(maskElement.maskMode)
             };
             shapeData.pt = bm_keyframeHelper.exportKeyframes(maskElement.property('maskShape'), frameRate);
-            bm_shapeHelper.checkVertexCount(shapeData.pt.k, shapeData.cl);
+            bm_shapeHelper.checkVertexCount(shapeData.pt.k);
             //bm_generalUtils.convertPathsToAbsoluteValues(shapeData.pt.k);
             shapeData.o = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Opacity'), frameRate);
             shapeData.x = bm_keyframeHelper.exportKeyframes(maskElement.property('Mask Expansion'), frameRate);

@@ -111,6 +111,7 @@ var ShapePropertyFactory = (function(){
             }
             this.mdf = hasModified;
             this.paths.length = 0;
+            this.v.c = keyPropS.c;
             this.paths[0] = this.v;
         }
 
@@ -135,12 +136,10 @@ var ShapePropertyFactory = (function(){
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
-        this.closed = type === 3 ? data.cl : data.closed;
         this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
         this.v = type === 3 ? data.pt.k : data.ks.k;
         this.getValue = getShapeValue;
         this.pv = this.v;
-        this.v.c = this.closed;
         this.paths = [this.v];
         this.reset = resetShape;
     }
@@ -152,7 +151,6 @@ var ShapePropertyFactory = (function(){
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
-        this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
         this.numNodes = len;
@@ -160,12 +158,13 @@ var ShapePropertyFactory = (function(){
             i: Array.apply(null,{length:len}),
             o: Array.apply(null,{length:len}),
             v: Array.apply(null,{length:len}),
-            c: this.closed
+            c: this.keyframes[0].s[0].c
         };
         this.pv = {
             i: Array.apply(null,{length:len}),
             o: Array.apply(null,{length:len}),
-            v: Array.apply(null,{length:len})
+            v: Array.apply(null,{length:len}),
+            c: this.keyframes[0].s[0].c
         };
         for(i=0;i<len;i+=1){
             this.v.i[i] = Array.apply(null,{length:jLen});
@@ -249,8 +248,6 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.paths = [];
-            data.closed = true;
-            this.closed = true;
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;
@@ -369,8 +366,6 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
-            data.closed = true;
-            this.closed = true;
             this.getValue = processKeys;
             this.reset = resetShape;
             if(data.sy === 1){
@@ -505,8 +500,6 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
-            data.closed = true;
-            this.closed = true;
             this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
             this.reset = resetShape;
