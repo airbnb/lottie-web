@@ -82,18 +82,18 @@ function dataFunctionManager(){
                 completeShapes(arr[i].it);
             }
         }
-        if(hasPaths){
+        /*if(hasPaths){
             //mx: distance
             //ss: sensitivity
             //dc: decay
-            /*arr.push({
+            arr.splice(arr.length-1,0,{
                 "ty": "ms",
                 "mx":20,
                 "ss":10,
                  "dc":0.001,
                 "maxDist":200
-            });*/
-        }
+            });
+        }*/
     }
 
     function convertPathsToAbsoluteValues(path){

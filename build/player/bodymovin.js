@@ -1430,13 +1430,13 @@ function dataFunctionManager(){
             //mx: distance
             //ss: sensitivity
             //dc: decay
-            /*arr.push({
+            arr.splice(arr.length-1,0,{
                 "ty": "ms",
                 "mx":20,
                 "ss":10,
                  "dc":0.001,
                 "maxDist":200
-            });*/
+            });
         }
     }
 
@@ -1550,6 +1550,84 @@ function dataFunctionManager(){
             for(i=0;i<len;i+=1){
                 if(layers[i].ty === 4){
                     iterateShapes(layers[i].shapes);
+                }
+            }
+        }
+
+        return function (animationData){
+            if(checkVersion(minimumVersion,animationData.v)){
+                iterateLayers(animationData.layers);
+                if(animationData.assets){
+                    var i, len = animationData.assets.length;
+                    for(i=0;i<len;i+=1){
+                        if(animationData.assets[i].layers){
+                            iterateLayers(animationData.assets[i].layers);
+
+                        }
+                    }
+                }
+            }
+        }
+    }());
+
+    var checkShapes = (function(){
+        var minimumVersion = [4,4,18];
+
+
+
+        function completeShapes(arr){
+            var i, len = arr.length;
+            var j, jLen;
+            var hasPaths = false;
+            for(i=len-1;i>=0;i-=1){
+                if(arr[i].ty == 'sh'){
+                    if(arr[i].ks.k.i){
+                        arr[i].ks.k.c = arr[i].closed;
+                    }else{
+                        jLen = arr[i].ks.k.length;
+                        for(j=0;j<jLen;j+=1){
+                            if(arr[i].ks.k[j].s){
+                                arr[i].ks.k[j].s[0].c = arr[i].closed;
+                            }
+                            if(arr[i].ks.k[j].e){
+                                arr[i].ks.k[j].e[0].c = arr[i].closed;
+                            }
+                        }
+                    }
+                    hasPaths = true;
+                }else if(arr[i].ty == 'gr'){
+                    completeShapes(arr[i].it);
+                }
+            }
+        }
+
+        function iterateLayers(layers){
+            var layerData;
+            var i, len = layers.length;
+            var j, jLen, k, kLen;
+            for(i=0;i<len;i+=1){
+                layerData = layers[i];
+                if(layerData.hasMask){
+                    var maskProps = layerData.masksProperties;
+                    jLen = maskProps.length;
+                    for(j=0;j<jLen;j+=1){
+                        if(maskProps[j].pt.k.i){
+                            maskProps[j].pt.k.c = maskProps[j].cl;
+                        }else{
+                            kLen = maskProps[j].pt.k.length;
+                            for(k=0;k<kLen;k+=1){
+                                if(maskProps[j].pt.k[k].s){
+                                    maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
+                                }
+                                if(maskProps[j].pt.k[k].e){
+                                    maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(layerData.ty === 4){
+                    completeShapes(layerData.shapes);
                 }
             }
         }
@@ -1727,6 +1805,7 @@ function dataFunctionManager(){
         }
         checkColors(animationData);
         checkText(animationData);
+        checkShapes(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
         //blitAnimation(animationData, animationData.assets, fontManager);
@@ -3002,6 +3081,9 @@ var ShapePropertyFactory = (function(){
     var initFrame = -999999;
 
     function interpolateShape() {
+        if(this.elem.globalData.frameId === this.frameId){
+            return;
+        }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
@@ -3107,10 +3189,12 @@ var ShapePropertyFactory = (function(){
             }
             this.mdf = hasModified;
             this.paths.length = 0;
+            this.v.c = keyPropS.c;
             this.paths[0] = this.v;
         }
 
         this.lastFrame = frameNum;
+        this.frameId = this.elem.globalData.frameId;
     }
 
     function getShapeValue(){
@@ -3130,23 +3214,21 @@ var ShapePropertyFactory = (function(){
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
-        this.closed = type === 3 ? data.cl : data.closed;
         this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
         this.v = type === 3 ? data.pt.k : data.ks.k;
         this.getValue = getShapeValue;
         this.pv = this.v;
-        this.v.c = this.closed;
         this.paths = [this.v];
         this.reset = resetShape;
     }
 
     function KeyframedShapeProperty(elem,data,type){
         this.comp = elem.comp;
+        this.elem = elem;
         this.offsetTime = elem.data.st;
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
-        this.closed = type === 3 ? data.cl : data.closed;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
         this.numNodes = len;
@@ -3154,12 +3236,13 @@ var ShapePropertyFactory = (function(){
             i: Array.apply(null,{length:len}),
             o: Array.apply(null,{length:len}),
             v: Array.apply(null,{length:len}),
-            c: this.closed
+            c: this.keyframes[0].s[0].c
         };
         this.pv = {
             i: Array.apply(null,{length:len}),
             o: Array.apply(null,{length:len}),
-            v: Array.apply(null,{length:len})
+            v: Array.apply(null,{length:len}),
+            c: this.keyframes[0].s[0].c
         };
         for(i=0;i<len;i+=1){
             this.v.i[i] = Array.apply(null,{length:jLen});
@@ -3243,8 +3326,6 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.paths = [];
-            data.closed = true;
-            this.closed = true;
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;
@@ -3363,8 +3444,6 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
-            data.closed = true;
-            this.closed = true;
             this.getValue = processKeys;
             this.reset = resetShape;
             if(data.sy === 1){
@@ -3499,8 +3578,6 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.mdf = false;
-            data.closed = true;
-            this.closed = true;
             this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
             this.reset = resetShape;
@@ -3725,7 +3802,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 var lastPos;
                 newShapes.push(newShapeData);
                 if(segments.length > 1){
-                    if(shapeData.shape.closed){
+                    if(shapeData.shape.v.c){
                         this.addShapes(shapeData,segments[1], newShapeData);
                     } else {
                         newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
@@ -3813,6 +3890,235 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
 
 
 ShapeModifiers.registerModifier('tm',TrimModifier);
+function MouseModifier(){};
+extendPrototype(ShapeModifier,MouseModifier);
+MouseModifier.prototype.processKeys = function(forceRender){
+    if(this.elem.globalData.frameId === this.frameId && !forceRender){
+        return;
+    }
+    this.mdf = true;
+
+};
+
+MouseModifier.prototype.addShapeToModifier = function(){
+    this.positions.push([]);
+};
+
+MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
+    var i, len = path.v.length;
+    var vValues = [],oValues = [],iValues = [];
+    var dist;
+    //console.log(mouseCoords);
+    var theta, x,y;
+    //// OPTION A
+    for(i=0;i<len;i+=1){
+        if(!positions.v[i]){
+            positions.v[i] = [path.v[i][0],path.v[i][1]];
+            positions.o[i] = [path.o[i][0],path.o[i][1]];
+            positions.i[i] = [path.i[i][0],path.i[i][1]];
+            positions.distV[i] = 0;
+            positions.distO[i] = 0;
+            positions.distI[i] = 0;
+
+        }
+        theta = Math.atan2(
+            path.v[i][1] - mouseCoords[1],
+            path.v[i][0] - mouseCoords[0]
+        );
+
+        x = mouseCoords[0] - positions.v[i][0];
+        y = mouseCoords[1] - positions.v[i][1];
+        var distance = Math.sqrt( (x * x) + (y * y) );
+        positions.distV[i] += (distance - positions.distV[i]) * this.data.dc;
+
+        positions.v[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][0]);
+        positions.v[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
+
+
+        theta = Math.atan2(
+            path.o[i][1] - mouseCoords[1],
+            path.o[i][0] - mouseCoords[0]
+        );
+
+        x = mouseCoords[0] - positions.o[i][0];
+        y = mouseCoords[1] - positions.o[i][1];
+        var distance = Math.sqrt( (x * x) + (y * y) );
+        positions.distO[i] += (distance - positions.distO[i]) * this.data.dc;
+
+        positions.o[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][0]);
+        positions.o[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
+
+
+        theta = Math.atan2(
+            path.i[i][1] - mouseCoords[1],
+            path.i[i][0] - mouseCoords[0]
+        );
+
+        x = mouseCoords[0] - positions.i[i][0];
+        y = mouseCoords[1] - positions.i[i][1];
+        var distance = Math.sqrt( (x * x) + (y * y) );
+        positions.distI[i] += (distance - positions.distI[i]) * this.data.dc;
+
+        positions.i[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
+        positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
+
+        /////OPTION 1
+        vValues.push(positions.v[i]);
+         oValues.push(positions.o[i]);
+         iValues.push(positions.i[i]);
+
+
+
+        /////OPTION 2
+        //vValues.push(positions.v[i]);
+        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
+        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
+
+
+
+        /////OPTION 3
+        //vValues.push(positions.v[i]);
+        //iValues.push(path.i[i]);
+        //oValues.push(path.o[i]);
+
+
+        /////OPTION 4
+        //vValues.push(path.v[i]);
+         //oValues.push(positions.o[i]);
+         //iValues.push(positions.i[i]);
+    }
+
+
+
+    //// OPTION B
+    /*for(i=0;i<len;i+=1){
+        if(!positions.v[i]){
+            positions.v[i] = [path.v[i][0],path.v[i][1]];
+            positions.o[i] = [path.o[i][0],path.o[i][1]];
+            positions.i[i] = [path.i[i][0],path.i[i][1]];
+            positions.distV[i] = 0;
+
+        }
+        theta = Math.atan2(
+            positions.v[i][1] - mouseCoords[1],
+            positions.v[i][0] - mouseCoords[0]
+        );
+        x = mouseCoords[0] - positions.v[i][0];
+        y = mouseCoords[1] - positions.v[i][1];
+        var distance = this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
+
+        positions.v[i][0] += Math.cos(theta) * distance + (path.v[i][0] - positions.v[i][0]) * this.data.dc;
+        positions.v[i][1] += Math.sin(theta) * distance + (path.v[i][1] - positions.v[i][1]) * this.data.dc;
+
+
+        theta = Math.atan2(
+            positions.o[i][1] - mouseCoords[1],
+            positions.o[i][0] - mouseCoords[0]
+        );
+        x = mouseCoords[0] - positions.o[i][0];
+        y = mouseCoords[1] - positions.o[i][1];
+        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
+
+        positions.o[i][0] += Math.cos(theta) * distance + (path.o[i][0] - positions.o[i][0]) * this.data.dc;
+        positions.o[i][1] += Math.sin(theta) * distance + (path.o[i][1] - positions.o[i][1]) * this.data.dc;
+
+
+        theta = Math.atan2(
+            positions.i[i][1] - mouseCoords[1],
+            positions.i[i][0] - mouseCoords[0]
+        );
+        x = mouseCoords[0] - positions.i[i][0];
+        y = mouseCoords[1] - positions.i[i][1];
+        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
+
+        positions.i[i][0] += Math.cos(theta) * distance + (path.i[i][0] - positions.i[i][0]) * this.data.dc;
+        positions.i[i][1] += Math.sin(theta) * distance + (path.i[i][1] - positions.i[i][1]) * this.data.dc;
+
+        /////OPTION 1
+        //vValues.push(positions.v[i]);
+        // oValues.push(positions.o[i]);
+        // iValues.push(positions.i[i]);
+
+
+
+        /////OPTION 2
+        //vValues.push(positions.v[i]);
+        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
+        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
+
+
+
+        /////OPTION 3
+        //vValues.push(positions.v[i]);
+        //iValues.push(path.i[i]);
+        //oValues.push(path.o[i]);
+
+
+        /////OPTION 4
+        //vValues.push(path.v[i]);
+        // oValues.push(positions.o[i]);
+        // iValues.push(positions.i[i]);
+    }*/
+
+
+    return {
+        v:vValues,
+        o:oValues,
+        i:iValues,
+        c:path.c
+    };
+}
+
+MouseModifier.prototype.processShapes = function(){
+    var mouseX = this.elem.globalData.mouseX;
+    var mouseY = this.elem.globalData.mouseY;
+    var shapePaths;
+    var i, len = this.shapes.length;
+    var j, jLen;
+
+    if(mouseX){
+        var localMouseCoords = this.elem.globalToLocal([mouseX,mouseY,0]);
+
+        var shapeData, newPaths = [];
+        for(i=0;i<len;i+=1){
+            shapeData = this.shapes[i];
+            if(!shapeData.shape.mdf && !this.mdf){
+                shapeData.shape.paths = shapeData.last;
+            } else {
+                shapeData.shape.mdf = true;
+                shapePaths = shapeData.shape.paths;
+                jLen = shapePaths.length;
+                for(j=0;j<jLen;j+=1){
+                    if(!this.positions[i][j]){
+                        this.positions[i][j] = {
+                            v:[],
+                            o:[],
+                            i:[],
+                            distV:[],
+                            distO:[],
+                            distI:[]
+                        };
+                    }
+                    newPaths.push(this.processPath(shapePaths[j],localMouseCoords, this.positions[i][j]));
+                }
+                shapeData.shape.paths = newPaths;
+                shapeData.last = newPaths;
+            }
+        }
+
+    }
+
+}
+
+MouseModifier.prototype.initModifierProperties = function(elem,data){
+    this.getValue = this.processKeys;
+    this.data = data;
+    this.positions = [];
+};
+
+
+
+ShapeModifiers.registerModifier('ms',MouseModifier);
 function RoundCornersModifier(){};
 extendPrototype(ShapeModifier,RoundCornersModifier);
 RoundCornersModifier.prototype.processKeys = function(forceRender){
@@ -7133,6 +7439,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     }
     //this.totalFrames = 50;
     //this.animationData.tf = 50;
+    this.animationData.__complete = false;
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin){
@@ -7987,7 +8294,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
         var i = 0;
         var nextElement;
         while(i<pos){
-            if(this.elements[i] && this.elements[i].getBaseElement()){
+            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
                 nextElement = this.elements[i].getBaseElement();
             }
             i += 1;
@@ -10128,7 +10435,7 @@ expressionsPlugin = Expressions;
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
         offsetTime = offsetTime === undefined ? this.offsetTime : 0;
-        //console.log(this.offsetTime);
+        console.log(frameNum,this.offsetTime);
         var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
 
         while(flag){
@@ -10371,14 +10678,22 @@ expressionsPlugin = Expressions;
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        var shapeProp = prop.ty === 'tm' ? prop.prop : prop;
-        shapeProp.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = setGroupProperty;
+        var isAdded = prop.k;
         if(data.ix !== undefined){
-            Object.defineProperty(shapeProp,'propertyIndex',{
+            Object.defineProperty(prop,'propertyIndex',{
                 get: function(){
                     return data.ix;
                 }
             })
+        }
+        if(type === 3){
+            searchExpressions(elem,data.pt,prop);
+        } else if(type === 4){
+            searchExpressions(elem,data.ks,prop);
+        }
+        if(!isAdded && prop.x){
+            arr.push(prop);
         }
         return prop;
     }
@@ -10754,12 +11069,12 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
-                        return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                        return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame);
-                    var endV = this.getValueAtTime(lastKeyFrame);
-                    var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                    var initV = this.getValueAtTime(firstKeyFrame,0);
+                    var endV = this.getValueAtTime(lastKeyFrame, 0);
+                    var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
                     var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
                     if(this.pv.length){
                         ret = new Array(initV.length);
@@ -10771,8 +11086,8 @@ var ExpressionManager = (function(){
                     }
                     return current-(endV-initV)*repeats;
                 } else if(type === 'continue'){
-                    var firstValue = this.getValueAtTime(firstKeyFrame);
-                    var nextFirstValue = this.getValueAtTime(firstKeyFrame + 0.001);
+                    var firstValue = this.getValueAtTime(firstKeyFrame, 0);
+                    var nextFirstValue = this.getValueAtTime(firstKeyFrame + 0.001, 0);
                     if(this.pv.length){
                         ret = new Array(firstValue.length);
                         len = ret.length;
@@ -10783,7 +11098,7 @@ var ExpressionManager = (function(){
                     }
                     return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.0005;
                 }
-                return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
             }
         }.bind(this);
 
@@ -10820,12 +11135,12 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
-                        return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                        return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame);
-                    var endV = this.getValueAtTime(lastKeyFrame);
-                    var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                    var initV = this.getValueAtTime(firstKeyFrame, 0);
+                    var endV = this.getValueAtTime(lastKeyFrame, 0);
+                    var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
                     var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(this.pv.length){
                         ret = new Array(initV.length);
@@ -10837,8 +11152,8 @@ var ExpressionManager = (function(){
                     }
                     return (endV-initV)*repeats + current;
                 } else if(type === 'continue'){
-                    var lastValue = this.getValueAtTime(lastKeyFrame);
-                    var nextLastValue = this.getValueAtTime(lastKeyFrame - 0.001);
+                    var lastValue = this.getValueAtTime(lastKeyFrame, 0);
+                    var nextLastValue = this.getValueAtTime(lastKeyFrame - 0.001, 0);
                     if(this.pv.length){
                         ret = new Array(lastValue.length);
                         len = ret.length;
@@ -10849,7 +11164,8 @@ var ExpressionManager = (function(){
                     }
                     return lastValue + (lastValue-nextLastValue)*(currentFrame - lastKeyFrame)/0.0005;
                 }
-                return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                //console.log('pos:',firstKeyFrame);
+                return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
             }
         }.bind(this);
         var loop_out = loopOut;
@@ -10996,7 +11312,6 @@ var ExpressionManager = (function(){
                 velocity = velocityAtTime(time);
             }
             bindedFn();
-            //console.log(val,this.v);
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
@@ -11024,6 +11339,8 @@ var ExpressionManager = (function(){
             }else if(this.v.i){
                 // Todo Improve validation for masks and shapes
                 this.mdf = true;
+                this.paths.length = 0;
+                this.paths[0] = this.v;
             }else{
                 /*if(!this.lastValue){
                 }*/
@@ -12092,4 +12409,4 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 break;
         }
     }
-};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.18'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.19'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  

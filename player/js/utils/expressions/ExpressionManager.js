@@ -360,12 +360,12 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
-                        return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                        return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame);
-                    var endV = this.getValueAtTime(lastKeyFrame);
-                    var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                    var initV = this.getValueAtTime(firstKeyFrame, 0);
+                    var endV = this.getValueAtTime(lastKeyFrame, 0);
+                    var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
                     var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
                     if(this.pv.length){
                         ret = new Array(initV.length);
@@ -377,8 +377,8 @@ var ExpressionManager = (function(){
                     }
                     return current-(endV-initV)*repeats;
                 } else if(type === 'continue'){
-                    var firstValue = this.getValueAtTime(firstKeyFrame);
-                    var nextFirstValue = this.getValueAtTime(firstKeyFrame + 0.001);
+                    var firstValue = this.getValueAtTime(firstKeyFrame, 0);
+                    var nextFirstValue = this.getValueAtTime(firstKeyFrame + 0.001, 0);
                     if(this.pv.length){
                         ret = new Array(firstValue.length);
                         len = ret.length;
@@ -389,7 +389,7 @@ var ExpressionManager = (function(){
                     }
                     return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.0005;
                 }
-                return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
             }
         }.bind(this);
 
@@ -426,12 +426,12 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
-                        return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                        return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame);
-                    var endV = this.getValueAtTime(lastKeyFrame);
-                    var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                    var initV = this.getValueAtTime(firstKeyFrame, 0);
+                    var endV = this.getValueAtTime(lastKeyFrame, 0);
+                    var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
                     var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(this.pv.length){
                         ret = new Array(initV.length);
@@ -443,8 +443,8 @@ var ExpressionManager = (function(){
                     }
                     return (endV-initV)*repeats + current;
                 } else if(type === 'continue'){
-                    var lastValue = this.getValueAtTime(lastKeyFrame);
-                    var nextLastValue = this.getValueAtTime(lastKeyFrame - 0.001);
+                    var lastValue = this.getValueAtTime(lastKeyFrame, 0);
+                    var nextLastValue = this.getValueAtTime(lastKeyFrame - 0.001, 0);
                     if(this.pv.length){
                         ret = new Array(lastValue.length);
                         len = ret.length;
@@ -455,7 +455,8 @@ var ExpressionManager = (function(){
                     }
                     return lastValue + (lastValue-nextLastValue)*(currentFrame - lastKeyFrame)/0.0005;
                 }
-                return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                console.log('paso');
+                return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
             }
         }.bind(this);
         var loop_out = loopOut;
