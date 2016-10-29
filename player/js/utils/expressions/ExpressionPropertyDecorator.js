@@ -251,11 +251,10 @@
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        var shapeProp = prop.ty === 'tm' ? prop.prop : prop;
-        shapeProp.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = setGroupProperty;
         var isAdded = prop.k;
         if(data.ix !== undefined){
-            Object.defineProperty(shapeProp,'propertyIndex',{
+            Object.defineProperty(prop,'propertyIndex',{
                 get: function(){
                     return data.ix;
                 }
