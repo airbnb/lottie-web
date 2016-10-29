@@ -136,7 +136,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 var lastPos;
                 newShapes.push(newShapeData);
                 if(segments.length > 1){
-                    if(shapeData.shape.closed){
+                    if(shapeData.shape.v.c){
                         this.addShapes(shapeData,segments[1], newShapeData);
                     } else {
                         newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
