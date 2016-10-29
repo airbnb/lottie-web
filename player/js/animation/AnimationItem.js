@@ -168,6 +168,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     }
     //this.totalFrames = 50;
     //this.animationData.tf = 50;
+    this.animationData.__complete = false;
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin){
