@@ -1,3 +1,6 @@
+## V 4.4.20
+- previous versions masks fix
+
 ## V 4.4.19
 - getValueAtTime expression fix
 - shape and mask expression support

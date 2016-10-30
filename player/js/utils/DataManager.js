@@ -276,7 +276,7 @@ function dataFunctionManager(){
                                     maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
                                 }
                                 if(maskProps[j].pt.k[k].e){
-                                    maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
+                                    maskProps[j].pt.k[k].e[0].c = maskProps[j].cl;
                                 }
                             }
                         }
