@@ -455,7 +455,6 @@ var ExpressionManager = (function(){
                     }
                     return lastValue + (lastValue-nextLastValue)*(currentFrame - lastKeyFrame)/0.0005;
                 }
-                console.log('paso');
                 return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
             }
         }.bind(this);

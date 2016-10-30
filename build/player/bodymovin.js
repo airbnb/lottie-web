@@ -1426,7 +1426,7 @@ function dataFunctionManager(){
                 completeShapes(arr[i].it);
             }
         }
-        if(hasPaths){
+        /*if(hasPaths){
             //mx: distance
             //ss: sensitivity
             //dc: decay
@@ -1437,7 +1437,7 @@ function dataFunctionManager(){
                  "dc":0.001,
                 "maxDist":200
             });
-        }
+        }*/
     }
 
     function convertPathsToAbsoluteValues(path){
@@ -10435,7 +10435,7 @@ expressionsPlugin = Expressions;
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
         offsetTime = offsetTime === undefined ? this.offsetTime : 0;
-        console.log(frameNum,this.offsetTime);
+        //console.log(this.offsetTime);
         var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
 
         while(flag){
@@ -11072,7 +11072,7 @@ var ExpressionManager = (function(){
                         return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame,0);
+                    var initV = this.getValueAtTime(firstKeyFrame, 0);
                     var endV = this.getValueAtTime(lastKeyFrame, 0);
                     var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame, 0);
                     var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
@@ -11164,7 +11164,6 @@ var ExpressionManager = (function(){
                     }
                     return lastValue + (lastValue-nextLastValue)*(currentFrame - lastKeyFrame)/0.0005;
                 }
-                //console.log('pos:',firstKeyFrame);
                 return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame, 0);
             }
         }.bind(this);

@@ -1426,7 +1426,7 @@ function dataFunctionManager(){
                 completeShapes(arr[i].it);
             }
         }
-        if(hasPaths){
+        /*if(hasPaths){
             //mx: distance
             //ss: sensitivity
             //dc: decay
@@ -1437,7 +1437,7 @@ function dataFunctionManager(){
                  "dc":0.001,
                 "maxDist":200
             });
-        }
+        }*/
     }
 
     function convertPathsToAbsoluteValues(path){

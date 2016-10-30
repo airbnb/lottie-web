@@ -1,3 +1,9 @@
+## V 4.4.19
+- getValueAtTime expression fix
+- shape and mask expression support
+- open and close shapes support per keyframe
+- html renderer cyclic fix
+
 ## V 4.4.18
 - standalone export fix
 

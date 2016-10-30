@@ -113,12 +113,6 @@
         path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
-    function initLoop(){
-        anim.loop = true;
-        anim.playSegments([294,323]);
-        anim.removeEventListener('complete',initLoop);
-    }
-    anim.addEventListener('complete',initLoop);
 
 </script>
 </body>

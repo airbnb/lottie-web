@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.19
+- getValueAtTime expression fix
+- shape and mask expression support
+- open and close shapes support per keyframe
+- html renderer cyclic fix
+
 ## V 4.4.18
 - standalone export fix
 
@@ -48,10 +54,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - hidden guided layers and parenting restore
 - split animations export resetting segments
 
-## V 4.4.7
-- Performance improvement
-- Stroke gradient support
-
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
@@ -59,7 +61,12 @@ CC 2014 and up.
 
 If you need the latest latest version, you can still install it from here:
 
-### Option 1:
+### Option 1 (Recommended):
+- download the ZIP from the repo.
+- Extract content and get the .zxp file from '/build/extension'
+- Use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
+
+### Option 2:
 
 - Close After Effects<br/>
 - Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
@@ -80,14 +87,14 @@ open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key name
 MAC:<br/>
 open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
 
-### Option 2:
+### Option 3:
 
 Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
 Skip directly to "Install third-party extensions"
 
 
-### For both
+### For all of them
 - Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
 ## How it works
@@ -242,11 +249,7 @@ my email is **hernantorrisi@gmail.com**
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
 
 ## Notes
-- If you want to modify the parser or the player, there are some gulp commands that can simplify the task
-- look at the great animations exported on the demo folder
-- gzipping the animation jsons and the player have a huge impact on the filesize. I recommend doing it if you use it for a project.
+- If you want to modify the parser or the player, there are some gulp commands that can simplify the task  
+- look at the great animations exported on codepen [See examples on codepen.](http://codepen.io/collection/nVYWZR/)
+- gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
 
-## Coming up
-- Exporting images in a sprite
-- Stroke Effect support
-- Experimenting with the webAnimationAPI export
