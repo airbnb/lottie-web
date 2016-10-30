@@ -67,9 +67,6 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
     }
     this.lastNum = this.currentFrameNum;
 
-    if(this.data.hasMask){
-        this.maskManager.renderFrame();
-    }
     this.finalTransform.opMdf = this.finalTransform.op.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;
@@ -100,6 +97,9 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
                 finalMat.cloneFromProps(mat);
             }
         }
+    }
+    if(this.data.hasMask){
+        this.maskManager.renderFrame(finalMat);
     }
 
     if(parentTransform){

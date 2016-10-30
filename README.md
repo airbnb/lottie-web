@@ -249,7 +249,7 @@ my email is **hernantorrisi@gmail.com**
 - **No layer stretching**! No idea why, but stretching a layer messes with all the data.
 
 ## Notes
-- If you want to modify the parser or the player, there are some gulp commands that can simplify the task  
+- If you want to modify the parser or the player, there are some gulp commands that can simplify the task
 - look at the great animations exported on codepen [See examples on codepen.](http://codepen.io/collection/nVYWZR/)
 - gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
 
