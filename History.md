@@ -1,3 +1,6 @@
+## V 4.4.21
+- stroke effect improvement
+
 ## V 4.4.20
 - previous versions masks fix
 

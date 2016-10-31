@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.21
+- stroke effect improvement
+
 ## V 4.4.20
 - previous versions masks fix
 

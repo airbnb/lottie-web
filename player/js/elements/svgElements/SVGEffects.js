@@ -126,19 +126,16 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
         this.initialize();
     }
     var mask = this.elem.maskManager.viewData[Math.max(this.filterManager.effectElements[0].p.v,1) - 1];
-    /*if(!mask){
-        console.log(this.filterManager.effectElements);
-    }*/
+
     if(forceRender || this.filterManager.mdf || mask.prop.mdf){
         this.pathMasker.setAttribute('d',mask.lastPath);
-        //this.pathMasker
     }
     if(forceRender || this.filterManager.effectElements[9].p.mdf || this.filterManager.effectElements[4].p.mdf || this.filterManager.effectElements[7].p.mdf || this.filterManager.effectElements[8].p.mdf || mask.prop.mdf){
         var dasharrayValue;
         if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100){
             var s = Math.min(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
             var e = Math.max(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
-            var l = mask.elem.getTotalLength();
+            var l = this.pathMasker.getTotalLength();
             dasharrayValue = '0 0 0 ' + l*s + ' ';
             var lineLength = l*(e-s);
             var segment = 1+this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;

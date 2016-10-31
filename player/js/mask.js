@@ -197,7 +197,6 @@ MaskElement.prototype.createLayerSolidPath = function(){
 
 MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     var pathString = '';
-    if(pathNodes.c){
     var i, len;
     len = pathNodes.v.length;
     for(i=1;i<len;i+=1){
@@ -208,15 +207,18 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
         pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[i][0])+','+bm_rnd(pathNodes.i[i][1]) + " "+bm_rnd(pathNodes.v[i][0])+','+bm_rnd(pathNodes.v[i][1]);
     }
-    //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-    pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[0][0])+','+bm_rnd(pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
+        //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+    if(pathNodes.c){
+        pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[0][0])+','+bm_rnd(pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
     }
     //pathNodes.__renderedString = pathString;
 
 
     if(viewData.lastPath !== pathString){
         if(viewData.elem){
-            if(pathData.inv){
+            if(!pathNodes.c){
+                viewData.elem.setAttribute('d','');
+            }else if(pathData.inv){
                 viewData.elem.setAttribute('d',this.solidPath + pathString);
             }else{
                 viewData.elem.setAttribute('d',pathString);
