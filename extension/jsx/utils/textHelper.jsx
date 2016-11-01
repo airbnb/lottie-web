@@ -61,7 +61,11 @@ var bm_textHelper = (function () {
             ob.j = getJustification(textDocument.justification);
             ob.tr = textDocument.tracking;
             if(textDocument.baselineLocs && textDocument.baselineLocs.length > 5){
-                ob.lh = textDocument.baselineLocs[5] - textDocument.baselineLocs[1];
+                if(textDocument.baselineLocs[5] > textDocument.baselineLocs[1]){
+                    ob.lh = textDocument.baselineLocs[5] - textDocument.baselineLocs[1];
+                } else {
+                    ob.lh = ob.s*1.2;
+                }
             } else {
                 ob.lh = ob.s*1.2;
             }

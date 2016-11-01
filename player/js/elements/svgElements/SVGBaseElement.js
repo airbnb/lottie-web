@@ -172,7 +172,6 @@ SVGBaseElement.prototype.createElements = function(){
         }
     }*/
     if(this.data.ef){
-        console.log('paso1');
         this.effectsManager = new SVGEffects(this);
     }
     this.checkParenting();
