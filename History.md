@@ -1,3 +1,6 @@
+## V 4.4.22
+- text layer defaulting line height value when first char is new line
+
 ## V 4.4.21
 - stroke effect improvement
 
