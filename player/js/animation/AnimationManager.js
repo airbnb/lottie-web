@@ -9,7 +9,6 @@ var animationManager = (function(){
     function removeElement(ev){
         var i = 0;
         var animItem = ev.target;
-        animItem.removeEventListener('destroy',removeElement);
         while(i<len) {
             if (registeredAnimations[i].animation === animItem) {
                 registeredAnimations.splice(i, 1);

@@ -217,6 +217,9 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
+    if(this.renderer && this.renderer.destroyed){
+        return;
+    }
     //console.log(JSON.parse(JSON.stringify(animData)));
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
@@ -496,6 +499,7 @@ AnimationItem.prototype.destroy = function (name) {
     this.renderer.destroy();
     this.trigger('destroy');
     this._cbs = null;
+    this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
