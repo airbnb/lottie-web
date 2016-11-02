@@ -95,7 +95,6 @@ var animationManager = (function(){
     }
 
     function resume(nowTime) {
-        console.log('resume');
 
         var elapsedTime = nowTime - initTime;
         var i;
