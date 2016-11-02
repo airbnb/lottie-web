@@ -59,8 +59,8 @@ var animationManager = (function(){
 
     function loadAnimation(params){
         var animItem = new AnimationItem();
-        animItem.setParams(params);
         setupAnimation(animItem, null);
+        animItem.setParams(params);
         return animItem;
     }
 
