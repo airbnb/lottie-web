@@ -18,6 +18,9 @@ var TransformExpressionInterface = (function (){
                 case "AnchorPoint":
                 case "ADBE AnchorPoint":
                     return _thisFunction.anchorPoint;
+                case "opacity":
+                case "Opacity":
+                    return _thisFunction.opacity;
             }
         }
 
@@ -47,6 +50,12 @@ var TransformExpressionInterface = (function (){
         Object.defineProperty(_thisFunction, "anchorPoint", {
             get: function () {
                 return transform.anchorPoint;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "opacity", {
+            get: function () {
+                return transform.opacity*100;
             }
         });
 

@@ -4,7 +4,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.supports3d = true;
     this.completeLayers = false;
     this.pendingElements = [];
-    this.elements = Array.apply(null,{length:this.layers.length});
+    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
