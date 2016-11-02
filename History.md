@@ -1,3 +1,7 @@
+## V 4.4.23
+- expressions transform opacity interface
+- removing rAF when idle (thanks to @mpeterson2 for the suggestion and PR)
+
 ## V 4.4.22
 - text layer defaulting line height value when first char is new line
 
