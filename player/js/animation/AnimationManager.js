@@ -2,8 +2,9 @@ var animationManager = (function(){
     var moduleOb = {};
     var registeredAnimations = [];
     var initTime = 0;
-    var isPaused = true;
     var len = 0;
+    var idled = true;
+    var playingAnimationsNum = 0;
 
     function removeElement(ev){
         var i = 0;
@@ -14,6 +15,7 @@ var animationManager = (function(){
                 registeredAnimations.splice(i, 1);
                 i -= 1;
                 len -= 1;
+                subtractPlayingCount();
             }
             i += 1;
         }
@@ -32,18 +34,34 @@ var animationManager = (function(){
         }
         var animItem = new AnimationItem();
         animItem.setData(element, animationData);
+        setupAnimation(animItem, element);
+        return animItem;
+    }
+
+    function addPlayingCount(){
+        playingAnimationsNum += 1;
+        activate();
+    }
+
+    function subtractPlayingCount(){
+        playingAnimationsNum -= 1;
+        if(playingAnimationsNum === 0){
+            idled = true;
+        }
+    }
+
+    function setupAnimation(animItem, element){
         animItem.addEventListener('destroy',removeElement);
+        animItem.addEventListener('_active',addPlayingCount);
+        animItem.addEventListener('_idle',subtractPlayingCount);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
-        return animItem;
     }
 
     function loadAnimation(params){
         var animItem = new AnimationItem();
         animItem.setParams(params);
-        animItem.addEventListener('destroy',removeElement);
-        registeredAnimations.push({elem: null,animation:animItem});
-        len += 1;
+        setupAnimation(animItem, null);
         return animItem;
     }
 
@@ -70,7 +88,6 @@ var animationManager = (function(){
     }
 
     function moveFrame (value, animation) {
-        isPaused = false;
         initTime = Date.now();
         var i;
         for(i=0;i<len;i+=1){
@@ -79,6 +96,7 @@ var animationManager = (function(){
     }
 
     function resume(nowTime) {
+        console.log('resume');
 
         var elapsedTime = nowTime - initTime;
         var i;
@@ -86,9 +104,9 @@ var animationManager = (function(){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        requestAnimationFrame(resume);
-
-
+        if(!idled) {
+            requestAnimationFrame(resume);
+        }
     }
 
     function first(nowTime){
@@ -165,6 +183,18 @@ var animationManager = (function(){
     function start(){
         requestAnimationFrame(first);
     }
+
+    function activate(){
+        if(idled){
+            idled = false;
+            if(Performance && Performance.now){
+                first(Performance.now);
+            } else {
+                requestAnimationFrame(first);
+            }
+        }
+    }
+
     //start();
 
     setTimeout(start,0);
