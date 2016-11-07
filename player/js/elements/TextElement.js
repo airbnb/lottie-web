@@ -141,7 +141,7 @@ ITextElement.prototype.getMeasures = function(){
         if(!this.viewData.p.n || this.viewData.p.mdf){
             var paths = mask.v;
             if(this.viewData.p.r){
-                paths = reversePath(paths, mask.closed);
+                paths = reversePath(paths);
             }
             var pathInfo = {
                 tLength: 0,
@@ -163,7 +163,7 @@ ITextElement.prototype.getMeasures = function(){
                 totalLength += pathData.bezierData.segmentLength;
             }
             i = len;
-            if (mask.closed) {
+            if (mask.v.c) {
                 pathData = {
                     s: paths.v[i],
                     e: paths.v[0],
@@ -182,7 +182,7 @@ ITextElement.prototype.getMeasures = function(){
         var currentLength = this.viewData.p.f.v, segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
         var segmentLength = 0, flag = true;
         var segments = pathInfo.segments;
-        if (currentLength < 0 && mask.closed) {
+        if (currentLength < 0 && mask.v.c) {
             if (pathInfo.tLength < Math.abs(currentLength)) {
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
@@ -296,7 +296,7 @@ ITextElement.prototype.getMeasures = function(){
                             pointInd = 0;
                             segmentInd += 1;
                             if (!segments[segmentInd]) {
-                                if (mask.closed) {
+                                if (mask.v.c) {
                                     pointInd = 0;
                                     segmentInd = 0;
                                     points = segments[segmentInd].bezierData.points;

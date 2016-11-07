@@ -131,6 +131,7 @@ SVGTextElement.prototype.buildNewText = function(){
         }
         if(singleShape) {
             xPos += letters[i].l;
+            xPos += documentData.tr/1000*documentData.s;
         }
         //
         this.textSpans[cnt] = tSpan;

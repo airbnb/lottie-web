@@ -1,6 +1,14 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.24
+- text mask path fixes
+- text tracking fix on texts without animators
+- transform yPosition and xPosition expression interface
+- rounded corners expression interface
+- shape hold keyframes last frame fix
+
+
 ## V 4.4.23
 - expressions transform opacity interface
 - removing rAF when idle (thanks to @mpeterson2 for the suggestion and PR)

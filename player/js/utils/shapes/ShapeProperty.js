@@ -14,7 +14,7 @@ var ShapePropertyFactory = (function(){
             if(frameNum < this.keyframes[0].t-this.offsetTime){
                 keyPropS = this.keyframes[0].s[0];
                 isHold = true;
-            }else if(frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
+            }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
                 if(this.keyframes[this.keyframes.length - 2].h === 1){
                     //keyPropS = this.keyframes[this.keyframes.length - 1].s ? this.keyframes[this.keyframes.length - 1].s[0] : this.keyframes[this.keyframes.length - 2].s[0];
                     keyPropS = this.keyframes[this.keyframes.length - 1].s[0];

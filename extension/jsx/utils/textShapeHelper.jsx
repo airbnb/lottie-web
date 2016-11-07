@@ -115,6 +115,7 @@ var bm_textShapeHelper = (function () {
         }
         textDocument.font = originalTextDocument.font;
         textDocument.fontSize = 100;
+        textDocument.tracking = 0;
         textDocument.justification = ParagraphJustification.LEFT_JUSTIFY;
         textProp.setValue(textDocument);
         dupl.enabled = true;
@@ -223,6 +224,7 @@ var bm_textShapeHelper = (function () {
         for (i = 0; i < len; i += 1) {
             fontDocument.font = fonts.list[i].fName;
             fontDocument.fontSize = 100;
+            fontDocument.tracking = 0;
             fontProp.setValue(fontDocument);
             rect = boxText.sourceRectAtTime(0, false);
             fonts.list[i].ascent = 250 + rect.top + rect.height;

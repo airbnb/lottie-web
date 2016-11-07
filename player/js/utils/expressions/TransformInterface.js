@@ -47,6 +47,18 @@ var TransformExpressionInterface = (function (){
             }
         });
 
+        Object.defineProperty(_thisFunction, "xPosition", {
+            get: function () {
+                return transform.xPosition;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "yPosition", {
+            get: function () {
+                return transform.yPosition;
+            }
+        });
+
         Object.defineProperty(_thisFunction, "anchorPoint", {
             get: function () {
                 return transform.anchorPoint;

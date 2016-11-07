@@ -8,6 +8,7 @@ var ShapeExpressionInterface = (function(){
         createEllipseInterface:createEllipseInterface,
         createStarInterface:createStarInterface,
         createRectInterface:createRectInterface,
+        createRoundedInterface:createRoundedInterface,
         createPathInterface:createPathInterface,
         createFillInterface:createFillInterface
     };
@@ -38,6 +39,9 @@ var ShapeExpressionInterface = (function(){
     function createRectInterface(shape,view,propertyGroup){
         return rectInterfaceFactory(shape,view,propertyGroup);
     }
+    function createRoundedInterface(shape,view,propertyGroup){
+        return roundedInterfaceFactory(shape,view,propertyGroup);
+    }
     function createPathInterface(shape,view,propertyGroup){
         return pathInterfaceFactory(shape,view,propertyGroup);
     }
@@ -64,6 +68,8 @@ var ShapeExpressionInterface = (function(){
                 arr.push(ShapeExpressionInterface.createPathInterface(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rc'){
                 arr.push(ShapeExpressionInterface.createRectInterface(shapes[i],view[i],propertyGroup));
+            } else if(shapes[i].ty == 'rd'){
+                arr.push(ShapeExpressionInterface.createRoundedInterface(shapes[i],view[i],propertyGroup));
             } else{
                 //console.log(shapes[i].ty);
             }
@@ -650,6 +656,43 @@ var ShapeExpressionInterface = (function(){
                         prop.s.getValue();
                     }
                     return prop.s.v;
+                }
+            });
+
+            Object.defineProperty(interfaceFunction, '_name', {
+                get: function(){
+                    return shape.nm;
+                }
+            });
+            return interfaceFunction;
+        }
+    }());
+
+    var roundedInterfaceFactory = (function(){
+        return function(shape,view,propertyGroup){
+            function _propertyGroup(val){
+                if(val == 1){
+                    return _propertyGroup;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            var prop = view;
+            _propertyGroup.propertyIndex = shape.ix;
+            prop.rd.setGroupProperty(_propertyGroup);
+
+            function interfaceFunction(value){
+                if(shape.r.ix === value || 'Round Corners 1' === value){
+                    return interfaceFunction.radius;
+                }
+
+            }
+            Object.defineProperty(interfaceFunction, 'radius', {
+                get: function(){
+                    if(prop.rd.k){
+                        prop.rd.getValue();
+                    }
+                    return prop.rd.v;
                 }
             });
 
