@@ -22,7 +22,7 @@ function MaskElement(data,element,globalData) {
     var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
 
-        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv){
+        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv || properties[i].o.k !== 100){
             maskType = 'mask';
             maskRef = 'mask';
         }
@@ -112,6 +112,7 @@ function MaskElement(data,element,globalData) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
+            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
             prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
         };
         if(rect){
@@ -154,6 +155,9 @@ MaskElement.prototype.renderFrame = function (finalMat) {
     for (i = 0; i < len; i++) {
         if(this.viewData[i].prop.mdf || this.firstFrame){
             this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
+        }
+        if(this.viewData[i].op.mdf || this.firstFrame){
+            this.viewData[i].elem.setAttribute('fill-opacity',this.viewData[i].op.v);
         }
         if(this.masksProperties[i].mode !== 'n'){
             if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
