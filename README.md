@@ -12,6 +12,7 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - shape interfaces fixes
 - fromWorld and toWorld expression support
 - function invoked from function expression support
+- inner grouped shapes transformation fix
 
 
 ## V 4.4.23
