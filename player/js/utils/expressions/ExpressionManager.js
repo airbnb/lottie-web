@@ -575,15 +575,17 @@ var ExpressionManager = (function(){
         var fromworldMatrix = new Matrix();
         function fromWorld(arr){
             fromworldMatrix.reset();
+            var pts = [];
+            pts.push(arr);
             elem.finalTransform.mProp.applyToMatrix(fromworldMatrix);
             if(elem.hierarchy && elem.hierarchy.length){
                 var i, len = elem.hierarchy.length;
                 for(i=0;i<len;i+=1){
                     elem.hierarchy[i].finalTransform.mProp.applyToMatrix(fromworldMatrix);
                 }
-                return fromworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
+                return fromworldMatrix.inversePoints(pts)[0];
             }
-            return fromworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
+            return fromworldMatrix.inversePoints(pts)[0];
         }
 
         var time,velocity, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;

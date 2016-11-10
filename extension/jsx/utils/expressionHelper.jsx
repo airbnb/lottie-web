@@ -307,6 +307,8 @@ var bm_expressionHelper = (function () {
                 args[i] = convertBinaryExpression(args[i]);
             } else if (args[i].type === 'UnaryExpression') {
                 args[i] = convertUnaryExpression(args[i]);
+            } else  if (args[i].type === 'CallExpression') {
+                handleCallExpression(args[i]);
             }
         }
     }
