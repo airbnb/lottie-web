@@ -7,6 +7,9 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - transform yPosition and xPosition expression interface
 - rounded corners expression interface
 - shape hold keyframes last frame fix
+- mask with single vertex fix
+- reversed shapes on hold keyframes fix
+- shape interfaces fixes
 
 
 ## V 4.4.23

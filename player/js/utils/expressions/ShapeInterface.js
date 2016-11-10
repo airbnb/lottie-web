@@ -437,7 +437,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }
@@ -483,7 +483,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }
@@ -599,7 +599,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }
@@ -672,7 +672,7 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             function _propertyGroup(val){
                 if(val == 1){
-                    return _propertyGroup;
+                    return interfaceFunction;
                 } else {
                     return propertyGroup(--val);
                 }

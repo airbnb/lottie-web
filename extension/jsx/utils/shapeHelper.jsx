@@ -81,8 +81,12 @@ var bm_shapeHelper = (function () {
         } else {
             len = ks.length;
             for (i = 0; i < len - 1; i += 1) {
-                reverseShape(ks[i].s[0]);
-                reverseShape(ks[i].e[0]);
+                if(ks[i].s){
+                    reverseShape(ks[i].s[0]);
+                }
+                if(ks[i].e){
+                    reverseShape(ks[i].e[0]);
+                }
             }
         }
     }
