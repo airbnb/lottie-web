@@ -10,6 +10,8 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - mask with single vertex fix
 - reversed shapes on hold keyframes fix
 - shape interfaces fixes
+- fromWorld and toWorld expression support
+- function invoked from function expression support
 
 
 ## V 4.4.23
