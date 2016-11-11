@@ -80,7 +80,7 @@ var bm_shapeHelper = (function () {
             ks.v = newV;
         } else {
             len = ks.length;
-            for (i = 0; i < len - 1; i += 1) {
+            for (i = 0; i < len; i += 1) {
                 if(ks[i].s){
                     reverseShape(ks[i].s[0]);
                 }

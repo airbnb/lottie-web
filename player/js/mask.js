@@ -40,6 +40,7 @@ function MaskElement(data,element,globalData) {
         path = document.createElementNS(svgNS, 'path');
         if(properties[i].mode == 'n') {
             this.viewData[i] = {
+                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
                 prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null),
                 elem: path
             };
