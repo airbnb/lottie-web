@@ -316,7 +316,6 @@ var bm_shapeHelper = (function () {
                     ob.ty = itemType;
                     ob.s = bm_keyframeHelper.exportKeyframes(prop.property('Size'), frameRate);
                     ob.p = bm_keyframeHelper.exportKeyframes(prop.property('Position'), frameRate);
-                    array.push(ob);
                 } else if (itemType === shapeItemTypes.fill) {
                     ob = {};
                     ob.ty = itemType;

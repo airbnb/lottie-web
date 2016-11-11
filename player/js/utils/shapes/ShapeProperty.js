@@ -130,6 +130,9 @@ var ShapePropertyFactory = (function(){
         } else {
             this.paths = [this.v];
         }
+        if(!this.k){
+            this.mdf = false;
+        }
     }
 
     function ShapeProperty(elem, data, type){
@@ -414,6 +417,15 @@ var ShapePropertyFactory = (function(){
             var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
             var round = bm_min(v0,v1,this.r.v);
             var cPoint = round*(1-roundCorner);
+            if(round === 0){
+                this.v.v.length = 4;
+                this.v.i.length = 4;
+                this.v.o.length = 4;
+            } else {
+                this.v.v.length = 8;
+                this.v.i.length = 8;
+                this.v.o.length = 8;
+            }
 
             if(this.d === 2 || this.d === 1) {
 
@@ -425,61 +437,78 @@ var ShapePropertyFactory = (function(){
                 this.v.o[1] = [p0+v0,p1+v1-cPoint];
                 this.v.i[1] = this.v.v[1];
 
-                this.v.v[2] = [p0+v0-round,p1+v1];
-                this.v.o[2] = this.v.v[2];
-                this.v.i[2] = [p0+v0-cPoint,p1+v1];
-
-                this.v.v[3] = [p0-v0+round,p1+v1];
-                this.v.o[3] = [p0-v0+cPoint,p1+v1];
-                this.v.i[3] = this.v.v[3];
-
-                this.v.v[4] = [p0-v0,p1+v1-round];
-                this.v.o[4] = this.v.v[4];
-                this.v.i[4] = [p0-v0,p1+v1-cPoint];
-
-                this.v.v[5] = [p0-v0,p1-v1+round];
-                this.v.o[5] = [p0-v0,p1-v1+cPoint];
-                this.v.i[5] = this.v.v[5];
-
-                this.v.v[6] = [p0-v0+round,p1-v1];
-                this.v.o[6] = this.v.v[6];
-                this.v.i[6] = [p0-v0+cPoint,p1-v1];
-
-                this.v.v[7] = [p0+v0-round,p1-v1];
-                this.v.o[7] = [p0+v0-cPoint,p1-v1];
-                this.v.i[7] = this.v.v[7];
+                if(round!== 0){
+                    this.v.v[2] = [p0+v0-round,p1+v1];
+                    this.v.o[2] = this.v.v[2];
+                    this.v.i[2] = [p0+v0-cPoint,p1+v1];
+                    this.v.v[3] = [p0-v0+round,p1+v1];
+                    this.v.o[3] = [p0-v0+cPoint,p1+v1];
+                    this.v.i[3] = this.v.v[3];
+                    this.v.v[4] = [p0-v0,p1+v1-round];
+                    this.v.o[4] = this.v.v[4];
+                    this.v.i[4] = [p0-v0,p1+v1-cPoint];
+                    this.v.v[5] = [p0-v0,p1-v1+round];
+                    this.v.o[5] = [p0-v0,p1-v1+cPoint];
+                    this.v.i[5] = this.v.v[5];
+                    this.v.v[6] = [p0-v0+round,p1-v1];
+                    this.v.o[6] = this.v.v[6];
+                    this.v.i[6] = [p0-v0+cPoint,p1-v1];
+                    this.v.v[7] = [p0+v0-round,p1-v1];
+                    this.v.o[7] = [p0+v0-cPoint,p1-v1];
+                    this.v.i[7] = this.v.v[7];
+                } else {
+                    this.v.v[2] = [p0-v0+round,p1+v1];
+                    this.v.o[2] = [p0-v0+cPoint,p1+v1];
+                    this.v.i[2] = this.v.v[2];
+                    this.v.v[3] = [p0-v0,p1-v1+round];
+                    this.v.o[3] = [p0-v0,p1-v1+cPoint];
+                    this.v.i[3] = this.v.v[3];
+                }
             }else{
                 this.v.v[0] = [p0+v0,p1-v1+round];
                 this.v.o[0] = [p0+v0,p1-v1+cPoint];
                 this.v.i[0] = this.v.v[0];
 
-                this.v.v[1] = [p0+v0-round,p1-v1];
-                this.v.o[1] = this.v.v[1];
-                this.v.i[1] = [p0+v0-cPoint,p1-v1];
+                if(round!== 0){
+                    this.v.v[1] = [p0+v0-round,p1-v1];
+                    this.v.o[1] = this.v.v[1];
+                    this.v.i[1] = [p0+v0-cPoint,p1-v1];
 
-                this.v.v[2] = [p0-v0+round,p1-v1];
-                this.v.o[2] = [p0-v0+cPoint,p1-v1];
-                this.v.i[2] = this.v.v[2];
+                    this.v.v[2] = [p0-v0+round,p1-v1];
+                    this.v.o[2] = [p0-v0+cPoint,p1-v1];
+                    this.v.i[2] = this.v.v[2];
 
-                this.v.v[3] = [p0-v0,p1-v1+round];
-                this.v.o[3] = this.v.v[3];
-                this.v.i[3] = [p0-v0,p1-v1+cPoint];
+                    this.v.v[3] = [p0-v0,p1-v1+round];
+                    this.v.o[3] = this.v.v[3];
+                    this.v.i[3] = [p0-v0,p1-v1+cPoint];
 
-                this.v.v[4] = [p0-v0,p1+v1-round];
-                this.v.o[4] = [p0-v0,p1+v1-cPoint];
-                this.v.i[4] = this.v.v[4];
+                    this.v.v[4] = [p0-v0,p1+v1-round];
+                    this.v.o[4] = [p0-v0,p1+v1-cPoint];
+                    this.v.i[4] = this.v.v[4];
 
-                this.v.v[5] = [p0-v0+round,p1+v1];
-                this.v.o[5] = this.v.v[5];
-                this.v.i[5] = [p0-v0+cPoint,p1+v1];
+                    this.v.v[5] = [p0-v0+round,p1+v1];
+                    this.v.o[5] = this.v.v[5];
+                    this.v.i[5] = [p0-v0+cPoint,p1+v1];
 
-                this.v.v[6] = [p0+v0-round,p1+v1];
-                this.v.o[6] = [p0+v0-cPoint,p1+v1];
-                this.v.i[6] = this.v.v[6];
+                    this.v.v[6] = [p0+v0-round,p1+v1];
+                    this.v.o[6] = [p0+v0-cPoint,p1+v1];
+                    this.v.i[6] = this.v.v[6];
 
-                this.v.v[7] = [p0+v0,p1+v1-round];
-                this.v.o[7] = this.v.v[7];
-                this.v.i[7] = [p0+v0,p1+v1-cPoint];
+                    this.v.v[7] = [p0+v0,p1+v1-round];
+                    this.v.o[7] = this.v.v[7];
+                    this.v.i[7] = [p0+v0,p1+v1-cPoint];
+                } else {
+                    this.v.v[1] = [p0-v0+round,p1-v1];
+                    this.v.o[1] = [p0-v0+cPoint,p1-v1];
+                    this.v.i[1] = this.v.v[1];
+                    this.v.v[2] = [p0-v0,p1+v1-round];
+                    this.v.o[2] = [p0-v0,p1+v1-cPoint];
+                    this.v.i[2] = this.v.v[2];
+                    this.v.v[3] = [p0+v0-round,p1+v1];
+                    this.v.o[3] = [p0+v0-cPoint,p1+v1];
+                    this.v.i[3] = this.v.v[3];
+
+                }
             }
             this.paths.length = 0;
             this.paths[0] = this.v;
@@ -492,6 +521,7 @@ var ShapePropertyFactory = (function(){
                 o: Array.apply(null,{length:8}),
                 c: true
             };
+            this.idd = randomString(10);
             this.paths = [];
             this.numNodes = 8;
             this.elem = elem;
