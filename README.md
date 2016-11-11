@@ -14,6 +14,8 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - function invoked from function expression support
 - inner grouped shapes transformation fix
 - opacity on masks supported for svg renderer
+- duplicate ellipse export fix
+- rounded corners on rectangle shapes fix
 
 
 ## V 4.4.23
