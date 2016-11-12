@@ -300,7 +300,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                         p: groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                 }
-                if (pathNodes.c) {
+                if (pathNodes.c && len) {
                     pathStringTransformed.push({
                         t: 'c',
                         p1: groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),

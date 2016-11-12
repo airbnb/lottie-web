@@ -411,7 +411,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                             //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                             pathStringTransformed += " M" + pathNodes.v[0].join(',');
                         }
-                        if (pathNodes.c) {
+                        if (pathNodes.c && len) {
                             //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                             pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[0].join(',') + " " + pathNodes.v[0].join(',');
                             pathStringTransformed += 'z';
