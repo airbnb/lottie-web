@@ -34,24 +34,23 @@ ICompElement.prototype.prepareFrame = function(num){
     if(this.isVisible===false && !this.data.xt){
         return;
     }
-    var timeRemapped = num;
+
     if(this.tm){
-        timeRemapped = this.tm.v;
+        var timeRemapped = this.tm.v;
         if(timeRemapped === this.data.op){
             timeRemapped = this.data.op - 1;
         }
+        this.renderedFrame = timeRemapped;
+    } else {
+        this.renderedFrame = num/this.data.sr;
     }
-    this.renderedFrame = timeRemapped/this.data.sr;
     var i,len = this.elements.length;
     if(!this.completeLayers){
         this.checkLayers(this.renderedFrame);
     }
     for( i = 0; i < len; i+=1 ){
-        /*if(!this.elements[i]){
-            this.checkLayer(i, this.renderedFrame - this.layers[i].st, this.layerElement);
-        }*/
         if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
+            this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
         }
     }
 };

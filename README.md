@@ -16,6 +16,8 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - opacity on masks supported for svg renderer
 - duplicate ellipse export fix
 - rounded corners on rectangle shapes fix
+- rounded corners multiple shapes fix
+- time remapped stretched layers fix
 
 
 ## V 4.4.23

@@ -86,8 +86,9 @@ RoundCornersModifier.prototype.processShapes = function(){
     var rd = this.rd.v;
 
     if(rd !== 0){
-        var shapeData, newPaths = [];
+        var shapeData, newPaths;
         for(i=0;i<len;i+=1){
+            newPaths = [];
             shapeData = this.shapes[i];
             if(!shapeData.shape.mdf && !this.mdf){
                 shapeData.shape.paths = shapeData.last;
