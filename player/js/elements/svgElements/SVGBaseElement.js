@@ -13,11 +13,13 @@ createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.createElements = function(){
     if(this.data.td){
-        if(this.data.td == 3){
-            this.layerElement = document.createElementNS(svgNS,'mask');
-            this.layerElement.setAttribute('id',this.layerId);
-            this.layerElement.setAttribute('mask-type','luminance');
-            this.globalData.defs.appendChild(this.layerElement);
+        if(this.data.td == 3 || this.data.td == 1){
+            this.layerElement = document.createElementNS(svgNS,'g');
+            var masker = document.createElementNS(svgNS,'mask');
+            masker.setAttribute('id',this.layerId);
+            masker.setAttribute('mask-type',this.data.td == 3 ? 'luminance':'alpha');
+            masker.appendChild(this.layerElement);
+            this.globalData.defs.appendChild(masker);
         }else if(this.data.td == 2){
             var maskGroup = document.createElementNS(svgNS,'mask');
             maskGroup.setAttribute('id',this.layerId);
@@ -54,11 +56,6 @@ SVGBaseElement.prototype.createElements = function(){
             this.globalData.defs.appendChild(maskGroup);
         }else{
             this.layerElement = document.createElementNS(svgNS,'g');
-            var masker = document.createElementNS(svgNS,'mask');
-            masker.setAttribute('id',this.layerId);
-            masker.setAttribute('mask-type','alpha');
-            masker.appendChild(this.layerElement);
-            this.globalData.defs.appendChild(masker);
         }
         if(this.data.hasMask){
             this.maskedElement = this.layerElement;

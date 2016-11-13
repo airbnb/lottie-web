@@ -18,10 +18,10 @@ IImageElement.prototype.createElements = function(){
     this.maskedElement = this.innerElem;
     this.layerElement.appendChild(this.innerElem);
     if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
+        this.layerElement.setAttribute('id',this.data.ln);
     }
     if(this.data.cl){
-        this.innerElem.setAttribute('class',this.data.cl);
+        this.layerElement.setAttribute('class',this.data.cl);
     }
 
 };
