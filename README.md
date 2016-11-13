@@ -18,6 +18,8 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - rounded corners on rectangle shapes fix
 - rounded corners multiple shapes fix
 - time remapped stretched layers fix
+- shapes with no vertices fix
+- more stroke effect types support
 
 
 ## V 4.4.23

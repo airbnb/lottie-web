@@ -16,7 +16,7 @@ var fs = require('fs');
 var htmlreplace = require('gulp-html-replace');
 var eventstream = require("event-stream");
 
-var bm_version = '4.4.23';
+var bm_version = '4.4.24';
 
 var files = [
     {

@@ -28,7 +28,7 @@ IImageElement.prototype.createElements = function(){
 
 IImageElement.prototype.hide = function(){
     if(!this.hidden){
-        this.innerElem.style.display = 'none';
+        this.layerElement.style.display = 'none';
         this.hidden = true;
     }
 };
@@ -41,7 +41,7 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
     }
     if(this.hidden){
         this.hidden = false;
-        this.innerElem.style.display = 'block';
+        this.layerElement.style.display = 'block';
     }
     if(this.firstFrame){
         this.firstFrame = false;

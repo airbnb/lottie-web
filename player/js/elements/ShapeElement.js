@@ -265,14 +265,17 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     this.globalToLocal([0,0,0]);
-
-    this.hidden = false;
+    if(this.hidden){
+        this.layerElement.style.display = 'block';
+        this.hidden = false;
+    }
     this.renderModifiers();
     this.renderShape(null,null,true, null);
 };
 
 IShapeElement.prototype.hide = function(){
     if(!this.hidden){
+        this.layerElement.style.display = 'none';
         var i, len = this.stylesList.length;
         for(i=len-1;i>=0;i-=1){
             if(this.stylesList[i].ld !== '0'){
