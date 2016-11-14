@@ -1,3 +1,25 @@
+## V 4.4.24
+- text mask path fixes
+- text tracking fix on texts without animators
+- transform yPosition and xPosition expression interface
+- rounded corners expression interface
+- shape hold keyframes last frame fix
+- mask with single vertex fix
+- reversed shapes on hold keyframes fix
+- shape interfaces fixes
+- fromWorld and toWorld expression support
+- function invoked from function expression support
+- inner grouped shapes transformation fix
+- opacity on masks supported for svg renderer
+- duplicate ellipse export fix
+- rounded corners on rectangle shapes fix
+- rounded corners multiple shapes fix
+- time remapped stretched layers fix
+- shapes with no vertices fix
+- more stroke effect types support
+- luminance mask fix
+- alpha mask support IE and Edge
+
 ## V 4.4.23
 - expressions transform opacity interface
 - removing rAF when idle (thanks to @mpeterson2 for the suggestion and PR)

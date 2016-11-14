@@ -269,7 +269,7 @@ var ShapeExpressionInterface = (function(){
                     return propertyGroup(--val);
                 }
             }
-            _propertyGroup.propertyIndex = shape.ix;
+            interfaceFunction.propertyIndex = shape.ix;
 
             view.s.setGroupProperty(_propertyGroup);
             view.e.setGroupProperty(_propertyGroup);
@@ -442,7 +442,7 @@ var ShapeExpressionInterface = (function(){
                     return propertyGroup(--val);
                 }
             }
-            _propertyGroup.propertyIndex = shape.ix;
+            interfaceFunction.propertyIndex = shape.ix;
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
             prop.s.setGroupProperty(_propertyGroup);
             prop.p.setGroupProperty(_propertyGroup);
@@ -489,7 +489,7 @@ var ShapeExpressionInterface = (function(){
                 }
             }
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            _propertyGroup.propertyIndex = shape.ix;
+            interfaceFunction.propertyIndex = shape.ix;
             prop.or.setGroupProperty(_propertyGroup);
             prop.os.setGroupProperty(_propertyGroup);
             prop.pt.setGroupProperty(_propertyGroup);
@@ -605,7 +605,7 @@ var ShapeExpressionInterface = (function(){
                 }
             }
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            _propertyGroup.propertyIndex = shape.ix;
+            interfaceFunction.propertyIndex = shape.ix;
             prop.p.setGroupProperty(_propertyGroup);
             prop.s.setGroupProperty(_propertyGroup);
             prop.r.setGroupProperty(_propertyGroup);
@@ -678,7 +678,7 @@ var ShapeExpressionInterface = (function(){
                 }
             }
             var prop = view;
-            _propertyGroup.propertyIndex = shape.ix;
+            interfaceFunction.propertyIndex = shape.ix;
             prop.rd.setGroupProperty(_propertyGroup);
 
             function interfaceFunction(value){

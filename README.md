@@ -21,6 +21,7 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - shapes with no vertices fix
 - more stroke effect types support
 - luminance mask fix
+- alpha mask support IE and Edge
 
 
 ## V 4.4.23
