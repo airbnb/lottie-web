@@ -20,6 +20,18 @@ SVGBaseElement.prototype.createElements = function(){
             masker.setAttribute('mask-type',this.data.td == 3 ? 'luminance':'alpha');
             masker.appendChild(this.layerElement);
             this.globalData.defs.appendChild(masker);
+            ////// This is only for IE and Edge when mask if of type alpha
+            if(!featureSupport.maskType && this.data.td == 1){
+                masker.setAttribute('mask-type','luminance');
+                var filId = randomString(10);
+                var fil = filtersFactory.createFilter(filId);
+                this.globalData.defs.appendChild(fil);
+                fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
+                var gg = document.createElementNS(svgNS,'g');
+                gg.appendChild(this.layerElement);
+                masker.appendChild(gg);
+                gg.setAttribute('filter','url(#'+filId+')');
+            }
         }else if(this.data.td == 2){
             var maskGroup = document.createElementNS(svgNS,'mask');
             maskGroup.setAttribute('id',this.layerId);
@@ -27,14 +39,8 @@ SVGBaseElement.prototype.createElements = function(){
             var maskGrouper = document.createElementNS(svgNS,'g');
             maskGroup.appendChild(maskGrouper);
             this.layerElement = document.createElementNS(svgNS,'g');
-            var fil = document.createElementNS(svgNS,'filter');
             var filId = randomString(10);
-            fil.setAttribute('id',filId);
-            fil.setAttribute('filterUnits','objectBoundingBox');
-            fil.setAttribute('x','0%');
-            fil.setAttribute('y','0%');
-            fil.setAttribute('width','100%');
-            fil.setAttribute('height','100%');
+            var fil = filtersFactory.createFilter(filId);
             var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
             feCTr.setAttribute('in','SourceGraphic');
             fil.appendChild(feCTr);
@@ -53,6 +59,14 @@ SVGBaseElement.prototype.createElements = function(){
             maskGrouper.setAttribute('filter','url(#'+filId+')');
             maskGrouper.appendChild(alphaRect);
             maskGrouper.appendChild(this.layerElement);
+            if(!featureSupport.maskType){
+                maskGroup.setAttribute('mask-type','luminance');
+                fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
+                var gg = document.createElementNS(svgNS,'g');
+                maskGrouper.appendChild(alphaRect);
+                gg.appendChild(this.layerElement);
+                maskGrouper.appendChild(gg);
+            }
             this.globalData.defs.appendChild(maskGroup);
         }else{
             this.layerElement = document.createElementNS(svgNS,'g');

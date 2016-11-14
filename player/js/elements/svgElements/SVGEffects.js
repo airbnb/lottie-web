@@ -1,6 +1,7 @@
 function SVGEffects(elem){
     var i, len = elem.data.ef.length;
-    var fil = document.createElementNS(svgNS,'filter');
+    var filId = randomString(10);
+    var fil = filtersFactory.createFilter(filId);
     var count = 0;
     this.filters = [];
     var filterManager;
@@ -19,13 +20,6 @@ function SVGEffects(elem){
         }
     }
     if(count){
-        var filId = randomString(10);
-        fil.setAttribute('id',filId);
-        fil.setAttribute('filterUnits','objectBoundingBox');
-        fil.setAttribute('x','0%');
-        fil.setAttribute('y','0%');
-        fil.setAttribute('width','100%');
-        fil.setAttribute('height','100%');
         elem.globalData.defs.appendChild(fil);
         elem.layerElement.setAttribute('filter','url(#'+filId+')');
     }
@@ -136,12 +130,13 @@ SVGStrokeEffect.prototype.initialize = function(){
         groupPath.setAttribute('stroke','#fff');
     } else if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
         if(this.filterManager.effectElements[10].p.v === 2){
-            while(this.elem.layerElement.children.length){
-                this.elem.layerElement.removeChild(this.elem.layerElement.children[0]);
+            var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
+            while(elemChildren.length){
+                this.elem.layerElement.removeChild(elemChildren[0]);
             }
         }
         this.elem.layerElement.appendChild(groupPath);
-        this.elem.layerElement.setAttribute('mask','');
+        this.elem.layerElement.removeAttribute('mask');
         groupPath.setAttribute('stroke','#fff');
     }
     this.initialized = true;

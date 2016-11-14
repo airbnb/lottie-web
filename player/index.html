@@ -47,6 +47,8 @@
     <script src="js/utils/shapes/MouseModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
+    <script src="js/utils/featureSupport.js"></script>
+    <script src="js/utils/filters.js"></script>
     <script src="js/renderers/BaseRenderer.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js" data-light-skip="true"></script>
@@ -104,12 +106,12 @@
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/mobilo/P_1.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
