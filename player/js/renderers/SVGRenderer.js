@@ -52,8 +52,8 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.layerElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     this.layerElement.style.width = '100%';
     this.layerElement.style.height = '100%';
-    this.layerElement.style.transform = 'translate3d(0,0,0)';
-    this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
+    //this.layerElement.style.transform = 'translate3d(0,0,0)';
+    //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.layerElement);
     //Mask animation
     var defs = document.createElementNS(svgNS, 'defs');
