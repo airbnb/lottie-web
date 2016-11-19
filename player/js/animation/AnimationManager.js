@@ -14,7 +14,9 @@ var animationManager = (function(){
                 registeredAnimations.splice(i, 1);
                 i -= 1;
                 len -= 1;
-                subtractPlayingCount();
+                if(!animItem.isPaused){
+                    subtractPlayingCount();   
+                }
             }
             i += 1;
         }
