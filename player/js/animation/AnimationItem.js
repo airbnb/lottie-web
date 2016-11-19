@@ -605,7 +605,7 @@ AnimationItem.prototype.getAssets = function () {
 };
 
 AnimationItem.prototype.trigger = function(name){
-    if(this._cbs[name]){
+    if(this._cbs && this._cbs[name]){
         switch(name){
             case 'enterFrame':
                 this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
