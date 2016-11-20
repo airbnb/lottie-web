@@ -34,7 +34,7 @@ BMMath.abs = function(val){
         }
         return absArr;
     }
-    return val;
+    return Math.abs(val);
 
 }
 var defaultCurveSegments = 75;
