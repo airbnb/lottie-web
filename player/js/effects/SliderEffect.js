@@ -10,6 +10,9 @@ function ColorEffect(data,elem, dynamicProperties){
 function PointEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
 }
+function LayerIndexEffect(data,elem, dynamicProperties){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+}
 function CheckboxEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
 }

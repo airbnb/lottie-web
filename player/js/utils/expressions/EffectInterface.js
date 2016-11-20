@@ -10,7 +10,7 @@ var EffectsExpressionInterface = (function (){
             var effectsData = elem.data.ef;
             var i, len = elem.effects.effectElements.length;
             for(i=0;i<len;i+=1){
-                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup));
+                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup,elem));
             }
 
             return function(name){
@@ -25,14 +25,14 @@ var EffectsExpressionInterface = (function (){
         }
     }
 
-    function createGroupInterface(data,elements, propertyGroup){
+    function createGroupInterface(data,elements, propertyGroup, elem){
         var effectElements = [];
         var i, len = data.ef.length;
         for(i=0;i<len;i+=1){
-            if(data.ef.ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup));
+            if(data.ef[i].ty === 5){
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup, elem));
             } else {
-                effectElements.push(createValueInterface(elements.effectElements[i]));
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem));
             }
         }
         return function(name){
@@ -52,8 +52,11 @@ var EffectsExpressionInterface = (function (){
         }
     }
 
-    function createValueInterface(element){
+    function createValueInterface(element, type, elem){
         return function(){
+            if(type === 10){
+                return elem.comp.compInterface(element.p.v);
+            }
             if(element.p.k){
                 element.p.getValue();
             }

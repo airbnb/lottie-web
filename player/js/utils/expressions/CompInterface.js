@@ -3,7 +3,7 @@ var CompExpressionInterface = (function (){
         function _thisLayerFunction(name){
             var i=0, len = comp.layers.length;
             while(i<len){
-                if(comp.layers[i].nm === name){
+                if(comp.layers[i].nm === name || comp.layers[i].ind === name - 1){
                     return comp.elements[i].layerInterface;
                 }
                 i += 1;
