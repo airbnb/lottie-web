@@ -1,6 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.25
+- text properties matched by matchName
+- destroy anims fix for animation count
+- checking callbacks array before dispatching event
+
 ## V 4.4.24
 - text mask path fixes
 - text tracking fix on texts without animators
@@ -27,68 +32,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 ## V 4.4.23
 - expressions transform opacity interface
 - removing rAF when idle (thanks to @mpeterson2 for the suggestion and PR)
-
-## V 4.4.22
-- text layer defaulting line height value when first char is new line
-
-## V 4.4.21
-- stroke effect improvement
-
-## V 4.4.20
-- previous versions masks fix
-
-## V 4.4.19
-- getValueAtTime expression fix
-- shape and mask expression support
-- open and close shapes support per keyframe
-- html renderer cyclic fix
-
-## V 4.4.18
-- standalone export fix
-
-## V 4.4.17
-- expression support for effect and effect group match name
-
-## V 4.4.16
-- support for text source keyframes
-- fix parented masked layers
-- new expressions
-- rect shape expressions interface
-
-## V 4.4.15
-- new expressions
-- blend mode fix
-
-## V 4.4.14
-- fixed bodymovin_light
-- fixed translations with same origin and destination
-
-## V 4.4.13
-- preserveAspectRatio all values for canvas
-- Different vertices between keyframes supported
-- New expressions
-- First effects: Stroke, Fill, Tint.
-- Orient along path
-
-## V 4.4.12
-- Trim path fix on offsetted shapes
-
-## V 4.4.11
-- html and canvas renderer fixes
-- more expressions supported
-- better subtracted mask support on the svg renderer
-- trim paths memory management corrected. If you're using Trim paths with animated strokes please update to this build!
-
-## V 4.4.10
-- fix on canvas nested compositions if only element animated was a mask
-
-## V 4.4.9
-- included preserveAspectRatio for canvas 'xMidYMid' and 'none' supported for now
-
-## V 4.4.8
-- animation new method "setSubframe" to enable subframe rendering (true by default).
-- hidden guided layers and parenting restore
-- split animations export resetting segments
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**

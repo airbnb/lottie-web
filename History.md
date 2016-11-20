@@ -1,3 +1,8 @@
+## V 4.4.25
+- text properties matched by matchName
+- destroy anims fix for animation count
+- checking callbacks array before dispatching event
+
 ## V 4.4.24
 - text mask path fixes
 - text tracking fix on texts without animators

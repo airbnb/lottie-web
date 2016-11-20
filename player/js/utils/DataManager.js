@@ -625,9 +625,6 @@ function dataFunctionManager(){
             }
             documentData.lineWidths = lineWidths;
 
-            if(!data.t.a){
-                data.t.a = [];
-            }
             var animators = data.t.a;
             jLen = animators.length;
             var based, ind, indexes = [];
