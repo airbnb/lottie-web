@@ -133,14 +133,14 @@ var bm_textHelper = (function () {
         
         var i, len = textProperty.numProperties;
         for (i = 0; i < len; i += 1) {
-            switch (textProperty(i + 1).name) {
-            case "Path Options":
+            switch (textProperty(i + 1).matchName) {
+            case "ADBE Text Path Options":
                 exportTextPathData(textProperty(i + 1), layerOb.t.p, layerOb.masksProperties, frameRate);
                 break;
-            case "More Options":
+            case "ADBE Text More Options":
                 exportMoreOptionsData(textProperty(i + 1), layerOb.t.m, frameRate);
                 break;
-            case "Animators":
+            case "ADBE Text Animators":
                 if (!layerOb.t.a) {
                     layerOb.t.a = [];
                 }
