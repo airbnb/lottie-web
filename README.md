@@ -1,6 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.26
+- expressions Math.abs fix
+- Layer Index expression support
+- Nested group effects fix
+
 ## V 4.4.25
 - text properties matched by matchName
 - destroy anims fix for animation count
@@ -27,11 +32,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - more stroke effect types support
 - luminance mask fix
 - alpha mask support IE and Edge
-
-
-## V 4.4.23
-- expressions transform opacity interface
-- removing rAF when idle (thanks to @mpeterson2 for the suggestion and PR)
 
 ## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**

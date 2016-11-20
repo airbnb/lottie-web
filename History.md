@@ -1,3 +1,8 @@
+## V 4.4.26
+- expressions Math.abs fix
+- Layer Index expression support
+- Nested group effects fix
+
 ## V 4.4.25
 - text properties matched by matchName
 - destroy anims fix for animation count

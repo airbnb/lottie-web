@@ -35,7 +35,7 @@ BMMath.abs = function(val){
         }
         return absArr;
     }
-    return val;
+    return Math.abs(val);
 
 }
 var defaultCurveSegments = 75;
@@ -12364,7 +12364,7 @@ var CompExpressionInterface = (function (){
         function _thisLayerFunction(name){
             var i=0, len = comp.layers.length;
             while(i<len){
-                if(comp.layers[i].nm === name){
+                if(comp.layers[i].nm === name || comp.layers[i].ind === name - 1){
                     return comp.elements[i].layerInterface;
                 }
                 i += 1;
@@ -12495,7 +12495,7 @@ var EffectsExpressionInterface = (function (){
             var effectsData = elem.data.ef;
             var i, len = elem.effects.effectElements.length;
             for(i=0;i<len;i+=1){
-                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup));
+                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup,elem));
             }
 
             return function(name){
@@ -12510,14 +12510,14 @@ var EffectsExpressionInterface = (function (){
         }
     }
 
-    function createGroupInterface(data,elements, propertyGroup){
+    function createGroupInterface(data,elements, propertyGroup, elem){
         var effectElements = [];
         var i, len = data.ef.length;
         for(i=0;i<len;i+=1){
-            if(data.ef.ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup));
+            if(data.ef[i].ty === 5){
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup, elem));
             } else {
-                effectElements.push(createValueInterface(elements.effectElements[i]));
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem));
             }
         }
         return function(name){
@@ -12537,8 +12537,11 @@ var EffectsExpressionInterface = (function (){
         }
     }
 
-    function createValueInterface(element){
+    function createValueInterface(element, type, elem){
         return function(){
+            if(type === 10){
+                return elem.comp.compInterface(element.p.v);
+            }
             if(element.p.k){
                 element.p.getValue();
             }
@@ -12568,6 +12571,9 @@ function ColorEffect(data,elem, dynamicProperties){
 }
 function PointEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
+}
+function LayerIndexEffect(data,elem, dynamicProperties){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
 }
 function CheckboxEffect(data,elem, dynamicProperties){
     this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
@@ -12632,6 +12638,10 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 eff = new CheckboxEffect(effects[i],element,dynamicProperties);
                 this.effectElements.push(eff);
                 break;
+            case 10:
+                eff = new LayerIndexEffect(effects[i],element,dynamicProperties);
+                this.effectElements.push(eff);
+                break;
             case 5:
                 eff = new EffectsManager(effects[i],element,dynamicProperties);
                 this.effectElements.push(eff);
@@ -12642,4 +12652,4 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 break;
         }
     }
-};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.25'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.26'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
