@@ -41,13 +41,22 @@ SVGBaseElement.prototype.createElements = function(){
             this.layerElement = document.createElementNS(svgNS,'g');
             var filId = randomString(10);
             var fil = filtersFactory.createFilter(filId);
-            var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
+            ////
+
+            var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+            feColorMatrix.setAttribute('type','matrix');
+            feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
+            feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
+            fil.appendChild(feColorMatrix);
+
+            ////
+            /*var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
             feCTr.setAttribute('in','SourceGraphic');
             fil.appendChild(feCTr);
             var feFunc = document.createElementNS(svgNS,'feFuncA');
             feFunc.setAttribute('type','table');
             feFunc.setAttribute('tableValues','1.0 0.0');
-            feCTr.appendChild(feFunc);
+            feCTr.appendChild(feFunc);*/
             this.globalData.defs.appendChild(fil);
             var alphaRect = document.createElementNS(svgNS,'rect');
             alphaRect.setAttribute('width',this.comp.data ? this.comp.data.w : this.globalData.compSize.w);
