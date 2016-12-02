@@ -28,6 +28,7 @@ var AnimationItem = function () {
     this.subframeEnabled = subframeEnabled;
     this.segments = [];
     this.pendingSegment = false;
+    this._idle = true;
     this.projectInterface = ProjectInterface();
 };
 
@@ -333,7 +334,10 @@ AnimationItem.prototype.play = function (name) {
     }
     if(this.isPaused === true){
         this.isPaused = false;
-        this.trigger('_active');
+        if(this._idle){
+            this._idle = false;
+            this.trigger('_active');
+        }
     }
 };
 
@@ -343,7 +347,10 @@ AnimationItem.prototype.pause = function (name) {
     }
     if(this.isPaused === false){
         this.isPaused = true;
-        this.trigger('_idle');
+        if(!this.pendingSegment){
+            this._idle = true;
+            this.trigger('_idle');
+        }
     }
 };
 

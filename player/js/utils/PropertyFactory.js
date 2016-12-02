@@ -552,8 +552,6 @@ var PropertyFactory = (function(){
         var p;
         if(type === 2){
             p = new TransformProperty(elem, data, arr);
-        }else if(type === 7){
-            p = new TrimProperty(elem, data, arr);
         }else if(!data.k.length){
             p = new ValueProperty(elem,data, mult);
         }else if(typeof(data.k[0]) === 'number'){

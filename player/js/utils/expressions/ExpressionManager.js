@@ -100,6 +100,7 @@ var ExpressionManager = (function(){
     function mul(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
+        var arr;
         if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a * b;
         }
@@ -127,6 +128,7 @@ var ExpressionManager = (function(){
     function div(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
+        var arr;
         if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
             return a / b;
         }
@@ -296,6 +298,7 @@ var ExpressionManager = (function(){
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var thisLayer,thisComp;
+        var fn = new Function();
         var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         eval(fnStr);
         var bindedFn = fn.bind(this);
