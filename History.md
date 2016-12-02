@@ -1,3 +1,7 @@
+## V 4.4.27
+- playSegments fix
+- inverting alphas with color matrices
+
 ## V 4.4.26
 - expressions Math.abs fix
 - Layer Index expression support
