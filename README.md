@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.28
+- expressions: better seeded random, properties by matchName
+
 ## V 4.4.27
 - playSegments fix
 - inverting alphas with color matrices

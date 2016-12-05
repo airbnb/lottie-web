@@ -34,8 +34,8 @@ var bm_effectsHelper = (function () {
     
     function findEffectPropertyType(prop) {
         var propertyValueType = prop.propertyValueType;
-                bm_eventDispatcher.log(prop.name);
-                bm_eventDispatcher.log(prop.matchName);
+                //bm_eventDispatcher.log(prop.name);
+                //bm_eventDispatcher.log(prop.matchName);
         //customValue
             /*bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
             bm_eventDispatcher.log('Prop ertyValueType.LAYER_INDEX: ' + PropertyValueType.LAYER_INDEX);

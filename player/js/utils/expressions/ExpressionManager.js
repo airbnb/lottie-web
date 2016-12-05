@@ -40,14 +40,14 @@ var ExpressionManager = (function(){
         if(tOfA === 'string' || tOfB === 'string'){
             return a + b;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
             return a + b;
         }
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
             b[0] = a + b[0];
             return b;
         }
@@ -70,14 +70,14 @@ var ExpressionManager = (function(){
     function sub(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
             return a - b;
         }
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
             a[0] = a[0] - b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
             b[0] = a - b[0];
             return b;
         }
@@ -101,12 +101,12 @@ var ExpressionManager = (function(){
         var tOfA = typeof a;
         var tOfB = typeof b;
         var arr;
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
             return a * b;
         }
 
         var i, len;
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -114,7 +114,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -129,11 +129,11 @@ var ExpressionManager = (function(){
         var tOfA = typeof a;
         var tOfB = typeof b;
         var arr;
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
             return a / b;
         }
         var i, len;
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -141,7 +141,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -174,6 +174,10 @@ var ExpressionManager = (function(){
     var helperLengthArray = [0,0,0,0,0,0];
 
     function length(arr1,arr2){
+        if(typeof arr1 === "number"){
+            arr2 = arr2 || 0;
+            return Math.abs(arr1 - arr2);
+        }
         if(!arr2){
             arr2 = helperLengthArray;
         }
@@ -254,10 +258,6 @@ var ExpressionManager = (function(){
         }
         return arr;
     }
-
-    function seedRandom(seed){
-        BMMath.seedrandom(seed);
-    };
     function random(min,max){
         if(max === undefined){
             if(min === undefined){
@@ -591,11 +591,16 @@ var ExpressionManager = (function(){
             return fromworldMatrix.inversePoints(pts)[0];
         }
 
+        function seedRandom(seed){
+            BMMath.seedrandom(randSeed + seed);
+        };
+
         var time,velocity, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
+        var randSeed = Math.floor(Math.random()*1000000);
         function execute(){
-            //seedRandom(0);
+            seedRandom(randSeed);
             if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
                 return;
             }

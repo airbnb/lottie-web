@@ -108,7 +108,7 @@ var ShapeExpressionInterface = (function(){
                }
                var i = 0, len = interfaces.length;
                while(i<len){
-                   if(interfaces[i]._name === value){
+                   if(interfaces[i]._name === value || interfaces[i].mn === value){
                        return interfaces[i];
                    }
                    i+=1;
@@ -121,8 +121,8 @@ var ShapeExpressionInterface = (function(){
                    return propertyGroup(val-1);
                }
            };
-
            interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
+           interfaceFunction.numProperties = interfaces.length;
 
            return interfaceFunction;
        }
@@ -180,7 +180,9 @@ var ShapeExpressionInterface = (function(){
                 }
             });
             //interfaceFunction.content = interfaceFunction;
+            interfaceFunction.numProperties = 1;
             interfaceFunction.nm = shape.nm;
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -203,7 +205,8 @@ var ShapeExpressionInterface = (function(){
                     }
                     return view.o.v;
                 },
-                _name: shape.nm
+                _name: shape.nm,
+                mn: shape.mn
             };
             return ob;
         }
@@ -254,7 +257,8 @@ var ShapeExpressionInterface = (function(){
                     }
                     return this.dashOb;
                 },
-                _name: shape.nm
+                _name: shape.nm,
+                mn: shape.mn
             };
             return ob;
         }
@@ -316,6 +320,7 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -429,6 +434,7 @@ var ShapeExpressionInterface = (function(){
                 }
             });
             interfaceFunction.ty = 'tr';
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -475,6 +481,7 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -591,6 +598,7 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -664,6 +672,7 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -701,6 +710,7 @@ var ShapeExpressionInterface = (function(){
                     return shape.nm;
                 }
             });
+            interfaceFunction.mn = shape.mn;
             return interfaceFunction;
         }
     }());
@@ -722,7 +732,8 @@ var ShapeExpressionInterface = (function(){
                     }
                     return prop.v;
                 },
-                _name: shape.nm
+                _name: shape.nm,
+                mn: shape.mn
             }
             return ob;
         }

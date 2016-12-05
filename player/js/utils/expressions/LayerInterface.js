@@ -30,6 +30,7 @@ var LayerExpressionInterface = (function (){
                 case "ADBE Root Vectors Group":
                 case 2:
                     return _thisLayerFunction.shapeInterface;
+                case 1:
                 case "Transform":
                 case "transform":
                 case "ADBE Transform Group":

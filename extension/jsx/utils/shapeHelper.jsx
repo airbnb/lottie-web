@@ -378,7 +378,8 @@ var bm_shapeHelper = (function () {
                     ob = {
                         ty : itemType,
                         it: [],
-                        nm: prop.name
+                        nm: prop.name,
+                        np: prop.property('Contents').numProperties
                     };
                     navigationShapeTree.push(prop.name);
                     iterateProperties(prop.property('Contents'), ob.it, frameRate, isText);
@@ -415,6 +416,7 @@ var bm_shapeHelper = (function () {
                 }
                 if (ob) {
                     ob.nm = prop.name;
+                    ob.mn = prop.matchName;
                     var layerAttributes = bm_generalUtils.findAttributes(prop.name);
                     if(layerAttributes.ln){
                         ob.ln = layerAttributes.ln;
