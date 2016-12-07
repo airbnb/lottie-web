@@ -137,9 +137,11 @@ SVGTextElement.prototype.buildNewText = function(){
         this.textSpans[cnt] = tSpan;
         cnt += 1;
     }
-    while(cnt < this.textSpans.length){
-        this.textSpans[cnt].style.display = 'none';
-        cnt += 1;
+    if(!singleShape){
+        while(cnt < this.textSpans.length){
+            this.textSpans[cnt].style.display = 'none';
+            cnt += 1;
+        }
     }
     if(singleShape && this.globalData.fontManager.chars){
         tSpan.setAttribute('d',shapeStr);

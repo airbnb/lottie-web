@@ -401,7 +401,7 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         var loopOut = function loopOut(type,duration,durationFlag){
-            if(!this.k){
+            if(!this.k || !this.keyframes){
                 return this.pv;
             }
             var currentFrame = time*elem.comp.globalData.frameRate;
