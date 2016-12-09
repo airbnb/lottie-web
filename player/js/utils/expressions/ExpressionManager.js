@@ -189,6 +189,10 @@ var ExpressionManager = (function(){
         return Math.sqrt(addedLength);
     }
 
+    function normalize(vec){
+        return div(vec, length(vec));
+    }
+
     function rgbToHsl(val){
         var r = val[0]; var g = val[1]; var b = val[2];
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
