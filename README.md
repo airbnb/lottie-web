@@ -2,9 +2,10 @@
 After Effects plugin for exporting animations to svg/canvas/html + js
 
 ## V 4.4.28
-- expressions: better seeded random, properties by matchName
+- expressions: better seeded random, properties by matchName, normalize support
 - single shape text with keyframes fix
 - masked track matted comps fix
+- trim path 0% to 100% fix
 
 ## V 4.4.27
 - playSegments fix

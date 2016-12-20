@@ -3200,18 +3200,16 @@ var ShapePropertyFactory = (function(){
     }
 
     function resetShape(){
-        if(this.paths.length){
-            this.paths.length = 1;
-            this.paths[0] = this.v;
-        } else {
-            this.paths = [this.v];
-        }
+        this.resetPaths.length = 1;
+        this.resetPaths[0] = this.v;
+        this.paths = this.resetPaths;
         if(!this.k){
             this.mdf = false;
         }
     }
 
     function ShapeProperty(elem, data, type){
+        this.resetPaths = [];
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
@@ -3224,6 +3222,7 @@ var ShapePropertyFactory = (function(){
     }
 
     function KeyframedShapeProperty(elem,data,type){
+        this.resetPaths = [];
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
@@ -3326,6 +3325,7 @@ var ShapePropertyFactory = (function(){
             this.numNodes = 4;
             this.d = data.d;
             this.dynamicProperties = [];
+            this.resetPaths = [];
             this.paths = [];
             this.elem = elem;
             this.comp = elem.comp;
@@ -3438,6 +3438,7 @@ var ShapePropertyFactory = (function(){
                 o: [],
                 c: true
             };
+            this.resetPaths = [];
             this.elem = elem;
             this.comp = elem.comp;
             this.data = data;
@@ -3597,7 +3598,7 @@ var ShapePropertyFactory = (function(){
                 o: Array.apply(null,{length:8}),
                 c: true
             };
-            this.idd = randomString(10);
+            this.resetPaths = [];
             this.paths = [];
             this.numNodes = 8;
             this.elem = elem;
@@ -3773,6 +3774,14 @@ TrimModifier.prototype.processShapes = function(firstFrame){
         for(i=0;i<len;i+=1){
             this.shapes[i].shape.paths = [];
             this.shapes[i].shape.mdf = true;
+        }
+    } else if((e === 1 && s === 0) || (e===0 && s === 1)){
+        for(i=0;i<len;i+=1){
+            shapeData = this.shapes[i];
+            if(shapeData.shape.paths !== shapeData.last){
+                shapeData.shape.mdf = true;
+                shapeData.last = shapeData.shape.paths;
+            }
         }
     } else {
         var segments = [], shapeData, newShapes;
@@ -5174,6 +5183,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.comp = comp;
     this.data = data;
     this.matteElement = null;
+    this.transformedElement = null;
     this.parentContainer = parentContainer;
     this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.placeholder = placeholder;
@@ -5183,13 +5193,19 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.createElements = function(){
+    this.layerElement = document.createElementNS(svgNS,'g');
+    this.transformedElement = this.layerElement;
+    if(this.data.hasMask){
+        this.maskedElement = this.layerElement;
+    }
+    var layerElementParent = null;
     if(this.data.td){
         if(this.data.td == 3 || this.data.td == 1){
-            this.layerElement = document.createElementNS(svgNS,'g');
             var masker = document.createElementNS(svgNS,'mask');
             masker.setAttribute('id',this.layerId);
             masker.setAttribute('mask-type',this.data.td == 3 ? 'luminance':'alpha');
             masker.appendChild(this.layerElement);
+            layerElementParent = masker;
             this.globalData.defs.appendChild(masker);
             ////// This is only for IE and Edge when mask if of type alpha
             if(!featureSupport.maskType && this.data.td == 1){
@@ -5200,7 +5216,9 @@ SVGBaseElement.prototype.createElements = function(){
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
                 var gg = document.createElementNS(svgNS,'g');
                 gg.appendChild(this.layerElement);
+                layerElementParent = gg;
                 masker.appendChild(gg);
+                console.log('eee');
                 gg.setAttribute('filter','url(#'+filId+')');
             }
         }else if(this.data.td == 2){
@@ -5209,7 +5227,6 @@ SVGBaseElement.prototype.createElements = function(){
             maskGroup.setAttribute('mask-type','alpha');
             var maskGrouper = document.createElementNS(svgNS,'g');
             maskGroup.appendChild(maskGrouper);
-            this.layerElement = document.createElementNS(svgNS,'g');
             var filId = randomString(10);
             var fil = filtersFactory.createFilter(filId);
             ////
@@ -5239,39 +5256,29 @@ SVGBaseElement.prototype.createElements = function(){
             maskGrouper.setAttribute('filter','url(#'+filId+')');
             maskGrouper.appendChild(alphaRect);
             maskGrouper.appendChild(this.layerElement);
+            layerElementParent = maskGrouper;
             if(!featureSupport.maskType){
                 maskGroup.setAttribute('mask-type','luminance');
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
                 var gg = document.createElementNS(svgNS,'g');
                 maskGrouper.appendChild(alphaRect);
                 gg.appendChild(this.layerElement);
+                layerElementParent = gg;
                 maskGrouper.appendChild(gg);
             }
             this.globalData.defs.appendChild(maskGroup);
-        }else{
-            this.layerElement = document.createElementNS(svgNS,'g');
-        }
-        if(this.data.hasMask){
-            this.maskedElement = this.layerElement;
         }
     }else if(this.data.hasMask || this.data.tt){
-        this.layerElement = document.createElementNS(svgNS,'g');
         if(this.data.tt){
             this.matteElement = document.createElementNS(svgNS,'g');
             this.matteElement.appendChild(this.layerElement);
+            layerElementParent = this.matteElement;
             this.baseElement = this.matteElement;
-            //this.appendNodeToParent(this.matteElement);
         }else{
             this.baseElement = this.layerElement;
-            //this.appendNodeToParent(this.layerElement);
-        }
-        if(this.data.hasMask){
-            this.maskedElement = this.layerElement;
         }
     }else{
-        this.layerElement = document.createElementNS(svgNS,'g');
         this.baseElement = this.layerElement;
-        //this.appendNodeToParent(this.layerElement);
     }
     if((this.data.ln || this.data.cl) && (this.data.ty === 4 || this.data.ty === 0)){
         if(this.data.ln){
@@ -5281,15 +5288,28 @@ SVGBaseElement.prototype.createElements = function(){
             this.layerElement.setAttribute('class',this.data.cl);
         }
     }
-    if(this.data.ty === 0 && !this.checkMasks()){
-        var cp = document.createElementNS(svgNS, 'clipPath');
-        var pt = document.createElementNS(svgNS,'path');
-        pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
-        var clipId = 'cp_'+randomString(8);
-        cp.setAttribute('id',clipId);
-        this.layerElement.setAttribute('clip-path','url(#'+clipId+')');
-        cp.appendChild(pt);
-        this.globalData.defs.appendChild(cp);
+    if(this.data.ty === 0){
+            var cp = document.createElementNS(svgNS, 'clipPath');
+            var pt = document.createElementNS(svgNS,'path');
+            pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
+            var clipId = 'cp_'+randomString(8);
+            cp.setAttribute('id',clipId);
+            cp.appendChild(pt);
+            this.globalData.defs.appendChild(cp);
+        if(this.checkMasks()){
+            var cpGroup = document.createElementNS(svgNS,'g');
+            cpGroup.setAttribute('clip-path','url(#'+clipId+')');
+            cpGroup.appendChild(this.layerElement);
+            this.transformedElement = cpGroup;
+            if(layerElementParent){
+                layerElementParent.appendChild(this.transformedElement);
+            } else {
+                this.baseElement = this.transformedElement;
+            }
+        } else {
+            this.layerElement.setAttribute('clip-path','url(#'+clipId+')');
+        }
+        
     }
     if(this.data.bm !== 0){
         this.setBlendMode();
@@ -5414,10 +5434,10 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf;
     }
     if(this.finalTransform.matMdf && this.layerElement){
-        this.layerElement.setAttribute('transform',finalMat.to2dCSS());
+        this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
     }
     if(this.finalTransform.opMdf && this.layerElement){
-        this.layerElement.setAttribute('opacity',this.finalTransform.opacity);
+        this.transformedElement.setAttribute('opacity',this.finalTransform.opacity);
     }
 
     if(this.data.hasMask){
@@ -6182,9 +6202,11 @@ SVGTextElement.prototype.buildNewText = function(){
         this.textSpans[cnt] = tSpan;
         cnt += 1;
     }
-    while(cnt < this.textSpans.length){
-        this.textSpans[cnt].style.display = 'none';
-        cnt += 1;
+    if(!singleShape){
+        while(cnt < this.textSpans.length){
+            this.textSpans[cnt].style.display = 'none';
+            cnt += 1;
+        }
     }
     if(singleShape && this.globalData.fontManager.chars){
         tSpan.setAttribute('d',shapeStr);
@@ -7739,6 +7761,7 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
+    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 
@@ -7925,6 +7948,7 @@ AnimationItem.prototype.destroy = function (name) {
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
+    //console.log(this.totalFrames);
     if (this.currentRawFrame >= this.totalFrames) {
         this.checkSegments();
         if(this.loop === false){
@@ -8067,4 +8091,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.27'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.28'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
