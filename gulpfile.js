@@ -300,3 +300,11 @@ gulp.task('createExtensionFiles',['createExtensionAsset','createExtensionStandAl
 
 gulp.task('buildAll',['buildLightMin','buildLight','buildFullMin','buildFull','createExtensionFiles'], function() {
 });
+
+gulp.task('buildAudio', function(){
+    gulp.src('./player/tests/demos/audio/index.html')
+        .pipe(usemin({
+            js: [uglify()]
+        }))
+        .pipe(gulp.dest('./player/tests/demos/audio/'));
+});

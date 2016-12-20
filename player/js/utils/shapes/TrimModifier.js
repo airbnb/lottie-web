@@ -80,6 +80,14 @@ TrimModifier.prototype.processShapes = function(firstFrame){
             this.shapes[i].shape.paths = [];
             this.shapes[i].shape.mdf = true;
         }
+    } else if((e === 1 && s === 0) || (e===0 && s === 1)){
+        for(i=0;i<len;i+=1){
+            shapeData = this.shapes[i];
+            if(shapeData.shape.paths !== shapeData.last){
+                shapeData.shape.mdf = true;
+                shapeData.last = shapeData.shape.paths;
+            }
+        }
     } else {
         var segments = [], shapeData, newShapes;
         for(i=0;i<len;i+=1){

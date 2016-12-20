@@ -325,6 +325,7 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
+    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 
@@ -511,6 +512,7 @@ AnimationItem.prototype.destroy = function (name) {
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
+    //console.log(this.totalFrames);
     if (this.currentRawFrame >= this.totalFrames) {
         this.checkSegments();
         if(this.loop === false){

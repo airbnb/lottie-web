@@ -124,18 +124,16 @@ var ShapePropertyFactory = (function(){
     }
 
     function resetShape(){
-        if(this.paths.length){
-            this.paths.length = 1;
-            this.paths[0] = this.v;
-        } else {
-            this.paths = [this.v];
-        }
+        this.resetPaths.length = 1;
+        this.resetPaths[0] = this.v;
+        this.paths = this.resetPaths;
         if(!this.k){
             this.mdf = false;
         }
     }
 
     function ShapeProperty(elem, data, type){
+        this.resetPaths = [];
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
@@ -148,6 +146,7 @@ var ShapePropertyFactory = (function(){
     }
 
     function KeyframedShapeProperty(elem,data,type){
+        this.resetPaths = [];
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
@@ -250,6 +249,7 @@ var ShapePropertyFactory = (function(){
             this.numNodes = 4;
             this.d = data.d;
             this.dynamicProperties = [];
+            this.resetPaths = [];
             this.paths = [];
             this.elem = elem;
             this.comp = elem.comp;
@@ -362,6 +362,7 @@ var ShapePropertyFactory = (function(){
                 o: [],
                 c: true
             };
+            this.resetPaths = [];
             this.elem = elem;
             this.comp = elem.comp;
             this.data = data;
@@ -521,7 +522,7 @@ var ShapePropertyFactory = (function(){
                 o: Array.apply(null,{length:8}),
                 c: true
             };
-            this.idd = randomString(10);
+            this.resetPaths = [];
             this.paths = [];
             this.numNodes = 8;
             this.elem = elem;
