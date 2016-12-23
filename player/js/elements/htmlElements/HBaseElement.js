@@ -36,6 +36,7 @@ HBaseElement.prototype.getBaseElement = function(){
 HBaseElement.prototype.createElements = function(){
     if(this.data.hasMask){
         this.layerElement = document.createElementNS(svgNS,'svg');
+        styleDiv(this.layerElement);
         //this.appendNodeToParent(this.layerElement);
         this.baseElement = this.layerElement;
         this.maskedElement = this.layerElement;

@@ -13,6 +13,7 @@ HImageElement.prototype.createElements = function(){
         var parent = document.createElement('div');
         styleDiv(parent);
         var cont = document.createElementNS(svgNS,'svg');
+        styleDiv(cont);
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
         parent.appendChild(cont);

@@ -28,6 +28,7 @@ HTextElement.prototype.createElements = function(){
     if(this.isMasked){
         this.renderType = 'svg';
         var cont = document.createElementNS(svgNS,'svg');
+        styleDiv(cont);
         this.cont = cont;
         this.compW = this.comp.data ? this.comp.data.w : this.globalData.compSize.w;
         this.compH = this.comp.data ? this.comp.data.h : this.globalData.compSize.h;

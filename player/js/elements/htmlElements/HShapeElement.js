@@ -25,6 +25,7 @@ HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
     var cont = document.createElementNS(svgNS,'svg');
+    styleDiv(cont);
     var size = this.comp.data ? this.comp.data : this.globalData.compSize;
     cont.setAttribute('width',size.w);
     cont.setAttribute('height',size.h);
