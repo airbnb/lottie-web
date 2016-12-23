@@ -22,6 +22,7 @@ HImageElement.prototype.createElements = function(){
         this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
         cont.appendChild(this.imageElem);
         this.layerElement = parent;
+        this.transformedElement = parent;
         this.baseElement = parent;
         this.innerElem = parent;
         this.maskedElement = this.imageElem;

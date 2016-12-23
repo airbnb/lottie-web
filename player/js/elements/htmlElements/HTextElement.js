@@ -24,6 +24,7 @@ HTextElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
     this.layerElement = parent;
+    this.transformedElement = parent;
     if(this.isMasked){
         this.renderType = 'svg';
         var cont = document.createElementNS(svgNS,'svg');
@@ -43,6 +44,7 @@ HTextElement.prototype.createElements = function(){
     }
     this.baseElement = parent;
 
+    this.checkParenting();
 
 };
 
@@ -100,7 +102,7 @@ HTextElement.prototype.buildNewText = function(){
             if(!this.isMasked){
                 if(this.textSpans[cnt]){
                     tParent = this.textSpans[cnt];
-                    tCont = tParent.children()[0];
+                    tCont = tParent.children[0];
                 } else {
 
                     tParent = document.createElement('div');

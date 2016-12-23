@@ -11,6 +11,7 @@ HSolidElement.prototype.createElements = function(){
     cont.setAttribute('height',this.data.sh);
     parent.appendChild(cont);
     this.layerElement = parent;
+    this.transformedElement = parent;
     //this.appendNodeToParent(parent);
     this.baseElement = parent;
     this.innerElem = parent;

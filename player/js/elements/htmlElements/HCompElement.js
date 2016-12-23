@@ -36,9 +36,11 @@ HCompElement.prototype.createElements = function(){
         this.maskedElement = g;
         this.baseElement = divElement;
         this.layerElement = g;
+        this.transformedElement = divElement;
     }else{
         this.layerElement = divElement;
         this.baseElement = this.layerElement;
+        this.transformedElement = divElement;
     }
     //this.appendNodeToParent(this.layerElement);
     this.checkParenting();
