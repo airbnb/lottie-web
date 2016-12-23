@@ -181,6 +181,7 @@ HTextElement.prototype.buildNewText = function(){
         }else{
             this.textSpans[cnt] = tSpan;
         }
+        this.textSpans[cnt].style.display = 'block';
         this.textPaths[cnt] = tSpan;
         cnt += 1;
     }
