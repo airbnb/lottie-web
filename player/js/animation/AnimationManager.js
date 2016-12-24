@@ -187,11 +187,7 @@ var animationManager = (function(){
     function activate(){
         if(idled){
             idled = false;
-            if(Performance && Performance.now){
-                first(Performance.now);
-            } else {
-                requestAnimationFrame(first);
-            }
+            requestAnimationFrame(first);
         }
     }
 
