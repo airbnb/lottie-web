@@ -1,3 +1,7 @@
+## V 4.4.29
+- Trim path fix
+- html renderer fixes
+
 ## V 4.4.28
 - expressions: better seeded random, properties by matchName, normalize support
 - single shape text with keyframes fix

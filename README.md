@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.29
+- Trim path fix
+- html renderer fixes
+
 ## V 4.4.28
 - expressions: better seeded random, properties by matchName, normalize support
 - single shape text with keyframes fix
@@ -16,34 +20,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - Layer Index expression support
 - Nested group effects fix
 
-## V 4.4.25
-- text properties matched by matchName
-- destroy anims fix for animation count
-- checking callbacks array before dispatching event
-
-## V 4.4.24
-- text mask path fixes
-- text tracking fix on texts without animators
-- transform yPosition and xPosition expression interface
-- rounded corners expression interface
-- shape hold keyframes last frame fix
-- mask with single vertex fix
-- reversed shapes on hold keyframes fix
-- shape interfaces fixes
-- fromWorld and toWorld expression support
-- function invoked from function expression support
-- inner grouped shapes transformation fix
-- opacity on masks supported for svg renderer
-- duplicate ellipse export fix
-- rounded corners on rectangle shapes fix
-- rounded corners multiple shapes fix
-- time remapped stretched layers fix
-- shapes with no vertices fix
-- more stroke effect types support
-- luminance mask fix
-- alpha mask support IE and Edge
-
-## Installing extension: Finally the plugin is on the Adobe add-ons.
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
 CC 2014 and up.
