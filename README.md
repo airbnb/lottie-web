@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.4.30
+- Gradient Fill default value breaking render fix
+- Demo file fix when json is renamed
+
 ## V 4.4.29
 - Trim path fix
 - html renderer fixes
