@@ -149,6 +149,23 @@ var animationManager = (function(){
         }
     }
 
+    function getRegisteredAnimation(elem){
+      var animItem;
+      for(i = 0; i < registeredAnimations.length; i++){
+        registeredAnimation = registeredAnimations[i];
+
+        if (registeredAnimation.elem && registeredAnimation.elem == elem){
+          animItem = registeredAnimation.animation
+        }
+      }
+
+      return animItem
+    }
+
+    function getRegisteredAnimations(){
+      return registeredAnimations
+    }
+
     function searchAnimations(animationData, standalone, renderer){
         var animElements = document.getElementsByClassName('bodymovin');
         var i, len = animElements.length;
@@ -205,6 +222,8 @@ var animationManager = (function(){
     moduleOb.stop = stop;
     moduleOb.togglePause = togglePause;
     moduleOb.searchAnimations = searchAnimations;
+    moduleOb.getRegisteredAnimation = getRegisteredAnimation;
+    moduleOb.getRegisteredAnimations = getRegisteredAnimations;
     moduleOb.resize = resize;
     moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
