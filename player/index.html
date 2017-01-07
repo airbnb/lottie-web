@@ -58,6 +58,11 @@
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
     <script src="js/elements/svgElements/SVGTextElement.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTintEffect.js"></script>
+    <script src="js/elements/svgElements/effects/SVGFillFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGStrokeEffect.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTritoneFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGProLevelsFilter.js"></script>
     <script src="js/elements/svgElements/SVGEffects.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
@@ -106,12 +111,12 @@
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:true
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/data2.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

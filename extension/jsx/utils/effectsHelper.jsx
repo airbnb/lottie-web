@@ -16,7 +16,9 @@ var bm_effectsHelper = (function () {
         layerIndex: 10,
         tint: 20,
         fill: 21,
-        stroke: 22
+        stroke: 22,
+        tritone: 23,
+        proLevels: 24
     };
     
     function getEffectType(name) {
@@ -27,6 +29,10 @@ var bm_effectsHelper = (function () {
             return effectTypes.fill;
         case 'ADBE Stroke':
             return effectTypes.stroke;
+        case 'ADBE Tritone':
+            return effectTypes.tritone;
+        case 'ADBE Pro Levels2':
+            return effectTypes.proLevels;
         default:
             return effectTypes.group;
         }
@@ -225,8 +231,7 @@ var bm_effectsHelper = (function () {
             effectElement = effects(i + 1);
             var effectType = getEffectType(effectElement.matchName);
             //If the effect is not a Slider Control and is not enabled, it won't be exported.
-            if(effectType !== effectTypes.group && !effects(i + 1).enabled){
-                //bm_eventDispatcher.log('PASO');
+            if(effectType !== effectTypes.group && !effectElement.enabled){
                 continue;
             }
             effectsArray.push(exportCustomEffect(effectElement ,effectType, frameRate));
