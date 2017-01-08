@@ -1,3 +1,7 @@
+## V 4.5.0
+- Tritone effect supported
+- Levels effect supported. The one called "Levels (Individual Controls)"
+
 ## V 4.4.30
 - Gradient Fill default value breaking render fix
 - Demo file fix when json is renamed
