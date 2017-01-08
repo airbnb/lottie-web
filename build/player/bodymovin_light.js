@@ -3927,235 +3927,6 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
 
 
 ShapeModifiers.registerModifier('tm',TrimModifier);
-function MouseModifier(){};
-extendPrototype(ShapeModifier,MouseModifier);
-MouseModifier.prototype.processKeys = function(forceRender){
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
-        return;
-    }
-    this.mdf = true;
-
-};
-
-MouseModifier.prototype.addShapeToModifier = function(){
-    this.positions.push([]);
-};
-
-MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
-    var i, len = path.v.length;
-    var vValues = [],oValues = [],iValues = [];
-    var dist;
-    //console.log(mouseCoords);
-    var theta, x,y;
-    //// OPTION A
-    for(i=0;i<len;i+=1){
-        if(!positions.v[i]){
-            positions.v[i] = [path.v[i][0],path.v[i][1]];
-            positions.o[i] = [path.o[i][0],path.o[i][1]];
-            positions.i[i] = [path.i[i][0],path.i[i][1]];
-            positions.distV[i] = 0;
-            positions.distO[i] = 0;
-            positions.distI[i] = 0;
-
-        }
-        theta = Math.atan2(
-            path.v[i][1] - mouseCoords[1],
-            path.v[i][0] - mouseCoords[0]
-        );
-
-        x = mouseCoords[0] - positions.v[i][0];
-        y = mouseCoords[1] - positions.v[i][1];
-        var distance = Math.sqrt( (x * x) + (y * y) );
-        positions.distV[i] += (distance - positions.distV[i]) * this.data.dc;
-
-        positions.v[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][0]);
-        positions.v[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
-
-
-        theta = Math.atan2(
-            path.o[i][1] - mouseCoords[1],
-            path.o[i][0] - mouseCoords[0]
-        );
-
-        x = mouseCoords[0] - positions.o[i][0];
-        y = mouseCoords[1] - positions.o[i][1];
-        var distance = Math.sqrt( (x * x) + (y * y) );
-        positions.distO[i] += (distance - positions.distO[i]) * this.data.dc;
-
-        positions.o[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][0]);
-        positions.o[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
-
-
-        theta = Math.atan2(
-            path.i[i][1] - mouseCoords[1],
-            path.i[i][0] - mouseCoords[0]
-        );
-
-        x = mouseCoords[0] - positions.i[i][0];
-        y = mouseCoords[1] - positions.i[i][1];
-        var distance = Math.sqrt( (x * x) + (y * y) );
-        positions.distI[i] += (distance - positions.distI[i]) * this.data.dc;
-
-        positions.i[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
-        positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
-
-        /////OPTION 1
-        vValues.push(positions.v[i]);
-         oValues.push(positions.o[i]);
-         iValues.push(positions.i[i]);
-
-
-
-        /////OPTION 2
-        //vValues.push(positions.v[i]);
-        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
-        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
-
-
-
-        /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
-
-
-        /////OPTION 4
-        //vValues.push(path.v[i]);
-         //oValues.push(positions.o[i]);
-         //iValues.push(positions.i[i]);
-    }
-
-
-
-    //// OPTION B
-    /*for(i=0;i<len;i+=1){
-        if(!positions.v[i]){
-            positions.v[i] = [path.v[i][0],path.v[i][1]];
-            positions.o[i] = [path.o[i][0],path.o[i][1]];
-            positions.i[i] = [path.i[i][0],path.i[i][1]];
-            positions.distV[i] = 0;
-
-        }
-        theta = Math.atan2(
-            positions.v[i][1] - mouseCoords[1],
-            positions.v[i][0] - mouseCoords[0]
-        );
-        x = mouseCoords[0] - positions.v[i][0];
-        y = mouseCoords[1] - positions.v[i][1];
-        var distance = this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
-
-        positions.v[i][0] += Math.cos(theta) * distance + (path.v[i][0] - positions.v[i][0]) * this.data.dc;
-        positions.v[i][1] += Math.sin(theta) * distance + (path.v[i][1] - positions.v[i][1]) * this.data.dc;
-
-
-        theta = Math.atan2(
-            positions.o[i][1] - mouseCoords[1],
-            positions.o[i][0] - mouseCoords[0]
-        );
-        x = mouseCoords[0] - positions.o[i][0];
-        y = mouseCoords[1] - positions.o[i][1];
-        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
-
-        positions.o[i][0] += Math.cos(theta) * distance + (path.o[i][0] - positions.o[i][0]) * this.data.dc;
-        positions.o[i][1] += Math.sin(theta) * distance + (path.o[i][1] - positions.o[i][1]) * this.data.dc;
-
-
-        theta = Math.atan2(
-            positions.i[i][1] - mouseCoords[1],
-            positions.i[i][0] - mouseCoords[0]
-        );
-        x = mouseCoords[0] - positions.i[i][0];
-        y = mouseCoords[1] - positions.i[i][1];
-        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
-
-        positions.i[i][0] += Math.cos(theta) * distance + (path.i[i][0] - positions.i[i][0]) * this.data.dc;
-        positions.i[i][1] += Math.sin(theta) * distance + (path.i[i][1] - positions.i[i][1]) * this.data.dc;
-
-        /////OPTION 1
-        //vValues.push(positions.v[i]);
-        // oValues.push(positions.o[i]);
-        // iValues.push(positions.i[i]);
-
-
-
-        /////OPTION 2
-        //vValues.push(positions.v[i]);
-        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
-        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
-
-
-
-        /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
-
-
-        /////OPTION 4
-        //vValues.push(path.v[i]);
-        // oValues.push(positions.o[i]);
-        // iValues.push(positions.i[i]);
-    }*/
-
-
-    return {
-        v:vValues,
-        o:oValues,
-        i:iValues,
-        c:path.c
-    };
-}
-
-MouseModifier.prototype.processShapes = function(){
-    var mouseX = this.elem.globalData.mouseX;
-    var mouseY = this.elem.globalData.mouseY;
-    var shapePaths;
-    var i, len = this.shapes.length;
-    var j, jLen;
-
-    if(mouseX){
-        var localMouseCoords = this.elem.globalToLocal([mouseX,mouseY,0]);
-
-        var shapeData, newPaths = [];
-        for(i=0;i<len;i+=1){
-            shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf){
-                shapeData.shape.paths = shapeData.last;
-            } else {
-                shapeData.shape.mdf = true;
-                shapePaths = shapeData.shape.paths;
-                jLen = shapePaths.length;
-                for(j=0;j<jLen;j+=1){
-                    if(!this.positions[i][j]){
-                        this.positions[i][j] = {
-                            v:[],
-                            o:[],
-                            i:[],
-                            distV:[],
-                            distO:[],
-                            distI:[]
-                        };
-                    }
-                    newPaths.push(this.processPath(shapePaths[j],localMouseCoords, this.positions[i][j]));
-                }
-                shapeData.shape.paths = newPaths;
-                shapeData.last = newPaths;
-            }
-        }
-
-    }
-
-}
-
-MouseModifier.prototype.initModifierProperties = function(elem,data){
-    this.getValue = this.processKeys;
-    this.data = data;
-    this.positions = [];
-};
-
-
-
-ShapeModifiers.registerModifier('ms',MouseModifier);
 function RoundCornersModifier(){};
 extendPrototype(ShapeModifier,RoundCornersModifier);
 RoundCornersModifier.prototype.processKeys = function(forceRender){
@@ -4345,22 +4116,22 @@ var filtersFactory = (function(){
 	ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
 	function createFilter(filId){
-		var fil = document.createElementNS(svgNS,'filter');
-		fil.setAttribute('id',filId);
-        fil.setAttribute('filterUnits','objectBoundingBox');
-        fil.setAttribute('x','0%');
-        fil.setAttribute('y','0%');
-        fil.setAttribute('width','100%');
-        fil.setAttribute('height','100%');
-        return fil;
+        	var fil = document.createElementNS(svgNS,'filter');
+        	fil.setAttribute('id',filId);
+                fil.setAttribute('filterUnits','objectBoundingBox');
+                fil.setAttribute('x','0%');
+                fil.setAttribute('y','0%');
+                fil.setAttribute('width','100%');
+                fil.setAttribute('height','100%');
+                return fil;
 	}
 
 	function createAlphaToLuminanceFilter(){
-        var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
-        feColorMatrix.setAttribute('type','matrix');
-        feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
-        feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1');
-        return feColorMatrix;
+                var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+                feColorMatrix.setAttribute('type','matrix');
+                feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
+                feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1');
+                return feColorMatrix;
 	}
 
 	return ob;
@@ -6272,40 +6043,6 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
 SVGTextElement.prototype.destroy = function(){
     this._parent.destroy.call();
 };
-function SVGEffects(elem){
-    var i, len = elem.data.ef.length;
-    var filId = randomString(10);
-    var fil = filtersFactory.createFilter(filId);
-    var count = 0;
-    this.filters = [];
-    var filterManager;
-    for(i=0;i<len;i+=1){
-        if(elem.data.ef[i].ty === 20){
-            count += 1;
-            filterManager = new SVGTintFilter(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
-        }else if(elem.data.ef[i].ty === 21){
-            count += 1;
-            filterManager = new SVGFillFilter(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
-        }else if(elem.data.ef[i].ty === 22){
-            filterManager = new SVGStrokeEffect(elem, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
-        }
-    }
-    if(count){
-        elem.globalData.defs.appendChild(fil);
-        elem.layerElement.setAttribute('filter','url(#'+filId+')');
-    }
-}
-
-SVGEffects.prototype.renderFrame = function(firstFrame){
-    var i, len = this.filters.length;
-    for(i=0;i<len;i+=1){
-        this.filters[i].renderFrame(firstFrame);
-    }
-};
-
 function SVGTintFilter(filter, filterManager){
     this.filterManager = filterManager;
     var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
@@ -6342,7 +6079,6 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
         this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
 };
-
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
     var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
@@ -6359,7 +6095,6 @@ SVGFillFilter.prototype.renderFrame = function(forceRender){
         this.matrixFilter.setAttribute('values','0 0 0 0 '+color[0]+' 0 0 0 0 '+color[1]+' 0 0 0 0 '+color[2]+' 0 0 0 '+opacity+' 0');
     }
 };
-
 function SVGStrokeEffect(elem, filterManager){
     this.initialized = false;
     this.filterManager = filterManager;
@@ -6462,6 +6197,233 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
             var color = this.filterManager.effectElements[3].p.v;
             this.pathMasker.setAttribute('stroke','rgb('+bm_floor(color[0]*255)+','+bm_floor(color[1]*255)+','+bm_floor(color[2]*255)+')');
         }
+    }
+};
+function SVGTritoneFilter(filter, filterManager){
+    this.filterManager = filterManager;
+    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    feColorMatrix.setAttribute('type','matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
+    feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('result','f1');
+    filter.appendChild(feColorMatrix);
+    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+    filter.appendChild(feComponentTransfer);
+    this.matrixFilter = feComponentTransfer;
+    var feFuncR = document.createElementNS(svgNS,'feFuncR');
+    feFuncR.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFuncR);
+    this.feFuncR = feFuncR;
+    var feFuncG = document.createElementNS(svgNS,'feFuncG');
+    feFuncG.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFuncG);
+    this.feFuncG = feFuncG;
+    var feFuncB = document.createElementNS(svgNS,'feFuncB');
+    feFuncB.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFuncB);
+    this.feFuncB = feFuncB;
+}
+
+SVGTritoneFilter.prototype.renderFrame = function(forceRender){
+    if(forceRender || this.filterManager.mdf){
+        var color1 = this.filterManager.effectElements[0].p.v;
+        var color2 = this.filterManager.effectElements[1].p.v;
+        var color3 = this.filterManager.effectElements[2].p.v;
+        var tableR = color3[0] + ' ' + color2[0] + ' ' + color1[0]
+        var tableG = color3[1] + ' ' + color2[1] + ' ' + color1[1]
+        var tableB = color3[2] + ' ' + color2[2] + ' ' + color1[2]
+        this.feFuncR.setAttribute('tableValues', tableR);
+        this.feFuncG.setAttribute('tableValues', tableG);
+        this.feFuncB.setAttribute('tableValues', tableB);
+        //var opacity = this.filterManager.effectElements[2].p.v/100;
+        //this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
+    }
+};
+function SVGProLevelsFilter(filter, filterManager){
+    this.filterManager = filterManager;
+    var effectElements = this.filterManager.effectElements;
+    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    var feFuncR, feFuncG, feFuncB;
+    
+    if(effectElements[9].p.k || effectElements[9].p.v !== 0 
+        || effectElements[10].p.k || effectElements[10].p.v !== 1
+        || effectElements[11].p.k || effectElements[11].p.v !== 1
+        || effectElements[12].p.k || effectElements[12].p.v !== 0
+        || effectElements[13].p.k || effectElements[13].p.v !== 1){
+        feFuncR = document.createElementNS(svgNS,'feFuncR');
+        feFuncR.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncR);
+        this.feFuncR = feFuncR;
+    }
+    if(effectElements[16].p.k || effectElements[16].p.v !== 0 
+        || effectElements[17].p.k || effectElements[17].p.v !== 1
+        || effectElements[18].p.k || effectElements[18].p.v !== 1
+        || effectElements[19].p.k || effectElements[19].p.v !== 0
+        || effectElements[20].p.k || effectElements[20].p.v !== 1){
+        feFuncG = document.createElementNS(svgNS,'feFuncG');
+        feFuncG.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncG);
+        this.feFuncG = feFuncG;
+    }
+    if(effectElements[23].p.k || effectElements[23].p.v !== 0 
+        || effectElements[24].p.k || effectElements[24].p.v !== 1
+        || effectElements[25].p.k || effectElements[25].p.v !== 1
+        || effectElements[26].p.k || effectElements[26].p.v !== 0
+        || effectElements[27].p.k || effectElements[27].p.v !== 1){
+        var feFuncB = document.createElementNS(svgNS,'feFuncB');
+        feFuncB.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncB);
+        this.feFuncB = feFuncB;
+    }
+    if(effectElements[30].p.k || effectElements[30].p.v !== 0 
+        || effectElements[31].p.k || effectElements[31].p.v !== 1
+        || effectElements[32].p.k || effectElements[32].p.v !== 1
+        || effectElements[33].p.k || effectElements[33].p.v !== 0
+        || effectElements[34].p.k || effectElements[34].p.v !== 1){
+        var feFuncA = document.createElementNS(svgNS,'feFuncA');
+        feFuncA.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncA);
+        this.feFuncA = feFuncA;
+    }
+    
+    if(this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA){
+        feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+        filter.appendChild(feComponentTransfer);
+        feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    }
+
+    if(effectElements[2].p.k || effectElements[2].p.v !== 0 
+        || effectElements[3].p.k || effectElements[3].p.v !== 1
+        || effectElements[4].p.k || effectElements[4].p.v !== 1
+        || effectElements[5].p.k || effectElements[5].p.v !== 0
+        || effectElements[6].p.k || effectElements[6].p.v !== 1){
+
+        feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+        filter.appendChild(feComponentTransfer);
+        feFuncR = document.createElementNS(svgNS,'feFuncR');
+        feFuncR.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncR);
+        this.feFuncRComposed = feFuncR;
+        feFuncG = document.createElementNS(svgNS,'feFuncG');
+        feFuncG.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncG);
+        this.feFuncGComposed = feFuncG;
+        feFuncB = document.createElementNS(svgNS,'feFuncB');
+        feFuncB.setAttribute('type','table');
+        feComponentTransfer.appendChild(feFuncB);
+        this.feFuncBComposed = feFuncB;
+    }
+}
+
+SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfoer) {
+    var feFunc = document.createElementNS(svgNS,type);
+    feFunc.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFunc);
+    return feFunc;
+}
+
+SVGProLevelsFilter.prototype.getTableValue = function(redInputBlack, redInputWhite, gamma, redOutputBlack, redOutputWhite) {
+    var cnt = Math.min(redInputBlack,0);
+    var val = redOutputBlack;
+    if(gamma === 1){
+        bezier = {get: function(val){return val}}
+    } else if(gamma > 1){
+        perc = (gamma - 1)/4;
+        bezier = BezierFactory.getBezierEasing(0, perc, 1 - perc, 1)
+    } else{
+        perc = gamma/1;
+        bezier = BezierFactory.getBezierEasing(1 - perc, 0, 1, perc)
+    }
+    while(cnt<1){
+        perc = bezier.get(cnt);
+        if(cnt<0){
+
+        }else if(perc <= redInputBlack){
+            val += ' '+redOutputBlack
+        } else if(perc > redInputBlack && perc < redInputWhite){
+            val += ' '+(redOutputBlack + (redOutputWhite - redOutputBlack)*((perc-redInputBlack)/(redInputWhite-redInputBlack)))
+        }else {
+            val += ' '+redOutputWhite
+        }
+        cnt += 1/255;
+    }
+    return val;
+}
+
+SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
+    if(forceRender || this.filterManager.mdf){
+        var redInputBlack, redInputWhite, redOutputBlack, redOutputWhite;
+        var val, cnt, perc, bezier;
+        var effectElements = this.filterManager.effectElements;
+        if(this.feFuncRComposed && (forceRender || effectElements[2].p.mdf || effectElements[3].p.mdf || effectElements[4].p.mdf || effectElements[5].p.mdf || effectElements[6].p.mdf)){
+            val = this.getTableValue(effectElements[2].p.v,effectElements[3].p.v,effectElements[4].p.v,effectElements[5].p.v,effectElements[6].p.v)
+            this.feFuncRComposed.setAttribute('tableValues',val)
+            this.feFuncGComposed.setAttribute('tableValues',val)
+            this.feFuncBComposed.setAttribute('tableValues',val)
+        }
+
+        if(this.feFuncR && (forceRender || effectElements[9].p.mdf || effectElements[10].p.mdf || effectElements[11].p.mdf || effectElements[12].p.mdf || effectElements[13].p.mdf)){
+            val = this.getTableValue(effectElements[9].p.v,effectElements[10].p.v,effectElements[11].p.v,effectElements[12].p.v,effectElements[13].p.v)
+            this.feFuncR.setAttribute('tableValues',val)
+        }
+
+        if(this.feFuncG && (forceRender || effectElements[16].p.mdf || effectElements[17].p.mdf || effectElements[18].p.mdf || effectElements[19].p.mdf || effectElements[20].p.mdf)){
+            val = this.getTableValue(effectElements[16].p.v,effectElements[17].p.v,effectElements[18].p.v,effectElements[19].p.v,effectElements[20].p.v)
+            this.feFuncG.setAttribute('tableValues',val)
+        }
+
+        if(this.feFuncB && (forceRender || effectElements[23].p.mdf || effectElements[24].p.mdf || effectElements[25].p.mdf || effectElements[26].p.mdf || effectElements[27].p.mdf)){
+            val = this.getTableValue(effectElements[23].p.v,effectElements[24].p.v,effectElements[25].p.v,effectElements[26].p.v,effectElements[27].p.v)
+            this.feFuncB.setAttribute('tableValues',val)
+        }
+
+        if(this.feFuncA && (forceRender || effectElements[30].p.mdf || effectElements[31].p.mdf || effectElements[32].p.mdf || effectElements[33].p.mdf || effectElements[34].p.mdf)){
+            val = this.getTableValue(effectElements[30].p.v,effectElements[31].p.v,effectElements[32].p.v,effectElements[33].p.v,effectElements[34].p.v)
+            this.feFuncA.setAttribute('tableValues',val)
+        }
+        
+    }
+};
+function SVGEffects(elem){
+    var i, len = elem.data.ef.length;
+    var filId = randomString(10);
+    var fil = filtersFactory.createFilter(filId);
+    var count = 0;
+    this.filters = [];
+    var filterManager;
+    for(i=0;i<len;i+=1){
+        if(elem.data.ef[i].ty === 20){
+            count += 1;
+            filterManager = new SVGTintFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 21){
+            count += 1;
+            filterManager = new SVGFillFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 22){
+            filterManager = new SVGStrokeEffect(elem, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 23){
+            count += 1;
+            filterManager = new SVGTritoneFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 24){
+            count += 1;
+            filterManager = new SVGProLevelsFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }
+    }
+    if(count){
+        elem.globalData.defs.appendChild(fil);
+        elem.layerElement.setAttribute('filter','url(#'+filId+')');
+    }
+}
+
+SVGEffects.prototype.renderFrame = function(firstFrame){
+    var i, len = this.filters.length;
+    for(i=0;i<len;i+=1){
+        this.filters[i].renderFrame(firstFrame);
     }
 };
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
@@ -8086,4 +8048,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.30'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.5.0'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
