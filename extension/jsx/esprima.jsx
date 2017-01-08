@@ -4161,9 +4161,6 @@ var esprima = {};
 
         state.inIteration = oldInIteration;
         
-        bm_eventDispatcher.log('------');
-        bm_eventDispatcher.log(typeof left);
-        bm_eventDispatcher.log(left);
         if(typeof left === 'undefined'){
             return node.finishForStatement(init, test, update, body);
         } else if(forIn){
