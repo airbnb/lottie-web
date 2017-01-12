@@ -3807,8 +3807,8 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 }
 
                 totalModifierLength += totalShapeLength;
-            }
             shapeData.shape.mdf = true;
+            }
         }
         for(i=0;i<len;i+=1){
             newShapes = [];
@@ -7324,7 +7324,7 @@ var animationManager = (function(){
 
     function destroy(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=(len-1);i>=0;i-=1){
             registeredAnimations[i].animation.destroy(animation);
         }
     }
@@ -8537,7 +8537,7 @@ HybridRenderer.prototype.addTo3dContainer = function(elem,pos){
             var j = this.threeDElements[i].startPos;
             var nextElement;
             while(j<pos){
-                if(this.elements[j] && this.elements[j].getBaseElement()){
+                if(this.elements[j] && this.elements[j].getBaseElement){
                     nextElement = this.elements[j].getBaseElement();
                 }
                 j += 1;
@@ -10454,6 +10454,7 @@ HImageElement.prototype.createElements = function(){
         this.layerElement = img;
         this.baseElement = img;
         this.innerElem = img;
+        this.transformedElement = img;
     }
     img.src = assetPath;
     if(this.data.ln){

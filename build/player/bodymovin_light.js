@@ -3807,8 +3807,8 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 }
 
                 totalModifierLength += totalShapeLength;
-            }
             shapeData.shape.mdf = true;
+            }
         }
         for(i=0;i<len;i+=1){
             newShapes = [];
@@ -7324,7 +7324,7 @@ var animationManager = (function(){
 
     function destroy(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=(len-1);i>=0;i-=1){
             registeredAnimations[i].animation.destroy(animation);
         }
     }

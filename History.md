@@ -1,3 +1,7 @@
+## V 4.5.1
+- Trim path fix
+- Html renderer fixes
+
 ## V 4.5.0
 - Tritone effect supported
 - Levels effect supported. The one called "Levels (Individual Controls)"

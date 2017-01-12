@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.5.1
+- Trim path fix
+- Html renderer fixes
+
 ## V 4.5.0
 - Tritone effect supported
 - Levels effect supported. The one called "Levels (Individual Controls)"
@@ -18,15 +22,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - single shape text with keyframes fix
 - masked track matted comps fix
 - trim path 0% to 100% fix
-
-## V 4.4.27
-- playSegments fix
-- inverting alphas with color matrices
-
-## V 4.4.26
-- expressions Math.abs fix
-- Layer Index expression support
-- Nested group effects fix
 
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
