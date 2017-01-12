@@ -112,8 +112,8 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 }
 
                 totalModifierLength += totalShapeLength;
-            }
             shapeData.shape.mdf = true;
+            }
         }
         for(i=0;i<len;i+=1){
             newShapes = [];
