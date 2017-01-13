@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.5.2
+- Comp expression interface default return
+- HTML renderer validation fix
+
 ## V 4.5.1
 - Trim path fix
 - Html renderer fixes
