@@ -35,7 +35,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
         var i = 0;
         var nextElement;
         while(i<pos){
-            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
+            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
                 nextElement = this.elements[i].getBaseElement();
             }
             i += 1;
