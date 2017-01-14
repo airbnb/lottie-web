@@ -96,7 +96,7 @@ var bm_textShapeHelper = (function () {
     
     function createNewChar(layerInfo, originalTextDocument, ch, charData) {
             //"allCaps","applyFill","applyStroke","baselineLocs","baselineShift","boxText","boxTextPos","boxTextSize","fauxBold","fauxItalic","fillColor","font","fontFamily","fontLocation","fontSize","fontStyle","horizontalScale","justification","pointText","resetCharStyle","resetParagraphStyle","smallCaps","strokeColor","strokeOverFill","strokeWidth","subscript","superscript","text","tracking","tsume","verticalScale"
-        if (ch.charCodeAt(0) === 13) {
+        if (ch.charCodeAt(0) === 13 || ch.charCodeAt(0) === 160) {
             return;
         }
         var shapeLayer;
