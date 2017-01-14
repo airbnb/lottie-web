@@ -82,24 +82,22 @@ SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfoer)
 }
 
 SVGProLevelsFilter.prototype.getTableValue = function(redInputBlack, redInputWhite, gamma, redOutputBlack, redOutputWhite) {
-    var cnt = Math.min(redInputBlack,0);
+    var cnt = 0;
     var val = redOutputBlack;
-    if(gamma === 1){
-        bezier = {get: function(val){return val}}
-    } else if(gamma > 1){
+    if(gamma > 1){
         perc = (gamma - 1)/4;
-        bezier = BezierFactory.getBezierEasing(0, perc, 1 - perc, 1)
-    } else{
+        bezier = BezierFactory.getBezierEasing(0, perc, 1 - perc, 1);
+    } else if(gamma < 1){
         perc = gamma/1;
-        bezier = BezierFactory.getBezierEasing(1 - perc, 0, 1, perc)
+        bezier = BezierFactory.getBezierEasing(1 - perc, 0, 1, perc);
     }
+    var min = Math.min(redInputBlack, redInputWhite);
+    var max = Math.max(redInputBlack, redInputWhite);
     while(cnt<1){
-        perc = bezier.get(cnt);
-        if(cnt<0){
-
-        }else if(perc <= redInputBlack){
+        perc = gamma === 1 ? cnt : bezier.get(cnt);
+        if(perc <= min){
             val += ' '+redOutputBlack
-        } else if(perc > redInputBlack && perc < redInputWhite){
+        } else if(perc > min && perc < max){
             val += ' '+(redOutputBlack + (redOutputWhite - redOutputBlack)*((perc-redInputBlack)/(redInputWhite-redInputBlack)))
         }else {
             val += ' '+redOutputWhite
