@@ -81,35 +81,34 @@ SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfoer)
     return feFunc;
 }
 
-SVGProLevelsFilter.prototype.getTableValue = function(redInputBlack, redInputWhite, gamma, redOutputBlack, redOutputWhite) {
+SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
     var cnt = 0;
-    var val = redOutputBlack;
-    if(gamma > 1){
-        perc = (gamma - 1)/4;
-        bezier = BezierFactory.getBezierEasing(0, perc, 1 - perc, 1);
-    } else if(gamma < 1){
-        perc = gamma/1;
-        bezier = BezierFactory.getBezierEasing(1 - perc, 0, 1, perc);
-    }
-    var min = Math.min(redInputBlack, redInputWhite);
-    var max = Math.max(redInputBlack, redInputWhite);
-    while(cnt<1){
-        perc = gamma === 1 ? cnt : bezier.get(cnt);
+    var segments = 256;
+    var perc;
+    var min = Math.min(inputBlack, inputWhite);
+    var max = Math.max(inputBlack, inputWhite);
+    var table = Array.call(null,{length:segments});
+    var colorValue;
+    var pos = 0;
+    var outputDelta = outputWhite - outputBlack; 
+    var inputDelta = inputWhite - inputBlack; 
+    while(cnt <= 256) {
+        perc = cnt/256;
         if(perc <= min){
-            val += ' '+redOutputBlack
-        } else if(perc > min && perc < max){
-            val += ' '+(redOutputBlack + (redOutputWhite - redOutputBlack)*((perc-redInputBlack)/(redInputWhite-redInputBlack)))
-        }else {
-            val += ' '+redOutputWhite
+            colorValue = inputDelta < 0 ? outputWhite : outputBlack;
+        } else if(perc >= max){
+            colorValue = inputDelta < 0 ? outputBlack : outputWhite;
+        } else {
+            colorValue = (outputBlack + outputDelta * Math.pow((perc - inputBlack) / inputDelta, 1 / gamma));
         }
-        cnt += 1/255;
+        table[pos++] = colorValue;
+        cnt += 256/(segments-1);
     }
-    return val;
+    return table.join(' ');
 }
 
 SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
     if(forceRender || this.filterManager.mdf){
-        var redInputBlack, redInputWhite, redOutputBlack, redOutputWhite;
         var val, cnt, perc, bezier;
         var effectElements = this.filterManager.effectElements;
         if(this.feFuncRComposed && (forceRender || effectElements[2].p.mdf || effectElements[3].p.mdf || effectElements[4].p.mdf || effectElements[5].p.mdf || effectElements[6].p.mdf)){
