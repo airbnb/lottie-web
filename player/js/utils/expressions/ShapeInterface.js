@@ -367,6 +367,27 @@ var ShapeExpressionInterface = (function(){
                 if(shape.sa && shape.sa.ix === value){
                     return interfaceFunction.skewAxis;
                 }
+                if(value === 'Opacity') {
+                    return interfaceFunction.opacity;
+                }
+                if(value === 'Position') {
+                    return interfaceFunction.position;
+                }
+                if(value === 'Anchor Point') {
+                    return interfaceFunction.anchorPoint;
+                }
+                if(value === 'Scale') {
+                    return interfaceFunction.scale;
+                }
+                if(value === 'Rotation') {
+                    return interfaceFunction.rotation;
+                }
+                if(value === 'Skew') {
+                    return interfaceFunction.skew;
+                }
+                if(value === 'Skew Axis') {
+                    return interfaceFunction.skewAxis;
+                }
 
             }
             Object.defineProperty(interfaceFunction, 'opacity', {
