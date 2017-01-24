@@ -1,3 +1,9 @@
+## V 4.5.3
+- Skipping non breaking space on characters
+- levels effect optimizations
+- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
+- transform properties in expression through transformInterface
+
 ## V 4.5.2
 - Comp expression interface default return
 - HTML renderer validation fix

@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.5.3
+- Skipping non breaking space on characters
+- levels effect optimizations
+- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
+- transform properties in expression through transformInterface
+
 ## V 4.5.2
 - Comp expression interface default return
 - HTML renderer validation fix
@@ -12,20 +18,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 ## V 4.5.0
 - Tritone effect supported
 - Levels effect supported. The one called "Levels (Individual Controls)"
-
-## V 4.4.30
-- Gradient Fill default value breaking render fix
-- Demo file fix when json is renamed
-
-## V 4.4.29
-- Trim path fix
-- html renderer fixes
-
-## V 4.4.28
-- expressions: better seeded random, properties by matchName, normalize support
-- single shape text with keyframes fix
-- masked track matted comps fix
-- trim path 0% to 100% fix
 
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
