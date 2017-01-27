@@ -330,6 +330,8 @@ AnimationItem.prototype.renderFrame = function () {
 };
 
 AnimationItem.prototype.play = function (name) {
+    this.trigger('_play')
+    
     if(name && this.name != name){
         return;
     }
@@ -634,6 +636,9 @@ AnimationItem.prototype.trigger = function(name){
             default:
                 this.triggerEvent(name);
         }
+    }
+    if(name === '_play' && this.onPlay){
+      this.onPlay.call(this)
     }
     if(name === 'enterFrame' && this.onEnterFrame){
         this.onEnterFrame.call(this,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
