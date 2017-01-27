@@ -43,8 +43,8 @@
             animationManager.searchAnimations();
         }
     }
-    function registerAnimation(elem){
-        return animationManager.registerAnimation(elem);
+    function registerAnimation(elem, data){
+        return animationManager.registerAnimation(elem, data);
     }
     function resize(){
         animationManager.resize();
