@@ -1,0 +1,72 @@
+{
+  "properties": [
+    {
+      "description": "Character Value",
+      "extendedName": "Character",
+      "name": "ch",
+      "type": "string"
+    },
+    {
+      "description": "Character Font Family",
+      "extendedName": "Font Family",
+      "name": "fFamily",
+      "type": "string"
+    },
+    {
+      "description": "Character Font Size",
+      "extendedName": "Font Size",
+      "name": "size",
+      "type": "string"
+    },
+    {
+      "description": "Character Font Style",
+      "extendedName": "Font Style",
+      "name": "style",
+      "type": "string"
+    },
+    {
+      "description": "Character Width",
+      "extendedName": "Width",
+      "name": "w",
+      "type": "number"
+    },
+    {
+      "description": "Character Data",
+      "extendedName": "Character Data",
+      "name": "data",
+      "properties": [
+        {
+          "description": "Character Composing Shapes",
+          "extendedName": "Character Shapes",
+          "items": {
+            "properties": [
+              {
+                "description": "Character Items",
+                "extendedName": "Items",
+                "name": "it",
+                "properties": [
+                  {
+                    "description": "Character Items Keys",
+                    "extendedName": "keys",
+                    "name": "ks",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/shape"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "name": "shapes",
+          "type": "array"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

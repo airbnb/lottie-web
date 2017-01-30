@@ -1,0 +1,39 @@
+{
+  "properties": [
+    {
+      "description": "Precomp ID",
+      "extendedName": "ID",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "description": "List of Precomp Layers",
+      "extendedName": "Layers",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/layers/shape"
+          },
+          {
+            "$ref": "#/layers/solid"
+          },
+          {
+            "$ref": "#/layers/comp"
+          },
+          {
+            "$ref": "#/layers/image"
+          },
+          {
+            "$ref": "#/layers/null"
+          },
+          {
+            "$ref": "#/layers/text"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "layers",
+      "type": "array"
+    }
+  ]
+}

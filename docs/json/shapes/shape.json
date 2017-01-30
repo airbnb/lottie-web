@@ -1,0 +1,42 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Direction. Direction how the shape is drawn. Used for trim path for example.",
+      "extendedName": "Direction",
+      "name": "d",
+      "type": "number"
+    },
+    {
+      "description": "Shape content type. Value: sh",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Shape's vertices",
+      "extendedName": "Vertices",
+      "name": "ks",
+      "oneOf": [
+        {
+          "$ref": "#/properties/shape"
+        },
+        {
+          "$ref": "#/properties/shapeKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

@@ -1,0 +1,631 @@
+{
+  "properties": [
+    {
+      "description": "Type of layer: Solid. Value 1.",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "number"
+    },
+    {
+      "description": "Transform properties",
+      "extendedName": "Transform",
+      "name": "ks",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/transform"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Auto-Orient along path AE property.",
+      "extendedName": "Auto-Orient",
+      "name": "ao",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/boolean"
+        }
+      ],
+      "type": "number"
+    },
+    {
+      "description": "Blend Mode",
+      "extendedName": "Blend Mode",
+      "name": "bm",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/blendMode"
+        }
+      ],
+      "type": "number"
+    },
+    {
+      "description": "3d layer flag",
+      "extendedName": "3d Layer",
+      "name": "ddd",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/boolean"
+        }
+      ],
+      "type": "number"
+    },
+    {
+      "description": "Layer index in AE. Used for parenting and expressions.",
+      "extendedName": "Index",
+      "name": "ind",
+      "type": "number"
+    },
+    {
+      "description": "Parsed layer name used as html class on SVG/HTML renderer",
+      "extendedName": "Class",
+      "name": "cl",
+      "type": "string"
+    },
+    {
+      "description": "Parsed layer name used as html id on SVG/HTML renderer",
+      "extendedName": "layer HTML ID",
+      "name": "ln",
+      "type": "string"
+    },
+    {
+      "description": "In Point of layer. Sets the initial frame of the layer.",
+      "extendedName": "In Point",
+      "name": "ip",
+      "type": "number"
+    },
+    {
+      "description": "Out Point of layer. Sets the final frame of the layer.",
+      "extendedName": "Out Point",
+      "name": "op",
+      "type": "number"
+    },
+    {
+      "description": "Start Time of layer. Sets the start time of the layer.",
+      "extendedName": "Start Time",
+      "name": "st",
+      "type": "number"
+    },
+    {
+      "description": "After Effects Layer Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "number"
+    },
+    {
+      "description": "Boolean when layer has a mask. Will be deprecated in favor of checking maskProperties.",
+      "extendedName": "Has Masks",
+      "name": "hasMask",
+      "type": "number"
+    },
+    {
+      "description": "List of Masks",
+      "extendedName": "Mask Properties",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/helpers/mask"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "maskProperties",
+      "type": "array"
+    },
+    {
+      "description": "List of Effects",
+      "extendedName": "Effects",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/effects/index"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "ef",
+      "type": "array"
+    },
+    {
+      "description": "Auto-Orient along path AE property.",
+      "extendedName": "Effects",
+      "name": "ef",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/boolean"
+        }
+      ],
+      "type": "number"
+    },
+    {
+      "description": "Layer Time Stretching",
+      "extendedName": "Stretch",
+      "name": "sr",
+      "type": "number"
+    },
+    {
+      "description": "Layer Parent. Uses ind of parent.",
+      "extendedName": "Parent",
+      "name": "parent",
+      "type": "number"
+    },
+    {
+      "description": "Text Data",
+      "extendedName": "Text Data",
+      "name": "t",
+      "properties": [
+        {
+          "description": "Text animators",
+          "extendedName": "Animators",
+          "items": {
+            "properties": [
+              {
+                "description": "Text animator animated properties",
+                "extendedName": "Animated Properties",
+                "name": "a",
+                "properties": [
+                  {
+                    "description": "Text animator Position",
+                    "extendedName": "Position",
+                    "name": "p",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/multiDimensional"
+                      },
+                      {
+                        "$ref": "#/properties/multiDimensionalKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Anchor Point",
+                    "extendedName": "Anchor Point",
+                    "name": "a",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/multiDimensional"
+                      },
+                      {
+                        "$ref": "#/properties/multiDimensionalKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Scale",
+                    "extendedName": "Scale",
+                    "name": "s",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/multiDimensional"
+                      },
+                      {
+                        "$ref": "#/properties/multiDimensionalKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Skew",
+                    "extendedName": "Skew",
+                    "name": "sk",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Skew Axis",
+                    "extendedName": "Skew Axis",
+                    "name": "sa",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Rotation",
+                    "extendedName": "Rotation",
+                    "name": "r",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Opacity",
+                    "extendedName": "Opacity",
+                    "name": "o",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Stroke Width",
+                    "extendedName": "Stroke Width",
+                    "name": "sw",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Stroke Color",
+                    "extendedName": "Stroke Color",
+                    "name": "sc",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/multiDimensional"
+                      },
+                      {
+                        "$ref": "#/properties/multiDimensionalKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Fill Color",
+                    "extendedName": "Fill Color",
+                    "name": "fc",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/multiDimensional"
+                      },
+                      {
+                        "$ref": "#/properties/multiDimensionalKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Fill Hue",
+                    "extendedName": "Fill Hue",
+                    "name": "fh",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Fill Saturation",
+                    "extendedName": "Fill Saturation",
+                    "name": "fs",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Fill Brightness",
+                    "extendedName": "Fill Brightness",
+                    "name": "fb",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "description": "Text animator Tracking",
+                    "extendedName": "Tracking",
+                    "name": "t",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "type": "object"
+              },
+              {
+                "description": "Animators Range Selecton",
+                "extendedName": "Range Selecton",
+                "name": "s",
+                "properties": [
+                  {
+                    "description": "Selector Type. Expressible, or Normal.",
+                    "extendedName": "Type",
+                    "name": "t",
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Max Amount",
+                    "extendedName": "Max Amount",
+                    "name": "a",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Levels Min Ease",
+                    "extendedName": "Min Ease",
+                    "name": "ne",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Levels Max Ease",
+                    "extendedName": "Max Ease",
+                    "name": "xe",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Randomize Order",
+                    "extendedName": "Randomize",
+                    "name": "rn",
+                    "oneOf": [
+                      {
+                        "$ref": "#/helpers/boolean"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Shape",
+                    "extendedName": "Shape",
+                    "name": "sh",
+                    "oneOf": [
+                      {
+                        "$ref": "#/helpers/textShape"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Based On",
+                    "extendedName": "Based On",
+                    "name": "b",
+                    "oneOf": [
+                      {
+                        "$ref": "#/helpers/textBased"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Range Units. Percentage or Index.",
+                    "extendedName": "Range Units",
+                    "name": "r",
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Start",
+                    "extendedName": "Start",
+                    "name": "s",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector End",
+                    "extendedName": "End",
+                    "name": "e",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "number"
+                  },
+                  {
+                    "description": "Selector Offset",
+                    "extendedName": "Offset",
+                    "name": "o",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/value"
+                      },
+                      {
+                        "$ref": "#/properties/valueKeyframed"
+                      }
+                    ],
+                    "type": "number"
+                  }
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "name": "a",
+          "type": "array"
+        },
+        {
+          "description": "Text More Options",
+          "extendedName": "More Options",
+          "name": "m",
+          "properties": [
+            {
+              "description": "Text Anchor Point Grouping",
+              "extendedName": "Anchor Point Grouping",
+              "name": "g",
+              "oneOf": [
+                {
+                  "$ref": "#/helpers/textGrouping"
+                }
+              ],
+              "type": "number"
+            },
+            {
+              "description": "Text Grouping Alignment",
+              "extendedName": "Grouping Alignment",
+              "name": "a",
+              "oneOf": [
+                {
+                  "$ref": "#/properties/multiDimensional"
+                },
+                {
+                  "$ref": "#/properties/multiDimensionalKeyframed"
+                }
+              ],
+              "type": "number"
+            }
+          ],
+          "type": "object"
+        },
+        {
+          "description": "Text Path",
+          "extendedName": "Text Path",
+          "name": "p",
+          "type": "number"
+        },
+        {
+          "description": "Text Document Data",
+          "extendedName": "Document",
+          "name": "d",
+          "properties": [
+            {
+              "description": "Text Document Data Keyframes",
+              "extendedName": "Keyframes",
+              "items": {
+                "oneOf": [
+                  {
+                    "properties":[
+                      {
+                        "description": "Keyframe Time",
+                        "extendedName": "Time",
+                        "name": "t",
+                        "type": "number"
+                      },
+                      {
+                        "description": "Text Properties",
+                        "extendedName": "Text Properties",
+                        "name": "s",
+                        "type": "object",
+                        "properties":[
+                          {
+                            "description": "Text Font",
+                            "extendedName": "Font",
+                            "name": "f",
+                            "type": "string"
+                          },
+                          {
+                            "description": "Text Font Color",
+                            "extendedName": "Font Color",
+                            "name": "fc",
+                            "type": "array"
+                          },
+                          {
+                            "description": "Text Justification",
+                            "extendedName": "Justificaiton",
+                            "name": "j",
+                            "type": "string"
+                          },
+                          {
+                            "description": "Text Line Height",
+                            "extendedName": "Line Height",
+                            "name": "lh",
+                            "type": "number"
+                          },
+                          {
+                            "description": "Text Font Size",
+                            "extendedName": "Size",
+                            "name": "s",
+                            "type": "number"
+                          },
+                          {
+                            "description": "Text String Value",
+                            "extendedName": "Text",
+                            "name": "t",
+                            "type": "string"
+                          },
+                          {
+                            "description": "Text Tracking",
+                            "extendedName": "Tracking",
+                            "name": "tr",
+                            "type": "number"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "type": "object"
+              },
+              "name": "k",
+              "type": "array"
+            }
+          ],
+          "type": "object"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

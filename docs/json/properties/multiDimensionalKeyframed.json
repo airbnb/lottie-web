@@ -1,0 +1,100 @@
+{
+	"properties": [
+		{
+      		"description": "Property Value keyframes",
+      		"extended_name": "Keyframes",
+			"name": "k",
+			"type": "array",
+			"properties": [
+				{
+		      		"description": "End value of keyframe segment.",
+		      		"extended_name": "End",
+					"name": "e",
+					"type": "array"
+				},
+				{
+		      		"description": "Start value of keyframe segment.",
+		      		"extended_name": "Start",
+					"name": "s",
+					"type": "array"
+				},
+				{
+		      		"description": "Start time of keyframe segment.",
+		      		"extended_name": "Time",
+					"name": "t",
+					"type": "number"
+				},
+				{
+		      		"description": "Bezier curve interpolation in value.",
+		      		"extended_name": "In Value",
+					"name": "i",
+					"type": "object",
+					"properties": [
+						{
+				      		"description": "bezier x axis. Array of numbers.",
+				      		"extended_name": "X axis",
+							"name": "x",
+							"type": "array"
+						},
+						{
+				      		"description": "bezier y axis. Array of numbers.",
+				      		"extended_name": "Y axis",
+							"name": "y",
+							"type": "array"
+						}
+					]
+				},
+				{
+		      		"description": "Bezier curve interpolation out value.",
+		      		"extended_name": "Out Value",
+					"name": "o",
+					"type": "object",
+					"properties": [
+						{
+				      		"description": "bezier x axis. Array of numbers.",
+				      		"extended_name": "X axis",
+							"name": "x",
+							"type": "array"
+						},
+						{
+				      		"description": "bezier y axis. Array of numbers.",
+				      		"extended_name": "Y axis",
+							"name": "y",
+							"type": "array"
+						}
+					]
+				},
+				{
+		      		"description": "Bezier curve name. Used for caching.",
+		      		"extended_name": "Name",
+					"name": "n",
+					"type": "number"
+				}
+			]
+		},
+		{
+      		"description": "Property Expression. An AE expression that modifies the value.",
+      		"extended_name": "Expression",
+			"name": "x",
+			"type": "string"
+		},
+		{
+      		"description": "Property Index. Used for expressions.",
+      		"extended_name": "Property Index",
+			"name": "ix",
+			"type": "string"
+		},
+		{
+      		"description": "In Spatial Tangent. Only for spatial properties. Array of numbers.",
+      		"extended_name": "In Tangent",
+			"name": "ti",
+			"type": "array"
+		},
+		{
+      		"description": "Out Spatial Tangent. Only for spatial properties. Array of numbers.",
+      		"extended_name": "Out Tangent",
+			"name": "to",
+			"type": "array"
+		}
+	]
+}
