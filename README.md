@@ -138,9 +138,9 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
  . a "data-name" attribute to specify a name to target play controls specifically
  <br/>
  **Example**
- <br/>
- ```html
-<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <br/> 
+```html
+ <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 <br/>
 
