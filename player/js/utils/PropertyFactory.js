@@ -363,17 +363,20 @@ var PropertyFactory = (function(){
                 }
                 if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
                     var v1,v2;
-                    if (this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t) {
-                        v1 = this.p.getValueAtTime(this.p.keyframes[0].t+0.01,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t, 0);
-                    } else if(this.p.lastFrame+this.p.offsetTime > this.p.keyframes[this.p.keyframes.length - 1].t) {
-                        v1 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t, 0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t - 0.01, 0);
+                    if (this.p.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
+                    } else if(this.p.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
+                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
                     } else {
                         v1 = this.p.pv;
-                        v2 = this.p.getValueAtTime(this.p.lastFrame+this.p.offsetTime - 0.01, this.p.offsetTime);
+                        v2 = this.p.getValueAtTime((this.p.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
                     }
-                    //var prevV = this.p.getValueAtTime(this.p.lastFrame - 0.01, true);
+                        console.log('v1[1] - v2[1]:', v1[1] - v2[1])
+                        console.log('v1[0] - v2[0]:', v1[0] - v2[0])
+                        console.log('rot:', -Math.atan2(v1[1] - v2[1], v1[0] - v2[0]))
+                        console.log('-----')
                     this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
                 }
                 if(this.data.p.s){

@@ -232,7 +232,7 @@ var ShapeExpressionInterface = (function(){
             view.c.setGroupProperty(_propertyGroup);
             view.o.setGroupProperty(_propertyGroup);
             view.w.setGroupProperty(_propertyGroup);
-            var i, len = shape.d.length;
+            var i, len = shape.d ? shape.d.length : 0;
             var dashOb = {}
             for (i = 0; i < len; i += 1) {
                 addPropertyToDashOb(i);
@@ -287,12 +287,12 @@ var ShapeExpressionInterface = (function(){
             interfaceFunction.propertyIndex = shape.ix;
             Object.defineProperty(interfaceFunction, 'start', {
                 get: function(){
-                    return ExpressionValue(view.s, 1 / /view.s.mult);
+                    return ExpressionValue(view.s, 1 / view.s.mult);
                 }
             });
             Object.defineProperty(interfaceFunction, 'end', {
                 get: function(){
-                    return ExpressionValue(view.e, 1 / /view.e.mult);
+                    return ExpressionValue(view.e, 1 / view.e.mult);
                 }
             });
             Object.defineProperty(interfaceFunction, 'offset', {

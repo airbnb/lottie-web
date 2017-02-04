@@ -160,10 +160,9 @@
             return this.vel;
         }
         var delta = -0.01;
-        frameNum *= this.elem.globalData.frameRate;
         //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum,0);
-        var v2 = this.getValueAtTime(frameNum + delta,0);
+        var v1 = this.getValueAtTime(frameNum, 0);
+        var v2 = this.getValueAtTime(frameNum + delta, 0);
         var velocity;
         if(v1.length){
             velocity = Array.apply(null,{length:v1.length});
