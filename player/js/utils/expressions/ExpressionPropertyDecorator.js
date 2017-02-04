@@ -1,10 +1,11 @@
-(function addPropertyDecorator(){
+(function addPropertyDecorator() {
 
-    function getStaticValueAtTime(){
+    function getStaticValueAtTime() {
         return this.pv;
     }
 
     function getValueAtTime(frameNum, offsetTime) {
+        frameNum *= this.elem.globalData.frameRate;
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
         offsetTime = offsetTime === undefined ? this.offsetTime : 0;
@@ -31,58 +32,58 @@
         }
 
         var k, kLen,perc,jLen, j = 0, fnc;
-        if(keyData.to){
+        if (keyData.to) {
 
-            if(!keyData.bezierData){
+            if (!keyData.bezierData) {
                 bez.buildBezierData(keyData);
             }
             var bezierData = keyData.bezierData;
-            if(frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime){
+            if (frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime) {
                 var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
                 kLen = bezierData.points[ind].point.length;
                 for(k = 0; k < kLen; k += 1){
                     retVal[k] = bezierData.points[ind].point[k];
                 }
-            }else{
-                if(keyData.__fnct){
+            } else {
+                if (keyData.__fnct) {
                     fnc = keyData.__fnct;
-                }else{
+                } else {
                     //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
-                    fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n).get;
+                    fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y, keyData.n).get;
                     keyData.__fnct = fnc;
                 }
-                perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
-                var distanceInLine = bezierData.segmentLength*perc;
+                perc = fnc((frameNum - (keyData.t - offsetTime)) / ((nextKeyData.t - offsetTime) - (keyData.t - offsetTime)));
+                var distanceInLine = bezierData.segmentLength * perc;
 
                 var segmentPerc;
                 var addedLength = 0;
                 dir = 1;
                 flag = true;
                 jLen = bezierData.points.length;
-                while(flag){
-                    addedLength +=bezierData.points[j].partialLength*dir;
-                    if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
+                while(flag) {
+                    addedLength += bezierData.points[j].partialLength*dir;
+                    if (distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1) {
                         kLen = bezierData.points[j].point.length;
-                        for(k=0;k<kLen;k+=1){
+                        for (k = 0; k < kLen; k += 1) {
                             retVal[k] = bezierData.points[j].point[k];
                         }
                         break;
-                    }else if(distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
-                        segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
+                    } else if (distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
+                        segmentPerc = (distanceInLine - addedLength) / (bezierData.points[j + 1].partialLength);
                         kLen = bezierData.points[j].point.length;
-                        for(k=0;k<kLen;k+=1){
-                            retVal[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
+                        for (k = 0; k < kLen; k += 1) {
+                            retVal[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k]) * segmentPerc;
                         }
                         break;
                     }
-                    if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
+                    if (j < jLen - 1 && dir == 1 || j > 0 && dir == -1) {
                         j += dir;
-                    }else{
+                    } else {
                         flag = false;
                     }
                 }
             }
-        }else{
+        } else {
             var outX,outY,inX,inY, isArray = false, keyValue;
             len = keyData.s.length;
             for(i=0;i<len;i+=1){
@@ -213,9 +214,9 @@
             this.getMult = getValueProxy;
             this.getVelocityAtTime = getVelocityAtTime;
             if(this.kf){
-                this.getValueAtTime = getValueAtTime;
+                this.getValueAtTime = getValueAtTime.bind(this);
             } else {
-                this.getValueAtTime = getStaticValueAtTime;
+                this.getValueAtTime = getStaticValueAtTime.bind(this);
             }
             this.setGroupProperty = setGroupProperty;
         }
@@ -227,9 +228,9 @@
         var prop = propertyGetProp(elem,data,type, mult, arr);
         prop.getVelocityAtTime = getVelocityAtTime;
         if(prop.kf){
-            prop.getValueAtTime = getValueAtTime;
+            prop.getValueAtTime = getValueAtTime.bind(prop);
         } else {
-            prop.getValueAtTime = getStaticValueAtTime;
+            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
         }
         prop.setGroupProperty = setGroupProperty;
         var isAdded = prop.k;

@@ -93,6 +93,7 @@
     <script src="js/utils/expressions/TransformInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ProjectInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/EffectInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ExpressionValue.js" data-light-skip="true"></script>
     <script src="js/effects/SliderEffect.js" data-light-skip="true"></script>
     <script src="js/effects.js" data-light-skip="true"></script>
     <!-- end Expressions -->
@@ -110,12 +111,12 @@
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/data3.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

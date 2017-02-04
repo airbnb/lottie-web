@@ -33,6 +33,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gulp-cheerio": "^0.6.2"
+    "gulp-cheerio": "^0.6.2",
+    "jslint": "^0.10.3"
   }
 }

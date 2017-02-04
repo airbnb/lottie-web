@@ -15,6 +15,7 @@ var cheerio = require('gulp-cheerio');
 var fs = require('fs');
 var htmlreplace = require('gulp-html-replace');
 var eventstream = require("event-stream");
+var jslint = require('gulp-jslint');
 
 var bm_version = '4.5.3';
 
@@ -35,10 +36,16 @@ gulp.task('gzipFile', function(){
     .pipe(gulp.dest('demo/'));
 });
 
+gulp.task('lint-code', function () {
+    return gulp.src(['.player/js/**/*'])
+            .pipe(jslint({ /* this object represents the JSLint directives being passed down */ }))
+            .pipe(jslint.reporter( 'my-reporter' ));
+});
+
 gulp.task('buildPlayer', function(){
     gulp.src('./player/index.html')
         .pipe(usemin({
-            js: [uglify()]
+            js: [uglify(uglifyOptions)]
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap(moduleWrap))
@@ -54,7 +61,7 @@ gulp.task('buildUnminifiedPlayer', function(){
 gulp.task('buildExpressionModule', function(){
     gulp.src('./player/expressions.html')
         .pipe(usemin({
-            js: [uglify()]
+            js: [uglify(uglifyOptions)]
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap(expressionsModuleWrap))
@@ -64,7 +71,7 @@ gulp.task('buildExpressionModule', function(){
 gulp.task('zipPlayer',['buildPlayer','buildUnminifiedPlayer'], function(){
     gulp.src('./player/index.html')
         .pipe(usemin({
-            js: [uglify()]
+            js: [uglify(uglifyOptions)]
         }))
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap(moduleWrap))
@@ -105,6 +112,7 @@ gulp.task('tmp', function() {
 
 var srcs = [];
 var demoBuiltData = '';
+var uglifyOptions = {output: {ascii_only:true}};
 
 
 gulp.task('getBuildSources', function(cb) {
@@ -167,7 +175,7 @@ gulp.task('buildLightMin',['buildLightSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('bodymovin_light.min.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -175,7 +183,7 @@ gulp.task('buildFullMin',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('bodymovin.min.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -183,7 +191,7 @@ gulp.task('createExtensionZipAsset',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('bm.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(gzip({ append: true }))
         .pipe(gulp.dest('extension/assets/player/'));
 });
@@ -199,7 +207,7 @@ gulp.task('createExtensionStandAlone',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('standalone.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(gulp.dest('extension/assets/player/'));
 });
 
@@ -207,7 +215,7 @@ gulp.task('createExtensionAsset',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('bm.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(gulp.dest('extension/assets/player/'));
 });
 
@@ -227,7 +235,7 @@ gulp.task('buildDemoData',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('tmp.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(saveToVar());
 });
 
@@ -262,7 +270,7 @@ gulp.task('buildDemoData',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('tmp.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(saveToVar());
 });
 
@@ -289,7 +297,7 @@ gulp.task('createExtensionLibrary',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('bm.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(replaceCustomValues())
         .pipe(gulp.dest('extension/js/libs/'));
 });
@@ -304,7 +312,7 @@ gulp.task('buildAll',['buildLightMin','buildLight','buildFullMin','buildFull','c
 gulp.task('buildAudio', function(){
     gulp.src('./player/tests/demos/audio/index.html')
         .pipe(usemin({
-            js: [uglify()]
+            js: [uglify(uglifyOptions)]
         }))
         .pipe(gulp.dest('./player/tests/demos/audio/'));
 });

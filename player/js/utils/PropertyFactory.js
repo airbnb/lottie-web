@@ -268,155 +268,107 @@ var PropertyFactory = (function(){
         this.lastFrame = initFrame;
     }
 
-    var TransformProperty = (function(){
-        function positionGetter(){
-            if(this.p.k){
-                this.p.getValue();
-            }
-            if(!this.p.v.key){
-                this.p.v.key = function(pos){
-                    if(!this.p.v.numKeys){
-                        return 0;
-                    } else {
-                        return this.p.keyframes[pos-1].t;
-                    }
-                }.bind(this);
-            }
-            if(!this.p.v.numKeys){
-                this.p.v.numKeys = this.p.keyframes ? this.p.keyframes.length : 0;
-            }
-            if(!this.p.v.valueAtTime){
-                this.p.v.valueAtTime = this.p.getValueAtTime.bind(this.p);
-            }
-            return this.p.v;
+    var TransformProperty = (function() {
+        function positionGetter() {
+            return ExpressionValue(this.p);
         }
-        function xPositionGetter(){
-            if(this.px.k){
-                this.px.getValue();
-            }
-            return this.px.v;
+        function xPositionGetter() {
+            return ExpressionValue(this.px);
         }
-        function yPositionGetter(){
-            if(this.py.k){
-                this.py.getValue();
-            }
-            return this.py.v;
+        function yPositionGetter() {
+            return ExpressionValue(this.py);
         }
-        function zPositionGetter(){
-            if(this.pz.k){
-                this.pz.getValue();
-            }
-            return this.pz.v;
+        function zPositionGetter() {
+            return ExpressionValue(this.pz);
         }
-        function anchorGetter(){
-            if(this.a.k){
-                this.a.getValue();
-            }
-            return this.a.v;
+        function anchorGetter() {
+            return ExpressionValue(this.a);
         }
-        function orientationGetter(){
-            if(this.or.k){
-                this.or.getValue();
-            }
-            return this.or.v;
+        function orientationGetter() {
+            return ExpressionValue(this.or);
         }
-        function rotationGetter(){
-            if(this.r.k){
-                this.r.getValue();
-            }
-            return this.r.v/degToRads;
+        function rotationGetter() {
+            return ExpressionValue(this.r, 1/degToRads);
         }
-        function scaleGetter(){
-            if(this.s.k){
-                this.s.getValue();
-            }
-            return this.s.v;
+        function scaleGetter() {
+            return ExpressionValue(this.s, 100);
         }
-        function opacityGetter(){
-            if(this.o.k){
-                this.o.getValue();
-            }
-            return this.o.v;
+        function opacityGetter() {
+            return ExpressionValue(this.o, 100);
         }
-        function skewGetter(){
-            if(this.sk.k){
-                this.sk.getValue();
-            }
-            return this.sk.v;
+        function skewGetter() {
+            return ExpressionValue(this.sk);
         }
-        function skewAxisGetter(){
-            if(this.sa.k){
-                this.sa.getValue();
-            }
-            return this.sa.v;
+        function skewAxisGetter() {
+            return ExpressionValue(this.sa);
         }
-        function applyToMatrix(mat){
+        function applyToMatrix(mat) {
             var i, len = this.dynamicProperties.length;
-            for(i=0;i<len;i+=1){
+            for(i = 0; i < len; i += 1) {
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                if (this.dynamicProperties[i].mdf) {
                     this.mdf = true;
                 }
             }
-            if(this.a){
-                mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+            if (this.a) {
+                mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
             }
-            if(this.s){
-                mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+            if (this.s) {
+                mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
             }
-            if(this.r){
+            if (this.r) {
                 mat.rotate(-this.r.v);
-            }else{
+            } else {
                 mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
-            if(this.data.p.s){
-                if(this.data.p.z) {
+            if (this.data.p.s) {
+                if (this.data.p.z) {
                     mat.translate(this.px.v, this.py.v, -this.pz.v);
                 } else {
                     mat.translate(this.px.v, this.py.v, 0);
                 }
-            }else{
-                mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            } else {
+                mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
             }
         }
         function processKeys(){
-            if(this.elem.globalData.frameId === this.frameId){
+            if (this.elem.globalData.frameId === this.frameId) {
                 return;
             }
 
             this.mdf = false;
             var i, len = this.dynamicProperties.length;
 
-            for(i=0;i<len;i+=1){
+            for(i = 0; i < len; i += 1) {
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                if (this.dynamicProperties[i].mdf) {
                     this.mdf = true;
                 }
             }
-            if(this.mdf){
+            if (this.mdf) {
                 this.v.reset();
-                if(this.a){
-                    this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+                if (this.a) {
+                    this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
                 }
-                if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                if(this.s) {
+                    this.v.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
                 }
-                if(this.sk){
-                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
+                if (this.sk) {
+                    this.v.skewFromAxis(-this.sk.v, this.sa.v);
                 }
-                if(this.r){
+                if (this.r) {
                     this.v.rotate(-this.r.v);
-                }else{
+                } else {
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
-                if(this.autoOriented && this.p.keyframes && this.p.getValueAtTime){
+                if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
                     var v1,v2;
-                    if(this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t){
+                    if (this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t) {
                         v1 = this.p.getValueAtTime(this.p.keyframes[0].t+0.01,0);
                         v2 = this.p.getValueAtTime(this.p.keyframes[0].t, 0);
-                    }else if(this.p.lastFrame+this.p.offsetTime > this.p.keyframes[this.p.keyframes.length - 1].t){
-                        v1 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t-0.01, 0);
+                    } else if(this.p.lastFrame+this.p.offsetTime > this.p.keyframes[this.p.keyframes.length - 1].t) {
+                        v1 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t, 0);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t - 0.01, 0);
                     } else {
                         v1 = this.p.pv;
                         v2 = this.p.getValueAtTime(this.p.lastFrame+this.p.offsetTime - 0.01, this.p.offsetTime);

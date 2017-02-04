@@ -5,7 +5,7 @@ var ExpressionManager = (function(){
     function duplicatePropertyValue(value, mult){
         mult = mult || 1;
 
-        if(typeof value === 'number'){
+        if(typeof value === 'number'  || value instanceof Number){
             return value*mult;
         }else if(value.i){
             return JSON.parse(JSON.stringify(value));
@@ -21,10 +21,10 @@ var ExpressionManager = (function(){
 
     function $bm_neg(a){
         var tOfA = typeof a;
-        if(tOfA === 'number' || tOfA === 'boolean'){
+        if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
             return -a;
         }
-        if(tOfA === 'object'){
+        if(a.constructor === Array){
             var i, lenA = a.length;
             var retArr = [];
             for(i=0;i<lenA;i+=1){
@@ -40,18 +40,18 @@ var ExpressionManager = (function(){
         if(tOfA === 'string' || tOfB === 'string'){
             return a + b;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string'  || b instanceof Number)) {
             return a + b;
         }
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
+        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b .constructor === Array){
             b[0] = a + b[0];
             return b;
         }
-        if(tOfA === 'object' && tOfB === 'object'){
+        if(a.constructor === Array && b.constructor === Array){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -66,22 +66,23 @@ var ExpressionManager = (function(){
         }
         return 0;
     }
+    var add = sum;
 
     function sub(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
             return a - b;
         }
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
+        if( a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             a[0] = a[0] - b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  b.constructor === Array){
             b[0] = a - b[0];
             return b;
         }
-        if(tOfA === 'object' && tOfB === 'object'){
+        if(a.constructor === Array && b.constructor === Array){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -101,12 +102,12 @@ var ExpressionManager = (function(){
         var tOfA = typeof a;
         var tOfB = typeof b;
         var arr;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
             return a * b;
         }
 
         var i, len;
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
+        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -114,7 +115,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -129,11 +130,11 @@ var ExpressionManager = (function(){
         var tOfA = typeof a;
         var tOfB = typeof b;
         var arr;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
             return a / b;
         }
         var i, len;
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string')){
+        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number  )){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -141,7 +142,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -647,8 +648,10 @@ var ExpressionManager = (function(){
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
-                if(typeof this.v === 'number'){
+                if(typeof this.v === 'number' || this.v instanceof Number){
                     this.v *= this.mult;
+                }else if(this.v.length === 1){
+                    this.v = this.v[0] * this.mult;
                 }else{
                     len = this.v.length;
                     if(value === this.v){
@@ -663,7 +666,10 @@ var ExpressionManager = (function(){
             /*if(!this.v){
                 console.log(val);
             }*/
-            if(typeof this.v === 'number'){
+            if(this.v.length === 1){
+                this.v = this.v[0];
+            }
+            if(typeof this.v === 'number' || this.v instanceof Number){
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
                     this.mdf = true;
@@ -674,8 +680,6 @@ var ExpressionManager = (function(){
                 this.paths.length = 0;
                 this.paths[0] = this.v;
             }else{
-                /*if(!this.lastValue){
-                }*/
                 len = this.v.length;
                 for(i = 0; i < len; i += 1){
                     if(this.v[i] !== this.lastValue[i]){
