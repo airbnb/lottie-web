@@ -373,10 +373,6 @@ var PropertyFactory = (function(){
                         v1 = this.p.pv;
                         v2 = this.p.getValueAtTime((this.p.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
                     }
-                        console.log('v1[1] - v2[1]:', v1[1] - v2[1])
-                        console.log('v1[0] - v2[0]:', v1[0] - v2[0])
-                        console.log('rot:', -Math.atan2(v1[1] - v2[1], v1[0] - v2[0]))
-                        console.log('-----')
                     this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
                 }
                 if(this.data.p.s){
@@ -389,6 +385,7 @@ var PropertyFactory = (function(){
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
             }
+            //console.log(this.v.to2dCSS())
             this.frameId = this.elem.globalData.frameId;
         }
 
