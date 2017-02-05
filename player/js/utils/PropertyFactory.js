@@ -701,7 +701,6 @@ var PropertyFactory = (function(){
         var max = Math.max;
         var min = Math.min;
         var floor = Math.floor;
-        this.mdf = false;
         function updateRange(){
             if(this.dynamicProperties.length){
                 var i, len = this.dynamicProperties.length;
