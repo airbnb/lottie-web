@@ -79,7 +79,7 @@ Skip directly to "Install third-party extensions"
 **Check the demos for different ways to load animations.**
 - get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
-```
+```html
 <script src="js/bodymovin.js" type="text/javascript"></script>
 ```
 You can call bodymovin.loadAnimation() to start an animation.
@@ -93,7 +93,7 @@ It takes an object as a unique param with:
 - container: the dom element on which to render the animation
 <br />
 Returns the animation object you can control with play, pause, setSpeed, etc.
-```
+```js
 bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
@@ -103,7 +103,7 @@ bodymovin.loadAnimation({
 });
 ```
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
-```
+```js
 bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
@@ -138,9 +138,9 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
  . a "data-name" attribute to specify a name to target play controls specifically
  <br/>
  **Example**
- <br/>
- ```
-<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <br/> 
+```html
+ <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 <br/>
 
