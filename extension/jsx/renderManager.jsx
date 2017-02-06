@@ -110,7 +110,7 @@ var bm_renderManager = (function () {
             comps : [],
             fonts : [],
             layers : [],
-            v : '4.5.3',
+            v : '4.5.4',
             ddd : 0,
             ip : comp.workAreaStart * comp.frameRate,
             op : (comp.workAreaStart + comp.workAreaDuration) * comp.frameRate,

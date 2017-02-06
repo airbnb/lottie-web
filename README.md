@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.5.4
+- Trim path individually supported
+- bug fix that messed with webpack build
+
 ## V 4.5.3
 - Skipping non breaking space on characters
 - levels effect optimizations

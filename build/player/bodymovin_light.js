@@ -2938,7 +2938,6 @@ var PropertyFactory = (function(){
         var max = Math.max;
         var min = Math.min;
         var floor = Math.floor;
-        this.mdf = false;
         function updateRange(){
             if(this.dynamicProperties.length){
                 var i, len = this.dynamicProperties.length;
@@ -3737,6 +3736,7 @@ TrimModifier.prototype.initModifierProperties = function(elem,data){
     this.s = PropertyFactory.getProp(elem,data.s,0,0.01,this.dynamicProperties);
     this.e = PropertyFactory.getProp(elem,data.e,0,0.01,this.dynamicProperties);
     this.o = PropertyFactory.getProp(elem,data.o,0,0,this.dynamicProperties);
+    this.m = data.m;
     if(!this.dynamicProperties.length){
         this.getValue(true);
     }
@@ -3759,6 +3759,56 @@ TrimModifier.prototype.getSegmentsLength = function(keyframes){
         totalLength += lengths[i].addedLength;
     }
     return {lengths:lengths,totalLength:totalLength};
+}
+
+TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLength, totalModifierLength) {
+    var segments = []
+    if(e <= 1){
+        segments.push({
+            s: s,
+            e: e
+        })
+    }else if(s >= 1){
+        segments.push({
+            s: s - 1,
+            e: e - 1
+        })
+    }else{
+        segments.push({
+            s: s,
+            e: 1
+        })
+        segments.push({
+            s: 0,
+            e: e - 1
+        })
+    }
+    var shapeSegments = [];
+    var i, len = segments.length, segmentOb;
+    for(i = 0; i < len; i += 1) {
+        segmentOb = segments[i];
+        if (segmentOb.e * totalModifierLength < addedLength || segmentOb.s * totalModifierLength > addedLength + shapeLength) {
+            
+        } else {
+            var shapeS, shapeE;
+            if(segmentOb.s * totalModifierLength <= addedLength) {
+                shapeS = 0;
+            } else {
+                shapeS = (segmentOb.s * totalModifierLength - addedLength) / shapeLength;
+            }
+            if(segmentOb.e * totalModifierLength >= addedLength + shapeLength) {
+                shapeE = 1;
+            } else {
+                shapeE = ((segmentOb.e * totalModifierLength - addedLength) / shapeLength);
+            }
+            shapeSegments.push([shapeS, shapeE]);
+        }
+    }
+    //console.log(shapeSegments);
+    if(!shapeSegments.length){
+        shapeSegments.push([0,0]);
+    }
+    return shapeSegments;
 }
 
 TrimModifier.prototype.processShapes = function(firstFrame){
@@ -3787,7 +3837,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
         var segments = [], shapeData, newShapes;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf && !firstFrame){
+            if(!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2){
                 shapeData.shape.paths = shapeData.last;
             } else {
                 shapePaths = shapeData.shape.paths;
@@ -3807,51 +3857,67 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 }
 
                 totalModifierLength += totalShapeLength;
-            shapeData.shape.mdf = true;
+                shapeData.shape.mdf = true;
             }
         }
-        for(i=0;i<len;i+=1){
+        var shapeS = s, shapeE = e, addedLength = 0;
+        var j, jLen;
+        for(i = len - 1; i >= 0; i -= 1){
             newShapes = [];
             shapeData = this.shapes[i];
-            if(shapeData.shape.mdf){
-                segments.length = 0;
-                if(e <= 1){
-                    segments.push({
-                        s:shapeData.totalShapeLength*s,
-                        e:shapeData.totalShapeLength*e
-                    })
-                }else if(s >= 1){
-                    segments.push({
-                        s:shapeData.totalShapeLength*(s-1),
-                        e:shapeData.totalShapeLength*(e-1)
-                    })
-                }else{
-                    segments.push({
-                        s:shapeData.totalShapeLength*s,
-                        e:shapeData.totalShapeLength
-                    })
-                    segments.push({
-                        s:0,
-                        e:shapeData.totalShapeLength*(e-1)
-                    })
+            if (shapeData.shape.mdf) {
+                if(this.m === 2 && len > 1) {
+                    var edges = this.calculateShapeEdges(s, e, shapeData.totalShapeLength, addedLength, totalModifierLength);
+                    addedLength += shapeData.totalShapeLength;
+                } else {
+                    edges = [[shapeS, shapeE]]
                 }
-                var newShapeData = this.addShapes(shapeData,segments[0]);
-                var lastPos;
-                newShapes.push(newShapeData);
-                if(segments.length > 1){
-                    if(shapeData.shape.v.c){
-                        this.addShapes(shapeData,segments[1], newShapeData);
-                    } else {
+                jLen = edges.length;
+                for (j = 0; j < jLen; j += 1) {
+                    shapeS = edges[j][0];
+                    shapeE = edges[j][1];
+                    segments.length = 0;
+                    if(shapeE <= 1){
+                        segments.push({
+                            s:shapeData.totalShapeLength * shapeS,
+                            e:shapeData.totalShapeLength * shapeE
+                        })
+                    }else if(shapeS >= 1){
+                        segments.push({
+                            s:shapeData.totalShapeLength * (shapeS - 1),
+                            e:shapeData.totalShapeLength * (shapeE - 1)
+                        })
+                    }else{
+                        segments.push({
+                            s:shapeData.totalShapeLength * shapeS,
+                            e:shapeData.totalShapeLength
+                        })
+                        segments.push({
+                            s:0,
+                            e:shapeData.totalShapeLength*(shapeE - 1)
+                        })
+                    }
+                    var newShapeData = this.addShapes(shapeData,segments[0]);
+                    if (segments[0].s !== segments[0].e) {
+                        var lastPos;
+                        newShapes.push(newShapeData);
+                        if(segments.length > 1){
+                            if(shapeData.shape.v.c){
+                                this.addShapes(shapeData,segments[1], newShapeData);
+                            } else {
+                                newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
+                                lastPos = newShapeData.v.length-1;
+                                newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
+                                newShapeData = this.addShapes(shapeData,segments[1]);
+                                newShapes.push(newShapeData);
+                            }
+                        }
                         newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
                         lastPos = newShapeData.v.length-1;
                         newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
-                        newShapeData = this.addShapes(shapeData,segments[1]);
-                        newShapes.push(newShapeData);
                     }
+                    
                 }
-                newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
-                lastPos = newShapeData.v.length-1;
-                newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
                 shapeData.last = newShapes;
                 shapeData.shape.paths = newShapes;
             }
@@ -6246,45 +6312,17 @@ function SVGProLevelsFilter(filter, filterManager){
     var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
     var feFuncR, feFuncG, feFuncB;
     
-    if(effectElements[9].p.k || effectElements[9].p.v !== 0 
-        || effectElements[10].p.k || effectElements[10].p.v !== 1
-        || effectElements[11].p.k || effectElements[11].p.v !== 1
-        || effectElements[12].p.k || effectElements[12].p.v !== 0
-        || effectElements[13].p.k || effectElements[13].p.v !== 1){
-        feFuncR = document.createElementNS(svgNS,'feFuncR');
-        feFuncR.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncR);
-        this.feFuncR = feFuncR;
+    if(effectElements[9].p.k || effectElements[9].p.v !== 0 || effectElements[10].p.k || effectElements[10].p.v !== 1 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 0 || effectElements[13].p.k || effectElements[13].p.v !== 1){
+        this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
     }
-    if(effectElements[16].p.k || effectElements[16].p.v !== 0 
-        || effectElements[17].p.k || effectElements[17].p.v !== 1
-        || effectElements[18].p.k || effectElements[18].p.v !== 1
-        || effectElements[19].p.k || effectElements[19].p.v !== 0
-        || effectElements[20].p.k || effectElements[20].p.v !== 1){
-        feFuncG = document.createElementNS(svgNS,'feFuncG');
-        feFuncG.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncG);
-        this.feFuncG = feFuncG;
+    if(effectElements[16].p.k || effectElements[16].p.v !== 0 || effectElements[17].p.k || effectElements[17].p.v !== 1 || effectElements[18].p.k || effectElements[18].p.v !== 1 || effectElements[19].p.k || effectElements[19].p.v !== 0 || effectElements[20].p.k || effectElements[20].p.v !== 1){
+        this.feFuncG = this.createFeFunc('feFuncG', feComponentTransfer);
     }
-    if(effectElements[23].p.k || effectElements[23].p.v !== 0 
-        || effectElements[24].p.k || effectElements[24].p.v !== 1
-        || effectElements[25].p.k || effectElements[25].p.v !== 1
-        || effectElements[26].p.k || effectElements[26].p.v !== 0
-        || effectElements[27].p.k || effectElements[27].p.v !== 1){
-        var feFuncB = document.createElementNS(svgNS,'feFuncB');
-        feFuncB.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncB);
-        this.feFuncB = feFuncB;
+    if(effectElements[23].p.k || effectElements[23].p.v !== 0 || effectElements[24].p.k || effectElements[24].p.v !== 1 || effectElements[25].p.k || effectElements[25].p.v !== 1 || effectElements[26].p.k || effectElements[26].p.v !== 0 || effectElements[27].p.k || effectElements[27].p.v !== 1){
+        this.feFuncB = this.createFeFunc('feFuncB', feComponentTransfer);
     }
-    if(effectElements[30].p.k || effectElements[30].p.v !== 0 
-        || effectElements[31].p.k || effectElements[31].p.v !== 1
-        || effectElements[32].p.k || effectElements[32].p.v !== 1
-        || effectElements[33].p.k || effectElements[33].p.v !== 0
-        || effectElements[34].p.k || effectElements[34].p.v !== 1){
-        var feFuncA = document.createElementNS(svgNS,'feFuncA');
-        feFuncA.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncA);
-        this.feFuncA = feFuncA;
+    if(effectElements[30].p.k || effectElements[30].p.v !== 0 || effectElements[31].p.k || effectElements[31].p.v !== 1 || effectElements[32].p.k || effectElements[32].p.v !== 1 || effectElements[33].p.k || effectElements[33].p.v !== 0 || effectElements[34].p.k || effectElements[34].p.v !== 1){
+        this.feFuncA = this.createFeFunc('feFuncA', feComponentTransfer);
     }
     
     if(this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA){
@@ -6293,35 +6331,22 @@ function SVGProLevelsFilter(filter, filterManager){
         feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
     }
 
-    if(effectElements[2].p.k || effectElements[2].p.v !== 0 
-        || effectElements[3].p.k || effectElements[3].p.v !== 1
-        || effectElements[4].p.k || effectElements[4].p.v !== 1
-        || effectElements[5].p.k || effectElements[5].p.v !== 0
-        || effectElements[6].p.k || effectElements[6].p.v !== 1){
+    if(effectElements[2].p.k || effectElements[2].p.v !== 0 || effectElements[3].p.k || effectElements[3].p.v !== 1 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 0 || effectElements[6].p.k || effectElements[6].p.v !== 1){
 
         feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
         filter.appendChild(feComponentTransfer);
-        feFuncR = document.createElementNS(svgNS,'feFuncR');
-        feFuncR.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncR);
-        this.feFuncRComposed = feFuncR;
-        feFuncG = document.createElementNS(svgNS,'feFuncG');
-        feFuncG.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncG);
-        this.feFuncGComposed = feFuncG;
-        feFuncB = document.createElementNS(svgNS,'feFuncB');
-        feFuncB.setAttribute('type','table');
-        feComponentTransfer.appendChild(feFuncB);
-        this.feFuncBComposed = feFuncB;
+        this.feFuncRComposed = this.createFeFunc('feFuncR', feComponentTransfer);
+        this.feFuncGComposed = this.createFeFunc('feFuncG', feComponentTransfer);
+        this.feFuncBComposed = this.createFeFunc('feFuncB', feComponentTransfer);
     }
 }
 
-SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfoer) {
+SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfer) {
     var feFunc = document.createElementNS(svgNS,type);
     feFunc.setAttribute('type','table');
     feComponentTransfer.appendChild(feFunc);
     return feFunc;
-}
+};
 
 SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
     var cnt = 0;
@@ -6347,37 +6372,37 @@ SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, ga
         cnt += 256/(segments-1);
     }
     return table.join(' ');
-}
+};
 
 SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
     if(forceRender || this.filterManager.mdf){
         var val, cnt, perc, bezier;
         var effectElements = this.filterManager.effectElements;
         if(this.feFuncRComposed && (forceRender || effectElements[2].p.mdf || effectElements[3].p.mdf || effectElements[4].p.mdf || effectElements[5].p.mdf || effectElements[6].p.mdf)){
-            val = this.getTableValue(effectElements[2].p.v,effectElements[3].p.v,effectElements[4].p.v,effectElements[5].p.v,effectElements[6].p.v)
-            this.feFuncRComposed.setAttribute('tableValues',val)
-            this.feFuncGComposed.setAttribute('tableValues',val)
-            this.feFuncBComposed.setAttribute('tableValues',val)
+            val = this.getTableValue(effectElements[2].p.v,effectElements[3].p.v,effectElements[4].p.v,effectElements[5].p.v,effectElements[6].p.v);
+            this.feFuncRComposed.setAttribute('tableValues',val);
+            this.feFuncGComposed.setAttribute('tableValues',val);
+            this.feFuncBComposed.setAttribute('tableValues',val);
         }
 
         if(this.feFuncR && (forceRender || effectElements[9].p.mdf || effectElements[10].p.mdf || effectElements[11].p.mdf || effectElements[12].p.mdf || effectElements[13].p.mdf)){
-            val = this.getTableValue(effectElements[9].p.v,effectElements[10].p.v,effectElements[11].p.v,effectElements[12].p.v,effectElements[13].p.v)
-            this.feFuncR.setAttribute('tableValues',val)
+            val = this.getTableValue(effectElements[9].p.v,effectElements[10].p.v,effectElements[11].p.v,effectElements[12].p.v,effectElements[13].p.v);
+            this.feFuncR.setAttribute('tableValues',val);
         }
 
         if(this.feFuncG && (forceRender || effectElements[16].p.mdf || effectElements[17].p.mdf || effectElements[18].p.mdf || effectElements[19].p.mdf || effectElements[20].p.mdf)){
-            val = this.getTableValue(effectElements[16].p.v,effectElements[17].p.v,effectElements[18].p.v,effectElements[19].p.v,effectElements[20].p.v)
-            this.feFuncG.setAttribute('tableValues',val)
+            val = this.getTableValue(effectElements[16].p.v,effectElements[17].p.v,effectElements[18].p.v,effectElements[19].p.v,effectElements[20].p.v);
+            this.feFuncG.setAttribute('tableValues',val);
         }
 
         if(this.feFuncB && (forceRender || effectElements[23].p.mdf || effectElements[24].p.mdf || effectElements[25].p.mdf || effectElements[26].p.mdf || effectElements[27].p.mdf)){
-            val = this.getTableValue(effectElements[23].p.v,effectElements[24].p.v,effectElements[25].p.v,effectElements[26].p.v,effectElements[27].p.v)
-            this.feFuncB.setAttribute('tableValues',val)
+            val = this.getTableValue(effectElements[23].p.v,effectElements[24].p.v,effectElements[25].p.v,effectElements[26].p.v,effectElements[27].p.v);
+            this.feFuncB.setAttribute('tableValues',val);
         }
 
         if(this.feFuncA && (forceRender || effectElements[30].p.mdf || effectElements[31].p.mdf || effectElements[32].p.mdf || effectElements[33].p.mdf || effectElements[34].p.mdf)){
-            val = this.getTableValue(effectElements[30].p.v,effectElements[31].p.v,effectElements[32].p.v,effectElements[33].p.v,effectElements[34].p.v)
-            this.feFuncA.setAttribute('tableValues',val)
+            val = this.getTableValue(effectElements[30].p.v,effectElements[31].p.v,effectElements[32].p.v,effectElements[33].p.v,effectElements[34].p.v);
+            this.feFuncA.setAttribute('tableValues',val);
         }
         
     }
@@ -8045,4 +8070,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.5.3'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.5.4'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
