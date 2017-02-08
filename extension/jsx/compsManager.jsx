@@ -166,7 +166,7 @@ var bm_compsManager = (function () {
             tmpCompositions.push(getCompositionData(projectComps[i]));
         }
         compositions = tmpCompositions;
-        bm_eventDispatcher.sendEvent('bm:compositions:list', compositions);
+        bm_eventDispatcher.sendEvent('bm:compositions:list', projectComps);
     }
     
     function complete() {
