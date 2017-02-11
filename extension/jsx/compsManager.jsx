@@ -85,10 +85,11 @@ var bm_compsManager = (function () {
     }
     
     function complete() {
-        bm_eventDispatcher.sendEvent('bm:render:complete');
+        bm_eventDispatcher.sendEvent('bm:render:complete', currentComposition.id);
     }
 
     function renderComposition(compositionData) {
+        ob.cancelled = false;
         currentComposition = compositionData;
         projectComps = bm_projectManager.getCompositions();
         var comp;
@@ -100,10 +101,12 @@ var bm_compsManager = (function () {
             }
             i += 1;
         }
-        if (!comp) {
+        /*if (!comp) {
             bm_eventDispatcher.sendEvent('bm:render:complete');
             return;
         }
+        bm_eventDispatcher.sendEvent('bm:render:complete', currentComposition.id);
+        return;*/
         bm_eventDispatcher.sendEvent('bm:render:start', currentComposition.id);
         var destination = currentComposition.absoluteURI;
         var fsDestination = currentComposition.destination;
@@ -111,7 +114,7 @@ var bm_compsManager = (function () {
     }
     
     function renderComplete() {
-        bm_eventDispatcher.sendEvent('bm:render:complete');
+        bm_eventDispatcher.sendEvent('bm:render:complete', currentComposition.id);
     }
     
     function cancel() {
@@ -124,6 +127,7 @@ var bm_compsManager = (function () {
         searchCompositionDestination : searchCompositionDestination,
         renderComplete : renderComplete,
         browseFolder : browseFolder,
+        renderComposition : renderComposition,
         cancel : cancel,
         cancelled: false
     };
