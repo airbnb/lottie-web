@@ -37,6 +37,12 @@
       },
       "name": "ef",
       "type": "array"
+    },
+    {
+      "description": "Enabled AE property value",
+      "extended_name": "Enabled",
+      "name": "en",
+      "type": "number"
     }
   ]
 }

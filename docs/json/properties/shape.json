@@ -43,6 +43,12 @@
       "extended_name": "Property Index",
       "name": "ix",
       "type": "string"
+    },
+    {
+      "description": "Defines if property is animated",
+      "extended_name": "Animated",
+      "name": "a",
+      "type": "number"
     }
   ]
 }

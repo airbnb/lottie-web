@@ -1,7 +1,7 @@
 {
   "properties": [
     {
-      "description": "Type of layer: Solid. Value 1.",
+      "description": "Type of layer: Text. Value 5.",
       "extendedName": "Type",
       "name": "ty",
       "type": "number"
