@@ -552,7 +552,19 @@ var PropertyFactory = (function(){
         var p;
         if(type === 2){
             p = new TransformProperty(elem, data, arr);
-        }else if(!data.k.length){
+        } else if(data.a === 0){
+            if(type === 0) {
+                p = new ValueProperty(elem,data,mult);
+            } else {
+                p = new MultiDimensionalProperty(elem,data, mult);
+            }
+        } else if(data.a === 1){
+            if(type === 0) {
+                p = new KeyframedValueProperty(elem,data,mult);
+            } else {
+                p = new KeyframedMultidimensionalProperty(elem,data, mult);
+            }
+        } else if(!data.k.length){
             p = new ValueProperty(elem,data, mult);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult);

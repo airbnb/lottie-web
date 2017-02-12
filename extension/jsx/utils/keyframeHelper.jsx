@@ -292,9 +292,13 @@ var bm_keyframeHelper = (function () {
     }
     
     function exportKeyframes(prop, frRate, keyframeValues) {
-        var returnOb = {
-            k: exportKeys(prop, frRate, keyframeValues)
-        };
+        var returnOb = {}
+        if (prop.numKeys <= 1) {
+            returnOb.a = 0;
+        } else {
+            returnOb.a = 1;
+        }
+        returnOb.k = exportKeys(prop, frRate, keyframeValues);
         bm_expressionHelper.checkExpression(prop, returnOb);
         return returnOb;
     }
