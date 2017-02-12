@@ -1,3 +1,10 @@
+## V 4.5.5
+- Text selector Triangle fix
+- Expressions support for "active" property on effects
+- Rearranged exporting properties
+- Included "a" property for animated props
+- Docs updated
+
 ## V 4.5.4
 - Trim path individually supported
 - bug fix that messed with webpack build
