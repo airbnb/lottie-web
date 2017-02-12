@@ -761,7 +761,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 4){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
                     if(mult<.5){
@@ -773,7 +773,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 5){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     var tot = e - s;
                     /*ind += 0.5;
@@ -786,7 +786,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 6){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     ind = min(max(0,ind+0.5-s),e-s);
                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
