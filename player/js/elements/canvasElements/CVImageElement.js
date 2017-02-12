@@ -66,5 +66,5 @@ CVImageElement.prototype.renderFrame = function(parentMatrix){
 
 CVImageElement.prototype.destroy = function(){
     this.img = null;
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
 };

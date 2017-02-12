@@ -152,7 +152,7 @@ CVCompElement.prototype.destroy = function(){
     }
     this.layers = null;
     this.elements = null;
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
 };
 CVCompElement.prototype.checkLayers = CanvasRenderer.prototype.checkLayers;
 CVCompElement.prototype.buildItem = CanvasRenderer.prototype.buildItem;

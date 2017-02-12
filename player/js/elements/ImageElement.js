@@ -49,6 +49,6 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
 };
 
 IImageElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.innerElem =  null;
 };
