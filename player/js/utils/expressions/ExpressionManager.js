@@ -617,12 +617,12 @@ var ExpressionManager = (function(){
                 textTotal = this.textTotal;
                 selectorValue = this.selectorValue;
             }
-            if(!transform){
-                transform = elem.transform;
-            }
             if(!thisLayer){
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
+            }
+            if(!transform){
+                transform = elem.layerInterface("ADBE Transform Group");
             }
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");

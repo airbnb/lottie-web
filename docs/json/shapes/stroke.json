@@ -1,0 +1,92 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "Shape content type. Value: st",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Stroke Line Cap",
+      "extendedName": "Line Cap",
+      "name": "lc",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/lineCap"
+        }
+      ],
+      "type": "number"
+    },
+    {
+      "description": "Stroke Line Join",
+      "extendedName": "Line Join",
+      "name": "lj",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/lineJoin"
+        }
+      ],
+      "type": "number"
+    },
+    {
+      "description": "Stroke Miter Limit. Only if Line Join is set to Miter.",
+      "extendedName": "Miter Limit",
+      "name": "ml",
+      "type": "number"
+    },
+    {
+      "description": "Stroke Opacity",
+      "extendedName": "Opacity",
+      "name": "o",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Stroke Width",
+      "extendedName": "Width",
+      "name": "w",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Stroke Color",
+      "extendedName": "Color",
+      "name": "c",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

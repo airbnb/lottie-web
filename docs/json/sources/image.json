@@ -1,0 +1,34 @@
+{
+	"properties":[
+		{
+	      "description": "Image Height",
+	      "extendedName": "Height",
+	      "name": "h",
+	      "type": "number"
+	    },
+		{
+	      "description": "Image Width",
+	      "extendedName": "Width",
+	      "name": "w",
+	      "type": "number"
+	    },
+		{
+	      "description": "Image ID",
+	      "extendedName": "ID",
+	      "name": "id",
+	      "type": "string"
+	    },
+		{
+	      "description": "Image name",
+	      "extendedName": "Image name",
+	      "name": "p",
+	      "type": "string"
+	    },
+		{
+	      "description": "Image path",
+	      "extendedName": "Image path",
+	      "name": "u",
+	      "type": "string"
+	    }
+	]
+}

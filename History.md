@@ -1,3 +1,40 @@
+## V 4.5.5
+- Text selector Triangle fix
+- Expressions support for "active" property on effects
+- Rearranged exporting properties
+- Included "a" property for animated props
+- Docs updated
+
+## V 4.5.4
+- Trim path individually supported
+- bug fix that messed with webpack build
+
+## V 4.5.3
+- Skipping non breaking space on characters
+- levels effect optimizations
+- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
+- transform properties in expression through transformInterface
+
+## V 4.5.2
+- Comp expression interface default return
+- HTML renderer validation fix
+
+## V 4.5.1
+- Trim path fix
+- Html renderer fixes
+
+## V 4.5.0
+- Tritone effect supported
+- Levels effect supported. The one called "Levels (Individual Controls)"
+
+## V 4.4.30
+- Gradient Fill default value breaking render fix
+- Demo file fix when json is renamed
+
+## V 4.4.29
+- Trim path fix
+- html renderer fixes
+
 ## V 4.4.28
 - expressions: better seeded random, properties by matchName, normalize support
 - single shape text with keyframes fix

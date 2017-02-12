@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "Shape content type. Value: tm. THIS FEATURE IS NOT SUPPORTED. It's exported because if you export it, they will come.",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Merge Mode",
+      "extendedName": "Merge Mode",
+      "name": "mm",
+      "type": "number"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "properties": [
+    {
+      "description": "In Point of the Time Ruler. Sets the initial Frame of the animation.",
+      "extendedName": "In Point",
+      "name": "ip",
+      "type": "number"
+    },
+    {
+      "description": "Out Point of the Time Ruler. Sets the final Frame of the animation",
+      "extendedName": "Out Point",
+      "name": "op",
+      "type": "number"
+    },
+    {
+      "description": "Frame Rate",
+      "extendedName": "Frame Rate",
+      "name": "fr",
+      "type": "number"
+    },
+    {
+      "description": "Composition Width",
+      "extendedName": "Width",
+      "name": "w",
+      "type": "number"
+    },
+    {
+      "description": "Composition Height",
+      "extendedName": "Height",
+      "name": "h",
+      "type": "number"
+    },
+    {
+      "description": "Bodymovin Version",
+      "extendedName": "Version",
+      "name": "v",
+      "type": "number"
+    },
+    {
+      "description": "List of Composition Layers",
+      "extendedName": "Layers",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/layers/shape"
+          },
+          {
+            "$ref": "#/layers/solid"
+          },
+          {
+            "$ref": "#/layers/comp"
+          },
+          {
+            "$ref": "#/layers/image"
+          },
+          {
+            "$ref": "#/layers/null"
+          },
+          {
+            "$ref": "#/layers/text"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "layers",
+      "type": "array"
+    },
+    {
+      "description": "source items that can be used in multiple places. Comps and Images for now.",
+      "extendedName": "Assets",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/sources/image"
+          },
+          {
+            "$ref": "#/sources/precomp"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "assets",
+      "type": "array"
+    },
+    {
+      "description": "source chars for text layers",
+      "extendedName": "Chars",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/sources/chars"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "chars",
+      "type": "array"
+    }
+  ]
+}

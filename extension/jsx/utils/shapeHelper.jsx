@@ -319,7 +319,6 @@ var bm_shapeHelper = (function () {
                 } else if (itemType === shapeItemTypes.fill) {
                     ob = {};
                     ob.ty = itemType;
-                    ob.fillEnabled = prop.enabled;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
                 } else if (itemType === shapeItemTypes.gfill) {
@@ -348,7 +347,6 @@ var bm_shapeHelper = (function () {
                 } else if (itemType === shapeItemTypes.stroke) {
                     ob = {};
                     ob.ty = itemType;
-                    ob.fillEnabled = prop.enabled;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
                     ob.w = bm_keyframeHelper.exportKeyframes(prop.property('Stroke Width'), frameRate);

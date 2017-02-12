@@ -1,6 +1,6 @@
 {
   "name": "bodymovin",
-  "version": "4.4.28",
+  "version": "4.5.5",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
   "main": "./build/player/bodymovin.js",
   "repository": {
@@ -29,10 +29,8 @@
     "gulp-uglify": "^1.4.1",
     "gulp-usemin": "^0.3.14",
     "gulp-watch": "^4.3.5",
-    "gulp-wrap": "^0.11.0"
-  },
-  "license": "MIT",
-  "dependencies": {
+    "gulp-wrap": "^0.11.0",
     "gulp-cheerio": "^0.6.2"
-  }
+  },
+  "license": "MIT"
 }

@@ -1,0 +1,28 @@
+{
+	"properties": [
+		{
+      		"description": "Property Value",
+      		"extended_name": "Value",
+			"name": "k",
+			"type": "number"
+		},
+		{
+      		"description": "Property Expression. An AE expression that modifies the value.",
+      		"extended_name": "Expression",
+			"name": "x",
+			"type": "string"
+		},
+		{
+      		"description": "Property Index. Used for expressions.",
+      		"extended_name": "Property Index",
+			"name": "ix",
+			"type": "string"
+		},
+		{
+      		"description": "Defines if property is animated",
+      		"extended_name": "Animated",
+			"name": "a",
+			"type": "number"
+		}
+	]
+}

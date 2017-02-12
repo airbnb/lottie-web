@@ -1,0 +1,50 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "Shape content type. Value: fl",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Fill Opacity",
+      "extendedName": "Opacity",
+      "name": "o",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Fill Color",
+      "extendedName": "Color",
+      "name": "c",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

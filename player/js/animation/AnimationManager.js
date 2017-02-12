@@ -144,7 +144,7 @@ var animationManager = (function(){
 
     function destroy(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=(len-1);i>=0;i-=1){
             registeredAnimations[i].animation.destroy(animation);
         }
     }
@@ -187,11 +187,7 @@ var animationManager = (function(){
     function activate(){
         if(idled){
             idled = false;
-            if(Performance && Performance.now){
-                first(Performance.now);
-            } else {
-                requestAnimationFrame(first);
-            }
+            requestAnimationFrame(first);
         }
     }
 

@@ -83,7 +83,7 @@ ICompElement.prototype.getElements = function(){
 };
 
 ICompElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
         if(this.elements[i]){

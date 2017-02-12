@@ -203,7 +203,8 @@ var bm_dataManager = (function () {
             } else {
                 demoStr = demoStr.replace('__[[RENDERER]]__', "svg");
             }
-            var demoDestinationPath = destinationPath.replace('data.json','demo.html').replace('data.js','demo.html');
+            var filePathName = destinationPath.substr(destinationPath.lastIndexOf('/') + 1);
+            var demoDestinationPath = destinationPath.replace(filePathName,'demo.html');
             var demoFile = new File(demoDestinationPath);
             demoFile.open('w', 'TEXT', '????');
             demoFile.encoding = 'UTF-8';

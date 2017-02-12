@@ -1,0 +1,142 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Direction. Direction how the shape is drawn. Used for trim path for example.",
+      "extendedName": "Direction",
+      "name": "d",
+      "type": "number"
+    },
+    {
+      "description": "Shape content type. Value: sr",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Star's position",
+      "extendedName": "Position",
+      "name": "p",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's inner radius. Only used for stars, not polygons.",
+      "extendedName": "Inner Radius",
+      "name": "ir",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's inner roundness. Only used for stars, not polygons.",
+      "extendedName": "Inner Roundness",
+      "name": "is",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's outer radius.",
+      "extendedName": "Outer Radius",
+      "name": "ir",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's outer roundness.",
+      "extendedName": "Outer Roundness",
+      "name": "is",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's rotation.",
+      "extendedName": "Rotation",
+      "name": "r",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's number of points.",
+      "extendedName": "Points",
+      "name": "pt",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Star's type. Polygon or Star.",
+      "extendedName": "Star Type",
+      "name": "sy",
+      "type": "object",
+      "oneOf": [
+        {
+          "standsFor": "Star",
+          "value": 1
+        },
+        {
+          "standsFor": "Polygon",
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

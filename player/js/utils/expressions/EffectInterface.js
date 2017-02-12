@@ -35,7 +35,7 @@ var EffectsExpressionInterface = (function (){
                 effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem));
             }
         }
-        return function(name){
+        var groupInterface = function(name){
             var effects = data.ef, i = 0, len = effects.length;
            // console.log('effects:',effects);
             while(i<len) {
@@ -50,6 +50,8 @@ var EffectsExpressionInterface = (function (){
             }
             return effectElements[0]();
         }
+        groupInterface.active = data.en !== 0;
+        return groupInterface
     }
 
     function createValueInterface(element, type, elem){

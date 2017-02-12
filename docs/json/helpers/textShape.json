@@ -1,0 +1,28 @@
+{
+  "oneOf": [
+    {
+      "standsFor": "Square",
+      "value": 1
+    },
+    {
+      "standsFor": "Ramp Up",
+      "value": 2
+    },
+    {
+      "standsFor": "Ramp Down",
+      "value": 3
+    },
+    {
+      "standsFor": "Triangle",
+      "value": 4
+    },
+    {
+      "standsFor": "Round",
+      "value": 5
+    },
+    {
+      "standsFor": "Smooth",
+      "value": 6
+    }
+  ]
+}

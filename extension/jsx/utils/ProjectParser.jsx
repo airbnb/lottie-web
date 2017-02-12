@@ -27,6 +27,10 @@ var bm_ProjectHelper = (function(){
         if(!fileString){
             getProjectData();
         }
+        var hasNoGradColorData = false;
+        if(fileString.indexOf('ADBE Vector Grad Colors') === -1) {
+            hasNoGradColorData = true;
+        }
         numKeys = numKeys ? numKeys : 1;
         var gradientIndex = 0, navigationIndex = 0;
         var i = 0, len = shapeNavigation.length;
@@ -51,7 +55,7 @@ var bm_ProjectHelper = (function(){
         while(currentKey < numKeys){
             var gradientData = {};
             gradientIndex = fileString.indexOf('<prop.map',gradientIndex);
-            if(gradientIndex > limitIndex || (gradientIndex == -1 && limitIndex == Number.MAX_VALUE)){
+            if(hasNoGradColorData || gradientIndex > limitIndex || (gradientIndex == -1 && limitIndex == Number.MAX_VALUE)){
                 gradientData.c = [[0,1,1,1],[1,0,0,0]];
                 maxColors = Math.max(maxColors,2);
             } else {

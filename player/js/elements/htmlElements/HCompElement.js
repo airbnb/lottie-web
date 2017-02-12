@@ -28,6 +28,7 @@ HCompElement.prototype.createElements = function(){
     divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
         var compSvg = document.createElementNS(svgNS,'svg');
+        styleDiv(compSvg);
         compSvg.setAttribute('width',this.data.w);
         compSvg.setAttribute('height',this.data.h);
         var g = document.createElementNS(svgNS,'g');
@@ -36,9 +37,11 @@ HCompElement.prototype.createElements = function(){
         this.maskedElement = g;
         this.baseElement = divElement;
         this.layerElement = g;
+        this.transformedElement = divElement;
     }else{
         this.layerElement = divElement;
         this.baseElement = this.layerElement;
+        this.transformedElement = divElement;
     }
     //this.appendNodeToParent(this.layerElement);
     this.checkParenting();
