@@ -183,6 +183,7 @@ var bm_effectsHelper = (function () {
         ob.nm = elem.name;
         ob.mn = elem.matchName;
         ob.ix = elem.propertyIndex;
+        ob.en = elem.enabled === true ? 1 : 0;
         ob.ef = [];
         var i, len = elem.numProperties, prop;
         for (i = 0; i < len; i += 1) {
@@ -230,32 +231,13 @@ var bm_effectsHelper = (function () {
         for (i = 0; i < len; i += 1) {
             effectElement = effects(i + 1);
             var effectType = getEffectType(effectElement.matchName);
+            /*
             //If the effect is not a Slider Control and is not enabled, it won't be exported.
             if(effectType !== effectTypes.group && !effectElement.enabled){
                 continue;
             }
+            */
             effectsArray.push(exportCustomEffect(effectElement ,effectType, frameRate));
-            /*var effectType = getEffectType(effectElement.matchName);
-            switch (effectType) {
-            case effectTypes.sliderControl:
-                effectsArray.push(exportSliderControl(effectElement.property('Slider'), frameRate));
-                break;
-            case effectTypes.angleControl:
-                effectsArray.push(exportAngleControl(effectElement.property('Angle'), frameRate));
-                break;
-            case effectTypes.colorControl:
-                effectsArray.push(exportColorControl(effectElement.property('Color'), frameRate));
-                break;
-            case effectTypes.pointControl:
-                effectsArray.push(exportPointControl(effectElement.property('Point'), frameRate));
-                break;
-            case effectTypes.checkboxControl:
-                effectsArray.push(exportCheckboxControl(effectElement.property('Checkbox'), frameRate));
-                break;
-            default:
-                //iterateEffectProperties(effectElement);
-                effectsArray.push(exportCustomEffect(effectElement, frameRate));
-            }*/
         }
         if (effectsArray.length) {
             layerData.ef = effectsArray;
