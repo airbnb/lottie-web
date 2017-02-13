@@ -148,6 +148,35 @@ var bm_expressionHelper = (function () {
                         //addAssignment(body[i].body);
                     }
                 }
+            } else if (body[i].type === 'IfStatement') {
+                if (body[i].consequent) {
+                    if (body[i].consequent.type === 'BlockStatement') {
+                        findUndeclaredVariables(body[i].consequent.body, 0, null, declared, undeclared, true);
+                    } else if (body[i].consequent.type === 'ExpressionStatement') {
+                        expression = body[i].consequent.expression;
+                        if (expression.type === 'AssignmentExpression') {
+                            addAssignment(expression);
+                        } else if (expression.type === 'SequenceExpression') {
+                            addSequenceExpressions(expression.expressions);
+                        }
+                    } else if (body[i].consequent.type === 'ReturnStatement') {
+                        //
+                    }
+                }
+                if (body[i].alternate) {
+                    if (body[i].alternate.type === 'IfStatement') {
+                        findUndeclaredVariables(body[i].alternate.body, 0, null, declared, undeclared, true);
+                    } else if (body[i].alternate.type === 'BlockStatement') {
+                        findUndeclaredVariables(body[i].alternate.body, 0, null, declared, undeclared, true);
+                    } else if (body[i].alternate.type === 'ExpressionStatement') {
+                        expression = body[i].alternate.expression;
+                        if (expression.type === 'AssignmentExpression') {
+                            addAssignment(expression);
+                        } else if (expression.type === 'SequenceExpression') {
+                            addSequenceExpressions(expression.expressions);
+                        }
+                    }
+                }
             } else if (body[i].type === 'FunctionDeclaration') {
                 if (body[i].body && body[i].body.type === 'BlockStatement') {
                     var p = [];
