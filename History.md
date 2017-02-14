@@ -1,3 +1,9 @@
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
+
 ## V 4.5.5
 - Text selector Triangle fix
 - Expressions support for "active" property on effects
