@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.5.7
+- standalone autoplay fix
+
 ## V 4.5.6
 - expression instance fix for CEP
 - new variables declarations in expression conditional statements
