@@ -252,7 +252,12 @@ var bm_renderManager = (function () {
     }
     
     function setChars(chars) {
-        bm_eventDispatcher.sendEvent('bm:render:chars', {type: 'save', compId: currentCompID, chars: chars});
+        //bm_eventDispatcher.sendEvent('bm:render:chars', {type: 'save', compId: currentCompID, chars: chars});
+        var i, len = chars.length;
+        for (i = 0; i < len; i += 1) {
+            delete chars[i].font;
+        }
+        setCharsData(chars)
     }
     
     function setFontData(fontData) {
