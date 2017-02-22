@@ -1,0 +1,56 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Direction. Direction how the shape is drawn. Used for trim path for example.",
+      "extendedName": "Direction",
+      "name": "d",
+      "type": "number"
+    },
+    {
+      "description": "Shape content type. Value: el",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Ellipse's position",
+      "extendedName": "Position",
+      "name": "p",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Ellipse's size",
+      "extendedName": "Size",
+      "name": "s",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

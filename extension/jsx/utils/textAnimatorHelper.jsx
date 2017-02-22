@@ -25,7 +25,11 @@ var bm_textAnimatorHelper = (function () {
             }
         }
         
-        len = selectorProperty.numProperties;
+        if(!selectorProperty) {
+            selectorType = -1;
+        } else {
+            len = selectorProperty.numProperties;
+        }
         /*for (i = 0; i < len; i += 1) {
             //bm_eventDispatcher.log(selectorProperty.property(i + 1).matchName);
         }*/
@@ -71,6 +75,18 @@ var bm_textAnimatorHelper = (function () {
             ob.b = selectorProperty.property('ADBE Text Range Type2').value;
             var amount = selectorProperty.property('ADBE Text Expressible Amount');
             bm_expressionHelper.checkExpression(amount, ob);
+            //bm_eventDispatcher.log(ob.x);
+        } else if (selectorType === -1) {
+            ob.t = 0;
+            ob.xe = {k:0}
+            ob.ne = {k:0}
+            ob.a = {k:100}
+            ob.b = 1
+            ob.b = 0
+            ob.sh = 0
+            ob.s = {k:0}
+            ob.e = {k:100}
+            ob.o = {k:0}
             //bm_eventDispatcher.log(ob.x);
         }
         return ob;

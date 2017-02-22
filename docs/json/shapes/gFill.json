@@ -1,0 +1,114 @@
+{
+  "properties": [
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "Shape content type. Value: gf",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "string"
+    },
+    {
+      "description": "Fill Opacity",
+      "extendedName": "Opacity",
+      "name": "o",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Gradient Start Point",
+      "extendedName": "Start Point",
+      "name": "s",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Gradient End Point",
+      "extendedName": "End Point",
+      "name": "e",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Gradient Type",
+      "extendedName": "Type",
+      "name": "t",
+      "oneOf": [
+        {
+          "standsFor": "Linear",
+          "value": 1
+        },
+        {
+          "standsFor": "Radial",
+          "value": 2
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Gradient Highlight Length. Only if type is Radial",
+      "extendedName": "Highlight Length",
+      "name": "h",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Highlight Angle. Only if type is Radial",
+      "extendedName": "Highlight Angle",
+      "name": "a",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    {
+      "description": "Gradient Colors",
+      "extendedName": "Gradient Colors",
+      "name": "g",
+      "type": "object"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "properties": [
+    {
+      "description": "Effect Index. Used for expressions.",
+      "extendedName": "Effect Index",
+      "name": "ix",
+      "type": "number"
+    },
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "Effect type. Value:5.",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "number"
+    },
+    {
+      "description": "Effect List of properties.",
+      "extendedName": "Effects",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/effects/index"
+          }
+        ],
+        "type": "object"
+      },
+      "name": "ef",
+      "type": "array"
+    },
+    {
+      "description": "Enabled AE property value",
+      "extended_name": "Enabled",
+      "name": "en",
+      "type": "number"
+    }
+  ]
+}

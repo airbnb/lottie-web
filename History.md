@@ -1,3 +1,23 @@
+## V 4.5.7
+- standalone autoplay fix
+
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
+
+## V 4.5.5
+- Text selector Triangle fix
+- Expressions support for "active" property on effects
+- Rearranged exporting properties
+- Included "a" property for animated props
+- Docs updated
+
+## V 4.5.4
+- Trim path individually supported
+- bug fix that messed with webpack build
+
 ## V 4.5.3
 - Skipping non breaking space on characters
 - levels effect optimizations

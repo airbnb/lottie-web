@@ -1,0 +1,42 @@
+{
+  "properties": [
+    {
+      "description": "Effect Index. Used for expressions. NOT USED. EQUALS SLIDER.",
+      "extendedName": "Effect Index",
+      "name": "ix",
+      "type": "number"
+    },
+    {
+      "description": "After Effect's Match Name. Used for expressions.",
+      "extendedName": "Match Name",
+      "name": "mn",
+      "type": "string"
+    },
+    {
+      "description": "After Effect's Name. Used for expressions.",
+      "extendedName": "Name",
+      "name": "nm",
+      "type": "string"
+    },
+    {
+      "description": "Effect type. Value:0.",
+      "extendedName": "Type",
+      "name": "ty",
+      "type": "number"
+    },
+    {
+      "description": "Effect value.",
+      "extendedName": "Value",
+      "name": "v",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  ]
+}

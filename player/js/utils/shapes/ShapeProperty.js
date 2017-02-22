@@ -548,8 +548,9 @@ var ShapePropertyFactory = (function(){
     function getShapeProp(elem,data,type, arr){
         var prop;
         if(type === 3 || type === 4){
-            var keys = type === 3 ? data.pt.k : data.ks.k;
-            if(keys.length){
+            var dataProp = type === 3 ? data.pt : data.ks;
+            var keys = dataProp.k;
+            if(dataProp.a === 1 || keys.length){
                 prop = new KeyframedShapeProperty(elem, data, type);
             }else{
                 prop = new ShapeProperty(elem, data, type);

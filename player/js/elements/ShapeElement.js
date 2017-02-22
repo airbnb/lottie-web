@@ -552,7 +552,7 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData){
 };
 
 IShapeElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.shapeData = null;
     this.viewData = null;
     this.parentContainer = null;

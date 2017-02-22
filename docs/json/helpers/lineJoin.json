@@ -1,0 +1,16 @@
+{
+  "oneOf": [
+    {
+      "standsFor": "miter",
+      "value": 1
+    },
+    {
+      "standsFor": "round",
+      "value": 2
+    },
+    {
+      "standsFor": "butt",
+      "value": 3
+    }
+  ]
+}
