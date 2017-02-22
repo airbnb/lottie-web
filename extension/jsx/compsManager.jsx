@@ -57,16 +57,9 @@ var bm_compsManager = (function () {
     }
     
     //Opens folder where json is rendered
-    function browseFolder(id) {
-        var i = 0, len = compositions.length, compData;
-        while (i < len) {
-            if (compositions[i].id === id) {
-                var file = new File(compositions[i].destination);
-                file.parent.execute();
-                break;
-            }
-            i += 1;
-        }
+    function browseFolder(destination) {
+        var file = new File(destination);
+        file.parent.execute();
     }
     
     function updateData(){
