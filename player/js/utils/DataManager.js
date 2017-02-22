@@ -518,7 +518,11 @@ function dataFunctionManager(){
                     }
                     if(fontManager.chars){
                         charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
-                        cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                        if (charData != undefined){
+                          cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                        } else {
+                          cLength = 1;
+                        }
                     }else{
                         //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
                         cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
@@ -558,7 +562,11 @@ function dataFunctionManager(){
                 }
                 if(fontManager.chars){
                     charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
-                    cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
+                    if (charData != undefined){
+                      cLength = newLineFlag ? 0 : charData.w*documentData.s/100; 
+                    } else {
+                      cLength = 1;
+                    }
                 }else{
                     //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
                     //tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
