@@ -141,6 +141,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             }
             if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
                 data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
+                console.log(arr[i].r);
                 container.appendChild(pathElement);
             } else {
                 data[i].g = PropertyFactory.getGradientProp(this,arr[i].g,dynamicProperties);
@@ -157,6 +158,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 }
                 data[i].elem = pathElement;
                 container.appendChild(pathElement);
+            }
+            if(arr[i].r === 2) {
+                pathElement.setAttribute('fill-rule', 'evenodd');
             }
 
             if(arr[i].ln){
