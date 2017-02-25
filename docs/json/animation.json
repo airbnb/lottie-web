@@ -28,7 +28,7 @@
     "v": {
       "title": "Version",
       "description": "Bodymovin Version",
-      "type": "number"
+      "type": "string"
     },
     "layers": {
       "title": "Layers",
