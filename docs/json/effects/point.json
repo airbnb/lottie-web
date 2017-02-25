@@ -1,33 +1,30 @@
 {
-  "properties": [
-    {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ix": {
+      "title": "Effect Index",
       "description": "Effect Index. Used for expressions.",
-      "extendedName": "Effect Index",
-      "name": "ix",
       "type": "number"
     },
-    {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Effect type. Value:2.",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "number"
     },
-    {
+    "v": {
+      "title": "Value",
       "description": "Effect value.",
-      "extendedName": "Value",
-      "name": "v",
       "type": "object",
       "items": {
         "oneOf": [
@@ -41,5 +38,5 @@
         "type": "object"
       }
     }
-  ]
+  }
 }

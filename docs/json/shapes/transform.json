@@ -1,15 +1,15 @@
 {
-  "properties": [
-    {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "a": {
+      "title": "Anchor Point",
       "description": "Shape Transform Anchor Point",
-      "extendedName": "Anchor Point",
-      "name": "a",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -20,10 +20,9 @@
       ],
       "type": "object"
     },
-    {
+    "p": {
+      "title": "Position",
       "description": "Shape Transform Position",
-      "extendedName": "Position",
-      "name": "p",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -34,10 +33,9 @@
       ],
       "type": "object"
     },
-    {
+    "s": {
+      "title": "Scale",
       "description": "Shape Transform Scale",
-      "extendedName": "Scale",
-      "name": "s",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -48,10 +46,9 @@
       ],
       "type": "object"
     },
-    {
+    "r": {
+      "title": "Rotation",
       "description": "Shape Transform Rotation",
-      "extendedName": "Rotation",
-      "name": "r",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -62,10 +59,9 @@
       ],
       "type": "object"
     },
-    {
+    "o": {
+      "title": "Opacity",
       "description": "Shape Transform Opacity",
-      "extendedName": "Opacity",
-      "name": "o",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -76,10 +72,9 @@
       ],
       "type": "object"
     },
-    {
+    "sk": {
+      "title": "Skew",
       "description": "Shape Transform Skew",
-      "extendedName": "Skew",
-      "name": "sk",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -90,10 +85,9 @@
       ],
       "type": "object"
     },
-    {
+    "sa": {
+      "title": "Skew Axis",
       "description": "Shape Transform Skew Axis",
-      "extendedName": "Skew Axis",
-      "name": "sa",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -104,5 +98,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }
