@@ -1,27 +1,23 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Shape content type. Value: rd",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "string"
     },
-    {
+    "r": {
+      "title": "Radius",
       "description": "Rounded Corner Radius",
-      "extendedName": "Radius",
-      "name": "r",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -32,5 +28,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }

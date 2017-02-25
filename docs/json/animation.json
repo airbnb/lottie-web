@@ -1,44 +1,38 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "ip": {
+      "title": "In Point",
       "description": "In Point of the Time Ruler. Sets the initial Frame of the animation.",
-      "extendedName": "In Point",
-      "name": "ip",
       "type": "number"
     },
-    {
+    "op": {
+      "title": "Out Point",
       "description": "Out Point of the Time Ruler. Sets the final Frame of the animation",
-      "extendedName": "Out Point",
-      "name": "op",
       "type": "number"
     },
-    {
+    "fr": {
+      "title": "Frame Rate",
       "description": "Frame Rate",
-      "extendedName": "Frame Rate",
-      "name": "fr",
       "type": "number"
     },
-    {
+    "w": {
+      "title": "Width",
       "description": "Composition Width",
-      "extendedName": "Width",
-      "name": "w",
       "type": "number"
     },
-    {
+    "h": {
+      "title": "Height",
       "description": "Composition Height",
-      "extendedName": "Height",
-      "name": "h",
       "type": "number"
     },
-    {
+    "v": {
+      "title": "Version",
       "description": "Bodymovin Version",
-      "extendedName": "Version",
-      "name": "v",
       "type": "number"
     },
-    {
+    "layers": {
+      "title": "Layers",
       "description": "List of Composition Layers",
-      "extendedName": "Layers",
       "items": {
         "oneOf": [
           {
@@ -62,12 +56,11 @@
         ],
         "type": "object"
       },
-      "name": "layers",
       "type": "array"
     },
-    {
+    "assets": {
+      "title": "Assets",
       "description": "source items that can be used in multiple places. Comps and Images for now.",
-      "extendedName": "Assets",
       "items": {
         "oneOf": [
           {
@@ -79,12 +72,11 @@
         ],
         "type": "object"
       },
-      "name": "assets",
       "type": "array"
     },
-    {
+    "chars": {
+      "title": "Chars",
       "description": "source chars for text layers",
-      "extendedName": "Chars",
       "items": {
         "oneOf": [
           {
@@ -93,8 +85,7 @@
         ],
         "type": "object"
       },
-      "name": "chars",
       "type": "array"
     }
-  ]
+  }
 }

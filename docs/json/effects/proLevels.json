@@ -1,68 +1,127 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "ix": {
+      "title": "Effect Index",
       "description": "Effect Index. Used for expressions.",
-      "extendedName": "Effect Index",
-      "name": "ix",
       "type": "number"
     },
-    {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Effect type. Value:23.",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "number"
     },
-    {
+    "ef": {
+      "title": "Effects",
       "description": "ffect List of properties.",
-      "extendedName": "Effects",
-      "name": "ef",
       "type": "array",
-      "items":[
-      	{"$ref":"#/effects/dropDown"},
-      	{"$ref":"#/effects/noValue"},
-        {"$ref":"#/effects/noValue"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/noValue"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/noValue"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/noValue"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-      	{"$ref":"#/effects/noValue"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-        {"$ref":"#/effects/slider"},
-      	{"$ref":"#/effects/slider"}
+      "items": [
+        {
+          "$ref": "#/effects/dropDown"
+        },
+        {
+          "$ref": "#/effects/noValue"
+        },
+        {
+          "$ref": "#/effects/noValue"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/noValue"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/noValue"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/noValue"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/noValue"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        },
+        {
+          "$ref": "#/effects/slider"
+        }
       ]
     }
-  ]
+  }
 }

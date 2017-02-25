@@ -1,27 +1,23 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Shape content type. Value: st",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "string"
     },
-    {
+    "lc": {
+      "title": "Line Cap",
       "description": "Stroke Line Cap",
-      "extendedName": "Line Cap",
-      "name": "lc",
       "oneOf": [
         {
           "$ref": "#/helpers/lineCap"
@@ -29,10 +25,9 @@
       ],
       "type": "number"
     },
-    {
+    "lj": {
+      "title": "Line Join",
       "description": "Stroke Line Join",
-      "extendedName": "Line Join",
-      "name": "lj",
       "oneOf": [
         {
           "$ref": "#/helpers/lineJoin"
@@ -40,16 +35,14 @@
       ],
       "type": "number"
     },
-    {
+    "ml": {
+      "title": "Miter Limit",
       "description": "Stroke Miter Limit. Only if Line Join is set to Miter.",
-      "extendedName": "Miter Limit",
-      "name": "ml",
       "type": "number"
     },
-    {
+    "o": {
+      "title": "Opacity",
       "description": "Stroke Opacity",
-      "extendedName": "Opacity",
-      "name": "o",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -60,10 +53,9 @@
       ],
       "type": "object"
     },
-    {
+    "w": {
+      "title": "Width",
       "description": "Stroke Width",
-      "extendedName": "Width",
-      "name": "w",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -74,10 +66,9 @@
       ],
       "type": "object"
     },
-    {
+    "c": {
+      "title": "Color",
       "description": "Stroke Color",
-      "extendedName": "Color",
-      "name": "c",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -88,5 +79,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }

@@ -1,14 +1,13 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "id": {
+      "title": "ID",
       "description": "Precomp ID",
-      "extendedName": "ID",
-      "name": "id",
       "type": "string"
     },
-    {
+    "layers": {
+      "title": "Layers",
       "description": "List of Precomp Layers",
-      "extendedName": "Layers",
       "items": {
         "oneOf": [
           {
@@ -32,8 +31,7 @@
         ],
         "type": "object"
       },
-      "name": "layers",
       "type": "array"
     }
-  ]
+  }
 }

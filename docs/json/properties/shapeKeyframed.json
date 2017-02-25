@@ -1,37 +1,31 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "k": {
       "description": "Property Value keyframes",
       "extended_name": "Keyframes",
-      "name": "k",
       "properties": [
         {
           "description": "End value of keyframe segment.",
           "extended_name": "End",
-          "name": "e",
           "properties": [
             {
               "description": "Closed property of shape",
               "extended_name": "Closed",
-              "name": "c",
               "type": "boolean"
             },
             {
               "description": "Bezier curve In points. Array of 2 dimensional arrays.",
               "extended_name": "In Point",
-              "name": "i",
               "type": "array"
             },
             {
               "description": "Bezier curve Out points. Array of 2 dimensional arrays.",
               "extended_name": "Out Point",
-              "name": "o",
               "type": "array"
             },
             {
               "description": "Bezier curve Vertices. Array of 2 dimensional arrays.",
               "extended_name": "Vertices",
-              "name": "v",
               "type": "array"
             }
           ],
@@ -40,30 +34,25 @@
         {
           "description": "Start value of keyframe segment.",
           "extended_name": "Start",
-          "name": "s",
           "properties": [
             {
               "description": "Closed property of shape",
               "extended_name": "Closed",
-              "name": "c",
               "type": "boolean"
             },
             {
               "description": "Bezier curve In points. Array of 2 dimensional arrays.",
               "extended_name": "In Point",
-              "name": "i",
               "type": "array"
             },
             {
               "description": "Bezier curve Out points. Array of 2 dimensional arrays.",
               "extended_name": "Out Point",
-              "name": "o",
               "type": "array"
             },
             {
               "description": "Bezier curve Vertices. Array of 2 dimensional arrays.",
               "extended_name": "Vertices",
-              "name": "v",
               "type": "array"
             }
           ],
@@ -72,24 +61,20 @@
         {
           "description": "Start time of keyframe segment.",
           "extended_name": "Time",
-          "name": "t",
           "type": "number"
         },
         {
           "description": "Bezier curve interpolation in value.",
           "extended_name": "In Value",
-          "name": "i",
           "properties": [
             {
               "description": "bezier x axis. Array of numbers.",
               "extended_name": "X axis",
-              "name": "x",
               "type": "array"
             },
             {
               "description": "bezier y axis. Array of numbers.",
               "extended_name": "Y axis",
-              "name": "y",
               "type": "array"
             }
           ],
@@ -98,18 +83,15 @@
         {
           "description": "Bezier curve interpolation out value.",
           "extended_name": "Out Value",
-          "name": "o",
           "properties": [
             {
               "description": "bezier x axis. Array of numbers.",
               "extended_name": "X axis",
-              "name": "x",
               "type": "array"
             },
             {
               "description": "bezier y axis. Array of numbers.",
               "extended_name": "Y axis",
-              "name": "y",
               "type": "array"
             }
           ],
@@ -118,41 +100,35 @@
         {
           "description": "Bezier curve name. Used for caching.",
           "extended_name": "Name",
-          "name": "n",
           "type": "number"
         }
       ],
       "type": "array"
     },
-    {
+    "x": {
       "description": "Property Expression. An AE expression that modifies the value.",
       "extended_name": "Expression",
-      "name": "x",
       "type": "string"
     },
-    {
+    "ix": {
       "description": "Property Index. Used for expressions.",
       "extended_name": "Property Index",
-      "name": "ix",
       "type": "string"
     },
-    {
+    "ti": {
       "description": "In Spatial Tangent. Only for spatial properties. Array of numbers.",
       "extended_name": "In Tangent",
-      "name": "ti",
       "type": "array"
     },
-    {
+    "to": {
       "description": "Out Spatial Tangent. Only for spatial properties. Array of numbers.",
       "extended_name": "Out Tangent",
-      "name": "to",
       "type": "array"
     },
-    {
+    "a": {
       "description": "Defines if property is animated",
       "extended_name": "Animated",
-      "name": "a",
       "type": "number"
     }
-  ]
+  }
 }

@@ -1,27 +1,23 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Shape content type. Value: gf",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "string"
     },
-    {
+    "o": {
+      "title": "Opacity",
       "description": "Fill Opacity",
-      "extendedName": "Opacity",
-      "name": "o",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -32,10 +28,9 @@
       ],
       "type": "object"
     },
-    {
+    "s": {
+      "title": "Start Point",
       "description": "Gradient Start Point",
-      "extendedName": "Start Point",
-      "name": "s",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -46,10 +41,9 @@
       ],
       "type": "object"
     },
-    {
+    "e": {
+      "title": "End Point",
       "description": "Gradient End Point",
-      "extendedName": "End Point",
-      "name": "e",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -60,10 +54,9 @@
       ],
       "type": "object"
     },
-    {
+    "t": {
+      "title": "Type",
       "description": "Gradient Type",
-      "extendedName": "Type",
-      "name": "t",
       "oneOf": [
         {
           "standsFor": "Linear",
@@ -76,10 +69,9 @@
       ],
       "type": "object"
     },
-    {
+    "h": {
+      "title": "Highlight Length",
       "description": "Gradient Highlight Length. Only if type is Radial",
-      "extendedName": "Highlight Length",
-      "name": "h",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -90,10 +82,9 @@
       ],
       "type": "object"
     },
-    {
+    "a": {
+      "title": "Highlight Angle",
       "description": "Highlight Angle. Only if type is Radial",
-      "extendedName": "Highlight Angle",
-      "name": "a",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -104,11 +95,10 @@
       ],
       "type": "object"
     },
-    {
+    "g": {
+      "title": "Gradient Colors",
       "description": "Gradient Colors",
-      "extendedName": "Gradient Colors",
-      "name": "g",
       "type": "object"
     }
-  ]
+  }
 }

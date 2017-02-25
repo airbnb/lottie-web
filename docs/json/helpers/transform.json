@@ -1,9 +1,8 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "a": {
+      "title": "Anchor Point",
       "description": "Transform Anchor Point",
-      "extendedName": "Anchor Point",
-      "name": "a",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -14,10 +13,9 @@
       ],
       "type": "object"
     },
-    {
+    "p": {
+      "title": "Position",
       "description": "Transform Position",
-      "extendedName": "Position",
-      "name": "p",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -28,10 +26,9 @@
       ],
       "type": "object"
     },
-    {
+    "s": {
+      "title": "Scale",
       "description": "Transform Scale",
-      "extendedName": "Scale",
-      "name": "s",
       "oneOf": [
         {
           "$ref": "#/properties/multiDimensional"
@@ -42,10 +39,9 @@
       ],
       "type": "object"
     },
-    {
+    "r": {
+      "title": "Rotation",
       "description": "Transform Rotation",
-      "extendedName": "Rotation",
-      "name": "r",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -56,10 +52,9 @@
       ],
       "type": "object"
     },
-    {
+    "o": {
+      "title": "Opacity",
       "description": "Transform Opacity",
-      "extendedName": "Opacity",
-      "name": "o",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -70,10 +65,9 @@
       ],
       "type": "object"
     },
-    {
+    "px": {
+      "title": "Position X",
       "description": "Transform Position X",
-      "extendedName": "Position X",
-      "name": "px",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -84,10 +78,9 @@
       ],
       "type": "object"
     },
-    {
+    "py": {
+      "title": "Position Y",
       "description": "Transform Position Y",
-      "extendedName": "Position Y",
-      "name": "py",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -98,5 +91,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }

@@ -1,28 +1,24 @@
 {
-	"properties": [
-		{
-      		"description": "Property Value",
-      		"extended_name": "Value",
-			"name": "k",
-			"type": "array"
-		},
-		{
-      		"description": "Property Expression. An AE expression that modifies the value.",
-      		"extended_name": "Expression",
-			"name": "x",
-			"type": "string"
-		},
-		{
-      		"description": "Property Index. Used for expressions.",
-      		"extended_name": "Property Index",
-			"name": "ix",
-			"type": "string"
-		},
-		{
-      		"description": "Defines if property is animated",
-      		"extended_name": "Animated",
-			"name": "a",
-			"type": "number"
-		}
-	]
+  "properties": {
+    "k": {
+      "description": "Property Value",
+      "extended_name": "Value",
+      "type": "array"
+    },
+    "x": {
+      "description": "Property Expression. An AE expression that modifies the value.",
+      "extended_name": "Expression",
+      "type": "string"
+    },
+    "ix": {
+      "description": "Property Index. Used for expressions.",
+      "extended_name": "Property Index",
+      "type": "string"
+    },
+    "a": {
+      "description": "Defines if property is animated",
+      "extended_name": "Animated",
+      "type": "number"
+    }
+  }
 }

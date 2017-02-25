@@ -1,33 +1,28 @@
 {
-  "properties": [
-    {
+  "properties": {
+    "ix": {
+      "title": "Effect Index",
       "description": "Effect Index. Used for expressions.",
-      "extendedName": "Effect Index",
-      "name": "ix",
       "type": "number"
     },
-    {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Effect type. Value:7.",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "number"
     },
-    {
+    "v": {
+      "title": "Value",
       "description": "Effect value.",
-      "extendedName": "Value",
-      "name": "v",
       "oneOf": [
         {
           "$ref": "#/properties/value"
@@ -38,5 +33,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }
