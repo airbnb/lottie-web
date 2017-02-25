@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
     "k": {
       "description": "Property Value",
