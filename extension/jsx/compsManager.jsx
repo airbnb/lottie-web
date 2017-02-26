@@ -112,6 +112,7 @@ var bm_compsManager = (function () {
     
     function cancel() {
         ob.cancelled = true;
+        bm_textShapeHelper.removeComps();
         bm_eventDispatcher.sendEvent('bm:render:cancel');
     }
     
