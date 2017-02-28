@@ -200,7 +200,7 @@ var bm_textShapeHelper = (function () {
                         l = 0;
                         lLen = fonts.list.length;
                         while (l < lLen) {
-                            if (fonts.list[l]._name === charData.font) {
+                            if (fonts.list[l].fName === charData.font) {
                                 charData.fFamily = fonts.list[l].fFamily;
                                 break;
                             }
@@ -222,7 +222,7 @@ var bm_textShapeHelper = (function () {
         var fontDocument = fontProp.value;
         fontDocument.text = 'm';
         for (i = 0; i < len; i += 1) {
-            fontDocument.font = fonts.list[i]._name;
+            fontDocument.font = fonts.list[i].fName;
             fontDocument.fontSize = 100;
             fontDocument.tracking = 0;
             fontProp.setValue(fontDocument);

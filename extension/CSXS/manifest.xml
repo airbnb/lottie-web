@@ -34,7 +34,7 @@
 		<Extension Id="com.bodymovin.bodymovin">
 			<DispatchInfo >
 				<Resources>
-				<MainPath>./index.html</MainPath>
+				<MainPath>./index_dev.html</MainPath>
 				<ScriptPath>./jsx/hostscript.jsx</ScriptPath>
                 <CEFCommandLine>
                     <Parameter>--enable-nodejs</Parameter>
