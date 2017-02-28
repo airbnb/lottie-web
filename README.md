@@ -114,7 +114,7 @@ Skip directly to "Install third-party extensions"
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
-- path: the relative path to the animation object. (animationData and path are exclusive)
+- path: the relative path to the animation object. (animationData and path are mutually exclusive)
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
