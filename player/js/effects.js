@@ -59,6 +59,10 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 eff = new LayerIndexEffect(effects[i],element,dynamicProperties);
                 this.effectElements.push(eff);
                 break;
+            case 11:
+                eff = new MaskIndexEffect(effects[i],element,dynamicProperties);
+                this.effectElements.push(eff);
+                break;
             case 5:
                 eff = new EffectsManager(effects[i],element,dynamicProperties);
                 this.effectElements.push(eff);

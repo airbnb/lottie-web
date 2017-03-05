@@ -1,6 +1,24 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.5.9
+- expressions variable declaration fix
+- effect control type fix
+
+## V 4.5.8
+- fill-rule for fills and gradient fills on shapes
+- rounding colors values with an extra decimal
+- property expressions that return strings are evaluated as numbers
+
+## V 4.5.7
+- standalone autoplay fix
+
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
+
 ## V 4.5.5
 - Text selector Triangle fix
 - Expressions support for "active" property on effects
@@ -96,7 +114,7 @@ Skip directly to "Install third-party extensions"
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
-- path: the relative path to the animation object. (animationData and path are exclusive)
+- path: the relative path to the animation object. (animationData and path are mutually exclusive)
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference

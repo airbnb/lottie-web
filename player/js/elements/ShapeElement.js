@@ -158,6 +158,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 data[i].elem = pathElement;
                 container.appendChild(pathElement);
             }
+            if(arr[i].r === 2) {
+                pathElement.setAttribute('fill-rule', 'evenodd');
+            }
 
             if(arr[i].ln){
                 pathElement.setAttribute('id',arr[i].ln);

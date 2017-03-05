@@ -1,3 +1,21 @@
+## V 4.5.9
+- expressions variable declaration fix
+- effect control type fix
+
+## V 4.5.8
+- fill-rule for fills and gradient fills on shapes
+- rounding colors values with an extra decimal
+- property expressions that return strings are evaluated as numbers
+
+## V 4.5.7
+- standalone autoplay fix
+
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
+
 ## V 4.5.5
 - Text selector Triangle fix
 - Expressions support for "active" property on effects

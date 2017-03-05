@@ -172,14 +172,15 @@ var bm_shapeHelper = (function () {
 
         var pt1, pt2, pt3, pt4, curves;
         var j;
+        var rounder = bm_generalUtils.roundNumber;
         for(i = 0; i < sides; i +=1){
             if(nodesPerSide[i] === 0){
-                newV[count] = [shape.v[i][0],shape.v[i][1]];
-                newO[count] = [shape.o[i][0],shape.o[i][1]];
+                newV[count] = [rounder(shape.v[i][0], 3),rounder(shape.v[i][1], 3)];
+                newO[count] = [rounder(shape.o[i][0], 3),rounder(shape.o[i][1], 3)];
                 if(i === sides - 1){
-                    newI[0] = [shape.i[0][0],shape.i[0][1]];
+                    newI[0] = [rounder(shape.i[0][0], 3),rounder(shape.i[0][1], 3)];
                 } else {
-                    newI[count+1] = [shape.i[i+1][0],shape.i[i+1][1]];
+                    newI[count+1] = [rounder(shape.i[i+1][0], 3),rounder(shape.i[i+1][1], 3)];
                 }
                 count += 1;
             } else {
@@ -200,24 +201,24 @@ var bm_shapeHelper = (function () {
                 for(j=0;j<sideNodes;j+=1){
                     if(j<sideNodes - 1){
                         curves = getCurvesAtPerc(pt1,pt2,pt3,pt4, 1/(sideNodes-j));
-                        newV[count] = [curves.c1[0][0],curves.c1[0][1]];
-                        newO[count] = [curves.c1[1][0]-curves.c1[0][0],curves.c1[1][1] - curves.c1[0][1]];
+                        newV[count] = [rounder(curves.c1[0][0], 3),rounder(curves.c1[0][1], 3)];
+                        newO[count] = [rounder(curves.c1[1][0]-curves.c1[0][0], 3), rounder(curves.c1[1][1] - curves.c1[0][1], 3)];
                         if(count === totalVertices - 1){
-                            newI[0] = [curves.c2[2][0]-curves.c2[0][0],curves.c2[2][1] - curves.c2[0][1]];
+                            newI[0] = [rounder(curves.c2[2][0]-curves.c2[0][0], 3), rounder(curves.c2[2][1] - curves.c2[0][1], 3)];
                         } else {
-                            newI[count+1] = [curves.c1[2][0]-curves.c1[3][0],curves.c1[2][1] - curves.c1[3][1]];
+                            newI[count+1] = [rounder(curves.c1[2][0]-curves.c1[3][0], 3),rounder(curves.c1[2][1] - curves.c1[3][1], 3)];
                         }
                         pt1 = [curves.c2[0][0],curves.c2[0][1]];
                         pt2 = [curves.c2[1][0],curves.c2[1][1]];
                         pt3 = [curves.c2[2][0],curves.c2[2][1]];
                         pt4 = [curves.c2[3][0],curves.c2[3][1]];
                     } else {
-                        newV[count] = [curves.c2[0][0],curves.c2[0][1]];
-                        newO[count] = [curves.c2[1][0]-curves.c2[0][0],curves.c2[1][1] - curves.c2[0][1]];
+                        newV[count] = [rounder(curves.c2[0][0], 3), rounder(curves.c2[0][1], 3)];
+                        newO[count] = [rounder(curves.c2[1][0]-curves.c2[0][0], 3),rounder(curves.c2[1][1] - curves.c2[0][1], 3)];
                         if(count === totalVertices - 1){
-                            newI[0] = [curves.c2[2][0]-curves.c2[3][0],curves.c2[2][1] - curves.c2[3][1]];
+                            newI[0] = [rounder(curves.c2[2][0]-curves.c2[3][0], 3),rounder(curves.c2[2][1] - curves.c2[3][1], 3)];
                         } else {
-                            newI[count+1] = [curves.c2[2][0]-curves.c2[3][0],curves.c2[2][1] - curves.c2[3][1]];
+                            newI[count+1] = [rounder(curves.c2[2][0]-curves.c2[3][0], 3),rounder(curves.c2[2][1] - curves.c2[3][1], 3)];
                         }
                     }
                     count += 1;
@@ -321,10 +322,12 @@ var bm_shapeHelper = (function () {
                     ob.ty = itemType;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.r = prop.property('Fill Rule').value;
                 } else if (itemType === shapeItemTypes.gfill) {
                     ob = {};
                     ob.ty = itemType;
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.r = prop.property('Fill Rule').value;
                     navigationShapeTree.push(prop.name);
                     exportGradientData(ob,prop,frameRate, navigationShapeTree);
                     navigationShapeTree.pop();

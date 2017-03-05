@@ -14,6 +14,7 @@ var bm_effectsHelper = (function () {
         dropDownControl: 7,
         customValue: 9,
         layerIndex: 10,
+        maskIndex: 11,
         tint: 20,
         fill: 21,
         stroke: 22,
@@ -46,7 +47,8 @@ var bm_effectsHelper = (function () {
             /*bm_eventDispatcher.log('prop.propertyValueType: ' + prop.propertyValueType);
             bm_eventDispatcher.log('Prop ertyValueType.LAYER_INDEX: ' + PropertyValueType.LAYER_INDEX);
             bm_eventDispatcher.log('PropertyValueType.COLOR: ' + PropertyValueType.COLOR);
-            bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);*/
+            bm_eventDispatcher.log('PropertyValueType.OneD: ' + PropertyValueType.OneD);
+            bm_eventDispatcher.log('PropertyValueType.MASK_INDEX: ' + PropertyValueType.MASK_INDEX);*/
         //Prop ertyValueType.NO_VALUE
         if (propertyValueType === PropertyValueType.NO_VALUE) {
             return effectTypes.noValue;
@@ -61,6 +63,8 @@ var bm_effectsHelper = (function () {
             return effectTypes.customValue;
         } else if (propertyValueType === PropertyValueType.LAYER_INDEX) {
             return effectTypes.layerIndex;
+        } else if (propertyValueType === PropertyValueType.MASK_INDEX) {
+            return effectTypes.maskIndex;
         } else {
             return effectTypes.pointControl;
         }
@@ -147,6 +151,16 @@ var bm_effectsHelper = (function () {
         return ob;
     }
     
+    function exportMaskIndexControl(effect, frameRate) {
+        var ob = {};
+        ob.ty = effectTypes.layerIndex;
+        ob.nm = effect.name;
+        ob.mn = effect.matchName;
+        ob.ix = effect.propertyIndex;
+        ob.v = bm_keyframeHelper.exportKeyframes(effect, frameRate);
+        return ob;
+    }
+    
     function exportCustomControl(effect, frameRate){
         var ob = {};
         return ob;
@@ -205,6 +219,8 @@ var bm_effectsHelper = (function () {
                     ob.ef.push(exportCustomControl(prop, frameRate));
                 }  else if(type === effectTypes.layerIndex) {
                     ob.ef.push(exportLayerIndexControl(prop, frameRate));
+                }  else if(type === effectTypes.maskIndex) {
+                    ob.ef.push(exportMaskIndexControl(prop, frameRate));
                 } else {
                     ob.ef.push(exportPointControl(prop, frameRate));
                 }
