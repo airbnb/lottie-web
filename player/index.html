@@ -12,8 +12,8 @@
 
         #bodymovin{
             background-color:#000;
-            width:50px;
-            height:50px;
+            width:100%;
+            height:100%;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -113,26 +113,13 @@
         container: elem,
         renderer: 'svg',
         loop: true,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data3.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
-    elem.addEventListener('mouseover', function(){
-        console.log('over')
-        anim.playSegments([[0,29],[29,58]], true)
-    })
-    elem.addEventListener('mouseout', function(){
-        console.log('out')
-        anim.resetSegments(true)
-        anim.goToAndStop(0)
-    })
-    anim.addEventListener('DOMLoaded', function(){
-        //console.log('adssa')
-    //anim.playSegments([[0,29],[29,58]], true)
-    })
 
 </script>
 </body>
