@@ -87,6 +87,11 @@ var LayerExpressionInterface = (function (){
                 return _thisLayerFunction.shapeInterface;
             }
         });
+        Object.defineProperty(_thisLayerFunction, "text", {
+            get: function(){
+                return _thisLayerFunction.textInterface;
+            }
+        });
 
         _thisLayerFunction.active = true;
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;

@@ -106,6 +106,8 @@ BaseElement.prototype.initExpressions = function(){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
         this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.layerInterface);
+    } else if(this.data.ty === 5){
+        this.layerInterface.textInterface = TextExpressionInterface(this);
     }
 }
 
