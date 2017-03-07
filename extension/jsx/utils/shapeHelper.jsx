@@ -322,10 +322,12 @@ var bm_shapeHelper = (function () {
                     ob.ty = itemType;
                     ob.c = bm_keyframeHelper.exportKeyframes(prop.property('Color'), frameRate);
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.r = prop.property('Fill Rule').value;
                 } else if (itemType === shapeItemTypes.gfill) {
                     ob = {};
                     ob.ty = itemType;
                     ob.o = bm_keyframeHelper.exportKeyframes(prop.property('Opacity'), frameRate);
+                    ob.r = prop.property('Fill Rule').value;
                     navigationShapeTree.push(prop.name);
                     exportGradientData(ob,prop,frameRate, navigationShapeTree);
                     navigationShapeTree.pop();

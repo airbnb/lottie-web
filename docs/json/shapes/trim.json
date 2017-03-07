@@ -1,27 +1,25 @@
 {
-  "properties": [
-    {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Shape content type. Value: tm",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "string"
     },
-    {
+    "s": {
+      "title": "Start",
       "description": "Trim Start.",
-      "extendedName": "Start",
-      "name": "s",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -32,10 +30,9 @@
       ],
       "type": "object"
     },
-    {
+    "e": {
+      "title": "End",
       "description": "Trim End.",
-      "extendedName": "End",
-      "name": "e",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -46,10 +43,9 @@
       ],
       "type": "object"
     },
-    {
+    "o": {
+      "title": "Offset",
       "description": "Trim Offset.",
-      "extendedName": "Offset",
-      "name": "o",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -60,5 +56,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }
