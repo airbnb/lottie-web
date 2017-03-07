@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ty": {
+      "title": "Type",
+      "description": "Type of layer: Shape. Value 4.",
+      "type": "number"
+    },
+    "ks": {
+      "title": "Transform",
+      "description": "Transform properties",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/transform"
+        }
+      ],
+      "type": "object"
+    },
+    "ao": {
+      "title": "Auto-Orient",
+      "description": "Auto-Orient along path AE property.",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/boolean"
+        }
+      ],
+      "type": "number"
+    },
+    "bm": {
+      "title": "Blend Mode",
+      "description": "Blend Mode",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/blendMode"
+        }
+      ],
+      "type": "number"
+    },
+    "ddd": {
+      "title": "3d Layer",
+      "description": "3d layer flag",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/boolean"
+        }
+      ],
+      "type": "number"
+    },
+    "ind": {
+      "title": "Index",
+      "description": "Layer index in AE. Used for parenting and expressions.",
+      "type": "number"
+    },
+    "cl": {
+      "title": "Class",
+      "description": "Parsed layer name used as html class on SVG/HTML renderer",
+      "type": "string"
+    },
+    "ln": {
+      "title": "layer HTML ID",
+      "description": "Parsed layer name used as html id on SVG/HTML renderer",
+      "type": "string"
+    },
+    "ip": {
+      "title": "In Point",
+      "description": "In Point of layer. Sets the initial frame of the layer.",
+      "type": "number"
+    },
+    "op": {
+      "title": "Out Point",
+      "description": "Out Point of layer. Sets the final frame of the layer.",
+      "type": "number"
+    },
+    "st": {
+      "title": "Start Time",
+      "description": "Start Time of layer. Sets the start time of the layer.",
+      "type": "number"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "After Effects Layer Name. Used for expressions.",
+      "type": "number"
+    },
+    "hasMask": {
+      "title": "Has Masks",
+      "description": "Boolean when layer has a mask. Will be deprecated in favor of checking maskProperties.",
+      "type": "number"
+    },
+    "maskProperties": {
+      "title": "Mask Properties",
+      "description": "List of Masks",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/helpers/mask"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "ef": {
+      "title": "Effects",
+      "description": "List of Effects",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/effects/index"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "sr": {
+      "title": "Stretch",
+      "description": "Layer Time Stretching",
+      "type": "number"
+    },
+    "parent": {
+      "title": "Parent",
+      "description": "Layer Parent. Uses ind of parent.",
+      "type": "number"
+    },
+    "it": {
+      "title": "Items",
+      "description": "Shape list of items",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/shapes/shape",
+            "value": "sh"
+          },
+          {
+            "$ref": "#/shapes/rect",
+            "value": "rc"
+          },
+          {
+            "$ref": "#/shapes/ellipse",
+            "value": "el"
+          },
+          {
+            "$ref": "#/shapes/star",
+            "value": "sr"
+          },
+          {
+            "$ref": "#/shapes/fill",
+            "value": "fl"
+          },
+          {
+            "$ref": "#/shapes/gFill",
+            "value": "gf"
+          },
+          {
+            "$ref": "#/shapes/gStroke",
+            "value": "gs"
+          },
+          {
+            "$ref": "#/shapes/stroke",
+            "value": "st"
+          },
+          {
+            "$ref": "#/shapes/merge",
+            "value": "mm"
+          },
+          {
+            "$ref": "#/shapes/trim",
+            "value": "tm"
+          },
+          {
+            "$ref": "#/shapes/group",
+            "value": "gr"
+          },
+          {
+            "$ref": "#/shapes/roundedCorners",
+            "value": "rd"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  }
+}

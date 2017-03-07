@@ -1,28 +1,52 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
-## V 4.4.30
-- Gradient Fill default value breaking render fix
-- Demo file fix when json is renamed
+## V 4.5.9
+- expressions variable declaration fix
+- effect control type fix
 
-## V 4.4.29
+## V 4.5.8
+- fill-rule for fills and gradient fills on shapes
+- rounding colors values with an extra decimal
+- property expressions that return strings are evaluated as numbers
+
+## V 4.5.7
+- standalone autoplay fix
+
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
+
+## V 4.5.5
+- Text selector Triangle fix
+- Expressions support for "active" property on effects
+- Rearranged exporting properties
+- Included "a" property for animated props
+- Docs updated
+
+## V 4.5.4
+- Trim path individually supported
+- bug fix that messed with webpack build
+
+## V 4.5.3
+- Skipping non breaking space on characters
+- levels effect optimizations
+- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
+- transform properties in expression through transformInterface
+
+## V 4.5.2
+- Comp expression interface default return
+- HTML renderer validation fix
+
+## V 4.5.1
 - Trim path fix
-- html renderer fixes
+- Html renderer fixes
 
-## V 4.4.28
-- expressions: better seeded random, properties by matchName, normalize support
-- single shape text with keyframes fix
-- masked track matted comps fix
-- trim path 0% to 100% fix
-
-## V 4.4.27
-- playSegments fix
-- inverting alphas with color matrices
-
-## V 4.4.26
-- expressions Math.abs fix
-- Layer Index expression support
-- Nested group effects fix
+## V 4.5.0
+- Tritone effect supported
+- Levels effect supported. The one called "Levels (Individual Controls)"
 
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
@@ -84,13 +108,13 @@ Skip directly to "Install third-party extensions"
 **Check the demos for different ways to load animations.**
 - get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
-```
+```html
 <script src="js/bodymovin.js" type="text/javascript"></script>
 ```
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
-- path: the relative path to the animation object. (animationData and path are exclusive)
+- path: the relative path to the animation object. (animationData and path are mutually exclusive)
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
@@ -98,7 +122,7 @@ It takes an object as a unique param with:
 - container: the dom element on which to render the animation
 <br />
 Returns the animation object you can control with play, pause, setSpeed, etc.
-```
+```js
 bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
@@ -108,7 +132,7 @@ bodymovin.loadAnimation({
 });
 ```
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
-```
+```js
 bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
@@ -143,9 +167,9 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
  . a "data-name" attribute to specify a name to target play controls specifically
  <br/>
  **Example**
- <br/>
- ```
-<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <br/> 
+```html
+ <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 <br/>
 

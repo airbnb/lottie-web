@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ip": {
+      "title": "In Point",
+      "description": "In Point of the Time Ruler. Sets the initial Frame of the animation.",
+      "type": "number"
+    },
+    "op": {
+      "title": "Out Point",
+      "description": "Out Point of the Time Ruler. Sets the final Frame of the animation",
+      "type": "number"
+    },
+    "fr": {
+      "title": "Frame Rate",
+      "description": "Frame Rate",
+      "type": "number"
+    },
+    "w": {
+      "title": "Width",
+      "description": "Composition Width",
+      "type": "number"
+    },
+    "h": {
+      "title": "Height",
+      "description": "Composition Height",
+      "type": "number"
+    },
+    "v": {
+      "title": "Version",
+      "description": "Bodymovin Version",
+      "type": "string"
+    },
+    "layers": {
+      "title": "Layers",
+      "description": "List of Composition Layers",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/layers/shape"
+          },
+          {
+            "$ref": "#/layers/solid"
+          },
+          {
+            "$ref": "#/layers/comp"
+          },
+          {
+            "$ref": "#/layers/image"
+          },
+          {
+            "$ref": "#/layers/null"
+          },
+          {
+            "$ref": "#/layers/text"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "assets": {
+      "title": "Assets",
+      "description": "source items that can be used in multiple places. Comps and Images for now.",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/sources/image"
+          },
+          {
+            "$ref": "#/sources/precomp"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "chars": {
+      "title": "Chars",
+      "description": "source chars for text layers",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/sources/chars"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  }
+}

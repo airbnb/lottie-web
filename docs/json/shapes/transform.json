@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "nm": {
+      "title": "Name",
+      "description": "After Effect's Name. Used for expressions.",
+      "type": "string"
+    },
+    "a": {
+      "title": "Anchor Point",
+      "description": "Shape Transform Anchor Point",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "p": {
+      "title": "Position",
+      "description": "Shape Transform Position",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "s": {
+      "title": "Scale",
+      "description": "Shape Transform Scale",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "r": {
+      "title": "Rotation",
+      "description": "Shape Transform Rotation",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "o": {
+      "title": "Opacity",
+      "description": "Shape Transform Opacity",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "sk": {
+      "title": "Skew",
+      "description": "Shape Transform Skew",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "sa": {
+      "title": "Skew Axis",
+      "description": "Shape Transform Skew Axis",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  }
+}

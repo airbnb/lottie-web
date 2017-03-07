@@ -2789,7 +2789,19 @@ var PropertyFactory = (function(){
         var p;
         if(type === 2){
             p = new TransformProperty(elem, data, arr);
-        }else if(!data.k.length){
+        } else if(data.a === 0){
+            if(type === 0) {
+                p = new ValueProperty(elem,data,mult);
+            } else {
+                p = new MultiDimensionalProperty(elem,data, mult);
+            }
+        } else if(data.a === 1){
+            if(type === 0) {
+                p = new KeyframedValueProperty(elem,data,mult);
+            } else {
+                p = new KeyframedMultidimensionalProperty(elem,data, mult);
+            }
+        } else if(!data.k.length){
             p = new ValueProperty(elem,data, mult);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult);
@@ -2938,7 +2950,6 @@ var PropertyFactory = (function(){
         var max = Math.max;
         var min = Math.min;
         var floor = Math.floor;
-        this.mdf = false;
         function updateRange(){
             if(this.dynamicProperties.length){
                 var i, len = this.dynamicProperties.length;
@@ -2987,7 +2998,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 4){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
                     if(mult<.5){
@@ -2999,7 +3010,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 5){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     var tot = e - s;
                     /*ind += 0.5;
@@ -3012,7 +3023,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 6){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     ind = min(max(0,ind+0.5-s),e-s);
                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
@@ -3624,8 +3635,9 @@ var ShapePropertyFactory = (function(){
     function getShapeProp(elem,data,type, arr){
         var prop;
         if(type === 3 || type === 4){
-            var keys = type === 3 ? data.pt.k : data.ks.k;
-            if(keys.length){
+            var dataProp = type === 3 ? data.pt : data.ks;
+            var keys = dataProp.k;
+            if(dataProp.a === 1 || keys.length){
                 prop = new KeyframedShapeProperty(elem, data, type);
             }else{
                 prop = new ShapeProperty(elem, data, type);
@@ -3737,6 +3749,7 @@ TrimModifier.prototype.initModifierProperties = function(elem,data){
     this.s = PropertyFactory.getProp(elem,data.s,0,0.01,this.dynamicProperties);
     this.e = PropertyFactory.getProp(elem,data.e,0,0.01,this.dynamicProperties);
     this.o = PropertyFactory.getProp(elem,data.o,0,0,this.dynamicProperties);
+    this.m = data.m;
     if(!this.dynamicProperties.length){
         this.getValue(true);
     }
@@ -3759,6 +3772,56 @@ TrimModifier.prototype.getSegmentsLength = function(keyframes){
         totalLength += lengths[i].addedLength;
     }
     return {lengths:lengths,totalLength:totalLength};
+}
+
+TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLength, totalModifierLength) {
+    var segments = []
+    if(e <= 1){
+        segments.push({
+            s: s,
+            e: e
+        })
+    }else if(s >= 1){
+        segments.push({
+            s: s - 1,
+            e: e - 1
+        })
+    }else{
+        segments.push({
+            s: s,
+            e: 1
+        })
+        segments.push({
+            s: 0,
+            e: e - 1
+        })
+    }
+    var shapeSegments = [];
+    var i, len = segments.length, segmentOb;
+    for(i = 0; i < len; i += 1) {
+        segmentOb = segments[i];
+        if (segmentOb.e * totalModifierLength < addedLength || segmentOb.s * totalModifierLength > addedLength + shapeLength) {
+            
+        } else {
+            var shapeS, shapeE;
+            if(segmentOb.s * totalModifierLength <= addedLength) {
+                shapeS = 0;
+            } else {
+                shapeS = (segmentOb.s * totalModifierLength - addedLength) / shapeLength;
+            }
+            if(segmentOb.e * totalModifierLength >= addedLength + shapeLength) {
+                shapeE = 1;
+            } else {
+                shapeE = ((segmentOb.e * totalModifierLength - addedLength) / shapeLength);
+            }
+            shapeSegments.push([shapeS, shapeE]);
+        }
+    }
+    //console.log(shapeSegments);
+    if(!shapeSegments.length){
+        shapeSegments.push([0,0]);
+    }
+    return shapeSegments;
 }
 
 TrimModifier.prototype.processShapes = function(firstFrame){
@@ -3787,7 +3850,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
         var segments = [], shapeData, newShapes;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf && !firstFrame){
+            if(!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2){
                 shapeData.shape.paths = shapeData.last;
             } else {
                 shapePaths = shapeData.shape.paths;
@@ -3807,51 +3870,67 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 }
 
                 totalModifierLength += totalShapeLength;
+                shapeData.shape.mdf = true;
             }
-            shapeData.shape.mdf = true;
         }
-        for(i=0;i<len;i+=1){
+        var shapeS = s, shapeE = e, addedLength = 0;
+        var j, jLen;
+        for(i = len - 1; i >= 0; i -= 1){
             newShapes = [];
             shapeData = this.shapes[i];
-            if(shapeData.shape.mdf){
-                segments.length = 0;
-                if(e <= 1){
-                    segments.push({
-                        s:shapeData.totalShapeLength*s,
-                        e:shapeData.totalShapeLength*e
-                    })
-                }else if(s >= 1){
-                    segments.push({
-                        s:shapeData.totalShapeLength*(s-1),
-                        e:shapeData.totalShapeLength*(e-1)
-                    })
-                }else{
-                    segments.push({
-                        s:shapeData.totalShapeLength*s,
-                        e:shapeData.totalShapeLength
-                    })
-                    segments.push({
-                        s:0,
-                        e:shapeData.totalShapeLength*(e-1)
-                    })
+            if (shapeData.shape.mdf) {
+                if(this.m === 2 && len > 1) {
+                    var edges = this.calculateShapeEdges(s, e, shapeData.totalShapeLength, addedLength, totalModifierLength);
+                    addedLength += shapeData.totalShapeLength;
+                } else {
+                    edges = [[shapeS, shapeE]]
                 }
-                var newShapeData = this.addShapes(shapeData,segments[0]);
-                var lastPos;
-                newShapes.push(newShapeData);
-                if(segments.length > 1){
-                    if(shapeData.shape.v.c){
-                        this.addShapes(shapeData,segments[1], newShapeData);
-                    } else {
+                jLen = edges.length;
+                for (j = 0; j < jLen; j += 1) {
+                    shapeS = edges[j][0];
+                    shapeE = edges[j][1];
+                    segments.length = 0;
+                    if(shapeE <= 1){
+                        segments.push({
+                            s:shapeData.totalShapeLength * shapeS,
+                            e:shapeData.totalShapeLength * shapeE
+                        })
+                    }else if(shapeS >= 1){
+                        segments.push({
+                            s:shapeData.totalShapeLength * (shapeS - 1),
+                            e:shapeData.totalShapeLength * (shapeE - 1)
+                        })
+                    }else{
+                        segments.push({
+                            s:shapeData.totalShapeLength * shapeS,
+                            e:shapeData.totalShapeLength
+                        })
+                        segments.push({
+                            s:0,
+                            e:shapeData.totalShapeLength*(shapeE - 1)
+                        })
+                    }
+                    var newShapeData = this.addShapes(shapeData,segments[0]);
+                    if (segments[0].s !== segments[0].e) {
+                        var lastPos;
+                        newShapes.push(newShapeData);
+                        if(segments.length > 1){
+                            if(shapeData.shape.v.c){
+                                this.addShapes(shapeData,segments[1], newShapeData);
+                            } else {
+                                newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
+                                lastPos = newShapeData.v.length-1;
+                                newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
+                                newShapeData = this.addShapes(shapeData,segments[1]);
+                                newShapes.push(newShapeData);
+                            }
+                        }
                         newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
                         lastPos = newShapeData.v.length-1;
                         newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
-                        newShapeData = this.addShapes(shapeData,segments[1]);
-                        newShapes.push(newShapeData);
                     }
+                    
                 }
-                newShapeData.i[0] = [newShapeData.v[0][0],newShapeData.v[0][1]];
-                lastPos = newShapeData.v.length-1;
-                newShapeData.o[lastPos] = [newShapeData.v[lastPos][0],newShapeData.v[lastPos][1]];
                 shapeData.last = newShapes;
                 shapeData.shape.paths = newShapes;
             }
@@ -3927,235 +4006,6 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
 
 
 ShapeModifiers.registerModifier('tm',TrimModifier);
-function MouseModifier(){};
-extendPrototype(ShapeModifier,MouseModifier);
-MouseModifier.prototype.processKeys = function(forceRender){
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
-        return;
-    }
-    this.mdf = true;
-
-};
-
-MouseModifier.prototype.addShapeToModifier = function(){
-    this.positions.push([]);
-};
-
-MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
-    var i, len = path.v.length;
-    var vValues = [],oValues = [],iValues = [];
-    var dist;
-    //console.log(mouseCoords);
-    var theta, x,y;
-    //// OPTION A
-    for(i=0;i<len;i+=1){
-        if(!positions.v[i]){
-            positions.v[i] = [path.v[i][0],path.v[i][1]];
-            positions.o[i] = [path.o[i][0],path.o[i][1]];
-            positions.i[i] = [path.i[i][0],path.i[i][1]];
-            positions.distV[i] = 0;
-            positions.distO[i] = 0;
-            positions.distI[i] = 0;
-
-        }
-        theta = Math.atan2(
-            path.v[i][1] - mouseCoords[1],
-            path.v[i][0] - mouseCoords[0]
-        );
-
-        x = mouseCoords[0] - positions.v[i][0];
-        y = mouseCoords[1] - positions.v[i][1];
-        var distance = Math.sqrt( (x * x) + (y * y) );
-        positions.distV[i] += (distance - positions.distV[i]) * this.data.dc;
-
-        positions.v[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][0]);
-        positions.v[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
-
-
-        theta = Math.atan2(
-            path.o[i][1] - mouseCoords[1],
-            path.o[i][0] - mouseCoords[0]
-        );
-
-        x = mouseCoords[0] - positions.o[i][0];
-        y = mouseCoords[1] - positions.o[i][1];
-        var distance = Math.sqrt( (x * x) + (y * y) );
-        positions.distO[i] += (distance - positions.distO[i]) * this.data.dc;
-
-        positions.o[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][0]);
-        positions.o[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
-
-
-        theta = Math.atan2(
-            path.i[i][1] - mouseCoords[1],
-            path.i[i][0] - mouseCoords[0]
-        );
-
-        x = mouseCoords[0] - positions.i[i][0];
-        y = mouseCoords[1] - positions.i[i][1];
-        var distance = Math.sqrt( (x * x) + (y * y) );
-        positions.distI[i] += (distance - positions.distI[i]) * this.data.dc;
-
-        positions.i[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
-        positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
-
-        /////OPTION 1
-        vValues.push(positions.v[i]);
-         oValues.push(positions.o[i]);
-         iValues.push(positions.i[i]);
-
-
-
-        /////OPTION 2
-        //vValues.push(positions.v[i]);
-        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
-        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
-
-
-
-        /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
-
-
-        /////OPTION 4
-        //vValues.push(path.v[i]);
-         //oValues.push(positions.o[i]);
-         //iValues.push(positions.i[i]);
-    }
-
-
-
-    //// OPTION B
-    /*for(i=0;i<len;i+=1){
-        if(!positions.v[i]){
-            positions.v[i] = [path.v[i][0],path.v[i][1]];
-            positions.o[i] = [path.o[i][0],path.o[i][1]];
-            positions.i[i] = [path.i[i][0],path.i[i][1]];
-            positions.distV[i] = 0;
-
-        }
-        theta = Math.atan2(
-            positions.v[i][1] - mouseCoords[1],
-            positions.v[i][0] - mouseCoords[0]
-        );
-        x = mouseCoords[0] - positions.v[i][0];
-        y = mouseCoords[1] - positions.v[i][1];
-        var distance = this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
-
-        positions.v[i][0] += Math.cos(theta) * distance + (path.v[i][0] - positions.v[i][0]) * this.data.dc;
-        positions.v[i][1] += Math.sin(theta) * distance + (path.v[i][1] - positions.v[i][1]) * this.data.dc;
-
-
-        theta = Math.atan2(
-            positions.o[i][1] - mouseCoords[1],
-            positions.o[i][0] - mouseCoords[0]
-        );
-        x = mouseCoords[0] - positions.o[i][0];
-        y = mouseCoords[1] - positions.o[i][1];
-        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
-
-        positions.o[i][0] += Math.cos(theta) * distance + (path.o[i][0] - positions.o[i][0]) * this.data.dc;
-        positions.o[i][1] += Math.sin(theta) * distance + (path.o[i][1] - positions.o[i][1]) * this.data.dc;
-
-
-        theta = Math.atan2(
-            positions.i[i][1] - mouseCoords[1],
-            positions.i[i][0] - mouseCoords[0]
-        );
-        x = mouseCoords[0] - positions.i[i][0];
-        y = mouseCoords[1] - positions.i[i][1];
-        var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
-
-        positions.i[i][0] += Math.cos(theta) * distance + (path.i[i][0] - positions.i[i][0]) * this.data.dc;
-        positions.i[i][1] += Math.sin(theta) * distance + (path.i[i][1] - positions.i[i][1]) * this.data.dc;
-
-        /////OPTION 1
-        //vValues.push(positions.v[i]);
-        // oValues.push(positions.o[i]);
-        // iValues.push(positions.i[i]);
-
-
-
-        /////OPTION 2
-        //vValues.push(positions.v[i]);
-        // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
-        // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
-
-
-
-        /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
-
-
-        /////OPTION 4
-        //vValues.push(path.v[i]);
-        // oValues.push(positions.o[i]);
-        // iValues.push(positions.i[i]);
-    }*/
-
-
-    return {
-        v:vValues,
-        o:oValues,
-        i:iValues,
-        c:path.c
-    };
-}
-
-MouseModifier.prototype.processShapes = function(){
-    var mouseX = this.elem.globalData.mouseX;
-    var mouseY = this.elem.globalData.mouseY;
-    var shapePaths;
-    var i, len = this.shapes.length;
-    var j, jLen;
-
-    if(mouseX){
-        var localMouseCoords = this.elem.globalToLocal([mouseX,mouseY,0]);
-
-        var shapeData, newPaths = [];
-        for(i=0;i<len;i+=1){
-            shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf){
-                shapeData.shape.paths = shapeData.last;
-            } else {
-                shapeData.shape.mdf = true;
-                shapePaths = shapeData.shape.paths;
-                jLen = shapePaths.length;
-                for(j=0;j<jLen;j+=1){
-                    if(!this.positions[i][j]){
-                        this.positions[i][j] = {
-                            v:[],
-                            o:[],
-                            i:[],
-                            distV:[],
-                            distO:[],
-                            distI:[]
-                        };
-                    }
-                    newPaths.push(this.processPath(shapePaths[j],localMouseCoords, this.positions[i][j]));
-                }
-                shapeData.shape.paths = newPaths;
-                shapeData.last = newPaths;
-            }
-        }
-
-    }
-
-}
-
-MouseModifier.prototype.initModifierProperties = function(elem,data){
-    this.getValue = this.processKeys;
-    this.data = data;
-    this.positions = [];
-};
-
-
-
-ShapeModifiers.registerModifier('ms',MouseModifier);
 function RoundCornersModifier(){};
 extendPrototype(ShapeModifier,RoundCornersModifier);
 RoundCornersModifier.prototype.processKeys = function(forceRender){
@@ -4345,22 +4195,22 @@ var filtersFactory = (function(){
 	ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
 	function createFilter(filId){
-		var fil = document.createElementNS(svgNS,'filter');
-		fil.setAttribute('id',filId);
-        fil.setAttribute('filterUnits','objectBoundingBox');
-        fil.setAttribute('x','0%');
-        fil.setAttribute('y','0%');
-        fil.setAttribute('width','100%');
-        fil.setAttribute('height','100%');
-        return fil;
+        	var fil = document.createElementNS(svgNS,'filter');
+        	fil.setAttribute('id',filId);
+                fil.setAttribute('filterUnits','objectBoundingBox');
+                fil.setAttribute('x','0%');
+                fil.setAttribute('y','0%');
+                fil.setAttribute('width','100%');
+                fil.setAttribute('height','100%');
+                return fil;
 	}
 
 	function createAlphaToLuminanceFilter(){
-        var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
-        feColorMatrix.setAttribute('type','matrix');
-        feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
-        feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1');
-        return feColorMatrix;
+                var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+                feColorMatrix.setAttribute('type','matrix');
+                feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
+                feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1');
+                return feColorMatrix;
 	}
 
 	return ob;
@@ -6270,42 +6120,8 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
 
 SVGTextElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
 };
-function SVGEffects(elem){
-    var i, len = elem.data.ef.length;
-    var filId = randomString(10);
-    var fil = filtersFactory.createFilter(filId);
-    var count = 0;
-    this.filters = [];
-    var filterManager;
-    for(i=0;i<len;i+=1){
-        if(elem.data.ef[i].ty === 20){
-            count += 1;
-            filterManager = new SVGTintFilter(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
-        }else if(elem.data.ef[i].ty === 21){
-            count += 1;
-            filterManager = new SVGFillFilter(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
-        }else if(elem.data.ef[i].ty === 22){
-            filterManager = new SVGStrokeEffect(elem, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
-        }
-    }
-    if(count){
-        elem.globalData.defs.appendChild(fil);
-        elem.layerElement.setAttribute('filter','url(#'+filId+')');
-    }
-}
-
-SVGEffects.prototype.renderFrame = function(firstFrame){
-    var i, len = this.filters.length;
-    for(i=0;i<len;i+=1){
-        this.filters[i].renderFrame(firstFrame);
-    }
-};
-
 function SVGTintFilter(filter, filterManager){
     this.filterManager = filterManager;
     var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
@@ -6342,7 +6158,6 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
         this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
 };
-
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
     var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
@@ -6359,7 +6174,6 @@ SVGFillFilter.prototype.renderFrame = function(forceRender){
         this.matrixFilter.setAttribute('values','0 0 0 0 '+color[0]+' 0 0 0 0 '+color[1]+' 0 0 0 0 '+color[2]+' 0 0 0 '+opacity+' 0');
     }
 };
-
 function SVGStrokeEffect(elem, filterManager){
     this.initialized = false;
     this.filterManager = filterManager;
@@ -6464,6 +6278,189 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
         }
     }
 };
+function SVGTritoneFilter(filter, filterManager){
+    this.filterManager = filterManager;
+    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    feColorMatrix.setAttribute('type','matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
+    feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('result','f1');
+    filter.appendChild(feColorMatrix);
+    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+    filter.appendChild(feComponentTransfer);
+    this.matrixFilter = feComponentTransfer;
+    var feFuncR = document.createElementNS(svgNS,'feFuncR');
+    feFuncR.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFuncR);
+    this.feFuncR = feFuncR;
+    var feFuncG = document.createElementNS(svgNS,'feFuncG');
+    feFuncG.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFuncG);
+    this.feFuncG = feFuncG;
+    var feFuncB = document.createElementNS(svgNS,'feFuncB');
+    feFuncB.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFuncB);
+    this.feFuncB = feFuncB;
+}
+
+SVGTritoneFilter.prototype.renderFrame = function(forceRender){
+    if(forceRender || this.filterManager.mdf){
+        var color1 = this.filterManager.effectElements[0].p.v;
+        var color2 = this.filterManager.effectElements[1].p.v;
+        var color3 = this.filterManager.effectElements[2].p.v;
+        var tableR = color3[0] + ' ' + color2[0] + ' ' + color1[0]
+        var tableG = color3[1] + ' ' + color2[1] + ' ' + color1[1]
+        var tableB = color3[2] + ' ' + color2[2] + ' ' + color1[2]
+        this.feFuncR.setAttribute('tableValues', tableR);
+        this.feFuncG.setAttribute('tableValues', tableG);
+        this.feFuncB.setAttribute('tableValues', tableB);
+        //var opacity = this.filterManager.effectElements[2].p.v/100;
+        //this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
+    }
+};
+function SVGProLevelsFilter(filter, filterManager){
+    this.filterManager = filterManager;
+    var effectElements = this.filterManager.effectElements;
+    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    var feFuncR, feFuncG, feFuncB;
+    
+    if(effectElements[9].p.k || effectElements[9].p.v !== 0 || effectElements[10].p.k || effectElements[10].p.v !== 1 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 0 || effectElements[13].p.k || effectElements[13].p.v !== 1){
+        this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
+    }
+    if(effectElements[16].p.k || effectElements[16].p.v !== 0 || effectElements[17].p.k || effectElements[17].p.v !== 1 || effectElements[18].p.k || effectElements[18].p.v !== 1 || effectElements[19].p.k || effectElements[19].p.v !== 0 || effectElements[20].p.k || effectElements[20].p.v !== 1){
+        this.feFuncG = this.createFeFunc('feFuncG', feComponentTransfer);
+    }
+    if(effectElements[23].p.k || effectElements[23].p.v !== 0 || effectElements[24].p.k || effectElements[24].p.v !== 1 || effectElements[25].p.k || effectElements[25].p.v !== 1 || effectElements[26].p.k || effectElements[26].p.v !== 0 || effectElements[27].p.k || effectElements[27].p.v !== 1){
+        this.feFuncB = this.createFeFunc('feFuncB', feComponentTransfer);
+    }
+    if(effectElements[30].p.k || effectElements[30].p.v !== 0 || effectElements[31].p.k || effectElements[31].p.v !== 1 || effectElements[32].p.k || effectElements[32].p.v !== 1 || effectElements[33].p.k || effectElements[33].p.v !== 0 || effectElements[34].p.k || effectElements[34].p.v !== 1){
+        this.feFuncA = this.createFeFunc('feFuncA', feComponentTransfer);
+    }
+    
+    if(this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA){
+        feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+        filter.appendChild(feComponentTransfer);
+        feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    }
+
+    if(effectElements[2].p.k || effectElements[2].p.v !== 0 || effectElements[3].p.k || effectElements[3].p.v !== 1 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 0 || effectElements[6].p.k || effectElements[6].p.v !== 1){
+
+        feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+        filter.appendChild(feComponentTransfer);
+        this.feFuncRComposed = this.createFeFunc('feFuncR', feComponentTransfer);
+        this.feFuncGComposed = this.createFeFunc('feFuncG', feComponentTransfer);
+        this.feFuncBComposed = this.createFeFunc('feFuncB', feComponentTransfer);
+    }
+}
+
+SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfer) {
+    var feFunc = document.createElementNS(svgNS,type);
+    feFunc.setAttribute('type','table');
+    feComponentTransfer.appendChild(feFunc);
+    return feFunc;
+};
+
+SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
+    var cnt = 0;
+    var segments = 256;
+    var perc;
+    var min = Math.min(inputBlack, inputWhite);
+    var max = Math.max(inputBlack, inputWhite);
+    var table = Array.call(null,{length:segments});
+    var colorValue;
+    var pos = 0;
+    var outputDelta = outputWhite - outputBlack; 
+    var inputDelta = inputWhite - inputBlack; 
+    while(cnt <= 256) {
+        perc = cnt/256;
+        if(perc <= min){
+            colorValue = inputDelta < 0 ? outputWhite : outputBlack;
+        } else if(perc >= max){
+            colorValue = inputDelta < 0 ? outputBlack : outputWhite;
+        } else {
+            colorValue = (outputBlack + outputDelta * Math.pow((perc - inputBlack) / inputDelta, 1 / gamma));
+        }
+        table[pos++] = colorValue;
+        cnt += 256/(segments-1);
+    }
+    return table.join(' ');
+};
+
+SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
+    if(forceRender || this.filterManager.mdf){
+        var val, cnt, perc, bezier;
+        var effectElements = this.filterManager.effectElements;
+        if(this.feFuncRComposed && (forceRender || effectElements[2].p.mdf || effectElements[3].p.mdf || effectElements[4].p.mdf || effectElements[5].p.mdf || effectElements[6].p.mdf)){
+            val = this.getTableValue(effectElements[2].p.v,effectElements[3].p.v,effectElements[4].p.v,effectElements[5].p.v,effectElements[6].p.v);
+            this.feFuncRComposed.setAttribute('tableValues',val);
+            this.feFuncGComposed.setAttribute('tableValues',val);
+            this.feFuncBComposed.setAttribute('tableValues',val);
+        }
+
+        if(this.feFuncR && (forceRender || effectElements[9].p.mdf || effectElements[10].p.mdf || effectElements[11].p.mdf || effectElements[12].p.mdf || effectElements[13].p.mdf)){
+            val = this.getTableValue(effectElements[9].p.v,effectElements[10].p.v,effectElements[11].p.v,effectElements[12].p.v,effectElements[13].p.v);
+            this.feFuncR.setAttribute('tableValues',val);
+        }
+
+        if(this.feFuncG && (forceRender || effectElements[16].p.mdf || effectElements[17].p.mdf || effectElements[18].p.mdf || effectElements[19].p.mdf || effectElements[20].p.mdf)){
+            val = this.getTableValue(effectElements[16].p.v,effectElements[17].p.v,effectElements[18].p.v,effectElements[19].p.v,effectElements[20].p.v);
+            this.feFuncG.setAttribute('tableValues',val);
+        }
+
+        if(this.feFuncB && (forceRender || effectElements[23].p.mdf || effectElements[24].p.mdf || effectElements[25].p.mdf || effectElements[26].p.mdf || effectElements[27].p.mdf)){
+            val = this.getTableValue(effectElements[23].p.v,effectElements[24].p.v,effectElements[25].p.v,effectElements[26].p.v,effectElements[27].p.v);
+            this.feFuncB.setAttribute('tableValues',val);
+        }
+
+        if(this.feFuncA && (forceRender || effectElements[30].p.mdf || effectElements[31].p.mdf || effectElements[32].p.mdf || effectElements[33].p.mdf || effectElements[34].p.mdf)){
+            val = this.getTableValue(effectElements[30].p.v,effectElements[31].p.v,effectElements[32].p.v,effectElements[33].p.v,effectElements[34].p.v);
+            this.feFuncA.setAttribute('tableValues',val);
+        }
+        
+    }
+};
+function SVGEffects(elem){
+    var i, len = elem.data.ef.length;
+    var filId = randomString(10);
+    var fil = filtersFactory.createFilter(filId);
+    var count = 0;
+    this.filters = [];
+    var filterManager;
+    for(i=0;i<len;i+=1){
+        if(elem.data.ef[i].ty === 20){
+            count += 1;
+            filterManager = new SVGTintFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 21){
+            count += 1;
+            filterManager = new SVGFillFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 22){
+            filterManager = new SVGStrokeEffect(elem, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 23){
+            count += 1;
+            filterManager = new SVGTritoneFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 24){
+            count += 1;
+            filterManager = new SVGProLevelsFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }
+    }
+    if(count){
+        elem.globalData.defs.appendChild(fil);
+        elem.layerElement.setAttribute('filter','url(#'+filId+')');
+    }
+}
+
+SVGEffects.prototype.renderFrame = function(firstFrame){
+    var i, len = this.filters.length;
+    for(i=0;i<len;i+=1){
+        this.filters[i].renderFrame(firstFrame);
+    }
+};
 function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
     this.layers = data.layers;
@@ -6549,7 +6546,7 @@ ICompElement.prototype.getElements = function(){
 };
 
 ICompElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
         if(this.elements[i]){
@@ -6623,7 +6620,7 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
 };
 
 IImageElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.innerElem =  null;
 };
 function IShapeElement(data,parentContainer,globalData,comp, placeholder){
@@ -6785,6 +6782,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 }
                 data[i].elem = pathElement;
                 container.appendChild(pathElement);
+            }
+            if(arr[i].r === 2) {
+                pathElement.setAttribute('fill-rule', 'evenodd');
             }
 
             if(arr[i].ln){
@@ -7180,7 +7180,7 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData){
 };
 
 IShapeElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.shapeData = null;
     this.viewData = null;
     this.parentContainer = null;
@@ -7252,8 +7252,8 @@ var animationManager = (function(){
             i+=1;
         }
         var animItem = new AnimationItem();
-        animItem.setData(element, animationData);
         setupAnimation(animItem, element);
+        animItem.setData(element, animationData);
         return animItem;
     }
 
@@ -7362,7 +7362,7 @@ var animationManager = (function(){
 
     function destroy(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=(len-1);i>=0;i-=1){
             registeredAnimations[i].animation.destroy(animation);
         }
     }
@@ -8086,4 +8086,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.4.30'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.5.9'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  

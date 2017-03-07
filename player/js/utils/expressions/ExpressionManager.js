@@ -303,8 +303,9 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var thisLayer,thisComp;
         var fn = new Function();
-        var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        eval(fnStr);
+        //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
+        //eval(fnStr);
+        var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
 
@@ -617,12 +618,12 @@ var ExpressionManager = (function(){
                 textTotal = this.textTotal;
                 selectorValue = this.selectorValue;
             }
-            if(!transform){
-                transform = elem.transform;
-            }
             if(!thisLayer){
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
+            }
+            if(!transform){
+                transform = elem.layerInterface("ADBE Transform Group");
             }
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
@@ -647,7 +648,7 @@ var ExpressionManager = (function(){
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
-                if(typeof this.v === 'number'){
+                if(typeof this.v === 'number' || typeof this.v === 'string'){
                     this.v *= this.mult;
                 }else{
                     len = this.v.length;
@@ -663,7 +664,7 @@ var ExpressionManager = (function(){
             /*if(!this.v){
                 console.log(val);
             }*/
-            if(typeof this.v === 'number'){
+            if(typeof this.v === 'number' || typeof this.v === 'string'){
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
                     this.mdf = true;

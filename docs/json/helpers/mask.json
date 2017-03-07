@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "inv": {
+      "title": "Inverted",
+      "description": "Inverted Mask flag",
+      "type": "boolean"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "Mask name. Used for expressions and effects.",
+      "type": "string"
+    },
+    "pt": {
+      "title": "Points",
+      "description": "Mask vertices",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/properties/shape"
+          },
+          {
+            "$ref": "#/properties/shapeKeyframed"
+          }
+        ]
+      }
+    },
+    "o": {
+      "title": "Opacity",
+      "description": "Mask opacity.",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ]
+    },
+    "mode": {
+      "title": "Mode",
+      "description": "Mask mode. Not all mask types are supported.",
+      "type": "string",
+      "oneOf": [
+        {
+          "standsFor": "None",
+          "value": "n"
+        },
+        {
+          "standsFor": "Additive",
+          "value": "a"
+        },
+        {
+          "standsFor": "Subtract",
+          "value": "s"
+        },
+        {
+          "standsFor": "Intersect",
+          "value": "i"
+        },
+        {
+          "standsFor": "Lighten",
+          "value": "l"
+        },
+        {
+          "standsFor": "Darken",
+          "value": "d"
+        },
+        {
+          "standsFor": "Difference",
+          "value": "f"
+        }
+      ]
+    }
+  }
+}

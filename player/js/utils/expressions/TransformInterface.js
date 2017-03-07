@@ -71,6 +71,18 @@ var TransformExpressionInterface = (function (){
             }
         });
 
+        Object.defineProperty(_thisFunction, "skew", {
+            get: function () {
+                return transform.skew;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "skewAxis", {
+            get: function () {
+                return transform.skewAxis;
+            }
+        });
+
         return _thisFunction;
     }
 }());

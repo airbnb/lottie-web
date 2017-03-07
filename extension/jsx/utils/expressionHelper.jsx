@@ -93,6 +93,37 @@ var bm_expressionHelper = (function () {
             declared.push(variableName);
         }
 
+        function addIfStatement(statement){
+            if(statement.consequent){
+                if (statement.consequent.type === 'BlockStatement') {
+                    findUndeclaredVariables(statement.consequent.body, 0, null, declared, undeclared, true);
+                } else if (statement.consequent.type === 'ExpressionStatement') {
+                    expression = statement.consequent.expression;
+                    if (expression.type === 'AssignmentExpression') {
+                        addAssignment(expression);
+                    } else if (expression.type === 'SequenceExpression') {
+                        addSequenceExpressions(expression.expressions);
+                    }
+                } else if (statement.consequent.type === 'ReturnStatement') {
+                    //
+                }
+            }
+            if (statement.alternate) {
+                if (statement.alternate.type === 'IfStatement') {
+                    addIfStatement(statement.alternate)
+                } else if (statement.alternate.type === 'BlockStatement') {
+                    findUndeclaredVariables(statement.alternate.body, 0, null, declared, undeclared, true);
+                } else if (statement.alternate.type === 'ExpressionStatement') {
+                    expression = statement.alternate.expression;
+                    if (expression.type === 'AssignmentExpression') {
+                        addAssignment(expression);
+                    } else if (expression.type === 'SequenceExpression') {
+                        addSequenceExpressions(expression.expressions);
+                    }
+                }
+            }
+        }
+
         if (!declared) {
             declared = [];
         }
@@ -148,6 +179,8 @@ var bm_expressionHelper = (function () {
                         //addAssignment(body[i].body);
                     }
                 }
+            } else if (body[i].type === 'IfStatement') {
+                addIfStatement(body[i]);
             } else if (body[i].type === 'FunctionDeclaration') {
                 if (body[i].body && body[i].body.type === 'BlockStatement') {
                     var p = [];

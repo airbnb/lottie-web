@@ -32,6 +32,7 @@ HImageElement.prototype.createElements = function(){
         this.layerElement = img;
         this.baseElement = img;
         this.innerElem = img;
+        this.transformedElement = img;
     }
     img.src = assetPath;
     if(this.data.ln){

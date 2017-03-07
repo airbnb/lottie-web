@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "oneOf": [
+    {
+      "standsFor": "miter",
+      "value": 1
+    },
+    {
+      "standsFor": "round",
+      "value": 2
+    },
+    {
+      "standsFor": "butt",
+      "value": 3
+    }
+  ]
+}

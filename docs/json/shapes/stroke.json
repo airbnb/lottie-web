@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
+      "description": "After Effect's Match Name. Used for expressions.",
+      "type": "string"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "After Effect's Name. Used for expressions.",
+      "type": "string"
+    },
+    "ty": {
+      "title": "Type",
+      "description": "Shape content type. Value: st",
+      "type": "string"
+    },
+    "lc": {
+      "title": "Line Cap",
+      "description": "Stroke Line Cap",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/lineCap"
+        }
+      ],
+      "type": "number"
+    },
+    "lj": {
+      "title": "Line Join",
+      "description": "Stroke Line Join",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/lineJoin"
+        }
+      ],
+      "type": "number"
+    },
+    "ml": {
+      "title": "Miter Limit",
+      "description": "Stroke Miter Limit. Only if Line Join is set to Miter.",
+      "type": "number"
+    },
+    "o": {
+      "title": "Opacity",
+      "description": "Stroke Opacity",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "w": {
+      "title": "Width",
+      "description": "Stroke Width",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "c": {
+      "title": "Color",
+      "description": "Stroke Color",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  }
+}

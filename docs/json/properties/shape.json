@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "k": {
+      "description": "Property Value",
+      "extended_name": "Value",
+      "properties": [
+        {
+          "description": "Closed property of shape",
+          "extended_name": "Closed",
+          "type": "boolean"
+        },
+        {
+          "description": "Bezier curve In points. Array of 2 dimensional arrays.",
+          "extended_name": "In Point",
+          "type": "array"
+        },
+        {
+          "description": "Bezier curve Out points. Array of 2 dimensional arrays.",
+          "extended_name": "Out Point",
+          "type": "array"
+        },
+        {
+          "description": "Bezier curve Vertices. Array of 2 dimensional arrays.",
+          "extended_name": "Vertices",
+          "type": "array"
+        }
+      ],
+      "type": "object"
+    },
+    "x": {
+      "description": "Property Expression. An AE expression that modifies the value.",
+      "extended_name": "Expression",
+      "type": "string"
+    },
+    "ix": {
+      "description": "Property Index. Used for expressions.",
+      "extended_name": "Property Index",
+      "type": "string"
+    },
+    "a": {
+      "description": "Defines if property is animated",
+      "extended_name": "Animated",
+      "type": "number"
+    }
+  }
+}

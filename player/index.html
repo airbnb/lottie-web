@@ -44,7 +44,6 @@
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
-    <script src="js/utils/shapes/MouseModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
@@ -58,6 +57,11 @@
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
     <script src="js/elements/svgElements/SVGTextElement.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTintEffect.js"></script>
+    <script src="js/elements/svgElements/effects/SVGFillFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGStrokeEffect.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTritoneFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGProLevelsFilter.js"></script>
     <script src="js/elements/svgElements/SVGEffects.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
@@ -109,7 +113,7 @@
         loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:false
         },
         path: 'exports/render/data.json'
     };

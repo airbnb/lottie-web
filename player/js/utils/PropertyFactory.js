@@ -552,7 +552,19 @@ var PropertyFactory = (function(){
         var p;
         if(type === 2){
             p = new TransformProperty(elem, data, arr);
-        }else if(!data.k.length){
+        } else if(data.a === 0){
+            if(type === 0) {
+                p = new ValueProperty(elem,data,mult);
+            } else {
+                p = new MultiDimensionalProperty(elem,data, mult);
+            }
+        } else if(data.a === 1){
+            if(type === 0) {
+                p = new KeyframedValueProperty(elem,data,mult);
+            } else {
+                p = new KeyframedMultidimensionalProperty(elem,data, mult);
+            }
+        } else if(!data.k.length){
             p = new ValueProperty(elem,data, mult);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult);
@@ -701,7 +713,6 @@ var PropertyFactory = (function(){
         var max = Math.max;
         var min = Math.min;
         var floor = Math.floor;
-        this.mdf = false;
         function updateRange(){
             if(this.dynamicProperties.length){
                 var i, len = this.dynamicProperties.length;
@@ -750,7 +761,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 4){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
                     if(mult<.5){
@@ -762,7 +773,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 5){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     var tot = e - s;
                     /*ind += 0.5;
@@ -775,7 +786,7 @@ var PropertyFactory = (function(){
                 mult = easer(mult);
             }else if(type == 6){
                 if(e === s){
-                    mult = ind >= e ? 0 : 1;
+                    mult = 0;
                 }else{
                     ind = min(max(0,ind+0.5-s),e-s);
                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;

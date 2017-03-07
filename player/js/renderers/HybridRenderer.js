@@ -35,7 +35,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
         var i = 0;
         var nextElement;
         while(i<pos){
-            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
+            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
                 nextElement = this.elements[i].getBaseElement();
             }
             i += 1;
@@ -143,7 +143,7 @@ HybridRenderer.prototype.addTo3dContainer = function(elem,pos){
             var j = this.threeDElements[i].startPos;
             var nextElement;
             while(j<pos){
-                if(this.elements[j] && this.elements[j].getBaseElement()){
+                if(this.elements[j] && this.elements[j].getBaseElement){
                     nextElement = this.elements[j].getBaseElement();
                 }
                 j += 1;

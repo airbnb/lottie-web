@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
+      "description": "After Effect's Match Name. Used for expressions.",
+      "type": "string"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "After Effect's Name. Used for expressions.",
+      "type": "string"
+    },
+    "ty": {
+      "title": "Type",
+      "description": "Shape content type. Value: gr",
+      "type": "string"
+    },
+    "np": {
+      "title": "Number of Properties",
+      "description": "Group number of properties. Used for expressions.",
+      "type": "number"
+    },
+    "it": {
+      "title": "Items",
+      "description": "Group list of items",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/shapes/shape",
+            "value": "sh"
+          },
+          {
+            "$ref": "#/shapes/rect",
+            "value": "rc"
+          },
+          {
+            "$ref": "#/shapes/ellipse",
+            "value": "el"
+          },
+          {
+            "$ref": "#/shapes/star",
+            "value": "sr"
+          },
+          {
+            "$ref": "#/shapes/fill",
+            "value": "fl"
+          },
+          {
+            "$ref": "#/shapes/gFill",
+            "value": "gf"
+          },
+          {
+            "$ref": "#/shapes/gStroke",
+            "value": "gs"
+          },
+          {
+            "$ref": "#/shapes/stroke",
+            "value": "st"
+          },
+          {
+            "$ref": "#/shapes/merge",
+            "value": "mm"
+          },
+          {
+            "$ref": "#/shapes/trim",
+            "value": "tm"
+          },
+          {
+            "$ref": "#/shapes/group",
+            "value": "gr"
+          },
+          {
+            "$ref": "#/shapes/roundedCorners",
+            "value": "rd"
+          },
+          {
+            "$ref": "#/shapes/transform",
+            "value": "tr"
+          }
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  }
+}
