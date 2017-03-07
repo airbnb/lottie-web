@@ -1,4 +1,4 @@
-(function (root, factory) { if(typeof define === "function" && define.amd) { define( factory); } else if(typeof module === "object" && module.exports) { module.exports = factory(); } else { root.bodymovin = factory(); } }(window, function() {var svgNS = "http://www.w3.org/2000/svg";
+(function (root, factory) { if(typeof define === "function" && define.amd) { define( factory); } else if(typeof module === "object" && module.exports) { module.exports = factory(); } else { root.bodymovin = factory(); } }(global.window, function() {var svgNS = "http://www.w3.org/2000/svg";
 var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -875,7 +875,7 @@ function Matrix() {
 
 //
 // autoseed()
-// Returns an object for autoseeding, using window.crypto and Node crypto
+// Returns an object for autoseeding, using global.window.crypto and Node crypto
 // module if available.
 //
     function autoseed() {
@@ -1097,23 +1097,23 @@ var MatrixManager = matrixManagerFunction;
 (function () {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    for(var x = 0; x < vendors.length && !global.window.requestAnimationFrame; ++x) {
+        global.window.requestAnimationFrame = global.window[vendors[x] + 'RequestAnimationFrame'];
+        global.window.cancelAnimationFrame = global.window[vendors[x] + 'CancelAnimationFrame'] || global.window[vendors[x] + 'CancelRequestAnimationFrame'];
     }
-    if(!window.requestAnimationFrame)
-        window.requestAnimationFrame = function (callback, element) {
+    if(!global.window.requestAnimationFrame)
+        global.window.requestAnimationFrame = function (callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function () {
+            var id = global.window.setTimeout(function () {
                     callback(currTime + timeToCall);
                 },
                 timeToCall);
             lastTime = currTime + timeToCall;
             return id;
         };
-    if(!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function (id) {
+    if(!global.window.cancelAnimationFrame)
+        global.window.cancelAnimationFrame = function (id) {
             clearTimeout(id);
         };
 }());
@@ -2061,9 +2061,9 @@ var FontManager = (function(){
                 continue;
             }
             if(this.fonts[i].fOrigin === 't'){
-                if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
+                if(global.window.Typekit && global.window.Typekit.load && this.typekitLoaded === 0){
                     this.typekitLoaded = 1;
-                    try{window.Typekit.load({
+                    try{global.window.Typekit.load({
                         async: true,
                         active: function() {
                             this.typekitLoaded = 2;
@@ -8097,7 +8097,7 @@ function CanvasRenderer(animationItem, config){
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {
-        this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
+        this.renderConfig.dpr = (config && config.dpr) || global.window.devicePixelRatio || 1;
     }
     this.renderedFrame = -1;
     this.globalData = {
