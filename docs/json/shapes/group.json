@@ -1,32 +1,30 @@
 {
-  "properties": [
-    {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Shape content type. Value: gr",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "string"
     },
-    {
+    "np": {
+      "title": "Number of Properties",
       "description": "Group number of properties. Used for expressions.",
-      "extendedName": "Number of Properties",
-      "name": "np",
       "type": "number"
     },
-    {
+    "it": {
+      "title": "Items",
       "description": "Group list of items",
-      "extendedName": "Items",
       "items": {
         "oneOf": [
           {
@@ -84,8 +82,7 @@
         ],
         "type": "object"
       },
-      "name": "it",
       "type": "array"
     }
-  ]
+  }
 }

@@ -1,33 +1,30 @@
 {
-  "properties": [
-    {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
       "description": "After Effect's Match Name. Used for expressions.",
-      "extendedName": "Match Name",
-      "name": "mn",
       "type": "string"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effect's Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "d": {
+      "title": "Direction",
       "description": "After Effect's Direction. Direction how the shape is drawn. Used for trim path for example.",
-      "extendedName": "Direction",
-      "name": "d",
       "type": "number"
     },
-    {
+    "ty": {
+      "title": "Type",
       "description": "Shape content type. Value: sh",
-      "extendedName": "Type",
-      "name": "ty",
       "type": "string"
     },
-    {
+    "ks": {
+      "title": "Vertices",
       "description": "Shape's vertices",
-      "extendedName": "Vertices",
-      "name": "ks",
       "oneOf": [
         {
           "$ref": "#/properties/shape"
@@ -38,5 +35,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }

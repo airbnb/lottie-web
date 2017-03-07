@@ -1,3 +1,12 @@
+## V 4.5.9
+- expressions variable declaration fix
+- effect control type fix
+
+## V 4.5.8
+- fill-rule for fills and gradient fills on shapes
+- rounding colors values with an extra decimal
+- property expressions that return strings are evaluated as numbers
+
 ## V 4.5.7
 - standalone autoplay fix
 
