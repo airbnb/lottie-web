@@ -646,6 +646,10 @@ var ExpressionManager = (function(){
                 velocity = velocityAtTime(time);
             }
             bindedFn();
+            if(this.v.length && isNaN(this.v[0])){
+
+                console.log(val)
+            }
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){

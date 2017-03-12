@@ -11,9 +11,9 @@
         }
 
         #bodymovin{
-            background-color:#000;
-            width:100%;
-            height:100%;
+            background-color:#fff;
+            width:960px;
+            height:540px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -21,7 +21,6 @@
             transform: translate3d(0,0,0);
             margin: auto;
             opacity: 1;
-            background-color: red;
         }
 
         .botas_loop_3,.botas_loop_2{
@@ -114,11 +113,11 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:true
         },
-        path: 'exports/render/data3.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

@@ -81,6 +81,24 @@ var LayerExpressionInterface = (function (){
                 return transformInterface;
             }
         });
+
+        Object.defineProperty(_thisLayerFunction, "width", {
+            get: function () {
+                if(elem.data.ty === 0) {
+                    return elem.data.w
+                }
+                return 100;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "height", {
+            get: function () {
+                if(elem.data.ty === 0) {
+                    return elem.data.h
+                }
+                return 100;
+            }
+        });
         Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
         Object.defineProperty(_thisLayerFunction, "content", {
             get: function(){
