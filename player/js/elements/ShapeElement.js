@@ -179,7 +179,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             var g = document.createElementNS(svgNS,'g');
             container.appendChild(g);
             data[i].gr = g;
-            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1, transformers);
+            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1, ownTransformers);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
@@ -369,11 +369,14 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
         jLen = paths.length;
         if(viewData.elements[l].st.lvl < lvl){
             var mat = this.mHelper.reset(), props;
-            var k;
-            for(k=viewData.transformers.length-1;k>=0;k-=1){
+            var iterations = lvl - viewData.elements[l].st.lvl;
+            var k = viewData.transformers.length-1;
+            while(iterations > 0) {
                 redraw = viewData.transformers[k].mProps.mdf || redraw;
                 props = viewData.transformers[k].mProps.v.props;
                 mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+                iterations --;
+                k --;
             }
             if(redraw){
                 for(j=0;j<jLen;j+=1){
