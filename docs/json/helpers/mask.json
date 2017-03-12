@@ -1,34 +1,36 @@
 {
-  "properties": [
-    {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "inv": {
+      "title": "Inverted",
       "description": "Inverted Mask flag",
-      "extendedName": "Inverted",
-      "name": "inv",
       "type": "boolean"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "Mask name. Used for expressions and effects.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "string"
     },
-    {
+    "pt": {
+      "title": "Points",
       "description": "Mask vertices",
-      "extendedName": "Points",
-      "name": "pt",
       "type": "array",
-      "items":{
-        "type":"object",
-        "oneOf":[
-          { "$ref": "#/properties/shape" },
-          { "$ref": "#/properties/shapeKeyframed" }
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/properties/shape"
+          },
+          {
+            "$ref": "#/properties/shapeKeyframed"
+          }
         ]
       }
     },
-    {
+    "o": {
+      "title": "Opacity",
       "description": "Mask opacity.",
-      "extendedName": "Opacity",
-      "name": "o",
       "type": "object",
       "oneOf": [
         {
@@ -39,10 +41,9 @@
         }
       ]
     },
-    {
+    "mode": {
+      "title": "Mode",
       "description": "Mask mode. Not all mask types are supported.",
-      "extendedName": "Mode",
-      "name": "mode",
       "type": "string",
       "oneOf": [
         {
@@ -75,5 +76,5 @@
         }
       ]
     }
-  ]
+  }
 }

@@ -158,6 +158,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 data[i].elem = pathElement;
                 container.appendChild(pathElement);
             }
+            if(arr[i].r === 2) {
+                pathElement.setAttribute('fill-rule', 'evenodd');
+            }
 
             if(arr[i].ln){
                 pathElement.setAttribute('id',arr[i].ln);
@@ -552,7 +555,7 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData){
 };
 
 IShapeElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.shapeData = null;
     this.viewData = null;
     this.parentContainer = null;

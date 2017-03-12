@@ -1,15 +1,15 @@
 {
-  "properties": [
-    {
-      "description": "Type of layer: Solid. Value 1.",
-      "extendedName": "Type",
-      "name": "ty",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ty": {
+      "title": "Type",
+      "description": "Type of layer: Text. Value 5.",
       "type": "number"
     },
-    {
+    "ks": {
+      "title": "Transform",
       "description": "Transform properties",
-      "extendedName": "Transform",
-      "name": "ks",
       "oneOf": [
         {
           "$ref": "#/helpers/transform"
@@ -17,10 +17,9 @@
       ],
       "type": "object"
     },
-    {
+    "ao": {
+      "title": "Auto-Orient",
       "description": "Auto-Orient along path AE property.",
-      "extendedName": "Auto-Orient",
-      "name": "ao",
       "oneOf": [
         {
           "$ref": "#/helpers/boolean"
@@ -28,10 +27,9 @@
       ],
       "type": "number"
     },
-    {
+    "bm": {
+      "title": "Blend Mode",
       "description": "Blend Mode",
-      "extendedName": "Blend Mode",
-      "name": "bm",
       "oneOf": [
         {
           "$ref": "#/helpers/blendMode"
@@ -39,10 +37,9 @@
       ],
       "type": "number"
     },
-    {
+    "ddd": {
+      "title": "3d Layer",
       "description": "3d layer flag",
-      "extendedName": "3d Layer",
-      "name": "ddd",
       "oneOf": [
         {
           "$ref": "#/helpers/boolean"
@@ -50,57 +47,49 @@
       ],
       "type": "number"
     },
-    {
+    "ind": {
+      "title": "Index",
       "description": "Layer index in AE. Used for parenting and expressions.",
-      "extendedName": "Index",
-      "name": "ind",
       "type": "number"
     },
-    {
+    "cl": {
+      "title": "Class",
       "description": "Parsed layer name used as html class on SVG/HTML renderer",
-      "extendedName": "Class",
-      "name": "cl",
       "type": "string"
     },
-    {
+    "ln": {
+      "title": "layer HTML ID",
       "description": "Parsed layer name used as html id on SVG/HTML renderer",
-      "extendedName": "layer HTML ID",
-      "name": "ln",
       "type": "string"
     },
-    {
+    "ip": {
+      "title": "In Point",
       "description": "In Point of layer. Sets the initial frame of the layer.",
-      "extendedName": "In Point",
-      "name": "ip",
       "type": "number"
     },
-    {
+    "op": {
+      "title": "Out Point",
       "description": "Out Point of layer. Sets the final frame of the layer.",
-      "extendedName": "Out Point",
-      "name": "op",
       "type": "number"
     },
-    {
+    "st": {
+      "title": "Start Time",
       "description": "Start Time of layer. Sets the start time of the layer.",
-      "extendedName": "Start Time",
-      "name": "st",
       "type": "number"
     },
-    {
+    "nm": {
+      "title": "Name",
       "description": "After Effects Layer Name. Used for expressions.",
-      "extendedName": "Name",
-      "name": "nm",
       "type": "number"
     },
-    {
+    "hasMask": {
+      "title": "Has Masks",
       "description": "Boolean when layer has a mask. Will be deprecated in favor of checking maskProperties.",
-      "extendedName": "Has Masks",
-      "name": "hasMask",
       "type": "number"
     },
-    {
+    "maskProperties": {
+      "title": "Mask Properties",
       "description": "List of Masks",
-      "extendedName": "Mask Properties",
       "items": {
         "oneOf": [
           {
@@ -109,27 +98,11 @@
         ],
         "type": "object"
       },
-      "name": "maskProperties",
       "type": "array"
     },
-    {
-      "description": "List of Effects",
-      "extendedName": "Effects",
-      "items": {
-        "oneOf": [
-          {
-            "$ref": "#/effects/index"
-          }
-        ],
-        "type": "object"
-      },
-      "name": "ef",
-      "type": "array"
-    },
-    {
+    "ef": {
+      "title": "Effects",
       "description": "Auto-Orient along path AE property.",
-      "extendedName": "Effects",
-      "name": "ef",
       "oneOf": [
         {
           "$ref": "#/helpers/boolean"
@@ -137,37 +110,32 @@
       ],
       "type": "number"
     },
-    {
+    "sr": {
+      "title": "Stretch",
       "description": "Layer Time Stretching",
-      "extendedName": "Stretch",
-      "name": "sr",
       "type": "number"
     },
-    {
+    "parent": {
+      "title": "Parent",
       "description": "Layer Parent. Uses ind of parent.",
-      "extendedName": "Parent",
-      "name": "parent",
       "type": "number"
     },
-    {
+    "t": {
+      "title": "Text Data",
       "description": "Text Data",
-      "extendedName": "Text Data",
-      "name": "t",
       "properties": [
         {
+          "title": "Animators",
           "description": "Text animators",
-          "extendedName": "Animators",
           "items": {
             "properties": [
               {
+                "title": "Animated Properties",
                 "description": "Text animator animated properties",
-                "extendedName": "Animated Properties",
-                "name": "a",
                 "properties": [
                   {
+                    "title": "Position",
                     "description": "Text animator Position",
-                    "extendedName": "Position",
-                    "name": "p",
                     "oneOf": [
                       {
                         "$ref": "#/properties/multiDimensional"
@@ -179,9 +147,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Anchor Point",
                     "description": "Text animator Anchor Point",
-                    "extendedName": "Anchor Point",
-                    "name": "a",
                     "oneOf": [
                       {
                         "$ref": "#/properties/multiDimensional"
@@ -193,9 +160,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Scale",
                     "description": "Text animator Scale",
-                    "extendedName": "Scale",
-                    "name": "s",
                     "oneOf": [
                       {
                         "$ref": "#/properties/multiDimensional"
@@ -207,9 +173,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Skew",
                     "description": "Text animator Skew",
-                    "extendedName": "Skew",
-                    "name": "sk",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -221,9 +186,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Skew Axis",
                     "description": "Text animator Skew Axis",
-                    "extendedName": "Skew Axis",
-                    "name": "sa",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -235,9 +199,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Rotation",
                     "description": "Text animator Rotation",
-                    "extendedName": "Rotation",
-                    "name": "r",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -249,9 +212,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Opacity",
                     "description": "Text animator Opacity",
-                    "extendedName": "Opacity",
-                    "name": "o",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -263,9 +225,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Stroke Width",
                     "description": "Text animator Stroke Width",
-                    "extendedName": "Stroke Width",
-                    "name": "sw",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -277,9 +238,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Stroke Color",
                     "description": "Text animator Stroke Color",
-                    "extendedName": "Stroke Color",
-                    "name": "sc",
                     "oneOf": [
                       {
                         "$ref": "#/properties/multiDimensional"
@@ -291,9 +251,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Fill Color",
                     "description": "Text animator Fill Color",
-                    "extendedName": "Fill Color",
-                    "name": "fc",
                     "oneOf": [
                       {
                         "$ref": "#/properties/multiDimensional"
@@ -305,9 +264,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Fill Hue",
                     "description": "Text animator Fill Hue",
-                    "extendedName": "Fill Hue",
-                    "name": "fh",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -319,9 +277,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Fill Saturation",
                     "description": "Text animator Fill Saturation",
-                    "extendedName": "Fill Saturation",
-                    "name": "fs",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -333,9 +290,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Fill Brightness",
                     "description": "Text animator Fill Brightness",
-                    "extendedName": "Fill Brightness",
-                    "name": "fb",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -347,9 +303,8 @@
                     "type": "object"
                   },
                   {
+                    "title": "Tracking",
                     "description": "Text animator Tracking",
-                    "extendedName": "Tracking",
-                    "name": "t",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -364,20 +319,17 @@
                 "type": "object"
               },
               {
+                "title": "Range Selecton",
                 "description": "Animators Range Selecton",
-                "extendedName": "Range Selecton",
-                "name": "s",
                 "properties": [
                   {
+                    "title": "Type",
                     "description": "Selector Type. Expressible, or Normal.",
-                    "extendedName": "Type",
-                    "name": "t",
                     "type": "number"
                   },
                   {
+                    "title": "Max Amount",
                     "description": "Selector Max Amount",
-                    "extendedName": "Max Amount",
-                    "name": "a",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -389,9 +341,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "Min Ease",
                     "description": "Levels Min Ease",
-                    "extendedName": "Min Ease",
-                    "name": "ne",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -403,9 +354,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "Max Ease",
                     "description": "Levels Max Ease",
-                    "extendedName": "Max Ease",
-                    "name": "xe",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -417,9 +367,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "Randomize",
                     "description": "Selector Randomize Order",
-                    "extendedName": "Randomize",
-                    "name": "rn",
                     "oneOf": [
                       {
                         "$ref": "#/helpers/boolean"
@@ -428,9 +377,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "Shape",
                     "description": "Selector Shape",
-                    "extendedName": "Shape",
-                    "name": "sh",
                     "oneOf": [
                       {
                         "$ref": "#/helpers/textShape"
@@ -439,9 +387,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "Based On",
                     "description": "Selector Based On",
-                    "extendedName": "Based On",
-                    "name": "b",
                     "oneOf": [
                       {
                         "$ref": "#/helpers/textBased"
@@ -450,15 +397,13 @@
                     "type": "number"
                   },
                   {
+                    "title": "Range Units",
                     "description": "Selector Range Units. Percentage or Index.",
-                    "extendedName": "Range Units",
-                    "name": "r",
                     "type": "number"
                   },
                   {
+                    "title": "Start",
                     "description": "Selector Start",
-                    "extendedName": "Start",
-                    "name": "s",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -470,9 +415,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "End",
                     "description": "Selector End",
-                    "extendedName": "End",
-                    "name": "e",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -484,9 +428,8 @@
                     "type": "number"
                   },
                   {
+                    "title": "Offset",
                     "description": "Selector Offset",
-                    "extendedName": "Offset",
-                    "name": "o",
                     "oneOf": [
                       {
                         "$ref": "#/properties/value"
@@ -503,18 +446,15 @@
             ],
             "type": "object"
           },
-          "name": "a",
           "type": "array"
         },
         {
+          "title": "More Options",
           "description": "Text More Options",
-          "extendedName": "More Options",
-          "name": "m",
           "properties": [
             {
+              "title": "Anchor Point Grouping",
               "description": "Text Anchor Point Grouping",
-              "extendedName": "Anchor Point Grouping",
-              "name": "g",
               "oneOf": [
                 {
                   "$ref": "#/helpers/textGrouping"
@@ -523,9 +463,8 @@
               "type": "number"
             },
             {
+              "title": "Grouping Alignment",
               "description": "Text Grouping Alignment",
-              "extendedName": "Grouping Alignment",
-              "name": "a",
               "oneOf": [
                 {
                   "$ref": "#/properties/multiDimensional"
@@ -540,75 +479,64 @@
           "type": "object"
         },
         {
+          "title": "Text Path",
           "description": "Text Path",
-          "extendedName": "Text Path",
-          "name": "p",
           "type": "number"
         },
         {
+          "title": "Document",
           "description": "Text Document Data",
-          "extendedName": "Document",
-          "name": "d",
           "properties": [
             {
+              "title": "Keyframes",
               "description": "Text Document Data Keyframes",
-              "extendedName": "Keyframes",
               "items": {
                 "oneOf": [
                   {
-                    "properties":[
+                    "properties": [
                       {
+                        "title": "Time",
                         "description": "Keyframe Time",
-                        "extendedName": "Time",
-                        "name": "t",
                         "type": "number"
                       },
                       {
+                        "title": "Text Properties",
                         "description": "Text Properties",
-                        "extendedName": "Text Properties",
-                        "name": "s",
                         "type": "object",
-                        "properties":[
+                        "properties": [
                           {
+                            "title": "Font",
                             "description": "Text Font",
-                            "extendedName": "Font",
-                            "name": "f",
                             "type": "string"
                           },
                           {
+                            "title": "Font Color",
                             "description": "Text Font Color",
-                            "extendedName": "Font Color",
-                            "name": "fc",
                             "type": "array"
                           },
                           {
+                            "title": "Justificaiton",
                             "description": "Text Justification",
-                            "extendedName": "Justificaiton",
-                            "name": "j",
                             "type": "string"
                           },
                           {
+                            "title": "Line Height",
                             "description": "Text Line Height",
-                            "extendedName": "Line Height",
-                            "name": "lh",
                             "type": "number"
                           },
                           {
+                            "title": "Size",
                             "description": "Text Font Size",
-                            "extendedName": "Size",
-                            "name": "s",
                             "type": "number"
                           },
                           {
+                            "title": "Text",
                             "description": "Text String Value",
-                            "extendedName": "Text",
-                            "name": "t",
                             "type": "string"
                           },
                           {
+                            "title": "Tracking",
                             "description": "Text Tracking",
-                            "extendedName": "Tracking",
-                            "name": "tr",
                             "type": "number"
                           }
                         ]
@@ -618,7 +546,6 @@
                 ],
                 "type": "object"
               },
-              "name": "k",
               "type": "array"
             }
           ],
@@ -627,5 +554,5 @@
       ],
       "type": "object"
     }
-  ]
+  }
 }

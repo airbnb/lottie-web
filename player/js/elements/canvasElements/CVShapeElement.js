@@ -66,6 +66,9 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                     }
                 }
 
+            } else {
+
+                styleElem.r = arr[i].r === 2 ? 'evenodd' : 'nonzero';
             }
             this.stylesList.push(styleElem);
             data[i].style = styleElem;
@@ -259,7 +262,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             }
         }
         if(type !== 'st'){
-            ctx.fill();
+            ctx.fill(this.stylesList[i].r);
         }
         renderer.restore();
     }
@@ -366,6 +369,6 @@ CVShapeElement.prototype.destroy = function(){
     this.canvasContext = null;
     this.stylesList.length = 0;
     this.viewData.length = 0;
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
 };
 

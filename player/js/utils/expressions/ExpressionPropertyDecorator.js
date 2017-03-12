@@ -252,6 +252,11 @@
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         prop.setGroupProperty = setGroupProperty;
+        if(prop.kf){
+            prop.getValueAtTime = getValueAtTime;
+        } else {
+            prop.getValueAtTime = getStaticValueAtTime;
+        }
         var isAdded = prop.k;
         if(data.ix !== undefined){
             Object.defineProperty(prop,'propertyIndex',{

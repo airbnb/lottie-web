@@ -304,8 +304,9 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var thisLayer,thisComp;
         var fn = new Function();
-        var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        eval(fnStr);
+        //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
+        //eval(fnStr);
+        var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = data.k ? data.k.length : 0;
 
@@ -648,7 +649,7 @@ var ExpressionManager = (function(){
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
-                if(typeof this.v === 'number' || this.v instanceof Number){
+                if(typeof this.v === 'number' || this.v instanceof Number || typeof this.v === 'string'){
                     this.v *= this.mult;
                 }else if(this.v.length === 1){
                     this.v = this.v[0] * this.mult;
@@ -669,7 +670,7 @@ var ExpressionManager = (function(){
             if(this.v.length === 1){
                 this.v = this.v[0];
             }
-            if(typeof this.v === 'number' || this.v instanceof Number){
+            if(typeof this.v === 'number' || this.v instanceof Number || typeof this.v === 'string'){
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
                     this.mdf = true;

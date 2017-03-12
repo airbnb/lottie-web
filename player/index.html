@@ -21,6 +21,7 @@
             transform: translate3d(0,0,0);
             margin: auto;
             opacity: 1;
+            background-color: red;
         }
 
         .botas_loop_3,.botas_loop_2{
@@ -108,8 +109,9 @@
 <script>
 
     var anim;
+    var elem = document.getElementById('bodymovin')
     var animData = {
-        container: document.getElementById('bodymovin'),
+        container: elem,
         renderer: 'svg',
         loop: false,
         autoplay: true,
