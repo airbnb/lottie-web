@@ -307,7 +307,7 @@ var ExpressionManager = (function(){
         //eval(fnStr);
         var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
-        var numKeys = data.k ? data.k.length : 0;
+        var numKeys = property.kf ? data.k.length : 0;
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
