@@ -9,6 +9,7 @@ var TransformExpressionInterface = (function (){
                 case "rotation":
                 case "Rotation":
                 case "ADBE Rotation":
+                case "ADBE Rotate Z":
                     return _thisFunction.rotation;
                 case "position":
                 case "Position":
