@@ -28,6 +28,7 @@ var LayerExpressionInterface = (function (){
         function _thisLayerFunction(name){
             switch(name){
                 case "ADBE Root Vectors Group":
+                case "Contents":
                 case 2:
                     return _thisLayerFunction.shapeInterface;
                 case 1:
@@ -81,6 +82,31 @@ var LayerExpressionInterface = (function (){
                 return transformInterface;
             }
         });
+
+        Object.defineProperty(_thisLayerFunction, "width", {
+            get: function () {
+                if(elem.data.ty === 0) {
+                    return elem.data.w
+                }
+                return 100;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "height", {
+            get: function () {
+                if(elem.data.ty === 0) {
+                    return elem.data.h
+                }
+                return 100;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "source", {
+            get: function () {
+                return elem.data;
+            }
+        });
+
         Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
         Object.defineProperty(_thisLayerFunction, "content", {
             get: function(){

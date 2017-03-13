@@ -16,6 +16,7 @@ var TransformExpressionInterface = (function (){
                     return transform.position;
                 case "anchorPoint":
                 case "AnchorPoint":
+                case "Anchor Point":
                 case "ADBE AnchorPoint":
                     return _thisFunction.anchorPoint;
                 case "opacity":

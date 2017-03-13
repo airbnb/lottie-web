@@ -537,7 +537,7 @@ var ExpressionManager = (function(){
                 time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
-            if(ind === data.k.length - 1){
+            if(ind === data.k.length - 1 && !data.k[ind].h){
                 arr = data.k[ind-1].e;
             }else{
                 arr = data.k[ind].s;
@@ -605,7 +605,7 @@ var ExpressionManager = (function(){
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
         function execute(){
-            seedRandom(randSeed);
+            //seedRandom(randSeed);
             if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
                 return;
             }

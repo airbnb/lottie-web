@@ -133,6 +133,7 @@ var ShapeExpressionInterface = (function(){
             var interfaceFunction = function _interfaceFunction(value){
                 switch(value){
                     case 'ADBE Vectors Group':
+                    case 'Contents':
                     case 2:
                         return interfaceFunction.content;
                     case 'ADBE Vector Transform Group':
@@ -190,25 +191,29 @@ var ShapeExpressionInterface = (function(){
     var fillInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
 
+            function interfaceFunction(val){
+                if(val === 'Color' || val === 'color'){
+                    return interfaceFunction.color;
+                } else if(val === 'Opacity' || val === 'opacity'){
+                    return interfaceFunction.opacity;
+                }
+            }
+            Object.defineProperty(interfaceFunction, 'color', {
+                get: function(){
+                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'opacity', {
+                get: function(){
+                    return ExpressionValue(view.o, 100);
+                }
+            });
+            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
+            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
+
             view.c.setGroupProperty(propertyGroup);
             view.o.setGroupProperty(propertyGroup);
-            var ob = {
-                get color(){
-                    if(view.c.k){
-                        view.c.getValue();
-                    }
-                    return [view.c.v[0]/view.c.mult,view.c.v[1]/view.c.mult,view.c.v[2]/view.c.mult,1];
-                },
-                get opacity(){
-                    if(view.o.k){
-                        view.o.getValue();
-                    }
-                    return view.o.v;
-                },
-                _name: shape.nm,
-                mn: shape.mn
-            };
-            return ob;
+            return interfaceFunction;
         }
     }());
 
@@ -224,43 +229,48 @@ var ShapeExpressionInterface = (function(){
             view.c.setGroupProperty(_propertyGroup);
             view.o.setGroupProperty(_propertyGroup);
             view.w.setGroupProperty(_propertyGroup);
-            var ob = {
-                get color(){
-                    if(view.c.k){
-                        view.c.getValue();
-                    }
-                    return [view.c.v[0]/view.c.mult,view.c.v[1]/view.c.mult,view.c.v[2]/view.c.mult,1];
-                },
-                get opacity(){
-                    if(view.o.k){
-                        view.o.getValue();
-                    }
-                    return view.o.v;
-                },
-                get strokeWidth(){
-                    if(view.w.k){
-                        view.w.getValue();
-                    }
-                    return view.w.v;
-                },
-                dashOb: {},
-                get dash(){
-                    var d = view.d;
-                    var dModels = shape.d;
-                    var i, len = dModels.length;
-                    for(i=0;i<len;i+=1){
-                        if(d.dataProps[i].p.k){
-                            d.dataProps[i].p.getValue();
-                        }
-                        d.dataProps[i].p.setGroupProperty(propertyGroup);
-                        this.dashOb[dModels[i].nm] = d.dataProps[i].p.v;
-                    }
-                    return this.dashOb;
-                },
-                _name: shape.nm,
-                mn: shape.mn
-            };
-            return ob;
+            var i, len = shape.d ? shape.d.length : 0;
+            var dashOb = {}
+            for (i = 0; i < len; i += 1) {
+                addPropertyToDashOb(i);
+                view.d.dataProps[i].p.setGroupProperty(_dashPropertyGroup);
+            }
+
+            function interfaceFunction(val){
+                if(val === 'Color' || val === 'color'){
+                    return interfaceFunction.color;
+                } else if(val === 'Opacity' || val === 'opacity'){
+                    return interfaceFunction.opacity;
+                } else if(val === 'Stroke Width' || val === 'stroke width'){
+                    return interfaceFunction.strokeWidth;
+                }
+            }
+            Object.defineProperty(interfaceFunction, 'color', {
+                get: function(){
+                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'opacity', {
+                get: function(){
+                    return ExpressionValue(view.o, 100);
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'strokeWidth', {
+                get: function(){
+                    return ExpressionValue(view.w);
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'dash', {
+                get: function(){
+                    return dashOb;
+                }
+            });
+            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
+            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
+
+            view.c.setGroupProperty(propertyGroup);
+            view.o.setGroupProperty(propertyGroup);
+            return interfaceFunction;
         }
     }());
 
@@ -740,23 +750,31 @@ var ShapeExpressionInterface = (function(){
         return function(shape,view,propertyGroup){
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
             prop.setGroupProperty(propertyGroup);
-            var ob = {
-                get shape(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop.v;
-                },
-                get path(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop.v;
-                },
-                _name: shape.nm,
-                mn: shape.mn
+
+            function interfaceFunction(val){
+                if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path'){
+                    return interfaceFunction.shape;
+                }
             }
-            return ob;
+            Object.defineProperty(interfaceFunction, 'path', {
+                get: function(){
+                    if(prop.k){
+                        prop.getValue();
+                    }
+                    return prop.v;
+                }
+            });
+            Object.defineProperty(interfaceFunction, 'shape', {
+                get: function(){
+                    if(prop.k){
+                        prop.getValue();
+                    }
+                    return prop.v;
+                }
+            });
+            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
+            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
+            return interfaceFunction;
         }
     }());
 
