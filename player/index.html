@@ -41,6 +41,7 @@
     <script src="js/utils/DataManager.js"></script>
     <script src="js/utils/FontManager.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
+    <script src="js/utils/shapes/shape_helper.js"></script>
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
@@ -113,9 +114,9 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:false
         },
         path: 'exports/render/data.json'
     };

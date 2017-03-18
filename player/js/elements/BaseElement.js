@@ -41,7 +41,7 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        if(this.isVisible || this.dynamicProperties[i].type === 'transform'){
+        if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
             this.dynamicProperties[i].getValue();
             if(this.dynamicProperties[i].mdf){
                 this.elemMdf = true;
@@ -179,6 +179,7 @@ BaseElement.prototype.init = function(){
     this.hidden = false;
     this.firstFrame = true;
     this.isVisible = false;
+    this._isParent = false;
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
     if(this.data.ks){
