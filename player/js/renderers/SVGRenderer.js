@@ -63,10 +63,12 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.globalData.frameId = 0;
+    this.globalData.nm = animData.nm;
     this.globalData.compSize = {
         w: animData.w,
         h: animData.h
     };
+    this.data = animData;
     this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');

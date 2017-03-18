@@ -147,6 +147,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     }else{
         this.canvasContext = this.renderConfig.context;
     }
+    this.data = animData;
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.renderer = this;
     this.globalData.isDashed = false;

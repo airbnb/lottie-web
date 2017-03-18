@@ -295,6 +295,7 @@ var ExpressionManager = (function(){
     function initiateExpression(elem,data,property){
         var val = data.x;
         var needsVelocity = val.indexOf('velocity') !== -1;
+        var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
         var transform,content,effect;
         var thisComp = elem.comp;
@@ -538,7 +539,7 @@ var ExpressionManager = (function(){
                 time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
-            if(ind === data.k.length - 1){
+            if(ind === data.k.length - 1 && !data.k[ind].h){
                 arr = data.k[ind-1].e;
             }else{
                 arr = data.k[ind].s;
@@ -601,12 +602,15 @@ var ExpressionManager = (function(){
             BMMath.seedrandom(randSeed + seed);
         };
 
-        var time,velocity, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
+        var time,velocity, value,textIndex,textTotal,selectorValue;
+        var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
         function execute(){
-            seedRandom(randSeed);
+            if(_needsRandom){
+                seedRandom(randSeed);
+            }
             if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
                 return;
             }

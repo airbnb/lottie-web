@@ -41,15 +41,18 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
+        if(this.isVisible || this.dynamicProperties[i].type === 'transform'){
+            this.dynamicProperties[i].getValue();
+            if(this.dynamicProperties[i].mdf){
+                this.elemMdf = true;
+                this.globalData.mdf = true;
+            }
         }
     }
-    if(this.data.hasMask){
+    if(this.data.hasMask && this.isVisible){
         this.maskManager.prepareFrame(num*this.data.sr);
     }
+    
     /* TODO check this
     if(this.data.sy){
         if(this.data.sy[0].renderedData[num]){
