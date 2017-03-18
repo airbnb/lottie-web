@@ -112,13 +112,13 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'html',
         loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/geography/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

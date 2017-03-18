@@ -30,8 +30,8 @@ HTextElement.prototype.createElements = function(){
         var cont = document.createElementNS(svgNS,'svg');
         styleDiv(cont);
         this.cont = cont;
-        this.compW = this.comp.data ? this.comp.data.w : this.globalData.compSize.w;
-        this.compH = this.comp.data ? this.comp.data.h : this.globalData.compSize.h;
+        this.compW = this.comp.data.w;
+        this.compH = this.comp.data.h;
         cont.setAttribute('width',this.compW);
         cont.setAttribute('height',this.compH);
         var g = document.createElementNS(svgNS,'g');
