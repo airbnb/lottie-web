@@ -38,7 +38,7 @@ BMMath.abs = function(val){
     return Math.abs(val);
 
 }
-var defaultCurveSegments = 75;
+var defaultCurveSegments = 150;
 var degToRads = Math.PI/180;
 var roundCorner = 0.5519;
 
@@ -2505,160 +2505,111 @@ var PropertyFactory = (function(){
         this.lastFrame = initFrame;
     }
 
-    var TransformProperty = (function(){
-        function positionGetter(){
-            if(this.p.k){
-                this.p.getValue();
-            }
-            if(!this.p.v.key){
-                this.p.v.key = function(pos){
-                    if(!this.p.v.numKeys){
-                        return 0;
-                    } else {
-                        return this.p.keyframes[pos-1].t;
-                    }
-                }.bind(this);
-            }
-            if(!this.p.v.numKeys){
-                this.p.v.numKeys = this.p.keyframes ? this.p.keyframes.length : 0;
-            }
-            if(!this.p.v.valueAtTime){
-                this.p.v.valueAtTime = this.p.getValueAtTime.bind(this.p);
-            }
-            return this.p.v;
+    var TransformProperty = (function() {
+        function positionGetter() {
+            return ExpressionValue(this.p);
         }
-        function xPositionGetter(){
-            if(this.px.k){
-                this.px.getValue();
-            }
-            return this.px.v;
+        function xPositionGetter() {
+            return ExpressionValue(this.px);
         }
-        function yPositionGetter(){
-            if(this.py.k){
-                this.py.getValue();
-            }
-            return this.py.v;
+        function yPositionGetter() {
+            return ExpressionValue(this.py);
         }
-        function zPositionGetter(){
-            if(this.pz.k){
-                this.pz.getValue();
-            }
-            return this.pz.v;
+        function zPositionGetter() {
+            return ExpressionValue(this.pz);
         }
-        function anchorGetter(){
-            if(this.a.k){
-                this.a.getValue();
-            }
-            return this.a.v;
+        function anchorGetter() {
+            return ExpressionValue(this.a);
         }
-        function orientationGetter(){
-            if(this.or.k){
-                this.or.getValue();
-            }
-            return this.or.v;
+        function orientationGetter() {
+            return ExpressionValue(this.or);
         }
-        function rotationGetter(){
-            if(this.r.k){
-                this.r.getValue();
-            }
-            return this.r.v/degToRads;
+        function rotationGetter() {
+            return ExpressionValue(this.r, 1/degToRads);
         }
-        function scaleGetter(){
-            if(this.s.k){
-                this.s.getValue();
-            }
-            return this.s.v;
+        function scaleGetter() {
+            return ExpressionValue(this.s, 100);
         }
-        function opacityGetter(){
-            if(this.o.k){
-                this.o.getValue();
-            }
-            return this.o.v;
+        function opacityGetter() {
+            return ExpressionValue(this.o, 100);
         }
-        function skewGetter(){
-            if(this.sk.k){
-                this.sk.getValue();
-            }
-            return this.sk.v;
+        function skewGetter() {
+            return ExpressionValue(this.sk);
         }
-        function skewAxisGetter(){
-            if(this.sa.k){
-                this.sa.getValue();
-            }
-            return this.sa.v;
+        function skewAxisGetter() {
+            return ExpressionValue(this.sa);
         }
-        function applyToMatrix(mat){
+        function applyToMatrix(mat) {
             var i, len = this.dynamicProperties.length;
-            for(i=0;i<len;i+=1){
+            for(i = 0; i < len; i += 1) {
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                if (this.dynamicProperties[i].mdf) {
                     this.mdf = true;
                 }
             }
-            if(this.a){
-                mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+            if (this.a) {
+                mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
             }
-            if(this.s){
-                mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+            if (this.s) {
+                mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
             }
-            if(this.r){
+            if (this.r) {
                 mat.rotate(-this.r.v);
-            }else{
+            } else {
                 mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
-            if(this.data.p.s){
-                if(this.data.p.z) {
+            if (this.data.p.s) {
+                if (this.data.p.z) {
                     mat.translate(this.px.v, this.py.v, -this.pz.v);
                 } else {
                     mat.translate(this.px.v, this.py.v, 0);
                 }
-            }else{
-                mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            } else {
+                mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
             }
         }
         function processKeys(){
-            if(this.elem.globalData.frameId === this.frameId){
+            if (this.elem.globalData.frameId === this.frameId) {
                 return;
             }
 
             this.mdf = false;
             var i, len = this.dynamicProperties.length;
 
-            for(i=0;i<len;i+=1){
+            for(i = 0; i < len; i += 1) {
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                if (this.dynamicProperties[i].mdf) {
                     this.mdf = true;
                 }
             }
-            if(this.mdf){
+            if (this.mdf) {
                 this.v.reset();
-                if(this.a){
-                    this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+                if (this.a) {
+                    this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
                 }
-                if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                if(this.s) {
+                    this.v.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
                 }
-                if(this.sk){
-                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
+                if (this.sk) {
+                    this.v.skewFromAxis(-this.sk.v, this.sa.v);
                 }
-                if(this.r){
+                if (this.r) {
                     this.v.rotate(-this.r.v);
-                }else{
+                } else {
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
-                if(this.autoOriented && this.p.keyframes && this.p.getValueAtTime){
+                if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
                     var v1,v2;
-                    if(this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t){
-                        v1 = this.p.getValueAtTime(this.p.keyframes[0].t+0.01,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t, 0);
-                    }else if(this.p.lastFrame+this.p.offsetTime > this.p.keyframes[this.p.keyframes.length - 1].t){
-                        v1 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t-0.01, 0);
+                    if (this.p.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
+                    } else if(this.p.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
+                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
                     } else {
                         v1 = this.p.pv;
-                        v2 = this.p.getValueAtTime(this.p.lastFrame+this.p.offsetTime - 0.01, this.p.offsetTime);
+                        v2 = this.p.getValueAtTime((this.p.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
                     }
-                    //var prevV = this.p.getValueAtTime(this.p.lastFrame - 0.01, true);
                     this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
                 }
                 if(this.data.p.s){
@@ -2671,6 +2622,7 @@ var PropertyFactory = (function(){
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
             }
+            //console.log(this.v.to2dCSS())
             this.frameId = this.elem.globalData.frameId;
         }
 
@@ -2705,6 +2657,7 @@ var PropertyFactory = (function(){
         return function TransformProperty(elem,data,arr){
             this.elem = elem;
             this.frameId = -1;
+            this.type = 'transform';
             this.dynamicProperties = [];
             this.mdf = false;
             this.data = data;
@@ -3085,6 +3038,29 @@ var PropertyFactory = (function(){
     ob.getGradientProp = getGradientProp;
     return ob;
 }());
+var shape_helper = (function(){
+
+	function clone(shape){
+		var i, len = shape.v.length;
+		var cloned = {
+			c: shape.c,
+			i: Array.call({length:len}),
+			o: Array.call({length:len}),
+			v: Array.call({length:len})
+		}
+		for(i = 0; i < len; i += 1) {
+			cloned.v[i] = [shape.v[i][0],shape.v[i][1]]
+			cloned.o[i] = [shape.o[i][0],shape.o[i][1]]
+			cloned.i[i] = [shape.i[i][0],shape.i[i][1]]
+		}
+		return cloned
+
+	}
+
+	return {
+		clone: clone
+	}
+}())
 var ShapePropertyFactory = (function(){
 
     var initFrame = -999999;
@@ -4294,9 +4270,11 @@ BaseRenderer.prototype.buildElementParenting = function(element, parentName, hie
                 this.addPendingElement(element);
             } else if(layers[i].parent !== undefined){
                 hierarchy.push(elements[i]);
+                elements[i]._isParent = true;
                 this.buildElementParenting(element,layers[i].parent, hierarchy);
             } else {
                 hierarchy.push(elements[i]);
+                elements[i]._isParent = true;
                 element.setHierarchy(hierarchy);
             }
 
@@ -4374,10 +4352,12 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.globalData.frameId = 0;
+    this.globalData.nm = animData.nm;
     this.globalData.compSize = {
         w: animData.w,
         h: animData.h
     };
+    this.data = animData;
     this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
@@ -4567,8 +4547,8 @@ function MaskElement(data,element,globalData) {
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
             rect = document.createElementNS(svgNS, 'rect');
             rect.setAttribute('fill', '#ffffff');
-            rect.setAttribute('width', this.element.comp.data ? this.element.comp.data.w : this.element.globalData.compSize.w);
-            rect.setAttribute('height', this.element.comp.data ? this.element.comp.data.h : this.element.globalData.compSize.h);
+            rect.setAttribute('width', this.element.comp.data.w);
+            rect.setAttribute('height', this.element.comp.data.h);
             currentMasks.push(rect);
         } else {
             rect = null;
@@ -4833,15 +4813,18 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
+        if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
+            this.dynamicProperties[i].getValue();
+            if(this.dynamicProperties[i].mdf){
+                this.elemMdf = true;
+                this.globalData.mdf = true;
+            }
         }
     }
-    if(this.data.hasMask){
+    if(this.data.hasMask && this.isVisible){
         this.maskManager.prepareFrame(num*this.data.sr);
     }
+    
     /* TODO check this
     if(this.data.sy){
         if(this.data.sy[0].renderedData[num]){
@@ -4898,6 +4881,8 @@ BaseElement.prototype.initExpressions = function(){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
         this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.layerInterface);
+    } else if(this.data.ty === 5){
+        this.layerInterface.textInterface = TextExpressionInterface(this);
     }
 }
 
@@ -4968,6 +4953,7 @@ BaseElement.prototype.init = function(){
     this.hidden = false;
     this.firstFrame = true;
     this.isVisible = false;
+    this._isParent = false;
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
     if(this.data.ks){
@@ -5096,8 +5082,8 @@ SVGBaseElement.prototype.createElements = function(){
             feCTr.appendChild(feFunc);*/
             this.globalData.defs.appendChild(fil);
             var alphaRect = document.createElementNS(svgNS,'rect');
-            alphaRect.setAttribute('width',this.comp.data ? this.comp.data.w : this.globalData.compSize.w);
-            alphaRect.setAttribute('height',this.comp.data ? this.comp.data.h : this.globalData.compSize.h);
+            alphaRect.setAttribute('width',this.comp.data.w);
+            alphaRect.setAttribute('height',this.comp.data.h);
             alphaRect.setAttribute('x','0');
             alphaRect.setAttribute('y','0');
             alphaRect.setAttribute('fill','#ffffff');
@@ -6420,6 +6406,93 @@ SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
         
     }
 };
+function SVGDropShadowEffect(filter, filterManager){
+    /*<feGaussianBlur in="SourceAlpha" stdDeviation="3"/> <!-- stdDeviation is how much to blur -->
+  <feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
+  <feMerge> 
+    <feMergeNode/> <!-- this contains the offset blurred image -->
+    <feMergeNode in="SourceGraphic"/> <!-- this contains the element that the filter is applied to -->
+  </feMerge>*/
+  /*<feFlood flood-color="#3D4574" flood-opacity="0.5" result="offsetColor"/>*/
+    filter.setAttribute('x','-100%');
+    filter.setAttribute('y','-100%');
+    filter.setAttribute('width','400%');
+    filter.setAttribute('height','400%');
+    this.filterManager = filterManager;
+
+    var feGaussianBlur = document.createElementNS(svgNS,'feGaussianBlur');
+    feGaussianBlur.setAttribute('in','SourceAlpha');
+    feGaussianBlur.setAttribute('result','drop_shadow_1');
+    feGaussianBlur.setAttribute('stdDeviation','0');
+    this.feGaussianBlur = feGaussianBlur;
+    filter.appendChild(feGaussianBlur);
+
+    var feOffset = document.createElementNS(svgNS,'feOffset');
+    feOffset.setAttribute('dx','25');
+    feOffset.setAttribute('dy','0');
+    feOffset.setAttribute('in','drop_shadow_1');
+    feOffset.setAttribute('result','drop_shadow_2');
+    this.feOffset = feOffset;
+    filter.appendChild(feOffset);
+    var feFlood = document.createElementNS(svgNS,'feFlood');
+    feFlood.setAttribute('flood-color','#00ff00');
+    feFlood.setAttribute('flood-opacity','1');
+    feFlood.setAttribute('result','drop_shadow_3');
+    this.feFlood = feFlood;
+    filter.appendChild(feFlood);
+
+    var feComposite = document.createElementNS(svgNS,'feComposite');
+    feComposite.setAttribute('in','drop_shadow_3');
+    feComposite.setAttribute('in2','drop_shadow_2');
+    feComposite.setAttribute('operator','in');
+    feComposite.setAttribute('result','drop_shadow_4');
+    filter.appendChild(feComposite);
+
+
+    var feMerge = document.createElementNS(svgNS,'feMerge');
+    filter.appendChild(feMerge);
+    var feMergeNode;
+    feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+    feMerge.appendChild(feMergeNode);
+    feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+    feMergeNode.setAttribute('in','SourceGraphic');
+    this.feMergeNode = feMergeNode;
+    this.feMerge = feMerge;
+    this.originalNodeAdded = false;
+    feMerge.appendChild(feMergeNode);
+}
+
+SVGDropShadowEffect.prototype.renderFrame = function(forceRender){
+    if(forceRender || this.filterManager.mdf){
+        if(forceRender || this.filterManager.effectElements[4].p.mdf){
+            this.feGaussianBlur.setAttribute('stdDeviation', this.filterManager.effectElements[4].p.v / 4);
+        }
+        if(forceRender || this.filterManager.effectElements[0].p.mdf){
+            var col = this.filterManager.effectElements[0].p.v;
+            this.feFlood.setAttribute('flood-color',rgbToHex(Math.round(col[0]*255),Math.round(col[1]*255),Math.round(col[2]*255)));
+        }
+        if(forceRender || this.filterManager.effectElements[1].p.mdf){
+            this.feFlood.setAttribute('flood-opacity',this.filterManager.effectElements[1].p.v/255);
+        }
+        if(forceRender || this.filterManager.effectElements[2].p.mdf || this.filterManager.effectElements[3].p.mdf){
+            var distance = this.filterManager.effectElements[3].p.v
+            var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads
+            var x = distance * Math.cos(angle)
+            var y = distance * Math.sin(angle)
+            this.feOffset.setAttribute('dx', x);
+            this.feOffset.setAttribute('dy', y);
+        }
+        /*if(forceRender || this.filterManager.effectElements[5].p.mdf){
+            if(this.filterManager.effectElements[5].p.v === 1 && this.originalNodeAdded) {
+                this.feMerge.removeChild(this.feMergeNode);
+                this.originalNodeAdded = false;
+            } else if(this.filterManager.effectElements[5].p.v === 0 && !this.originalNodeAdded) {
+                this.feMerge.appendChild(this.feMergeNode);
+                this.originalNodeAdded = true;
+            }
+        }*/
+    }
+};
 function SVGEffects(elem){
     var i, len = elem.data.ef.length;
     var filId = randomString(10);
@@ -6446,6 +6519,10 @@ function SVGEffects(elem){
         }else if(elem.data.ef[i].ty === 24){
             count += 1;
             filterManager = new SVGProLevelsFilter(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 25){
+            count += 1;
+            filterManager = new SVGDropShadowEffect(fil, elem.effects.effectElements[i]);
             this.filters.push(filterManager);
         }
     }
@@ -6804,7 +6881,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             var g = document.createElementNS(svgNS,'g');
             container.appendChild(g);
             data[i].gr = g;
-            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1, transformers);
+            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1, ownTransformers);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
@@ -6989,16 +7066,19 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
     var lvl = viewData.lvl;
     for(l=0;l<lLen;l+=1){
         redraw = viewData.sh.mdf || this.firstFrame;
-        pathStringTransformed = '';
+        pathStringTransformed = 'M0 0';
         var paths = viewData.sh.paths;
         jLen = paths.length;
         if(viewData.elements[l].st.lvl < lvl){
             var mat = this.mHelper.reset(), props;
-            var k;
-            for(k=viewData.transformers.length-1;k>=0;k-=1){
+            var iterations = lvl - viewData.elements[l].st.lvl;
+            var k = viewData.transformers.length-1;
+            while(iterations > 0) {
                 redraw = viewData.transformers[k].mProps.mdf || redraw;
                 props = viewData.transformers[k].mProps.v.props;
                 mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+                iterations --;
+                k --;
             }
             if(redraw){
                 for(j=0;j<jLen;j+=1){
@@ -8086,4 +8166,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.5.9'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.6.0'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  

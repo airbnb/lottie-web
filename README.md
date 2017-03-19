@@ -1,6 +1,13 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.6.0
+- New UI!
+- Drop shadow effect support
+- performance improvement on animations with offsetted layers
+- big performance improvement on expressions
+- expressions expressions expressions
+
 ## V 4.5.9
 - expressions variable declaration fix
 - effect control type fix

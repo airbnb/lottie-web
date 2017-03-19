@@ -11,16 +11,15 @@
         }
 
         #bodymovin{
-            background-color:#099;
-            width:960px;
-            height:540px;
+            background-color:#333;
+            width:100%;
+            height:100%;
             /*width:800px;
             height:500px;*/
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
             margin: auto;
-            opacity: 1;
         }
 
         .botas_loop_3,.botas_loop_2{
@@ -120,7 +119,7 @@
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/cetan.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
