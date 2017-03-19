@@ -37,7 +37,6 @@ var EffectsExpressionInterface = (function (){
         }
         var groupInterface = function(name){
             var effects = data.ef, i = 0, len = effects.length;
-           // console.log('effects:',effects);
             while(i<len) {
                 if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                     if(effects[i].ty === 5){
@@ -59,18 +58,7 @@ var EffectsExpressionInterface = (function (){
             if(type === 10){
                 return elem.comp.compInterface(element.p.v);
             }
-            if(element.p.k){
-                element.p.getValue();
-            }
-            if(typeof element.p.v === 'number'){
-                return element.p.v;
-            }
-            var i, len = element.p.v.length;
-            var arr = Array.apply(null,{length:len});
-            for(i=0;i<len;i+=1){
-                arr[i] = element.p.v[i];
-            }
-            return arr;
+            return ExpressionValue(element.p);
         }
     }
 

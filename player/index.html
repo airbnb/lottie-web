@@ -11,9 +11,9 @@
         }
 
         #bodymovin{
-            background-color:#000;
-            width:100%;
-            height:100%;
+            background-color:#099;
+            width:960px;
+            height:540px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -41,6 +41,7 @@
     <script src="js/utils/DataManager.js"></script>
     <script src="js/utils/FontManager.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
+    <script src="js/utils/shapes/shape_helper.js"></script>
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
@@ -93,6 +94,7 @@
     <script src="js/utils/expressions/TransformInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ProjectInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/EffectInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ExpressionValue.js" data-light-skip="true"></script>
     <script src="js/effects/SliderEffect.js" data-light-skip="true"></script>
     <script src="js/effects.js" data-light-skip="true"></script>
     <!-- end Expressions -->
@@ -107,15 +109,16 @@
 <script>
 
     var anim;
+    var elem = document.getElementById('bodymovin')
     var animData = {
-        container: document.getElementById('bodymovin'),
+        container: elem,
         renderer: 'svg',
         loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/cetan.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

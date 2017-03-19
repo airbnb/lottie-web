@@ -30,8 +30,8 @@ function MaskElement(data,element,globalData) {
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
             rect = document.createElementNS(svgNS, 'rect');
             rect.setAttribute('fill', '#ffffff');
-            rect.setAttribute('width', this.element.comp.data ? this.element.comp.data.w : this.element.globalData.compSize.w);
-            rect.setAttribute('height', this.element.comp.data ? this.element.comp.data.h : this.element.globalData.compSize.h);
+            rect.setAttribute('width', this.element.comp.data.w);
+            rect.setAttribute('height', this.element.comp.data.h);
             currentMasks.push(rect);
         } else {
             rect = null;
