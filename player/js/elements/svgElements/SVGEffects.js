@@ -25,6 +25,10 @@ function SVGEffects(elem){
             count += 1;
             filterManager = new SVGProLevelsFilter(fil, elem.effects.effectElements[i]);
             this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 25){
+            count += 1;
+            filterManager = new SVGDropShadowEffect(fil, elem.effects.effectElements[i]);
+            this.filters.push(filterManager);
         }
     }
     if(count){
