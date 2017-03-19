@@ -11,7 +11,7 @@
         }
 
         #bodymovin{
-            background-color:#fff;
+            background-color:#099;
             width:960px;
             height:540px;
             /*width:800px;
@@ -112,13 +112,13 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'html',
-        loop: false,
+        renderer: 'svg',
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/geography/data.json'
+        path: 'exports/render/cetan.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
