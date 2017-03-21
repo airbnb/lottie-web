@@ -444,7 +444,7 @@ var PropertyFactory = (function(){
                 this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this.dynamicProperties);
                 this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
                 this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
-                this.or = PropertyFactory.getProp(elem, data.or, 0, degToRads, this.dynamicProperties);
+                this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
             }
             if(data.sk){
                 this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
