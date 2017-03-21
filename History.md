@@ -1,3 +1,7 @@
+## V 4.6.1
+- 3D orientation fix
+- render improvements
+
 ## V 4.6.0
 - New UI!
 - Drop shadow effect support
