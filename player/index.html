@@ -28,12 +28,13 @@
 
     </style>
     <!-- build:js bodymovin.js -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.3/pixi.min.js"></script>
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
-    <script src="js/3rd_party/PIXI.js"></script>
+    <script src="js/3rd_party/PIXI_4_4_3.js"></script>
     <script src="js/utils/MatrixManager.js"></script>
     <script src="js/utils/animationFramePolyFill.js"></script>
     <script src="js/utils/functionExtensions.js"></script>
@@ -110,13 +111,13 @@
     var animData = {
         container: document.getElementById('bodymovin'),
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         autoloadSegments: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/rubberhose/data.json'
+        path: 'exports/bm/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

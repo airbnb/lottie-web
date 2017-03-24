@@ -57,6 +57,8 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     this.animationItem.wrapper.appendChild(this.layerElement);
     ///
     this.renderer = new PIXI.WebGLRenderer(animData.w, animData.h,{antialias:true,transparent:true});
+    /*this.renderer.view.style.transform = 'scale(0.5,0.5)';
+    this.renderer.view.style.transformOrigin = '0 0';*/
     this.animationItem.wrapper.appendChild(this.renderer.view);
     this.stage = new PIXI.Container();
     this.PLayerElement = this.stage;
