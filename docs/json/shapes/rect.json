@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
+      "description": "After Effect's Match Name. Used for expressions.",
+      "type": "string"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "After Effect's Name. Used for expressions.",
+      "type": "string"
+    },
+    "d": {
+      "title": "Direction",
+      "description": "After Effect's Direction. Direction how the shape is drawn. Used for trim path for example.",
+      "type": "number"
+    },
+    "ty": {
+      "title": "Type",
+      "description": "Shape content type. Value: rc",
+      "type": "string"
+    },
+    "p": {
+      "title": "Position",
+      "description": "Rect's position",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "s": {
+      "title": "Size",
+      "description": "Rect's size",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "r": {
+      "title": "Rounded corners",
+      "description": "Rect's rounded corners",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  }
+}

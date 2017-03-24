@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ch": {
+      "title": "Character",
+      "description": "Character Value",
+      "type": "string"
+    },
+    "fFamily": {
+      "title": "Font Family",
+      "description": "Character Font Family",
+      "type": "string"
+    },
+    "size": {
+      "title": "Font Size",
+      "description": "Character Font Size",
+      "type": "string"
+    },
+    "style": {
+      "title": "Font Style",
+      "description": "Character Font Style",
+      "type": "string"
+    },
+    "w": {
+      "title": "Width",
+      "description": "Character Width",
+      "type": "number"
+    },
+    "data": {
+      "title": "Character Data",
+      "description": "Character Data",
+      "properties": [
+        {
+          "title": "Character Shapes",
+          "description": "Character Composing Shapes",
+          "items": {
+            "properties": [
+              {
+                "title": "Items",
+                "description": "Character Items",
+                "properties": [
+                  {
+                    "title": "keys",
+                    "description": "Character Items Keys",
+                    "oneOf": [
+                      {
+                        "$ref": "#/properties/shape"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      ],
+      "type": "object"
+    }
+  }
+}

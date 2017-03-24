@@ -7,10 +7,12 @@ HSolidElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
     var cont = document.createElementNS(svgNS,'svg');
+    styleDiv(cont);
     cont.setAttribute('width',this.data.sw);
     cont.setAttribute('height',this.data.sh);
     parent.appendChild(cont);
     this.layerElement = parent;
+    this.transformedElement = parent;
     //this.appendNodeToParent(parent);
     this.baseElement = parent;
     this.innerElem = parent;

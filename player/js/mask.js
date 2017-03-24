@@ -22,7 +22,7 @@ function MaskElement(data,element,globalData) {
     var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
 
-        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv){
+        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv || properties[i].o.k !== 100){
             maskType = 'mask';
             maskRef = 'mask';
         }
@@ -30,16 +30,17 @@ function MaskElement(data,element,globalData) {
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
             rect = document.createElementNS(svgNS, 'rect');
             rect.setAttribute('fill', '#ffffff');
-            rect.setAttribute('width', this.element.comp.data ? this.element.comp.data.w : this.element.globalData.compSize.w);
-            rect.setAttribute('height', this.element.comp.data ? this.element.comp.data.h : this.element.globalData.compSize.h);
+            rect.setAttribute('width', this.element.comp.data.w);
+            rect.setAttribute('height', this.element.comp.data.h);
             currentMasks.push(rect);
         } else {
             rect = null;
         }
 
         path = document.createElementNS(svgNS, 'path');
-        if(properties[i].mode == 'n' || properties[i].cl === false) {
+        if(properties[i].mode == 'n') {
             this.viewData[i] = {
+                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
                 prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null),
                 elem: path
             };
@@ -47,21 +48,11 @@ function MaskElement(data,element,globalData) {
             continue;
         }
         count += 1;
-        if (properties[i].cl) {
-            if(properties[i].mode == 's'){
-                path.setAttribute('fill', '#000000');
-            }else{
-                path.setAttribute('fill', '#ffffff');
-            }
-        } else {
-            path.setAttribute('fill', 'none');
-            if(properties[i].mode == 's'){
-                path.setAttribute('fill', '#000000');
-            }else{
-                path.setAttribute('fill', '#ffffff');
-            }
-            path.setAttribute('stroke-width', '1');
-            path.setAttribute('stroke-miterlimit', '10');
+
+        if(properties[i].mode == 's'){
+            path.setAttribute('fill', '#000000');
+        }else{
+            path.setAttribute('fill', '#ffffff');
         }
         path.setAttribute('clip-rule','nonzero');
 
@@ -122,6 +113,7 @@ function MaskElement(data,element,globalData) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
+            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
             prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
         };
         if(rect){
@@ -165,7 +157,10 @@ MaskElement.prototype.renderFrame = function (finalMat) {
         if(this.viewData[i].prop.mdf || this.firstFrame){
             this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
-        if(this.masksProperties[i].mode !== 'n' && this.masksProperties[i].cl !== false){
+        if(this.viewData[i].op.mdf || this.firstFrame){
+            this.viewData[i].elem.setAttribute('fill-opacity',this.viewData[i].op.v);
+        }
+        if(this.masksProperties[i].mode !== 'n'){
             if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
                 this.viewData[i].invRect.setAttribute('x', -finalMat.props[12]);
                 this.viewData[i].invRect.setAttribute('y', -finalMat.props[13]);
@@ -206,19 +201,15 @@ MaskElement.prototype.createLayerSolidPath = function(){
 };
 
 MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
-    var pathString = '';
+    var pathString = " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
     var i, len;
     len = pathNodes.v.length;
     for(i=1;i<len;i+=1){
-        if(i==1){
-            //pathString += " M"+pathNodes.v[0][0]+','+pathNodes.v[0][1];
-            pathString += " M"+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
-        }
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
         pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[i][0])+','+bm_rnd(pathNodes.i[i][1]) + " "+bm_rnd(pathNodes.v[i][0])+','+bm_rnd(pathNodes.v[i][1]);
     }
-    if(pathData.cl){
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+    if(pathNodes.c && len > 1){
         pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[0][0])+','+bm_rnd(pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
     }
     //pathNodes.__renderedString = pathString;
@@ -226,7 +217,9 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
 
     if(viewData.lastPath !== pathString){
         if(viewData.elem){
-            if(pathData.inv){
+            if(!pathNodes.c){
+                viewData.elem.setAttribute('d','');
+            }else if(pathData.inv){
                 viewData.elem.setAttribute('d',this.solidPath + pathString);
             }else{
                 viewData.elem.setAttribute('d',pathString);

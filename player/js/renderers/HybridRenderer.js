@@ -5,6 +5,7 @@ function HybridRenderer(animationItem){
     this.globalData = {
         frameNum: -1
     };
+    this.pendingElements = [];
     this.elements = [];
     this.threeDElements = [];
     this.destroyed = false;
@@ -17,6 +18,13 @@ extendPrototype(BaseRenderer,HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 
+HybridRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+    }
+};
+
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();
     if(!newElement){
@@ -27,7 +35,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
         var i = 0;
         var nextElement;
         while(i<pos){
-            if(this.elements[i] && this.elements[i].getBaseElement()){
+            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
                 nextElement = this.elements[i].getBaseElement();
             }
             i += 1;
@@ -135,7 +143,7 @@ HybridRenderer.prototype.addTo3dContainer = function(elem,pos){
             var j = this.threeDElements[i].startPos;
             var nextElement;
             while(j<pos){
-                if(this.elements[j] && this.elements[j].getBaseElement()){
+                if(this.elements[j] && this.elements[j].getBaseElement){
                     nextElement = this.elements[j].getBaseElement();
                 }
                 j += 1;
@@ -170,6 +178,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     var defs = document.createElementNS(svgNS,'defs');
     svg.appendChild(defs);
     this.globalData.defs = defs;
+    this.data = animData;
     //Mask animation
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);

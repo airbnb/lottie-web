@@ -8,12 +8,26 @@ createElement(SVGBaseElement, SVGTextElement);
 SVGTextElement.prototype.init = ITextElement.prototype.init;
 SVGTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
+SVGTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 
 SVGTextElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
-    var documentData = this.data.t.d;
 
+
+    if(this.data.ln){
+        this.layerElement.setAttribute('id',this.data.ln);
+    }
+    if(this.data.cl){
+        this.layerElement.setAttribute('class',this.data.cl);
+    }
+};
+
+SVGTextElement.prototype.buildNewText = function(){
+    var i, len;
+
+    var documentData = this.currentTextDocumentData;
+    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
     if(documentData.fc) {
         this.layerElement.setAttribute('fill', 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')');
     }else{
@@ -33,7 +47,6 @@ SVGTextElement.prototype.createElements = function(){
         this.layerElement.setAttribute('font-style', fStyle);
         this.layerElement.setAttribute('font-weight', fWeight);
     }
-    var i, len;
 
 
 
@@ -48,14 +61,16 @@ SVGTextElement.prototype.createElements = function(){
     if (singleShape) {
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
     }
+    var cnt = 0;
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
             if(!singleShape || i === 0){
-                tSpan = document.createElementNS(svgNS,'path');
+                tSpan = this.textSpans[cnt] ? this.textSpans[cnt] : document.createElementNS(svgNS,'path');
             }
         }else{
-            tSpan = document.createElementNS(svgNS,'text');
+            tSpan = this.textSpans[cnt] ? this.textSpans[cnt] : document.createElementNS(svgNS,'text');
         }
+        tSpan.style.display = 'inherit';
         tSpan.setAttribute('stroke-linecap', 'butt');
         tSpan.setAttribute('stroke-linejoin','round');
         tSpan.setAttribute('stroke-miterlimit','4');
@@ -116,21 +131,23 @@ SVGTextElement.prototype.createElements = function(){
         }
         if(singleShape) {
             xPos += letters[i].l;
+            xPos += documentData.tr/1000*documentData.s;
         }
         //
-        this.textSpans.push(tSpan);
+        this.textSpans[cnt] = tSpan;
+        cnt += 1;
     }
-    if(this.data.ln){
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    if(this.data.cl){
-        this.layerElement.setAttribute('class',this.data.cl);
+    if(!singleShape){
+        while(cnt < this.textSpans.length){
+            this.textSpans[cnt].style.display = 'none';
+            cnt += 1;
+        }
     }
     if(singleShape && this.globalData.fontManager.chars){
         tSpan.setAttribute('d',shapeStr);
         this.layerElement.appendChild(tSpan);
     }
-};
+}
 
 SVGTextElement.prototype.hide = function(){
     if(!this.hidden){
@@ -154,7 +171,6 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     if(this.data.singleShape){
         return;
     }
-
     this.getMeasures();
     if(!this.lettersChangedFlag){
         return;
@@ -162,7 +178,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     var  i,len;
     var renderedLetters = this.renderedLetters;
 
-    var letters = this.data.t.d.l;
+    var letters = this.currentTextDocumentData.l;
 
     len = letters.length;
     var renderedLetter;
@@ -190,5 +206,5 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
 
 SVGTextElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
 };

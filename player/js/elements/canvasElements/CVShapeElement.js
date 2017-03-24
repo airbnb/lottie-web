@@ -66,6 +66,9 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
                     }
                 }
 
+            } else {
+
+                styleElem.r = arr[i].r === 2 ? 'evenodd' : 'nonzero';
             }
             this.stylesList.push(styleElem);
             data[i].style = styleElem;
@@ -259,7 +262,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             }
         }
         if(type !== 'st'){
-            ctx.fill();
+            ctx.fill(this.stylesList[i].r);
         }
         renderer.restore();
     }
@@ -300,7 +303,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                         p: groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                 }
-                if (pathNodes.c) {
+                if (pathNodes.c && len) {
                     pathStringTransformed.push({
                         t: 'c',
                         p1: groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
@@ -366,6 +369,6 @@ CVShapeElement.prototype.destroy = function(){
     this.canvasContext = null;
     this.stylesList.length = 0;
     this.viewData.length = 0;
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
 };
 

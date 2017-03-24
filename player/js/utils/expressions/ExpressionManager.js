@@ -2,16 +2,18 @@ var ExpressionManager = (function(){
     var ob = {};
     var Math = BMMath;
 
-    function duplicatePropertyValue(value){
-        if(typeof value === 'number'){
-            return value;
+    function duplicatePropertyValue(value, mult){
+        mult = mult || 1;
+
+        if(typeof value === 'number'  || value instanceof Number){
+            return value*mult;
         }else if(value.i){
             return JSON.parse(JSON.stringify(value));
         }else{
             var arr = Array.apply(null,{length:value.length});
             var i, len = value.length;
             for(i=0;i<len;i+=1){
-                arr[i]=value[i];
+                arr[i]=value[i]*mult;
             }
             return arr;
         }
@@ -19,10 +21,10 @@ var ExpressionManager = (function(){
 
     function $bm_neg(a){
         var tOfA = typeof a;
-        if(tOfA === 'number' || tOfA === 'boolean'){
+        if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
             return -a;
         }
-        if(tOfA === 'object'){
+        if(a.constructor === Array){
             var i, lenA = a.length;
             var retArr = [];
             for(i=0;i<lenA;i+=1){
@@ -38,18 +40,18 @@ var ExpressionManager = (function(){
         if(tOfA === 'string' || tOfB === 'string'){
             return a + b;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string'  || b instanceof Number)) {
             return a + b;
         }
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b .constructor === Array){
             b[0] = a + b[0];
             return b;
         }
-        if(tOfA === 'object' && tOfB === 'object'){
+        if(a.constructor === Array && b.constructor === Array){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -64,22 +66,23 @@ var ExpressionManager = (function(){
         }
         return 0;
     }
+    var add = sum;
 
     function sub(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
             return a - b;
         }
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if( a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             a[0] = a[0] - b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  b.constructor === Array){
             b[0] = a - b[0];
             return b;
         }
-        if(tOfA === 'object' && tOfB === 'object'){
+        if(a.constructor === Array && b.constructor === Array){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -98,12 +101,13 @@ var ExpressionManager = (function(){
     function mul(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        var arr;
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
             return a * b;
         }
 
         var i, len;
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -111,7 +115,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -125,11 +129,12 @@ var ExpressionManager = (function(){
     function div(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean') && (tOfB === 'number' || tOfB === 'boolean')) {
+        var arr;
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
             return a / b;
         }
         var i, len;
-        if(tOfA === 'object' && (tOfB === 'number' || tOfB === 'boolean')){
+        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number  )){
             len = a.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -137,7 +142,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean') && tOfB === 'object'){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             len = b.length;
             arr = Array.apply(null,{length:len});
             for(i=0;i<len;i+=1){
@@ -170,6 +175,10 @@ var ExpressionManager = (function(){
     var helperLengthArray = [0,0,0,0,0,0];
 
     function length(arr1,arr2){
+        if(typeof arr1 === "number"){
+            arr2 = arr2 || 0;
+            return Math.abs(arr1 - arr2);
+        }
         if(!arr2){
             arr2 = helperLengthArray;
         }
@@ -179,6 +188,10 @@ var ExpressionManager = (function(){
             addedLength += Math.pow(arr2[i]-arr1[i],2);
         }
         return Math.sqrt(addedLength);
+    }
+
+    function normalize(vec){
+        return div(vec, length(vec));
     }
 
     function rgbToHsl(val){
@@ -239,7 +252,7 @@ var ExpressionManager = (function(){
         }else if(t >= tMax){
             return value2;
         }
-        var perc = tMax === tMin ? 0 : t/(tMax-tMin);
+        var perc = tMax === tMin ? 0 : (t-tMin)/(tMax-tMin);
         if(!value1.length){
             return value1 + (value2-value1)*perc;
         }
@@ -250,10 +263,6 @@ var ExpressionManager = (function(){
         }
         return arr;
     }
-
-    function seedRandom(seed){
-        BMMath.seedrandom(seed);
-    };
     function random(min,max){
         if(max === undefined){
             if(min === undefined){
@@ -286,6 +295,7 @@ var ExpressionManager = (function(){
     function initiateExpression(elem,data,property){
         var val = data.x;
         var needsVelocity = val.indexOf('velocity') !== -1;
+        var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
         var transform,content,effect;
         var thisComp = elem.comp;
@@ -294,10 +304,12 @@ var ExpressionManager = (function(){
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var thisLayer,thisComp;
-        var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        eval(fnStr);
+        var fn = new Function();
+        //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
+        //eval(fnStr);
+        var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
-        var numKeys = data.k ? data.k.length : 0;
+        var numKeys = property.kf ? data.k.length : 0;
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
@@ -358,12 +370,12 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
-                        return this.getValueAtTime((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                        return this.getValueAtTime(((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame);
-                    var endV = this.getValueAtTime(lastKeyFrame);
-                    var current = this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                    var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
+                    var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
+                    var current = this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
                     var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
                     if(this.pv.length){
                         ret = new Array(initV.length);
@@ -375,19 +387,19 @@ var ExpressionManager = (function(){
                     }
                     return current-(endV-initV)*repeats;
                 } else if(type === 'continue'){
-                    var firstValue = this.getValueAtTime(firstKeyFrame);
-                    var nextFirstValue = this.getValueAtTime(firstKeyFrame + 0.001);
+                    var firstValue = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
+                    var nextFirstValue = this.getValueAtTime((firstKeyFrame + 0.001) / this.comp.globalData.frameRate, 0);
                     if(this.pv.length){
                         ret = new Array(firstValue.length);
                         len = ret.length;
                         for(i=0;i<len;i+=1){
-                            ret[i] = firstValue[i] + (firstValue[i]-nextFirstValue[i])*(firstKeyFrame - currentFrame)/0.0005;
+                            ret[i] = firstValue[i] + (firstValue[i]-nextFirstValue[i])*(firstKeyFrame - currentFrame)/0.001;
                         }
                         return ret;
                     }
-                    return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.0005;
+                    return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
                 }
-                return this.getValueAtTime(cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame);
+                return this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
             }
         }.bind(this);
 
@@ -396,7 +408,7 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         var loopOut = function loopOut(type,duration,durationFlag){
-            if(!this.k){
+            if(!this.k || !this.keyframes){
                 return this.pv;
             }
             var currentFrame = time*elem.comp.globalData.frameRate;
@@ -424,12 +436,12 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
-                        return this.getValueAtTime(cycleDuration - (currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                        return this.getValueAtTime((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
                     }
                 } else if(type === 'offset'){
-                    var initV = this.getValueAtTime(firstKeyFrame);
-                    var endV = this.getValueAtTime(lastKeyFrame);
-                    var current = this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                    var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
+                    var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
+                    var current = this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
                     var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(this.pv.length){
                         ret = new Array(initV.length);
@@ -441,19 +453,19 @@ var ExpressionManager = (function(){
                     }
                     return (endV-initV)*repeats + current;
                 } else if(type === 'continue'){
-                    var lastValue = this.getValueAtTime(lastKeyFrame);
-                    var nextLastValue = this.getValueAtTime(lastKeyFrame - 0.001);
+                    var lastValue = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
+                    var nextLastValue = this.getValueAtTime((lastKeyFrame - 0.001) / this.comp.globalData.frameRate, 0);
                     if(this.pv.length){
                         ret = new Array(lastValue.length);
                         len = ret.length;
                         for(i=0;i<len;i+=1){
-                            ret[i] = lastValue[i] + (lastValue[i]-nextLastValue[i])*(currentFrame - lastKeyFrame)/0.0005;
+                            ret[i] = lastValue[i] + (lastValue[i]-nextLastValue[i])*((currentFrame - lastKeyFrame)/ this.comp.globalData.frameRate)/0.0005;
                         }
                         return ret;
                     }
-                    return lastValue + (lastValue-nextLastValue)*(currentFrame - lastKeyFrame)/0.0005;
+                    return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
                 }
-                return this.getValueAtTime((currentFrame - firstKeyFrame)%cycleDuration +  firstKeyFrame);
+                return this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
             }
         }.bind(this);
         var loop_out = loopOut;
@@ -463,7 +475,7 @@ var ExpressionManager = (function(){
         }.bind(this);
 
         var valueAtTime = function valueAtTime(t) {
-            return this.getValueAtTime(t*elem.comp.globalData.frameRate);
+            return this.getValueAtTime(t, 0);
         }.bind(this);
 
         var velocityAtTime = function velocityAtTime(t) {
@@ -527,7 +539,7 @@ var ExpressionManager = (function(){
                 time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
-            if(ind === data.k.length - 1){
+            if(ind === data.k.length - 1 && !data.k[ind].h){
                 arr = data.k[ind-1].e;
             }else{
                 arr = data.k[ind].s;
@@ -556,16 +568,54 @@ var ExpressionManager = (function(){
             return t*fps;
         }
 
-        var time,velocity, value,textIndex,textTotal,selectorValue, index = elem.data.ind + 1;
+        var toworldMatrix = new Matrix();
+        function toWorld(arr){
+            toworldMatrix.reset();
+            elem.finalTransform.mProp.applyToMatrix(toworldMatrix);
+            if(elem.hierarchy && elem.hierarchy.length){
+                var i, len = elem.hierarchy.length;
+                for(i=0;i<len;i+=1){
+                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toworldMatrix);
+                }
+                return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
+            }
+            return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
+        }
+
+        var fromworldMatrix = new Matrix();
+        function fromWorld(arr){
+            fromworldMatrix.reset();
+            var pts = [];
+            pts.push(arr);
+            elem.finalTransform.mProp.applyToMatrix(fromworldMatrix);
+            if(elem.hierarchy && elem.hierarchy.length){
+                var i, len = elem.hierarchy.length;
+                for(i=0;i<len;i+=1){
+                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(fromworldMatrix);
+                }
+                return fromworldMatrix.inversePoints(pts)[0];
+            }
+            return fromworldMatrix.inversePoints(pts)[0];
+        }
+
+        function seedRandom(seed){
+            BMMath.seedrandom(randSeed + seed);
+        };
+
+        var time,velocity, value,textIndex,textTotal,selectorValue;
+        var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
+        var randSeed = Math.floor(Math.random()*1000000);
         function execute(){
-            //seedRandom(0);
+            if(_needsRandom){
+                seedRandom(randSeed);
+            }
             if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
                 return;
             }
             if(this.lock){
-                this.v = duplicatePropertyValue(this.pv);
+                this.v = duplicatePropertyValue(this.pv,this.mult);
                 return true;
             }
             if(this.type === 'textSelector'){
@@ -573,12 +623,12 @@ var ExpressionManager = (function(){
                 textTotal = this.textTotal;
                 selectorValue = this.selectorValue;
             }
-            if(!transform){
-                transform = elem.transform;
-            }
             if(!thisLayer){
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
+            }
+            if(!transform){
+                transform = elem.layerInterface("ADBE Transform Group");
             }
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
@@ -600,12 +650,13 @@ var ExpressionManager = (function(){
                 velocity = velocityAtTime(time);
             }
             bindedFn();
-            //console.log(val,this.v);
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
-                if(typeof this.v === 'number'){
+                if(typeof this.v === 'number' || this.v instanceof Number || typeof this.v === 'string'){
                     this.v *= this.mult;
+                }else if(this.v.length === 1){
+                    this.v = this.v[0] * this.mult;
                 }else{
                     len = this.v.length;
                     if(value === this.v){
@@ -620,7 +671,10 @@ var ExpressionManager = (function(){
             /*if(!this.v){
                 console.log(val);
             }*/
-            if(typeof this.v === 'number'){
+            if(this.v.length === 1){
+                this.v = this.v[0];
+            }
+            if(typeof this.v === 'number' || this.v instanceof Number || typeof this.v === 'string'){
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
                     this.mdf = true;
@@ -628,9 +682,9 @@ var ExpressionManager = (function(){
             }else if(this.v.i){
                 // Todo Improve validation for masks and shapes
                 this.mdf = true;
+                this.paths.length = 0;
+                this.paths[0] = this.v;
             }else{
-                /*if(!this.lastValue){
-                }*/
                 len = this.v.length;
                 for(i = 0; i < len; i += 1){
                     if(this.v[i] !== this.lastValue[i]){

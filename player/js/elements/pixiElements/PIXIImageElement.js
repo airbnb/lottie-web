@@ -24,6 +24,10 @@ PIXIImageElement.prototype.createElements = function(){
         this.innerElem.setAttribute('class',this.data.cl);
     }
 
+    var texture = PIXI.Texture.fromImage(assetPath);
+    this.PInnerElem = new PIXI.Sprite(texture);
+    this.PLayerElement.addChild(this.PInnerElem);
+
 };
 
 PIXIImageElement.prototype.hide = function(){

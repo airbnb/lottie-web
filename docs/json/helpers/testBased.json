@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "oneOf": [
+    {
+      "standsFor": "Characters",
+      "value": 1
+    },
+    {
+      "standsFor": "Character Excluding Spaces",
+      "value": 2
+    },
+    {
+      "standsFor": "Words",
+      "value": 3
+    },
+    {
+      "standsFor": "Lines",
+      "value": 4
+    }
+  ]
+}

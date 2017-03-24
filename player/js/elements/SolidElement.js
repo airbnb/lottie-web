@@ -16,10 +16,10 @@ ISolidElement.prototype.createElements = function(){
     this.layerElement.appendChild(rect);
     this.innerElem = rect;
     if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
+        this.layerElement.setAttribute('id',this.data.ln);
     }
     if(this.data.cl){
-        this.innerElem.setAttribute('class',this.data.cl);
+        this.layerElement.setAttribute('class',this.data.cl);
     }
 };
 

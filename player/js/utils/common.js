@@ -1,4 +1,4 @@
-var subframeEnabled = false;
+var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
@@ -34,10 +34,10 @@ BMMath.abs = function(val){
         }
         return absArr;
     }
-    return val;
+    return Math.abs(val);
 
 }
-var defaultCurveSegments = 75;
+var defaultCurveSegments = 150;
 var degToRads = Math.PI/180;
 var roundCorner = 0.5519;
 
@@ -321,11 +321,11 @@ function iterateDynamicProperties(num){
     }
 }
 
-function reversePath(paths, isClosed){
+function reversePath(paths){
     var newI = [], newO = [], newV = [];
     var i, len, newPaths = {};
     var init = 0;
-    if (isClosed) {
+    if (paths.c) {
         newI[0] = paths.o[0];
         newO[0] = paths.i[0];
         newV[0] = paths.v[0];

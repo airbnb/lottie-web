@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "ix": {
+      "title": "Effect Index",
+      "description": "Effect Index. Used for expressions.",
+      "type": "number"
+    },
+    "mn": {
+      "title": "Match Name",
+      "description": "After Effect's Match Name. Used for expressions.",
+      "type": "string"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "After Effect's Name. Used for expressions.",
+      "type": "string"
+    },
+    "ty": {
+      "title": "Type",
+      "description": "Effect type. Value:23.",
+      "type": "number"
+    },
+    "ef": {
+      "title": "Effects",
+      "description": "Effect List of properties.",
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/effects/color"
+        },
+        {
+          "$ref": "#/effects/color"
+        },
+        {
+          "$ref": "#/effects/color"
+        },
+        {
+          "$ref": "#/effects/slider"
+        }
+      ]
+    }
+  }
+}

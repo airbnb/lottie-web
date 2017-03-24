@@ -96,7 +96,9 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
     }
 };
 
-IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProperties, level){
+IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProperties, level, transformers){
+    transformers = transformers || [];
+    var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
     var ownArrays = [], ownModifiers = [], styleOb, currentTransform;
@@ -108,7 +110,6 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 d: '',
                 ld: '',
                 lvl: level,
-                transformers:[],
                 mdf: false
             };
             var pathElement = document.createElementNS(svgNS, "path");
@@ -157,6 +158,9 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 data[i].elem = pathElement;
                 container.appendChild(pathElement);
             }
+            if(arr[i].r === 2) {
+                pathElement.setAttribute('fill-rule', 'evenodd');
+            }
 
             if(arr[i].ln){
                 pathElement.setAttribute('id',arr[i].ln);
@@ -175,7 +179,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             var g = document.createElementNS(svgNS,'g');
             container.appendChild(g);
             data[i].gr = g;
-            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1);
+            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1, ownTransformers);
         }else if(arr[i].ty == 'tr'){
             data[i] = {
                 transform : {
@@ -185,17 +189,13 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                 elements: []
             };
             currentTransform = data[i].transform;
-            jLen = this.stylesList.length;
-            for(j=0;j<jLen;j+=1){
-                if(!this.stylesList[j].closed){
-                    this.stylesList[j].transformers.push(currentTransform);
-                }
-            }
+            ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             data[i] = {
                 elements : [],
                 caches:[],
                 styles : [],
+                transformers: ownTransformers,
                 lStr: ''
             };
             var ty = 4;
@@ -268,14 +268,17 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     this.globalToLocal([0,0,0]);
-
-    this.hidden = false;
+    if(this.hidden){
+        this.layerElement.style.display = 'block';
+        this.hidden = false;
+    }
     this.renderModifiers();
     this.renderShape(null,null,true, null);
 };
 
 IShapeElement.prototype.hide = function(){
     if(!this.hidden){
+        this.layerElement.style.display = 'none';
         var i, len = this.stylesList.length;
         for(i=len-1;i>=0;i-=1){
             if(this.stylesList[i].ld !== '0'){
@@ -361,16 +364,19 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
     var lvl = viewData.lvl;
     for(l=0;l<lLen;l+=1){
         redraw = viewData.sh.mdf || this.firstFrame;
-        pathStringTransformed = '';
+        pathStringTransformed = 'M0 0';
         var paths = viewData.sh.paths;
         jLen = paths.length;
         if(viewData.elements[l].st.lvl < lvl){
             var mat = this.mHelper.reset(), props;
-            var k, kLen = viewData.elements[l].st.lvl;
-            for(k=lvl-1;k>=kLen;k-=1){
-                redraw = viewData.elements[l].st.transformers[k - kLen].mProps.mdf || redraw;
-                props = viewData.elements[l].st.transformers[k - kLen].mProps.v.props;
+            var iterations = lvl - viewData.elements[l].st.lvl;
+            var k = viewData.transformers.length-1;
+            while(iterations > 0) {
+                redraw = viewData.transformers[k].mProps.mdf || redraw;
+                props = viewData.transformers[k].mProps.v.props;
                 mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+                iterations --;
+                k --;
             }
             if(redraw){
                 for(j=0;j<jLen;j+=1){
@@ -414,7 +420,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                             //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                             pathStringTransformed += " M" + pathNodes.v[0].join(',');
                         }
-                        if (pathNodes.c) {
+                        if (pathNodes.c && len) {
                             //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                             pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[0].join(',') + " " + pathNodes.v[0].join(',');
                             pathStringTransformed += 'z';
@@ -552,7 +558,7 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData){
 };
 
 IShapeElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.shapeData = null;
     this.viewData = null;
     this.parentContainer = null;

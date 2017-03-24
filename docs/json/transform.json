@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "a": {
+      "title": "Anchor Point",
+      "description": "Transform Anchor Point",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "p": {
+      "title": "Position",
+      "description": "Transform Position",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "s": {
+      "title": "Scale",
+      "description": "Transform Scale",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "r": {
+      "title": "Rotation",
+      "description": "Transform Rotation",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "o": {
+      "title": "Opacity",
+      "description": "Transform Opacity",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "px": {
+      "title": "Position X",
+      "description": "Transform Position X",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "py": {
+      "title": "Position Y",
+      "description": "Transform Position Y",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    }
+  }
+}

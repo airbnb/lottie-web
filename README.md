@@ -1,55 +1,76 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
-## V 4.4.14
-- fixed bodymovin_light
-- fixed translations with same origin and destination
+## V 4.6.1
+- 3D orientation fix
+- render improvements
 
-## V 4.4.13
-- preserveAspectRatio all values for canvas
-- Different vertices between keyframes supported
-- New expressions
-- First effects: Stroke, Fill, Tint.
-- Orient along path
+## V 4.6.0
+- New UI!
+- Drop shadow effect support
+- performance improvement on animations with offsetted layers
+- big performance improvement on expressions
+- expressions expressions expressions
 
-## V 4.4.12
-- Trim path fix on offsetted shapes
+## V 4.5.9
+- expressions variable declaration fix
+- effect control type fix
 
-## V 4.4.11
-- html and canvas renderer fixes
-- more expressions supported
-- better subtracted mask support on the svg renderer
-- trim paths memory management corrected. If you're using Trim paths with animated strokes please update to this build!
+## V 4.5.8
+- fill-rule for fills and gradient fills on shapes
+- rounding colors values with an extra decimal
+- property expressions that return strings are evaluated as numbers
 
-## V 4.4.10
-- fix on canvas nested compositions if only element animated was a mask
+## V 4.5.7
+- standalone autoplay fix
 
-## V 4.4.9
-- included preserveAspectRatio for canvas 'xMidYMid' and 'none' supported for now
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
 
-## V 4.4.8
-- animation new method "setSubframe" to enable subframe rendering (true by default).
-- hidden guided layers and parenting restore
-- split animations export resetting segments
+## V 4.5.5
+- Text selector Triangle fix
+- Expressions support for "active" property on effects
+- Rearranged exporting properties
+- Included "a" property for animated props
+- Docs updated
 
-## V 4.4.7
-- Performance improvement
-- Stroke gradient support
+## V 4.5.4
+- Trim path individually supported
+- bug fix that messed with webpack build
 
-## V 4.4.6
-- Nested gradient fix
+## V 4.5.3
+- Skipping non breaking space on characters
+- levels effect optimizations
+- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
+- transform properties in expression through transformInterface
 
-## V 4.4.5
-- Alpha masks fix
+## V 4.5.2
+- Comp expression interface default return
+- HTML renderer validation fix
 
-## Installing extension: Finally the plugin is on the Adobe add-ons.
+## V 4.5.1
+- Trim path fix
+- Html renderer fixes
+
+## V 4.5.0
+- Tritone effect supported
+- Levels effect supported. The one called "Levels (Individual Controls)"
+
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
 CC 2014 and up.
 
 If you need the latest latest version, you can still install it from here:
 
-### Option 1:
+### Option 1 (Recommended):
+- download the ZIP from the repo.
+- Extract content and get the .zxp file from '/build/extension'
+- Use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
+
+### Option 2:
 
 - Close After Effects<br/>
 - Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
@@ -70,14 +91,14 @@ open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key name
 MAC:<br/>
 open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
 
-### Option 2:
+### Option 3:
 
 Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
 Skip directly to "Install third-party extensions"
 
 
-### For both
+### For all of them
 - Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
 ## How it works
@@ -98,13 +119,13 @@ Skip directly to "Install third-party extensions"
 **Check the demos for different ways to load animations.**
 - get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
-```
+```html
 <script src="js/bodymovin.js" type="text/javascript"></script>
 ```
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
-- path: the relative path to the animation object. (animationData and path are exclusive)
+- path: the relative path to the animation object. (animationData and path are mutually exclusive)
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
@@ -112,7 +133,7 @@ It takes an object as a unique param with:
 - container: the dom element on which to render the animation
 <br />
 Returns the animation object you can control with play, pause, setSpeed, etc.
-```
+```js
 bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
@@ -122,7 +143,7 @@ bodymovin.loadAnimation({
 });
 ```
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
-```
+```js
 bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
@@ -157,9 +178,9 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
  . a "data-name" attribute to specify a name to target play controls specifically
  <br/>
  **Example**
- <br/>
- ```
-<div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <br/> 
+```html
+ <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 <br/>
 
@@ -233,10 +254,6 @@ my email is **hernantorrisi@gmail.com**
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
-- look at the great animations exported on the demo folder
-- gzipping the animation jsons and the player have a huge impact on the filesize. I recommend doing it if you use it for a project.
+- look at the great animations exported on codepen [See examples on codepen.](http://codepen.io/collection/nVYWZR/)
+- gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
 
-## Coming up
-- Exporting images in a sprite
-- Stroke Effect support
-- Experimenting with the webAnimationAPI export

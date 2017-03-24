@@ -3,7 +3,8 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
-    this.elements = Array.apply(null,{length:this.layers.length});
+    this.pendingElements = [];
+    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
@@ -33,24 +34,23 @@ ICompElement.prototype.prepareFrame = function(num){
     if(this.isVisible===false && !this.data.xt){
         return;
     }
-    var timeRemapped = num;
+
     if(this.tm){
-        timeRemapped = this.tm.v;
+        var timeRemapped = this.tm.v;
         if(timeRemapped === this.data.op){
             timeRemapped = this.data.op - 1;
         }
+        this.renderedFrame = timeRemapped;
+    } else {
+        this.renderedFrame = num/this.data.sr;
     }
-    this.renderedFrame = timeRemapped/this.data.sr;
     var i,len = this.elements.length;
     if(!this.completeLayers){
         this.checkLayers(this.renderedFrame);
     }
     for( i = 0; i < len; i+=1 ){
-        /*if(!this.elements[i]){
-            this.checkLayer(i, this.renderedFrame - this.layers[i].st, this.layerElement);
-        }*/
         if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
+            this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
         }
     }
 };
@@ -83,7 +83,7 @@ ICompElement.prototype.getElements = function(){
 };
 
 ICompElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
         if(this.elements[i]){
@@ -104,3 +104,5 @@ ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
+ICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
+ICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;

@@ -28,6 +28,7 @@ var AnimationItem = function () {
     this.subframeEnabled = subframeEnabled;
     this.segments = [];
     this.pendingSegment = false;
+    this._idle = true;
     this.projectInterface = ProjectInterface();
 };
 
@@ -171,6 +172,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     }
     //this.totalFrames = 50;
     //this.animationData.tf = 50;
+    this.animationData.__complete = false;
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin){
@@ -219,6 +221,9 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
+    if(this.renderer && this.renderer.destroyed){
+        return;
+    }
     //console.log(JSON.parse(JSON.stringify(animData)));
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
@@ -323,6 +328,7 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
+    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 
@@ -332,6 +338,10 @@ AnimationItem.prototype.play = function (name) {
     }
     if(this.isPaused === true){
         this.isPaused = false;
+        if(this._idle){
+            this._idle = false;
+            this.trigger('_active');
+        }
     }
 };
 
@@ -341,6 +351,10 @@ AnimationItem.prototype.pause = function (name) {
     }
     if(this.isPaused === false){
         this.isPaused = true;
+        if(!this.pendingSegment){
+            this._idle = true;
+            this.trigger('_idle');
+        }
     }
 };
 
@@ -349,10 +363,8 @@ AnimationItem.prototype.togglePause = function (name) {
         return;
     }
     if(this.isPaused === true){
-        this.isPaused = false;
         this.play();
     }else{
-        this.isPaused = true;
         this.pause();
     }
 };
@@ -361,7 +373,7 @@ AnimationItem.prototype.stop = function (name) {
     if(name && this.name != name){
         return;
     }
-    this.isPaused = true;
+    this.pause();
     this.currentFrame = this.currentRawFrame = 0;
     this.playCount = 0;
     this.gotoFrame();
@@ -376,7 +388,7 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
     }else{
         this.setCurrentRawFrameValue(value * this.frameModifier);
     }
-    this.isPaused = true;
+    this.pause();
 };
 
 AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
@@ -498,10 +510,12 @@ AnimationItem.prototype.destroy = function (name) {
     this.renderer.destroy();
     this.trigger('destroy');
     this._cbs = null;
+    this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
+    //console.log(this.totalFrames);
     if (this.currentRawFrame >= this.totalFrames) {
         this.checkSegments();
         if(this.loop === false){
@@ -603,7 +617,7 @@ AnimationItem.prototype.getAssets = function () {
 };
 
 AnimationItem.prototype.trigger = function(name){
-    if(this._cbs[name]){
+    if(this._cbs && this._cbs[name]){
         switch(name){
             case 'enterFrame':
                 this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));

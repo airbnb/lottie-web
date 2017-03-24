@@ -10,13 +10,13 @@ var EffectsExpressionInterface = (function (){
             var effectsData = elem.data.ef;
             var i, len = elem.effects.effectElements.length;
             for(i=0;i<len;i+=1){
-                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup));
+                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup,elem));
             }
 
             return function(name){
                 var effects = elem.data.ef, i = 0, len = effects.length;
                 while(i<len) {
-                    if(name === effects[i].nm || name === effects[i].ix){
+                    if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                         return effectElements[i];
                     }
                     i += 1;
@@ -25,19 +25,18 @@ var EffectsExpressionInterface = (function (){
         }
     }
 
-    function createGroupInterface(data,elements, propertyGroup){
+    function createGroupInterface(data,elements, propertyGroup, elem){
         var effectElements = [];
         var i, len = data.ef.length;
         for(i=0;i<len;i+=1){
-            if(data.ef.ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup));
+            if(data.ef[i].ty === 5){
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup, elem));
             } else {
-                effectElements.push(createValueInterface(elements.effectElements[i]));
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem));
             }
         }
-        return function(name){
+        var groupInterface = function(name){
             var effects = data.ef, i = 0, len = effects.length;
-           // console.log('effects:',effects);
             while(i<len) {
                 if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                     if(effects[i].ty === 5){
@@ -50,22 +49,16 @@ var EffectsExpressionInterface = (function (){
             }
             return effectElements[0]();
         }
+        groupInterface.active = data.en !== 0;
+        return groupInterface
     }
 
-    function createValueInterface(element){
+    function createValueInterface(element, type, elem){
         return function(){
-            if(element.p.k){
-                element.p.getValue();
+            if(type === 10){
+                return elem.comp.compInterface(element.p.v);
             }
-            if(typeof element.p.v === 'number'){
-                return element.p.v;
-            }
-            var i, len = element.p.v.length;
-            var arr = Array.apply(null,{length:len});
-            for(i=0;i<len;i+=1){
-                arr[i] = element.p.v[i];
-            }
-            return arr;
+            return ExpressionValue(element.p);
         }
     }
 

@@ -10,6 +10,7 @@ function PIXIRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.elements = [];
+    this.pendingElements = [];
     this.destroyed = false;
 
 }
@@ -30,7 +31,7 @@ PIXIRenderer.prototype.createText = function (data) {
 };
 
 PIXIRenderer.prototype.createImage = function (data) {
-    return new IImageElement(data, this.layerElement,this.globalData,this);
+    return new PIXIImageElement(data, this.layerElement,this.globalData,this);
 };
 
 PIXIRenderer.prototype.createComp = function (data) {
@@ -59,7 +60,7 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     this.renderer = new PIXI.WebGLRenderer(animData.w, animData.h,{antialias:true,transparent:true});
     /*this.renderer.view.style.transform = 'scale(0.5,0.5)';
     this.renderer.view.style.transformOrigin = '0 0';*/
-    this.animationItem.wrapper.appendChild(this.renderer.view);
+    //this.animationItem.wrapper.appendChild(this.renderer.view);
     this.stage = new PIXI.Container();
     this.PLayerElement = this.stage;
 
@@ -76,6 +77,7 @@ PIXIRenderer.prototype.configAnimation = function(animData){
         w: animData.w,
         h: animData.h
     };
+    this.data = animData;
     this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
@@ -135,6 +137,13 @@ PIXIRenderer.prototype.buildItem  = function(pos){
     if(this.layers[pos].tt){
         this.buildItem(pos - 1);
         element.setMatte(elements[pos - 1].layerId);
+    }
+};
+
+PIXIRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
     }
 };
 

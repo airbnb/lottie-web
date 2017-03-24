@@ -9,6 +9,7 @@ var TransformExpressionInterface = (function (){
                 case "rotation":
                 case "Rotation":
                 case "ADBE Rotation":
+                case "ADBE Rotate Z":
                     return _thisFunction.rotation;
                 case "position":
                 case "Position":
@@ -16,8 +17,12 @@ var TransformExpressionInterface = (function (){
                     return transform.position;
                 case "anchorPoint":
                 case "AnchorPoint":
+                case "Anchor Point":
                 case "ADBE AnchorPoint":
                     return _thisFunction.anchorPoint;
+                case "opacity":
+                case "Opacity":
+                    return _thisFunction.opacity;
             }
         }
 
@@ -28,13 +33,7 @@ var TransformExpressionInterface = (function (){
         });
         Object.defineProperty(_thisFunction, "scale", {
             get: function () {
-                var s = transform.scale;
-                var i, len = s.length;
-                var transformedS = Array.apply(null,{length:len});
-                for(i=0;i<len;i+=1){
-                    transformedS[i] = s[i]*100;
-                }
-                return transformedS;
+                return transform.scale;
             }
         });
 
@@ -44,9 +43,39 @@ var TransformExpressionInterface = (function (){
             }
         });
 
+        Object.defineProperty(_thisFunction, "xPosition", {
+            get: function () {
+                return transform.xPosition;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "yPosition", {
+            get: function () {
+                return transform.yPosition;
+            }
+        });
+
         Object.defineProperty(_thisFunction, "anchorPoint", {
             get: function () {
                 return transform.anchorPoint;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "opacity", {
+            get: function () {
+                return transform.opacity;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "skew", {
+            get: function () {
+                return transform.skew;
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "skewAxis", {
+            get: function () {
+                return transform.skewAxis;
             }
         });
 

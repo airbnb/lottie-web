@@ -41,15 +41,18 @@ BaseElement.prototype.prepareFrame = function(num){
     }
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
+        if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
+            this.dynamicProperties[i].getValue();
+            if(this.dynamicProperties[i].mdf){
+                this.elemMdf = true;
+                this.globalData.mdf = true;
+            }
         }
     }
-    if(this.data.hasMask){
+    if(this.data.hasMask && this.isVisible){
         this.maskManager.prepareFrame(num*this.data.sr);
     }
+    
     /* TODO check this
     if(this.data.sy){
         if(this.data.sy[0].renderedData[num]){
@@ -106,6 +109,8 @@ BaseElement.prototype.initExpressions = function(){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
         this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.layerInterface);
+    } else if(this.data.ty === 5){
+        this.layerInterface.textInterface = TextExpressionInterface(this);
     }
 }
 
@@ -158,7 +163,9 @@ BaseElement.prototype.setBlendMode = function(){
             blendModeValue = 'luminosity';
             break;
     }
-    this.layerElement.style['mix-blend-mode'] = blendModeValue;
+    var elem = this.baseElement || this.layerElement;
+
+    elem.style['mix-blend-mode'] = blendModeValue;
 }
 
 BaseElement.prototype.init = function(){
@@ -174,6 +181,7 @@ BaseElement.prototype.init = function(){
     this.hidden = false;
     this.firstFrame = true;
     this.isVisible = false;
+    this._isParent = false;
     this.currentFrameNum = -99999;
     this.lastNum = -99999;
     if(this.data.ks){
@@ -215,6 +223,10 @@ BaseElement.prototype.getHierarchy = function(){
         this.hierarchy = [];
     }
     return this.hierarchy;
+};
+
+BaseElement.prototype.setHierarchy = function(hierarchy){
+    this.hierarchy = hierarchy;
 };
 
 BaseElement.prototype.getLayerSize = function(){

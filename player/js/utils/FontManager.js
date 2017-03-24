@@ -40,7 +40,7 @@ var FontManager = (function(){
             if(this.fonts[i].fOrigin === 't'){
                 if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
                     this.typekitLoaded = 1;
-                    try{Typekit.load({
+                    try{window.Typekit.load({
                         async: true,
                         active: function() {
                             this.typekitLoaded = 2;

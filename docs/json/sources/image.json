@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "h": {
+      "title": "Height",
+      "description": "Image Height",
+      "type": "number"
+    },
+    "w": {
+      "title": "Width",
+      "description": "Image Width",
+      "type": "number"
+    },
+    "id": {
+      "title": "ID",
+      "description": "Image ID",
+      "type": "string"
+    },
+    "p": {
+      "title": "Image name",
+      "description": "Image name",
+      "type": "string"
+    },
+    "u": {
+      "title": "Image path",
+      "description": "Image path",
+      "type": "string"
+    }
+  }
+}

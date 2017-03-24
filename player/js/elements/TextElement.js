@@ -2,9 +2,10 @@ function ITextElement(data, animationItem,parentContainer,globalData){
 }
 ITextElement.prototype.init = function(){
     this._parent.init.call(this);
+
     this.lettersChangedFlag = false;
+    this.currentTextDocumentData = {};
     var data = this.data;
-    this.renderedLetters = Array.apply(null,{length:data.t.d.l ? data.t.d.l.length : 0});
     this.viewData = {
         m:{
             a: PropertyFactory.getProp(this,data.t.m.a,1,0,this.dynamicProperties)
@@ -87,6 +88,25 @@ ITextElement.prototype.init = function(){
         this.maskPath = false;
     }
 };
+ITextElement.prototype.prepareFrame = function(num) {
+    var i = 0, len = this.data.t.d.k.length;
+    var textDocumentData = this.data.t.d.k[i].s;
+    i += 1;
+    while(i<len){
+        if(this.data.t.d.k[i].t > num){
+            break;
+        }
+        textDocumentData = this.data.t.d.k[i].s;
+        i += 1;
+    }
+    this.lettersChangedFlag = false;
+    if(textDocumentData !== this.currentTextDocumentData){
+        this.currentTextDocumentData = textDocumentData;
+        this.lettersChangedFlag = true;
+        this.buildNewText();
+    }
+    this._parent.prepareFrame.call(this, num);
+}
 
 ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
     var j,jLen = shapes.length;
@@ -114,14 +134,14 @@ ITextElement.prototype.getMeasures = function(){
     var data = this.data;
     var xPos,yPos;
     var i, len;
-    var documentData = data.t.d;
+    var documentData = this.currentTextDocumentData;
     var letters = documentData.l;
     if(this.maskPath) {
         var mask = this.viewData.p.m;
         if(!this.viewData.p.n || this.viewData.p.mdf){
             var paths = mask.v;
             if(this.viewData.p.r){
-                paths = reversePath(paths, mask.closed);
+                paths = reversePath(paths);
             }
             var pathInfo = {
                 tLength: 0,
@@ -143,7 +163,7 @@ ITextElement.prototype.getMeasures = function(){
                 totalLength += pathData.bezierData.segmentLength;
             }
             i = len;
-            if (mask.closed) {
+            if (mask.v.c) {
                 pathData = {
                     s: paths.v[i],
                     e: paths.v[0],
@@ -162,7 +182,7 @@ ITextElement.prototype.getMeasures = function(){
         var currentLength = this.viewData.p.f.v, segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
         var segmentLength = 0, flag = true;
         var segments = pathInfo.segments;
-        if (currentLength < 0 && mask.closed) {
+        if (currentLength < 0 && mask.v.c) {
             if (pathInfo.tLength < Math.abs(currentLength)) {
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
@@ -191,12 +211,11 @@ ITextElement.prototype.getMeasures = function(){
     len = letters.length;
     xPos = 0;
     yPos = 0;
-    var yOff = data.t.d.s*1.2*.714;
+    var yOff = documentData.s*1.2*.714;
     var firstLine = true;
     var renderedData = this.viewData, animatorProps, animatorSelector;
     var j, jLen;
     var lettersValue = Array.apply(null,{length:len}), letterValue;
-    this.lettersChangedFlag = false;
 
     jLen = renderedData.a.length;
     var lastLetter;
@@ -277,7 +296,7 @@ ITextElement.prototype.getMeasures = function(){
                             pointInd = 0;
                             segmentInd += 1;
                             if (!segments[segmentInd]) {
-                                if (mask.closed) {
+                                if (mask.v.c) {
                                     pointInd = 0;
                                     segmentInd = 0;
                                     points = segments[segmentInd].bezierData.points;
@@ -329,17 +348,17 @@ ITextElement.prototype.getMeasures = function(){
             }
             lineLength += letters[i].l/2;
             if(documentData.strokeWidthAnim) {
-                sw = data.t.d.sw || 0;
+                sw = documentData.sw || 0;
             }
             if(documentData.strokeColorAnim) {
-                if(data.t.d.sc){
-                    sc = [data.t.d.sc[0], data.t.d.sc[1], data.t.d.sc[2]];
+                if(documentData.sc){
+                    sc = [documentData.sc[0], documentData.sc[1], documentData.sc[2]];
                 }else{
                     sc = [0,0,0];
                 }
             }
             if(documentData.fillColorAnim) {
-                fc = [data.t.d.fc[0], data.t.d.fc[1], data.t.d.fc[2]];
+                fc = [documentData.fc[0], documentData.fc[1], documentData.fc[2]];
             }
             for(j=0;j<jLen;j+=1){
                 animatorProps = renderedData.a[j].a;
@@ -504,7 +523,7 @@ ITextElement.prototype.getMeasures = function(){
                 currentLength -= renderedData.m.a.v[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
-                    currentLength += documentData.tr/1000*data.t.d.s;
+                    currentLength += documentData.tr/1000*documentData.s;
                 }
             }else{
 
@@ -524,7 +543,7 @@ ITextElement.prototype.getMeasures = function(){
                 }
                 matrixHelper.translate(offf,0,0);
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200,renderedData.m.a.v[1]*yOff/100,0);
-                xPos += letters[i].l + documentData.tr/1000*data.t.d.s;
+                xPos += letters[i].l + documentData.tr/1000*documentData.s;
             }
             if(renderType === 'html'){
                 letterM = matrixHelper.toCSS();
@@ -550,7 +569,6 @@ ITextElement.prototype.getMeasures = function(){
                     letterValue = lastLetter;
                 }
             }
-
             this.renderedLetters[i] = letterValue;
         }
     }

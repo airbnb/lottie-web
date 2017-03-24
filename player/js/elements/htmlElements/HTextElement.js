@@ -17,19 +17,21 @@ createElement(HBaseElement, HTextElement);
 HTextElement.prototype.init = ITextElement.prototype.init;
 HTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 HTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
+HTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 
 HTextElement.prototype.createElements = function(){
     this.isMasked = this.checkMasks();
-    var documentData = this.data.t.d;
     var parent = document.createElement('div');
     styleDiv(parent);
     this.layerElement = parent;
+    this.transformedElement = parent;
     if(this.isMasked){
         this.renderType = 'svg';
         var cont = document.createElementNS(svgNS,'svg');
+        styleDiv(cont);
         this.cont = cont;
-        this.compW = this.comp.data ? this.comp.data.w : this.globalData.compSize.w;
-        this.compH = this.comp.data ? this.comp.data.h : this.globalData.compSize.h;
+        this.compW = this.comp.data.w;
+        this.compH = this.comp.data.h;
         cont.setAttribute('width',this.compW);
         cont.setAttribute('height',this.compH);
         var g = document.createElementNS(svgNS,'g');
@@ -43,6 +45,13 @@ HTextElement.prototype.createElements = function(){
     }
     this.baseElement = parent;
 
+    this.checkParenting();
+
+};
+
+HTextElement.prototype.buildNewText = function(){
+    var documentData = this.currentTextDocumentData;
+    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
     if(documentData.fc) {
         this.innerElem.style.color = this.innerElem.style.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';
         ////this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
@@ -75,34 +84,48 @@ HTextElement.prototype.createElements = function(){
     }
     var i, len;
 
-
-
     var letters = documentData.l;
     len = letters.length;
     var tSpan,tParent,tCont;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '';
+    var cnt = 0;
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
-            tSpan = document.createElementNS(svgNS,'path');
-            if(!this.isMasked){
-                tParent = document.createElement('div');
-                tCont = document.createElementNS(svgNS,'svg');
-                tCont.appendChild(tSpan);
-                styleDiv(tParent);
+            if(!this.textPaths[cnt]){
+                tSpan = document.createElementNS(svgNS,'path');
+                tSpan.setAttribute('stroke-linecap', 'butt');
+                tSpan.setAttribute('stroke-linejoin','round');
+                tSpan.setAttribute('stroke-miterlimit','4');
+            } else {
+                tSpan = this.textPaths[cnt];
             }
-            tSpan.setAttribute('stroke-linecap', 'butt');
-            tSpan.setAttribute('stroke-linejoin','round');
-            tSpan.setAttribute('stroke-miterlimit','4');
+            if(!this.isMasked){
+                if(this.textSpans[cnt]){
+                    tParent = this.textSpans[cnt];
+                    tCont = tParent.children[0];
+                } else {
+
+                    tParent = document.createElement('div');
+                    tCont = document.createElementNS(svgNS,'svg');
+                    tCont.appendChild(tSpan);
+                    styleDiv(tParent);
+                }
+            }
         }else{
             if(!this.isMasked){
-                tParent = document.createElement('span');
-                styleDiv(tParent);
-                tSpan = document.createElement('span');
-                styleDiv(tSpan);
-                tParent.appendChild(tSpan);
+                if(this.textSpans[cnt]){
+                    tParent = this.textSpans[cnt];
+                    tSpan = this.textPaths[cnt];
+                } else {
+                    tParent = document.createElement('span');
+                    styleDiv(tParent);
+                    tSpan = document.createElement('span');
+                    styleDiv(tSpan);
+                    tParent.appendChild(tSpan);
+                }
             } else {
-                tSpan = document.createElementNS(svgNS,'text');
+                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : document.createElementNS(svgNS,'text');
             }
         }
         //tSpan.setAttribute('visibility', 'hidden');
@@ -135,16 +158,6 @@ HTextElement.prototype.createElements = function(){
                     letters[i].yOffset = boundingBox.y;
                     tParent.appendChild(tCont);
 
-
-                    /*var rBound = Math.ceil(shapeData.bounds.r*scale);
-                    var tBound = Math.floor(shapeData.bounds.t*scale);
-                    var lBound = Math.floor(shapeData.bounds.l*scale);
-                    var bBound = Math.ceil(shapeData.bounds.b*scale);
-                    tCont.setAttribute('width',rBound - lBound);
-                    tCont.setAttribute('height',bBound - tBound);
-                    tCont.setAttribute('viewBox',lBound+' '+tBound+' '+(rBound - lBound)+' '+(bBound - tBound));
-                    tCont.style.transform = tCont.style.webkitTransform = 'translate('+lBound+'px,'+ tBound+'px)';
-                    letters[i].yOffset = tBound;*/
                 } else{
                     tCont.setAttribute('width',1);
                     tCont.setAttribute('height',1);
@@ -165,13 +178,19 @@ HTextElement.prototype.createElements = function(){
         }
         //
         if(!this.isMasked){
-            this.textSpans.push(tParent);
+            this.textSpans[cnt] = tParent;
         }else{
-            this.textSpans.push(tSpan);
+            this.textSpans[cnt] = tSpan;
         }
-        this.textPaths.push(tSpan);
+        this.textSpans[cnt].style.display = 'block';
+        this.textPaths[cnt] = tSpan;
+        cnt += 1;
     }
-};
+    while(cnt < this.textSpans.length){
+        this.textSpans[cnt].style.display = 'none';
+        cnt += 1;
+    }
+}
 
 HTextElement.prototype.hide = SVGTextElement.prototype.hide;
 
@@ -185,10 +204,11 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
     if(this.hidden){
         this.hidden = false;
         this.innerElem.style.display = 'block';
+        this.layerElement.style.display = 'block';
     }
 
     if(this.data.singleShape){
-        if(!this.firstFrame){
+        if(!this.firstFrame && !this.lettersChangedFlag){
             return;
         } else {
             // Todo Benchmark if using this is better than getBBox
@@ -206,7 +226,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
     var  i,len;
     var renderedLetters = this.renderedLetters;
 
-    var letters = this.data.t.d.l;
+    var letters = this.currentTextDocumentData.l;
 
     len = letters.length;
     var renderedLetter;

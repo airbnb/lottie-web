@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <style>
-        body{
-            background-color:#ccc;
+        body, html{
+            background-color:#ddd;
             margin: 0px;
             height: 100%;
             overflow-x: hidden;
@@ -11,24 +11,22 @@
         }
 
         #bodymovin{
-            background-color:#ccc;
-            width:750px;
-            height:275px;
+            background-color:#333;
+            width:100%;
+            height:100%;
             /*width:800px;
             height:500px;*/
             display:block;
             transform: translate3d(0,0,0);
-            /*margin: auto;*/
-            opacity: 1;
+            margin: auto;
         }
 
-        .botas_loop_1,.botas_loop_2{
+        .botas_loop_3,.botas_loop_2{
             display:none
         }
 
     </style>
     <!-- build:js bodymovin.js -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.3/pixi.min.js"></script>
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
@@ -42,63 +40,74 @@
     <script src="js/utils/DataManager.js"></script>
     <script src="js/utils/FontManager.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
+    <script src="js/utils/shapes/shape_helper.js"></script>
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
+    <script src="js/utils/featureSupport.js"></script>
+    <script src="js/utils/filters.js"></script>
     <script src="js/renderers/BaseRenderer.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
-    <script src="js/renderers/PIXIRenderer.js"></script>
-    <script src="js/renderers/CanvasRenderer.js"></script>
-    <script src="js/renderers/HybridRenderer.js"></script>
+    <script src="js/renderers/PIXIRenderer.js" data-light-skip="true"></script>
+    <script src="js/renderers/CanvasRenderer.js" data-light-skip="true"></script>
+    <script src="js/renderers/HybridRenderer.js" data-light-skip="true"></script>
     <script src="js/mask.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
     <script src="js/elements/svgElements/SVGTextElement.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTintEffect.js"></script>
+    <script src="js/elements/svgElements/effects/SVGFillFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGStrokeEffect.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTritoneFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGProLevelsFilter.js"></script>
+    <script src="js/elements/svgElements/effects/SVGDropShadowEffect.js"></script>
     <script src="js/elements/svgElements/SVGEffects.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
-    <script src="js/elements/canvasElements/CVBaseElement.js"></script>
-    <script src="js/elements/canvasElements/CVCompElement.js"></script>
-    <script src="js/elements/canvasElements/CVImageElement.js"></script>
-    <script src="js/elements/canvasElements/CVMaskElement.js"></script>
-    <script src="js/elements/canvasElements/CVShapeElement.js"></script>
-    <script src="js/elements/canvasElements/CVSolidElement.js"></script>
-    <script src="js/elements/canvasElements/CVTextElement.js"></script>
-    <script src="js/elements/htmlElements/HBaseElement.js"></script>
-    <script src="js/elements/htmlElements/HSolidElement.js"></script>
-    <script src="js/elements/htmlElements/HCompElement.js"></script>
-    <script src="js/elements/htmlElements/HShapeElement.js"></script>
-    <script src="js/elements/htmlElements/HTextElement.js"></script>
-    <script src="js/elements/htmlElements/HImageElement.js"></script>
-    <script src="js/elements/htmlElements/HCameraElement.js"></script>
-    <script src="js/elements/pixiElements/PIXIBaseElement.js"></script>
-    <script src="js/elements/pixiElements/PIXIImageElement.js"></script>
-    <script src="js/elements/pixiElements/PIXISolidElement.js"></script>
-    <script src="js/elements/pixiElements/PIXIShapeElement.js"></script>
-    <script src="js/elements/pixiElements/PIXICompElement.js"></script>
-    <script src="js/elements/pixiElements/PIXIMask.js"></script>
+    <script src="js/elements/canvasElements/CVBaseElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVCompElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVImageElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVMaskElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVShapeElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVSolidElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVTextElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HBaseElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HSolidElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HCompElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HShapeElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HTextElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HImageElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HCameraElement.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXIBaseElement.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXIImageElement.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXISolidElement.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXIShapeElement.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXICompElement.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXIMask.js" data-light-skip="true"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
-    <script src="js/utils/expressions/Expressions.js"></script>
-    <script src="js/utils/expressions/ExpressionPropertyDecorator.js"></script>
-    <script src="js/utils/expressions/ExpressionManager.js"></script>
-    <script src="js/utils/expressions/ShapeInterface.js"></script>
-    <script src="js/utils/expressions/LayerInterface.js"></script>
-    <script src="js/utils/expressions/CompInterface.js"></script>
-    <script src="js/utils/expressions/TransformInterface.js"></script>
-    <script src="js/utils/expressions/ProjectInterface.js"></script>
-    <script src="js/utils/expressions/EffectInterface.js"></script>
-    <script src="js/effects/SliderEffect.js"></script>
-    <script src="js/effects.js"></script>
+    <script src="js/utils/expressions/Expressions.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ExpressionManager.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ShapeInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/TextInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/LayerInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/CompInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/TransformInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ProjectInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/EffectInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ExpressionValue.js" data-light-skip="true"></script>
+    <script src="js/effects/SliderEffect.js" data-light-skip="true"></script>
+    <script src="js/effects.js" data-light-skip="true"></script>
     <!-- end Expressions -->
     <!-- endbuild -->
-    <script src="js/module.js"></script>
+    <script src="js/module.js" data-skip="true"></script>
     <!-- <script src="bodymovin.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
 </head>
@@ -108,16 +117,16 @@
 <script>
 
     var anim;
+    var elem = document.getElementById('bodymovin')
     var animData = {
-        container: document.getElementById('bodymovin'),
+        container: elem,
         renderer: 'svg',
         loop: true,
         autoplay: true,
-        autoloadSegments: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/bm/data.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

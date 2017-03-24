@@ -18,17 +18,17 @@ IImageElement.prototype.createElements = function(){
     this.maskedElement = this.innerElem;
     this.layerElement.appendChild(this.innerElem);
     if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
+        this.layerElement.setAttribute('id',this.data.ln);
     }
     if(this.data.cl){
-        this.innerElem.setAttribute('class',this.data.cl);
+        this.layerElement.setAttribute('class',this.data.cl);
     }
 
 };
 
 IImageElement.prototype.hide = function(){
     if(!this.hidden){
-        this.innerElem.style.display = 'none';
+        this.layerElement.style.display = 'none';
         this.hidden = true;
     }
 };
@@ -41,7 +41,7 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
     }
     if(this.hidden){
         this.hidden = false;
-        this.innerElem.style.display = 'block';
+        this.layerElement.style.display = 'block';
     }
     if(this.firstFrame){
         this.firstFrame = false;
@@ -49,6 +49,6 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
 };
 
 IImageElement.prototype.destroy = function(){
-    this._parent.destroy.call();
+    this._parent.destroy.call(this._parent);
     this.innerElem =  null;
 };

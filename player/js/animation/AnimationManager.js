@@ -2,18 +2,21 @@ var animationManager = (function(){
     var moduleOb = {};
     var registeredAnimations = [];
     var initTime = 0;
-    var isPaused = true;
     var len = 0;
+    var idled = true;
+    var playingAnimationsNum = 0;
 
     function removeElement(ev){
         var i = 0;
         var animItem = ev.target;
-        animItem.removeEventListener('destroy',removeElement);
         while(i<len) {
             if (registeredAnimations[i].animation === animItem) {
                 registeredAnimations.splice(i, 1);
                 i -= 1;
                 len -= 1;
+                if(!animItem.isPaused){
+                    subtractPlayingCount();   
+                }
             }
             i += 1;
         }
@@ -31,19 +34,35 @@ var animationManager = (function(){
             i+=1;
         }
         var animItem = new AnimationItem();
+        setupAnimation(animItem, element);
         animItem.setData(element, animationData);
+        return animItem;
+    }
+
+    function addPlayingCount(){
+        playingAnimationsNum += 1;
+        activate();
+    }
+
+    function subtractPlayingCount(){
+        playingAnimationsNum -= 1;
+        if(playingAnimationsNum === 0){
+            idled = true;
+        }
+    }
+
+    function setupAnimation(animItem, element){
         animItem.addEventListener('destroy',removeElement);
+        animItem.addEventListener('_active',addPlayingCount);
+        animItem.addEventListener('_idle',subtractPlayingCount);
         registeredAnimations.push({elem: element,animation:animItem});
         len += 1;
-        return animItem;
     }
 
     function loadAnimation(params){
         var animItem = new AnimationItem();
+        setupAnimation(animItem, null);
         animItem.setParams(params);
-        animItem.addEventListener('destroy',removeElement);
-        registeredAnimations.push({elem: null,animation:animItem});
-        len += 1;
         return animItem;
     }
 
@@ -70,7 +89,6 @@ var animationManager = (function(){
     }
 
     function moveFrame (value, animation) {
-        isPaused = false;
         initTime = Date.now();
         var i;
         for(i=0;i<len;i+=1){
@@ -86,9 +104,9 @@ var animationManager = (function(){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        requestAnimationFrame(resume);
-
-
+        if(!idled) {
+            requestAnimationFrame(resume);
+        }
     }
 
     function first(nowTime){
@@ -126,7 +144,7 @@ var animationManager = (function(){
 
     function destroy(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=(len-1);i>=0;i-=1){
             registeredAnimations[i].animation.destroy(animation);
         }
     }
@@ -165,6 +183,14 @@ var animationManager = (function(){
     function start(){
         requestAnimationFrame(first);
     }
+
+    function activate(){
+        if(idled){
+            idled = false;
+            requestAnimationFrame(first);
+        }
+    }
+
     //start();
 
     setTimeout(start,0);

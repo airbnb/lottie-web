@@ -10,6 +10,7 @@ function SVGRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false
     };
     this.elements = [];
+    this.pendingElements = [];
     this.destroyed = false;
 
 }
@@ -51,8 +52,8 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.layerElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     this.layerElement.style.width = '100%';
     this.layerElement.style.height = '100%';
-    this.layerElement.style.transform = 'translate3d(0,0,0)';
-    this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
+    //this.layerElement.style.transform = 'translate3d(0,0,0)';
+    //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.layerElement);
     //Mask animation
     var defs = document.createElementNS(svgNS, 'defs');
@@ -62,10 +63,12 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.globalData.frameId = 0;
+    this.globalData.nm = animData.nm;
     this.globalData.compSize = {
         w: animData.w,
         h: animData.h
     };
+    this.data = animData;
     this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
@@ -112,6 +115,7 @@ SVGRenderer.prototype.buildItem  = function(pos){
     if(elements[pos] || this.layers[pos].ty == 99){
         return;
     }
+    elements[pos] = true;
     var element = this.createItem(this.layers[pos]);
 
     elements[pos] = element;
@@ -123,8 +127,29 @@ SVGRenderer.prototype.buildItem  = function(pos){
     }
     this.appendElementInPos(element,pos);
     if(this.layers[pos].tt){
-        this.buildItem(pos - 1);
-        element.setMatte(elements[pos - 1].layerId);
+        if(!this.elements[pos - 1] || this.elements[pos - 1] === true){
+            this.buildItem(pos - 1);
+            this.addPendingElement(element);
+        } else {
+            element.setMatte(elements[pos - 1].layerId);
+        }
+    }
+};
+
+SVGRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
+        if(element.data.tt){
+            var i = 0, len = this.elements.length;
+            while(i<len){
+                if(this.elements[i] === element){
+                    element.setMatte(this.elements[i - 1].layerId);
+                    break;
+                }
+                i += 1;
+            }
+        }
     }
 };
 
@@ -167,7 +192,7 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos){
     var i = 0;
     var nextElement;
     while(i<pos){
-        if(this.elements[i] && this.elements[i].getBaseElement()){
+        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
             nextElement = this.elements[i].getBaseElement();
         }
         i += 1;

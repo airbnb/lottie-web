@@ -26,6 +26,7 @@ function CanvasRenderer(animationItem, config){
         this.contextData.saved[i] = Array.apply(null,{length:16});
     }
     this.elements = [];
+    this.pendingElements = [];
     this.transformMat = new Matrix();
     this.completeLayers = false;
 }
@@ -146,6 +147,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     }else{
         this.canvasContext = this.renderConfig.context;
     }
+    this.data = animData;
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.renderer = this;
     this.globalData.isDashed = false;
@@ -309,6 +311,13 @@ CanvasRenderer.prototype.buildItem = function(pos){
     element.initExpressions();
     if(this.layers[pos].ty === 0){
         element.resize(this.globalData.transformCanvas);
+    }
+};
+
+CanvasRenderer.prototype.checkPendingElements  = function(){
+    while(this.pendingElements.length){
+        var element = this.pendingElements.pop();
+        element.checkParenting();
     }
 };
 

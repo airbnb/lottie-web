@@ -1,3 +1,146 @@
+## V 4.6.1
+- 3D orientation fix
+- render improvements
+
+## V 4.6.0
+- New UI!
+- Drop shadow effect support
+- performance improvement on animations with offsetted layers
+- big performance improvement on expressions
+- expressions expressions expressions
+
+## V 4.5.9
+- expressions variable declaration fix
+- effect control type fix
+
+## V 4.5.8
+- fill-rule for fills and gradient fills on shapes
+- rounding colors values with an extra decimal
+- property expressions that return strings are evaluated as numbers
+
+## V 4.5.7
+- standalone autoplay fix
+
+## V 4.5.6
+- expression instance fix for CEP
+- new variables declarations in expression conditional statements
+- reduced filesize on exported shapes with different vertex count
+- setting parents context when calling destroy (fixes webpack issue)
+
+## V 4.5.5
+- Text selector Triangle fix
+- Expressions support for "active" property on effects
+- Rearranged exporting properties
+- Included "a" property for animated props
+- Docs updated
+
+## V 4.5.4
+- Trim path individually supported
+- bug fix that messed with webpack build
+
+## V 4.5.3
+- Skipping non breaking space on characters
+- levels effect optimizations
+- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
+- transform properties in expression through transformInterface
+
+## V 4.5.2
+- Comp expression interface default return
+- HTML renderer validation fix
+
+## V 4.5.1
+- Trim path fix
+- Html renderer fixes
+
+## V 4.5.0
+- Tritone effect supported
+- Levels effect supported. The one called "Levels (Individual Controls)"
+
+## V 4.4.30
+- Gradient Fill default value breaking render fix
+- Demo file fix when json is renamed
+
+## V 4.4.29
+- Trim path fix
+- html renderer fixes
+
+## V 4.4.28
+- expressions: better seeded random, properties by matchName, normalize support
+- single shape text with keyframes fix
+- masked track matted comps fix
+- trim path 0% to 100% fix
+
+## V 4.4.27
+- playSegments fix
+- inverting alphas with color matrices
+
+## V 4.4.26
+- expressions Math.abs fix
+- Layer Index expression support
+- Nested group effects fix
+
+## V 4.4.25
+- text properties matched by matchName
+- destroy anims fix for animation count
+- checking callbacks array before dispatching event
+
+## V 4.4.24
+- text mask path fixes
+- text tracking fix on texts without animators
+- transform yPosition and xPosition expression interface
+- rounded corners expression interface
+- shape hold keyframes last frame fix
+- mask with single vertex fix
+- reversed shapes on hold keyframes fix
+- shape interfaces fixes
+- fromWorld and toWorld expression support
+- function invoked from function expression support
+- inner grouped shapes transformation fix
+- opacity on masks supported for svg renderer
+- duplicate ellipse export fix
+- rounded corners on rectangle shapes fix
+- rounded corners multiple shapes fix
+- time remapped stretched layers fix
+- shapes with no vertices fix
+- more stroke effect types support
+- luminance mask fix
+- alpha mask support IE and Edge
+
+## V 4.4.23
+- expressions transform opacity interface
+- removing rAF when idle (thanks to @mpeterson2 for the suggestion and PR)
+
+## V 4.4.22
+- text layer defaulting line height value when first char is new line
+
+## V 4.4.21
+- stroke effect improvement
+
+## V 4.4.20
+- previous versions masks fix
+
+## V 4.4.19
+- getValueAtTime expression fix
+- shape and mask expression support
+- open and close shapes support per keyframe
+- html renderer cyclic fix
+
+## V 4.4.18
+- standalone export fix
+
+## V 4.4.17
+- expression support for effect and effect group match name
+
+## V 4.4.16
+- support for text source keyframes
+- fix parented masked layers
+- new expressions
+- rect shape expressions interface
+
+## V 4.4.15
+- new expressions
+- blend mode fix
+
 ## V 4.4.14
 - fixed bodymovin_light
 - fixed translations with same origin and destination

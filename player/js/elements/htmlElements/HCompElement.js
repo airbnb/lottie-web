@@ -3,6 +3,7 @@ function HCompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -27,6 +28,7 @@ HCompElement.prototype.createElements = function(){
     divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
         var compSvg = document.createElementNS(svgNS,'svg');
+        styleDiv(compSvg);
         compSvg.setAttribute('width',this.data.w);
         compSvg.setAttribute('height',this.data.h);
         var g = document.createElementNS(svgNS,'g');
@@ -35,9 +37,11 @@ HCompElement.prototype.createElements = function(){
         this.maskedElement = g;
         this.baseElement = divElement;
         this.layerElement = g;
+        this.transformedElement = divElement;
     }else{
         this.layerElement = divElement;
         this.baseElement = this.layerElement;
+        this.transformedElement = divElement;
     }
     //this.appendNodeToParent(this.layerElement);
     this.checkParenting();
@@ -71,6 +75,8 @@ HCompElement.prototype.renderFrame = function(parentMatrix){
 
 HCompElement.prototype.checkLayers = BaseRenderer.prototype.checkLayers;
 HCompElement.prototype.buildItem = HybridRenderer.prototype.buildItem;
+HCompElement.prototype.checkPendingElements = HybridRenderer.prototype.checkPendingElements;
+HCompElement.prototype.addPendingElement = HybridRenderer.prototype.addPendingElement;
 HCompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
 HCompElement.prototype.createItem = HybridRenderer.prototype.createItem;
 HCompElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
