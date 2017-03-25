@@ -199,9 +199,9 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = new Array(data.k.length);
-        this.pv = new Array(data.k.length);
-        this.lastValue = new Array(data.k.length);
+        this.v = Array.apply(null, {length:data.k.length});
+        this.pv = Array.apply(null, {length:data.k.length});
+        this.lastValue = Array.apply(null, {length:data.k.length});
         var arr = Array.apply(null, {length:data.k.length});
         this.vel = arr.map(function () { return 0 });
         var i, len = data.k.length;
@@ -256,10 +256,10 @@ var PropertyFactory = (function(){
         this.getValue = getValue;
         this.frameId = -1;
         this._lastIndex = 0;
-        this.v = new Array(data.k[0].s.length);
-        this.pv = new Array(data.k[0].s.length);
-        this.lastValue = new Array(data.k[0].s.length);
-        this.lastPValue = new Array(data.k[0].s.length);
+        this.v = Array.apply(null, {length:data.k[0].s.length});
+        this.pv = Array.apply(null, {length:data.k[0].s.length});
+        this.lastValue = Array.apply(null, {length:data.k[0].s.length});
+        this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
         this.lastFrame = initFrame;
     }
 
