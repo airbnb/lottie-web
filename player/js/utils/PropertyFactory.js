@@ -45,8 +45,8 @@ var PropertyFactory = (function(){
                     var ind = frameNum >= nextKeyData.t-this.offsetTime ? bezierData.points.length - 1 : 0;
                     kLen = bezierData.points[ind].point.length;
                     for(k = 0; k < kLen; k += 1){
-                        this.v[k] = this.mult ? bezierData.points[ind].point[k]*this.mult : bezierData.points[ind].point[k];
                         this.pv[k] = bezierData.points[ind].point[k];
+                        this.v[k] = this.mult ? this.pv[k]*this.mult : this.pv[k];
                         if(this.lastPValue[k] !== this.pv[k]) {
                             this.mdf = true;
                             this.lastPValue[k] = this.pv[k];
@@ -73,8 +73,8 @@ var PropertyFactory = (function(){
                         if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
-                                this.v[k] = this.mult ? bezierData.points[j].point[k]*this.mult : bezierData.points[j].point[k];
                                 this.pv[k] = bezierData.points[j].point[k];
+                                this.v[k] = this.mult ? this.pv[k]*this.mult : this.pv[k];
                                 if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
                                     this.lastPValue[k] = this.pv[k];
@@ -85,9 +85,8 @@ var PropertyFactory = (function(){
                             segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
-                                this.v[k] = this.mult ? (bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc)*this.mult : bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
                                 this.pv[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
-
+                                this.v[k] = this.mult ? this.pv[k] * this.mult : this.pv[k];
                                 if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
                                     this.lastPValue[k] = this.pv[k];
@@ -106,52 +105,41 @@ var PropertyFactory = (function(){
                     this._lastBezierData = bezierData;
                 }
             }else{
-                var outX,outY,inX,inY, isArray = false, keyValue;
+                var outX,outY,inX,inY, keyValue;
                 len = keyData.s.length;
                 for(i=0;i<len;i+=1){
                     if(keyData.h !== 1){
-                        if(keyData.o.x instanceof Array){
-                            isArray = true;
-                            if(!keyData.__fnct){
-                                keyData.__fnct = [];
-                            }
-                            if(!keyData.__fnct[i]){
-                                outX = keyData.o.x[i] || keyData.o.x[0];
-                                outY = keyData.o.y[i] || keyData.o.y[0];
-                                inX = keyData.i.x[i] || keyData.i.x[0];
-                                inY = keyData.i.y[i] || keyData.i.y[0];
-                            }
-                        }else{
-                            isArray = false;
-                            if(!keyData.__fnct) {
-                                outX = keyData.o.x;
-                                outY = keyData.o.y;
-                                inX = keyData.i.x;
-                                inY = keyData.i.y;
-                            }
-                        }
-                        if(isArray){
-                            if(keyData.__fnct[i]){
-                                fnc = keyData.__fnct[i];
-                            }else{
-                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct[i] = fnc;
-                            }
-                        }else{
-                            if(keyData.__fnct){
-                                fnc = keyData.__fnct;
-                            }else{
-                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct = fnc;
-                            }
-                        }
                         if(frameNum >= nextKeyData.t-this.offsetTime){
                             perc = 1;
                         }else if(frameNum < keyData.t-this.offsetTime){
                             perc = 0;
                         }else{
+                            if(keyData.o.x instanceof Array){
+                                if(!keyData.__fnct){
+                                    keyData.__fnct = [];
+                                }
+                                if (!keyData.__fnct[i]) {
+                                    outX = keyData.o.x[i] || keyData.o.x[0];
+                                    outY = keyData.o.y[i] || keyData.o.y[0];
+                                    inX = keyData.i.x[i] || keyData.i.x[0];
+                                    inY = keyData.i.y[i] || keyData.i.y[0];
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct[i] = fnc;
+                                } else {
+                                    fnc = keyData.__fnct[i];
+                                }
+                            } else {
+                                if (!keyData.__fnct) {
+                                    outX = keyData.o.x;
+                                    outY = keyData.o.y;
+                                    inX = keyData.i.x;
+                                    inY = keyData.i.y;
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct = fnc;
+                                } else{
+                                    fnc = keyData.__fnct;
+                                }
+                            }
                             perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                         }
                     }

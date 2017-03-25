@@ -16,7 +16,6 @@ var ShapePropertyFactory = (function(){
                 this._lastIndex = 0;
             }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
                 if(this.keyframes[this.keyframes.length - 2].h === 1){
-                    //keyPropS = this.keyframes[this.keyframes.length - 1].s ? this.keyframes[this.keyframes.length - 1].s[0] : this.keyframes[this.keyframes.length - 2].s[0];
                     keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
                 }else{
                     keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
@@ -42,19 +41,18 @@ var ShapePropertyFactory = (function(){
 
                 var perc;
                 if(!isHold){
-                    var fnc;
-                    if(keyData.__fnct){
-                        fnc = keyData.__fnct;
-                    }else{
-                        //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y);
-                        fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y).get;
-                        keyData.__fnct = fnc;
-                    }
                     if(frameNum >= nextKeyData.t-this.offsetTime){
                         perc = 1;
                     }else if(frameNum < keyData.t-this.offsetTime){
                         perc = 0;
                     }else{
+                        var fnc;
+                        if(keyData.__fnct){
+                            fnc = keyData.__fnct;
+                        }else{
+                            fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y).get;
+                            keyData.__fnct = fnc;
+                        }
                         perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                     }
                     keyPropE = keyData.e[0];
