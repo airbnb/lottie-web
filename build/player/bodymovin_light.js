@@ -2245,10 +2245,10 @@ var PropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime)))){
-
-        }else{
-            var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
+        if(!(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))))){
+            var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+            window.contador = window.contador ? window.contador + i : 1 + i;
+            var len = this.keyframes.length- 1,flag = true;
             var keyData, nextKeyData;
 
             while(flag){
@@ -2264,13 +2264,15 @@ var PropertyFactory = (function(){
                     break;
                 }
                 if(i < len - 1){
-                    i += dir;
+                    i += 1;
                 }else{
                     flag = false;
                 }
             }
 
-            var k, kLen,perc,jLen, j = 0, fnc;
+            this._lastIndex = i;
+
+            var k, kLen,perc,jLen, j, fnc;
             if(keyData.to){
 
                 if(!keyData.bezierData){
@@ -2288,6 +2290,7 @@ var PropertyFactory = (function(){
                             this.lastPValue[k] = this.pv[k];
                         }
                     }
+                    this._lastBezierData = null;
                 }else{
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
@@ -2299,12 +2302,13 @@ var PropertyFactory = (function(){
                     var distanceInLine = bezierData.segmentLength*perc;
 
                     var segmentPerc;
-                    var addedLength = 0;
-                    dir = 1;
+                    var addedLength =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastAddedLength : 0;
+                    j =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastPoint : 0;
+                    window.contador = window.contador ? window.contador + j : 1 + j;
                     flag = true;
                     jLen = bezierData.points.length;
                     while(flag){
-                        addedLength +=bezierData.points[j].partialLength*dir;
+                        addedLength +=bezierData.points[j].partialLength;
                         if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
@@ -2330,12 +2334,15 @@ var PropertyFactory = (function(){
                             }
                             break;
                         }
-                        if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
-                            j += dir;
+                        if(j < jLen - 1){
+                            j += 1;
                         }else{
                             flag = false;
                         }
                     }
+                    this._lastPoint = j;
+                    this._lastAddedLength = addedLength - bezierData.points[j].partialLength;
+                    this._lastBezierData = bezierData;
                 }
             }else{
                 var outX,outY,inX,inY, isArray = false, keyValue;
@@ -2462,6 +2469,7 @@ var PropertyFactory = (function(){
         this.lastValue = -99999;
         this.lastPValue = -99999;
         this.frameId = -1;
+        this._lastIndex = 0;
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -2498,6 +2506,7 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.getValue = getValue;
         this.frameId = -1;
+        this._lastIndex = 0;
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
         this.lastValue = new Array(data.k[0].s.length);
@@ -3071,12 +3080,12 @@ var ShapePropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
-        }else{
+        if(!((this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))))){
             var keyPropS,keyPropE,isHold;
             if(frameNum < this.keyframes[0].t-this.offsetTime){
                 keyPropS = this.keyframes[0].s[0];
                 isHold = true;
+                this._lastIndex = 0;
             }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
                 if(this.keyframes[this.keyframes.length - 2].h === 1){
                     //keyPropS = this.keyframes[this.keyframes.length - 1].s ? this.keyframes[this.keyframes.length - 1].s[0] : this.keyframes[this.keyframes.length - 2].s[0];
@@ -3086,7 +3095,9 @@ var ShapePropertyFactory = (function(){
                 }
                 isHold = true;
             }else{
-                var i = 0,len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
+                var i = this.lastFrame < initFrame ? this._lastIndex : 0;
+                window.contador = window.contador ? window.contador + i : 1 + i;
+                var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
                 while(flag){
                     keyData = this.keyframes[i];
                     nextKeyData = this.keyframes[i+1];
@@ -3100,9 +3111,7 @@ var ShapePropertyFactory = (function(){
                     }
                 }
                 isHold = keyData.h === 1;
-                if(isHold && i === len){
-                    keyData = nextKeyData;
-                }
+                this._lastIndex = i;
 
                 var perc;
                 if(!isHold){
@@ -3213,6 +3222,7 @@ var ShapePropertyFactory = (function(){
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
+        this._lastIndex = 0;
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
@@ -4454,6 +4464,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     //clearPoints();
     /*console.log('-------');
     console.log('FRAME ',num);*/
+    window.contador2 = window.contador2 ? window.contador2 + 1 : 1;
     this.globalData.frameNum = num;
     this.globalData.frameId += 1;
     this.globalData.projectInterface.currentFrame = num;

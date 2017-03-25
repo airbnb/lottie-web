@@ -8,11 +8,12 @@ var ShapePropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(!(this.lastFrame === frameNum || (this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))))){
+        if(!((this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))))){
             var keyPropS,keyPropE,isHold;
             if(frameNum < this.keyframes[0].t-this.offsetTime){
                 keyPropS = this.keyframes[0].s[0];
                 isHold = true;
+                this._lastIndex = 0;
             }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
                 if(this.keyframes[this.keyframes.length - 2].h === 1){
                     //keyPropS = this.keyframes[this.keyframes.length - 1].s ? this.keyframes[this.keyframes.length - 1].s[0] : this.keyframes[this.keyframes.length - 2].s[0];
@@ -22,7 +23,7 @@ var ShapePropertyFactory = (function(){
                 }
                 isHold = true;
             }else{
-                var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+                var i = this.lastFrame < initFrame ? this._lastIndex : 0;
                 var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
                 while(flag){
                     keyData = this.keyframes[i];
@@ -36,13 +37,7 @@ var ShapePropertyFactory = (function(){
                         flag = false;
                     }
                 }
-                if(i === len){
-                    console.log('asdasdasd')
-                }
                 isHold = keyData.h === 1;
-                if(isHold && i === len){
-                    keyData = nextKeyData;
-                }
                 this._lastIndex = i;
 
                 var perc;

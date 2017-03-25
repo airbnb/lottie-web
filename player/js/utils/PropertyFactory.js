@@ -10,7 +10,7 @@ var PropertyFactory = (function(){
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         if(!(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))))){
             var i = this.lastFrame < frameNum ? this._lastIndex : 0;
-            var len = this.keyframes.length- 1,dir= 1,flag = true;
+            var len = this.keyframes.length- 1,flag = true;
             var keyData, nextKeyData;
 
             while(flag){
@@ -26,7 +26,7 @@ var PropertyFactory = (function(){
                     break;
                 }
                 if(i < len - 1){
-                    i += dir;
+                    i += 1;
                 }else{
                     flag = false;
                 }
@@ -34,7 +34,7 @@ var PropertyFactory = (function(){
 
             this._lastIndex = i;
 
-            var k, kLen,perc,jLen, j = 0, fnc;
+            var k, kLen,perc,jLen, j, fnc;
             if(keyData.to){
 
                 if(!keyData.bezierData){
@@ -52,6 +52,7 @@ var PropertyFactory = (function(){
                             this.lastPValue[k] = this.pv[k];
                         }
                     }
+                    this._lastBezierData = null;
                 }else{
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
@@ -63,12 +64,12 @@ var PropertyFactory = (function(){
                     var distanceInLine = bezierData.segmentLength*perc;
 
                     var segmentPerc;
-                    var addedLength = 0;
-                    dir = 1;
+                    var addedLength =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastAddedLength : 0;
+                    j =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastPoint : 0;
                     flag = true;
                     jLen = bezierData.points.length;
                     while(flag){
-                        addedLength +=bezierData.points[j].partialLength*dir;
+                        addedLength +=bezierData.points[j].partialLength;
                         if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
@@ -94,12 +95,15 @@ var PropertyFactory = (function(){
                             }
                             break;
                         }
-                        if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
-                            j += dir;
+                        if(j < jLen - 1){
+                            j += 1;
                         }else{
                             flag = false;
                         }
                     }
+                    this._lastPoint = j;
+                    this._lastAddedLength = addedLength - bezierData.points[j].partialLength;
+                    this._lastBezierData = bezierData;
                 }
             }else{
                 var outX,outY,inX,inY, isArray = false, keyValue;
