@@ -8,10 +8,9 @@ var PropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime)))){
-
-        }else{
-            var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
+        if(!(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))))){
+            var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+            var len = this.keyframes.length- 1,dir= 1,flag = true;
             var keyData, nextKeyData;
 
             while(flag){
@@ -32,6 +31,8 @@ var PropertyFactory = (function(){
                     flag = false;
                 }
             }
+
+            this._lastIndex = i;
 
             var k, kLen,perc,jLen, j = 0, fnc;
             if(keyData.to){
@@ -225,6 +226,7 @@ var PropertyFactory = (function(){
         this.lastValue = -99999;
         this.lastPValue = -99999;
         this.frameId = -1;
+        this._lastIndex = 0;
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -261,6 +263,7 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.getValue = getValue;
         this.frameId = -1;
+        this._lastIndex = 0;
         this.v = new Array(data.k[0].s.length);
         this.pv = new Array(data.k[0].s.length);
         this.lastValue = new Array(data.k[0].s.length);

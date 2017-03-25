@@ -8,8 +8,7 @@ var ShapePropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))){
-        }else{
+        if(!(this.lastFrame === frameNum || (this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))))){
             var keyPropS,keyPropE,isHold;
             if(frameNum < this.keyframes[0].t-this.offsetTime){
                 keyPropS = this.keyframes[0].s[0];
@@ -23,7 +22,8 @@ var ShapePropertyFactory = (function(){
                 }
                 isHold = true;
             }else{
-                var i = 0,len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
+                var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+                var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
                 while(flag){
                     keyData = this.keyframes[i];
                     nextKeyData = this.keyframes[i+1];
@@ -40,6 +40,7 @@ var ShapePropertyFactory = (function(){
                 if(isHold && i === len){
                     keyData = nextKeyData;
                 }
+                this._lastIndex = i;
 
                 var perc;
                 if(!isHold){
@@ -150,6 +151,7 @@ var ShapePropertyFactory = (function(){
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
+        this._lastIndex = 0;
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
