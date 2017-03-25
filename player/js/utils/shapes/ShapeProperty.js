@@ -36,6 +36,9 @@ var ShapePropertyFactory = (function(){
                         flag = false;
                     }
                 }
+                if(i === len){
+                    console.log('asdasdasd')
+                }
                 isHold = keyData.h === 1;
                 if(isHold && i === len){
                     keyData = nextKeyData;
