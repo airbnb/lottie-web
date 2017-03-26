@@ -20,10 +20,10 @@ var ShapeModifiers = (function(){
 function ShapeModifier(){}
 ShapeModifier.prototype.initModifierProperties = function(){};
 ShapeModifier.prototype.addShapeToModifier = function(){};
-ShapeModifier.prototype.addShape = function(shape){
+ShapeModifier.prototype.addShape = function(data){
     if(!this.closed){
-        this.shapes.push({shape:shape,last:[]});
-        this.addShapeToModifier(shape);
+        this.shapes.push({shape:data.sh,last:[], data: data});
+        this.addShapeToModifier(data.sh);
     }
 }
 ShapeModifier.prototype.init = function(elem,data,dynamicProperties){

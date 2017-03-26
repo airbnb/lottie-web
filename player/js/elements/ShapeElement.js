@@ -209,7 +209,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
             data[i].lvl = level;
             this.shapes.push(data[i].sh);
-            this.addShapeToModifiers(data[i].sh);
+            this.addShapeToModifiers(data[i]);
             jLen = this.stylesList.length;
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
@@ -219,7 +219,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                     });
                 }
             }
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'rp'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties);
             this.shapeModifiers.push(modifier);
@@ -237,10 +237,10 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
     }
 };
 
-IShapeElement.prototype.addShapeToModifiers = function(shape) {
+IShapeElement.prototype.addShapeToModifiers = function(data) {
     var i, len = this.shapeModifiers.length;
     for(i=0;i<len;i+=1){
-        this.shapeModifiers[i].addShape(shape);
+        this.shapeModifiers[i].addShape(data);
     }
 };
 
