@@ -26,6 +26,103 @@
             display:none
         }
 
+        #playpausebtn{
+            /*position: relative;*/
+            /*height: 40px;*/
+            /*width: 40px;*/
+            background-image: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCARXhpZgAATU0AKgAAAAgABAESAAMAAAABAAEAAAEaAAUAAAABAAAAPgEbAAUAAAABAAAARodpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAACigAwAEAAAAAQAAACgAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJTQQlAAAAAAAQ1B2M2Y8AsgTpgAmY7PhCfv/AABEIACgAKAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2wBDAAkGBxITEBESEhESFhIVEBIVFxgWFRgVFxUYFRIWGBUYFRYYHiggGBolHRgVITEhJykrLi4uFyAzODMtNygtLiv/2wBDAQoKCg4NDRUPDxUrGRUZKys3LS0tKystKysrKysrLSstLSsrLSsrLSsrKysrKysrKysrKysrKysrKysrKysrKyv/3QAEAAP/2gAMAwEAAhEDEQA/AOGkcKCxOABk1paxolxasFniZN2NrdUfIB+VxwT7HB4PFc3qM25XHbY3/oJr6uayjmtxHLGkkbRqCrgMpBUdQapslI+ZaK9Q8UfCvrJYtxyTDISe/wDyzkPI7/K2R0wRXml1bvE7Ryo0ci/eRxhh+HcdeRkHHWi47EVJilopiP/Q8uuvuP8A7jf+gmvruy/1af7i/wDoIr5Eu/uP/uN/6Ca+sJ9Sit7cSzypHGsa5Z2Cj7o9e/tTYkaJrkPiDdaYIgt/tLHmNV/1+R1MW35h15PT14rifFfxbeTMWnqUU5BmkX5yMdYoz93/AHnHb7teeszMzSSO8kj8s7sWZvqT29unpQkMfOU3NsDhMnbv2l8dt+35d304plFFMR//0fMZEzkeox+fWtbVNTubp1e4leQqAFBOFQYx8iDhfr196zVq5BViJIowop9FFIAoopKBH//Z");
+            /*background-repeat: no-repeat;*/
+            /*z-index: 1;*/
+        }
+
+
+        #volumeslider::-webkit-slider-runnable-track {
+            width: 0px;
+            height: 40px;
+            cursor: pointer;
+            background: #000;
+            background: rgba(0, 0, 0, 0.4);
+            outline: transparent;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            margin-left: -12px;
+            margin-right: -12px;
+            cursor:pointer;
+        }
+
+        #volumeslider::-webkit-slider-thumb {
+            margin-top: 1px;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        #playpausebtn_onceOnVideo {
+            /*width: 9%;*/
+            /*height: 20%;*/
+            /*opacity: 0.5;*/
+            /*position: absolute;*/
+            /*left: 45%;*/
+            /*top: 40%;*/
+            /*z-index: 1;*/
+            background: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCARXhpZgAATU0AKgAAAAgABAESAAMAAAABAAEAAAEaAAUAAAABAAAAPgEbAAUAAAABAAAARodpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAACigAwAEAAAAAQAAACgAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJTQQlAAAAAAAQ1B2M2Y8AsgTpgAmY7PhCfv/AABEIACgAKAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2wBDAAkGBxITEBESEhESFhIVEBIVFxgWFRgVFxUYFRIWGBUYFRYYHiggGBolHRgVITEhJykrLi4uFyAzODMtNygtLiv/2wBDAQoKCg4NDRUPDxUrGRUZKys3LS0tKystKysrKysrLSstLSsrLSsrLSsrKysrKysrKysrKysrKysrKysrKysrKyv/3QAEAAP/2gAMAwEAAhEDEQA/AOGkcKCxOABk1paxolxasFniZN2NrdUfIB+VxwT7HB4PFc3qM25XHbY3/oJr6uayjmtxHLGkkbRqCrgMpBUdQapslI+ZaK9Q8UfCvrJYtxyTDISe/wDyzkPI7/K2R0wRXml1bvE7Ryo0ci/eRxhh+HcdeRkHHWi47EVJilopiP/Q8uuvuP8A7jf+gmvruy/1af7i/wDoIr5Eu/uP/uN/6Ca+sJ9Sit7cSzypHGsa5Z2Cj7o9e/tTYkaJrkPiDdaYIgt/tLHmNV/1+R1MW35h15PT14rifFfxbeTMWnqUU5BmkX5yMdYoz93/AHnHb7teeszMzSSO8kj8s7sWZvqT29unpQkMfOU3NsDhMnbv2l8dt+35d304plFFMR//0fMZEzkeox+fWtbVNTubp1e4leQqAFBOFQYx8iDhfr196zVq5BViJIowop9FFIAoopKBH//Z") no-repeat center;
+        }
+
+
+        #seekSliderRange:focus {
+            outline: none;
+        }
+
+        /*-webkit-slider-runnable-track-width:*/
+        #seekSliderRange::-webkit-slider-runnable-track {
+            width: 98%;
+            height: 8.4px;
+            cursor: pointer;
+            background: transparent;
+            border-color: transparent;
+            color: transparent;
+        }
+
+        #seekSliderRange::-webkit-slider-thumb {
+            height: 36px;
+            width: 16px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -14px;
+        }
+
+        #seekSliderRange::-moz-range-track {
+            width: 98%;
+            height: 8.4px;
+            cursor: pointer;
+        }
+
+        #seekSliderRange::-moz-range-thumb {
+            height: 36px;
+            width: 16px;
+            cursor: pointer;
+        }
+
+        #seekSliderRange::-ms-track {
+            width: 98%;
+            height: 8.4px;
+            cursor: pointer;
+            background: transparent;
+            border-color: transparent;
+            color: transparent;
+        }
+
+        #seekSliderRange::-ms-thumb {
+            height: 36px;
+            width: 16px;
+            cursor: pointer;
+            height: 8.4px;
+        }
+
+
+
+
     </style>
     <!-- build:js bodymovin.js -->
      <script src="js/main.js"></script>
@@ -48,6 +145,7 @@
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
+    <script src="js/seekBarController.js"></script>
     <script src="js/renderers/BaseRenderer.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js" data-light-skip="true"></script>
@@ -68,6 +166,8 @@
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
+    <script src="js/elements/IAudioElement.js"></script>
+    <script src="js/elements/IVideoElement.js"></script>
     <script src="js/elements/canvasElements/CVBaseElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVCompElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVImageElement.js" data-light-skip="true"></script>
@@ -82,6 +182,8 @@
     <script src="js/elements/htmlElements/HTextElement.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HImageElement.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HCameraElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HVideoElement.js" data-light-skip="true"></script>
+    <script src="js/elements/htmlElements/HAudioElement.js" data-light-skip="true"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -113,15 +215,18 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'html',
         loop: true,
         autoplay: true,
+        seekBar: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/billabon2.json'
     };
     anim = bodymovin.loadAnimation(animData);
+    window.onresize = anim.resize.bind(anim);
+
 
 </script>
 </body>
