@@ -708,7 +708,6 @@ var ShapeExpressionInterface = (function(){
             interfaceFunction.propertyIndex = shape.ix;
             prop.c.setGroupProperty(_propertyGroup);
             prop.o.setGroupProperty(_propertyGroup);
-            console.log(shape)
 
             function interfaceFunction(value){
                 if(shape.c.ix === value || 'Copies' === value){

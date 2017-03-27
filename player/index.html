@@ -114,11 +114,12 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: false,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:false,
+            preserveAspectRatio: 'xMidYMid slice'
         },
         path: 'exports/render/data.json'
     };

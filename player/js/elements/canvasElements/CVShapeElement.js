@@ -106,7 +106,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
             this.shapes.push(data[i].sh);
-            this.addShapeToModifiers(data[i].sh);
+            this.addShapeToModifiers(data[i]);
             jLen = this.stylesList.length;
             var hasStrokes = false, hasFills = false;
             for(j=0;j<jLen;j+=1){
@@ -121,7 +121,7 @@ CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
             }
             data[i].st = hasStrokes;
             data[i].fl = hasFills;
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'rp'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties);
             this.shapeModifiers.push(modifier);
