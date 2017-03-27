@@ -394,7 +394,7 @@ var ShapeExpressionInterface = (function(){
                 if(value === 'Scale') {
                     return interfaceFunction.scale;
                 }
-                if(value === 'Rotation') {
+                if(value === 'Rotation' || value === 'ADBE Vector Rotation') {
                     return interfaceFunction.rotation;
                 }
                 if(value === 'Skew') {
