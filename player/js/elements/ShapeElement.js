@@ -381,8 +381,8 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
             if(redraw){
                 for(j=0;j<jLen;j+=1){
                     pathNodes = paths[j];
-                    if(pathNodes && pathNodes.v){
-                        len = pathNodes.v.length;
+                    if(pathNodes && pathNodes._length){
+                        len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {
                             if (i == 1) {
                                 pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
@@ -406,8 +406,8 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
             if(redraw){
                 for(j=0;j<jLen;j+=1){
                     pathNodes = paths[j];
-                    if(pathNodes && pathNodes.v){
-                        len = pathNodes.v.length;
+                    if(pathNodes && pathNodes._length){
+                        len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {
                             if (i == 1) {
                                 //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);

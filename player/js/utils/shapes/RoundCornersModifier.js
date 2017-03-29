@@ -94,7 +94,7 @@ RoundCornersModifier.prototype.processShapes = function(){
             } else {
                 shapeData.shape.mdf = true;
                 shapePaths = shapeData.shape.paths;
-                jLen = shapePaths.length;
+                jLen = shapeData.shape._pathsLength;
                 for(j=0;j<jLen;j+=1){
                     newPaths[j] = this.processPath(shapePaths[j],rd);
                 }

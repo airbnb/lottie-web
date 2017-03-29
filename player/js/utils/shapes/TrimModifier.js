@@ -146,8 +146,9 @@ TrimModifier.prototype.processShapes = function(firstFrame){
             if(!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2){
                 shapeData.shape.paths = shapeData.last;
             } else {
+                shape_helper.releaseArray(localPaths, shapeData._localPathsLength);
                 shapePaths = shapeData.shape.paths;
-                jLen = shapePaths.length;
+                jLen = shapeData.shape._pathsLength;
                 totalShapeLength = 0;
                 if(!shapeData.shape.mdf && shapeData.pathsData){
                     totalShapeLength = shapeData.totalShapeLength;
