@@ -22,7 +22,7 @@ ShapeModifier.prototype.initModifierProperties = function(){};
 ShapeModifier.prototype.addShapeToModifier = function(){};
 ShapeModifier.prototype.addShape = function(data){
     if(!this.closed){
-        this.shapes.push({shape:data.sh,last:[], data: data});
+        this.shapes.push({shape:data.sh,last:[], data: data, localPaths:Array.apply(null,{length:128}),_localPathsLength:0});
         this.addShapeToModifier(data.sh);
     }
 }

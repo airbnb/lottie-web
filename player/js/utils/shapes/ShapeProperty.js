@@ -121,16 +121,14 @@ var ShapePropertyFactory = (function(){
     }
 
     function resetShape(){
-        this.resetPaths.length = 1;
-        this.resetPaths[0] = this.v;
-        this.paths = this.resetPaths;
+        this.paths[0] = this.v;
+        this._pathsLength = 1;
         if(!this.k){
             this.mdf = false;
         }
     }
 
     function ShapeProperty(elem, data, type){
-        this.resetPaths = [];
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
@@ -138,12 +136,13 @@ var ShapePropertyFactory = (function(){
         this.v = type === 3 ? data.pt.k : data.ks.k;
         this.getValue = getShapeValue;
         this.pv = this.v;
-        this.paths = [this.v];
+        this._pathsLength = 1;
+        this.paths = Array.apply(null,{length:128})
+        this.paths[0] = this.v;
         this.reset = resetShape;
     }
 
     function KeyframedShapeProperty(elem,data,type){
-        this.resetPaths = [];
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
@@ -247,7 +246,6 @@ var ShapePropertyFactory = (function(){
             this.numNodes = 4;
             this.d = data.d;
             this.dynamicProperties = [];
-            this.resetPaths = [];
             this.paths = [];
             this.elem = elem;
             this.comp = elem.comp;
@@ -330,7 +328,7 @@ var ShapePropertyFactory = (function(){
                 currentAng += angle*dir;
             }
             this.numNodes = numPts;
-            this.paths.length = 0;
+            //this.paths.length = 0;
             this.paths[0] = this.v;
         }
 
@@ -360,7 +358,6 @@ var ShapePropertyFactory = (function(){
                 o: [],
                 c: true
             };
-            this.resetPaths = [];
             this.elem = elem;
             this.comp = elem.comp;
             this.data = data;
@@ -520,7 +517,6 @@ var ShapePropertyFactory = (function(){
                 o: Array.apply(null,{length:8}),
                 c: true
             };
-            this.resetPaths = [];
             this.paths = [];
             this.numNodes = 8;
             this.elem = elem;

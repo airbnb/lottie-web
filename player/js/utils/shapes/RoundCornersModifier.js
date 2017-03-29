@@ -24,18 +24,19 @@ RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){
+    var cloned_path = shape_helper.clone(path);
     var i, len = path.v.length;
-    var vValues = [],oValues = [],iValues = [];
-    var currentV,currentI,currentO,closerV, newV,newO,newI,distance,newPosPerc;
+    var currentV,currentI,currentO,closerV, newV,newO,newI,distance,newPosPerc,index = 0;
     for(i=0;i<len;i+=1){
         currentV = path.v[i];
         currentO = path.o[i];
         currentI = path.i[i];
         if(currentV[0]===currentO[0] && currentV[1]===currentO[1] && currentV[0]===currentI[0] && currentV[1]===currentI[1]){
             if((i===0 || i === len - 1) && !path.c){
-                vValues.push(currentV);
-                oValues.push(currentO);
-                iValues.push(currentI);
+                cloned_path.v[index] = currentV;
+                cloned_path.o[index] = currentO;
+                cloned_path.i[index] = currentI;
+                index += 1;
             } else {
                 if(i===0){
                     closerV = path.v[len-1];
@@ -47,9 +48,10 @@ RoundCornersModifier.prototype.processPath = function(path, round){
                 newV = [currentV[0]+(closerV[0]-currentV[0])*newPosPerc,currentV[1]-(currentV[1]-closerV[1])*newPosPerc];
                 newI = newV;
                 newO = [newV[0]-(newV[0]-currentV[0])*roundCorner,newV[1]-(newV[1]-currentV[1])*roundCorner];
-                vValues.push(newV);
-                oValues.push(newO);
-                iValues.push(newI);
+                cloned_path.v[index] = newV;
+                cloned_path.i[index] = newI;
+                cloned_path.o[index] = newO;
+                index += 1;
 
                 if(i === len - 1){
                     closerV = path.v[0];
@@ -61,22 +63,19 @@ RoundCornersModifier.prototype.processPath = function(path, round){
                 newV = [currentV[0]+(closerV[0]-currentV[0])*newPosPerc,currentV[1]+(closerV[1]-currentV[1])*newPosPerc];
                 newI = [newV[0]-(newV[0]-currentV[0])*roundCorner,newV[1]-(newV[1]-currentV[1])*roundCorner];
                 newO = newV;
-                vValues.push(newV);
-                oValues.push(newO);
-                iValues.push(newI);
+                cloned_path.v[index] = newV;
+                cloned_path.i[index] = newI;
+                cloned_path.o[index] = newO;
+                index += 1;
             }
         } else {
-            vValues.push(path.v[i]);
-            oValues.push(path.o[i]);
-            iValues.push(path.i[i]);
+            cloned_path.v[index] = path.v[i];
+            cloned_path.o[index] = path.o[i];
+            cloned_path.i[index] = path.i[i];
+            index += 1;
         }
     }
-    return {
-        v:vValues,
-        o:oValues,
-        i:iValues,
-        c:path.c
-    };
+    return cloned_path;
 }
 
 RoundCornersModifier.prototype.processShapes = function(){
@@ -88,8 +87,8 @@ RoundCornersModifier.prototype.processShapes = function(){
     if(rd !== 0){
         var shapeData, newPaths;
         for(i=0;i<len;i+=1){
-            newPaths = [];
             shapeData = this.shapes[i];
+            newPaths = shapeData.shape.paths;
             if(!shapeData.shape.mdf && !this.mdf){
                 shapeData.shape.paths = shapeData.last;
             } else {
@@ -97,9 +96,8 @@ RoundCornersModifier.prototype.processShapes = function(){
                 shapePaths = shapeData.shape.paths;
                 jLen = shapePaths.length;
                 for(j=0;j<jLen;j+=1){
-                    newPaths.push(this.processPath(shapePaths[j],rd));
+                    newPaths[j] = this.processPath(shapePaths[j],rd);
                 }
-                shapeData.shape.paths = newPaths;
                 shapeData.last = newPaths;
             }
         }

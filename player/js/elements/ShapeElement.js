@@ -366,7 +366,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
         redraw = viewData.sh.mdf || this.firstFrame;
         pathStringTransformed = 'M0 0';
         var paths = viewData.sh.paths;
-        jLen = paths.length;
+        jLen = viewData.sh._pathsLength;
         if(viewData.elements[l].st.lvl < lvl){
             var mat = this.mHelper.reset(), props;
             var iterations = lvl - viewData.elements[l].st.lvl;
