@@ -132,8 +132,14 @@ var ShapePropertyFactory = (function(){
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
-        this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
-        this.v = type === 3 ? data.pt.k : data.ks.k;
+        this.v = new ShapePath();
+        var pathData = type === 3 ? data.pt.k : data.ks.k;
+        this.v._length = pathData.v.length;
+        this.v.v = pathData.v;
+        this.v.i = pathData.i;
+        this.v.o = pathData.o;
+        this.v.c = pathData.c;
+        this.v._length = this.v.v.length;
         this.getValue = getShapeValue;
         this.pv = this.v;
         this._pathsLength = 1;
@@ -152,7 +158,6 @@ var ShapePropertyFactory = (function(){
         this.k = true;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
-        this.numNodes = len;
         this.v = new ShapePath();
         this.v.setPathData(this.keyframes[0].s[0].c, len);
         this.pv = new ShapePath(this.v);
@@ -297,7 +302,6 @@ var ShapePropertyFactory = (function(){
             };*/
             this.v = new ShapePath();
             this.v.setPathData(true, 4);
-            this.numNodes = 4;
             this._pathsLength = 1;
             this.d = data.d;
             this.dynamicProperties = [];
@@ -346,7 +350,6 @@ var ShapePropertyFactory = (function(){
                 this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];*/
                 currentAng += angle*dir;
             }
-            this.numNodes = numPts;
             this.paths.length = 0;
             this.paths[0] = this.v;
         }
@@ -386,7 +389,6 @@ var ShapePropertyFactory = (function(){
                 longFlag = !longFlag;
                 currentAng += angle*dir;
             }
-            this.numNodes = numPts;
             //this.paths.length = 0;
             this.paths[0] = this.v;
         }
@@ -721,7 +723,6 @@ var ShapePropertyFactory = (function(){
             this.v.setPathData(true, 8);
             this._pathsLength = 1;
             this.paths = [];
-            this.numNodes = 8;
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;

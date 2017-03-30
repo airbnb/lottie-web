@@ -60,7 +60,7 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
         newPaths = shapeData.shape.paths;
         localPaths = shapeData.localPaths;
         if(!shapeData.shape.mdf && !this.mdf && !firstFrame){
-            shapeData.shape.paths = shapeData.last;
+            shapeData.shape.paths = shapeData.localPaths;
             shapeData.shape._pathsLength = shapeData._localPathsLength;
         } else {
             shape_helper.releaseArray(localPaths, shapeData._localPathsLength);
@@ -137,7 +137,6 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
             shapeData.shape.paths = newPaths;
             shapeData.shape._pathsLength = _pathsLength;
             shapeData._localPathsLength = _pathsLength;
-            shapeData.last = newPaths;
         }
     }
 }

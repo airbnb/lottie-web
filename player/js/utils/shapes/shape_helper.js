@@ -2,17 +2,18 @@ function ShapePath(shape){
 	this.c = shape ? shape.c : false;
 	this._length = shape ? shape._length : 0;
 	this._actualArrayLength = shape? Math.max(shape._actualArrayLength, 4) : 4;
+	this.v = Array.apply(null,{length:this._actualArrayLength});
+	this.o = Array.apply(null,{length:this._actualArrayLength});
+	this.i = Array.apply(null,{length:this._actualArrayLength});
 	if(shape) {
-		//Todo probably need to duplicate each point in array
-		var arr = [];
-		this.v = arr.concat(shape.v);
-		this.o = arr.concat(shape.o);
-		this.i = arr.concat(shape.i);
-	} else {
-		this.v = Array.apply(null,{length:this._actualArrayLength});
-		this.o = Array.apply(null,{length:this._actualArrayLength});
-		this.i = Array.apply(null,{length:this._actualArrayLength});
-	}
+		var i = 0;
+		while(i < this._length){
+			this.v[i] = [shape.v[i][0],shape.v[i][1]];
+			this.o[i] = [shape.o[i][0],shape.o[i][1]];
+			this.i[i] = [shape.i[i][0],shape.i[i][1]];
+			i += 1;
+		}
+	} 
 }
 
 ShapePath.prototype.setPathData = function(closed, len) {

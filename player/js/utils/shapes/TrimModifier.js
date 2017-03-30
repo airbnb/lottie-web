@@ -48,12 +48,12 @@ TrimModifier.prototype.initModifierProperties = function(elem,data){
     }
 };
 
-TrimModifier.prototype.getSegmentsLength = function(keyframes){
-    var closed = keyframes.c;
-    var pathV = keyframes.v;
-    var pathO = keyframes.o;
-    var pathI = keyframes.i;
-    var i, len = pathV.length;
+TrimModifier.prototype.getSegmentsLength = function(shapeData){
+    var closed = shapeData.c;
+    var pathV = shapeData.v;
+    var pathO = shapeData.o;
+    var pathI = shapeData.i;
+    var i, len = shapeData._length;
     var lengths = [];
     var totalLength = 0;
     for(i=0;i<len-1;i+=1){
@@ -125,26 +125,27 @@ TrimModifier.prototype.processShapes = function(firstFrame){
     var e = this.eValue;
     var pathsData,pathData, totalShapeLength, totalModifierLength = 0;
 
-
     if(e === s){
         for(i=0;i<len;i+=1){
             this.shapes[i].shape.paths = [];
             this.shapes[i].shape.mdf = true;
         }
     } else if((e === 1 && s === 0) || (e===0 && s === 1)){
-        for(i=0;i<len;i+=1){
+        /*for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            if(shapeData.shape.paths !== shapeData.last){
+            if(shapeData.shape.paths !== shapeData.localPaths){
                 shapeData.shape.mdf = true;
                 shapeData.last = shapeData.shape.paths;
             }
-        }
+        }*/
     } else {
-        var segments = [], shapeData, newShapes;
+        var segments = [], shapeData, newPaths, localPaths;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
+            localPaths = shapeData.localPaths;
             if(!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2){
-                shapeData.shape.paths = shapeData.last;
+                shapeData.shape.paths = shapeData.localPaths;
+                shapeData.shape._pathsLength = shapeData._localPathsLength;
             } else {
                 shape_helper.releaseArray(localPaths, shapeData._localPathsLength);
                 shapePaths = shapeData.shape.paths;
@@ -168,10 +169,12 @@ TrimModifier.prototype.processShapes = function(firstFrame){
             }
         }
         var shapeS = s, shapeE = e, addedLength = 0;
-        var j, jLen;
+        var j, jLen, _pathsLength;
         for(i = len - 1; i >= 0; i -= 1){
-            newShapes = [];
+            _pathsLength = 0;
             shapeData = this.shapes[i];
+            localPaths = shapeData.localPaths;
+            newPaths = shapeData.shape.paths;
             if (shapeData.shape.mdf) {
                 if(this.m === 2 && len > 1) {
                     var edges = this.calculateShapeEdges(s, e, shapeData.totalShapeLength, addedLength, totalModifierLength);
@@ -207,21 +210,29 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                     var newShapesData = this.addShapes(shapeData,segments[0]);
                     if (segments[0].s !== segments[0].e) {
                         var lastPos;
-                        newShapes = newShapes.concat(newShapesData);
+                        ////newPaths = newPaths.concat(newShapesData);
                         if(segments.length > 1){
                             if(shapeData.shape.v.c){
                                 this.addShapes(shapeData,segments[1], newShapesData[newShapesData.length - 1]);
+                                _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
                             } else {
+                                _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
                                 newShapesData = this.addShapes(shapeData,segments[1]);
-                                newShapes = newShapes.concat(newShapesData);
+                                ////newPaths = newPaths.concat(newShapesData);
+                                _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
                             }
+                        } else {
+                            _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
                         }
                     }
                     
                 }
-                shapeData.last = newShapes;
-                shapeData.shape.paths = newShapes;
+                shapeData.shape._pathsLength = _pathsLength;
+                shapeData._localPathsLength = _pathsLength;
             }
+        }
+        for(i=0;i<_pathsLength;i+=1) {
+            newPaths[i] = localPaths[i];
         }
     }
     if(!this.dynamicProperties.length){
@@ -229,32 +240,42 @@ TrimModifier.prototype.processShapes = function(firstFrame){
     }
 }
 
+TrimModifier.prototype.addPaths = function(newPaths, localPathsCollection, pos) {
+    var i, len = newPaths.length;
+    for(i = 0; i < len; i += 1) {
+        localPathsCollection[pos + i] = newPaths[i];
+    }
+    return len;
+}
+
 TrimModifier.prototype.addSegment = function(pt1,pt2,pt3,pt4,shapePath,pos) {
-    shapePath.o[pos] = pt2;
+    shapePath.addPointAt(pt2,'o',pos);
+    shapePath.addPointAt(pt3,'i',pos + 1);
+    shapePath.addPointAt(pt1,'v',pos);
+    shapePath.addPointAt(pt4,'v',pos + 1);
+    /*shapePath.o[pos] = pt2;
     shapePath.i[pos+1] = pt3;
     shapePath.v[pos+1] = pt4;
-    shapePath.v[pos] = pt1;
+    shapePath.v[pos] = pt1;*/
 }
 
 TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
     var pathsData = shapeData.pathsData;
     var shapePaths = shapeData.shape.paths;
-    var i, len = shapePaths.length, j, jLen;
+    var i, len = shapeData.shape._pathsLength, j, jLen;
     var addedLength = 0;
     var currentLengthData,segmentCount;
     var lengths;
     var segment;
     var shapes = [];
+    var initPos;
     if(!shapePath){
-        shapePath = {
-            c: true,
-            v:[],
-            i:[],
-            o:[]
-        };
+        shapePath = new ShapePath();
         segmentCount = 0;
+        initPos = 0;
     } else {
-        segmentCount = shapePath.v.length - 1;
+        segmentCount = shapePath._length;
+        initPos = shapePath._length;
     }
     shapes.push(shapePath);
     for(i=0;i<len;i+=1){
@@ -300,24 +321,24 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
             segmentCount += 1;
         }
         ////
-        shapePath.i[0] = [shapePath.v[0][0],shapePath.v[0][1]];
-        shapePath.o[shapePath.v.length - 1] = [shapePath.v[shapePath.v.length - 1][0],shapePath.v[shapePath.v.length - 1][1]];
+        ////shapePath.i[0] = [shapePath.v[0][0],shapePath.v[0][1]];
+        shapePath.addXYAt(shapePath.v[initPos][0],shapePath.v[initPos][1],'i',initPos);
+        shapePath.addXYAt(shapePath.v[shapePath._length - 1][0],shapePath.v[shapePath._length - 1][1],'o',shapePath._length - 1);
+        ////shapePath.o[shapePath.v.length - 1] = [shapePath.v[shapePath.v.length - 1][0],shapePath.v[shapePath.v.length - 1][1]];
         if(addedLength > shapeSegment.e){
             break;
         }
         if(i<len-1){
-            shapePath = {
+            shapePath = new ShapePath();
+            /*shapePath = {
                 c: true,
                 v:[],
                 i:[],
                 o:[]
-            };
+            };*/
             shapes.push(shapePath);
             segmentCount = 0;
         }
-
-        
-
     }
     return shapes;
 

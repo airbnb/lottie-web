@@ -85,20 +85,24 @@ RoundCornersModifier.prototype.processShapes = function(){
     var rd = this.rd.v;
 
     if(rd !== 0){
-        var shapeData, newPaths;
+        var shapeData, newPaths, localPaths;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
+            localPaths = shapeData.localPaths;
             newPaths = shapeData.shape.paths;
             if(!shapeData.shape.mdf && !this.mdf){
-                shapeData.shape.paths = shapeData.last;
+                shapeData.shape.paths = shapeData.localPaths;
+                shapeData.shape._pathsLength = shapeData._localPathsLength;
             } else {
                 shapeData.shape.mdf = true;
                 shapePaths = shapeData.shape.paths;
                 jLen = shapeData.shape._pathsLength;
                 for(j=0;j<jLen;j+=1){
                     newPaths[j] = this.processPath(shapePaths[j],rd);
+                    localPaths[j] = newPaths[j];
                 }
-                shapeData.last = newPaths;
+                shapeData._localPathsLength = jLen;
+                //shapeData.localPaths = newPaths;
             }
         }
 
