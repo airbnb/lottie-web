@@ -276,13 +276,13 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
     var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
     if(redraw) {
         var paths = viewData.sh.paths;
-        jLen = paths.length;
+        jLen = viewData.sh._pathsLength;
         var pathStringTransformed = viewData.trNodes;
         pathStringTransformed.length = 0;
         for(j=0;j<jLen;j+=1){
             var pathNodes = paths[j];
             if(pathNodes && pathNodes.v){
-                len = pathNodes.v.length;
+                len = pathNodes._length;
                 for (i = 1; i < len; i += 1) {
                     if (i == 1) {
                         pathStringTransformed.push({

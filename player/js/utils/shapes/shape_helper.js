@@ -42,6 +42,10 @@ ShapePath.prototype.addPointAt = function(point, type, pos) {
 	this.addXYAt(point[0],point[1],type,pos);
 }
 
+ShapePath.prototype.setTriplePointAt = function(v,o,i,pos) {
+	this.setTripleAt(v[0],v[1],o[0],[1],i[0],i[1],pos);
+}
+
 ShapePath.prototype.addXYAt = function(x, y, type, pos) {
 	var arr;
 	this._length = Math.max(this._length, pos + 1);
