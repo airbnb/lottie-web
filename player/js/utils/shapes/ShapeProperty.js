@@ -59,7 +59,7 @@ var ShapePropertyFactory = (function(){
                 }
                 keyPropS = keyData.s[0];
             }
-            jLen = this.v.i.length;
+            jLen = this.v._length;
             kLen = keyPropS.i[0].length;
             var hasModified = false;
             var vertexValue;
