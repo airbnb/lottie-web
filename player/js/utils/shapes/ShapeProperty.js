@@ -744,7 +744,6 @@ var ShapePropertyFactory = (function(){
             };*/
             this.v = new ShapePath();
             this.v.c = true;
-            console.log(this.v.c);
             //this.v.setPathData(true, 4);
             this._pathsLength = 1;
             this.paths = [];
