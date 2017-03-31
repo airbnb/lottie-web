@@ -49,6 +49,13 @@ var EffectsExpressionInterface = (function (){
             }
             return effectElements[0]();
         }
+        if(data.mn === 'ADBE Color Control'){
+            Object.defineProperty(groupInterface, 'color', {
+                get: function(){
+                    return effectElements[0]();
+                }
+            });
+        }
         groupInterface.active = data.en !== 0;
         return groupInterface
     }
