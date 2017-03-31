@@ -415,6 +415,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                             }
                             //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
                             pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[i].join(',') + " " + pathNodes.v[i].join(',');
+                            console.log(i, 'pathStringTransformed:', pathStringTransformed.length)
                         }
                         if (len == 1) {
                             //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
@@ -427,6 +428,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                         }
                     }
                 }
+                console.log('pathStringTransformed:', pathStringTransformed.length)
                 viewData.caches[l] = pathStringTransformed;
             } else {
                 pathStringTransformed = viewData.caches[l];
