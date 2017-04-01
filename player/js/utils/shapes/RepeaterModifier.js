@@ -28,7 +28,6 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.sMatrix = new Matrix();
     this.tMatrix = new Matrix();
     this.matrix = new Matrix();
-    this.newPaths = [];
 };
 
 RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix, transform, perc, inv){
@@ -50,23 +49,20 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
     }
     var i, len = this.shapes.length;
     var j, jLen;
-    var shapeData, newPaths, localPaths, currentPath;
+    var shapeData, localShapeCollection, currentPath;
     var copies = Math.ceil(this.c.v);
     var offset = this.o.v;
-    var k, _pathsLength;
+    var k, _pathsLength, pathData, shapeCollection, shapeCollectionList;
     for(i=0;i<len;i+=1){
         _pathsLength = 0;
         shapeData = this.shapes[i];
-        newPaths = shapeData.shape.paths;
-        localPaths = shapeData.localPaths;
-        if(!shapeData.shape.mdf && !this.mdf && !firstFrame){
-            shapeData.shape.paths = shapeData.localPaths;
-            shapeData.shape._pathsLength = shapeData._localPathsLength;
-        } else {
-            shape_helper.releaseArray(localPaths, shapeData._localPathsLength);
+        localShapeCollection = shapeData.localShapeCollection;
+        if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
+            localShapeCollection.releaseShapes();
             shapeData.shape.mdf = true;
-            shapePaths = shapeData.shape.paths;
-            jLen = shapeData.shape._pathsLength;
+            shapeCollection = shapeData.shape.paths;
+            shapeCollectionList = shapeCollection._shapes;
+            jLen = shapeCollection._length;
             var iteration = 0;
             var tMat = this.tr.v.props;
             this.pMatrix.reset();
@@ -102,7 +98,7 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
             }
             var tProps;
             for(j=0;j<jLen;j+=1){
-                currentPath = shapePaths[j];
+                currentPath = shapeCollectionList[j];
                 for(k=0;k<copies;k+=1) {
                     if(k !== 0) {
                         this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
@@ -127,22 +123,19 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                         this.matrix.transform(sProps[0],sProps[1],sProps[2],sProps[3],sProps[4],sProps[5],sProps[6],sProps[7],sProps[8],sProps[9],sProps[10],sProps[11],sProps[12],sProps[13],sProps[14],sProps[15]);
                         this.matrix.transform(pProps[0],pProps[1],pProps[2],pProps[3],pProps[4],pProps[5],pProps[6],pProps[7],pProps[8],pProps[9],pProps[10],pProps[11],pProps[12],pProps[13],pProps[14],pProps[15]);
                     }
-                    newPaths[_pathsLength] = this.processPath(currentPath, this.matrix);
-                    localPaths[_pathsLength] = newPaths[_pathsLength];
+                    localShapeCollection.addShape(this.processPath(currentPath, this.matrix))
                     _pathsLength += 1;
                     this.matrix.reset();
                     iteration += 1;
                 }
             }
-            shapeData.shape.paths = newPaths;
-            shapeData.shape._pathsLength = _pathsLength;
-            shapeData._localPathsLength = _pathsLength;
         }
+        shapeData.shape.paths = localShapeCollection;
     }
 }
 
 RepeaterModifier.prototype.processPath = function(path, transform) {
-    var clonedPath = shape_helper.clone(path, transform);
+    var clonedPath = shape_pool.clone(path, transform);
     return clonedPath;
 }
 

@@ -754,7 +754,7 @@ var ShapeExpressionInterface = (function(){
                     if(prop.k){
                         prop.getValue();
                     }
-                    return shape_helper.clone(prop.v);
+                    return shape_pool.clone(prop.v);
                 }
             });
             Object.defineProperty(interfaceFunction, 'shape', {
@@ -762,7 +762,7 @@ var ShapeExpressionInterface = (function(){
                     if(prop.k){
                         prop.getValue();
                     }
-                    return shape_helper.clone(prop.v);
+                    return shape_pool.clone(prop.v);
                 }
             });
             Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });

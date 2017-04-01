@@ -24,7 +24,8 @@ RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){
-    var cloned_path = shape_helper.clone(path);
+    var cloned_path = shape_pool.newShape();
+    cloned_path.c = path.c;
     var i, len = path._length;
     var currentV,currentI,currentO,closerV, newV,newO,newI,distance,newPosPerc,index = 0;
     var vX,vY,oX,oY,iX,iY;
@@ -92,32 +93,27 @@ RoundCornersModifier.prototype.processPath = function(path, round){
     return cloned_path;
 }
 
-RoundCornersModifier.prototype.processShapes = function(){
+RoundCornersModifier.prototype.processShapes = function(firstFrame){
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
     var rd = this.rd.v;
 
     if(rd !== 0){
-        var shapeData, newPaths, localPaths;
+        var shapeData, newPaths, localShapeCollection;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            localPaths = shapeData.localPaths;
             newPaths = shapeData.shape.paths;
-            if(!shapeData.shape.mdf && !this.mdf){
-                shapeData.shape.paths = shapeData.localPaths;
-                shapeData.shape._pathsLength = shapeData._localPathsLength;
-            } else {
+            localShapeCollection = shapeData.localShapeCollection;
+            if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
                 shapeData.shape.mdf = true;
-                shapePaths = shapeData.shape.paths;
-                jLen = shapeData.shape._pathsLength;
+                shapePaths = shapeData.shape.paths._shapes;
+                jLen = shapeData.shape.paths._length;
                 for(j=0;j<jLen;j+=1){
-                    newPaths[j] = this.processPath(shapePaths[j],rd);
-                    localPaths[j] = newPaths[j];
+                    localShapeCollection.addShape(this.processPath(shapePaths[j],rd));
                 }
-                shapeData._localPathsLength = jLen;
-                //shapeData.localPaths = newPaths;
             }
+            shapeData.shape.paths = shapeData.localShapeCollection;
         }
 
     }

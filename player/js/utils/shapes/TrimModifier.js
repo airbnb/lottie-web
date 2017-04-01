@@ -139,24 +139,23 @@ TrimModifier.prototype.processShapes = function(firstFrame){
             }
         }*/
     } else {
-        var segments = [], shapeData, newPaths, localPaths;
+        var segments = [], shapeData, newPaths, localShapeCollection;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            localPaths = shapeData.localPaths;
             if(!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2){
-                shapeData.shape.paths = shapeData.localPaths;
-                shapeData.shape._pathsLength = shapeData._localPathsLength;
+                shapeData.shape.paths = shapeData.localShapeCollection;
             } else {
-                shape_helper.releaseArray(localPaths, shapeData._localPathsLength);
+                localShapeCollection = shapeData.localShapeCollection;
+                localShapeCollection.releaseShapes();
                 shapePaths = shapeData.shape.paths;
-                jLen = shapeData.shape._pathsLength;
+                jLen = shapePaths._length;
                 totalShapeLength = 0;
                 if(!shapeData.shape.mdf && shapeData.pathsData){
                     totalShapeLength = shapeData.totalShapeLength;
                 } else {
                     pathsData = [];
                     for(j=0;j<jLen;j+=1){
-                        pathData = this.getSegmentsLength(shapePaths[j]);
+                        pathData = this.getSegmentsLength(shapePaths._shapes[j]);
                         pathsData.push(pathData);
                         totalShapeLength += pathData.totalLength;
                     }
@@ -173,7 +172,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
         for(i = len - 1; i >= 0; i -= 1){
             _pathsLength = 0;
             shapeData = this.shapes[i];
-            localPaths = shapeData.localPaths;
+            localShapeCollection = shapeData.localShapeCollection;
             newPaths = shapeData.shape.paths;
             if (shapeData.shape.mdf) {
                 if(this.m === 2 && len > 1) {
@@ -214,45 +213,42 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                         if(segments.length > 1){
                             if(shapeData.shape.v.c){
                                 this.addShapes(shapeData,segments[1], newShapesData[newShapesData.length - 1]);
-                                _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
+                                _pathsLength += this.addPaths(newShapesData, localShapeCollection);
                             } else {
-                                _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
+                                _pathsLength += this.addPaths(newShapesData, localShapeCollection);
                                 newShapesData = this.addShapes(shapeData,segments[1]);
                                 ////newPaths = newPaths.concat(newShapesData);
-                                _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
+                                _pathsLength += this.addPaths(newShapesData, localShapeCollection);
                             }
                         } else {
-                            _pathsLength += this.addPaths(newShapesData, localPaths, _pathsLength);
+                            _pathsLength += this.addPaths(newShapesData, localShapeCollection);
                         }
                     }
                     
                 }
-                shapeData.shape._pathsLength = _pathsLength;
-                shapeData._localPathsLength = _pathsLength;
             }
         }
-        for(i=0;i<_pathsLength;i+=1) {
-            newPaths[i] = localPaths[i];
-        }
+
+        shapeData.shape.paths = localShapeCollection;
     }
     if(!this.dynamicProperties.length){
         this.mdf = false;
     }
 }
 
-TrimModifier.prototype.addPaths = function(newPaths, localPathsCollection, pos) {
+TrimModifier.prototype.addPaths = function(newPaths, localShapeCollection) {
     var i, len = newPaths.length;
     for(i = 0; i < len; i += 1) {
-        localPathsCollection[pos + i] = newPaths[i];
+        localShapeCollection.addShape(newPaths[i])
     }
     return len;
 }
 
 TrimModifier.prototype.addSegment = function(pt1,pt2,pt3,pt4,shapePath,pos) {
-    shapePath.addPointAt(pt2,'o',pos);
-    shapePath.addPointAt(pt3,'i',pos + 1);
-    shapePath.addPointAt(pt1,'v',pos);
-    shapePath.addPointAt(pt4,'v',pos + 1);
+    shapePath.setPointAt(pt2,'o',pos);
+    shapePath.setPointAt(pt3,'i',pos + 1);
+    shapePath.setPointAt(pt1,'v',pos);
+    shapePath.setPointAt(pt4,'v',pos + 1);
     /*shapePath.o[pos] = pt2;
     shapePath.i[pos+1] = pt3;
     shapePath.v[pos+1] = pt4;
@@ -261,8 +257,8 @@ TrimModifier.prototype.addSegment = function(pt1,pt2,pt3,pt4,shapePath,pos) {
 
 TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
     var pathsData = shapeData.pathsData;
-    var shapePaths = shapeData.shape.paths;
-    var i, len = shapeData.shape._pathsLength, j, jLen;
+    var shapePaths = shapeData.shape.paths._shapes;
+    var i, len = shapeData.shape.paths._length, j, jLen;
     var addedLength = 0;
     var currentLengthData,segmentCount;
     var lengths;
@@ -270,7 +266,7 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
     var shapes = [];
     var initPos;
     if(!shapePath){
-        shapePath = new ShapePath();
+        shapePath = shape_pool.newShape();
         segmentCount = 0;
         initPos = 0;
     } else {
@@ -322,14 +318,14 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
         }
         ////
         ////shapePath.i[0] = [shapePath.v[0][0],shapePath.v[0][1]];
-        shapePath.addXYAt(shapePath.v[initPos][0],shapePath.v[initPos][1],'i',initPos);
-        shapePath.addXYAt(shapePath.v[shapePath._length - 1][0],shapePath.v[shapePath._length - 1][1],'o',shapePath._length - 1);
+        shapePath.setXYAt(shapePath.v[initPos][0],shapePath.v[initPos][1],'i',initPos);
+        shapePath.setXYAt(shapePath.v[shapePath._length - 1][0],shapePath.v[shapePath._length - 1][1],'o',shapePath._length - 1);
         ////shapePath.o[shapePath.v.length - 1] = [shapePath.v[shapePath.v.length - 1][0],shapePath.v[shapePath.v.length - 1][1]];
         if(addedLength > shapeSegment.e){
             break;
         }
         if(i<len-1){
-            shapePath = new ShapePath();
+            shapePath = shape_pool.newShape();
             /*shapePath = {
                 c: true,
                 v:[],
