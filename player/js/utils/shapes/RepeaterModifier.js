@@ -52,9 +52,16 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
     var shapeData, localShapeCollection, currentPath;
     var copies = Math.ceil(this.c.v);
     var offset = this.o.v;
-    var k, _pathsLength, pathData, shapeCollection, shapeCollectionList;
+    var offsetModulo = offset%1;
+    var roundOffset = offset > 0 ? Math.floor(offset) : Math.ceil(offset);
+    var k, pathData, shapeCollection, shapeCollectionList;
+    var tMat = this.tr.v.props;
+    var pProps = this.pMatrix.props;
+    var rProps = this.rMatrix.props;
+    var sProps = this.sMatrix.props;
+    var iteration = 0;
+    var l, lLen, tProps,transformers, maxLvl;
     for(i=0;i<len;i+=1){
-        _pathsLength = 0;
         shapeData = this.shapes[i];
         localShapeCollection = shapeData.localShapeCollection;
         if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
@@ -63,21 +70,15 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
             shapeCollection = shapeData.shape.paths;
             shapeCollectionList = shapeCollection._shapes;
             jLen = shapeCollection._length;
-            var iteration = 0;
-            var tMat = this.tr.v.props;
+            iteration = 0;
             this.pMatrix.reset();
             this.rMatrix.reset();
             this.sMatrix.reset();
             this.tMatrix.reset();
             this.matrix.reset();
-            var pProps = this.pMatrix.props;
-            var rProps = this.rMatrix.props;
-            var sProps = this.sMatrix.props;
 
-            var offsetModulo = offset%1;
             if(offset > 0) {
-                offset=Math.floor(offset);
-                while(iteration<offset){
+                while(iteration<roundOffset){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
                     iteration += 1;
                 }
@@ -85,9 +86,8 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, offsetModulo, false);
                     iteration += offsetModulo;
                 }
-            } else if(offset < 0) {
-                offset=Math.ceil(offset);
-                while(iteration>offset){
+            } else if(roundOffset < 0) {
+                while(iteration>roundOffset){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, true);
                     iteration -= 1;
                 }
@@ -96,7 +96,6 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                     iteration -= offsetModulo;
                 }
             }
-            var tProps;
             for(j=0;j<jLen;j+=1){
                 currentPath = shapeCollectionList[j];
                 for(k=0;k<copies;k+=1) {
@@ -105,13 +104,12 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                     }
                     if(shapeData.data.transformers) {
                         shapeData.data.lvl = 0;
-                        var maxLvl = 0;
-                        var l, lLen;
+                        maxLvl = 0;
                         lLen = shapeData.data.elements.length;
                         for(l = 0; l < lLen; l += 1) {
                             maxLvl = Math.max(maxLvl, shapeData.data.elements[l].st.lvl);
                         } 
-                        var transformers = shapeData.data.transformers;
+                        transformers = shapeData.data.transformers;
                         lLen = transformers.length;
                         for(l = lLen - 1; l >= maxLvl; l -= 1) {
                             tProps = transformers[l].mProps.v.props;
@@ -123,8 +121,7 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                         this.matrix.transform(sProps[0],sProps[1],sProps[2],sProps[3],sProps[4],sProps[5],sProps[6],sProps[7],sProps[8],sProps[9],sProps[10],sProps[11],sProps[12],sProps[13],sProps[14],sProps[15]);
                         this.matrix.transform(pProps[0],pProps[1],pProps[2],pProps[3],pProps[4],pProps[5],pProps[6],pProps[7],pProps[8],pProps[9],pProps[10],pProps[11],pProps[12],pProps[13],pProps[14],pProps[15]);
                     }
-                    localShapeCollection.addShape(this.processPath(currentPath, this.matrix))
-                    _pathsLength += 1;
+                    localShapeCollection.addShape(this.processPath(currentPath, this.matrix));
                     this.matrix.reset();
                     iteration += 1;
                 }

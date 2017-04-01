@@ -171,7 +171,7 @@ var ShapePropertyFactory = (function(){
 
         function convertEllToPath(){
             var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
-            if(this.d !== 2 && this.d !== 3){
+            if(this.d !== 3){
                 this.v.v[0][0] = p0;
                 this.v.v[0][1] = p1-s1;
                 this.v.v[1][0] = p0 + s0;
@@ -196,18 +196,6 @@ var ShapePropertyFactory = (function(){
                 this.v.o[2][1] = p1 + s1;
                 this.v.o[3][0] = p0 - s0;
                 this.v.o[3][1] = p1 - s1*cPoint;
-                /*this.v.v[0] = [p0,p1-s1];
-                this.v.i[0] = [p0 - s0*cPoint,p1 - s1];
-                this.v.o[0] = [p0 + s0*cPoint,p1 - s1];
-                this.v.v[1] = [p0 + s0,p1];
-                this.v.i[1] = [p0 + s0,p1 - s1*cPoint];
-                this.v.o[1] = [p0 + s0,p1 + s1*cPoint];
-                this.v.v[2] = [p0,p1+s1];
-                this.v.i[2] = [p0 + s0*cPoint,p1 + s1];
-                this.v.o[2] = [p0 - s0*cPoint,p1 + s1];
-                this.v.v[3] = [p0 - s0,p1];
-                this.v.i[3] = [p0 - s0,p1 + s1*cPoint];
-                this.v.o[3] = [p0 - s0,p1 - s1*cPoint];*/
             }else{
                 this.v.v[0][0] = p0;
                 this.v.v[0][1] = p1-s1;
@@ -217,7 +205,7 @@ var ShapePropertyFactory = (function(){
                 this.v.v[2][1] = p1+s1;
                 this.v.v[3][0] = p0 + s0;
                 this.v.v[3][1] = p1;
-                this.v.i[0][0] = p0 - s0*cPoint;
+                this.v.i[0][0] = p0 + s0*cPoint;
                 this.v.i[0][1] = p1 - s1;
                 this.v.i[1][0] = p0 - s0;
                 this.v.i[1][1] = p1 - s1*cPoint;
@@ -233,18 +221,6 @@ var ShapePropertyFactory = (function(){
                 this.v.o[2][1] = p1 + s1;
                 this.v.o[3][0] = p0 + s0;
                 this.v.o[3][1] = p1 - s1*cPoint;
-                /*this.v.v[0] = [p0,p1-s1];
-                this.v.o[0] = [p0 - s0*cPoint,p1 - s1];
-                this.v.i[0] = [p0 + s0*cPoint,p1 - s1];
-                this.v.v[1] = [p0 - s0,p1];
-                this.v.o[1] = [p0 - s0,p1 + s1*cPoint];
-                this.v.i[1] = [p0 - s0,p1 - s1*cPoint];
-                this.v.v[2] = [p0,p1+s1];
-                this.v.o[2] = [p0 + s0*cPoint,p1 + s1];
-                this.v.i[2] = [p0 - s0*cPoint,p1 + s1];
-                this.v.v[3] = [p0 + s0,p1];
-                this.v.o[3] = [p0 + s0,p1 - s1*cPoint];
-                this.v.i[3] = [p0 + s0,p1 + s1*cPoint];*/
             }
         }
 
@@ -312,6 +288,7 @@ var ShapePropertyFactory = (function(){
             var i, currentAng = -Math.PI/ 2;
             var dir = this.data.d === 3 ? -1 : 1;
             currentAng += this.r.v;
+            this.v._length = 0;
             for(i=0;i<numPts;i+=1){
                 var x = rad * Math.cos(currentAng);
                 var y = rad * Math.sin(currentAng);
@@ -319,7 +296,7 @@ var ShapePropertyFactory = (function(){
                 var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
                 x +=  + this.p.v[0];
                 y +=  + this.p.v[1];
-                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i);
+                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
                 /*this.v.v[i] = [x,y];
                 this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
                 this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];*/
@@ -345,6 +322,7 @@ var ShapePropertyFactory = (function(){
             var i, rad,roundness,perimSegment, currentAng = -Math.PI/ 2;
             currentAng += this.r.v;
             var dir = this.data.d === 3 ? -1 : 1;
+            this.v._length = 0;
             for(i=0;i<numPts;i+=1){
                 rad = longFlag ? longRad : shortRad;
                 roundness = longFlag ? longRound : shortRound;
@@ -355,7 +333,7 @@ var ShapePropertyFactory = (function(){
                 var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
                 x +=  + this.p.v[0];
                 y +=  + this.p.v[1];
-                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i);
+                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
 
                 /*this.v.v[i] = [x,y];
                 this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
@@ -364,8 +342,6 @@ var ShapePropertyFactory = (function(){
                 longFlag = !longFlag;
                 currentAng += angle*dir;
             }
-            //this.paths.length = 0;
-            this.paths[0] = this.v;
         }
 
         function processKeys() {
@@ -418,6 +394,7 @@ var ShapePropertyFactory = (function(){
             this.or = PropertyFactory.getProp(elem,data.or,0,0,this.dynamicProperties);
             this.os = PropertyFactory.getProp(elem,data.os,0,0.01,this.dynamicProperties);
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+            this.localShapeCollection.addShape(this.v);
             this.paths = this.localShapeCollection;
             if(this.dynamicProperties.length){
                 this.k = true;
@@ -452,36 +429,36 @@ var ShapePropertyFactory = (function(){
             var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
             var round = bm_min(v0,v1,this.r.v);
             var cPoint = round*(1-roundCorner);
-            this.v._length = round ? 8 : 4;
+            this.v._length = 0;
 
             if(this.d === 2 || this.d === 1) {
-                this.v.setTripleAt(p0+v0, p1-v1+round,p0+v0, p1-v1+round,p0+v0,p1-v1+cPoint,0);
-                this.v.setTripleAt(p0+v0, p1+v1-round,p0+v0, p1+v1-cPoint,p0+v0, p1+v1-round,1);
+                this.v.setTripleAt(p0+v0, p1-v1+round,p0+v0, p1-v1+round,p0+v0,p1-v1+cPoint,0, true);
+                this.v.setTripleAt(p0+v0, p1+v1-round,p0+v0, p1+v1-cPoint,p0+v0, p1+v1-round,1, true);
                 if(round!== 0){
-                    this.v.setTripleAt(p0+v0-round, p1+v1,p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,2);
-                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,p0-v0+round,p1+v1,3);
-                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,4);
-                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,p0-v0,p1-v1+round,5);
-                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,6);
-                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,p0+v0-round,p1-v1,7);
+                    this.v.setTripleAt(p0+v0-round, p1+v1,p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,2, true);
+                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,p0-v0+round,p1+v1,3, true);
+                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,4, true);
+                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,p0-v0,p1-v1+round,5, true);
+                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,6, true);
+                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,p0+v0-round,p1-v1,7, true);
                 } else {
                     this.v.setTripleAt(p0-v0,p1+v1,p0-v0+cPoint,p1+v1,p0-v0,p1+v1,2);
                     this.v.setTripleAt(p0-v0,p1-v1,p0-v0,p1-v1+cPoint,p0-v0,p1-v1,3);
                 }
             }else{
-                this.v.setTripleAt(p0+v0,p1-v1+round,p0+v0,p1-v1+cPoint,p0+v0,p1-v1+round,0);
+                this.v.setTripleAt(p0+v0,p1-v1+round,p0+v0,p1-v1+cPoint,p0+v0,p1-v1+round,0, true);
                 if(round!== 0){
-                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,1);
-                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,p0-v0+round,p1-v1,2);
-                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,3);
-                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,p0-v0,p1+v1-round,4);
-                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,5);
-                    this.v.setTripleAt(p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,p0+v0-round,p1+v1,6);
-                    this.v.setTripleAt(p0+v0,p1+v1-round,p0+v0,p1+v1-round,p0+v0,p1+v1-cPoint,7);
+                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,1, true);
+                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,p0-v0+round,p1-v1,2, true);
+                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,3, true);
+                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,p0-v0,p1+v1-round,4, true);
+                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,5, true);
+                    this.v.setTripleAt(p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,p0+v0-round,p1+v1,6, true);
+                    this.v.setTripleAt(p0+v0,p1+v1-round,p0+v0,p1+v1-round,p0+v0,p1+v1-cPoint,7, true);
                 } else {
-                    this.v.setTripleAt(p0-v0,p1-v1,p0-v0+cPoint,p1-v1,p0-v0,p1-v1,1);
-                    this.v.setTripleAt(p0-v0,p1+v1,p0-v0,p1+v1-cPoint,p0-v0,p1+v1,2);
-                    this.v.setTripleAt(p0+v0,p1+v1,p0+v0-cPoint,p1+v1,p0+v0,p1+v1,3);
+                    this.v.setTripleAt(p0-v0,p1-v1,p0-v0+cPoint,p1-v1,p0-v0,p1-v1,1, true);
+                    this.v.setTripleAt(p0-v0,p1+v1,p0-v0,p1+v1-cPoint,p0-v0,p1+v1,2, true);
+                    this.v.setTripleAt(p0+v0,p1+v1,p0+v0-cPoint,p1+v1,p0+v0,p1+v1,3, true);
 
                 }
             }

@@ -217,8 +217,8 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                     
                 }
             }
+            shapeData.shape.paths = localShapeCollection;
         }
-        shapeData.shape.paths = localShapeCollection;
     }
     if(!this.dynamicProperties.length){
         this.mdf = false;

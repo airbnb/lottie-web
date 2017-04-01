@@ -37,7 +37,7 @@ ShapePath.prototype.setTriplePointAt = function(v,o,i,pos) {
 	this.setTripleAt(v[0],v[1],o[0],[1],i[0],i[1],pos);
 }
 
-ShapePath.prototype.setXYAt = function(x, y, type, pos) {
+ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 	var arr;
 	this._length = Math.max(this._length, pos + 1);
 	if(this._length >= this._actualArrayLength) {
@@ -54,13 +54,15 @@ ShapePath.prototype.setXYAt = function(x, y, type, pos) {
 			arr = this.o;
 			break;
 	}
-	arr[pos] = point_pool.newPoint();
+	if(!arr[pos] || (arr[pos] && !replace)){
+		arr[pos] = point_pool.newPoint();
+	}
 	arr[pos][0] = x;
 	arr[pos][1] = y;
 }
 
-ShapePath.prototype.setTripleAt = function(vX,vY,oX,oY,iX,iY,pos) {
-	this.setXYAt(vX,vY,'v',pos);
-	this.setXYAt(oX,oY,'o',pos);
-	this.setXYAt(iX,iY,'i',pos);
+ShapePath.prototype.setTripleAt = function(vX,vY,oX,oY,iX,iY,pos, replace) {
+	this.setXYAt(vX,vY,'v',pos, replace);
+	this.setXYAt(oX,oY,'o',pos, replace);
+	this.setXYAt(iX,iY,'i',pos, replace);
 }
