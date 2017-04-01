@@ -246,8 +246,6 @@ var ShapePropertyFactory = (function(){
                 this.v.o[3] = [p0 + s0,p1 - s1*cPoint];
                 this.v.i[3] = [p0 + s0,p1 + s1*cPoint];*/
             }
-            this.paths.length = 0;
-            this.paths[0] = this.v;
         }
 
         function processKeys(frameNum){
@@ -266,8 +264,6 @@ var ShapePropertyFactory = (function(){
             }
             if(this.mdf){
                 this.convertEllToPath();
-                this.paths.length = 0;
-                this.paths[0] = this.v;
             }
         }
 
@@ -282,6 +278,7 @@ var ShapePropertyFactory = (function(){
             this.v.setPathData(true, 4);
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
             this.paths = this.localShapeCollection;
+            this.localShapeCollection.addShape(this.v);
             this.d = data.d;
             this.dynamicProperties = [];
             this.elem = elem;
@@ -459,271 +456,42 @@ var ShapePropertyFactory = (function(){
 
             if(this.d === 2 || this.d === 1) {
                 this.v.setTripleAt(p0+v0, p1-v1+round,p0+v0, p1-v1+round,p0+v0,p1-v1+cPoint,0);
-                /*this.v.v[0][0] = p0+v0;
-                this.v.v[0][1] = p1-v1+round;
-                this.v.o[0] = this.v.v[0];
-                this.v.i[0][0] = p0+v0;
-                this.v.i[0][1] = p1-v1+cPoint;*/
-
                 this.v.setTripleAt(p0+v0, p1+v1-round,p0+v0, p1+v1-cPoint,p0+v0, p1+v1-round,1);
-                /*this.v.v[1][0] = p0+v0;
-                this.v.v[1][1] = p1+v1-round;
-                this.v.o[1][0] = p0+v0;
-                this.v.o[1][1] = p1+v1-cPoint;
-                this.v.i[1] = this.v.v[1];*/
-
-                /*this.v.v[0] = [p0+v0,p1-v1+round];
-                this.v.o[0] = this.v.v[0];
-                this.v.i[0] = [p0+v0,p1-v1+cPoint];
-
-                this.v.v[1] = [p0+v0,p1+v1-round];
-                this.v.o[1] = [p0+v0,p1+v1-cPoint];
-                this.v.i[1] = this.v.v[1];*/
-
                 if(round!== 0){
-
                     this.v.setTripleAt(p0+v0-round, p1+v1,p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,2);
-                    /*this.v.v[2][0] = p0+v0-round;
-                    this.v.v[2][1] = p1+v1;
-                    this.v.o[2][0] = p0+v0-round;
-                    this.v.o[2][1] = p1+v1;
-                    this.v.i[2][0] = p0+v0-cPoint;
-                    this.v.i[2][1] = p1+v1;*/
-
-
                     this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,p0-v0+round,p1+v1,3);
-                    /*this.v.v[3][0] = p0-v0+round;
-                    this.v.v[3][1] = p1+v1;
-                    this.v.o[3][0] = p0-v0+cPoint;
-                    this.v.o[3][1] = p1+v1;
-                    this.v.i[3][0] = p0-v0+round;
-                    this.v.i[3][1] = p1+v1;*/
-
-
                     this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,4);
-                    /*this.v.v[4][0] = p0-v0;
-                    this.v.v[4][1] = p1+v1-round;
-                    this.v.o[4][0] = p0-v0;
-                    this.v.o[4][1] = p1+v1-round;
-                    this.v.i[4][0] = p0-v0;
-                    this.v.i[4][1] = p1+v1-cPoint;*/
-
                     this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,p0-v0,p1-v1+round,5);
-                    /*this.v.v[5][0] = p0-v0;
-                    this.v.v[5][1] = p1-v1+round;
-                    this.v.o[5][0] = p0-v0;
-                    this.v.o[5][1] = p1-v1+cPoint;
-                    this.v.i[5][0] = p0-v0;
-                    this.v.i[5][1] = p1-v1+round;*/
-
                     this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,6);
-                    /*this.v.v[6][0] = p0-v0+round;
-                    this.v.v[6][1] = p1-v1;
-                    this.v.o[6][0] = p0-v0+round;
-                    this.v.o[6][1] = p1-v1;
-                    this.v.i[6][0] = p0-v0+cPoint;
-                    this.v.i[6][1] = p1-v1;*/
-
                     this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,p0+v0-round,p1-v1,7);
-                    /*this.v.v[7][0] = p0+v0-round;
-                    this.v.v[7][1] = p1-v1;
-                    this.v.o[7][0] = p0+v0-cPoint;
-                    this.v.o[7][1] = p1-v1;
-                    this.v.i[7][0] = p0+v0-round;
-                    this.v.i[7][1] = p1-v1;*/
-
-
-                    /*this.v.v[2] = [p0+v0-round,p1+v1];
-                    this.v.o[2] = this.v.v[2];
-                    this.v.i[2] = [p0+v0-cPoint,p1+v1];
-                    this.v.v[3] = [p0-v0+round,p1+v1];
-                    this.v.o[3] = [p0-v0+cPoint,p1+v1];
-                    this.v.i[3] = this.v.v[3];
-                    this.v.v[4] = [p0-v0,p1+v1-round];
-                    this.v.o[4] = this.v.v[4];
-                    this.v.i[4] = [p0-v0,p1+v1-cPoint];
-                    this.v.v[5] = [p0-v0,p1-v1+round];
-                    this.v.o[5] = [p0-v0,p1-v1+cPoint];
-                    this.v.i[5] = this.v.v[5];
-                    this.v.v[6] = [p0-v0+round,p1-v1];
-                    this.v.o[6] = this.v.v[6];
-                    this.v.i[6] = [p0-v0+cPoint,p1-v1];
-                    this.v.v[7] = [p0+v0-round,p1-v1];
-                    this.v.o[7] = [p0+v0-cPoint,p1-v1];
-                    this.v.i[7] = this.v.v[7];*/
                 } else {
                     this.v.setTripleAt(p0-v0,p1+v1,p0-v0+cPoint,p1+v1,p0-v0,p1+v1,2);
-                    /*this.v.v[2][0] = p0-v0+round;
-                    this.v.v[2][1] = p1+v1;
-                    this.v.o[2][0] = p0-v0+cPoint;
-                    this.v.o[2][1] = p1+v1;
-                    this.v.i[2][0] = p0-v0+round;
-                    this.v.i[2][1] = p1+v1;*/
-
                     this.v.setTripleAt(p0-v0,p1-v1,p0-v0,p1-v1+cPoint,p0-v0,p1-v1,3);
-                    /*this.v.v[3][0] = p0-v0;
-                    this.v.v[3][1] = p1-v1+round;
-                    this.v.o[3][0] = p0-v0;
-                    this.v.o[3][1] = p1-v1+cPoint;
-                    this.v.i[3][0] = p0-v0;
-                    this.v.i[3][1] = p1-v1+round;*/
-                    /*
-                    this.v.v[2] = [p0-v0+round,p1+v1];
-                    this.v.o[2] = [p0-v0+cPoint,p1+v1];
-                    this.v.i[2] = this.v.v[2];
-                    this.v.v[3] = [p0-v0,p1-v1+round];
-                    this.v.o[3] = [p0-v0,p1-v1+cPoint];
-                    this.v.i[3] = this.v.v[3];*/
                 }
             }else{
                 this.v.setTripleAt(p0+v0,p1-v1+round,p0+v0,p1-v1+cPoint,p0+v0,p1-v1+round,0);
-                /*this.v.v[0][0] = p0+v0;
-                this.v.v[0][1] = p1-v1+round;
-                this.v.o[0][0] = p0+v0;
-                this.v.o[0][1] = p1-v1+cPoint;
-                this.v.i[0][0] = p0+v0;
-                this.v.i[0][1] = p1-v1+round;*/
-                /*
-                this.v.v[0] = [p0+v0,p1-v1+round];
-                this.v.o[0] = [p0+v0,p1-v1+cPoint];
-                this.v.i[0] = this.v.v[0];*/
-
                 if(round!== 0){
                     this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,1);
-                    /*this.v.v[1][0] = p0+v0-round;
-                    this.v.v[1][1] = p1-v1;
-                    this.v.o[1][0] = p0+v0-round;
-                    this.v.o[1][1] = p1-v1;
-                    this.v.i[1][0] = p0+v0-cPoint;
-                    this.v.i[1][1] = p1-v1;*/
-                    /*
-                    this.v.v[1] = [p0+v0-round,p1-v1];
-                    this.v.o[1] = this.v.v[1];
-                    this.v.i[1] = [p0+v0-cPoint,p1-v1];*/
-
                     this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,p0-v0+round,p1-v1,2);
-                    /*this.v.v[2][0] = p0-v0+round;
-                    this.v.v[2][1] = p1-v1;
-                    this.v.o[2][2] = p0-v0+cPoint;
-                    this.v.o[2][1] = p1-v1;
-                    this.v.i[2][0] = p0-v0+round;
-                    this.v.i[2][1] = p1-v1;*/
-                    /*
-                    this.v.v[2] = [p0-v0+round,p1-v1];
-                    this.v.o[2] = [p0-v0+cPoint,p1-v1];
-                    this.v.i[2] = this.v.v[2];*/
-
                     this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,3);
-                    /*this.v.v[3][0] = p0-v0;
-                    this.v.v[3][1] = p1-v1+round;
-                    this.v.o[3][0] = p0-v0;
-                    this.v.o[3][1] = p1-v1+round;
-                    this.v.i[3][0] = p0-v0;
-                    this.v.i[3][1] = p1-v1+cPoint;*/
-                    /*
-                    this.v.v[3] = [p0-v0,p1-v1+round];
-                    this.v.o[3] = this.v.v[3];
-                    this.v.i[3] = [p0-v0,p1-v1+cPoint];*/
-
                     this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,p0-v0,p1+v1-round,4);
-                    /*this.v.v[4][0] = p0-v0;
-                    this.v.v[4][1] = p1+v1-round;
-                    this.v.o[4][0] = p0-v0;
-                    this.v.o[4][1] = p1+v1-cPoint;
-                    this.v.i[4][0] = p0-v0;
-                    this.v.i[4][1] = p1+v1-round;*/
-                    /*
-                    this.v.v[4] = [p0-v0,p1+v1-round];
-                    this.v.o[4] = [p0-v0,p1+v1-cPoint];
-                    this.v.i[4] = this.v.v[4];*/
-
                     this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,5);
-                    /*this.v.v[5][0] = p0-v0+round;
-                    this.v.v[5][1] = p1+v1;
-                    this.v.o[5][0] = p0-v0+round;
-                    this.v.o[5][1] = p1+v1;
-                    this.v.i[5][0] = p0-v0+cPoint;
-                    this.v.i[5][1] = p1+v1;*/
-                    /*
-                    this.v.v[5] = [p0-v0+round,p1+v1];
-                    this.v.o[5] = this.v.v[5];
-                    this.v.i[5] = [p0-v0+cPoint,p1+v1];*/
-
                     this.v.setTripleAt(p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,p0+v0-round,p1+v1,6);
-                    /*this.v.v[6][0] = p0+v0-round;
-                    this.v.v[6][1] = p1+v1;
-                    this.v.o[6][0] = p0+v0-cPoint;
-                    this.v.o[6][1] = p1+v1;
-                    this.v.i[6][0] = p0+v0-round;
-                    this.v.i[6][1] = p1+v1;*/
-                    /*
-                    this.v.v[6] = [p0+v0-round,p1+v1];
-                    this.v.o[6] = [p0+v0-cPoint,p1+v1];
-                    this.v.i[6] = this.v.v[6];*/
-
                     this.v.setTripleAt(p0+v0,p1+v1-round,p0+v0,p1+v1-round,p0+v0,p1+v1-cPoint,7);
-                    /*this.v.v[7][0] = p0+v0;
-                    this.v.v[7][1] = p1+v1-round;
-                    this.v.o[7][0] = p0+v0;
-                    this.v.o[7][1] = p1+v1-round;
-                    this.v.i[7][0] = p0+v0;
-                    this.v.i[7][1] = p1+v1-cPoint;*/
-                    /*
-                    this.v.v[7] = [p0+v0,p1+v1-round];
-                    this.v.o[7] = this.v.v[7];
-                    this.v.i[7] = [p0+v0,p1+v1-cPoint];*/
                 } else {
                     this.v.setTripleAt(p0-v0,p1-v1,p0-v0+cPoint,p1-v1,p0-v0,p1-v1,1);
-                    /*this.v.v[1][0] = p0-v0+round;
-                    this.v.v[1][1] = p1-v1;
-                    this.v.o[1][0] = p0-v0+cPoint;
-                    this.v.o[1][1] = p1-v1;
-                    this.v.i[1][0] = p0-v0+round;
-                    this.v.i[1][1] = p1-v1;*/
-
                     this.v.setTripleAt(p0-v0,p1+v1,p0-v0,p1+v1-cPoint,p0-v0,p1+v1,2);
-                    /*this.v.v[2][0] = p0-v0;
-                    this.v.v[2][1] = p1+v1-round;
-                    this.v.o[2][0] = p0-v0;
-                    this.v.o[2][1] = p1+v1-cPoint;
-                    this.v.i[2][0] = p0-v0;
-                    this.v.i[2][1] = p1+v1-round;*/
-
                     this.v.setTripleAt(p0+v0,p1+v1,p0+v0-cPoint,p1+v1,p0+v0,p1+v1,3);
-                    /*this.v.v[3][0] = p0+v0-round;
-                    this.v.v[3][1] = p1+v1;
-                    this.v.o[3][0] = p0+v0-cPoint;
-                    this.v.o[3][1] = p1+v1;
-                    this.v.i[3][0] = p0+v0-round;
-                    this.v.i[3][1] = p1+v1;*/
-                    /*
-                    this.v.v[1] = [p0-v0+round,p1-v1];
-                    this.v.o[1] = [p0-v0+cPoint,p1-v1];
-                    this.v.i[1] = this.v.v[1];
-                    this.v.v[2] = [p0-v0,p1+v1-round];
-                    this.v.o[2] = [p0-v0,p1+v1-cPoint];
-                    this.v.i[2] = this.v.v[2];
-                    this.v.v[3] = [p0+v0-round,p1+v1];
-                    this.v.o[3] = [p0+v0-cPoint,p1+v1];
-                    this.v.i[3] = this.v.v[3];*/
 
                 }
             }
-            //this.paths.length = 0;
-            this.paths[0] = this.v;
         }
 
         return function RectShapeProperty(elem,data) {
-            /*this.v = {
-                v: Array.apply(null,{length:8}),
-                i: Array.apply(null,{length:8}),
-                o: Array.apply(null,{length:8}),
-                c: true
-            };*/
             this.v = shape_pool.newShape();
             this.v.c = true;
-            //this.v.setPathData(true, 4);
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+            this.localShapeCollection.addShape(this.v);
             this.paths = this.localShapeCollection;
             this.elem = elem;
             this.comp = elem.comp;

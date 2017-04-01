@@ -106,6 +106,7 @@ RoundCornersModifier.prototype.processShapes = function(firstFrame){
             newPaths = shapeData.shape.paths;
             localShapeCollection = shapeData.localShapeCollection;
             if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
+                localShapeCollection.releaseShapes();
                 shapeData.shape.mdf = true;
                 shapePaths = shapeData.shape.paths._shapes;
                 jLen = shapeData.shape.paths._length;
