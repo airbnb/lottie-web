@@ -161,9 +161,9 @@ TrimModifier.prototype.processShapes = function(firstFrame){
         var j, jLen;
         for(i = len - 1; i >= 0; i -= 1){
             shapeData = this.shapes[i];
-            localShapeCollection = shapeData.localShapeCollection;
-            localShapeCollection.releaseShapes();
             if (shapeData.shape.mdf) {
+                localShapeCollection = shapeData.localShapeCollection;
+                localShapeCollection.releaseShapes();
                 if(this.m === 2 && len > 1) {
                     var edges = this.calculateShapeEdges(s, e, shapeData.totalShapeLength, addedLength, totalModifierLength);
                     addedLength += shapeData.totalShapeLength;
@@ -203,20 +203,17 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                                 var lastShape = newShapesData.pop();
                                 this.addPaths(newShapesData, localShapeCollection);
                                 newShapesData = this.addShapes(shapeData,segments[1], lastShape);
-                                this.addPaths(newShapesData, localShapeCollection);
                             } else {
                                 this.addPaths(newShapesData, localShapeCollection);
                                 newShapesData = this.addShapes(shapeData,segments[1]);
-                                this.addPaths(newShapesData, localShapeCollection);
                             }
-                        } else {
-                            this.addPaths(newShapesData, localShapeCollection);
-                        }
+                        } 
+                        this.addPaths(newShapesData, localShapeCollection);
                     }
                     
                 }
+                shapeData.shape.paths = localShapeCollection;
             }
-            shapeData.shape.paths = localShapeCollection;
         }
     }
     if(!this.dynamicProperties.length){
@@ -232,11 +229,15 @@ TrimModifier.prototype.addPaths = function(newPaths, localShapeCollection) {
 }
 
 TrimModifier.prototype.addSegment = function(pt1,pt2,pt3,pt4,shapePath,pos) {
+    /*console.log(pt1, 'vertex: v, at: ', pos);
+    console.log(pt2, 'vertex: o, at: ', pos);
+    console.log(pt3, 'vertex: i, at: ', pos + 1);
+    console.log(pt4, 'vertex: v, at: ', pos + 1);*/
     shapePath.setPointAt(pt2,'o',pos);
     shapePath.setPointAt(pt3,'i',pos + 1);
-    //if(pos === 0){
+    if(pos === 0){
         shapePath.setPointAt(pt1,'v',pos);
-    //}
+    }
     shapePath.setPointAt(pt4,'v',pos + 1);
 }
 
