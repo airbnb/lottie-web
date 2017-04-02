@@ -120,12 +120,12 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/cowboy.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
