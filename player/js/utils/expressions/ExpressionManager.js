@@ -679,11 +679,11 @@ var ExpressionManager = (function(){
                     this.lastValue = this.v;
                     this.mdf = true;
                 }
-            }else if(this.v.i){
+            }else if(this.v._length){
                 // Todo Improve validation for masks and shapes
                 this.mdf = true;
-                this.paths.length = 0;
-                this.paths[0] = this.v;
+                this.localShapeCollection.releaseShapes();
+                this.localShapeCollection.addShape(this.v);
             }else{
                 len = this.v.length;
                 for(i = 0; i < len; i += 1){

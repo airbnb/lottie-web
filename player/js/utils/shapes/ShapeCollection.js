@@ -1,6 +1,6 @@
 function ShapeCollection(){
 	this._length = 0;
-	this._actualArrayLength = 8;
+	this._actualArrayLength = 4;
 	this._shapes = Array.apply(null,{length:this._actualArrayLength});
 }
 

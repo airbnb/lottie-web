@@ -1,9 +1,9 @@
 var point_pool = (function(){
 	var ob = {
 		newPoint: newPoint,
-		release: release,
-		getLength:function(){return _length},
-		getCont:function(){return cont}
+		release: release
+		/*,getLength:function(){return _length}
+		,getCont:function(){return cont}*/
 	}
 
 	var _length = 0;

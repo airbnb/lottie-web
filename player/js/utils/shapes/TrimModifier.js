@@ -257,7 +257,6 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
         shapePath = shape_pool.newShape();
         segmentCount = 0;
         initPos = 0;
-        newShape = true;
     } else {
         segmentCount = shapePath._length;
         initPos = shapePath._length;
@@ -317,7 +316,7 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
         }
         if(i<len-1){
             shapePath = shape_pool.newShape();
-            //newShape = true;
+            newShape = true;
             shapes.push(shapePath);
             segmentCount = 0;
         }
