@@ -68,7 +68,7 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
             localShapeCollection.releaseShapes();
             shapeData.shape.mdf = true;
             shapeCollection = shapeData.shape.paths;
-            shapeCollectionList = shapeCollection._shapes;
+            shapeCollectionList = shapeCollection.shapes;
             jLen = shapeCollection._length;
             iteration = 0;
             this.pMatrix.reset();

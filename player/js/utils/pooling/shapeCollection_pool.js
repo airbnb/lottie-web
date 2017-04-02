@@ -25,7 +25,7 @@ var shapeCollection_pool = (function(){
 	function release(shapeCollection) {
 		var i, len = shapeCollection._length;
 		for(i = 0; i < len; i += 1) {
-			shape_pool.release(shapeCollection._shapes[i]);
+			shape_pool.release(shapeCollection.shapes[i]);
 		}
 		shapeCollection._length = 0;
 

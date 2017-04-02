@@ -138,7 +138,7 @@ var ShapePropertyFactory = (function(){
         this.v.c = pathData.c;
         this.v._length = this.v.v.length;
         this.getValue = getShapeValue;
-        this.pv = this.v;
+        this.pv = shape_pool.clone(this.v);
         this.localShapeCollection = shapeCollection_pool.newShapeCollection();
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);

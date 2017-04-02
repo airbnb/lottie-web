@@ -145,7 +145,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 } else {
                     pathsData = [];
                     for(j=0;j<jLen;j+=1){
-                        pathData = this.getSegmentsLength(shapePaths._shapes[j]);
+                        pathData = this.getSegmentsLength(shapePaths.shapes[j]);
                         pathsData.push(pathData);
                         totalShapeLength += pathData.totalLength;
                     }
@@ -244,7 +244,7 @@ TrimModifier.prototype.addSegment = function(pt1,pt2,pt3,pt4,shapePath,pos, newS
 
 TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){
     var pathsData = shapeData.pathsData;
-    var shapePaths = shapeData.shape.paths._shapes;
+    var shapePaths = shapeData.shape.paths.shapes;
     var i, len = shapeData.shape.paths._length, j, jLen;
     var addedLength = 0;
     var currentLengthData,segmentCount;

@@ -380,7 +380,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
             }
             if(redraw){
                 for(j=0;j<jLen;j+=1){
-                    pathNodes = paths._shapes[j];
+                    pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes._length){
                         len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {
@@ -405,7 +405,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
         } else {
             if(redraw){
                 for(j=0;j<jLen;j+=1){
-                    pathNodes = paths._shapes[j];
+                    pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes._length){
                         len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {

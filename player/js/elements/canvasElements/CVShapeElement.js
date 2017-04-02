@@ -280,7 +280,7 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
         var pathStringTransformed = viewData.trNodes;
         pathStringTransformed.length = 0;
         for(j=0;j<jLen;j+=1){
-            var pathNodes = paths._shapes[j];
+            var pathNodes = paths.shapes[j];
             if(pathNodes && pathNodes.v){
                 len = pathNodes._length;
                 for (i = 1; i < len; i += 1) {
