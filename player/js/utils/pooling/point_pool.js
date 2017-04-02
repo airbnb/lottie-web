@@ -7,8 +7,8 @@ var point_pool = (function(){
 	}
 
 	var _length = 0;
-	var _topLength = 8;
-	var pool = Array.apply(null,{length:_topLength});
+	var _maxLength = 8;
+	var pool = Array.apply(null,{length:_maxLength});
 
 	//var cont = 0;
 
@@ -30,9 +30,9 @@ var point_pool = (function(){
 	}
 
 	function release(point) {
-		if(_length === _topLength) {
+		if(_length === _maxLength) {
 			pool = pooling.double(pool);
-			_topLength = _topLength*2;
+			_maxLength = _maxLength*2;
 		}
 		pool[_length] = point;
 		_length += 1;

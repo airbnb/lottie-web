@@ -6,8 +6,8 @@ var shapeCollection_pool = (function(){
 	}
 
 	var _length = 0;
-	var _topLength = 4;
-	var pool = Array.apply(null,{length:_topLength});
+	var _maxLength = 4;
+	var pool = Array.apply(null,{length:_maxLength});
 
 	var cont = 0;
 
@@ -29,9 +29,9 @@ var shapeCollection_pool = (function(){
 		}
 		shapeCollection._length = 0;
 
-		if(_length === _topLength) {
+		if(_length === _maxLength) {
 			pool = pooling.double(pool);
-			_topLength = _topLength*2;
+			_maxLength = _maxLength*2;
 		}
 		pool[_length] = shapeCollection;
 		_length += 1;
@@ -39,9 +39,9 @@ var shapeCollection_pool = (function(){
 
 	function clone(shapeCollection, originCollection) {
 		release(shapeCollection);
-		if(_length === _topLength) {
+		if(_length === _maxLength) {
 			pool = pooling.double(pool);
-			_topLength = _topLength*2;
+			_maxLength = _maxLength*2;
 		}
 		pool[_length] = shapeCollection;
 		_length += 1;

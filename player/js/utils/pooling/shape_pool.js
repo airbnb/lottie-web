@@ -7,8 +7,8 @@ var shape_pool = (function(){
 	}
 
 	var _length = 0;
-	var _topLength = 4;
-	var pool = Array.apply(null,{length:_topLength});
+	var _maxLength = 4;
+	var pool = Array.apply(null,{length:_maxLength});
 
 	function newShape(){
 		var shapePath;
@@ -22,9 +22,9 @@ var shape_pool = (function(){
 	}
 
 	function release(shapePath) {
-		if(_length === _topLength) {
+		if(_length === _maxLength) {
 			pool = pooling.double(pool);
-			_topLength = _topLength*2;
+			_maxLength = _maxLength*2;
 		}
 		var len = shapePath._length, i;
 		for(i = 0; i < len; i += 1) {

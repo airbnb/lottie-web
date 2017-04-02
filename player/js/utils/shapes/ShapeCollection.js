@@ -1,13 +1,13 @@
 function ShapeCollection(){
 	this._length = 0;
-	this._actualArrayLength = 4;
-	this.shapes = Array.apply(null,{length:this._actualArrayLength});
+	this._maxLength = 4;
+	this.shapes = Array.apply(null,{length:this._maxLength});
 }
 
 ShapeCollection.prototype.addShape = function(shapeData){
-	if(this._length === this._actualArrayLength){
-		this.shapes = this.shapes.concat(Array.apply(null,{length:this._actualArrayLength}));
-		this._actualArrayLength *= 2;
+	if(this._length === this._maxLength){
+		this.shapes = this.shapes.concat(Array.apply(null,{length:this._maxLength}));
+		this._maxLength *= 2;
 	}
 	this.shapes[this._length] = shapeData;
 	this._length += 1;

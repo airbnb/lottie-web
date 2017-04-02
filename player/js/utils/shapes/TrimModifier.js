@@ -234,12 +234,12 @@ TrimModifier.prototype.addSegment = function(pt1,pt2,pt3,pt4,shapePath,pos, newS
     console.log(pt3, 'vertex: i, at: ', pos + 1);
     console.log(pt4, 'vertex: v, at: ', pos + 1);
     console.log('newShape: ', newShape);*/
-    shapePath.setPointAt(pt2,'o',pos);
-    shapePath.setPointAt(pt3,'i',pos + 1);
+    shapePath.setXYAt(pt2[0],pt2[1],'o',pos);
+    shapePath.setXYAt(pt3[0],pt3[1],'i',pos + 1);
     if(newShape){
-        shapePath.setPointAt(pt1,'v',pos);
+        shapePath.setXYAt(pt1[0],pt1[1],'v',pos);
     }
-    shapePath.setPointAt(pt4,'v',pos + 1);
+    shapePath.setXYAt(pt4[0],pt4[1],'v',pos + 1);
 }
 
 TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath){

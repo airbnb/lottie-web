@@ -1,15 +1,15 @@
 function ShapePath(){
 	this.c = false;
 	this._length = 0;
-	this._actualArrayLength = 8;
-	this.v = Array.apply(null,{length:this._actualArrayLength});
-	this.o = Array.apply(null,{length:this._actualArrayLength});
-	this.i = Array.apply(null,{length:this._actualArrayLength});
+	this._maxLength = 8;
+	this.v = Array.apply(null,{length:this._maxLength});
+	this.o = Array.apply(null,{length:this._maxLength});
+	this.i = Array.apply(null,{length:this._maxLength});
 }
 
 ShapePath.prototype.setPathData = function(closed, len) {
 	this.c = closed;
-	while(len > this._actualArrayLength){
+	while(len > this._maxLength){
 		this.doubleArrayLength();
 	}
 	var i = 0;
@@ -23,24 +23,16 @@ ShapePath.prototype.setPathData = function(closed, len) {
 }
 
 ShapePath.prototype.doubleArrayLength = function() {
-	this.v = this.v.concat(Array.apply(null,{length:this._actualArrayLength}))
-	this.i = this.i.concat(Array.apply(null,{length:this._actualArrayLength}))
-	this.o = this.o.concat(Array.apply(null,{length:this._actualArrayLength}))
-	this._actualArrayLength *= 2;
-}
-
-ShapePath.prototype.setPointAt = function(point, type, pos) {
-	this.setXYAt(point[0],point[1],type,pos);
-}
-
-ShapePath.prototype.setTriplePointAt = function(v,o,i,pos) {
-	this.setTripleAt(v[0],v[1],o[0],[1],i[0],i[1],pos);
+	this.v = this.v.concat(Array.apply(null,{length:this._maxLength}))
+	this.i = this.i.concat(Array.apply(null,{length:this._maxLength}))
+	this.o = this.o.concat(Array.apply(null,{length:this._maxLength}))
+	this._maxLength *= 2;
 }
 
 ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 	var arr;
 	this._length = Math.max(this._length, pos + 1);
-	if(this._length >= this._actualArrayLength) {
+	if(this._length >= this._maxLength) {
 		this.doubleArrayLength();
 	}
 	switch(type){
