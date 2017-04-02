@@ -59,7 +59,7 @@ var ShapePropertyFactory = (function(){
                 }
                 keyPropS = keyData.s[0];
             }
-            jLen = this.v.i.length;
+            jLen = this.v._length;
             kLen = keyPropS.i[0].length;
             var hasModified = false;
             var vertexValue;
@@ -107,9 +107,8 @@ var ShapePropertyFactory = (function(){
                 }
             }
             this.mdf = hasModified;
-            this.paths.length = 0;
             this.v.c = keyPropS.c;
-            this.paths[0] = this.v;
+            this.paths = this.localShapeCollection;
         }
 
         this.lastFrame = frameNum;
@@ -121,29 +120,32 @@ var ShapePropertyFactory = (function(){
     }
 
     function resetShape(){
-        this.resetPaths.length = 1;
-        this.resetPaths[0] = this.v;
-        this.paths = this.resetPaths;
+        this.paths = this.localShapeCollection;
         if(!this.k){
             this.mdf = false;
         }
     }
 
     function ShapeProperty(elem, data, type){
-        this.resetPaths = [];
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
-        this.numNodes = type === 3 ? data.pt.k.v.length : data.ks.k.v.length;
-        this.v = type === 3 ? data.pt.k : data.ks.k;
+        this.v = shape_pool.newShape();
+        var pathData = type === 3 ? data.pt.k : data.ks.k;
+        this.v.v = pathData.v;
+        this.v.i = pathData.i;
+        this.v.o = pathData.o;
+        this.v.c = pathData.c;
+        this.v._length = this.v.v.length;
         this.getValue = getShapeValue;
-        this.pv = this.v;
-        this.paths = [this.v];
+        this.pv = shape_pool.clone(this.v);
+        this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+        this.paths = this.localShapeCollection;
+        this.paths.addShape(this.v);
         this.reset = resetShape;
     }
 
     function KeyframedShapeProperty(elem,data,type){
-        this.resetPaths = [];
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
@@ -153,28 +155,12 @@ var ShapePropertyFactory = (function(){
         this.k = true;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
-        this.numNodes = len;
-        this.v = {
-            i: Array.apply(null,{length:len}),
-            o: Array.apply(null,{length:len}),
-            v: Array.apply(null,{length:len}),
-            c: this.keyframes[0].s[0].c
-        };
-        this.pv = {
-            i: Array.apply(null,{length:len}),
-            o: Array.apply(null,{length:len}),
-            v: Array.apply(null,{length:len}),
-            c: this.keyframes[0].s[0].c
-        };
-        for(i=0;i<len;i+=1){
-            this.v.i[i] = Array.apply(null,{length:jLen});
-            this.v.o[i] = Array.apply(null,{length:jLen});
-            this.v.v[i] = Array.apply(null,{length:jLen});
-            this.pv.i[i] = Array.apply(null,{length:jLen});
-            this.pv.o[i] = Array.apply(null,{length:jLen});
-            this.pv.v[i] = Array.apply(null,{length:jLen});
-        }
-        this.paths = [];
+        this.v = shape_pool.newShape();
+        this.v.setPathData(this.keyframes[0].s[0].c, len);
+        this.pv = shape_pool.clone(this.v);
+        this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+        this.paths = this.localShapeCollection;
+        this.paths.addShape(this.v);
         this.lastFrame = initFrame;
         this.reset = resetShape;
     }
@@ -185,35 +171,57 @@ var ShapePropertyFactory = (function(){
 
         function convertEllToPath(){
             var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
-            if(this.d !== 2 && this.d !== 3){
-                this.v.v[0] = [p0,p1-s1];
-                this.v.i[0] = [p0 - s0*cPoint,p1 - s1];
-                this.v.o[0] = [p0 + s0*cPoint,p1 - s1];
-                this.v.v[1] = [p0 + s0,p1];
-                this.v.i[1] = [p0 + s0,p1 - s1*cPoint];
-                this.v.o[1] = [p0 + s0,p1 + s1*cPoint];
-                this.v.v[2] = [p0,p1+s1];
-                this.v.i[2] = [p0 + s0*cPoint,p1 + s1];
-                this.v.o[2] = [p0 - s0*cPoint,p1 + s1];
-                this.v.v[3] = [p0 - s0,p1];
-                this.v.i[3] = [p0 - s0,p1 + s1*cPoint];
-                this.v.o[3] = [p0 - s0,p1 - s1*cPoint];
+            if(this.d !== 3){
+                this.v.v[0][0] = p0;
+                this.v.v[0][1] = p1-s1;
+                this.v.v[1][0] = p0 + s0;
+                this.v.v[1][1] = p1;
+                this.v.v[2][0] = p0;
+                this.v.v[2][1] = p1+s1;
+                this.v.v[3][0] = p0 - s0;
+                this.v.v[3][1] = p1;
+                this.v.i[0][0] = p0 - s0*cPoint;
+                this.v.i[0][1] = p1 - s1;
+                this.v.i[1][0] = p0 + s0;
+                this.v.i[1][1] = p1 - s1*cPoint;
+                this.v.i[2][0] = p0 + s0*cPoint;
+                this.v.i[2][1] = p1 + s1;
+                this.v.i[3][0] = p0 - s0;
+                this.v.i[3][1] = p1 + s1*cPoint;
+                this.v.o[0][0] = p0 + s0*cPoint;
+                this.v.o[0][1] = p1 - s1;
+                this.v.o[1][0] = p0 + s0;
+                this.v.o[1][1] = p1 + s1*cPoint;
+                this.v.o[2][0] = p0 - s0*cPoint;
+                this.v.o[2][1] = p1 + s1;
+                this.v.o[3][0] = p0 - s0;
+                this.v.o[3][1] = p1 - s1*cPoint;
             }else{
-                this.v.v[0] = [p0,p1-s1];
-                this.v.o[0] = [p0 - s0*cPoint,p1 - s1];
-                this.v.i[0] = [p0 + s0*cPoint,p1 - s1];
-                this.v.v[1] = [p0 - s0,p1];
-                this.v.o[1] = [p0 - s0,p1 + s1*cPoint];
-                this.v.i[1] = [p0 - s0,p1 - s1*cPoint];
-                this.v.v[2] = [p0,p1+s1];
-                this.v.o[2] = [p0 + s0*cPoint,p1 + s1];
-                this.v.i[2] = [p0 - s0*cPoint,p1 + s1];
-                this.v.v[3] = [p0 + s0,p1];
-                this.v.o[3] = [p0 + s0,p1 - s1*cPoint];
-                this.v.i[3] = [p0 + s0,p1 + s1*cPoint];
+                this.v.v[0][0] = p0;
+                this.v.v[0][1] = p1-s1;
+                this.v.v[1][0] = p0 - s0;
+                this.v.v[1][1] = p1;
+                this.v.v[2][0] = p0;
+                this.v.v[2][1] = p1+s1;
+                this.v.v[3][0] = p0 + s0;
+                this.v.v[3][1] = p1;
+                this.v.i[0][0] = p0 + s0*cPoint;
+                this.v.i[0][1] = p1 - s1;
+                this.v.i[1][0] = p0 - s0;
+                this.v.i[1][1] = p1 - s1*cPoint;
+                this.v.i[2][0] = p0 - s0*cPoint;
+                this.v.i[2][1] = p1 + s1;
+                this.v.i[3][0] = p0 + s0;
+                this.v.i[3][1] = p1 + s1*cPoint;
+                this.v.o[0][0] = p0 - s0*cPoint;
+                this.v.o[0][1] = p1 - s1;
+                this.v.o[1][0] = p0 - s0;
+                this.v.o[1][1] = p1 + s1*cPoint;
+                this.v.o[2][0] = p0 + s0*cPoint;
+                this.v.o[2][1] = p1 + s1;
+                this.v.o[3][0] = p0 + s0;
+                this.v.o[3][1] = p1 - s1*cPoint;
             }
-            this.paths.length = 0;
-            this.paths[0] = this.v;
         }
 
         function processKeys(frameNum){
@@ -232,23 +240,23 @@ var ShapePropertyFactory = (function(){
             }
             if(this.mdf){
                 this.convertEllToPath();
-                this.paths.length = 0;
-                this.paths[0] = this.v;
             }
         }
 
         return function EllShapeProperty(elem,data) {
-            this.v = {
+            /*this.v = {
                 v: Array.apply(null,{length:4}),
                 i: Array.apply(null,{length:4}),
                 o: Array.apply(null,{length:4}),
                 c: true
-            };
-            this.numNodes = 4;
+            };*/
+            this.v = shape_pool.newShape();
+            this.v.setPathData(true, 4);
+            this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+            this.paths = this.localShapeCollection;
+            this.localShapeCollection.addShape(this.v);
             this.d = data.d;
             this.dynamicProperties = [];
-            this.resetPaths = [];
-            this.paths = [];
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;
@@ -271,15 +279,16 @@ var ShapePropertyFactory = (function(){
         function convertPolygonToPath(){
             var numPts = Math.floor(this.pt.v);
             var angle = Math.PI*2/numPts;
-            this.v.v.length = numPts;
+            /*this.v.v.length = numPts;
             this.v.i.length = numPts;
-            this.v.o.length = numPts;
+            this.v.o.length = numPts;*/
             var rad = this.or.v;
             var roundness = this.os.v;
             var perimSegment = 2*Math.PI*rad/(numPts*4);
             var i, currentAng = -Math.PI/ 2;
             var dir = this.data.d === 3 ? -1 : 1;
             currentAng += this.r.v;
+            this.v._length = 0;
             for(i=0;i<numPts;i+=1){
                 var x = rad * Math.cos(currentAng);
                 var y = rad * Math.sin(currentAng);
@@ -287,12 +296,12 @@ var ShapePropertyFactory = (function(){
                 var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
                 x +=  + this.p.v[0];
                 y +=  + this.p.v[1];
-                this.v.v[i] = [x,y];
+                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
+                /*this.v.v[i] = [x,y];
                 this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
-                this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
+                this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];*/
                 currentAng += angle*dir;
             }
-            this.numNodes = numPts;
             this.paths.length = 0;
             this.paths[0] = this.v;
         }
@@ -300,9 +309,9 @@ var ShapePropertyFactory = (function(){
         function convertStarToPath() {
             var numPts = Math.floor(this.pt.v)*2;
             var angle = Math.PI*2/numPts;
-            this.v.v.length = numPts;
+            /*this.v.v.length = numPts;
             this.v.i.length = numPts;
-            this.v.o.length = numPts;
+            this.v.o.length = numPts;*/
             var longFlag = true;
             var longRad = this.or.v;
             var shortRad = this.ir.v;
@@ -313,6 +322,7 @@ var ShapePropertyFactory = (function(){
             var i, rad,roundness,perimSegment, currentAng = -Math.PI/ 2;
             currentAng += this.r.v;
             var dir = this.data.d === 3 ? -1 : 1;
+            this.v._length = 0;
             for(i=0;i<numPts;i+=1){
                 rad = longFlag ? longRad : shortRad;
                 roundness = longFlag ? longRound : shortRound;
@@ -323,15 +333,15 @@ var ShapePropertyFactory = (function(){
                 var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
                 x +=  + this.p.v[0];
                 y +=  + this.p.v[1];
-                this.v.v[i] = [x,y];
+                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
+
+                /*this.v.v[i] = [x,y];
                 this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
                 this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
+                this.v._length = numPts;*/
                 longFlag = !longFlag;
                 currentAng += angle*dir;
             }
-            this.numNodes = numPts;
-            this.paths.length = 0;
-            this.paths[0] = this.v;
         }
 
         function processKeys() {
@@ -354,13 +364,14 @@ var ShapePropertyFactory = (function(){
         }
 
         return function StarShapeProperty(elem,data) {
-            this.v = {
+            /*this.v = {
                 v: [],
                 i: [],
                 o: [],
                 c: true
-            };
-            this.resetPaths = [];
+            };*/
+            this.v = shape_pool.newShape();
+            this.v.setPathData(true, 0);
             this.elem = elem;
             this.comp = elem.comp;
             this.data = data;
@@ -382,7 +393,9 @@ var ShapePropertyFactory = (function(){
             this.r = PropertyFactory.getProp(elem,data.r,0,degToRads,this.dynamicProperties);
             this.or = PropertyFactory.getProp(elem,data.or,0,0,this.dynamicProperties);
             this.os = PropertyFactory.getProp(elem,data.os,0,0.01,this.dynamicProperties);
-            this.paths = [];
+            this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+            this.localShapeCollection.addShape(this.v);
+            this.paths = this.localShapeCollection;
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
@@ -416,113 +429,47 @@ var ShapePropertyFactory = (function(){
             var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
             var round = bm_min(v0,v1,this.r.v);
             var cPoint = round*(1-roundCorner);
-            if(round === 0){
-                this.v.v.length = 4;
-                this.v.i.length = 4;
-                this.v.o.length = 4;
-            } else {
-                this.v.v.length = 8;
-                this.v.i.length = 8;
-                this.v.o.length = 8;
-            }
+            this.v._length = 0;
 
             if(this.d === 2 || this.d === 1) {
-
-                this.v.v[0] = [p0+v0,p1-v1+round];
-                this.v.o[0] = this.v.v[0];
-                this.v.i[0] = [p0+v0,p1-v1+cPoint];
-
-                this.v.v[1] = [p0+v0,p1+v1-round];
-                this.v.o[1] = [p0+v0,p1+v1-cPoint];
-                this.v.i[1] = this.v.v[1];
-
+                this.v.setTripleAt(p0+v0, p1-v1+round,p0+v0, p1-v1+round,p0+v0,p1-v1+cPoint,0, true);
+                this.v.setTripleAt(p0+v0, p1+v1-round,p0+v0, p1+v1-cPoint,p0+v0, p1+v1-round,1, true);
                 if(round!== 0){
-                    this.v.v[2] = [p0+v0-round,p1+v1];
-                    this.v.o[2] = this.v.v[2];
-                    this.v.i[2] = [p0+v0-cPoint,p1+v1];
-                    this.v.v[3] = [p0-v0+round,p1+v1];
-                    this.v.o[3] = [p0-v0+cPoint,p1+v1];
-                    this.v.i[3] = this.v.v[3];
-                    this.v.v[4] = [p0-v0,p1+v1-round];
-                    this.v.o[4] = this.v.v[4];
-                    this.v.i[4] = [p0-v0,p1+v1-cPoint];
-                    this.v.v[5] = [p0-v0,p1-v1+round];
-                    this.v.o[5] = [p0-v0,p1-v1+cPoint];
-                    this.v.i[5] = this.v.v[5];
-                    this.v.v[6] = [p0-v0+round,p1-v1];
-                    this.v.o[6] = this.v.v[6];
-                    this.v.i[6] = [p0-v0+cPoint,p1-v1];
-                    this.v.v[7] = [p0+v0-round,p1-v1];
-                    this.v.o[7] = [p0+v0-cPoint,p1-v1];
-                    this.v.i[7] = this.v.v[7];
+                    this.v.setTripleAt(p0+v0-round, p1+v1,p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,2, true);
+                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,p0-v0+round,p1+v1,3, true);
+                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,4, true);
+                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,p0-v0,p1-v1+round,5, true);
+                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,6, true);
+                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,p0+v0-round,p1-v1,7, true);
                 } else {
-                    this.v.v[2] = [p0-v0+round,p1+v1];
-                    this.v.o[2] = [p0-v0+cPoint,p1+v1];
-                    this.v.i[2] = this.v.v[2];
-                    this.v.v[3] = [p0-v0,p1-v1+round];
-                    this.v.o[3] = [p0-v0,p1-v1+cPoint];
-                    this.v.i[3] = this.v.v[3];
+                    this.v.setTripleAt(p0-v0,p1+v1,p0-v0+cPoint,p1+v1,p0-v0,p1+v1,2);
+                    this.v.setTripleAt(p0-v0,p1-v1,p0-v0,p1-v1+cPoint,p0-v0,p1-v1,3);
                 }
             }else{
-                this.v.v[0] = [p0+v0,p1-v1+round];
-                this.v.o[0] = [p0+v0,p1-v1+cPoint];
-                this.v.i[0] = this.v.v[0];
-
+                this.v.setTripleAt(p0+v0,p1-v1+round,p0+v0,p1-v1+cPoint,p0+v0,p1-v1+round,0, true);
                 if(round!== 0){
-                    this.v.v[1] = [p0+v0-round,p1-v1];
-                    this.v.o[1] = this.v.v[1];
-                    this.v.i[1] = [p0+v0-cPoint,p1-v1];
-
-                    this.v.v[2] = [p0-v0+round,p1-v1];
-                    this.v.o[2] = [p0-v0+cPoint,p1-v1];
-                    this.v.i[2] = this.v.v[2];
-
-                    this.v.v[3] = [p0-v0,p1-v1+round];
-                    this.v.o[3] = this.v.v[3];
-                    this.v.i[3] = [p0-v0,p1-v1+cPoint];
-
-                    this.v.v[4] = [p0-v0,p1+v1-round];
-                    this.v.o[4] = [p0-v0,p1+v1-cPoint];
-                    this.v.i[4] = this.v.v[4];
-
-                    this.v.v[5] = [p0-v0+round,p1+v1];
-                    this.v.o[5] = this.v.v[5];
-                    this.v.i[5] = [p0-v0+cPoint,p1+v1];
-
-                    this.v.v[6] = [p0+v0-round,p1+v1];
-                    this.v.o[6] = [p0+v0-cPoint,p1+v1];
-                    this.v.i[6] = this.v.v[6];
-
-                    this.v.v[7] = [p0+v0,p1+v1-round];
-                    this.v.o[7] = this.v.v[7];
-                    this.v.i[7] = [p0+v0,p1+v1-cPoint];
+                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,1, true);
+                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,p0-v0+round,p1-v1,2, true);
+                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,3, true);
+                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,p0-v0,p1+v1-round,4, true);
+                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,5, true);
+                    this.v.setTripleAt(p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,p0+v0-round,p1+v1,6, true);
+                    this.v.setTripleAt(p0+v0,p1+v1-round,p0+v0,p1+v1-round,p0+v0,p1+v1-cPoint,7, true);
                 } else {
-                    this.v.v[1] = [p0-v0+round,p1-v1];
-                    this.v.o[1] = [p0-v0+cPoint,p1-v1];
-                    this.v.i[1] = this.v.v[1];
-                    this.v.v[2] = [p0-v0,p1+v1-round];
-                    this.v.o[2] = [p0-v0,p1+v1-cPoint];
-                    this.v.i[2] = this.v.v[2];
-                    this.v.v[3] = [p0+v0-round,p1+v1];
-                    this.v.o[3] = [p0+v0-cPoint,p1+v1];
-                    this.v.i[3] = this.v.v[3];
+                    this.v.setTripleAt(p0-v0,p1-v1,p0-v0+cPoint,p1-v1,p0-v0,p1-v1,1, true);
+                    this.v.setTripleAt(p0-v0,p1+v1,p0-v0,p1+v1-cPoint,p0-v0,p1+v1,2, true);
+                    this.v.setTripleAt(p0+v0,p1+v1,p0+v0-cPoint,p1+v1,p0+v0,p1+v1,3, true);
 
                 }
             }
-            this.paths.length = 0;
-            this.paths[0] = this.v;
         }
 
         return function RectShapeProperty(elem,data) {
-            this.v = {
-                v: Array.apply(null,{length:8}),
-                i: Array.apply(null,{length:8}),
-                o: Array.apply(null,{length:8}),
-                c: true
-            };
-            this.resetPaths = [];
-            this.paths = [];
-            this.numNodes = 8;
+            this.v = shape_pool.newShape();
+            this.v.c = true;
+            this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+            this.localShapeCollection.addShape(this.v);
+            this.paths = this.localShapeCollection;
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;

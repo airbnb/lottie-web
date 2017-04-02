@@ -19,6 +19,21 @@ var ExpressionManager = (function(){
         }
     }
 
+    function shapesEqual(shape1, shape2) {
+        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
+            return false;
+        }
+        var i, len = shape1._length;
+        for(i = 0; i < len; i += 1) {
+            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1]
+                || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1]
+                || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
+                return false;
+            }
+        }
+        return true;
+    }
+
     function $bm_neg(a){
         var tOfA = typeof a;
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
@@ -676,11 +691,12 @@ var ExpressionManager = (function(){
                     this.lastValue = this.v;
                     this.mdf = true;
                 }
-            }else if(this.v.i){
-                // Todo Improve validation for masks and shapes
-                this.mdf = true;
-                this.paths.length = 0;
-                this.paths[0] = this.v;
+            }else if(this.v._length){
+                if(!shapesEqual(this.v,this.localShapeCollection.shapes[0])){
+                    this.mdf = true;
+                    this.localShapeCollection.releaseShapes();
+                    this.localShapeCollection.addShape(shape_pool.clone(this.v));
+                }
             }else{
                 len = this.v.length;
                 for(i = 0; i < len; i += 1){

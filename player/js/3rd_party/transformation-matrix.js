@@ -269,7 +269,13 @@ var Matrix = (function(){
         return retPts;
     }
 
-    function applyToPointArray(x,y,z){
+    function applyToPointArray(x,y,z,dimensions){
+        if(dimensions && dimensions === 2) {
+            arr = point_pool.newPoint();
+            arr[0] = x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12]; 
+            arr[1] = x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13]; 
+            return arr;    
+        }
         return [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
     }
     function applyToPointStringified(x, y) {

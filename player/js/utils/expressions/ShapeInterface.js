@@ -9,6 +9,7 @@ var ShapeExpressionInterface = (function(){
         createStarInterface:createStarInterface,
         createRectInterface:createRectInterface,
         createRoundedInterface:createRoundedInterface,
+        createRepatearInterface:createRepatearInterface,
         createPathInterface:createPathInterface,
         createFillInterface:createFillInterface
     };
@@ -42,6 +43,9 @@ var ShapeExpressionInterface = (function(){
     function createRoundedInterface(shape,view,propertyGroup){
         return roundedInterfaceFactory(shape,view,propertyGroup);
     }
+    function createRepatearInterface(shape,view,propertyGroup){
+        return repeaterInterfaceFactory(shape,view,propertyGroup);
+    }
     function createPathInterface(shape,view,propertyGroup){
         return pathInterfaceFactory(shape,view,propertyGroup);
     }
@@ -70,6 +74,8 @@ var ShapeExpressionInterface = (function(){
                 arr.push(ShapeExpressionInterface.createRectInterface(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rd'){
                 arr.push(ShapeExpressionInterface.createRoundedInterface(shapes[i],view[i],propertyGroup));
+            } else if(shapes[i].ty == 'rp'){
+                arr.push(ShapeExpressionInterface.createRepatearInterface(shapes[i],view[i],propertyGroup));
             } else{
                 //console.log(shapes[i].ty);
             }
@@ -689,6 +695,50 @@ var ShapeExpressionInterface = (function(){
         }
     }());
 
+    var repeaterInterfaceFactory = (function(){
+        return function(shape,view,propertyGroup){
+            function _propertyGroup(val){
+                if(val == 1){
+                    return interfaceFunction;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            var prop = view;
+            interfaceFunction.propertyIndex = shape.ix;
+            prop.c.setGroupProperty(_propertyGroup);
+            prop.o.setGroupProperty(_propertyGroup);
+
+            function interfaceFunction(value){
+                if(shape.c.ix === value || 'Copies' === value){
+                    return interfaceFunction.copies;
+                } else if(shape.o.ix === value || 'Offset' === value){
+                    return interfaceFunction.offset;
+                }
+
+            }
+            Object.defineProperty(interfaceFunction, 'copies', {
+                get: function(){
+                    return ExpressionValue(prop.c);
+                }
+            });
+
+            Object.defineProperty(interfaceFunction, 'offset', {
+                get: function(){
+                    return ExpressionValue(prop.o);
+                }
+            });
+
+            Object.defineProperty(interfaceFunction, '_name', {
+                get: function(){
+                    return shape.nm;
+                }
+            });
+            interfaceFunction.mn = shape.mn;
+            return interfaceFunction;
+        }
+    }());
+
     var pathInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
@@ -704,7 +754,8 @@ var ShapeExpressionInterface = (function(){
                     if(prop.k){
                         prop.getValue();
                     }
-                    return shape_helper.clone(prop.v);
+                    return prop.v;
+                    //return shape_pool.clone(prop.v);
                 }
             });
             Object.defineProperty(interfaceFunction, 'shape', {
@@ -712,7 +763,8 @@ var ShapeExpressionInterface = (function(){
                     if(prop.k){
                         prop.getValue();
                     }
-                    return shape_helper.clone(prop.v);
+                    return prop.v;
+                    //return shape_pool.clone(prop.v);
                 }
             });
             Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
