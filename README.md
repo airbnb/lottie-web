@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.6.2
+- repeaters! (partially but should cover many cases)
+- new expressions
+- render improvements
+- reduced garbage collection
+
 ## V 4.6.1
 - 3D orientation fix
 - render improvements
@@ -11,53 +17,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js
 - performance improvement on animations with offsetted layers
 - big performance improvement on expressions
 - expressions expressions expressions
-
-## V 4.5.9
-- expressions variable declaration fix
-- effect control type fix
-
-## V 4.5.8
-- fill-rule for fills and gradient fills on shapes
-- rounding colors values with an extra decimal
-- property expressions that return strings are evaluated as numbers
-
-## V 4.5.7
-- standalone autoplay fix
-
-## V 4.5.6
-- expression instance fix for CEP
-- new variables declarations in expression conditional statements
-- reduced filesize on exported shapes with different vertex count
-- setting parents context when calling destroy (fixes webpack issue)
-
-## V 4.5.5
-- Text selector Triangle fix
-- Expressions support for "active" property on effects
-- Rearranged exporting properties
-- Included "a" property for animated props
-- Docs updated
-
-## V 4.5.4
-- Trim path individually supported
-- bug fix that messed with webpack build
-
-## V 4.5.3
-- Skipping non breaking space on characters
-- levels effect optimizations
-- shape expressions transform properties added (Needed to fix a Rubberhose 2 issue)
-- transform properties in expression through transformInterface
-
-## V 4.5.2
-- Comp expression interface default return
-- HTML renderer validation fix
-
-## V 4.5.1
-- Trim path fix
-- Html renderer fixes
-
-## V 4.5.0
-- Tritone effect supported
-- Levels effect supported. The one called "Levels (Individual Controls)"
 
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
