@@ -109,16 +109,16 @@ var ShapeExpressionInterface = (function(){
        return function(shape,view, propertyGroup){
            var interfaces;
            var interfaceFunction = function _interfaceFunction(value){
-               if(typeof value === 'number'){
-                   return interfaces[value-1];
-               }
                var i = 0, len = interfaces.length;
-               while(i<len){
-                   if(interfaces[i]._name === value || interfaces[i].mn === value){
+                while(i<len){
+                    if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value){
                        return interfaces[i];
-                   }
-                   i+=1;
-               }
+                    }
+                    i+=1;
+                }
+                if(typeof value === 'number'){
+                   return interfaces[value-1];
+                }
            };
            interfaceFunction.propertyGroup = function(val){
                if(val === 1){
@@ -742,7 +742,14 @@ var ShapeExpressionInterface = (function(){
     var pathInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            prop.setGroupProperty(propertyGroup);
+            function _propertyGroup(val){
+                if(val == 1){
+                    return interfaceFunction;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            prop.setGroupProperty(_propertyGroup);
 
             function interfaceFunction(val){
                 if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path'){
@@ -768,6 +775,7 @@ var ShapeExpressionInterface = (function(){
                 }
             });
             Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
+            Object.defineProperty(interfaceFunction, 'ix', { value: shape.ix });
             Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
             return interfaceFunction;
         }
