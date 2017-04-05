@@ -153,6 +153,7 @@ var ShapePropertyFactory = (function(){
         this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
+        this.kf = true;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
         this.v = shape_pool.newShape();
