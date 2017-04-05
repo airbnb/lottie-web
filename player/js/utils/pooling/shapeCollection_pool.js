@@ -49,4 +49,4 @@ var shapeCollection_pool = (function(){
 
 
 	return ob;
-}())
+}());

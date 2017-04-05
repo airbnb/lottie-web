@@ -42,4 +42,4 @@ var point_pool = (function(){
 
 
 	return ob;
-}())
+}());

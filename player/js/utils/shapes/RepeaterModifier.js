@@ -14,7 +14,7 @@ RepeaterModifier.prototype.processKeys = function(forceRender){
             this.mdf = true;
         }
     }
-}
+};
 RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this.dynamicProperties);
@@ -129,12 +129,12 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
         }
         shapeData.shape.paths = localShapeCollection;
     }
-}
+};
 
 RepeaterModifier.prototype.processPath = function(path, transform) {
     var clonedPath = shape_pool.clone(path, transform);
     return clonedPath;
-}
+};
 
 
 ShapeModifiers.registerModifier('rp',RepeaterModifier);

@@ -7,4 +7,4 @@ var pooling = (function(){
 	return {
 		double: double
 	}
-}())
+}());

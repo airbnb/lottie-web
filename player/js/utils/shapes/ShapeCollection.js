@@ -2,7 +2,7 @@ function ShapeCollection(){
 	this._length = 0;
 	this._maxLength = 4;
 	this.shapes = Array.apply(null,{length:this._maxLength});
-}
+};
 
 ShapeCollection.prototype.addShape = function(shapeData){
 	if(this._length === this._maxLength){
@@ -11,7 +11,7 @@ ShapeCollection.prototype.addShape = function(shapeData){
 	}
 	this.shapes[this._length] = shapeData;
 	this._length += 1;
-}
+};
 
 ShapeCollection.prototype.releaseShapes = function(){
 	var i;
@@ -19,4 +19,4 @@ ShapeCollection.prototype.releaseShapes = function(){
 		shape_pool.release(this.shapes[i]);
 	}
 	this._length = 0;
-}
+};

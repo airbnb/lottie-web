@@ -5,7 +5,7 @@ function ShapePath(){
 	this.v = Array.apply(null,{length:this._maxLength});
 	this.o = Array.apply(null,{length:this._maxLength});
 	this.i = Array.apply(null,{length:this._maxLength});
-}
+};
 
 ShapePath.prototype.setPathData = function(closed, len) {
 	this.c = closed;
@@ -20,14 +20,14 @@ ShapePath.prototype.setPathData = function(closed, len) {
 		i += 1;
 	}
 	this._length = len;
-}
+};
 
 ShapePath.prototype.doubleArrayLength = function() {
 	this.v = this.v.concat(Array.apply(null,{length:this._maxLength}))
 	this.i = this.i.concat(Array.apply(null,{length:this._maxLength}))
 	this.o = this.o.concat(Array.apply(null,{length:this._maxLength}))
 	this._maxLength *= 2;
-}
+};
 
 ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 	var arr;
@@ -51,10 +51,10 @@ ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 	}
 	arr[pos][0] = x;
 	arr[pos][1] = y;
-}
+};
 
 ShapePath.prototype.setTripleAt = function(vX,vY,oX,oY,iX,iY,pos, replace) {
 	this.setXYAt(vX,vY,'v',pos, replace);
 	this.setXYAt(oX,oY,'o',pos, replace);
 	this.setXYAt(iX,iY,'i',pos, replace);
-}
+};
