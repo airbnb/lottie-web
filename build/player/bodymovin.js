@@ -3046,7 +3046,7 @@ function ShapePath(){
 	this.v = Array.apply(null,{length:this._maxLength});
 	this.o = Array.apply(null,{length:this._maxLength});
 	this.i = Array.apply(null,{length:this._maxLength});
-}
+};
 
 ShapePath.prototype.setPathData = function(closed, len) {
 	this.c = closed;
@@ -3061,14 +3061,14 @@ ShapePath.prototype.setPathData = function(closed, len) {
 		i += 1;
 	}
 	this._length = len;
-}
+};
 
 ShapePath.prototype.doubleArrayLength = function() {
 	this.v = this.v.concat(Array.apply(null,{length:this._maxLength}))
 	this.i = this.i.concat(Array.apply(null,{length:this._maxLength}))
 	this.o = this.o.concat(Array.apply(null,{length:this._maxLength}))
 	this._maxLength *= 2;
-}
+};
 
 ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 	var arr;
@@ -3092,13 +3092,13 @@ ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 	}
 	arr[pos][0] = x;
 	arr[pos][1] = y;
-}
+};
 
 ShapePath.prototype.setTripleAt = function(vX,vY,oX,oY,iX,iY,pos, replace) {
 	this.setXYAt(vX,vY,'v',pos, replace);
 	this.setXYAt(oX,oY,'o',pos, replace);
 	this.setXYAt(iX,iY,'i',pos, replace);
-}
+};
 var ShapePropertyFactory = (function(){
 
     var initFrame = -999999;
@@ -4136,7 +4136,7 @@ RepeaterModifier.prototype.processKeys = function(forceRender){
             this.mdf = true;
         }
     }
-}
+};
 RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this.dynamicProperties);
@@ -4251,12 +4251,12 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
         }
         shapeData.shape.paths = localShapeCollection;
     }
-}
+};
 
 RepeaterModifier.prototype.processPath = function(path, transform) {
     var clonedPath = shape_pool.clone(path, transform);
     return clonedPath;
-}
+};
 
 
 ShapeModifiers.registerModifier('rp',RepeaterModifier);
@@ -4264,7 +4264,7 @@ function ShapeCollection(){
 	this._length = 0;
 	this._maxLength = 4;
 	this.shapes = Array.apply(null,{length:this._maxLength});
-}
+};
 
 ShapeCollection.prototype.addShape = function(shapeData){
 	if(this._length === this._maxLength){
@@ -4273,7 +4273,7 @@ ShapeCollection.prototype.addShape = function(shapeData){
 	}
 	this.shapes[this._length] = shapeData;
 	this._length += 1;
-}
+};
 
 ShapeCollection.prototype.releaseShapes = function(){
 	var i;
@@ -4281,7 +4281,7 @@ ShapeCollection.prototype.releaseShapes = function(){
 		shape_pool.release(this.shapes[i]);
 	}
 	this._length = 0;
-}
+};
 var ImagePreloader = (function(){
 
     function imageLoaded(){
@@ -4377,6 +4377,188 @@ var filtersFactory = (function(){
 
 	return ob;
 }())
+var pooling = (function(){
+
+	function double(arr){
+		return arr.concat(Array.apply(null,{length:arr.length}))
+	}
+
+	return {
+		double: double
+	}
+}());
+var point_pool = (function(){
+	var ob = {
+		newPoint: newPoint,
+		release: release
+		/*,getLength:function(){return _length}
+		,getCont:function(){return cont}*/
+	}
+
+	var _length = 0;
+	var _maxLength = 8;
+	var pool = Array.apply(null,{length:_maxLength});
+
+	//var cont = 0;
+
+	function newPoint(){
+		//window.bm_newPoint = window.bm_newPoint ? window.bm_newPoint + 1 : 1;
+		var point;
+		if(_length){
+			_length -= 1;
+			point = pool[_length];
+			//window.bm_reuse = window.bm_reuse ? window.bm_reuse + 1 : 1;
+		} else {
+			point = [0.1,0.1];
+			//cont++;
+			//console.log('new');
+			//window.bm_new = window.bm_new ? window.bm_new + 1 : 1;
+			//point._tst = cont++;
+		}
+		return point;
+	}
+
+	function release(point) {
+		if(_length === _maxLength) {
+			pool = pooling.double(pool);
+			_maxLength = _maxLength*2;
+		}
+		pool[_length] = point;
+		_length += 1;
+		//window.bm_release = window.bm_release ? window.bm_release + 1 : 1;
+		//console.log('release');
+	}
+
+
+	return ob;
+}());
+var shape_pool = (function(){
+	var ob = {
+		clone: clone,
+		newShape: newShape,
+		release: release,
+		releaseArray: releaseArray
+	}
+
+	var _length = 0;
+	var _maxLength = 4;
+	var pool = Array.apply(null,{length:_maxLength});
+
+	function newShape(){
+		var shapePath;
+		if(_length){
+			_length -= 1;
+			shapePath = pool[_length];
+		} else {
+			shapePath = new ShapePath();
+		}
+		return shapePath;
+	}
+
+	function release(shapePath) {
+		if(_length === _maxLength) {
+			pool = pooling.double(pool);
+			_maxLength = _maxLength*2;
+		}
+		var len = shapePath._length, i;
+		for(i = 0; i < len; i += 1) {
+			point_pool.release(shapePath.v[i]);
+			point_pool.release(shapePath.i[i]);
+			point_pool.release(shapePath.o[i]);
+		}
+		shapePath._length = 0;
+		shapePath.c = false;
+		pool[_length] = shapePath;
+		_length += 1;
+	}
+
+	function releaseArray(shapePathsCollection, length) {
+		while(length--) {
+			release(shapePathsCollection[length]);
+		}
+	}
+
+	function clone(shape, transform) {
+		var i, len = shape._length;
+		var cloned = newShape();
+		cloned._length = shape._length;
+		cloned.c = shape.c;
+
+		var pt;
+		
+		for(i = 0; i < len; i += 1) {
+			if(transform){
+				pt = transform.applyToPointArray(shape.v[i][0],shape.v[i][1],0,2);
+				cloned.setXYAt(pt[0],pt[1],'v',i);
+				point_pool.release(pt);
+				pt = transform.applyToPointArray(shape.o[i][0],shape.o[i][1],0,2);
+				cloned.setXYAt(pt[0],pt[1],'o',i);
+				point_pool.release(pt);
+				pt = transform.applyToPointArray(shape.i[i][0],shape.i[i][1],0,2);
+				cloned.setXYAt(pt[0],pt[1],'i',i);
+				point_pool.release(pt);
+			}else{
+				cloned.setTripleAt(shape.v[i][0],shape.v[i][1],shape.o[i][0],shape.o[i][1],shape.i[i][0],shape.i[i][1], i);
+			}
+		}
+		return cloned
+	}
+
+
+	return ob;
+}());
+var shapeCollection_pool = (function(){
+	var ob = {
+		newShapeCollection: newShapeCollection,
+		release: release,
+		clone: clone
+	}
+
+	var _length = 0;
+	var _maxLength = 4;
+	var pool = Array.apply(null,{length:_maxLength});
+
+	var cont = 0;
+
+	function newShapeCollection(){
+		var shapeCollection;
+		if(_length){
+			_length -= 1;
+			shapeCollection = pool[_length];
+		} else {
+			shapeCollection = new ShapeCollection();
+		}
+		return shapeCollection;
+	}
+
+	function release(shapeCollection) {
+		var i, len = shapeCollection._length;
+		for(i = 0; i < len; i += 1) {
+			shape_pool.release(shapeCollection.shapes[i]);
+		}
+		shapeCollection._length = 0;
+
+		if(_length === _maxLength) {
+			pool = pooling.double(pool);
+			_maxLength = _maxLength*2;
+		}
+		pool[_length] = shapeCollection;
+		_length += 1;
+	}
+
+	function clone(shapeCollection, originCollection) {
+		release(shapeCollection);
+		if(_length === _maxLength) {
+			pool = pooling.double(pool);
+			_maxLength = _maxLength*2;
+		}
+		pool[_length] = shapeCollection;
+		_length += 1;
+	}
+
+
+	return ob;
+}());
 function BaseRenderer(){}
 BaseRenderer.prototype.checkLayers = function(num){
     var i, len = this.layers.length, data;
@@ -8344,188 +8526,6 @@ AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
 
-var pooling = (function(){
-
-	function double(arr){
-		return arr.concat(Array.apply(null,{length:arr.length}))
-	}
-
-	return {
-		double: double
-	}
-}())
-var point_pool = (function(){
-	var ob = {
-		newPoint: newPoint,
-		release: release
-		/*,getLength:function(){return _length}
-		,getCont:function(){return cont}*/
-	}
-
-	var _length = 0;
-	var _maxLength = 8;
-	var pool = Array.apply(null,{length:_maxLength});
-
-	//var cont = 0;
-
-	function newPoint(){
-		//window.bm_newPoint = window.bm_newPoint ? window.bm_newPoint + 1 : 1;
-		var point;
-		if(_length){
-			_length -= 1;
-			point = pool[_length];
-			//window.bm_reuse = window.bm_reuse ? window.bm_reuse + 1 : 1;
-		} else {
-			point = [0.1,0.1];
-			//cont++;
-			//console.log('new');
-			//window.bm_new = window.bm_new ? window.bm_new + 1 : 1;
-			//point._tst = cont++;
-		}
-		return point;
-	}
-
-	function release(point) {
-		if(_length === _maxLength) {
-			pool = pooling.double(pool);
-			_maxLength = _maxLength*2;
-		}
-		pool[_length] = point;
-		_length += 1;
-		//window.bm_release = window.bm_release ? window.bm_release + 1 : 1;
-		//console.log('release');
-	}
-
-
-	return ob;
-}())
-var shape_pool = (function(){
-	var ob = {
-		clone: clone,
-		newShape: newShape,
-		release: release,
-		releaseArray: releaseArray
-	}
-
-	var _length = 0;
-	var _maxLength = 4;
-	var pool = Array.apply(null,{length:_maxLength});
-
-	function newShape(){
-		var shapePath;
-		if(_length){
-			_length -= 1;
-			shapePath = pool[_length];
-		} else {
-			shapePath = new ShapePath();
-		}
-		return shapePath;
-	}
-
-	function release(shapePath) {
-		if(_length === _maxLength) {
-			pool = pooling.double(pool);
-			_maxLength = _maxLength*2;
-		}
-		var len = shapePath._length, i;
-		for(i = 0; i < len; i += 1) {
-			point_pool.release(shapePath.v[i]);
-			point_pool.release(shapePath.i[i]);
-			point_pool.release(shapePath.o[i]);
-		}
-		shapePath._length = 0;
-		shapePath.c = false;
-		pool[_length] = shapePath;
-		_length += 1;
-	}
-
-	function releaseArray(shapePathsCollection, length) {
-		while(length--) {
-			release(shapePathsCollection[length]);
-		}
-	}
-
-	function clone(shape, transform) {
-		var i, len = shape._length;
-		var cloned = newShape();
-		cloned._length = shape._length;
-		cloned.c = shape.c;
-
-		var pt;
-		
-		for(i = 0; i < len; i += 1) {
-			if(transform){
-				pt = transform.applyToPointArray(shape.v[i][0],shape.v[i][1],0,2);
-				cloned.setXYAt(pt[0],pt[1],'v',i);
-				point_pool.release(pt);
-				pt = transform.applyToPointArray(shape.o[i][0],shape.o[i][1],0,2);
-				cloned.setXYAt(pt[0],pt[1],'o',i);
-				point_pool.release(pt);
-				pt = transform.applyToPointArray(shape.i[i][0],shape.i[i][1],0,2);
-				cloned.setXYAt(pt[0],pt[1],'i',i);
-				point_pool.release(pt);
-			}else{
-				cloned.setTripleAt(shape.v[i][0],shape.v[i][1],shape.o[i][0],shape.o[i][1],shape.i[i][0],shape.i[i][1], i);
-			}
-		}
-		return cloned
-	}
-
-
-	return ob;
-}())
-var shapeCollection_pool = (function(){
-	var ob = {
-		newShapeCollection: newShapeCollection,
-		release: release,
-		clone: clone
-	}
-
-	var _length = 0;
-	var _maxLength = 4;
-	var pool = Array.apply(null,{length:_maxLength});
-
-	var cont = 0;
-
-	function newShapeCollection(){
-		var shapeCollection;
-		if(_length){
-			_length -= 1;
-			shapeCollection = pool[_length];
-		} else {
-			shapeCollection = new ShapeCollection();
-		}
-		return shapeCollection;
-	}
-
-	function release(shapeCollection) {
-		var i, len = shapeCollection._length;
-		for(i = 0; i < len; i += 1) {
-			shape_pool.release(shapeCollection.shapes[i]);
-		}
-		shapeCollection._length = 0;
-
-		if(_length === _maxLength) {
-			pool = pooling.double(pool);
-			_maxLength = _maxLength*2;
-		}
-		pool[_length] = shapeCollection;
-		_length += 1;
-	}
-
-	function clone(shapeCollection, originCollection) {
-		release(shapeCollection);
-		if(_length === _maxLength) {
-			pool = pooling.double(pool);
-			_maxLength = _maxLength*2;
-		}
-		pool[_length] = shapeCollection;
-		_length += 1;
-	}
-
-
-	return ob;
-}())
 function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.renderConfig = {
@@ -12174,16 +12174,16 @@ var ShapeExpressionInterface = (function(){
        return function(shape,view, propertyGroup){
            var interfaces;
            var interfaceFunction = function _interfaceFunction(value){
-               if(typeof value === 'number'){
-                   return interfaces[value-1];
-               }
                var i = 0, len = interfaces.length;
-               while(i<len){
-                   if(interfaces[i]._name === value || interfaces[i].mn === value){
+                while(i<len){
+                    if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value){
                        return interfaces[i];
-                   }
-                   i+=1;
-               }
+                    }
+                    i+=1;
+                }
+                if(typeof value === 'number'){
+                   return interfaces[value-1];
+                }
            };
            interfaceFunction.propertyGroup = function(val){
                if(val === 1){
@@ -12807,7 +12807,14 @@ var ShapeExpressionInterface = (function(){
     var pathInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
             var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            prop.setGroupProperty(propertyGroup);
+            function _propertyGroup(val){
+                if(val == 1){
+                    return interfaceFunction;
+                } else {
+                    return propertyGroup(--val);
+                }
+            }
+            prop.setGroupProperty(_propertyGroup);
 
             function interfaceFunction(val){
                 if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path'){
@@ -12833,6 +12840,7 @@ var ShapeExpressionInterface = (function(){
                 }
             });
             Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
+            Object.defineProperty(interfaceFunction, 'ix', { value: shape.ix });
             Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
             return interfaceFunction;
         }
@@ -13341,4 +13349,4 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 break;
         }
     }
-};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.6.2'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.6.3'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  

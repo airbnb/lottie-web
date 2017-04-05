@@ -1,6 +1,10 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.6.3
+- bodymovin_light fix
+- rubberhose autoflop patch for inactive admin property
+
 ## V 4.6.2
 - repeaters! (partially but should cover many cases)
 - new expressions
