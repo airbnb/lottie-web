@@ -96,140 +96,166 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
     }
 };
 
+IShapeElement.prototype.createStyleElement = function(data, ownStyles, level, dynamicProperties, container){
+    var elementData = {};
+    styleOb = {
+        type: data.ty,
+        d: '',
+        ld: '',
+        lvl: level,
+        mdf: false
+    };
+    var pathElement = document.createElementNS(svgNS, "path");
+    elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
+    if(data.ty == 'st' || data.ty == 'gs') {
+        pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
+        ////pathElement.style.strokeLinecap = this.lcEnum[data.lc] || 'round';
+        pathElement.setAttribute('stroke-linejoin',this.ljEnum[data.lj] || 'round');
+        ////pathElement.style.strokeLinejoin = this.ljEnum[data.lj] || 'round';
+        pathElement.setAttribute('fill-opacity','0');
+        ////pathElement.style.fillOpacity = 0;
+        if(data.lj == 1) {
+            pathElement.setAttribute('stroke-miterlimit',data.ml);
+            ////pathElement.style.strokeMiterlimit = data.ml;
+        }
+
+        elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
+        if(data.d){
+            var d = PropertyFactory.getDashProp(this,data.d,'svg',dynamicProperties);
+            if(!d.k){
+                pathElement.setAttribute('stroke-dasharray', d.dasharray);
+                ////pathElement.style.strokeDasharray = d.dasharray;
+                pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
+                ////pathElement.style.strokeDashoffset = d.dashoffset;
+            }
+            elementData.d = d;
+        }
+
+    }
+    if(data.ty == 'fl' || data.ty == 'st'){
+        elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
+        container.appendChild(pathElement);
+    } else {
+        elementData.g = PropertyFactory.getGradientProp(this,data.g,dynamicProperties);
+        if(data.t == 2){
+            elementData.h = PropertyFactory.getProp(this,data.h,1,0.01,dynamicProperties);
+            elementData.a = PropertyFactory.getProp(this,data.a,1,degToRads,dynamicProperties);
+        }
+        elementData.s = PropertyFactory.getProp(this,data.s,1,null,dynamicProperties);
+        elementData.e = PropertyFactory.getProp(this,data.e,1,null,dynamicProperties);
+        this.setGradientData(pathElement,data,elementData, styleOb);
+        var maskId = this.setGradientOpacity(data,elementData, styleOb);
+        if(maskId){
+            pathElement.setAttribute('mask','url(#'+maskId+')');
+        }
+        elementData.elem = pathElement;
+        container.appendChild(pathElement);
+    }
+    if(data.r === 2) {
+        pathElement.setAttribute('fill-rule', 'evenodd');
+    }
+
+    if(data.ln){
+        pathElement.setAttribute('id',data.ln);
+    }
+    if(data.cl){
+        pathElement.setAttribute('class',data.cl);
+    }
+    styleOb.pElem = pathElement;
+    this.stylesList.push(styleOb);
+    elementData.style = styleOb;
+    ownStyles.push(styleOb);
+    return elementData;
+}
+
+IShapeElement.prototype.createGroupElement = function(data, container) {
+    var elementData = {
+        it: []
+    };
+    var g = document.createElementNS(svgNS,'g');
+    container.appendChild(g);
+    elementData.gr = g;
+    return elementData;
+}
+
+IShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
+    var elementData = {
+        transform : {
+            op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
+            mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
+        },
+        elements: []
+    };
+    return elementData;
+}
+
+IShapeElement.prototype.createShapeElement = function(data, ownTransformers, level, dynamicProperties) {
+    var elementData = {
+        elements : [],
+        caches:[],
+        styles : [],
+        transformers: ownTransformers,
+        lStr: ''
+    };
+    var ty = 4;
+    if(data.ty == 'rc'){
+        ty = 5;
+    }else if(data.ty == 'el'){
+        ty = 6;
+    }else if(data.ty == 'sr'){
+        ty = 7;
+    }
+    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
+    elementData.lvl = level;
+    this.shapes.push(elementData.sh);
+    this.addShapeToModifiers(elementData);
+    jLen = this.stylesList.length;
+    for(j=0;j<jLen;j+=1){
+        if(!this.stylesList[j].closed){
+            elementData.elements.push({
+                ty:this.stylesList[j].type,
+                st: this.stylesList[j]
+            });
+        }
+    }
+    return elementData;
+}
+
 IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProperties, level, transformers){
     transformers = transformers || [];
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownArrays = [], ownModifiers = [], styleOb, currentTransform;
+    var ownStyles = [], ownModifiers = [], styleOb, currentTransform;
     for(i=len;i>=0;i-=1){
         if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
-            data[i] = {};
-            styleOb = {
-                type: arr[i].ty,
-                d: '',
-                ld: '',
-                lvl: level,
-                mdf: false
-            };
-            var pathElement = document.createElementNS(svgNS, "path");
-            data[i].o = PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties);
-            if(arr[i].ty == 'st' || arr[i].ty == 'gs') {
-                pathElement.setAttribute('stroke-linecap', this.lcEnum[arr[i].lc] || 'round');
-                ////pathElement.style.strokeLinecap = this.lcEnum[arr[i].lc] || 'round';
-                pathElement.setAttribute('stroke-linejoin',this.ljEnum[arr[i].lj] || 'round');
-                ////pathElement.style.strokeLinejoin = this.ljEnum[arr[i].lj] || 'round';
-                pathElement.setAttribute('fill-opacity','0');
-                ////pathElement.style.fillOpacity = 0;
-                if(arr[i].lj == 1) {
-                    pathElement.setAttribute('stroke-miterlimit',arr[i].ml);
-                    ////pathElement.style.strokeMiterlimit = arr[i].ml;
-                }
-
-                data[i].w = PropertyFactory.getProp(this,arr[i].w,0,null,dynamicProperties);
-                if(arr[i].d){
-                    var d = PropertyFactory.getDashProp(this,arr[i].d,'svg',dynamicProperties);
-                    if(!d.k){
-                        pathElement.setAttribute('stroke-dasharray', d.dasharray);
-                        ////pathElement.style.strokeDasharray = d.dasharray;
-                        pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
-                        ////pathElement.style.strokeDashoffset = d.dashoffset;
-                    }
-                    data[i].d = d;
-                }
-
-            }
-            if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-                data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
-                container.appendChild(pathElement);
-            } else {
-                data[i].g = PropertyFactory.getGradientProp(this,arr[i].g,dynamicProperties);
-                if(arr[i].t == 2){
-                    data[i].h = PropertyFactory.getProp(this,arr[i].h,1,0.01,dynamicProperties);
-                    data[i].a = PropertyFactory.getProp(this,arr[i].a,1,degToRads,dynamicProperties);
-                }
-                data[i].s = PropertyFactory.getProp(this,arr[i].s,1,null,dynamicProperties);
-                data[i].e = PropertyFactory.getProp(this,arr[i].e,1,null,dynamicProperties);
-                this.setGradientData(pathElement,arr[i],data[i], styleOb);
-                var maskId = this.setGradientOpacity(arr[i],data[i], styleOb);
-                if(maskId){
-                    pathElement.setAttribute('mask','url(#'+maskId+')');
-                }
-                data[i].elem = pathElement;
-                container.appendChild(pathElement);
-            }
-            if(arr[i].r === 2) {
-                pathElement.setAttribute('fill-rule', 'evenodd');
-            }
-
-            if(arr[i].ln){
-                pathElement.setAttribute('id',arr[i].ln);
-            }
-            if(arr[i].cl){
-                pathElement.setAttribute('class',arr[i].cl);
-            }
-            styleOb.pElem = pathElement;
-            this.stylesList.push(styleOb);
-            data[i].style = styleOb;
-            ownArrays.push(styleOb);
+            data[i] = this.createStyleElement(arr[i], ownStyles, level, dynamicProperties, container);
         }else if(arr[i].ty == 'gr'){
-            data[i] = {
-                it: []
-            };
-            var g = document.createElementNS(svgNS,'g');
-            container.appendChild(g);
-            data[i].gr = g;
-            this.searchShapes(arr[i].it,data[i].it,g,dynamicProperties, level + 1, ownTransformers);
+            data[i] = this.createGroupElement(arr[i], container);
+            this.searchShapes(arr[i].it,data[i].it,data[i].gr,dynamicProperties, level + 1, ownTransformers);
         }else if(arr[i].ty == 'tr'){
-            data[i] = {
-                transform : {
-                    op: PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties),
-                    mProps: PropertyFactory.getProp(this,arr[i],2,null,dynamicProperties)
-                },
-                elements: []
-            };
+            data[i] = this.createTransformElement(arr[i], dynamicProperties);
             currentTransform = data[i].transform;
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            data[i] = {
-                elements : [],
-                caches:[],
-                styles : [],
-                transformers: ownTransformers,
-                lStr: ''
-            };
-            var ty = 4;
-            if(arr[i].ty == 'rc'){
-                ty = 5;
-            }else if(arr[i].ty == 'el'){
-                ty = 6;
-            }else if(arr[i].ty == 'sr'){
-                ty = 7;
-            }
-            data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
-            data[i].lvl = level;
-            this.shapes.push(data[i].sh);
-            this.addShapeToModifiers(data[i]);
-            jLen = this.stylesList.length;
-            for(j=0;j<jLen;j+=1){
-                if(!this.stylesList[j].closed){
-                    data[i].elements.push({
-                        ty:this.stylesList[j].type,
-                        st: this.stylesList[j]
-                    });
-                }
-            }
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'rp'){
+            data[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties)
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties);
             this.shapeModifiers.push(modifier);
             ownModifiers.push(modifier);
             data[i] = modifier;
+        }arr[i].ty == 'rp'){
+            var modifier = ShapeModifiers.getModifier(arr[i].ty);
+            modifier.init(this,arr[i],dynamicProperties, container);
+            this.shapeModifiers.push(modifier);
+            ownModifiers.push(modifier);
+            data[i] = modifier;
         }
     }
-    len = ownArrays.length;
+    len = ownStyles.length;
     for(i=0;i<len;i+=1){
-        ownArrays[i].closed = true;
+        ownStyles[i].closed = true;
     }
     len = ownModifiers.length;
     for(i=0;i<len;i+=1){
