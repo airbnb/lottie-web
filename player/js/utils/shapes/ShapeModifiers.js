@@ -26,9 +26,8 @@ ShapeModifier.prototype.addShape = function(data){
         this.addShapeToModifier(data.sh);
     }
 }
-ShapeModifier.prototype.init = function(elem,data,dynamicProperties, container){
+ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     this.elem = elem;
-    this.container = container;
     this.frameId = -1;
     this.shapes = [];
     this.dynamicProperties = [];

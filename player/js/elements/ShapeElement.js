@@ -239,13 +239,13 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             data[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties)
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'rp'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties);
             this.shapeModifiers.push(modifier);
             ownModifiers.push(modifier);
             data[i] = modifier;
-        }arr[i].ty == 'rp'){
+        }else if(arr[i].ty == 'rp'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties, container);
             this.shapeModifiers.push(modifier);

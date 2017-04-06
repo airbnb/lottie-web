@@ -28,8 +28,6 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.sMatrix = new Matrix();
     this.tMatrix = new Matrix();
     this.matrix = new Matrix();
-    this.groupContainer = document.createElementNS(svgNS,'g');
-    this.container.appendChild(g);
 };
 
 RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix, transform, perc, inv){
