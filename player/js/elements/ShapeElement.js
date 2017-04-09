@@ -445,6 +445,9 @@ IShapeElement.prototype.renderShape = function(items,data, container){
 IShapeElement.prototype.renderPath = function(pathData,itemData){
     var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.elements.length;
     var lvl = itemData.lvl;
+    if(!pathData._render){
+        return;
+    }
     for(l=0;l<lLen;l+=1){
         if(itemData.elements[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;

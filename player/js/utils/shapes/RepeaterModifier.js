@@ -160,7 +160,7 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                 this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, offsetModulo, false);
                 iteration += offsetModulo;
             }
-        } else if(roundOffset < 0) {
+        } else if(offset < 0) {
             while(iteration>roundOffset){
                 this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, true);
                 iteration -= 1;
