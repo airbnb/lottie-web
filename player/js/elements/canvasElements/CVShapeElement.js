@@ -135,7 +135,7 @@ CVShapeElement.prototype.reloadShapes = function(){
     for(i=0;i<len;i+=1){
         this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
