@@ -1,10 +1,10 @@
 function CVShapeElement(data, comp,globalData){
     this.shapes = [];
-    this.stylesList = [];
-    this.viewData = [];
-    this.shapeModifiers = [];
     this.shapesData = data.shapes;
-    this.firstFrame = true;
+    this.stylesList = [];
+    this.itemsData = [];
+    this.prevViewData = [];
+    this.shapeModifiers = [];
     this._parent.constructor.call(this,data, comp,globalData);
 }
 createElement(CVBaseElement, CVShapeElement);
@@ -27,107 +27,184 @@ CVShapeElement.prototype.dashResetter = [];
 CVShapeElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
-    this.searchShapes(this.shapesData,this.viewData,this.dynamicProperties);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
 };
-CVShapeElement.prototype.searchShapes = function(arr,data,dynamicProperties){
+
+CVShapeElement.prototype.createStyleElement = function(data, dynamicProperties){
+    var styleElem = {
+        data: data,
+        type: data.ty,
+        elements: []
+    };
+    var elementData = {};
+    if(data.ty == 'fl' || data.ty == 'st'){
+        elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
+        if(!elementData.c.k){
+            styleElem.co = 'rgb('+bm_floor(elementData.c.v[0])+','+bm_floor(elementData.c.v[1])+','+bm_floor(elementData.c.v[2])+')';
+        }
+    }
+    elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
+    if(data.ty == 'st') {
+        styleElem.lc = this.lcEnum[data.lc] || 'round';
+        styleElem.lj = this.ljEnum[data.lj] || 'round';
+        if(data.lj == 1) {
+            styleElem.ml = data.ml;
+        }
+        elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
+        if(!elementData.w.k){
+            styleElem.wi = elementData.w.v;
+        }
+        if(data.d){
+            var d = PropertyFactory.getDashProp(this,data.d,'canvas',dynamicProperties);
+            elementData.d = d;
+            if(!elementData.d.k){
+                styleElem.da = elementData.d.dasharray;
+                styleElem.do = elementData.d.dashoffset;
+            }
+        }
+
+    } else {
+
+        styleElem.r = data.r === 2 ? 'evenodd' : 'nonzero';
+    }
+    this.stylesList.push(styleElem);
+    elementData.style = styleElem;
+    return elementData;
+}
+
+CVShapeElement.prototype.createGroupElement = function(data) {
+    var elementData = {
+        it: [],
+        prevViewData: []
+    };
+    return elementData;
+}
+
+CVShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
+    var elementData = {
+        transform : {
+            mat: new Matrix(),
+            opacity: 1,
+            matMdf:false,
+            opMdf:false,
+            op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
+            mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
+        },
+        elements: []
+    };
+    return elementData;
+}
+
+CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) {
+    var elementData = {
+        nodes:[],
+        trNodes:[],
+        tr:[0,0,0,0,0,0]
+    };
+    var ty = 4;
+    if(data.ty == 'rc'){
+        ty = 5;
+    }else if(data.ty == 'el'){
+        ty = 6;
+    }else if(data.ty == 'sr'){
+        ty = 7;
+    }
+    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
+    this.shapes.push(elementData.sh);
+    this.addShapeToModifiers(elementData);
+    jLen = this.stylesList.length;
+    var hasStrokes = false, hasFills = false;
+    for(j=0;j<jLen;j+=1){
+        if(!this.stylesList[j].closed){
+            this.stylesList[j].elements.push(elementData);
+            if(this.stylesList[j].type === 'st'){
+                hasStrokes = true;
+            }else{
+                hasFills = true;
+            }
+        }
+    }
+    elementData.st = hasStrokes;
+    elementData.fl = hasFills;
+    return elementData;
+}
+
+CVShapeElement.prototype.reloadShapes = function(){
+    this.firstFrame = true;
+    var i, len = this.itemsData.length;
+    for(i=0;i<len;i+=1){
+        this.prevViewData[i] = this.itemsData[i];
+    }
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    var i, len = this.dynamicProperties.length;
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getValue();
+    }
+    this.renderModifiers();
+}
+
+CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, render){
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownArrays = [], ownModifiers = [], styleElem;
+    var ownArrays = [], ownModifiers = [];
     for(i=len;i>=0;i-=1){
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-            styleElem = {
-                type: arr[i].ty,
-                elements: []
-            };
-            data[i] = {};
-            if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-                data[i].c = PropertyFactory.getProp(this,arr[i].c,1,255,dynamicProperties);
-                if(!data[i].c.k){
-                    styleElem.co = 'rgb('+bm_floor(data[i].c.v[0])+','+bm_floor(data[i].c.v[1])+','+bm_floor(data[i].c.v[2])+')';
-                }
-            }
-            data[i].o = PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties);
-            if(arr[i].ty == 'st') {
-                styleElem.lc = this.lcEnum[arr[i].lc] || 'round';
-                styleElem.lj = this.ljEnum[arr[i].lj] || 'round';
-                if(arr[i].lj == 1) {
-                    styleElem.ml = arr[i].ml;
-                }
-                data[i].w = PropertyFactory.getProp(this,arr[i].w,0,null,dynamicProperties);
-                if(!data[i].w.k){
-                    styleElem.wi = data[i].w.v;
-                }
-                if(arr[i].d){
-                    var d = PropertyFactory.getDashProp(this,arr[i].d,'canvas',dynamicProperties);
-                    data[i].d = d;
-                    if(!data[i].d.k){
-                        styleElem.da = data[i].d.dasharray;
-                        styleElem.do = data[i].d.dashoffset;
-                    }
-                }
-
-            } else {
-
-                styleElem.r = arr[i].r === 2 ? 'evenodd' : 'nonzero';
-            }
-            this.stylesList.push(styleElem);
-            data[i].style = styleElem;
-            ownArrays.push(data[i].style);
-        }else if(arr[i].ty == 'gr'){
-            data[i] = {
-                it: []
-            };
-            this.searchShapes(arr[i].it,data[i].it,dynamicProperties);
-        }else if(arr[i].ty == 'tr'){
-            data[i] = {
-                transform : {
-                    mat: new Matrix(),
-                    opacity: 1,
-                    matMdf:false,
-                    opMdf:false,
-                    op: PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties),
-                    mProps: PropertyFactory.getProp(this,arr[i],2,null,dynamicProperties)
-                },
-                elements: []
-            };
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            data[i] = {
-                nodes:[],
-                trNodes:[],
-                tr:[0,0,0,0,0,0]
-            };
-            var ty = 4;
-            if(arr[i].ty == 'rc'){
-                ty = 5;
-            }else if(arr[i].ty == 'el'){
-                ty = 6;
-            }else if(arr[i].ty == 'sr'){
-                ty = 7;
-            }
-            data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
-            this.shapes.push(data[i].sh);
-            this.addShapeToModifiers(data[i]);
-            jLen = this.stylesList.length;
-            var hasStrokes = false, hasFills = false;
-            for(j=0;j<jLen;j+=1){
-                if(!this.stylesList[j].closed){
-                    this.stylesList[j].elements.push(data[i]);
-                    if(this.stylesList[j].type === 'st'){
-                        hasStrokes = true;
-                    }else{
-                        hasFills = true;
-                    }
-                }
-            }
-            data[i].st = hasStrokes;
-            data[i].fl = hasFills;
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'rp'){
-            var modifier = ShapeModifiers.getModifier(arr[i].ty);
-            modifier.init(this,arr[i],dynamicProperties);
-            this.shapeModifiers.push(modifier);
-            ownModifiers.push(modifier);
-            data[i] = modifier;
+        if(!arr[i]._processed){
+            arr[i]._render = render;
+        } else {
+            itemsData[i] = prevViewData[arr[i]._processed - 1];
         }
+        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+            if(!arr[i]._processed){
+                itemsData[i] = this.createStyleElement(arr[i], dynamicProperties);
+            } else {
+                itemsData[i].style.closed = false;
+            }
+            
+            ownArrays.push(itemsData[i].style);
+        }else if(arr[i].ty == 'gr'){
+            if(!arr[i]._processed){
+                itemsData[i] = this.createGroupElement(arr[i]);
+            } else {
+                jLen = itemsData[i].it.length;
+                for(j=0;j<jLen;j+=1){
+                    itemsData[i].prevViewData[j] = itemsData[i].it[j];
+                }
+            }
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, render);
+        }else if(arr[i].ty == 'tr'){
+            if(!arr[i]._processed){
+                itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
+            }
+        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
+            if(!arr[i]._processed){
+                itemsData[i] = this.createShapeElement(arr[i], dynamicProperties);
+            }
+            
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
+            if(!arr[i]._processed){
+                var modifier = ShapeModifiers.getModifier(arr[i].ty);
+                modifier.init(this,arr[i],dynamicProperties);
+                itemsData[i] = modifier;
+                this.shapeModifiers.push(modifier);
+            } else {
+                modifier = itemsData[i];
+                modifier.closed = false;
+            }
+            ownModifiers.push(modifier);
+        } else if(arr[i].ty == 'rp'){
+            if(!arr[i]._processed){
+                modifier = ShapeModifiers.getModifier(arr[i].ty);
+                itemsData[i] = modifier;
+                modifier.init(this,arr,i,itemsData,dynamicProperties);
+                this.shapeModifiers.push(modifier);
+                render = false;
+            }else{
+                modifier = itemsData[i];
+                modifier.closed = true;
+            }
+            ownModifiers.push(modifier);
+        }
+        arr[i]._processed = i + 1;
     }
     len = ownArrays.length;
     for(i=0;i<len;i+=1){
@@ -168,7 +245,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
         }
     }
     if(!data){
-        data = this.viewData;
+        data = this.itemsData;
     }
     ///
     ///
@@ -214,7 +291,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
     renderer.ctxTransform(this.finalTransform.mat.props);
     for(i=0;i<len;i+=1){
         type = this.stylesList[i].type;
-        if(type === 'st' && this.stylesList[i].wi === 0){
+        if((type === 'st' && this.stylesList[i].wi === 0) || !this.stylesList[i].data._render){
             continue;
         }
         renderer.save();
@@ -271,13 +348,13 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
         this.firstFrame = false;
     }
 };
-CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform){
+CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
     var len, i, j,jLen;
-    var redraw = groupTransform.matMdf || viewData.sh.mdf || this.firstFrame;
+    var redraw = groupTransform.matMdf || itemData.sh.mdf || this.firstFrame;
     if(redraw) {
-        var paths = viewData.sh.paths;
+        var paths = itemData.sh.paths;
         jLen = paths._length;
-        var pathStringTransformed = viewData.trNodes;
+        var pathStringTransformed = itemData.trNodes;
         pathStringTransformed.length = 0;
         for(j=0;j<jLen;j+=1){
             var pathNodes = paths.shapes[j];
@@ -314,51 +391,51 @@ CVShapeElement.prototype.renderPath = function(pathData,viewData,groupTransform)
                         t: 'z'
                     });
                 }
-                viewData.lStr = pathStringTransformed;
+                itemData.lStr = pathStringTransformed;
             }
 
         }
 
-        if (viewData.st) {
+        if (itemData.st) {
             for (i = 0; i < 16; i += 1) {
-                viewData.tr[i] = groupTransform.mat.props[i];
+                itemData.tr[i] = groupTransform.mat.props[i];
             }
         }
-        viewData.trNodes = pathStringTransformed;
+        itemData.trNodes = pathStringTransformed;
 
     }
 };
 
 
 
-CVShapeElement.prototype.renderFill = function(styleData,viewData, groupTransform){
-    var styleElem = viewData.style;
+CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransform){
+    var styleElem = itemData.style;
 
-    if(viewData.c.mdf || this.firstFrame){
-        styleElem.co = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
+    if(itemData.c.mdf || this.firstFrame){
+        styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.coOp = viewData.o.v*groupTransform.opacity;
+    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
+        styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
 };
 
-CVShapeElement.prototype.renderStroke = function(styleData,viewData, groupTransform){
-    var styleElem = viewData.style;
+CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransform){
+    var styleElem = itemData.style;
     //TODO fix dashes
-    var d = viewData.d;
+    var d = itemData.d;
     var dasharray,dashoffset;
     if(d && (d.mdf  || this.firstFrame)){
         styleElem.da = d.dasharray;
         styleElem.do = d.dashoffset;
     }
-    if(viewData.c.mdf || this.firstFrame){
-        styleElem.co = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
+    if(itemData.c.mdf || this.firstFrame){
+        styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(viewData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.coOp = viewData.o.v*groupTransform.opacity;
+    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
+        styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
-    if(viewData.w.mdf || this.firstFrame){
-        styleElem.wi = viewData.w.v;
+    if(itemData.w.mdf || this.firstFrame){
+        styleElem.wi = itemData.w.v;
     }
 };
 
@@ -368,7 +445,7 @@ CVShapeElement.prototype.destroy = function(){
     this.globalData = null;
     this.canvasContext = null;
     this.stylesList.length = 0;
-    this.viewData.length = 0;
+    this.itemData.length = 0;
     this._parent.destroy.call(this._parent);
 };
 

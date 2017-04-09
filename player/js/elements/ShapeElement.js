@@ -2,7 +2,7 @@ function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.shapes = [];
     this.shapesData = data.shapes;
     this.stylesList = [];
-    this.viewData = [];
+    this.itemsData = [];
     this.prevViewData = [];
     this.shapeModifiers = [];
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
@@ -26,11 +26,10 @@ IShapeElement.prototype.buildExpressionInterface = function(){};
 IShapeElement.prototype.createElements = function(){
     //TODO check if I can use symbol so i can set its viewBox
     this._parent.createElements.call(this);
-    this.searchShapes(this.shapesData,this.viewData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
     if(!this.data.hd || this.data.td){
         styleUnselectableDiv(this.layerElement);
     }
-    //this.elemInterface.registerShapeExpressionInterface(ShapeExpressionInterface.createShapeInterface(this.shapesData,this.viewData,this.elemInterface));
 };
 
 IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
@@ -238,11 +237,11 @@ IShapeElement.prototype.setElementStyles = function(){
 
 IShapeElement.prototype.reloadShapes = function(){
     this.firstFrame = true;
-    var i, len = this.viewData.length;
+    var i, len = this.itemsData.length;
     for(i=0;i<len;i+=1){
-        this.prevViewData[i] = this.viewData[i];
+        this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.viewData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
@@ -250,7 +249,7 @@ IShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 }
 
-IShapeElement.prototype.searchShapes = function(arr,data,prevViewData,container,dynamicProperties, level, transformers, render){
+IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container,dynamicProperties, level, transformers, render){
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
@@ -259,64 +258,63 @@ IShapeElement.prototype.searchShapes = function(arr,data,prevViewData,container,
         if(!arr[i]._processed){
             arr[i]._render = render;
         } else {
-            data[i] = prevViewData[arr[i]._processed - 1];
+            itemsData[i] = prevViewData[arr[i]._processed - 1];
         }
         if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
             if(!arr[i]._processed){
-                var elementStyle = this.createStyleElement(arr[i], level, dynamicProperties);
-                data[i] = elementStyle;
+                itemsData[i] = this.createStyleElement(arr[i], level, dynamicProperties);
             } else {
-                data[i].style.closed = false;
+                itemsData[i].style.closed = false;
             }
             if(arr[i]._render){
-                container.appendChild(data[i].elem);
+                container.appendChild(itemsData[i].elem);
             }
-            ownStyles.push(data[i].style);
+            ownStyles.push(itemsData[i].style);
         }else if(arr[i].ty == 'gr'){
             if(!arr[i]._processed){
-                data[i] = this.createGroupElement(arr[i]);
+                itemsData[i] = this.createGroupElement(arr[i]);
             } else {
-                jLen = data[i].it.length;
+                jLen = itemsData[i].it.length;
                 for(j=0;j<jLen;j+=1){
-                    data[i].prevViewData[j] = data[i].it[j];
+                    itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
-            this.searchShapes(arr[i].it,data[i].it,data[i].prevViewData,data[i].gr,dynamicProperties, level + 1, ownTransformers, render);
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr,dynamicProperties, level + 1, ownTransformers, render);
             if(arr[i]._render){
-                container.appendChild(data[i].gr);
+                container.appendChild(itemsData[i].gr);
             }
         }else if(arr[i].ty == 'tr'){
             if(!arr[i]._processed){
-                data[i] = this.createTransformElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
             }
-            currentTransform = data[i].transform;
+            currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!arr[i]._processed){
-                data[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
+                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
             }
-            data[i].elements = this.setElementStyles();
+            itemsData[i].elements = this.setElementStyles();
 
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
             if(!arr[i]._processed){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i],dynamicProperties);
-                data[i] = modifier;
+                itemsData[i] = modifier;
                 this.shapeModifiers.push(modifier);
             } else {
-                modifier = data[i];
+                modifier = itemsData[i];
                 modifier.closed = false;
             }
             ownModifiers.push(modifier);
         }else if(arr[i].ty == 'rp'){
             if(!arr[i]._processed){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
-                data[i] = modifier;
-                modifier.init(this,arr,i,data,dynamicProperties);
+                itemsData[i] = modifier;
+                modifier.init(this,arr,i,itemsData,dynamicProperties);
                 this.shapeModifiers.push(modifier);
                 render = false;
             }else{
-                modifier = data[i];
+                modifier = itemsData[i];
                 modifier.closed = true;
             }
             ownModifiers.push(modifier);
@@ -331,7 +329,6 @@ IShapeElement.prototype.searchShapes = function(arr,data,prevViewData,container,
     for(i=0;i<len;i+=1){
         ownModifiers[i].closed = true;
     }
-    //console.log('data:', data);
 };
 
 IShapeElement.prototype.addShapeToModifiers = function(data) {
@@ -359,14 +356,12 @@ IShapeElement.prototype.renderModifiers = function() {
 };
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
-    console.log('--- renderFrame ---')
     //this.reloadShapes();
     var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
         this.hide();
         return;
     }
-    this.globalToLocal([0,0,0]);
     if(this.hidden){
         this.layerElement.style.display = 'block';
         this.hidden = false;
@@ -377,7 +372,7 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
         this.stylesList[i].d = '';
         this.stylesList[i].mdf = false;
     }
-    this.renderShape(this.shapesData,this.viewData, null);
+    this.renderShape(this.shapesData,this.itemsData, null);
 
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i].ld === '0') {
@@ -385,7 +380,6 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
             this.stylesList[i].pElem.style.display = 'block';
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pElem);
         }
-        console.log('this.stylesList[i]:', this.stylesList[i])
         if (this.stylesList[i].mdf || this.firstFrame) {
             this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
             if(this.stylesList[i].msElem){
@@ -417,7 +411,6 @@ IShapeElement.prototype.hide = function(){
 };
 
 IShapeElement.prototype.renderShape = function(items,data, container){
-    console.log(items);
     var i, len = items.length - 1;
     var ty;
     for(i=len;i>=0;i-=1){
@@ -449,22 +442,22 @@ IShapeElement.prototype.renderShape = function(items,data, container){
 
 };
 
-IShapeElement.prototype.renderPath = function(pathData,viewData){
-    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = viewData.elements.length;
-    var lvl = viewData.lvl;
+IShapeElement.prototype.renderPath = function(pathData,itemData){
+    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.elements.length;
+    var lvl = itemData.lvl;
     for(l=0;l<lLen;l+=1){
-        if(viewData.elements[l].data._render){
-            redraw = viewData.sh.mdf || this.firstFrame;
+        if(itemData.elements[l].data._render){
+            redraw = itemData.sh.mdf || this.firstFrame;
             pathStringTransformed = 'M0 0';
-            var paths = viewData.sh.paths;
+            var paths = itemData.sh.paths;
             jLen = paths._length;
-            if(viewData.elements[l].lvl < lvl){
+            if(itemData.elements[l].lvl < lvl){
                 var mat = this.mHelper.reset(), props;
-                var iterations = lvl - viewData.elements[l].lvl;
-                var k = viewData.transformers.length-1;
+                var iterations = lvl - itemData.elements[l].lvl;
+                var k = itemData.transformers.length-1;
                 while(iterations > 0) {
-                    redraw = viewData.transformers[k].mProps.mdf || redraw;
-                    props = viewData.transformers[k].mProps.v.props;
+                    redraw = itemData.transformers[k].mProps.mdf || redraw;
+                    props = itemData.transformers[k].mProps.v.props;
                     mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
                     iterations --;
                     k --;
@@ -489,9 +482,9 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                             }
                         }
                     }
-                    viewData.caches[l] = pathStringTransformed;
+                    itemData.caches[l] = pathStringTransformed;
                 } else {
-                    pathStringTransformed = viewData.caches[l];
+                    pathStringTransformed = itemData.caches[l];
                 }
             } else {
                 if(redraw){
@@ -518,43 +511,43 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                             }
                         }
                     }
-                    viewData.caches[l] = pathStringTransformed;
+                    itemData.caches[l] = pathStringTransformed;
                 } else {
-                    pathStringTransformed = viewData.caches[l];
+                    pathStringTransformed = itemData.caches[l];
                 }
             }
-            viewData.elements[l].d += pathStringTransformed;
-            viewData.elements[l].mdf = redraw || viewData.elements[l].mdf;
+            itemData.elements[l].d += pathStringTransformed;
+            itemData.elements[l].mdf = redraw || itemData.elements[l].mdf;
         } else {
-            viewData.elements[l].mdf = true;
+            itemData.elements[l].mdf = true;
         }
     }
 
 };
 
-IShapeElement.prototype.renderFill = function(styleData,viewData){
-    var styleElem = viewData.style;
+IShapeElement.prototype.renderFill = function(styleData,itemData){
+    var styleElem = itemData.style;
 
-    if(viewData.c.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
-        ////styleElem.pElem.style.fill = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
+    if(itemData.c.mdf || this.firstFrame){
+        styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
+        ////styleElem.pElem.style.fill = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(viewData.o.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill-opacity',viewData.o.v);
+    if(itemData.o.mdf || this.firstFrame){
+        styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
     }
 };
 
-IShapeElement.prototype.renderGradient = function(styleData,viewData){
-    var gfill = viewData.gf;
-    var opFill = viewData.of;
-    var pt1 = viewData.s.v,pt2 = viewData.e.v;
+IShapeElement.prototype.renderGradient = function(styleData,itemData){
+    var gfill = itemData.gf;
+    var opFill = itemData.of;
+    var pt1 = itemData.s.v,pt2 = itemData.e.v;
 
-    if(viewData.o.mdf || this.firstFrame){
+    if(itemData.o.mdf || this.firstFrame){
         var attr = styleData.ty === 'gf' ? 'fill-opacity':'stroke-opacity';
-        viewData.elem.setAttribute(attr,viewData.o.v);
+        itemData.elem.setAttribute(attr,itemData.o.v);
     }
     //clippedElement.setAttribute('transform','matrix(1,0,0,1,-100,0)');
-    if(viewData.s.mdf || this.firstFrame){
+    if(itemData.s.mdf || this.firstFrame){
         var attr1 = styleData.t === 1 ? 'x1':'cx';
         var attr2 = attr1 === 'x1' ? 'y1':'cy';
         gfill.setAttribute(attr1,pt1[0]);
@@ -565,9 +558,9 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData){
         }
     }
     var stops, i, len, stop;
-    if(viewData.g.cmdf || this.firstFrame){
-        stops = viewData.cst;
-        var cValues = viewData.g.c;
+    if(itemData.g.cmdf || this.firstFrame){
+        stops = itemData.cst;
+        var cValues = itemData.g.c;
         len = stops.length;
         for(i=0;i<len;i+=1){
             stop = stops[i];
@@ -575,9 +568,9 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData){
             stop.setAttribute('stop-color','rgb('+cValues[i*4+1]+','+cValues[i*4+2]+','+cValues[i*4+3]+')');
         }
     }
-    if(opFill && (viewData.g.omdf || this.firstFrame)){
-        stops = viewData.ost;
-        var oValues = viewData.g.o;
+    if(opFill && (itemData.g.omdf || this.firstFrame)){
+        stops = itemData.ost;
+        var oValues = itemData.g.o;
         len = stops.length;
         for(i=0;i<len;i+=1){
             stop = stops[i];
@@ -586,7 +579,7 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData){
         }
     }
     if(styleData.t === 1){
-        if(viewData.e.mdf  || this.firstFrame){
+        if(itemData.e.mdf  || this.firstFrame){
             gfill.setAttribute('x2',pt2[0]);
             gfill.setAttribute('y2',pt2[1]);
             if(opFill){
@@ -596,23 +589,23 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData){
         }
     } else {
         var rad;
-        if(viewData.s.mdf || viewData.e.mdf || this.firstFrame){
+        if(itemData.s.mdf || itemData.e.mdf || this.firstFrame){
             rad = Math.sqrt(Math.pow(pt1[0]-pt2[0],2)+Math.pow(pt1[1]-pt2[1],2));
             gfill.setAttribute('r',rad);
             if(opFill){
                 opFill.setAttribute('r',rad);
             }
         }
-        if(viewData.e.mdf || viewData.h.mdf || viewData.a.mdf || this.firstFrame){
+        if(itemData.e.mdf || itemData.h.mdf || itemData.a.mdf || this.firstFrame){
             if(!rad){
                 rad = Math.sqrt(Math.pow(pt1[0]-pt2[0],2)+Math.pow(pt1[1]-pt2[1],2));
             }
             var ang = Math.atan2(pt2[1]-pt1[1], pt2[0]-pt1[0]);
 
-            var percent = viewData.h.v >= 1 ? 0.99 : viewData.h.v <= -1 ? -0.99:viewData.h.v;
+            var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99:itemData.h.v;
             var dist = rad*percent;
-            var x = Math.cos(ang + viewData.a.v)*dist + pt1[0];
-            var y = Math.sin(ang + viewData.a.v)*dist + pt1[1];
+            var x = Math.cos(ang + itemData.a.v)*dist + pt1[0];
+            var y = Math.sin(ang + itemData.a.v)*dist + pt1[1];
             gfill.setAttribute('fx',x);
             gfill.setAttribute('fy',y);
             if(opFill){
@@ -624,10 +617,10 @@ IShapeElement.prototype.renderGradient = function(styleData,viewData){
     }
 };
 
-IShapeElement.prototype.renderStroke = function(styleData,viewData){
-    var styleElem = viewData.style;
+IShapeElement.prototype.renderStroke = function(styleData,itemData){
+    var styleElem = itemData.style;
     //TODO fix dashes
-    var d = viewData.d;
+    var d = itemData.d;
     var dasharray,dashoffset;
     if(d && d.k && (d.mdf || this.firstFrame)){
         styleElem.pElem.setAttribute('stroke-dasharray', d.dasharray);
@@ -635,26 +628,26 @@ IShapeElement.prototype.renderStroke = function(styleData,viewData){
         styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
         ////styleElem.pElem.style.strokeDashoffset = d.dashoffset;
     }
-    if(viewData.c && (viewData.c.mdf || this.firstFrame)){
-        styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
-        ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
+    if(itemData.c && (itemData.c.mdf || this.firstFrame)){
+        styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
+        ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(viewData.o.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-opacity',viewData.o.v);
+    if(itemData.o.mdf || this.firstFrame){
+        styleElem.pElem.setAttribute('stroke-opacity',itemData.o.v);
     }
-    if(viewData.w.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-width',viewData.w.v);
+    if(itemData.w.mdf || this.firstFrame){
+        styleElem.pElem.setAttribute('stroke-width',itemData.w.v);
         if(styleElem.msElem){
-            styleElem.msElem.setAttribute('stroke-width',viewData.w.v);
+            styleElem.msElem.setAttribute('stroke-width',itemData.w.v);
         }
-        ////styleElem.pElem.style.strokeWidth = viewData.w.v;
+        ////styleElem.pElem.style.strokeWidth = itemData.w.v;
     }
 };
 
 IShapeElement.prototype.destroy = function(){
     this._parent.destroy.call(this._parent);
     this.shapeData = null;
-    this.viewData = null;
+    this.itemsData = null;
     this.parentContainer = null;
     this.placeholder = null;
 };
