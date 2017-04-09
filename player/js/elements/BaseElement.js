@@ -88,7 +88,7 @@ BaseElement.prototype.globalToLocal = function(pt){
     }
     var i, len = transforms.length,ptNew;
     for(i=0;i<len;i+=1){
-        ptNew = transforms[i].mat.applyToPointArray(0,0,0);
+        ptNew = transforms[i].mProp.v.applyToPointArray(0,0,0,2);
         //ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
         pt = [pt[0] - ptNew[0],pt[1] - ptNew[1],0];
     }

@@ -12,14 +12,13 @@
 
         #bodymovin{
             background-color:#333;
-            width:100%;
-            height:100%;
+            width:800px;
+            height:800px;
             /*width:800px;
             height:500px;*/
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
-            margin: auto;
         }
 
         .botas_loop_3,.botas_loop_2{
@@ -46,6 +45,7 @@
     <script src="js/utils/shapes/TrimModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/shapes/RepeaterModifier.js"></script>
+    <script src="js/utils/shapes/MouseModifier.js"></script>
     <script src="js/utils/shapes/ShapeCollection.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
@@ -119,7 +119,7 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: true,
         autoplay: true,
         rendererSettings: {
@@ -128,6 +128,13 @@
         path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
+    anim.addEventListener('DOMLoaded', function(){
+        window.addEventListener('mousemove', function(ev){
+            anim.renderer.globalData.mouseX = ev.pageX;
+            anim.renderer.globalData.mouseY = ev.pageY;
+        })
+    })
+    
 
 </script>
 </body>

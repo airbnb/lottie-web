@@ -13,8 +13,9 @@ MouseModifier.prototype.addShapeToModifier = function(){
 };
 
 MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
-    var i, len = path.v.length;
-    var vValues = [],oValues = [],iValues = [];
+    var cloned_path = shape_pool.newShape();
+    cloned_path.c = path.c;
+    var i, len = path._length;
     var dist;
     //console.log(mouseCoords);
     var theta, x,y;
@@ -71,9 +72,7 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
         positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
 
         /////OPTION 1
-        vValues.push(positions.v[i]);
-         oValues.push(positions.o[i]);
-         iValues.push(positions.i[i]);
+        cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1],positions.o[i][0],positions.o[i][1],positions.i[i][0],positions.i[i][1], i)
 
 
 
@@ -169,17 +168,12 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
     }*/
 
 
-    return {
-        v:vValues,
-        o:oValues,
-        i:iValues,
-        c:path.c
-    };
+    return cloned_path;
 }
 
 MouseModifier.prototype.processShapes = function(){
-    var mouseX = this.elem.globalData.mouseX;
-    var mouseY = this.elem.globalData.mouseY;
+    var mouseX = this.elem.globalData.mouseX || 200;
+    var mouseY = this.elem.globalData.mouseY || 200;
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -187,15 +181,16 @@ MouseModifier.prototype.processShapes = function(){
     if(mouseX){
         var localMouseCoords = this.elem.globalToLocal([mouseX,mouseY,0]);
 
-        var shapeData, newPaths = [];
+        var shapeData, newPaths, localShapeCollection;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf){
-                shapeData.shape.paths = shapeData.last;
-            } else {
+            newPaths = shapeData.shape.paths;
+            localShapeCollection = shapeData.localShapeCollection;
+            if(!(!shapeData.shape.mdf && !this.mdf)){
+                localShapeCollection.releaseShapes();
                 shapeData.shape.mdf = true;
                 shapePaths = shapeData.shape.paths;
-                jLen = shapePaths.length;
+                jLen = shapePaths._length;
                 for(j=0;j<jLen;j+=1){
                     if(!this.positions[i][j]){
                         this.positions[i][j] = {
@@ -207,10 +202,11 @@ MouseModifier.prototype.processShapes = function(){
                             distI:[]
                         };
                     }
-                    newPaths.push(this.processPath(shapePaths[j],localMouseCoords, this.positions[i][j]));
+                    localShapeCollection.addShape(this.processPath(shapePaths.shapes[j],localMouseCoords, this.positions[i][j]));
                 }
-                shapeData.shape.paths = newPaths;
-                shapeData.last = newPaths;
+                for(j=0;j<jLen;j+=1){
+                }
+                shapeData.shape.paths = shapeData.localShapeCollection;
             }
         }
 
