@@ -176,6 +176,9 @@ IShapeElement.prototype.createGroupElement = function(data) {
     };
     var g = document.createElementNS(svgNS,'g');
     elementData.gr = g;
+    if(data.ln){
+        elementData.gr.setAttribute('id',data.ln);
+    }
     return elementData;
 }
 

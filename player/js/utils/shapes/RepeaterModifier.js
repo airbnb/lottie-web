@@ -19,6 +19,7 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this.dynamicProperties);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this.dynamicProperties);
     this.tr = PropertyFactory.getProp(elem,data.tr,2,null,this.dynamicProperties);
+    this.data = data;
     if(!this.dynamicProperties.length){
         this.getValue(true);
     }
@@ -113,27 +114,23 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                     ty:'gr'
                 }
                 group.it.push({"a":{"a":0,"ix":1,"k":[0,0]},"nm":"Transform","o":{"a":0,"ix":7,"k":100},"p":{"a":0,"ix":2,"k":[0,0]},"r":{"a":0,"ix":6,"k":0},"s":{"a":0,"ix":3,"k":[100,100]},"sa":{"a":0,"ix":5,"k":0},"sk":{"a":0,"ix":4,"k":0},"ty":"tr"});
+                
                 this.arr.splice(0,0,group);
-                this._groups.push(group);
+                this._groups.splice(0,0,group);
                 this._currentCopies += 1;
             }
             this.elem.reloadShapes();
         }
-        if(this._currentCopies < copies){
-            while(this._currentCopies < copies){
-                this._groups[this._currentCopies]._render = true;
-                this.changeGroupRender(this._groups[this._currentCopies].it, true);
-                this._currentCopies += 1;
-            }
-            this.elem.firstFrame = true;
-        } else{
-            while(this._currentCopies > copies){
-                this._currentCopies -= 1;
-                this.arr[this._currentCopies]._render = false;
-                this.changeGroupRender(this._groups[this._currentCopies].it, false);
-            }
-            this.elem.firstFrame = true;
+        var i, cont = 0, renderFlag;
+        for(i = 0; i  <= this._groups.length - 1; i += 1){
+            renderFlag = cont < copies;
+            this._groups[i]._render = renderFlag;
+            this.changeGroupRender(this._groups[i].it, renderFlag);
+            cont += 1;
         }
+        
+        this._currentCopies = copies;
+        this.elem.firstFrame = true;
         ////
 
         var offset = this.o.v;
@@ -170,10 +167,12 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                 iteration -= offsetModulo;
             }
         }
-
-        for (i = this._currentCopies - 1; i >= 0; i -= 1) {
+        i = this.data.m === 1 ? 0 : this._currentCopies - 1;
+        var dir = this.data.m === 1 ? 1 : -1;
+        cont = this._currentCopies;
+        while(cont){
             if(iteration !== 0){
-                if(i !== this._currentCopies - 1){
+                if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
                 }
                 this.matrix.transform(rProps[0],rProps[1],rProps[2],rProps[3],rProps[4],rProps[5],rProps[6],rProps[7],rProps[8],rProps[9],rProps[10],rProps[11],rProps[12],rProps[13],rProps[14],rProps[15]);
@@ -185,21 +184,23 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                 for(j=0;j<jLen;j+=1) {
                     itemsTransform[j] = this.matrix.props[j];
                 }
-                //console.log(itemsTransform);
-                //this.elemsData[i].it
-                //console.log(this.elemsData)
-               // console.log(this.matrix.props)
                 this.matrix.reset();
+            } else {
+                this.matrix.reset();
+                var items = this.elemsData[i].it;
+                var itemsTransform = items[items.length - 1].transform.mProps.v.props;
+                var j, jLen = itemsTransform.length;
+                for(j=0;j<jLen;j+=1) {
+                    itemsTransform[j] = this.matrix.props[j];
+                }
             }
-            
             iteration += 1;
+            cont -= 1;
+            i += dir;
         }
     }
-
 }
 
-RepeaterModifier.prototype.addShape = function(){
-
-}
+RepeaterModifier.prototype.addShape = function(){}
 
 ShapeModifiers.registerModifier('rp',RepeaterModifier);
