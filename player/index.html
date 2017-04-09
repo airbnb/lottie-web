@@ -12,8 +12,8 @@
 
         #bodymovin{
             background-color:#333;
-            width:800px;
-            height:800px;
+            width:1024px;
+            height:768px;
             /*width:800px;
             height:500px;*/
             display:block;
@@ -120,7 +120,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
@@ -130,10 +130,14 @@
     anim = bodymovin.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function(){
         window.addEventListener('mousemove', function(ev){
-            anim.renderer.globalData.mouseX = ev.pageX;
-            anim.renderer.globalData.mouseY = ev.pageY;
+            anim.renderer.globalData.mouseX = ev.screenX || ev.pageX;
+            anim.renderer.globalData.mouseY = ev.screenY || ev.pageY;
         })
     })
+    anim.addEventListener('complete', function(){
+        console.log('compeded');
+        anim.goToAndStop(0);
+    });
     
 
 </script>

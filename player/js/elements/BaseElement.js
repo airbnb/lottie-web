@@ -71,9 +71,18 @@ BaseElement.prototype.prepareFrame = function(num){
     return this.isVisible;
 };
 
-BaseElement.prototype.globalToLocal = function(pt){
+BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
     var transforms = [];
+    var i, len;
     transforms.push(this.finalTransform);
+    if(this.hierarchy){
+        i = 0;
+        len = this.hierarchy.length;
+        while(i < len) {
+            transforms.push(this.hierarchy[i].finalTransform);
+            i += 1;
+        }   
+    }
     var flag = true;
     var comp = this.comp;
     while(flag){
@@ -86,19 +95,19 @@ BaseElement.prototype.globalToLocal = function(pt){
             flag = false;
         }
     }
-    var i, len = transforms.length,ptNew;
+    len = extraTransforms.length;
+    for(i = len - 1;i >= 0; i -= 1){
+        pt = extraTransforms[i].mProps.v.applyToPointArray(pt[0],pt[1],0,2);
+    }
+    len = transforms.length;
     for(i=0;i<len;i+=1){
-        ptNew = transforms[i].mProp.v.applyToPointArray(0,0,0,2);
-        //ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
-        pt = [pt[0] - ptNew[0],pt[1] - ptNew[1],0];
+        pt = transforms[i].mProp.v.applyToPointArray(pt[0],pt[1],0,2);
     }
     return pt;
 };
 
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
-    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
-    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
     if(this.data.hasMask){
         this.layerInterface.registerMaskInterface(this.maskManager);
     }

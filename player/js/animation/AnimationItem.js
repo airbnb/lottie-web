@@ -219,6 +219,9 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
+    //ERASE
+    //animData.layers[0].shapes.push({"ty": "ms","maxDist":300,"dc":0.01});
+    //animData.layers[2].shapes.push({"ty": "ms","maxDist":300,"dc":0.5});
     if(this.renderer && this.renderer.destroyed){
         return;
     }
