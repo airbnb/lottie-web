@@ -12,10 +12,10 @@
 
         #bodymovin{
             background-color:#333;
+            width:800px;
+            height:800px;
             width:1024px;
             height:768px;
-            /*width:800px;
-            height:500px;*/
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -120,25 +120,117 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/data3.json'
     };
     anim = bodymovin.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function(){
         window.addEventListener('mousemove', function(ev){
-            anim.renderer.globalData.mouseX = ev.screenX || ev.pageX;
-            anim.renderer.globalData.mouseY = ev.screenY || ev.pageY;
+            anim.renderer.globalData.mouseX = ev.offsetX || ev.pageX;
+            anim.renderer.globalData.mouseY = ev.offsetY || ev.pageY;
         })
+        //createDrawingCanvas();
     })
-    anim.addEventListener('complete', function(){
-        console.log('compeded');
-        anim.goToAndStop(0);
-    });
-    
+
+    function createDrawingCanvas(){
+
+        var canvasW, canvasH;
+        var currentAnimFrame = -1;
+        var isEven = false;
+        var maxOffset = 250;
+        var currentOffset = 0;
+        var offsetDir = -1;
+        
+        function tick(){
+            ////
+                /*// get svg data
+                var xml = new XMLSerializer().serializeToString(sourceSVG);
+
+                // make it base64
+                var svg64 = btoa(xml);
+                var b64Start = 'data:image/svg+xml;base64,';
+
+                // prepend a "header"
+                var image64 = b64Start + svg64;
+
+                // set it as the source of the img element
+                imgHelper.src = image64;*/
+            ////
+            isEven = !isEven;
+            if(isEven){
+                canvasCtx.globalCompositeOperation = 'exclusion';
+            }else {
+                canvasCtx.globalCompositeOperation = 'multiply';
+            }
+            if(offsetDir > 0){
+                currentOffset = currentOffset >= maxOffset ? maxOffset : currentOffset + offsetDir;
+            } else {
+                currentOffset = currentOffset <= 0 ? 0 : currentOffset + offsetDir;
+            }
+
+            if(anim.currentFrame !== currentAnimFrame){
+                currentAnimFrame = anim.currentFrame;
+                var currentH = 0;
+                while(currentH < canvasH){
+                    var newSegmentHeight = 2 + Math.round(2*Math.random());
+                    if(currentH + newSegmentHeight > canvasH){
+                        newSegmentHeight = canvasH - currentH;
+                    }
+                    var xOffset = Math.round(Math.random()*canvasW/10);
+                    var xOffset = 1 + Math.round(Math.random()*currentOffset);
+                    //xOffset = 0;
+                    bufferCanvasCtx.drawImage(source, xOffset, currentH, canvasW - xOffset, newSegmentHeight, 0 , currentH, canvasW - xOffset, newSegmentHeight);
+                    bufferCanvasCtx.drawImage(source, 0, currentH, xOffset, newSegmentHeight, canvasW - xOffset , currentH, xOffset, newSegmentHeight);
+                    currentH += newSegmentHeight;
+                }
+                canvasCtx.drawImage(bufferCanvas, 0, 0);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        function elemDownHandler(){
+            offsetDir = 2;
+        }
+
+        function elemUpHandler(){
+            offsetDir = -5;
+        }
+
+        var source;
+        ///
+        var sourceCanvas = elem.getElementsByTagName('canvas')[0];
+        sourceCanvas.style.display = 'none';
+        source = sourceCanvas;
+        canvasW = sourceCanvas.width;
+        canvasH = sourceCanvas.height;
+        ///
+        /*var sourceSVG = elem.getElementsByTagName('svg')[0];
+        sourceSVG.style.display = 'none';
+        var imgHelper = document.createElement('img');
+        source = imgHelper;
+        canvasW = 1024;
+        canvasH = 768;*/
+        ///
+        var canvas = document.createElement('canvas');
+        var bufferCanvas = document.createElement('canvas');
+        var canvasCtx = canvas.getContext('2d');
+        var bufferCanvasCtx = bufferCanvas.getContext('2d');
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+        bufferCanvas.width = canvasW;
+        bufferCanvas.height = canvasH;
+        //canvasCtx.globalCompositeOperation = 'darken';
+        elem.appendChild(canvas);
+        elem.addEventListener('mousedown', elemDownHandler);
+        elem.addEventListener('mouseup', elemUpHandler);
+        tick();
+
+
+    }
 
 </script>
 </body>

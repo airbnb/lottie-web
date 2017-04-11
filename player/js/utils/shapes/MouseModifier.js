@@ -20,7 +20,7 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
     //console.log(mouseCoords);
     var theta, x,y,globalPt;
     //// OPTION A
-    for(i=0;i<len;i+=1){
+    /*for(i=0;i<len;i+=1){
         if(!positions.v[i]){
             positions.v[i] = [path.v[i][0],path.v[i][1]];
             positions.o[i] = [path.o[i][0],path.o[i][1]];
@@ -31,13 +31,13 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
 
         }
 
-        globalPt = this.elem.globalToLocal(path.v[i],transformers);
+        globalPt = this.elem.localToGlobal(path.v[i],transformers);
         theta = Math.atan2(
             globalPt[1] - mouseCoords[1],
             globalPt[0] - mouseCoords[0]
         );
 
-        globalPt = this.elem.globalToLocal(positions.v[i],transformers);
+        globalPt = this.elem.localToGlobal(positions.v[i],transformers);
         x = mouseCoords[0] - globalPt[0];
         y = mouseCoords[1] - globalPt[1];
         var distance = Math.sqrt( (x * x) + (y * y) );
@@ -47,13 +47,13 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         positions.v[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
 
 
-        globalPt = this.elem.globalToLocal(path.o[i],transformers);
+        globalPt = this.elem.localToGlobal(path.o[i],transformers);
         theta = Math.atan2(
             globalPt[1] - mouseCoords[1],
             globalPt[0] - mouseCoords[0]
         );
 
-        globalPt = this.elem.globalToLocal(positions.o[i],transformers);
+        globalPt = this.elem.localToGlobal(positions.o[i],transformers);
         x = mouseCoords[0] - globalPt[0];
         y = mouseCoords[1] - globalPt[1];
         var distance = Math.sqrt( (x * x) + (y * y) );
@@ -63,13 +63,13 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         positions.o[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
 
 
-        globalPt = this.elem.globalToLocal(path.i[i],transformers);
+        globalPt = this.elem.localToGlobal(path.i[i],transformers);
         theta = Math.atan2(
             globalPt[1] - mouseCoords[1],
             globalPt[0] - mouseCoords[0]
         );
 
-        globalPt = this.elem.globalToLocal(positions.i[i],transformers);
+        globalPt = this.elem.localToGlobal(positions.i[i],transformers);
         x = mouseCoords[0] - globalPt[0];
         y = mouseCoords[1] - globalPt[1];
         var distance = Math.sqrt( (x * x) + (y * y) );
@@ -79,30 +79,30 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
 
         /////OPTION 1
-        cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
-            ,positions.o[i][0],positions.o[i][1]
-            ,positions.i[i][0],positions.i[i][1], i);
+        // cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+        //     ,positions.o[i][0],positions.o[i][1]
+        //     ,positions.i[i][0],positions.i[i][1], i);
 
 
 
         /////OPTION 2
-        /*cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
-            ,path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])
-            ,path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1]), i);*/
+        // cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+        //     ,path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])
+        //     ,path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1]), i);
 
 
 
         /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
+        // cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+        //     ,path.o[i][0],path.o[i][1]
+        //     ,path.i[i][0],path.i[i][1], i);
 
 
         /////OPTION 4
-        //vValues.push(path.v[i]);
-         //oValues.push(positions.o[i]);
-         //iValues.push(positions.i[i]);
-    }
+        // cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //      ,positions.o[i][0],positions.o[i][1]
+        //      ,positions.i[i][0],positions.i[i][1], i);
+    }*/
 
 
 
@@ -115,45 +115,51 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
             positions.distV[i] = 0;
 
         }
+        globalPt = this.elem.localToGlobal(path.v[i],transformers);
         theta = Math.atan2(
-            positions.v[i][1] - mouseCoords[1],
-            positions.v[i][0] - mouseCoords[0]
+            globalPt[1] - mouseCoords[1],
+            globalPt[0] - mouseCoords[0]
         );
-        x = mouseCoords[0] - positions.v[i][0];
-        y = mouseCoords[1] - positions.v[i][1];
+        globalPt = this.elem.localToGlobal(positions.v[i],transformers);
+        x = mouseCoords[0] - globalPt[0];
+        y = mouseCoords[1] - globalPt[1];
         var distance = this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
 
         positions.v[i][0] += Math.cos(theta) * distance + (path.v[i][0] - positions.v[i][0]) * this.data.dc;
         positions.v[i][1] += Math.sin(theta) * distance + (path.v[i][1] - positions.v[i][1]) * this.data.dc;
 
 
+        globalPt = this.elem.localToGlobal(path.o[i],transformers);
         theta = Math.atan2(
-            positions.o[i][1] - mouseCoords[1],
-            positions.o[i][0] - mouseCoords[0]
+            globalPt[1] - mouseCoords[1],
+            globalPt[0] - mouseCoords[0]
         );
-        x = mouseCoords[0] - positions.o[i][0];
-        y = mouseCoords[1] - positions.o[i][1];
+        globalPt = this.elem.localToGlobal(positions.o[i],transformers);
+        x = mouseCoords[0] - globalPt[0];
+        y = mouseCoords[1] - globalPt[1];
         var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
 
         positions.o[i][0] += Math.cos(theta) * distance + (path.o[i][0] - positions.o[i][0]) * this.data.dc;
         positions.o[i][1] += Math.sin(theta) * distance + (path.o[i][1] - positions.o[i][1]) * this.data.dc;
 
 
+        globalPt = this.elem.localToGlobal(path.i[i],transformers);
         theta = Math.atan2(
-            positions.i[i][1] - mouseCoords[1],
-            positions.i[i][0] - mouseCoords[0]
+            globalPt[1] - mouseCoords[1],
+            globalPt[0] - mouseCoords[0]
         );
-        x = mouseCoords[0] - positions.i[i][0];
-        y = mouseCoords[1] - positions.i[i][1];
+        globalPt = this.elem.localToGlobal(positions.i[i],transformers);
+        x = mouseCoords[0] - globalPt[0];
+        y = mouseCoords[1] - globalPt[1];
         var distance =  this.data.ss * this.data.mx / Math.sqrt( (x * x) + (y * y) );
 
         positions.i[i][0] += Math.cos(theta) * distance + (path.i[i][0] - positions.i[i][0]) * this.data.dc;
         positions.i[i][1] += Math.sin(theta) * distance + (path.i[i][1] - positions.i[i][1]) * this.data.dc;
 
         /////OPTION 1
-        //vValues.push(positions.v[i]);
-        // oValues.push(positions.o[i]);
-        // iValues.push(positions.i[i]);
+        cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+            ,positions.o[i][0],positions.o[i][1]
+            ,positions.i[i][0],positions.i[i][1], i);
 
 
 
@@ -182,27 +188,88 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
     var perc, distance, globalPt;
     for(i=0;i<len;i+=1){
 
-        globalPt = this.elem.globalToLocal(path.v[i],transformers);
+        globalPt = this.elem.localToGlobal(path.v[i],transformers);
 
         x = mouseCoords[0] - globalPt[0];
         y = mouseCoords[1] - globalPt[1];
         distance = Math.sqrt( (x * x) + (y * y) );
         perc = Math.min(1,distance/maxDist);
 
+        //// OPTION 1
+        // if(distance < maxDist){
+        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //     ,path.v[i][0]+(path.o[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.o[i][1] - path.v[i][1])*perc
+        //     ,path.v[i][0]+(path.i[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.i[i][1] - path.v[i][1])*perc, i);
+        // } else {
+        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //     ,path.o[i][0],path.o[i][1]
+        //     ,path.i[i][0],path.i[i][1], i);
+        // }
 
-        if(distance < maxDist){
-            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
-            ,path.v[i][0]+(path.o[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.o[i][1] - path.v[i][1])*perc
-            ,path.v[i][0]+(path.i[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.i[i][1] - path.v[i][1])*perc, i);
-        } else {
-            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
-            ,path.o[i][0],path.o[i][1]
-            ,path.i[i][0],path.i[i][1], i);
-        }
+        //// OPTION 2
+        // perc = 1 - perc*5;
+        // if(distance < maxDist){
+        //     cloned_path.setTripleAt(path.v[i][0] * perc,path.v[i][1] * perc
+        //     ,path.o[i][0] * perc,path.o[i][1] * perc
+        //     ,path.i[i][0] * perc,path.i[i][1] * perc, i);
+        // } else {
+        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //     ,path.o[i][0],path.o[i][1]
+        //     ,path.i[i][0],path.i[i][1], i);
+        // }
+
+        //// OPTION 3
+        // perc = 1 - perc;
+        // if(distance < maxDist){
+        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //     ,path.o[i][0] + (path.i[i][0] - path.o[i][0]) * perc, path.o[i][1] + (path.i[i][1] - path.o[i][1]) * perc
+        //     ,path.i[i][0] + (path.o[i][0] - path.i[i][0]) * perc, path.i[i][1] + (path.o[i][1] - path.i[i][1]) * perc, i);
+        // } else {
+        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //     ,path.o[i][0],path.o[i][1]
+        //     ,path.i[i][0],path.i[i][1], i);
+        // }
 
     }*/
 
+    ////OPTION D
+    //console.log('mouseCoords:', mouseCoords)
+    var localMouseCoords = this.elem.globalToLocal(mouseCoords, transformers);
+    //console.log(localMouseCoords);
 
+    var maxDist = this.data.maxDist;
+    var perc, distance;
+    for(i=0;i<len;i+=1){
+
+        //globalPt = this.elem.localToGlobal(path.v[i],transformers);
+
+        /*theta = Math.atan2(
+            path.v[i][1] - localMouseCoords[1],
+            path.v[i][0] - localMouseCoords[0]
+        );*/
+
+        x = path.v[i][0] - localMouseCoords[0];
+        y =path.v[i][1] - localMouseCoords[1];
+        distance = Math.sqrt( (x * x) + (y * y) );
+        var mult = -0.15*(distance/200);
+        //var mult = -.55*(Math.exp(distance/300)-1);
+        //var mult = -.55*(Math.log(distance/250));
+        //mult = -0.55*Math.cos(distance*Math.PI/180);
+
+        //// OPTION 1
+        cloned_path.setTripleAt(path.v[i][0] + (localMouseCoords[0] - path.v[i][0]) * mult, path.v[i][1] + (localMouseCoords[1] - path.v[i][1]) * mult
+            ,path.o[i][0],path.o[i][1]
+            ,path.i[i][0],path.i[i][1], i);
+
+        //// OPTION 2
+        // cloned_path.setTripleAt(path.v[i][0] + (localMouseCoords[0] - path.v[i][0]) * mult, path.v[i][1] + (localMouseCoords[1] - path.v[i][1]) * mult
+        //     ,path.o[i][0] + (localMouseCoords[0] - path.o[i][0]) * mult, path.o[i][1] + (localMouseCoords[1] - path.o[i][1]) * mult
+        //     ,path.i[i][0] + (localMouseCoords[0] - path.i[i][0]) * mult, path.i[i][1] + (localMouseCoords[1] - path.i[i][1]) * mult, i);
+
+    }
+
+
+    //return shape_pool.clone(path);
     return cloned_path;
 }
 
@@ -218,7 +285,7 @@ MouseModifier.prototype.processShapes = function(){
         var shapeData, newPaths, localShapeCollection, localMouseCoords;
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            //localMouseCoords = this.elem.globalToLocal([mouseX,mouseY], shapeData.transformers);
+            //localMouseCoords = this.elem.localToGlobal([mouseX,mouseY], shapeData.transformers);
             localMouseCoords = [mouseX,mouseY];
             newPaths = shapeData.shape.paths;
             localShapeCollection = shapeData.localShapeCollection;

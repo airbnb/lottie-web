@@ -5,21 +5,11 @@ function CVShapeElement(data, comp,globalData){
     this.itemsData = [];
     this.prevViewData = [];
     this.shapeModifiers = [];
+    this.processedElements = [];
     this._parent.constructor.call(this,data, comp,globalData);
 }
 createElement(CVBaseElement, CVShapeElement);
 
-CVShapeElement.prototype.lcEnum = {
-    '1': 'butt',
-    '2': 'round',
-    '3': 'butt'
-}
-
-CVShapeElement.prototype.ljEnum = {
-    '1': 'miter',
-    '2': 'round',
-    '3': 'butt'
-};
 CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
 
 CVShapeElement.prototype.dashResetter = [];
@@ -146,15 +136,16 @@ CVShapeElement.prototype.reloadShapes = function(){
 CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, render){
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownArrays = [], ownModifiers = [];
+    var ownArrays = [], ownModifiers = [], processedPos;
     for(i=len;i>=0;i-=1){
-        if(!arr[i]._processed){
+        processedPos = this.searchProcessedElement(arr[i]);
+        if(!processedPos){
             arr[i]._render = render;
         } else {
-            itemsData[i] = prevViewData[arr[i]._processed - 1];
+            itemsData[i] = prevViewData[processedPos - 1];
         }
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createStyleElement(arr[i], dynamicProperties);
             } else {
                 itemsData[i].style.closed = false;
@@ -162,7 +153,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
             
             ownArrays.push(itemsData[i].style);
         }else if(arr[i].ty == 'gr'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createGroupElement(arr[i]);
             } else {
                 jLen = itemsData[i].it.length;
@@ -172,16 +163,16 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
             }
             this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, render);
         }else if(arr[i].ty == 'tr'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
             }
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createShapeElement(arr[i], dynamicProperties);
             }
             
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
-            if(!arr[i]._processed){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+            if(!processedPos){
                 var modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i],dynamicProperties);
                 itemsData[i] = modifier;
@@ -192,7 +183,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
             }
             ownModifiers.push(modifier);
         } else if(arr[i].ty == 'rp'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 itemsData[i] = modifier;
                 modifier.init(this,arr,i,itemsData,dynamicProperties);
@@ -204,7 +195,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
             }
             ownModifiers.push(modifier);
         }
-        arr[i]._processed = i + 1;
+        this.addProcessedElement(arr[i], i + 1);
     }
     len = ownArrays.length;
     for(i=0;i<len;i+=1){
@@ -218,6 +209,10 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
 
 CVShapeElement.prototype.addShapeToModifiers = IShapeElement.prototype.addShapeToModifiers;
 CVShapeElement.prototype.renderModifiers = IShapeElement.prototype.renderModifiers;
+CVShapeElement.prototype.lcEnum = IShapeElement.prototype.lcEnum;
+CVShapeElement.prototype.ljEnum = IShapeElement.prototype.ljEnum;
+CVShapeElement.prototype.searchProcessedElement = IShapeElement.prototype.searchProcessedElement;
+CVShapeElement.prototype.addProcessedElement = IShapeElement.prototype.addProcessedElement;
 
 CVShapeElement.prototype.renderFrame = function(parentMatrix){
     if(this._parent.renderFrame.call(this, parentMatrix)===false){

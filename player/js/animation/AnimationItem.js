@@ -220,11 +220,21 @@ AnimationItem.prototype.loadSegments = function() {
 
 AnimationItem.prototype.configAnimation = function (animData) {
     //ERASE
-    //animData.layers[0].shapes.push({"ty": "ms","maxDist":300,"dc":0.01});
-    //animData.layers[2].shapes.push({"ty": "ms","maxDist":300,"dc":0.5});
+    console.log(animData);
+    // DANCING DARWIN
+    /*for(var i =0; i < 32; i+= 1){
+        //animData.layers[i].shapes.push({"ty": "ms","maxDist":50,"dc":0.95}); /// OPTION C 2
+        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":0.25}); /// OPTION A 1
+        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.75}); /// OPTION A 2
+        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.95}); /// OPTION A 3
+        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":.999}); /// OPTION A 4
+        animData.layers[i].shapes.push({"ty": "ms","dc":1, "ss": 140, "mx": 15}); /// OPTION B 1
+    }*/
+    // CIRCLE
+    /*animData.layers[0].shapes.push({"ty": "ms","dc":.5, "ss": 140, "mx": 15});
     if(this.renderer && this.renderer.destroyed){
         return;
-    }
+    }*/
     //console.log(JSON.parse(JSON.stringify(animData)));
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);

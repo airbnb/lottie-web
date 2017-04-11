@@ -71,7 +71,7 @@ BaseElement.prototype.prepareFrame = function(num){
     return this.isVisible;
 };
 
-BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
+BaseElement.prototype.localToGlobal = function(pt, extraTransforms){
     var transforms = [];
     var i, len;
     transforms.push(this.finalTransform);
@@ -95,13 +95,51 @@ BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
             flag = false;
         }
     }
-    len = extraTransforms.length;
-    for(i = len - 1;i >= 0; i -= 1){
-        pt = extraTransforms[i].mProps.v.applyToPointArray(pt[0],pt[1],0,2);
+    if(extraTransforms){
+        len = extraTransforms.length;
+        for(i = len - 1;i >= 0; i -= 1){
+            pt = extraTransforms[i].mProps.v.applyToPointArray(pt[0],pt[1],0,2);
+        }
     }
     len = transforms.length;
     for(i=0;i<len;i+=1){
         pt = transforms[i].mProp.v.applyToPointArray(pt[0],pt[1],0,2);
+    }
+    return pt;
+};
+
+BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
+    var transforms = [];
+    var i, len;
+    if(this.hierarchy){
+        i = this.hierarchy.length - 1;
+        while(i >= 0) {
+            transforms.push(this.hierarchy[i].finalTransform);
+            i -= 1;
+        }   
+    }
+    transforms.push(this.finalTransform);
+    var flag = true;
+    var comp = this.comp;
+    while(flag){
+        if(comp.finalTransform){
+            if(comp.data.hasMask){
+                transforms.splice(0,0,comp.finalTransform);
+            }
+            comp = comp.comp;
+        } else {
+            flag = false;
+        }
+    }
+    len = transforms.length;
+    for(i=0;i<len;i+=1){
+        pt = transforms[i].mProp.v.inversePoints([pt])[0];
+    }
+    if(extraTransforms){
+        len = extraTransforms.length;
+        for(i = 0;i < len; i += 1){
+            pt = extraTransforms[i].mProps.v.inversePoints([pt])[0];
+        }
     }
     return pt;
 };

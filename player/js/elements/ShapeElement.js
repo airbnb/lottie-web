@@ -5,6 +5,7 @@ function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.itemsData = [];
     this.prevViewData = [];
     this.shapeModifiers = [];
+    this.processedElements = [];
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
 }
 createElement(SVGBaseElement, IShapeElement);
@@ -20,6 +21,34 @@ IShapeElement.prototype.ljEnum = {
     '2': 'round',
     '3': 'butt'
 }
+
+IShapeElement.prototype.searchProcessedElement = function(elem){
+    var i = this.processedElements.length;
+    while(i){
+        i -= 1;
+        if(this.processedElements[i].elem === elem){
+            return this.processedElements[i].pos;
+        }
+    }
+    return 0;
+};
+
+IShapeElement.prototype.addProcessedElement = function(elem, pos){
+    var i = this.processedElements.length;
+    while(i){
+        i -= 1;
+        if(this.processedElements[i].elem === elem){
+            this.processedElements[i].pos = pos;
+            break;
+        }
+    }
+    if(i === 0){
+        this.processedElements.push({
+            elem: elem,
+            pos: pos
+        })
+    }
+};
 
 IShapeElement.prototype.buildExpressionInterface = function(){};
 
@@ -176,6 +205,9 @@ IShapeElement.prototype.createGroupElement = function(data) {
     };
     var g = document.createElementNS(svgNS,'g');
     elementData.gr = g;
+    if(data.ln){
+        elementData.gr.setAttribute('id',data.ln);
+    }
     return elementData;
 }
 
@@ -253,15 +285,16 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier;
+    var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier, processedPos;
     for(i=len;i>=0;i-=1){
-        if(!arr[i]._processed){
+        processedPos = this.searchProcessedElement(arr[i]);
+        if(!processedPos){
             arr[i]._render = render;
         } else {
-            itemsData[i] = prevViewData[arr[i]._processed - 1];
+            itemsData[i] = prevViewData[processedPos - 1];
         }
         if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createStyleElement(arr[i], level, dynamicProperties);
             } else {
                 itemsData[i].style.closed = false;
@@ -271,7 +304,7 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
             }
             ownStyles.push(itemsData[i].style);
         }else if(arr[i].ty == 'gr'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createGroupElement(arr[i]);
             } else {
                 jLen = itemsData[i].it.length;
@@ -284,19 +317,19 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
                 container.appendChild(itemsData[i].gr);
             }
         }else if(arr[i].ty == 'tr'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
             }
             currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
             }
             itemsData[i].elements = this.setElementStyles();
 
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i],dynamicProperties);
                 itemsData[i] = modifier;
@@ -307,7 +340,7 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
             }
             ownModifiers.push(modifier);
         }else if(arr[i].ty == 'rp'){
-            if(!arr[i]._processed){
+            if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 itemsData[i] = modifier;
                 modifier.init(this,arr,i,itemsData,dynamicProperties);
@@ -319,7 +352,7 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
             }
             ownModifiers.push(modifier);
         }
-        arr[i]._processed = i + 1;
+        this.addProcessedElement(arr[i], i + 1);
     }
     len = ownStyles.length;
     for(i=0;i<len;i+=1){
