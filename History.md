@@ -1,3 +1,6 @@
+## V 4.6.4
+- velocityAtTime expression fix
+
 ## V 4.6.3
 - bodymovin_light fix
 - rubberhose autoflop patch for inactive admin property
