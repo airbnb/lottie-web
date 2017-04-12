@@ -309,7 +309,7 @@ var ExpressionManager = (function(){
 
     function initiateExpression(elem,data,property){
         var val = data.x;
-        var needsVelocity = val.indexOf('velocity') !== -1;
+        var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
         var transform,content,effect;
