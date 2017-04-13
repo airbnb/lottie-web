@@ -209,7 +209,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
             data[i].lvl = level;
             this.shapes.push(data[i].sh);
-            this.addShapeToModifiers(data[i].sh);
+            this.addShapeToModifiers(data[i]);
             jLen = this.stylesList.length;
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
@@ -219,7 +219,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
                     });
                 }
             }
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'rp'){
             var modifier = ShapeModifiers.getModifier(arr[i].ty);
             modifier.init(this,arr[i],dynamicProperties);
             this.shapeModifiers.push(modifier);
@@ -237,10 +237,10 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
     }
 };
 
-IShapeElement.prototype.addShapeToModifiers = function(shape) {
+IShapeElement.prototype.addShapeToModifiers = function(data) {
     var i, len = this.shapeModifiers.length;
     for(i=0;i<len;i+=1){
-        this.shapeModifiers[i].addShape(shape);
+        this.shapeModifiers[i].addShape(data);
     }
 };
 
@@ -366,7 +366,7 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
         redraw = viewData.sh.mdf || this.firstFrame;
         pathStringTransformed = 'M0 0';
         var paths = viewData.sh.paths;
-        jLen = paths.length;
+        jLen = paths._length;
         if(viewData.elements[l].st.lvl < lvl){
             var mat = this.mHelper.reset(), props;
             var iterations = lvl - viewData.elements[l].st.lvl;
@@ -380,9 +380,9 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
             }
             if(redraw){
                 for(j=0;j<jLen;j+=1){
-                    pathNodes = paths[j];
-                    if(pathNodes && pathNodes.v){
-                        len = pathNodes.v.length;
+                    pathNodes = paths.shapes[j];
+                    if(pathNodes && pathNodes._length){
+                        len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {
                             if (i == 1) {
                                 pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
@@ -405,9 +405,9 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
         } else {
             if(redraw){
                 for(j=0;j<jLen;j+=1){
-                    pathNodes = paths[j];
-                    if(pathNodes && pathNodes.v){
-                        len = pathNodes.v.length;
+                    pathNodes = paths.shapes[j];
+                    if(pathNodes && pathNodes._length){
+                        len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {
                             if (i == 1) {
                                 //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);

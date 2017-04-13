@@ -168,7 +168,10 @@
             velocity = Array.apply(null,{length:v1.length});
             var i;
             for(i=0;i<v1.length;i+=1){
-                velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                //removing frameRate
+                //if needed, don't add it here
+                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                velocity[i] = (v2[i] - v1[i])/delta;
             }
         } else {
             velocity = (v2 - v1)/delta;

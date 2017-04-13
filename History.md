@@ -1,3 +1,16 @@
+## V 4.6.4
+- velocityAtTime expression fix
+
+## V 4.6.3
+- bodymovin_light fix
+- rubberhose autoflop patch for inactive admin property
+
+## V 4.6.2
+- repeaters! (partially but should cover many cases)
+- new expressions
+- render improvements
+- reduced garbage collection
+
 ## V 4.6.1
 - 3D orientation fix
 - render improvements

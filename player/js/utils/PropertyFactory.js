@@ -8,10 +8,9 @@ var PropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime)))){
-
-        }else{
-            var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
+        if(!(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))))){
+            var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+            var len = this.keyframes.length- 1,flag = true;
             var keyData, nextKeyData;
 
             while(flag){
@@ -27,13 +26,15 @@ var PropertyFactory = (function(){
                     break;
                 }
                 if(i < len - 1){
-                    i += dir;
+                    i += 1;
                 }else{
                     flag = false;
                 }
             }
 
-            var k, kLen,perc,jLen, j = 0, fnc;
+            this._lastIndex = i;
+
+            var k, kLen,perc,jLen, j, fnc;
             if(keyData.to){
 
                 if(!keyData.bezierData){
@@ -44,13 +45,14 @@ var PropertyFactory = (function(){
                     var ind = frameNum >= nextKeyData.t-this.offsetTime ? bezierData.points.length - 1 : 0;
                     kLen = bezierData.points[ind].point.length;
                     for(k = 0; k < kLen; k += 1){
-                        this.v[k] = this.mult ? bezierData.points[ind].point[k]*this.mult : bezierData.points[ind].point[k];
                         this.pv[k] = bezierData.points[ind].point[k];
+                        this.v[k] = this.mult ? this.pv[k]*this.mult : this.pv[k];
                         if(this.lastPValue[k] !== this.pv[k]) {
                             this.mdf = true;
                             this.lastPValue[k] = this.pv[k];
                         }
                     }
+                    this._lastBezierData = null;
                 }else{
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
@@ -62,17 +64,17 @@ var PropertyFactory = (function(){
                     var distanceInLine = bezierData.segmentLength*perc;
 
                     var segmentPerc;
-                    var addedLength = 0;
-                    dir = 1;
+                    var addedLength =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastAddedLength : 0;
+                    j =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastPoint : 0;
                     flag = true;
                     jLen = bezierData.points.length;
                     while(flag){
-                        addedLength +=bezierData.points[j].partialLength*dir;
+                        addedLength +=bezierData.points[j].partialLength;
                         if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
-                                this.v[k] = this.mult ? bezierData.points[j].point[k]*this.mult : bezierData.points[j].point[k];
                                 this.pv[k] = bezierData.points[j].point[k];
+                                this.v[k] = this.mult ? this.pv[k]*this.mult : this.pv[k];
                                 if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
                                     this.lastPValue[k] = this.pv[k];
@@ -83,9 +85,8 @@ var PropertyFactory = (function(){
                             segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
-                                this.v[k] = this.mult ? (bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc)*this.mult : bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
                                 this.pv[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
-
+                                this.v[k] = this.mult ? this.pv[k] * this.mult : this.pv[k];
                                 if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
                                     this.lastPValue[k] = this.pv[k];
@@ -93,60 +94,52 @@ var PropertyFactory = (function(){
                             }
                             break;
                         }
-                        if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
-                            j += dir;
+                        if(j < jLen - 1){
+                            j += 1;
                         }else{
                             flag = false;
                         }
                     }
+                    this._lastPoint = j;
+                    this._lastAddedLength = addedLength - bezierData.points[j].partialLength;
+                    this._lastBezierData = bezierData;
                 }
             }else{
-                var outX,outY,inX,inY, isArray = false, keyValue;
+                var outX,outY,inX,inY, keyValue;
                 len = keyData.s.length;
                 for(i=0;i<len;i+=1){
                     if(keyData.h !== 1){
-                        if(keyData.o.x instanceof Array){
-                            isArray = true;
-                            if(!keyData.__fnct){
-                                keyData.__fnct = [];
-                            }
-                            if(!keyData.__fnct[i]){
-                                outX = keyData.o.x[i] || keyData.o.x[0];
-                                outY = keyData.o.y[i] || keyData.o.y[0];
-                                inX = keyData.i.x[i] || keyData.i.x[0];
-                                inY = keyData.i.y[i] || keyData.i.y[0];
-                            }
-                        }else{
-                            isArray = false;
-                            if(!keyData.__fnct) {
-                                outX = keyData.o.x;
-                                outY = keyData.o.y;
-                                inX = keyData.i.x;
-                                inY = keyData.i.y;
-                            }
-                        }
-                        if(isArray){
-                            if(keyData.__fnct[i]){
-                                fnc = keyData.__fnct[i];
-                            }else{
-                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct[i] = fnc;
-                            }
-                        }else{
-                            if(keyData.__fnct){
-                                fnc = keyData.__fnct;
-                            }else{
-                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct = fnc;
-                            }
-                        }
                         if(frameNum >= nextKeyData.t-this.offsetTime){
                             perc = 1;
                         }else if(frameNum < keyData.t-this.offsetTime){
                             perc = 0;
                         }else{
+                            if(keyData.o.x instanceof Array){
+                                if(!keyData.__fnct){
+                                    keyData.__fnct = [];
+                                }
+                                if (!keyData.__fnct[i]) {
+                                    outX = keyData.o.x[i] || keyData.o.x[0];
+                                    outY = keyData.o.y[i] || keyData.o.y[0];
+                                    inX = keyData.i.x[i] || keyData.i.x[0];
+                                    inY = keyData.i.y[i] || keyData.i.y[0];
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct[i] = fnc;
+                                } else {
+                                    fnc = keyData.__fnct[i];
+                                }
+                            } else {
+                                if (!keyData.__fnct) {
+                                    outX = keyData.o.x;
+                                    outY = keyData.o.y;
+                                    inX = keyData.i.x;
+                                    inY = keyData.i.y;
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct = fnc;
+                                } else{
+                                    fnc = keyData.__fnct;
+                                }
+                            }
                             perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                         }
                     }
@@ -206,9 +199,9 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = new Array(data.k.length);
-        this.pv = new Array(data.k.length);
-        this.lastValue = new Array(data.k.length);
+        this.v = Array.apply(null, {length:data.k.length});
+        this.pv = Array.apply(null, {length:data.k.length});
+        this.lastValue = Array.apply(null, {length:data.k.length});
         var arr = Array.apply(null, {length:data.k.length});
         this.vel = arr.map(function () { return 0 });
         var i, len = data.k.length;
@@ -225,6 +218,7 @@ var PropertyFactory = (function(){
         this.lastValue = -99999;
         this.lastPValue = -99999;
         this.frameId = -1;
+        this._lastIndex = 0;
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -261,10 +255,11 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.getValue = getValue;
         this.frameId = -1;
-        this.v = new Array(data.k[0].s.length);
-        this.pv = new Array(data.k[0].s.length);
-        this.lastValue = new Array(data.k[0].s.length);
-        this.lastPValue = new Array(data.k[0].s.length);
+        this._lastIndex = 0;
+        this.v = Array.apply(null, {length:data.k[0].s.length});
+        this.pv = Array.apply(null, {length:data.k[0].s.length});
+        this.lastValue = Array.apply(null, {length:data.k[0].s.length});
+        this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
         this.lastFrame = initFrame;
     }
 
