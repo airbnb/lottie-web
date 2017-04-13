@@ -135,6 +135,10 @@ CanvasRenderer.prototype.restore = function(actionFlag){
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
+    animData.width = animData.width/blitter;
+    animData.height = animData.height/blitter;
+    animData.w = animData.w/blitter;
+    animData.h = animData.h/blitter;
     if(this.animationItem.wrapper){
         this.animationItem.container = document.createElement('canvas');
         this.animationItem.container.style.width = '100%';

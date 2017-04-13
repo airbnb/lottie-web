@@ -44,6 +44,10 @@ SVGRenderer.prototype.createSolid = function (data) {
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
+    animData.width = animData.width/blitter;
+    animData.height = animData.height/blitter;
+    animData.w = animData.w/blitter;
+    animData.h = animData.h/blitter;
     this.layerElement = document.createElementNS(svgNS,'svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     this.layerElement.setAttribute('width',animData.w);

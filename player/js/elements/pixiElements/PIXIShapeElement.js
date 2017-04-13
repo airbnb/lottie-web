@@ -311,7 +311,7 @@ PIXIShapeElement.prototype.renderShape = function(items,data,isMain, container,P
         items = this.shapesData;
         len = this.stylesList.length;
         for(i=0;i<len;i+=1){
-            this.stylesList[i].d = '';
+            // this.stylesList[i].d = '';
             this.stylesList[i].PD.length = 0;
             this.stylesList[i].mdf = false;
         }
@@ -364,14 +364,14 @@ PIXIShapeElement.prototype.renderShape = function(items,data,isMain, container,P
         for (i = 0; i < len; i += 1) {
             if (this.stylesList[i].ld === '0') {
                 this.stylesList[i].ld = '1';
-                this.stylesList[i].pElem.style.display = 'block';
+                // this.stylesList[i].pElem.style.display = 'block';
                 //this.stylesList[i].parent.appendChild(this.stylesList[i].pElem);
             }
             if (this.stylesList[i].mdf || this.firstFrame) {
-                this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
-                if(this.stylesList[i].msElem){
-                    this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
-                }
+                // this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
+                // if(this.stylesList[i].msElem){
+                //     this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
+                // }
             }
             var j, jLen = this.stylesList[i].PD.length;
             for(j=0;j<jLen;j+=1){
@@ -399,7 +399,7 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
         pathStringTransformed = '';
         PPathString = [];
         var paths = viewData.sh.paths;
-        jLen = paths.length;
+        jLen = paths._length;
         var PMatPoint,PMatPointI,PMatPointO;
         if(viewData.elements[l].st.lvl < lvl){
             var mat = this.mHelper.reset(), props;
@@ -411,19 +411,19 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
             }
             if(redraw){
                 for(j=0;j<jLen;j+=1){
-                    pathNodes = paths[j];
+                    pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes.v){
                         len = pathNodes.v.length;
                         for (i = 1; i < len; i += 1) {
                             if (i == 1) {
-                                pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                                // pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                                 PMatPoint = mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1],0);
                                 PPathString.push({
                                     t:'m',
                                     c:[PMatPoint[0], PMatPoint[1]]
                                 })
                             }
-                            pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+                            // pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
                             PMatPoint = mat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1],0);
                             PMatPointO = mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1],0);
                             PMatPointI = mat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1],0);
@@ -433,7 +433,7 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
                             })
                         }
                         if (len == 1) {
-                            pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                            // pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
                             PMatPoint = mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1],0);
                             PPathString.push({
                                 t:'m',
@@ -441,8 +441,8 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
                             })
                         }
                         if (pathNodes.c) {
-                            pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            pathStringTransformed += 'z';
+                            // pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+                            // pathStringTransformed += 'z';
                             PMatPoint = mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1],0);
                             PMatPointO = mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1],0);
                             PMatPointI = mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1],0);
@@ -453,46 +453,42 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
                         }
                     }
                 }
-                viewData.caches[l] = pathStringTransformed;
+                // viewData.caches[l] = pathStringTransformed;
                 viewData.PCaches[l] = PPathString;
             } else {
-                pathStringTransformed = viewData.caches[l];
+                // pathStringTransformed = viewData.caches[l];
                 PPathString = viewData.PCaches[l];
             }
         } else {
             if(redraw){
                 for(j=0;j<jLen;j+=1){
-                    pathNodes = paths[j];
-                    if(pathNodes && pathNodes.v){
-                        len = pathNodes.v.length;
+                    pathNodes = paths.shapes[j];
+                    if(pathNodes && pathNodes._length){
+                        len = pathNodes._length;
                         for (i = 1; i < len; i += 1) {
                             if (i == 1) {
-                                //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                                pathStringTransformed += " M" + pathNodes.v[0].join(',');
+                                // pathStringTransformed += " M" + pathNodes.v[0].join(',');
                                 PPathString.push({
                                     t:'m',
                                     c:[pathNodes.v[0][0], pathNodes.v[0][1]]
                                 })
                             }
-                            //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
-                            pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[i].join(',') + " " + pathNodes.v[i].join(',');
+                            // pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[i].join(',') + " " + pathNodes.v[i].join(',');
                             PPathString.push({
                                 t:'c',
                                 c:[pathNodes.o[i - 1][0], pathNodes.o[i - 1][1],pathNodes.i[i][0], pathNodes.i[i][1],pathNodes.v[i][0], pathNodes.v[i][1]]
                             })
                         }
                         if (len == 1) {
-                            //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            pathStringTransformed += " M" + pathNodes.v[0].join(',');
+                            // pathStringTransformed += " M" + pathNodes.v[0].join(',');
                             PPathString.push({
                                 t:'m',
                                 c:[pathNodes.v[0][0], pathNodes.v[0][1]]
                             })
                         }
                         if (pathNodes.c) {
-                            //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[0].join(',') + " " + pathNodes.v[0].join(',');
-                            pathStringTransformed += 'z';
+                            // pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[0].join(',') + " " + pathNodes.v[0].join(',');
+                            // pathStringTransformed += 'z';
                             PPathString.push({
                                 t:'c',
                                 c:[pathNodes.o[i - 1][0], pathNodes.o[i - 1][1],pathNodes.i[0][0], pathNodes.i[0][1],pathNodes.v[0][0], pathNodes.v[0][1]]
@@ -513,7 +509,7 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
             PPathString[1].c[4] += 0.1;
             PPathString[1].c[5] += 0.1;
         }
-        viewData.elements[l].st.d += pathStringTransformed;
+        //viewData.elements[l].st.d += pathStringTransformed;
         viewData.elements[l].st.PD = viewData.elements[l].st.PD.concat(PPathString);
         viewData.elements[l].st.mdf = redraw || viewData.elements[l].st.mdf;
     }
@@ -523,15 +519,14 @@ PIXIShapeElement.prototype.renderPath = function(pathData,viewData){
 PIXIShapeElement.prototype.renderFill = function(styleData,viewData){
     var styleElem = viewData.style;
 
-    if(viewData.c.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
-        ////styleElem.pElem.style.fill = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
-    }
+    // if(viewData.c.mdf || this.firstFrame){
+    //     styleElem.pElem.setAttribute('fill','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
+    // }
     styleElem.PPElem.clear();
     styleElem.PPElem.beginFill(rgbToHex(bm_floor(viewData.c.v[0]),bm_floor(viewData.c.v[1]),bm_floor(viewData.c.v[2]),'0x'));
-    if(viewData.o.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill-opacity',viewData.o.v);
-    }
+    // if(viewData.o.mdf || this.firstFrame){
+    //     styleElem.pElem.setAttribute('fill-opacity',viewData.o.v);
+    // }
 };
 
 PIXIShapeElement.prototype.renderGradient = function(styleData,viewData){
@@ -619,28 +614,25 @@ PIXIShapeElement.prototype.renderStroke = function(styleData,viewData){
     //TODO fix dashes
     var d = viewData.d;
     var dasharray,dashoffset;
-    if(d && d.k && (d.mdf || this.firstFrame)){
-        styleElem.pElem.setAttribute('stroke-dasharray', d.dasharray);
-        ////styleElem.pElem.style.strokeDasharray = d.dasharray;
-        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
-        ////styleElem.pElem.style.strokeDashoffset = d.dashoffset;
-    }
+    // if(d && d.k && (d.mdf || this.firstFrame)){
+    //     styleElem.pElem.setAttribute('stroke-dasharray', d.dasharray);
+    //     ////styleElem.pElem.style.strokeDasharray = d.dasharray;
+    //     styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
+    //     ////styleElem.pElem.style.strokeDashoffset = d.dashoffset;
+    // }
     styleElem.PPElem.clear();
-    if(viewData.c && (viewData.c.mdf || this.firstFrame)){
-        //styleElem.PPElem.beginFill(rgbToHex(bm_floor(viewData.c.v[0]),bm_floor(viewData.c.v[1]),bm_floor(viewData.c.v[2]),'0x'));
-        styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
-        ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')';
-    }
-    if(viewData.o.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-opacity',viewData.o.v);
-    }
-    if(viewData.w.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-width',viewData.w.v);
-        if(styleElem.msElem){
-            styleElem.msElem.setAttribute('stroke-width',viewData.w.v);
-        }
-        ////styleElem.pElem.style.strokeWidth = viewData.w.v;
-    }
+    // if(viewData.c && (viewData.c.mdf || this.firstFrame)){
+    //     styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(viewData.c.v[0])+','+bm_floor(viewData.c.v[1])+','+bm_floor(viewData.c.v[2])+')');
+    // }
+    // if(viewData.o.mdf || this.firstFrame){
+    //     styleElem.pElem.setAttribute('stroke-opacity',viewData.o.v);
+    // }
+    // if(viewData.w.mdf || this.firstFrame){
+    //     styleElem.pElem.setAttribute('stroke-width',viewData.w.v);
+    //     if(styleElem.msElem){
+    //         styleElem.msElem.setAttribute('stroke-width',viewData.w.v);
+    //     }
+    // }
     styleElem.PPElem.lineStyle(viewData.w.v,rgbToHex(bm_floor(viewData.c.v[0]),bm_floor(viewData.c.v[1]),bm_floor(viewData.c.v[2]),'0x'));
 };
 

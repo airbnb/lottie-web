@@ -3,6 +3,7 @@ function PIXICompElement(data,parentContainer,globalData,comp, placeholder){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
+    this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
@@ -104,3 +105,5 @@ PIXICompElement.prototype.createShape = PIXIRenderer.prototype.createShape;
 PIXICompElement.prototype.createText = PIXIRenderer.prototype.createText;
 PIXICompElement.prototype.createBase = PIXIRenderer.prototype.createBase;
 PIXICompElement.prototype.appendElementInPos = PIXIRenderer.prototype.appendElementInPos;
+PIXICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
+PIXICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;

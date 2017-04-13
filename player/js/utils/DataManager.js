@@ -304,7 +304,7 @@ function dataFunctionManager(){
         }
     }());
 
-    /*function blitPaths(path){
+    function blitPaths(path){
         var i, len = path.i.length;
         for(i=0;i<len;i+=1){
             path.i[i][0] /= blitter;
@@ -394,11 +394,18 @@ function dataFunctionManager(){
                     data.k[i].e = blitValue(data.k[i].e);
                     //console.log('post E: ', data.k[i].e);
                 }
+                if(data.k[i].to){
+                    data.k[i].to = blitValue(data.k[i].to);
+                    data.k[i].ti = blitValue(data.k[i].ti);
+                }
             }
         }
     }
 
     function blitLayers(layers,comps, fontManager){
+        if(layers._blitted){
+            return;
+        }
         var layerData;
         var animArray, lastFrame;
         var i, len = layers.length;
@@ -439,6 +446,7 @@ function dataFunctionManager(){
                 layerData.w = Math.round(layerData.w/blitter);
                 layerData.h = Math.round(layerData.h/blitter);
                 blitLayers(layerData.layers,comps, fontManager);
+                layerData.layers._blitted = true;
             }else if(layerData.ty === 4){
                 blitShapes(layerData.shapes);
             }else if(layerData.ty == 5){
@@ -453,7 +461,7 @@ function dataFunctionManager(){
 
     function blitAnimation(animationData,comps, fontManager){
         blitLayers(animationData.layers,comps, fontManager);
-    }*/
+    }
 
     function completeData(animationData, fontManager){
         if(animationData.__complete){
@@ -464,7 +472,9 @@ function dataFunctionManager(){
         checkShapes(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
-        //blitAnimation(animationData, animationData.assets, fontManager);
+        //console.log((JSON.stringify(animationData)));
+        blitAnimation(animationData, animationData.assets, fontManager);
+        //console.log((JSON.stringify(animationData)));
     }
 
     function completeText(data, fontManager){

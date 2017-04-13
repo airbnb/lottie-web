@@ -126,13 +126,13 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
+        renderer: 'pixi',
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data3.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

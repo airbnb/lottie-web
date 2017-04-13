@@ -44,6 +44,10 @@ PIXIRenderer.prototype.createSolid = function (data) {
 };
 
 PIXIRenderer.prototype.configAnimation = function(animData){
+    animData.width = animData.width/blitter;
+    animData.height = animData.height/blitter;
+    animData.w = animData.w/blitter;
+    animData.h = animData.h/blitter;
 
     this.layerElement = document.createElementNS(svgNS,'svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
@@ -55,12 +59,12 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     this.layerElement.style.height = '100%';
     this.layerElement.style.transform = 'translate3d(0,0,0)';
     this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this.layerElement);
+    //this.animationItem.wrapper.appendChild(this.layerElement);
     ///
     this.renderer = new PIXI.WebGLRenderer(animData.w, animData.h,{antialias:true,transparent:true});
-    /*this.renderer.view.style.transform = 'scale(0.5,0.5)';
-    this.renderer.view.style.transformOrigin = '0 0';*/
-    //this.animationItem.wrapper.appendChild(this.renderer.view);
+    this.renderer.view.style.transform = 'scale(0.5,0.5)';
+    this.renderer.view.style.transformOrigin = '0 0';
+    this.animationItem.wrapper.appendChild(this.renderer.view);
     this.stage = new PIXI.Container();
     this.PLayerElement = this.stage;
 
@@ -99,7 +103,6 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     this.globalData.fontManager.addFonts(animData.fonts,defs);
     this.elements = Array.apply(null,{length:animData.layers.length});
 };
-
 
 PIXIRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerHTML = '';
