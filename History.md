@@ -1,3 +1,7 @@
+## V 4.6.6
+- Text baseline supported (from After Effects 13.6 (CC 2015))
+- text animator fixes
+
 ## V 4.6.5
 - trim path full fix
 
