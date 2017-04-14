@@ -1,3 +1,6 @@
+## V 4.6.5
+- trim path full fix
+
 ## V 4.6.4
 - velocityAtTime expression fix
 

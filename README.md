@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.6.5
+- trim path full fix
+
 ## V 4.6.4
 - velocityAtTime expression fix
 
