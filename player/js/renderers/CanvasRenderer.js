@@ -160,6 +160,10 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         w: animData.w,
         h: animData.h
     };
+    this.globalData.mouseCoords = {
+        x: 0,
+        y: 0
+    };
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.layers = animData.layers;
     this.transformCanvas = {};

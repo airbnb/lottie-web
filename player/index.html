@@ -119,21 +119,22 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:false,
+            dpr: 1
         },
-        path: 'exports/render/data3.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function(){
         window.addEventListener('mousemove', function(ev){
-            anim.renderer.globalData.mouseX = ev.offsetX || ev.pageX;
-            anim.renderer.globalData.mouseY = ev.offsetY || ev.pageY;
+            anim.renderer.globalData.mouseCoords.x = ev.offsetX || ev.pageX;
+            anim.renderer.globalData.mouseCoords.y = ev.offsetY || ev.pageY;
         })
-        //createDrawingCanvas();
+        createDrawingCanvas();
     })
 
     function createDrawingCanvas(){
@@ -144,8 +145,12 @@
         var maxOffset = 250;
         var currentOffset = 0;
         var offsetDir = -1;
+        var lastSecond = Number.NEGATIVE_INFINITY;
+        var xOffset = 0;
+        var newSegmentHeight = 40;
+        var pairs = [];
         
-        function tick(){
+        function tick(time){
             ////
                 /*// get svg data
                 var xml = new XMLSerializer().serializeToString(sourceSVG);
@@ -162,9 +167,9 @@
             ////
             isEven = !isEven;
             if(isEven){
-                canvasCtx.globalCompositeOperation = 'exclusion';
+                //canvasCtx.globalCompositeOperation = 'exclusion';
             }else {
-                canvasCtx.globalCompositeOperation = 'multiply';
+                //canvasCtx.globalCompositeOperation = 'multiply';
             }
             if(offsetDir > 0){
                 currentOffset = currentOffset >= maxOffset ? maxOffset : currentOffset + offsetDir;
@@ -173,22 +178,38 @@
             }
 
             if(anim.currentFrame !== currentAnimFrame){
+                var newPairs = false;
+                if(time - lastSecond > 1000){
+                   newPairs = true;
+                   pairs.length = 0;
+                }
                 currentAnimFrame = anim.currentFrame;
-                var currentH = 0;
+                var currentH = 0, currentPair = 0;
                 while(currentH < canvasH){
-                    var newSegmentHeight = 2 + Math.round(2*Math.random());
-                    if(currentH + newSegmentHeight > canvasH){
-                        newSegmentHeight = canvasH - currentH;
+                    if(newPairs){
+                        newSegmentHeight = 2 + Math.round(20*Math.random());
+                        if(currentH + newSegmentHeight > canvasH){
+                            newSegmentHeight = canvasH - currentH;
+                        }
+                        xOffset = Math.round(Math.random()*(canvasW - 1));
+                        pairs.push([newSegmentHeight, xOffset]);
+                    } else {
+                        newSegmentHeight = pairs[currentPair][0];
+                        xOffset = pairs[currentPair][1];
+                        currentPair += 1;
                     }
-                    var xOffset = Math.round(Math.random()*canvasW/10);
-                    var xOffset = 1 + Math.round(Math.random()*currentOffset);
+                    //var xOffset = 1 + Math.round(Math.random()*currentOffset);
                     //xOffset = 0;
                     bufferCanvasCtx.drawImage(source, xOffset, currentH, canvasW - xOffset, newSegmentHeight, 0 , currentH, canvasW - xOffset, newSegmentHeight);
                     bufferCanvasCtx.drawImage(source, 0, currentH, xOffset, newSegmentHeight, canvasW - xOffset , currentH, xOffset, newSegmentHeight);
                     currentH += newSegmentHeight;
                 }
                 canvasCtx.drawImage(bufferCanvas, 0, 0);
+                if(newPairs){
+                    lastSecond = time;
+                }
             }
+
             requestAnimationFrame(tick);
         }
 
@@ -227,7 +248,7 @@
         elem.appendChild(canvas);
         elem.addEventListener('mousedown', elemDownHandler);
         elem.addEventListener('mouseup', elemUpHandler);
-        tick();
+        requestAnimationFrame(tick);
 
 
     }

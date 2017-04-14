@@ -68,6 +68,10 @@ SVGRenderer.prototype.configAnimation = function(animData){
         w: animData.w,
         h: animData.h
     };
+    this.globalData.mouseCoords = {
+        x: 0,
+        y: 0
+    };
     this.data = animData;
     this.globalData.frameRate = animData.fr;
     var maskElement = document.createElementNS(svgNS, 'clipPath');

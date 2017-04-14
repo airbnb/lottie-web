@@ -196,15 +196,15 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         perc = Math.min(1,distance/maxDist);
 
         //// OPTION 1
-        // if(distance < maxDist){
-        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
-        //     ,path.v[i][0]+(path.o[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.o[i][1] - path.v[i][1])*perc
-        //     ,path.v[i][0]+(path.i[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.i[i][1] - path.v[i][1])*perc, i);
-        // } else {
-        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
-        //     ,path.o[i][0],path.o[i][1]
-        //     ,path.i[i][0],path.i[i][1], i);
-        // }
+        if(distance < maxDist){
+            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+            ,path.v[i][0]+(path.o[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.o[i][1] - path.v[i][1])*perc
+            ,path.v[i][0]+(path.i[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.i[i][1] - path.v[i][1])*perc, i);
+        } else {
+            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+            ,path.o[i][0],path.o[i][1]
+            ,path.i[i][0],path.i[i][1], i);
+        }
 
         //// OPTION 2
         // perc = 1 - perc*5;
@@ -233,20 +233,13 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
     }*/
 
     ////OPTION D
-    //console.log('mouseCoords:', mouseCoords)
     var localMouseCoords = this.elem.globalToLocal(mouseCoords, transformers);
-    //console.log(localMouseCoords);
 
     var maxDist = this.data.maxDist;
     var perc, distance;
     for(i=0;i<len;i+=1){
 
         //globalPt = this.elem.localToGlobal(path.v[i],transformers);
-
-        /*theta = Math.atan2(
-            path.v[i][1] - localMouseCoords[1],
-            path.v[i][0] - localMouseCoords[0]
-        );*/
 
         x = path.v[i][0] - localMouseCoords[0];
         y =path.v[i][1] - localMouseCoords[1];
@@ -274,8 +267,8 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
 }
 
 MouseModifier.prototype.processShapes = function(){
-    var mouseX = this.elem.globalData.mouseX || 100;
-    var mouseY = this.elem.globalData.mouseY || 100;
+    var mouseX = this.elem.globalData.mouseCoords.x;
+    var mouseY = this.elem.globalData.mouseCoords.y;
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -321,6 +314,7 @@ MouseModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.data = data;
     this.positions = [];
+    this.dynamicProperties.push({});
 };
 
 

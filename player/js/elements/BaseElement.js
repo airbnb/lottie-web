@@ -87,8 +87,14 @@ BaseElement.prototype.localToGlobal = function(pt, extraTransforms){
     var comp = this.comp;
     while(flag){
         if(comp.finalTransform){
-            if(comp.data.hasMask){
-                transforms.splice(0,0,comp.finalTransform);
+            transforms.push(comp.finalTransform);
+            if(comp.hierarchy){
+                i = 0;
+                len = comp.hierarchy.length;
+                while(i < len) {
+                    transforms.push(comp.hierarchy[i].finalTransform);
+                    i += 1;
+                } 
             }
             comp = comp.comp;
         } else {
@@ -123,8 +129,14 @@ BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
     var comp = this.comp;
     while(flag){
         if(comp.finalTransform){
-            if(comp.data.hasMask){
-                transforms.splice(0,0,comp.finalTransform);
+            transforms.splice(0,0,comp.finalTransform);
+            if(comp.hierarchy){
+                len = comp.hierarchy.length;
+                i = 0;
+                while(i < len) {
+                    transforms.splice(0,0,comp.hierarchy[i].finalTransform);
+                    i += 1;
+                } 
             }
             comp = comp.comp;
         } else {
