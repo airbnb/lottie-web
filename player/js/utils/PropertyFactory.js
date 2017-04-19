@@ -8,10 +8,9 @@ var PropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime)))){
-
-        }else{
-            var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
+        if(!(frameNum === this.lastFrame || (this.lastFrame !== initFrame && ((this.lastFrame >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime && frameNum >= this.keyframes[this.keyframes.length- 1].t-this.offsetTime) || (this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime))))){
+            var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+            var len = this.keyframes.length- 1,flag = true;
             var keyData, nextKeyData;
 
             while(flag){
@@ -27,13 +26,15 @@ var PropertyFactory = (function(){
                     break;
                 }
                 if(i < len - 1){
-                    i += dir;
+                    i += 1;
                 }else{
                     flag = false;
                 }
             }
 
-            var k, kLen,perc,jLen, j = 0, fnc;
+            this._lastIndex = i;
+
+            var k, kLen,perc,jLen, j, fnc;
             if(keyData.to){
 
                 if(!keyData.bezierData){
@@ -44,13 +45,14 @@ var PropertyFactory = (function(){
                     var ind = frameNum >= nextKeyData.t-this.offsetTime ? bezierData.points.length - 1 : 0;
                     kLen = bezierData.points[ind].point.length;
                     for(k = 0; k < kLen; k += 1){
-                        this.v[k] = this.mult ? bezierData.points[ind].point[k]*this.mult : bezierData.points[ind].point[k];
                         this.pv[k] = bezierData.points[ind].point[k];
+                        this.v[k] = this.mult ? this.pv[k]*this.mult : this.pv[k];
                         if(this.lastPValue[k] !== this.pv[k]) {
                             this.mdf = true;
                             this.lastPValue[k] = this.pv[k];
                         }
                     }
+                    this._lastBezierData = null;
                 }else{
                     if(keyData.__fnct){
                         fnc = keyData.__fnct;
@@ -62,17 +64,17 @@ var PropertyFactory = (function(){
                     var distanceInLine = bezierData.segmentLength*perc;
 
                     var segmentPerc;
-                    var addedLength = 0;
-                    dir = 1;
+                    var addedLength =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastAddedLength : 0;
+                    j =  (this.lastFrame < frameNum && this._lastBezierData === bezierData) ? this._lastPoint : 0;
                     flag = true;
                     jLen = bezierData.points.length;
                     while(flag){
-                        addedLength +=bezierData.points[j].partialLength*dir;
+                        addedLength +=bezierData.points[j].partialLength;
                         if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
-                                this.v[k] = this.mult ? bezierData.points[j].point[k]*this.mult : bezierData.points[j].point[k];
                                 this.pv[k] = bezierData.points[j].point[k];
+                                this.v[k] = this.mult ? this.pv[k]*this.mult : this.pv[k];
                                 if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
                                     this.lastPValue[k] = this.pv[k];
@@ -83,9 +85,8 @@ var PropertyFactory = (function(){
                             segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
                             kLen = bezierData.points[j].point.length;
                             for(k=0;k<kLen;k+=1){
-                                this.v[k] = this.mult ? (bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc)*this.mult : bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
                                 this.pv[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
-
+                                this.v[k] = this.mult ? this.pv[k] * this.mult : this.pv[k];
                                 if(this.lastPValue[k] !== this.pv[k]) {
                                     this.mdf = true;
                                     this.lastPValue[k] = this.pv[k];
@@ -93,60 +94,52 @@ var PropertyFactory = (function(){
                             }
                             break;
                         }
-                        if(j < jLen - 1 && dir == 1 || j > 0 && dir == -1){
-                            j += dir;
+                        if(j < jLen - 1){
+                            j += 1;
                         }else{
                             flag = false;
                         }
                     }
+                    this._lastPoint = j;
+                    this._lastAddedLength = addedLength - bezierData.points[j].partialLength;
+                    this._lastBezierData = bezierData;
                 }
             }else{
-                var outX,outY,inX,inY, isArray = false, keyValue;
+                var outX,outY,inX,inY, keyValue;
                 len = keyData.s.length;
                 for(i=0;i<len;i+=1){
                     if(keyData.h !== 1){
-                        if(keyData.o.x instanceof Array){
-                            isArray = true;
-                            if(!keyData.__fnct){
-                                keyData.__fnct = [];
-                            }
-                            if(!keyData.__fnct[i]){
-                                outX = keyData.o.x[i] || keyData.o.x[0];
-                                outY = keyData.o.y[i] || keyData.o.y[0];
-                                inX = keyData.i.x[i] || keyData.i.x[0];
-                                inY = keyData.i.y[i] || keyData.i.y[0];
-                            }
-                        }else{
-                            isArray = false;
-                            if(!keyData.__fnct) {
-                                outX = keyData.o.x;
-                                outY = keyData.o.y;
-                                inX = keyData.i.x;
-                                inY = keyData.i.y;
-                            }
-                        }
-                        if(isArray){
-                            if(keyData.__fnct[i]){
-                                fnc = keyData.__fnct[i];
-                            }else{
-                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct[i] = fnc;
-                            }
-                        }else{
-                            if(keyData.__fnct){
-                                fnc = keyData.__fnct;
-                            }else{
-                                //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct = fnc;
-                            }
-                        }
                         if(frameNum >= nextKeyData.t-this.offsetTime){
                             perc = 1;
                         }else if(frameNum < keyData.t-this.offsetTime){
                             perc = 0;
                         }else{
+                            if(keyData.o.x instanceof Array){
+                                if(!keyData.__fnct){
+                                    keyData.__fnct = [];
+                                }
+                                if (!keyData.__fnct[i]) {
+                                    outX = keyData.o.x[i] || keyData.o.x[0];
+                                    outY = keyData.o.y[i] || keyData.o.y[0];
+                                    inX = keyData.i.x[i] || keyData.i.x[0];
+                                    inY = keyData.i.y[i] || keyData.i.y[0];
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct[i] = fnc;
+                                } else {
+                                    fnc = keyData.__fnct[i];
+                                }
+                            } else {
+                                if (!keyData.__fnct) {
+                                    outX = keyData.o.x;
+                                    outY = keyData.o.y;
+                                    inX = keyData.i.x;
+                                    inY = keyData.i.y;
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct = fnc;
+                                } else{
+                                    fnc = keyData.__fnct;
+                                }
+                            }
                             perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                         }
                     }
@@ -206,9 +199,9 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = new Array(data.k.length);
-        this.pv = new Array(data.k.length);
-        this.lastValue = new Array(data.k.length);
+        this.v = Array.apply(null, {length:data.k.length});
+        this.pv = Array.apply(null, {length:data.k.length});
+        this.lastValue = Array.apply(null, {length:data.k.length});
         var arr = Array.apply(null, {length:data.k.length});
         this.vel = arr.map(function () { return 0 });
         var i, len = data.k.length;
@@ -225,6 +218,7 @@ var PropertyFactory = (function(){
         this.lastValue = -99999;
         this.lastPValue = -99999;
         this.frameId = -1;
+        this._lastIndex = 0;
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -261,167 +255,119 @@ var PropertyFactory = (function(){
         this.comp = elem.comp;
         this.getValue = getValue;
         this.frameId = -1;
-        this.v = new Array(data.k[0].s.length);
-        this.pv = new Array(data.k[0].s.length);
-        this.lastValue = new Array(data.k[0].s.length);
-        this.lastPValue = new Array(data.k[0].s.length);
+        this._lastIndex = 0;
+        this.v = Array.apply(null, {length:data.k[0].s.length});
+        this.pv = Array.apply(null, {length:data.k[0].s.length});
+        this.lastValue = Array.apply(null, {length:data.k[0].s.length});
+        this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
         this.lastFrame = initFrame;
     }
 
-    var TransformProperty = (function(){
-        function positionGetter(){
-            if(this.p.k){
-                this.p.getValue();
-            }
-            if(!this.p.v.key){
-                this.p.v.key = function(pos){
-                    if(!this.p.v.numKeys){
-                        return 0;
-                    } else {
-                        return this.p.keyframes[pos-1].t;
-                    }
-                }.bind(this);
-            }
-            if(!this.p.v.numKeys){
-                this.p.v.numKeys = this.p.keyframes ? this.p.keyframes.length : 0;
-            }
-            if(!this.p.v.valueAtTime){
-                this.p.v.valueAtTime = this.p.getValueAtTime.bind(this.p);
-            }
-            return this.p.v;
+    var TransformProperty = (function() {
+        function positionGetter() {
+            return ExpressionValue(this.p);
         }
-        function xPositionGetter(){
-            if(this.px.k){
-                this.px.getValue();
-            }
-            return this.px.v;
+        function xPositionGetter() {
+            return ExpressionValue(this.px);
         }
-        function yPositionGetter(){
-            if(this.py.k){
-                this.py.getValue();
-            }
-            return this.py.v;
+        function yPositionGetter() {
+            return ExpressionValue(this.py);
         }
-        function zPositionGetter(){
-            if(this.pz.k){
-                this.pz.getValue();
-            }
-            return this.pz.v;
+        function zPositionGetter() {
+            return ExpressionValue(this.pz);
         }
-        function anchorGetter(){
-            if(this.a.k){
-                this.a.getValue();
-            }
-            return this.a.v;
+        function anchorGetter() {
+            return ExpressionValue(this.a);
         }
-        function orientationGetter(){
-            if(this.or.k){
-                this.or.getValue();
-            }
-            return this.or.v;
+        function orientationGetter() {
+            return ExpressionValue(this.or);
         }
-        function rotationGetter(){
-            if(this.r.k){
-                this.r.getValue();
-            }
-            return this.r.v/degToRads;
+        function rotationGetter() {
+            return ExpressionValue(this.r, 1/degToRads);
         }
-        function scaleGetter(){
-            if(this.s.k){
-                this.s.getValue();
-            }
-            return this.s.v;
+        function scaleGetter() {
+            return ExpressionValue(this.s, 100);
         }
-        function opacityGetter(){
-            if(this.o.k){
-                this.o.getValue();
-            }
-            return this.o.v;
+        function opacityGetter() {
+            return ExpressionValue(this.o, 100);
         }
-        function skewGetter(){
-            if(this.sk.k){
-                this.sk.getValue();
-            }
-            return this.sk.v;
+        function skewGetter() {
+            return ExpressionValue(this.sk);
         }
-        function skewAxisGetter(){
-            if(this.sa.k){
-                this.sa.getValue();
-            }
-            return this.sa.v;
+        function skewAxisGetter() {
+            return ExpressionValue(this.sa);
         }
-        function applyToMatrix(mat){
+        function applyToMatrix(mat) {
             var i, len = this.dynamicProperties.length;
-            for(i=0;i<len;i+=1){
+            for(i = 0; i < len; i += 1) {
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                if (this.dynamicProperties[i].mdf) {
                     this.mdf = true;
                 }
             }
-            if(this.a){
-                mat.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+            if (this.a) {
+                mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
             }
-            if(this.s){
-                mat.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+            if (this.s) {
+                mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
             }
-            if(this.r){
+            if (this.r) {
                 mat.rotate(-this.r.v);
-            }else{
+            } else {
                 mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
-            if(this.data.p.s){
-                if(this.data.p.z) {
+            if (this.data.p.s) {
+                if (this.data.p.z) {
                     mat.translate(this.px.v, this.py.v, -this.pz.v);
                 } else {
                     mat.translate(this.px.v, this.py.v, 0);
                 }
-            }else{
-                mat.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            } else {
+                mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
             }
         }
         function processKeys(){
-            if(this.elem.globalData.frameId === this.frameId){
+            if (this.elem.globalData.frameId === this.frameId) {
                 return;
             }
 
             this.mdf = false;
             var i, len = this.dynamicProperties.length;
 
-            for(i=0;i<len;i+=1){
+            for(i = 0; i < len; i += 1) {
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                if (this.dynamicProperties[i].mdf) {
                     this.mdf = true;
                 }
             }
-            if(this.mdf){
+            if (this.mdf) {
                 this.v.reset();
-                if(this.a){
-                    this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+                if (this.a) {
+                    this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
                 }
-                if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+                if(this.s) {
+                    this.v.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
                 }
-                if(this.sk){
-                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
+                if (this.sk) {
+                    this.v.skewFromAxis(-this.sk.v, this.sa.v);
                 }
-                if(this.r){
+                if (this.r) {
                     this.v.rotate(-this.r.v);
-                }else{
+                } else {
                     this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
                 }
-                if(this.autoOriented && this.p.keyframes && this.p.getValueAtTime){
+                if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
                     var v1,v2;
-                    if(this.p.lastFrame+this.p.offsetTime < this.p.keyframes[0].t){
-                        v1 = this.p.getValueAtTime(this.p.keyframes[0].t+0.01,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t, 0);
-                    }else if(this.p.lastFrame+this.p.offsetTime > this.p.keyframes[this.p.keyframes.length - 1].t){
-                        v1 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t-0.01, 0);
+                    if (this.p.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
+                    } else if(this.p.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
+                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
                     } else {
                         v1 = this.p.pv;
-                        v2 = this.p.getValueAtTime(this.p.lastFrame+this.p.offsetTime - 0.01, this.p.offsetTime);
+                        v2 = this.p.getValueAtTime((this.p.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
                     }
-                    //var prevV = this.p.getValueAtTime(this.p.lastFrame - 0.01, true);
                     this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
                 }
                 if(this.data.p.s){
@@ -434,6 +380,7 @@ var PropertyFactory = (function(){
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
             }
+            //console.log(this.v.to2dCSS())
             this.frameId = this.elem.globalData.frameId;
         }
 
@@ -468,6 +415,7 @@ var PropertyFactory = (function(){
         return function TransformProperty(elem,data,arr){
             this.elem = elem;
             this.frameId = -1;
+            this.type = 'transform';
             this.dynamicProperties = [];
             this.mdf = false;
             this.data = data;
@@ -491,7 +439,7 @@ var PropertyFactory = (function(){
                 this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this.dynamicProperties);
                 this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
                 this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
-                this.or = PropertyFactory.getProp(elem, data.or, 0, degToRads, this.dynamicProperties);
+                this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
             }
             if(data.sk){
                 this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);

@@ -178,6 +178,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     var defs = document.createElementNS(svgNS,'defs');
     svg.appendChild(defs);
     this.globalData.defs = defs;
+    this.data = animData;
     //Mask animation
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);

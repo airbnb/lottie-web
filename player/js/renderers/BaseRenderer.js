@@ -77,9 +77,11 @@ BaseRenderer.prototype.buildElementParenting = function(element, parentName, hie
                 this.addPendingElement(element);
             } else if(layers[i].parent !== undefined){
                 hierarchy.push(elements[i]);
+                elements[i]._isParent = true;
                 this.buildElementParenting(element,layers[i].parent, hierarchy);
             } else {
                 hierarchy.push(elements[i]);
+                elements[i]._isParent = true;
                 element.setHierarchy(hierarchy);
             }
 
