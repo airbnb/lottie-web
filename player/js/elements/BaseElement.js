@@ -86,7 +86,7 @@ BaseElement.prototype.localToGlobal = function(pt, extraTransforms){
     var flag = true;
     var comp = this.comp;
     while(flag){
-        if(comp.finalTransform){
+        if(comp){
             transforms.push(comp.finalTransform);
             if(comp.hierarchy){
                 i = 0;
@@ -128,7 +128,7 @@ BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
     var flag = true;
     var comp = this.comp;
     while(flag){
-        if(comp.finalTransform){
+        if(comp){
             transforms.splice(0,0,comp.finalTransform);
             if(comp.hierarchy){
                 len = comp.hierarchy.length;
@@ -145,12 +145,12 @@ BaseElement.prototype.globalToLocal = function(pt, extraTransforms){
     }
     len = transforms.length;
     for(i=0;i<len;i+=1){
-        pt = transforms[i].mProp.v.inversePoints([pt])[0];
+        pt = transforms[i].mProp.v.inversePoint(pt);
     }
     if(extraTransforms){
         len = extraTransforms.length;
         for(i = 0;i < len; i += 1){
-            pt = extraTransforms[i].mProps.v.inversePoints([pt])[0];
+            pt = extraTransforms[i].mProps.v.inversePoint(pt);
         }
     }
     return pt;

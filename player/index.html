@@ -11,11 +11,11 @@
         }
 
         #bodymovin{
-            background-color:#333;
-            width:800px;
-            height:800px;
-            width:1024px;
-            height:768px;
+            background-color:#000;
+            width:100%;
+            height:100%;
+/*            width:1820px;
+            height:275px;*/
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -23,6 +23,10 @@
 
         .botas_loop_3,.botas_loop_2{
             display:none
+        }
+
+        * {
+            pointer-events: none;
         }
 
     </style>
@@ -114,145 +118,27 @@
 <div id="bodymovin"></div>
 
 <script>
+    var mouseCoords = {
+        x:0,
+        y:0
+    }
+    var windowInnerWidth = window.innerWidth, windowInnerHeight = window.innerHeight;
 
     var anim;
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             dpr: 1
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/omanzano.json'
     };
     anim = bodymovin.loadAnimation(animData);
-    anim.addEventListener('DOMLoaded', function(){
-        window.addEventListener('mousemove', function(ev){
-            anim.renderer.globalData.mouseCoords.x = ev.offsetX || ev.pageX;
-            anim.renderer.globalData.mouseCoords.y = ev.offsetY || ev.pageY;
-        })
-        createDrawingCanvas();
-    })
-
-    function createDrawingCanvas(){
-
-        var canvasW, canvasH;
-        var currentAnimFrame = -1;
-        var isEven = false;
-        var maxOffset = 250;
-        var currentOffset = 0;
-        var offsetDir = -1;
-        var lastSecond = Number.NEGATIVE_INFINITY;
-        var xOffset = 0;
-        var newSegmentHeight = 40;
-        var pairs = [];
-        
-        function tick(time){
-            ////
-                /*// get svg data
-                var xml = new XMLSerializer().serializeToString(sourceSVG);
-
-                // make it base64
-                var svg64 = btoa(xml);
-                var b64Start = 'data:image/svg+xml;base64,';
-
-                // prepend a "header"
-                var image64 = b64Start + svg64;
-
-                // set it as the source of the img element
-                imgHelper.src = image64;*/
-            ////
-            isEven = !isEven;
-            if(isEven){
-                //canvasCtx.globalCompositeOperation = 'exclusion';
-            }else {
-                //canvasCtx.globalCompositeOperation = 'multiply';
-            }
-            if(offsetDir > 0){
-                currentOffset = currentOffset >= maxOffset ? maxOffset : currentOffset + offsetDir;
-            } else {
-                currentOffset = currentOffset <= 0 ? 0 : currentOffset + offsetDir;
-            }
-
-            if(anim.currentFrame !== currentAnimFrame){
-                var newPairs = false;
-                if(time - lastSecond > 1000){
-                   newPairs = true;
-                   pairs.length = 0;
-                }
-                currentAnimFrame = anim.currentFrame;
-                var currentH = 0, currentPair = 0;
-                while(currentH < canvasH){
-                    if(newPairs){
-                        newSegmentHeight = 2 + Math.round(20*Math.random());
-                        if(currentH + newSegmentHeight > canvasH){
-                            newSegmentHeight = canvasH - currentH;
-                        }
-                        xOffset = Math.round(Math.random()*(canvasW - 1));
-                        pairs.push([newSegmentHeight, xOffset]);
-                    } else {
-                        newSegmentHeight = pairs[currentPair][0];
-                        xOffset = pairs[currentPair][1];
-                        currentPair += 1;
-                    }
-                    //var xOffset = 1 + Math.round(Math.random()*currentOffset);
-                    //xOffset = 0;
-                    bufferCanvasCtx.drawImage(source, xOffset, currentH, canvasW - xOffset, newSegmentHeight, 0 , currentH, canvasW - xOffset, newSegmentHeight);
-                    bufferCanvasCtx.drawImage(source, 0, currentH, xOffset, newSegmentHeight, canvasW - xOffset , currentH, xOffset, newSegmentHeight);
-                    currentH += newSegmentHeight;
-                }
-                canvasCtx.drawImage(bufferCanvas, 0, 0);
-                if(newPairs){
-                    lastSecond = time;
-                }
-            }
-
-            requestAnimationFrame(tick);
-        }
-
-        function elemDownHandler(){
-            offsetDir = 2;
-        }
-
-        function elemUpHandler(){
-            offsetDir = -5;
-        }
-
-        var source;
-        ///
-        var sourceCanvas = elem.getElementsByTagName('canvas')[0];
-        sourceCanvas.style.display = 'none';
-        source = sourceCanvas;
-        canvasW = sourceCanvas.width;
-        canvasH = sourceCanvas.height;
-        ///
-        /*var sourceSVG = elem.getElementsByTagName('svg')[0];
-        sourceSVG.style.display = 'none';
-        var imgHelper = document.createElement('img');
-        source = imgHelper;
-        canvasW = 1024;
-        canvasH = 768;*/
-        ///
-        var canvas = document.createElement('canvas');
-        var bufferCanvas = document.createElement('canvas');
-        var canvasCtx = canvas.getContext('2d');
-        var bufferCanvasCtx = bufferCanvas.getContext('2d');
-        canvas.width = canvasW;
-        canvas.height = canvasH;
-        bufferCanvas.width = canvasW;
-        bufferCanvas.height = canvasH;
-        //canvasCtx.globalCompositeOperation = 'darken';
-        elem.appendChild(canvas);
-        elem.addEventListener('mousedown', elemDownHandler);
-        elem.addEventListener('mouseup', elemUpHandler);
-        requestAnimationFrame(tick);
-
-
-    }
-
+    
 </script>
 </body>
 </html>

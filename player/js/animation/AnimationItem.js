@@ -30,7 +30,58 @@ var AnimationItem = function () {
     this.pendingSegment = false;
     this._idle = true;
     this.projectInterface = ProjectInterface();
+    this.wrapperSize = {
+        w: 1,
+        h: 1
+    }
 };
+
+AnimationItem.prototype.measureWrapper = function() {
+    this.wrapperSize.w = this.wrapper.clientWidth;
+    this.wrapperSize.h = this.wrapper.clientHeight;
+}
+
+AnimationItem.prototype.createWrapperTransformObject = function(){
+    return {
+        mProp: {
+            v: {
+                inversePoint: function inversePoint(pt){
+                    var sc = 1;
+                    var svgRel = this.animationData.w / this.animationData.h;
+                    var elemRel = this.wrapperSize.w/this.wrapperSize.h;
+                    if(elemRel > svgRel) {
+                        sc = this.wrapperSize.h/this.animationData.h;
+                    } else {
+                        sc = this.wrapperSize.w/this.animationData.w;
+                    }
+                    var props13 = (this.wrapperSize.h - this.animationData.h*sc)/2;
+                    var props12 = (this.wrapperSize.w - this.animationData.w*sc)/2;
+                    var determinant = sc * sc;
+                    var a = sc/determinant;
+                    var d = sc/determinant;
+                    var e = (-sc * props12)/determinant;
+                    var f = -(sc * props13)/determinant;
+                    return [pt[0] * a + e, pt[1] * d + f, 0];
+                }.bind(this),
+
+                applyToPointArray: function applyToPointArray(x,y){
+                    var sc = 1;
+                    var svgRel = this.animationData.w / this.animationData.h;
+                    var elemRel = this.wrapper.clientWidth/this.wrapper.clientHeight;
+                    if(elemRel > svgRel) {
+                        sc = this.wrapper.clientHeight/this.animationData.h;
+                    } else {
+                        sc = this.wrapper.clientWidth/this.animationData.w;
+                    }
+                    var props13 = (this.wrapper.clientHeight - this.animationData.h*sc)/2;
+                    var props12 = (this.wrapper.clientWidth - this.animationData.w*sc)/2;
+
+                    return [x * sc + props12, y * sc + props13];
+                }.bind(this)
+            }
+        }
+    }
+}
 
 AnimationItem.prototype.setParams = function(params) {
     var self = this;
@@ -54,6 +105,14 @@ AnimationItem.prototype.setParams = function(params) {
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;
     }
+
+    this._wrapperTransformObject = this.createWrapperTransformObject();
+
+    Object.defineProperty(this.renderer, 'finalTransform',{
+        get: function(){
+            return this._wrapperTransformObject
+        }.bind(this)
+    })
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
 
@@ -134,7 +193,6 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
     if(prerender === 'false'){
         params.prerender = false;
     }
-    console.log('animElements:', params)
     this.setParams(params);
 };
 
@@ -220,38 +278,6 @@ AnimationItem.prototype.loadSegments = function() {
 
 AnimationItem.prototype.configAnimation = function (animData) {
     //ERASE
-    console.log(animData);
-    // two_dance
-    for(var i =0; i < animData.assets[0].layers.length; i += 1){
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":50,"dc":0.95}); /// OPTION C 2
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":0.25}); /// OPTION A 1
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.75}); /// OPTION A 2
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.95}); /// OPTION A 3
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":.999}); /// OPTION A 4
-        if(animData.assets[0].layers[i].ty === 4){
-            animData.assets[0].layers[i].shapes.push({"ty": "ms","dc":1, "ss": 140, "mx": 15}); /// OPTION B 1
-        }
-    }
-    for(var i =0; i < animData.assets[1].layers.length; i += 1){
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":50,"dc":0.95}); /// OPTION C 2
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":0.25}); /// OPTION A 1
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.75}); /// OPTION A 2
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.95}); /// OPTION A 3
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":.999}); /// OPTION A 4
-        animData.assets[1].layers[i].shapes.push({"ty": "ms","dc":1, "ss": 140, "mx": 15}); /// OPTION B 1
-    }
-
-    // DANCING DARWIN
-    /*for(var i =0; i < 32; i+= 1){
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":50,"dc":0.95}); /// OPTION C 2
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":0.25}); /// OPTION A 1
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.75}); /// OPTION A 2
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":300,"dc":.95}); /// OPTION A 3
-        //animData.layers[i].shapes.push({"ty": "ms","maxDist":250,"dc":.999}); /// OPTION A 4
-        animData.layers[i].shapes.push({"ty": "ms","dc":1, "ss": 140, "mx": 15}); /// OPTION B 1
-    }*/
-    // CIRCLE
-    //animData.assets[1].layers[1].shapes.push({"ty": "ms","dc":.5, "ss": 140, "mx": 15});
 
     ////
     if(this.renderer && this.renderer.destroyed){

@@ -79,9 +79,9 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
 
         /////OPTION 1
-        // cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
-        //     ,positions.o[i][0],positions.o[i][1]
-        //     ,positions.i[i][0],positions.i[i][1], i);
+        cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+            ,positions.o[i][0],positions.o[i][1]
+            ,positions.i[i][0],positions.i[i][1], i);
 
 
 
@@ -107,7 +107,7 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
 
 
     //// OPTION B
-    /*for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1){
         if(!positions.v[i]){
             positions.v[i] = [path.v[i][0],path.v[i][1]];
             positions.o[i] = [path.o[i][0],path.o[i][1]];
@@ -156,10 +156,11 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         positions.i[i][0] += Math.cos(theta) * distance + (path.i[i][0] - positions.i[i][0]) * this.data.dc;
         positions.i[i][1] += Math.sin(theta) * distance + (path.i[i][1] - positions.i[i][1]) * this.data.dc;
 
+
         /////OPTION 1
-        cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
-            ,positions.o[i][0],positions.o[i][1]
-            ,positions.i[i][0],positions.i[i][1], i);
+        // cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+        //     ,positions.o[i][0],positions.o[i][1]
+        //     ,positions.i[i][0],positions.i[i][1], i);
 
 
 
@@ -171,16 +172,16 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
 
 
         /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
+        // cloned_path.setTripleAt(positions.v[i][0],positions.v[i][1]
+        //      ,path.i[i][0],path.i[i][1]
+        //      ,path.o[i][0],path.o[i][1], i);
 
 
         /////OPTION 4
-        //vValues.push(path.v[i]);
-        // oValues.push(positions.o[i]);
-        // iValues.push(positions.i[i]);
-    }*/
+        cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+             ,positions.o[i][0],positions.o[i][1]
+             ,positions.i[i][0],positions.i[i][1], i);
+    }
 
     ////OPTION C
 
@@ -196,27 +197,27 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         perc = Math.min(1,distance/maxDist);
 
         //// OPTION 1
-        if(distance < maxDist){
-            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
-            ,path.v[i][0]+(path.o[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.o[i][1] - path.v[i][1])*perc
-            ,path.v[i][0]+(path.i[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.i[i][1] - path.v[i][1])*perc, i);
-        } else {
-            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
-            ,path.o[i][0],path.o[i][1]
-            ,path.i[i][0],path.i[i][1], i);
-        }
-
-        //// OPTION 2
-        // perc = 1 - perc*5;
         // if(distance < maxDist){
-        //     cloned_path.setTripleAt(path.v[i][0] * perc,path.v[i][1] * perc
-        //     ,path.o[i][0] * perc,path.o[i][1] * perc
-        //     ,path.i[i][0] * perc,path.i[i][1] * perc, i);
+        //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+        //     ,path.v[i][0]+(path.o[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.o[i][1] - path.v[i][1])*perc
+        //     ,path.v[i][0]+(path.i[i][0] - path.v[i][0])*perc,path.v[i][1]+(path.i[i][1] - path.v[i][1])*perc, i);
         // } else {
         //     cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
         //     ,path.o[i][0],path.o[i][1]
         //     ,path.i[i][0],path.i[i][1], i);
         // }
+
+        //// OPTION 2
+        perc = 1 - perc*2;
+        if(distance < maxDist){
+            cloned_path.setTripleAt(path.v[i][0] * perc,path.v[i][1] * perc
+            ,path.o[i][0] * perc,path.o[i][1] * perc
+            ,path.i[i][0] * perc,path.i[i][1] * perc, i);
+        } else {
+            cloned_path.setTripleAt(path.v[i][0],path.v[i][1]
+            ,path.o[i][0],path.o[i][1]
+            ,path.i[i][0],path.i[i][1], i);
+        }
 
         //// OPTION 3
         // perc = 1 - perc;
@@ -233,7 +234,8 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
     }*/
 
     ////OPTION D
-    var localMouseCoords = this.elem.globalToLocal(mouseCoords, transformers);
+    /*var localMouseCoords = this.elem.globalToLocal(mouseCoords, transformers);
+    //console.log(localMouseCoords);
 
     var maxDist = this.data.maxDist;
     var perc, distance;
@@ -242,24 +244,40 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, transformers, 
         //globalPt = this.elem.localToGlobal(path.v[i],transformers);
 
         x = path.v[i][0] - localMouseCoords[0];
-        y =path.v[i][1] - localMouseCoords[1];
+        y = path.v[i][1] - localMouseCoords[1];
         distance = Math.sqrt( (x * x) + (y * y) );
-        var mult = -0.15*(distance/200);
-        //var mult = -.55*(Math.exp(distance/300)-1);
-        //var mult = -.55*(Math.log(distance/250));
-        //mult = -0.55*Math.cos(distance*Math.PI/180);
+        var mult = 0.2*(distance/200);
+        var mult = .95*(Math.exp(distance/400)-1);
+        var mult = .25*(Math.log(distance/450));
+        //mult = -0.15*Math.cos(distance*3*Math.PI/180);
+
+        //var mult = .75*(Math.exp(distance/400)-1); // OPTION 2
+        // mult = -0.75*Math.cos(distance/3*Math.PI/180); //OPTION 2
+        //var mult = .45*(Math.log(distance*5/450)); // OPTION 2
+        //var mult = .95*(Math.exp(distance/400)-1); // OPTION 3
+        //var mult = .25*(Math.log(distance/450)); OPTION 3
 
         //// OPTION 1
-        cloned_path.setTripleAt(path.v[i][0] + (localMouseCoords[0] - path.v[i][0]) * mult, path.v[i][1] + (localMouseCoords[1] - path.v[i][1]) * mult
-            ,path.o[i][0],path.o[i][1]
-            ,path.i[i][0],path.i[i][1], i);
+        // cloned_path.setTripleAt(path.v[i][0] + (localMouseCoords[0] - path.v[i][0]) * mult, path.v[i][1] + (localMouseCoords[1] - path.v[i][1]) * mult
+        //     ,path.o[i][0],path.o[i][1]
+        //     ,path.i[i][0],path.i[i][1], i);
 
         //// OPTION 2
         // cloned_path.setTripleAt(path.v[i][0] + (localMouseCoords[0] - path.v[i][0]) * mult, path.v[i][1] + (localMouseCoords[1] - path.v[i][1]) * mult
         //     ,path.o[i][0] + (localMouseCoords[0] - path.o[i][0]) * mult, path.o[i][1] + (localMouseCoords[1] - path.o[i][1]) * mult
         //     ,path.i[i][0] + (localMouseCoords[0] - path.i[i][0]) * mult, path.i[i][1] + (localMouseCoords[1] - path.i[i][1]) * mult, i);
 
-    }
+        //// OPTION 3
+        cloned_path.setTripleAt(path.v[i][0] + (localMouseCoords[0] + path.v[i][0]) * mult, path.v[i][1] + (localMouseCoords[1] + path.v[i][1]) * mult
+            ,path.o[i][0] + (localMouseCoords[0] + path.o[i][0]) * mult, path.o[i][1] + (localMouseCoords[1] + path.o[i][1]) * mult
+            ,path.i[i][0] + (localMouseCoords[0] + path.i[i][0]) * mult, path.i[i][1] + (localMouseCoords[1] + path.i[i][1]) * mult, i);
+
+        //// OPTION 4
+        // cloned_path.setTripleAt(path.v[i][0] - (localMouseCoords[0] - path.v[i][0]) * mult, path.v[i][1] - (localMouseCoords[1] - path.v[i][1]) * mult
+        //     ,path.o[i][0] - (localMouseCoords[0] - path.o[i][0]) * mult, path.o[i][1] - (localMouseCoords[1] - path.o[i][1]) * mult
+        //     ,path.i[i][0] - (localMouseCoords[0] - path.i[i][0]) * mult, path.i[i][1] - (localMouseCoords[1] - path.i[i][1]) * mult, i);
+
+    }*/
 
 
     //return shape_pool.clone(path);
@@ -272,42 +290,36 @@ MouseModifier.prototype.processShapes = function(){
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
-
-    if(mouseX){
-
-        var shapeData, newPaths, localShapeCollection, localMouseCoords;
-        for(i=0;i<len;i+=1){
-            shapeData = this.shapes[i];
-            //localMouseCoords = this.elem.localToGlobal([mouseX,mouseY], shapeData.transformers);
-            localMouseCoords = [mouseX,mouseY];
-            newPaths = shapeData.shape.paths;
-            localShapeCollection = shapeData.localShapeCollection;
-            if(!(!shapeData.shape.mdf && !this.mdf)){
-                localShapeCollection.releaseShapes();
-                shapeData.shape.mdf = true;
-                shapePaths = shapeData.shape.paths;
-                jLen = shapePaths._length;
-                for(j=0;j<jLen;j+=1){
-                    if(!this.positions[i][j]){
-                        this.positions[i][j] = {
-                            v:[],
-                            o:[],
-                            i:[],
-                            distV:[],
-                            distO:[],
-                            distI:[]
-                        };
-                    }
-                    localShapeCollection.addShape(this.processPath(shapePaths.shapes[j],localMouseCoords,shapeData.transformers, this.positions[i][j]));
+    var shapeData, newPaths, localShapeCollection, localMouseCoords;
+    for(i=0;i<len;i+=1){
+        shapeData = this.shapes[i];
+        //localMouseCoords = this.elem.localToGlobal([mouseX,mouseY], shapeData.transformers);
+        localMouseCoords = [mouseX,mouseY];
+        newPaths = shapeData.shape.paths;
+        localShapeCollection = shapeData.localShapeCollection;
+        if(!(!shapeData.shape.mdf && !this.mdf)){
+            localShapeCollection.releaseShapes();
+            shapeData.shape.mdf = true;
+            shapePaths = shapeData.shape.paths;
+            jLen = shapePaths._length;
+            for(j=0;j<jLen;j+=1){
+                if(!this.positions[i][j]){
+                    this.positions[i][j] = {
+                        v:[],
+                        o:[],
+                        i:[],
+                        distV:[],
+                        distO:[],
+                        distI:[]
+                    };
                 }
-                for(j=0;j<jLen;j+=1){
-                }
-                shapeData.shape.paths = shapeData.localShapeCollection;
+                localShapeCollection.addShape(this.processPath(shapePaths.shapes[j],localMouseCoords,shapeData.transformers, this.positions[i][j]));
             }
+            for(j=0;j<jLen;j+=1){
+            }
+            shapeData.shape.paths = shapeData.localShapeCollection;
         }
-
     }
-
 }
 
 MouseModifier.prototype.initModifierProperties = function(elem,data){

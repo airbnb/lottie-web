@@ -17,7 +17,7 @@ CVShapeElement.prototype.dashResetter = [];
 CVShapeElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties,[], true);
 };
 
 CVShapeElement.prototype.createStyleElement = function(data, dynamicProperties){
@@ -85,10 +85,11 @@ CVShapeElement.prototype.createTransformElement = function(data, dynamicProperti
     return elementData;
 }
 
-CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) {
+CVShapeElement.prototype.createShapeElement = function(data, ownTransformers, dynamicProperties) {
     var elementData = {
         nodes:[],
         trNodes:[],
+        transformers: ownTransformers,
         tr:[0,0,0,0,0,0]
     };
     var ty = 4;
@@ -125,7 +126,7 @@ CVShapeElement.prototype.reloadShapes = function(){
     for(i=0;i<len;i+=1){
         this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, [], true);
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
@@ -133,7 +134,8 @@ CVShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 }
 
-CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, render){
+CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, transformers, render){
+    var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
     var ownArrays = [], ownModifiers = [], processedPos;
@@ -161,14 +163,15 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
                     itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, render);
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, ownTransformers, render);
         }else if(arr[i].ty == 'tr'){
             if(!processedPos){
                 itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
             }
+            ownTransformers.push(itemsData[i].transform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, dynamicProperties);
             }
             
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
