@@ -665,6 +665,7 @@ function dataFunctionManager(){
                 data.singleShape = true;
             }
             documentData.yOffset = documentData.lh || documentData.s*1.2;
+            documentData.ls = documentData.ls || 0;
             documentData.ascent = fontData.ascent*documentData.s/100;
         }
 

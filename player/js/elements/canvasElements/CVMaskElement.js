@@ -47,7 +47,7 @@ CVMaskElement.prototype.renderFrame = function (transform) {
         data = this.viewData[i].v;
         pt = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0):data.v[0];
         ctx.moveTo(pt[0], pt[1]);
-        var j, jLen = data.v.length;
+        var j, jLen = data._length;
         for (j = 1; j < jLen; j++) {
             pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
             pt2 = transform ? transform.applyToPointArray(data.i[j][0],data.i[j][1],0) : data.i[j];

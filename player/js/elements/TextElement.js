@@ -280,6 +280,16 @@ ITextElement.prototype.getMeasures = function(){
                         }
 
                     }
+                    if ('a' in animatorProps) {
+                        animatorSelector = renderedData.a[j].s;
+                        mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
+                        if(mult.length){
+                            animatorOffset += animatorProps.a.v[0] * mult[0];
+                        } else{
+                            animatorOffset += animatorProps.a.v[0] * mult;
+                        }
+
+                    }
                 }
                 flag = true;
                 while (flag) {
@@ -287,7 +297,7 @@ ITextElement.prototype.getMeasures = function(){
                         perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
                         xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
                         yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-                        matrixHelper.translate(0, -(renderedData.m.a.v[1] * yOff / 100) + yPos);
+                        matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200, -(renderedData.m.a.v[1] * yOff / 100));
                         flag = false;
                     } else if (points) {
                         segmentLength += currentPoint.partialLength;
@@ -490,7 +500,6 @@ ITextElement.prototype.getMeasures = function(){
                             matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
                         }
                     }else{
-
                         if(mult.length) {
                             matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
                         } else {
@@ -510,6 +519,9 @@ ITextElement.prototype.getMeasures = function(){
             }
 
             if(this.maskPath) {
+                matrixHelper.translate(0,-documentData.ls);
+
+                matrixHelper.translate(0, renderedData.m.a.v[1]*yOff/100 + yPos,0);
                 if (data.t.p.p) {
                     tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
                     var rot = Math.atan(tanAngle) * 180 / Math.PI;
@@ -519,7 +531,6 @@ ITextElement.prototype.getMeasures = function(){
                     matrixHelper.rotate(-rot * Math.PI / 180);
                 }
                 matrixHelper.translate(xPathPos, yPathPos, 0);
-                matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100,0);
                 currentLength -= renderedData.m.a.v[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
@@ -541,6 +552,7 @@ ITextElement.prototype.getMeasures = function(){
                         matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
                         break;
                 }
+                matrixHelper.translate(0,-documentData.ls);
                 matrixHelper.translate(offf,0,0);
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200,renderedData.m.a.v[1]*yOff/100,0);
                 xPos += letters[i].l + documentData.tr/1000*documentData.s;
