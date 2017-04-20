@@ -72,7 +72,7 @@ to make sure it was copied correctly type)
 
 **WINDOWS:**
  - open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.
- 
+
 **MAC:**
  - open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.
 
@@ -114,13 +114,13 @@ Skip directly to "Install third-party extensions"
 
 You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
-- animationData: an Object with the exported animation data.
-- path: the relative path to the animation object. (animationData and path are mutually exclusive)
-- loop: true / false / number
-- autoplay: true / false it will start playing as soon as it is ready
-- name: animation name for future reference
-- renderer: 'svg' / 'canvas' / 'html' to set the renderer
-- container: the dom element on which to render the animation
+- **animationData**: an Object with the exported animation data.
+- **path**: the relative path to the animation object. (animationData and path are mutually exclusive)
+- **loop**: true / false / number
+- **autoplay**: true / false it will start playing as soon as it is ready
+- **name**: animation name for future reference
+- **renderer**: 'svg' / 'canvas' / 'html' to set the renderer
+- **container**: the dom element on which to render the animation
 
 Returns the animation object you can control with play, pause, setSpeed, etc.
 ```js
