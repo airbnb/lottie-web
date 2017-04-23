@@ -217,12 +217,12 @@
         container: elem,
         renderer: 'html',
         loop: true,
-        autoplay: true,
+        autoplay: false,
         seekBar: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/billabon2.json'
+        path: 'exports/render/test.json'
     };
     anim = bodymovin.loadAnimation(animData);
     window.onresize = anim.resize.bind(anim);

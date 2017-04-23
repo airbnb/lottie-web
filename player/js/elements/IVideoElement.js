@@ -80,8 +80,13 @@ IVideoElement.prototype.createElements = function(){
 
 IVideoElement.prototype.hide = function(){
     if(!this.hidden){
+
         //we need to pause & reset video position in case we play this video again (like in loop)
+        // console.log(this.baseElement.getElementsByTagName('audio'))
+
+
         if(this.baseElement.getElementsByTagName('video').length !=0) {
+            // console.log(this.baseElement.getElementsByTagName('video'))
             this.baseElement.getElementsByTagName('video')[0].pause();
             this.baseElement.getElementsByTagName('video')[0].currentTime = 0;
         }
@@ -90,7 +95,7 @@ IVideoElement.prototype.hide = function(){
             this.baseElement.getElementsByTagName('audio')[0].pause();
             this.baseElement.getElementsByTagName('audio')[0].currentTime = 0;
         }
-        // isPlaying = false;
+        isPlaying = false;
 
         this.layerElement.style.display = 'none';
         this.hidden = true;
@@ -117,21 +122,28 @@ IVideoElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
 
+    // console.log('lior-2');
+
     if(this.hidden){
         //play the video
-         if(this.comp.comp.animationItem.isPaused === false) {
-             if(this.baseElement.getElementsByTagName('video').length !=0) {
-                 if (this.baseElement.getElementsByTagName('video')[0].paused) {
-                     this.baseElement.getElementsByTagName('video')[0].play();
-                 }
-             }
-
-             else if(this.baseElement.getElementsByTagName('audio').length !=0){
-                 if (this.baseElement.getElementsByTagName('audio')[0].paused) {
-                     this.baseElement.getElementsByTagName('audio')[0].play();
-                 }
-             }
-        }
+        // console.log("lior1")
+        // console.log(this.comp.comp.comp.animationItem.isPaused )
+        //  if(this.comp.comp.comp.animationItem.isPaused === false) {
+        //      if(this.baseElement.getElementsByTagName('video').length !=0) {
+        //          console.log('lior2');
+        //          console.log(this.baseElement.getElementsByTagName('video')[0])
+        //          if (this.baseElement.getElementsByTagName('video')[0].paused) {
+        //              console.log('ddddd');
+        //              this.baseElement.getElementsByTagName('video')[0].play();
+        //          }
+        //      }
+        //
+        //      else if(this.baseElement.getElementsByTagName('audio').length !=0){
+        //          if (this.baseElement.getElementsByTagName('audio')[0].paused) {
+        //              this.baseElement.getElementsByTagName('audio')[0].play();
+        //          }
+        //      }
+        // }
         this.hidden = false;
         this.layerElement.style.display = 'block';
     }

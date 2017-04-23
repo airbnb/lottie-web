@@ -353,19 +353,27 @@ AnimationItem.prototype.play = function (name) {
                 {
                     // console.log(this.projectInterface.compositions[0]);
                     if(this.isPaused === false) {
-                        // console.log(this.projectInterface.compositions[0].elements[i].elements);
 
                         if (typeof this.projectInterface.compositions[0].elements[i].elements == "object") {
                             if (this.projectInterface.compositions[0].elements[i].elements[0]) {
-                                if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video').length != 0) {
-                                    this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].play();
-                                }
 
-                                // for svg animation the audio is in :   this.projectInterface.compositions[0].elements[i].baseElement.getElementsByTagName('audio')
-                                else if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
-                                    this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].play();
+                                // console.log(this.projectInterface.compositions[0].elements[i].elements);
 
-                                }
+                                this.playAudioVideo(this.projectInterface.compositions[0].elements[i].elements,'play',null);
+                            //
+                            //     if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video').length != 0) {
+                            //         this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].play();
+                            //         // console.log('lior');
+                            //         // console.log(this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0])
+                            //
+                            //
+                            //     }
+                            //
+                            //     // for svg animation the audio is in :   this.projectInterface.compositions[0].elements[i].baseElement.getElementsByTagName('audio')
+                            //     else if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
+                            //         this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].play();
+                            //
+                            //     }
                             }
                         }
                     }
@@ -379,8 +387,63 @@ AnimationItem.prototype.play = function (name) {
     }
 };
 
+AnimationItem.prototype.playAudioVideo = function (elements,action,goToTime) {
+    // if (this.projectInterface.compositions[0].elements[i].elements[0]) {
+    // console.log(elements)
+    if (elements instanceof Array){
+    for (i = 0; i < elements.length; i++) {
+        if (elements[i].elements != "object") {
+            // console.log('im here')
+            // console.log(elements[i].elements);
+
+            if (elements[i].baseElement.getElementsByTagName('video').length != 0) {
+                // console.log('Video')
+                if (action == 'play'){
+                elements[i].baseElement.getElementsByTagName('video')[0].play();
+                }
+
+                else if (action == 'pause'){
+                    elements[i].baseElement.getElementsByTagName('video')[0].pause();
+                }
+
+                else if (action == 'goToTime'){
+                    elements[i].baseElement.getElementsByTagName('video')[0].currentTime = goToTime;
+                }
+                    // this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].currentTime = goToTime;
+
+
+                // console.log(this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0])
+
+            }
+
+            else if (elements[i].baseElement.getElementsByTagName('audio').length != 0) {
+
+                if (action == 'play') {
+                    // console.log('playmusic')
+                    elements[i].baseElement.getElementsByTagName('audio')[0].play();
+                }
+
+                else if (action == 'pause') {
+                    // console.log('stopmusic')
+                    elements[i].baseElement.getElementsByTagName('audio')[0].pause();
+                }
+
+                else if (action == 'goToTime'){
+                    elements[i].baseElement.getElementsByTagName('audio')[0].currentTime = goToTime;
+                }
+            }
+            // this.playAudioVideo(elements[i].elements);
+        }
+
+        // console.log(i);
+
+    }}
+
+}
+
 // mute function
 AnimationItem.prototype.mute = function (name) {
+
     if(name && this.name != name){
         return;
     }
@@ -390,23 +453,19 @@ AnimationItem.prototype.mute = function (name) {
 
         if(data.ip - data.st <= (this.currentFrame - this.layers[i].st) && data.op - data.st > (this.currentFrame - this.layers[i].st)) {
             if (typeof this.projectInterface.compositions[0].elements[i].elements == "object") {
-                if (this.isMute === false) {
-                    if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
-                        this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].muted = true;
-                        this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].volume = 0;
 
-                        //console.log('this.volumeValue:     '+this.volumeValue);
-                        //console.log('-----Value:     '+this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].volume);
-                    }
+                if (this.isMute === false || this.isMute == null) {
+
+                    this.muteAdudio(this.projectInterface.compositions[0].elements[i].elements,'mute',false,null);
+
                     this.isMute = true;
                     break;
                 }
                 //TODO CHECK with two audio's playing together
                 else if (this.isMute === true) {
-                    if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
-                        this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].muted = false;
-                        this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].volume = 1;
-                    }
+
+                    this.muteAdudio(this.projectInterface.compositions[0].elements[i].elements,'mute',true,null);
+
                     this.isMute = false;
                     break;
                 }
@@ -414,6 +473,48 @@ AnimationItem.prototype.mute = function (name) {
         }
     }
 };
+
+AnimationItem.prototype.muteAdudio = function (elements,action,mute,volume) {
+
+    if (elements instanceof Array) {
+        for (i = 0; i < elements.length; i++) {
+            if (elements[i].elements != "object") {
+
+                if (elements[i].baseElement.getElementsByTagName('audio').length != 0) {
+                    if (action == 'mute') {
+
+                        if (mute === false) {
+                            console.log(mute);
+
+                            elements[i].baseElement.getElementsByTagName('audio')[0].muted = true;
+                            elements[i].baseElement.getElementsByTagName('audio')[0].volume = 0;
+
+                            //console.log('this.volumeValue:     '+this.volumeValue);
+                            //console.log('-----Value:     '+this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].volume);
+                        }
+
+                        else if (mute === true) {
+                            console.log(mute);
+
+                            elements[i].baseElement.getElementsByTagName('audio')[0].muted = false;
+                            elements[i].baseElement.getElementsByTagName('audio')[0].volume = 1;
+                        }
+                    }
+                    if (action == 'setVolume') {
+                        console.log(volume)
+                        elements[i].baseElement.getElementsByTagName('audio')[0].volume = volume;
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
 
 // set volume function
 AnimationItem.prototype.setVolumeRange = function (name) {
@@ -426,10 +527,12 @@ AnimationItem.prototype.setVolumeRange = function (name) {
 
         if(data.ip - data.st <= (this.currentFrame - this.layers[i].st) && data.op - data.st > (this.currentFrame - this.layers[i].st)) {
             if (typeof this.projectInterface.compositions[0].elements[i].elements == "object") {
-                if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
-                    this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].volume = this.volumeValue;
+                // if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
+                    // this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].volume = this.volumeValue;
                     //console.log("volumeValue: "+this.volumeValue);
-                }
+                // }
+                this.muteAdudio(this.projectInterface.compositions[0].elements[i].elements,'setVolume',true,this.volumeValue);
+
             }
         }
     }
@@ -453,17 +556,24 @@ AnimationItem.prototype.pause = function (name) {
                     if (data.ip - data.st <= (this.currentFrame - this.layers[i].st) && data.op - data.st > (this.currentFrame - this.layers[i].st)) {
                         if (typeof this.projectInterface.compositions[0].elements[i].elements == "object") {
                             // if (isPlaying) {
-                            if(this.projectInterface.compositions[0].elements[i].elements[0]) {
-                                if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video').length != 0) {
-                                    this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].pause();
-                                }
-                            }
 
-                            else if(this.projectInterface.compositions[0].elements[i].elements[0]){
-                                if(this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length !=0) {
-                                    this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].pause();
-                                }
+                            if (this.projectInterface.compositions[0].elements[i].elements[0]) {
+
+                                // console.log(this.projectInterface.compositions[0].elements[i].elements);
+
+                                this.playAudioVideo(this.projectInterface.compositions[0].elements[i].elements, 'pause',null);
                             }
+                            // if(this.projectInterface.compositions[0].elements[i].elements[0]) {
+                            //     if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video').length != 0) {
+                            //         this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].pause();
+                            //     }
+                            // }
+                            //
+                            // else if(this.projectInterface.compositions[0].elements[i].elements[0]){
+                            //     if(this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length !=0) {
+                            //         this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].pause();
+                            //     }
+                            // }
                         }
                     }
                 }
@@ -510,15 +620,18 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
                     // console.log("data.ip: "+data.ip);
                     var goToTime = (value - data.ip) /24;
                     if (this.projectInterface.compositions[0].elements[i].elements[0]) {
-                        if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video').length != 0) {
-                            this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].currentTime = goToTime;
-                        }
+                        this.playAudioVideo(this.projectInterface.compositions[0].elements[i].elements, 'goToTime', goToTime);
                     }
-                    else if (this.projectInterface.compositions[0].elements[i].elements[0]) {
-                        if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
-                            this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].currentTime = goToTime;
-                        }
-                    }
+
+                        // if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video').length != 0) {
+                        //     this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('video')[0].currentTime = goToTime;
+                        // }
+                    // }
+                    // else if (this.projectInterface.compositions[0].elements[i].elements[0]) {
+                    //     if (this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio').length != 0) {
+                    //         this.projectInterface.compositions[0].elements[i].elements[0].baseElement.getElementsByTagName('audio')[0].currentTime = goToTime;
+                    //     }
+                    // }
                 }
             }
         }
