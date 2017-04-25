@@ -33,7 +33,7 @@ function SVGEffects(elem){
     }
     if(count){
         elem.globalData.defs.appendChild(fil);
-        elem.layerElement.setAttribute('filter','url(#'+filId+')');
+        elem.layerElement.setAttribute('filter','url(' + location.href + '#'+filId+')');
     }
 }
 
