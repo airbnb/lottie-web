@@ -292,7 +292,7 @@ SVGBaseElement.prototype.setMatte = function(id){
     if(!this.matteElement){
         return;
     }
-    this.matteElement.setAttribute("mask", "url(" + location.href + #" + id + ")");
+    this.matteElement.setAttribute("mask", "url(" + location.href + "#" + id + ")");
 };
 
 SVGBaseElement.prototype.hide = function(){
