@@ -348,12 +348,16 @@ var ExpressionManager = (function(){
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
             var arr = Array.apply({length:len});
-            for(j=0;j<len;j+=1){
-                arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+            if(len>1){
+                for(j=0;j<len;j+=1){
+                    arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
+                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
+                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+                }
+                return arr;
+            } else {
+                return this.pv + addedAmps[0] + (-amp + amp*2*BMMath.random())*perc;
             }
-            return arr;
         }.bind(this);
 
         var loopIn = function loopIn(type,duration, durationFlag) {
