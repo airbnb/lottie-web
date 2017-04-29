@@ -34,6 +34,11 @@ BaseRenderer.prototype.createItem = function(layer){
     }
     return this.createBase(layer);
 };
+
+BaseRenderer.prototype.createCamera = function(){
+    throw new Error('You\'re using a 3d camera. Try the html renderer.');
+}
+
 BaseRenderer.prototype.buildAllItems = function(){
     var i, len = this.layers.length;
     for(i=0;i<len;i+=1){

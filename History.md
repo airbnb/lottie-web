@@ -1,3 +1,7 @@
+## V 4.6.8
+- 3d camera fix
+- fix for tests
+
 ## V 4.6.7
 - Trim path with Rectangle fix
 
