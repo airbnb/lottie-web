@@ -27,6 +27,8 @@ BaseRenderer.prototype.createItem = function(layer){
             return this.createShape(layer);
         case 5:
             return this.createText(layer);
+        case 13:
+            return this.createCamera(layer);
         case 99:
             return null;
     }
