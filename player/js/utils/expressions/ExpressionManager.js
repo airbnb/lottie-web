@@ -64,7 +64,7 @@ var ExpressionManager = (function(){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b .constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             b[0] = a + b[0];
             return b;
         }
