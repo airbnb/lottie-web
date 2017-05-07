@@ -8790,6 +8790,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
+    setTimeout(function() {this.animationItem.onTransformCanvas(this.transformCanvas)}.bind(this), 0);
     var i, len = this.elements.length;
     for(i=0;i<len;i+=1){
         if(this.elements[i] && this.elements[i].data.ty === 0){
@@ -8799,7 +8800,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
 };
 
 CanvasRenderer.prototype.destroy = function () {
-    if(this.renderConfig.clearCanvas) {
+    if(this.renderConfig.clearCanvas && this.animationItem.wrapper) {
         this.animationItem.wrapper.innerHTML = '';
     }
     var i, len = this.layers ? this.layers.length : 0;
@@ -8899,6 +8900,7 @@ CanvasRenderer.prototype.searchExtraCompositions = function(assets){
         }
     }
 };
+
 function HybridRenderer(animationItem){
     this.animationItem = animationItem;
     this.layers = null;
@@ -9346,7 +9348,7 @@ function CVCompElement(data, comp,globalData){
     cv.height = this.data.h;
     this.canvas = cv;
     this.globalData = compGlobalData;
-    this.layers = data.layers;
+    this.layers = data.layers || [];
     this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
@@ -9479,6 +9481,7 @@ CVCompElement.prototype.createShape = CanvasRenderer.prototype.createShape;
 CVCompElement.prototype.createText = CanvasRenderer.prototype.createText;
 CVCompElement.prototype.createBase = CanvasRenderer.prototype.createBase;
 CVCompElement.prototype.buildElementParenting = CanvasRenderer.prototype.buildElementParenting;
+
 function CVImageElement(data, comp,globalData){
     this.assetData = globalData.getAssetData(data.refId);
     this._parent.constructor.call(this,data, comp,globalData);
@@ -12100,6 +12103,83 @@ var ExpressionManager = (function(){
     ob.initiateExpression = initiateExpression;
     return ob;
 }());
+var makePathExpressionProperty = (function() {
+  return function(pathValue) {
+    var p = pathValue.keyframes;
+    if (p.__pathPropertyDefined) {
+      return p;
+    }
+    p.__pathPropertyDefined = true;
+    Object.defineProperty(p, 'key', {
+      get: function() {
+        var frameRate = pathValue.comp.globalData.frameRate;
+        return function(index) {
+          //this index starts from 1
+          var k = p[index - 1];
+          k.time = k.t / frameRate;
+          k.index = index;
+          if (index === p.length) {
+            k.value = p[index - 2].e;
+          } else {
+            k.value = k.s;
+          }
+          return k;
+        }
+      },
+    });
+    Object.defineProperty(p, 'numKeys', {
+      get: function() {
+        return p.length;
+      }
+    });
+    Object.defineProperty(p, 'value', {
+      get: function() {
+        return p;
+      }
+    });
+    return p;
+  };
+})();
+
+var makeTimeRemapExpressionProperty = (function() {
+  return function(tmValue) {
+    var p = tmValue.keyframes;
+    if (p.__tmPropertyDefined) {
+      return p;
+    }
+    p.__tmPropertyDefined = true;
+    Object.defineProperty(p, 'key', {
+      get: function() {
+        var frameRate = tmValue.comp.globalData.frameRate;
+        return function(index) {
+          //this index starts from 1
+          var k = p[index - 1];
+          k.time = k.t / frameRate;
+          //  console.log(`k.time=${k.time}, k.t=${k.t}, frameRate=${frameRate}`)
+          k.index = index;
+          if (index === p.length) {
+            k.value = p[index - 2].e;
+          } else {
+            k.value = k.s;
+          }
+          return k;
+        }
+      },
+    });
+    Object.defineProperty(p, 'numKeys', {
+      get: function() {
+        return p.length;
+      }
+    });
+    Object.defineProperty(p, 'value', {
+      get: function() {
+        return p;
+      }
+    });
+    return p;
+  }
+})();
+
 var ShapeExpressionInterface = (function(){
     var ob = {
         createShapeInterface:createShapeInterface,
@@ -12861,7 +12941,7 @@ var ShapeExpressionInterface = (function(){
             Object.defineProperty(interfaceFunction, 'path', {
                 get: function(){
                     if(prop.k){
-                        prop.getValue();
+                        return makePathExpressionProperty(prop)
                     }
                     return prop.v;
                     //return shape_pool.clone(prop.v);
@@ -13027,6 +13107,12 @@ var LayerExpressionInterface = (function (){
         Object.defineProperty(_thisLayerFunction, "text", {
             get: function(){
                 return _thisLayerFunction.textInterface;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "timeRemap", {
+            get: function(){
+                return makeTimeRemapExpressionProperty(elem.tm);
             }
         });
 
