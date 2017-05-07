@@ -759,7 +759,7 @@ var ShapeExpressionInterface = (function(){
             Object.defineProperty(interfaceFunction, 'path', {
                 get: function(){
                     if(prop.k){
-                        prop.getValue();
+                        return makePathExpressionProperty(prop)
                     }
                     return prop.v;
                     //return shape_pool.clone(prop.v);
