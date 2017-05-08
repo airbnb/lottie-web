@@ -8790,7 +8790,9 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
-    setTimeout(function() {this.animationItem.onTransformCanvas(this.transformCanvas)}.bind(this), 0);
+    if (this.animationItem.onTransformCanvas) {
+	setTimeout(function() {this.animationItem.onTransformCanvas(this.transformCanvas)}.bind(this), 0);
+    }
     var i, len = this.elements.length;
     for(i=0;i<len;i+=1){
         if(this.elements[i] && this.elements[i].data.ty === 0){
