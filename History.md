@@ -1,3 +1,9 @@
+## V 4.6.9
+- new expressions. More Rubberhose support
+- expression fixes
+- expression sandboxing window and document
+- pointInLine 3d fix
+
 ## V 4.6.8
 - 3d camera fix
 - fix for tests
