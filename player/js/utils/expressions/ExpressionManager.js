@@ -526,26 +526,32 @@ var ExpressionManager = (function(){
             } else {
                 index = -1;
                 time *= elem.comp.globalData.frameRate;
-                for(i=0;i<len-1;i+=1){
-                    if(time === data.k[i].t){
-                        index = i + 1;
-                        keyTime = data.k[i].t;
-                        break;
-                    }else if(time>data.k[i].t && time<data.k[i+1].t){
-                        if(time-data.k[i].t > data.k[i+1].t - time){
-                            index = i + 2;
-                            keyTime = data.k[i+1].t;
-                        } else {
+                if (time < data.k[0].t) {
+                    index = 1;
+                    keyTime = data.k[0].t;
+                } else {
+                    for(i=0;i<len-1;i+=1){
+                        if(time === data.k[i].t){
                             index = i + 1;
                             keyTime = data.k[i].t;
+                            break;
+                        }else if(time>data.k[i].t && time<data.k[i+1].t){
+                            if(time-data.k[i].t > data.k[i+1].t - time){
+                                index = i + 2;
+                                keyTime = data.k[i+1].t;
+                            } else {
+                                index = i + 1;
+                                keyTime = data.k[i].t;
+                            }
+                            break;
                         }
-                        break;
+                    }
+                    if(index === -1){
+                        index = i + 1;
+                        keyTime = data.k[i].t;
                     }
                 }
-                if(index === -1){
-                    index = i + 1;
-                    keyTime = data.k[i].t;
-                }
+                
             }
             var ob = {};
             ob.index = index;
