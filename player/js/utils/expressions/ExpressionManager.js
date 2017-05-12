@@ -661,7 +661,7 @@ var ExpressionManager = (function(){
             }
             hasParent = !!(elem.hierarchy && elem.hierarchy.length);
             if(hasParent && !parent){
-                parent = elem.hierarchy[elem.hierarchy.length - 1].layerInterface;
+                parent = elem.hierarchy[0].layerInterface;
             }
             this.lock = true;
             if(this.getPreValue){
