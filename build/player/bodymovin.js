@@ -602,8 +602,7 @@ var Matrix = (function(){
         return x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14];
     }
 
-    function inversePoints(pts){
-        //var determinant = this.a * this.d - this.b * this.c;
+    function inversePoint(pt) {
         var determinant = this.props[0] * this.props[5] - this.props[1] * this.props[4];
         var a = this.props[5]/determinant;
         var b = - this.props[1]/determinant;
@@ -611,9 +610,13 @@ var Matrix = (function(){
         var d = this.props[0]/determinant;
         var e = (this.props[4] * this.props[13] - this.props[5] * this.props[12])/determinant;
         var f = - (this.props[0] * this.props[13] - this.props[1] * this.props[12])/determinant;
+        return [pt[0] * a + pt[1] * c + e, pt[0] * b + pt[1] * d + f, 0];
+    }
+
+    function inversePoints(pts){
         var i, len = pts.length, retPts = [];
         for(i=0;i<len;i+=1){
-            retPts[i] = [pts[i][0] * a + pts[i][1] * c + e, pts[i][0] * b + pts[i][1] * d + f, 0]
+            retPts[i] = inversePoint(pts[i]);
         }
         return retPts;
     }
@@ -678,6 +681,7 @@ var Matrix = (function(){
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
         this.inversePoints = inversePoints;
+        this.inversePoint = inversePoint;
         this._t = this.transform;
 
         this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
@@ -1154,7 +1158,22 @@ function bezFunction(){
     }
 
     function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
-        return pointOnLine2D(x1,y1, x2,y2, x3,y3) && pointOnLine2D(x1,z1, x2,z2, x3,z3);
+        var dist1 = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
+        var dist2 = Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2) + Math.pow(z3 - z1, 2));
+        var dist3 = Math.sqrt(Math.pow(x3 - x2, 2) + Math.pow(y3 - y2, 2) + Math.pow(z3 - z2, 2));
+        var diffDist;
+        if(dist1 > dist2){
+            if(dist1 > dist3){
+                diffDist = dist1 - dist2 - dist3;
+            } else {
+                diffDist = dist3 - dist2 - dist1;
+            }
+        } else if(dist3 > dist2){
+            diffDist = dist3 - dist2 - dist1;
+        } else {
+            diffDist = dist2 - dist1 - dist3;
+        }
+        return diffDist > -0.0001 && diffDist < 0.0001;
     }
 
     /*function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
@@ -2015,6 +2034,7 @@ function dataFunctionManager(){
                 data.singleShape = true;
             }
             documentData.yOffset = documentData.lh || documentData.s*1.2;
+            documentData.ls = documentData.ls || 0;
             documentData.ascent = fontData.ascent*documentData.s/100;
         }
 
@@ -3881,6 +3901,10 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 shapeData.shape.paths = localShapeCollection;
             }
         }
+    } else if(this.mdf){
+        for(i=0;i<len;i+=1){
+            this.shapes[i].shape.mdf = true;
+        }
     }
     if(!this.dynamicProperties.length){
         this.mdf = false;
@@ -4531,6 +4555,9 @@ var shape_pool = (function(){
 			point_pool.release(shapePath.v[i]);
 			point_pool.release(shapePath.i[i]);
 			point_pool.release(shapePath.o[i]);
+			shapePath.v[i] = null;
+			shapePath.i[i] = null;
+			shapePath.o[i] = null;
 		}
 		shapePath._length = 0;
 		shapePath.c = false;
@@ -4654,11 +4681,18 @@ BaseRenderer.prototype.createItem = function(layer){
             return this.createShape(layer);
         case 5:
             return this.createText(layer);
+        case 13:
+            return this.createCamera(layer);
         case 99:
             return null;
     }
     return this.createBase(layer);
 };
+
+BaseRenderer.prototype.createCamera = function(){
+    throw new Error('You\'re using a 3d camera. Try the html renderer.');
+}
+
 BaseRenderer.prototype.buildAllItems = function(){
     var i, len = this.layers.length;
     for(i=0;i<len;i+=1){
@@ -6027,6 +6061,16 @@ ITextElement.prototype.getMeasures = function(){
                         }
 
                     }
+                    if ('a' in animatorProps) {
+                        animatorSelector = renderedData.a[j].s;
+                        mult = animatorSelector.getMult(letters[i].anIndexes[j],data.t.a[j].s.totalChars);
+                        if(mult.length){
+                            animatorOffset += animatorProps.a.v[0] * mult[0];
+                        } else{
+                            animatorOffset += animatorProps.a.v[0] * mult;
+                        }
+
+                    }
                 }
                 flag = true;
                 while (flag) {
@@ -6034,7 +6078,7 @@ ITextElement.prototype.getMeasures = function(){
                         perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
                         xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
                         yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-                        matrixHelper.translate(0, -(renderedData.m.a.v[1] * yOff / 100) + yPos);
+                        matrixHelper.translate(-renderedData.m.a.v[0]*letters[i].an/200, -(renderedData.m.a.v[1] * yOff / 100));
                         flag = false;
                     } else if (points) {
                         segmentLength += currentPoint.partialLength;
@@ -6237,7 +6281,6 @@ ITextElement.prototype.getMeasures = function(){
                             matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
                         }
                     }else{
-
                         if(mult.length) {
                             matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
                         } else {
@@ -6257,6 +6300,9 @@ ITextElement.prototype.getMeasures = function(){
             }
 
             if(this.maskPath) {
+                matrixHelper.translate(0,-documentData.ls);
+
+                matrixHelper.translate(0, renderedData.m.a.v[1]*yOff/100 + yPos,0);
                 if (data.t.p.p) {
                     tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
                     var rot = Math.atan(tanAngle) * 180 / Math.PI;
@@ -6266,7 +6312,6 @@ ITextElement.prototype.getMeasures = function(){
                     matrixHelper.rotate(-rot * Math.PI / 180);
                 }
                 matrixHelper.translate(xPathPos, yPathPos, 0);
-                matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200, renderedData.m.a.v[1]*yOff/100,0);
                 currentLength -= renderedData.m.a.v[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
@@ -6288,6 +6333,7 @@ ITextElement.prototype.getMeasures = function(){
                         matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
                         break;
                 }
+                matrixHelper.translate(0,-documentData.ls);
                 matrixHelper.translate(offf,0,0);
                 matrixHelper.translate(renderedData.m.a.v[0]*letters[i].an/200,renderedData.m.a.v[1]*yOff/100,0);
                 xPos += letters[i].l + documentData.tr/1000*documentData.s;
@@ -6414,6 +6460,7 @@ SVGTextElement.prototype.buildNewText = function(){
             if(documentData.ps){
                 matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
             }
+            matrixHelper.translate(0,-documentData.ls,0);
             switch(documentData.j){
                 case 1:
                     matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
@@ -10348,6 +10395,7 @@ CVTextElement.prototype.buildNewText = function(){
                 if(documentData.ps){
                     matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
                 }
+                matrixHelper.translate(0,-documentData.ls,0);
                 switch(documentData.j){
                     case 1:
                         matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
@@ -11223,7 +11271,7 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     if(data.ks.a){
         this.a = PropertyFactory.getProp(this,data.ks.a,1,0,this.dynamicProperties);
     }
-    if(data.ks.or.k.length){
+    if(data.ks.or.k.length && data.ks.or.k[0].to){
         var i,len = data.ks.or.k.length;
         for(i=0;i<len;i+=1){
             data.ks.or.k[i].to = null;
@@ -11492,7 +11540,10 @@ expressionsPlugin = Expressions;
             velocity = Array.apply(null,{length:v1.length});
             var i;
             for(i=0;i<v1.length;i+=1){
-                velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                //removing frameRate
+                //if needed, don't add it here
+                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                velocity[i] = (v2[i] - v1[i])/delta;
             }
         } else {
             velocity = (v2 - v1)/delta;
@@ -11612,6 +11663,8 @@ expressionsPlugin = Expressions;
 var ExpressionManager = (function(){
     var ob = {};
     var Math = BMMath;
+    var window = null;
+    var document = null;
 
     function duplicatePropertyValue(value, mult){
         mult = mult || 1;
@@ -11673,7 +11726,7 @@ var ExpressionManager = (function(){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b .constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             b[0] = a + b[0];
             return b;
         }
@@ -11920,7 +11973,7 @@ var ExpressionManager = (function(){
 
     function initiateExpression(elem,data,property){
         var val = data.x;
-        var needsVelocity = val.indexOf('velocity') !== -1;
+        var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
         var transform,content,effect;
@@ -11929,6 +11982,8 @@ var ExpressionManager = (function(){
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
+        var width = elem.data.sw ? elem.data.sw : 0;
+        var height = elem.data.sh ? elem.data.sh : 0;
         var thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
@@ -11959,12 +12014,16 @@ var ExpressionManager = (function(){
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
             var arr = Array.apply({length:len});
-            for(j=0;j<len;j+=1){
-                arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+            if(len>1){
+                for(j=0;j<len;j+=1){
+                    arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
+                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
+                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+                }
+                return arr;
+            } else {
+                return this.pv + addedAmps[0] + (-amp + amp*2*BMMath.random())*perc;
             }
-            return arr;
         }.bind(this);
 
         var loopIn = function loopIn(type,duration, durationFlag) {
@@ -12264,7 +12323,7 @@ var ExpressionManager = (function(){
             }
             hasParent = !!(elem.hierarchy && elem.hierarchy.length);
             if(hasParent && !parent){
-                parent = elem.hierarchy[elem.hierarchy.length - 1].layerInterface;
+                parent = elem.hierarchy[0].layerInterface;
             }
             this.lock = true;
             if(this.getPreValue){
@@ -13141,6 +13200,19 @@ var LayerExpressionInterface = (function (){
         }
         return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
     }
+    function fromComp(arr){
+        var toWorldMat = new Matrix();
+        toWorldMat.reset();
+        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
+        if(this._elem.hierarchy && this._elem.hierarchy.length){
+            var i, len = this._elem.hierarchy.length;
+            for(i=0;i<len;i+=1){
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+            }
+            return toWorldMat.inversePoint(arr);
+        }
+        return toWorldMat.inversePoint(arr);
+    }
 
 
     return function(elem){
@@ -13172,6 +13244,7 @@ var LayerExpressionInterface = (function (){
         }
         _thisLayerFunction.toWorld = toWorld;
         _thisLayerFunction.toComp = toWorld;
+        _thisLayerFunction.fromComp = fromComp;
         _thisLayerFunction._elem = elem;
         Object.defineProperty(_thisLayerFunction, 'hasParent', {
             get: function(){
@@ -13611,4 +13684,4 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 break;
         }
     }
-};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.6.3'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.6.9'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index]; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  

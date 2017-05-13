@@ -11,7 +11,7 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     if(data.ks.a){
         this.a = PropertyFactory.getProp(this,data.ks.a,1,0,this.dynamicProperties);
     }
-    if(data.ks.or.k.length){
+    if(data.ks.or.k.length && data.ks.or.k[0].to){
         var i,len = data.ks.or.k.length;
         for(i=0;i<len;i+=1){
             data.ks.or.k[i].to = null;

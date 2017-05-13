@@ -115,6 +115,9 @@ function _addEventListener(eventName, callback){
     }
     this._cbs[eventName].push(callback);
 
+	return function() {
+		this.removeEventListener(eventName, callback);
+	}.bind(this);
 }
 
 function _removeEventListener(eventName,callback){

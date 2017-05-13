@@ -9,7 +9,22 @@ function bezFunction(){
     }
 
     function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
-        return pointOnLine2D(x1,y1, x2,y2, x3,y3) && pointOnLine2D(x1,z1, x2,z2, x3,z3);
+        var dist1 = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
+        var dist2 = Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2) + Math.pow(z3 - z1, 2));
+        var dist3 = Math.sqrt(Math.pow(x3 - x2, 2) + Math.pow(y3 - y2, 2) + Math.pow(z3 - z2, 2));
+        var diffDist;
+        if(dist1 > dist2){
+            if(dist1 > dist3){
+                diffDist = dist1 - dist2 - dist3;
+            } else {
+                diffDist = dist3 - dist2 - dist1;
+            }
+        } else if(dist3 > dist2){
+            diffDist = dist3 - dist2 - dist1;
+        } else {
+            diffDist = dist2 - dist1 - dist3;
+        }
+        return diffDist > -0.0001 && diffDist < 0.0001;
     }
 
     /*function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {

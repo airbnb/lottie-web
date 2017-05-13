@@ -31,6 +31,9 @@ var shape_pool = (function(){
 			point_pool.release(shapePath.v[i]);
 			point_pool.release(shapePath.i[i]);
 			point_pool.release(shapePath.o[i]);
+			shapePath.v[i] = null;
+			shapePath.i[i] = null;
+			shapePath.o[i] = null;
 		}
 		shapePath._length = 0;
 		shapePath.c = false;

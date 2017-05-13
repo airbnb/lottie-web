@@ -1,26 +1,32 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.6.9
+- new expressions. More Rubberhose support
+- expression fixes
+- expression sandboxing window and document
+- pointInLine 3d fix
+
+## V 4.6.8
+- 3d camera fix
+- fix for tests
+
+## V 4.6.7
+- Trim path with Rectangle fix
+
+## V 4.6.6
+- Text baseline supported (from After Effects 13.6 (CC 2015))
+- text animator fixes
+
+## V 4.6.5
+- trim path full fix
+
+## V 4.6.4
+- velocityAtTime expression fix
+
 ## V 4.6.3
 - bodymovin_light fix
 - rubberhose autoflop patch for inactive admin property
-
-## V 4.6.2
-- repeaters! (partially but should cover many cases)
-- new expressions
-- render improvements
-- reduced garbage collection
-
-## V 4.6.1
-- 3D orientation fix
-- render improvements
-
-## V 4.6.0
-- New UI!
-- Drop shadow effect support
-- performance improvement on animations with offsetted layers
-- big performance improvement on expressions
-- expressions expressions expressions
 
 **Get it directly from the store!**
 https://creative.adobe.com/addons/products/12557
