@@ -91,7 +91,7 @@ Skip directly to "Install third-party extensions"
 ```html
 <script src="js/bodymovin.js" type="text/javascript"></script>
 ```
-You can call bodymovin.loadAnimation() to start an animation.
+You can call `bodymovin.loadAnimation()` to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
 - path: the relative path to the animation object. (animationData and path are mutually exclusive)
@@ -99,12 +99,13 @@ It takes an object as a unique param with:
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
 - renderer: 'svg' / 'canvas' / 'html' to set the renderer
-- container: the dom element on which to render the animation
-<br />
+- container: the DOM element on which to render the animation
+
 Returns the animation object you can control with play, pause, setSpeed, etc.
+
 ```js
 bodymovin.loadAnimation({
-  container: element, // the dom element
+  container: element, // the DOM element
   renderer: 'svg',
   loop: true,
   autoplay: true,
@@ -112,9 +113,10 @@ bodymovin.loadAnimation({
 });
 ```
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
+
 ```js
 bodymovin.loadAnimation({
-  container: element, // the dom element
+  container: element, // the DOM element
   renderer: 'svg',
   loop: true,
   autoplay: true,
@@ -126,35 +128,37 @@ bodymovin.loadAnimation({
   }
 });
 ```
+
 If you do this, you will have to handle the canvas clearing after each frame
 <br/>
-Another way to load animations is adding specific attributes to a dom element.
+Another way to load animations is adding specific attributes to a DOM element.
 You have to include a div and set it's class to bodymovin.
 If you do it before page load, it will automatically search for all tags with the class "bodymovin".
-Or you can call bodymovin.searchAnimations() after page load and it will search all elements with the class "bodymovin".
+
+Or you can call `bodymovin.searchAnimations()` after page load and it will search all elements with the class "bodymovin".
 <br/>
-- add the data.json to a folder relative to the html
-- create a div that will contain the animation.
-<br/>
- **Required**
- <br/>
- . a class called "bodymovin"
- . a "data-animation-path" attribute with relative path to the data.json
- <br/>
-**Optional**
-<br/>
- . a "data-anim-loop" attribute
- . a "data-name" attribute to specify a name to target play controls specifically
- <br/>
- **Example**
- <br/> 
+- Add the data.json to a folder relative to the html
+- Create a div that will contain the animation.
+- **Required**
+  - A class called "bodymovin"
+  - A "data-animation-path" attribute with relative path to the data.json
+- **Optional**
+  - A "data-anim-loop" attribute
+  - A "data-name" attribute to specify a name to target play controls specifically
+
+**Example**
+
 ```html
- <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <div style="width:1067px;height:600px"  class="bodymovin" 
+ data-animation-path="animation/" 
+ data-anim-loop="true" 
+ data-name="ninja"></div>
 ```
-<br/>
+
 
 ## Usage
 animation instances have these main methods:
+
 **anim.play()** <br/>
 **anim.stop()** <br/>
 **anim.pause()** <br/>
