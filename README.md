@@ -35,8 +35,7 @@ CC 2014 and up.
 If you need the latest latest version, you can still install it from here:
 
 ### Option 1 (Recommended):
-- download the ZIP from the repo.
-- Extract content and get the .zxp file from '/build/extension'
+- [Download the .zxp](/build/extension/bodymovin.zxp?raw=true) from this repo.
 - Use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
 
 ### Option 2:
