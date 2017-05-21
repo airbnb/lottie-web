@@ -19,7 +19,7 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this.dynamicProperties);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this.dynamicProperties);
-    this.tr = PropertyFactory.getProp(elem,data.tr,2,null,this.dynamicProperties);
+    this.tr = new TransformProperty(elem,data.tr, this.dynamicProperties);
     if(!this.dynamicProperties.length){
         this.getValue(true);
     }

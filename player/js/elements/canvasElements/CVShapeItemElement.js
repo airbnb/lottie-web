@@ -72,7 +72,7 @@ CVShapeItemElement.prototype.searchShapes = function(arr,data,dynamicProperties,
                     matMdf:false,
                     opMdf:false,
                     op: PropertyFactory.getProp(this.elemData,arr[i].o,0,0.01,dynamicProperties),
-                    mProps: PropertyFactory.getProp(this.elemData,arr[i],2,null,dynamicProperties)
+                    mProps: new TransformProperty(this.elemData,arr[i], dynamicProperties)
                 },
                 elements: []
             };

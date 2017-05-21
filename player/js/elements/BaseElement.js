@@ -186,7 +186,7 @@ BaseElement.prototype.init = function(){
     this.lastNum = -99999;
     if(this.data.ks){
         this.finalTransform = {
-            mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
+            mProp: new TransformProperty(this,this.data.ks, this.dynamicProperties, this.elementType === 'three'),
             matMdf: false,
             opMdf: false,
             mat: new Matrix(),

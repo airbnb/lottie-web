@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="utf-8"/>
     <style>
         body, html{
             background-color:#ddd;
@@ -27,6 +28,7 @@
         }
 
     </style>
+     <script src="three.min.js"></script>
     <!-- build:js bodymovin.js -->
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
@@ -39,6 +41,7 @@
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
     <script src="js/utils/FontManager.js"></script>
+    <script src="js/utils/TransformProperty.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
     <script src="js/utils/shapes/ShapePath.js"></script>
     <script src="js/utils/shapes/ShapeProperty.js"></script>
@@ -58,6 +61,7 @@
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js" data-light-skip="true"></script>
     <script src="js/renderers/HybridRenderer.js" data-light-skip="true"></script>
+    <script src="js/renderers/ThreejsRenderer.js" data-light-skip="true"></script>
     <script src="js/mask.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
@@ -88,6 +92,11 @@
     <script src="js/elements/htmlElements/HTextElement.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HImageElement.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HCameraElement.js" data-light-skip="true"></script>
+    <script src="js/elements/threejsElements/TBaseElement.js" data-light-skip="true"></script>
+    <script src="js/elements/threejsElements/TCameraElement.js" data-light-skip="true"></script>
+    <script src="js/elements/threejsElements/TSolidElement.js" data-light-skip="true"></script>
+    <script src="js/elements/threejsElements/TImageElement.js" data-light-skip="true"></script>
+    <script src="js/elements/threejsElements/TMaskElement.js" data-light-skip="true"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -119,8 +128,8 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
+        renderer: 'three',
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false

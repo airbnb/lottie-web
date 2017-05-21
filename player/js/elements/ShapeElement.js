@@ -184,7 +184,7 @@ IShapeElement.prototype.searchShapes = function(arr,data,container,dynamicProper
             data[i] = {
                 transform : {
                     op: PropertyFactory.getProp(this,arr[i].o,0,0.01,dynamicProperties),
-                    mProps: PropertyFactory.getProp(this,arr[i],2,null,dynamicProperties)
+                    mProps: new TransformProperty(this,arr[i], dynamicProperties)
                 },
                 elements: []
             };
