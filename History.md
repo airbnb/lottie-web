@@ -1,3 +1,7 @@
+## V 4.6.10
+- AE language export fix
+- nearestKey expression fix
+
 ## V 4.6.9
 - new expressions. More Rubberhose support
 - expression fixes
