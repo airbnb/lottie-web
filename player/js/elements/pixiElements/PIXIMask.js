@@ -217,7 +217,7 @@ PIXIMaskElement.prototype.createLayerSolidPath = function(){
 PIXIMaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     var pathString = '';
     var i, len;
-    len = pathNodes.v.length;
+    len = pathNodes._length;
     viewData.PElem.clear();
     viewData.PElem.beginFill(0xffffff);
     for(i=1;i<len;i+=1){

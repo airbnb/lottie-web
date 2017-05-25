@@ -473,7 +473,7 @@ function dataFunctionManager(){
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
         //console.log((JSON.stringify(animationData)));
-        blitAnimation(animationData, animationData.assets, fontManager);
+        //blitAnimation(animationData, animationData.assets, fontManager);
         //console.log((JSON.stringify(animationData)));
     }
 
