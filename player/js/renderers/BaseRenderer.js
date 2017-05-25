@@ -27,11 +27,18 @@ BaseRenderer.prototype.createItem = function(layer){
             return this.createShape(layer);
         case 5:
             return this.createText(layer);
+        case 13:
+            return this.createCamera(layer);
         case 99:
             return null;
     }
     return this.createBase(layer);
 };
+
+BaseRenderer.prototype.createCamera = function(){
+    throw new Error('You\'re using a 3d camera. Try the html renderer.');
+}
+
 BaseRenderer.prototype.buildAllItems = function(){
     var i, len = this.layers.length;
     for(i=0;i<len;i+=1){

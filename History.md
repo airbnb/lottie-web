@@ -1,3 +1,27 @@
+## V 4.6.10
+- AE language export fix
+- nearestKey expression fix
+
+## V 4.6.9
+- new expressions. More Rubberhose support
+- expression fixes
+- expression sandboxing window and document
+- pointInLine 3d fix
+
+## V 4.6.8
+- 3d camera fix
+- fix for tests
+
+## V 4.6.7
+- Trim path with Rectangle fix
+
+## V 4.6.6
+- Text baseline supported (from After Effects 13.6 (CC 2015))
+- text animator fixes
+
+## V 4.6.5
+- trim path full fix
+
 ## V 4.6.4
 - velocityAtTime expression fix
 

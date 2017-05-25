@@ -88,6 +88,7 @@ CVTextElement.prototype.buildNewText = function(){
                 if(documentData.ps){
                     matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
                 }
+                matrixHelper.translate(0,-documentData.ls,0);
                 switch(documentData.j){
                     case 1:
                         matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);

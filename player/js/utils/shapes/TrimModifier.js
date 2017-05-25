@@ -215,6 +215,10 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 shapeData.shape.paths = localShapeCollection;
             }
         }
+    } else if(this.mdf){
+        for(i=0;i<len;i+=1){
+            this.shapes[i].shape.mdf = true;
+        }
     }
     if(!this.dynamicProperties.length){
         this.mdf = false;

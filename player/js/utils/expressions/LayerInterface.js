@@ -12,6 +12,19 @@ var LayerExpressionInterface = (function (){
         }
         return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
     }
+    function fromComp(arr){
+        var toWorldMat = new Matrix();
+        toWorldMat.reset();
+        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
+        if(this._elem.hierarchy && this._elem.hierarchy.length){
+            var i, len = this._elem.hierarchy.length;
+            for(i=0;i<len;i+=1){
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+            }
+            return toWorldMat.inversePoint(arr);
+        }
+        return toWorldMat.inversePoint(arr);
+    }
 
 
     return function(elem){
@@ -43,6 +56,7 @@ var LayerExpressionInterface = (function (){
         }
         _thisLayerFunction.toWorld = toWorld;
         _thisLayerFunction.toComp = toWorld;
+        _thisLayerFunction.fromComp = fromComp;
         _thisLayerFunction._elem = elem;
         Object.defineProperty(_thisLayerFunction, 'hasParent', {
             get: function(){

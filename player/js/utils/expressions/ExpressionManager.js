@@ -1,6 +1,8 @@
 var ExpressionManager = (function(){
     var ob = {};
     var Math = BMMath;
+    var window = null;
+    var document = null;
 
     function duplicatePropertyValue(value, mult){
         mult = mult || 1;
@@ -62,7 +64,7 @@ var ExpressionManager = (function(){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b .constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             b[0] = a + b[0];
             return b;
         }
@@ -318,6 +320,8 @@ var ExpressionManager = (function(){
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
+        var width = elem.data.sw ? elem.data.sw : 0;
+        var height = elem.data.sh ? elem.data.sh : 0;
         var thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
@@ -348,12 +352,16 @@ var ExpressionManager = (function(){
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
             var arr = Array.apply({length:len});
-            for(j=0;j<len;j+=1){
-                arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+            if(len>1){
+                for(j=0;j<len;j+=1){
+                    arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
+                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
+                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+                }
+                return arr;
+            } else {
+                return this.pv + addedAmps[0] + (-amp + amp*2*BMMath.random())*perc;
             }
-            return arr;
         }.bind(this);
 
         var loopIn = function loopIn(type,duration, durationFlag) {
@@ -518,26 +526,32 @@ var ExpressionManager = (function(){
             } else {
                 index = -1;
                 time *= elem.comp.globalData.frameRate;
-                for(i=0;i<len-1;i+=1){
-                    if(time === data.k[i].t){
-                        index = i + 1;
-                        keyTime = data.k[i].t;
-                        break;
-                    }else if(time>data.k[i].t && time<data.k[i+1].t){
-                        if(time-data.k[i].t > data.k[i+1].t - time){
-                            index = i + 2;
-                            keyTime = data.k[i+1].t;
-                        } else {
+                if (time < data.k[0].t) {
+                    index = 1;
+                    keyTime = data.k[0].t;
+                } else {
+                    for(i=0;i<len-1;i+=1){
+                        if(time === data.k[i].t){
                             index = i + 1;
                             keyTime = data.k[i].t;
+                            break;
+                        }else if(time>data.k[i].t && time<data.k[i+1].t){
+                            if(time-data.k[i].t > data.k[i+1].t - time){
+                                index = i + 2;
+                                keyTime = data.k[i+1].t;
+                            } else {
+                                index = i + 1;
+                                keyTime = data.k[i].t;
+                            }
+                            break;
                         }
-                        break;
+                    }
+                    if(index === -1){
+                        index = i + 1;
+                        keyTime = data.k[i].t;
                     }
                 }
-                if(index === -1){
-                    index = i + 1;
-                    keyTime = data.k[i].t;
-                }
+                
             }
             var ob = {};
             ob.index = index;
@@ -653,7 +667,7 @@ var ExpressionManager = (function(){
             }
             hasParent = !!(elem.hierarchy && elem.hierarchy.length);
             if(hasParent && !parent){
-                parent = elem.hierarchy[elem.hierarchy.length - 1].layerInterface;
+                parent = elem.hierarchy[0].layerInterface;
             }
             this.lock = true;
             if(this.getPreValue){
