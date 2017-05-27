@@ -221,7 +221,7 @@ PIXIShapeElement.prototype.searchShapes = function(arr,data,container,PContainer
             data[i].sh = ShapePropertyFactory.getShapeProp(this,arr[i],ty,dynamicProperties);
             data[i].lvl = level;
             this.shapes.push(data[i].sh);
-            this.addShapeToModifiers(data[i].sh);
+            this.addShapeToModifiers(data[i]);
             jLen = this.stylesList.length;
             for(j=0;j<jLen;j+=1){
                 if(!this.stylesList[j].closed){
@@ -249,10 +249,10 @@ PIXIShapeElement.prototype.searchShapes = function(arr,data,container,PContainer
     }
 };
 
-PIXIShapeElement.prototype.addShapeToModifiers = function(shape) {
+PIXIShapeElement.prototype.addShapeToModifiers = function(data) {
     var i, len = this.shapeModifiers.length;
     for(i=0;i<len;i+=1){
-        this.shapeModifiers[i].addShape(shape);
+        this.shapeModifiers[i].addShape(data);
     }
 };
 
