@@ -1,8 +1,16 @@
 var LayerExpressionInterface = (function (){
-    function toWorld(arr){
+    function toWorld(arr, time){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
-        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
+        var transformMat;
+        if(time) {
+            //Todo implement value at time on transform properties
+            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
+            transformMat = this._elem.finalTransform.mProp;
+        } else {
+            transformMat = this._elem.finalTransform.mProp;
+        }
+        transformMat.applyToMatrix(toWorldMat);
         if(this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
@@ -11,6 +19,28 @@ var LayerExpressionInterface = (function (){
             return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
         }
         return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
+    }
+    function fromWorld(arr, time){
+        var toWorldMat = new Matrix();
+        toWorldMat.reset();
+        var transformMat;
+        if(time) {
+            //Todo implement value at time on transform properties
+            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
+            transformMat = this._elem.finalTransform.mProp;
+        } else {
+            transformMat = this._elem.finalTransform.mProp;
+        }
+        transformMat.applyToMatrix(toWorldMat);
+        if(this._elem.hierarchy && this._elem.hierarchy.length){
+            var i, len = this._elem.hierarchy.length;
+            for(i=0;i<len;i+=1){
+                console.log(this._elem.hierarchy[i].finalTransform.mProp.getValueAtTime)
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+            }
+            return toWorldMat.inversePoint(arr);
+        }
+        return toWorldMat.inversePoint(arr);
     }
     function fromComp(arr){
         var toWorldMat = new Matrix();
@@ -55,6 +85,7 @@ var LayerExpressionInterface = (function (){
             }
         }
         _thisLayerFunction.toWorld = toWorld;
+        _thisLayerFunction.fromWorld = fromWorld;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction.fromComp = fromComp;
         _thisLayerFunction._elem = elem;
