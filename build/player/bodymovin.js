@@ -12963,7 +12963,6 @@ var LayerExpressionInterface = (function (){
         if(this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
-                console.log(this._elem.hierarchy[i].finalTransform.mProp.getValueAtTime)
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
             }
             return toWorldMat.inversePoint(arr);
