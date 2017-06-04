@@ -513,11 +513,11 @@ var ExpressionManager = (function(){
             var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
             var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
             return [yaw,pitch,0];
-        }
+        };
 
         function easeOut(t, val1, val2){
             return -(val2-val1) * t*(t-2) + val1;
-        }
+        };
 
         function nearestKey(time){
             var i, len = data.k.length,index,keyTime;
@@ -558,7 +558,7 @@ var ExpressionManager = (function(){
             ob.index = index;
             ob.time = keyTime/elem.comp.globalData.frameRate;
             return ob;
-        }
+        };
 
         function key(ind){
             if(!data.k.length || typeof(data.k[0]) === 'number'){
@@ -579,14 +579,14 @@ var ExpressionManager = (function(){
                 ob[i] = arr[i];
             }
             return ob;
-        }
+        };
 
         function framesToTime(frames,fps){
             if(!fps){
                 fps = elem.comp.globalData.frameRate;
             }
             return frames/fps;
-        }
+        };
 
         function timeToFrames(t,fps){
             if(!t){
@@ -596,36 +596,7 @@ var ExpressionManager = (function(){
                 fps = elem.comp.globalData.frameRate;
             }
             return t*fps;
-        }
-        /*var toworldMatrix = new Matrix();
-        function toWorld(arr, time){
-            toworldMatrix.reset();
-            elem.finalTransform.mProp.applyToMatrix(toworldMatrix);
-            if(elem.hierarchy && elem.hierarchy.length){
-                var i, len = elem.hierarchy.length;
-                for(i=0;i<len;i+=1){
-                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toworldMatrix);
-                }
-                return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
-            }
-            return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
-        }*/
-
-        /*var fromworldMatrix = new Matrix();
-        function fromWorld(arr){
-            fromworldMatrix.reset();
-            var pts = [];
-            pts.push(arr);
-            elem.finalTransform.mProp.applyToMatrix(fromworldMatrix);
-            if(elem.hierarchy && elem.hierarchy.length){
-                var i, len = elem.hierarchy.length;
-                for(i=0;i<len;i+=1){
-                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(fromworldMatrix);
-                }
-                return fromworldMatrix.inversePoints(pts)[0];
-            }
-            return fromworldMatrix.inversePoints(pts)[0];
-        }*/
+        };
 
         function seedRandom(seed){
             BMMath.seedrandom(randSeed + seed);
@@ -728,7 +699,7 @@ var ExpressionManager = (function(){
             this.lock = false;
         }
         return execute;
-    }
+    };
 
     ob.initiateExpression = initiateExpression;
     return ob;

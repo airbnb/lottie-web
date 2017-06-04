@@ -1,15 +1,14 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.6.11
+- Non spatial interpolation fix
+- new expressions supported
+- fonts fix
+
 ## V 4.6.10
 - AE language export fix
 - nearestKey expression fix
-
-## V 4.6.9
-- new expressions. More Rubberhose support
-- expression fixes
-- expression sandboxing window and document
-- pointInLine 3d fix
 
 # Plugin installation
 
