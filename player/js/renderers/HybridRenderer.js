@@ -73,6 +73,15 @@ HybridRenderer.prototype.createText = function (data) {
     return new HTextElement(data, this.layerElement,this.globalData,this);
 };
 
+HybridRenderer.prototype.createVideo = function (data) {
+    return new HVideoElement(data, this.layerElement,this.globalData,this);
+};
+
+
+HybridRenderer.prototype.createAudio = function (data) {
+    return new HAudioElement(data, this.layerElement,this.globalData,this);
+};
+
 HybridRenderer.prototype.createCamera = function (data) {
     this.camera = new HCameraElement(data, this.layerElement,this.globalData,this);
     return this.camera;

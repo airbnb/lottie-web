@@ -85,5 +85,7 @@ HCompElement.prototype.createComp = HybridRenderer.prototype.createComp;
 HCompElement.prototype.createSolid = HybridRenderer.prototype.createSolid;
 HCompElement.prototype.createShape = HybridRenderer.prototype.createShape;
 HCompElement.prototype.createText = HybridRenderer.prototype.createText;
+HCompElement.prototype.createVideo = HybridRenderer.prototype.createVideo;
+HCompElement.prototype.createAudio = HybridRenderer.prototype.createAudio;
 HCompElement.prototype.createBase = HybridRenderer.prototype.createBase;
 HCompElement.prototype.appendElementInPos = HybridRenderer.prototype.appendElementInPos;
