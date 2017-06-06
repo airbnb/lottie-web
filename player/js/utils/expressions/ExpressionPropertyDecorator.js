@@ -194,6 +194,14 @@
         }
     }
 
+    function getTransformValueAtTime(time) {
+        console.log('time:', time)
+    }
+
+    function getTransformStaticValueAtTime(time) {
+
+    }
+
     var TextExpressionSelectorProp = (function(){
 
         function getValueProxy(index,total){
@@ -229,10 +237,18 @@
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
         var prop = propertyGetProp(elem,data,type, mult, arr);
         prop.getVelocityAtTime = getVelocityAtTime;
-        if(prop.kf){
-            prop.getValueAtTime = getValueAtTime.bind(prop);
+        if(type === 2) {
+            if(prop.dynamicProperties.length) {
+                prop.getValueAtTime = getTransformValueAtTime.bind(prop);
+            } else {
+                prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
+            }
         } else {
-            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
+            if(prop.kf){
+                prop.getValueAtTime = getValueAtTime.bind(prop);
+            } else {
+                prop.getValueAtTime = getStaticValueAtTime.bind(prop);
+            }
         }
         prop.setGroupProperty = setGroupProperty;
         var isAdded = prop.k;
