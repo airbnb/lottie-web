@@ -26,13 +26,6 @@ IImageElement.prototype.createElements = function(){
 
 };
 
-IImageElement.prototype.hide = function(){
-    if(!this.hidden){
-        this.layerElement.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
 IImageElement.prototype.renderFrame = function(parentMatrix){
     var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
@@ -40,8 +33,7 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     if(this.hidden){
-        this.hidden = false;
-        this.layerElement.style.display = 'block';
+        this.show();
     }
     if(this.firstFrame){
         this.firstFrame = false;

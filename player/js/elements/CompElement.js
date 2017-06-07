@@ -19,13 +19,13 @@ createElement(SVGBaseElement, ICompElement);
 
 ICompElement.prototype.hide = function(){
     if(!this.hidden){
+        this._parent.hide.call(this);
         var i,len = this.elements.length;
         for( i = 0; i < len; i+=1 ){
             if(this.elements[i]){
                 this.elements[i].hide();
             }
         }
-        this.hidden = true;
     }
 };
 
@@ -63,7 +63,9 @@ ICompElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
 
-    this.hidden = false;
+    if(this.hidden) {
+        this.show();
+    }
     for( i = 0; i < len; i+=1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
