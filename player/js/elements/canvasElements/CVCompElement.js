@@ -34,7 +34,7 @@ function CVCompElement(data, comp,globalData){
     cv.height = this.data.h;
     this.canvas = cv;
     this.globalData = compGlobalData;
-    this.layers = data.layers;
+    this.layers = data.layers || [];
     this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     if(this.data.tm){
