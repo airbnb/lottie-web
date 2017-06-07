@@ -1,14 +1,16 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js
 
+## V 4.7.0
+- hiding elements when opacity is at 0
+- colinear points fix
+- anchor point expression fix
+- server side rendering window object validation (thanks @zephinzer)
+
 ## V 4.6.11
 - Non spatial interpolation fix
 - new expressions supported
 - fonts fix
-
-## V 4.6.10
-- AE language export fix
-- nearestKey expression fix
 
 # Plugin installation
 
@@ -166,7 +168,9 @@ bodymovin.loadAnimation({
   rendererSettings: {
     context: canvasContext, // the canvas context
     scaleMode: 'noScale',
-    clearCanvas: false
+    clearCanvas: false,
+    progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
+    hideOnTransparent: true //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
   }
 });
 ```

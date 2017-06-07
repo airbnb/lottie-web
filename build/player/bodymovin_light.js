@@ -1,4 +1,4 @@
-var window=(typeof window === "undefined")?{}:window;var inBrowser=(typeof navigator !== "undefined");(inBrowser) && (function (root, factory) { if(typeof define === "function" && define.amd) { define( factory); } else if(typeof module === "object" && module.exports) { module.exports = factory(); } else { root.bodymovin = factory(); } }(window, function() {var svgNS = "http://www.w3.org/2000/svg";
+var window=(typeof window === "undefined")?{}:window;(function (root, factory) { if(typeof define === "function" && define.amd) { define( factory); } else if(typeof module === "object" && module.exports) { module.exports = factory(); } else { root.bodymovin = factory(); } }(window, function() {var svgNS = "http://www.w3.org/2000/svg";
 var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -1161,6 +1161,9 @@ function bezFunction(){
     }
 
     function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
+        if(z1 === 0 && z2 === 0 && z3 === 0) {
+            return pointOnLine2D(x1,y1, x2,y2, x3,y3);
+        }
         var dist1 = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
         var dist2 = Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2) + Math.pow(z3 - z1, 2));
         var dist3 = Math.sqrt(Math.pow(x3 - x2, 2) + Math.pow(y3 - y2, 2) + Math.pow(z3 - z2, 2));
@@ -4702,8 +4705,10 @@ function SVGRenderer(animationItem, config){
     };
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
-        progressiveLoad: (config && config.progressiveLoad) || false
+        progressiveLoad: (config && config.progressiveLoad) || false,
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
     };
+    this.globalData.renderConfig = this.renderConfig;
     this.elements = [];
     this.pendingElements = [];
     this.destroyed = false;
@@ -5422,6 +5427,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.data = data;
     this.matteElement = null;
     this.transformedElement = null;
+    this.isTransparent = false;
     this.parentContainer = parentContainer;
     this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.placeholder = placeholder;
@@ -5669,6 +5675,15 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
     }
     if(this.finalTransform.opMdf && this.layerElement){
+        if(this.finalTransform.op.v <= 0) {
+            if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
+                this.isTransparent = true;
+                this.hide();
+            }
+        } else if(this.hidden && this.isTransparent){
+            this.isTransparent = false;
+            this.show();
+        }
         this.transformedElement.setAttribute('opacity',this.finalTransform.op.v);
     }
 
@@ -5714,7 +5729,17 @@ SVGBaseElement.prototype.setMatte = function(id){
 };
 
 SVGBaseElement.prototype.hide = function(){
+    if(!this.hidden){
+        this.layerElement.style.display = 'none';
+        this.hidden = true;
+    }
+};
 
+SVGBaseElement.prototype.show = function(){
+    if(this.isVisible && !this.isTransparent){
+        this.hidden = false;
+        this.layerElement.style.display = 'block';
+    }
 };
 
 function ITextElement(data, animationItem,parentContainer,globalData){
@@ -6459,13 +6484,6 @@ SVGTextElement.prototype.buildNewText = function(){
     }
 }
 
-SVGTextElement.prototype.hide = function(){
-    if(!this.hidden){
-        this.layerElement.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
 SVGTextElement.prototype.renderFrame = function(parentMatrix){
 
     var renderParent = this._parent.renderFrame.call(this,parentMatrix);
@@ -6474,8 +6492,7 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     if(this.hidden){
-        this.hidden = false;
-        this.layerElement.style.display = 'block';
+        this.show();
     }
 
     if(this.data.singleShape){
@@ -6969,13 +6986,13 @@ createElement(SVGBaseElement, ICompElement);
 
 ICompElement.prototype.hide = function(){
     if(!this.hidden){
+        this._parent.hide.call(this);
         var i,len = this.elements.length;
         for( i = 0; i < len; i+=1 ){
             if(this.elements[i]){
                 this.elements[i].hide();
             }
         }
-        this.hidden = true;
     }
 };
 
@@ -7013,7 +7030,9 @@ ICompElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
 
-    this.hidden = false;
+    if(this.hidden) {
+        this.show();
+    }
     for( i = 0; i < len; i+=1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
@@ -7084,13 +7103,6 @@ IImageElement.prototype.createElements = function(){
 
 };
 
-IImageElement.prototype.hide = function(){
-    if(!this.hidden){
-        this.layerElement.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
 IImageElement.prototype.renderFrame = function(parentMatrix){
     var renderParent = this._parent.renderFrame.call(this,parentMatrix);
     if(renderParent===false){
@@ -7098,8 +7110,7 @@ IImageElement.prototype.renderFrame = function(parentMatrix){
         return;
     }
     if(this.hidden){
-        this.hidden = false;
-        this.layerElement.style.display = 'block';
+        this.show();
     }
     if(this.firstFrame){
         this.firstFrame = false;
@@ -7702,7 +7713,6 @@ ISolidElement.prototype.createElements = function(){
     }
 };
 
-ISolidElement.prototype.hide = IImageElement.prototype.hide;
 ISolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
 ISolidElement.prototype.destroy = IImageElement.prototype.destroy;
 
@@ -8576,4 +8586,4 @@ AnimationItem.prototype.trigger = function(name){
 AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
-var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.6.11'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index] || { src: '' }; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.7.0'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index] || { src: '' }; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
