@@ -631,8 +631,8 @@ var ExpressionManager = (function(){
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
+                anchorPoint = transform.anchorPoint;
             }
-            anchorPoint = transform.anchorPoint
             
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
