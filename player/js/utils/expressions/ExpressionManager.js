@@ -69,10 +69,11 @@ var ExpressionManager = (function(){
             return b;
         }
         if(a.constructor === Array && b.constructor === Array){
+            
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
-                if(typeof a[i] === 'number' && typeof b[i] === 'number'){
+                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
                     retArr[i] = a[i] + b[i];
                 }else{
                     retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
@@ -103,7 +104,7 @@ var ExpressionManager = (function(){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
-                if(typeof a[i] === 'number' && typeof b[i] === 'number'){
+                if((typeof a[i] === 'number' || a[i] instanceof Number) && typeof (typeof b[i] === 'number' || b[i] instanceof Number)){
                     retArr[i] = a[i] - b[i];
                 }else{
                     retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
@@ -322,7 +323,7 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var thisLayer,thisComp;
+        var toWorld,fromWorld,anchorPoint,thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
@@ -512,11 +513,11 @@ var ExpressionManager = (function(){
             var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
             var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
             return [yaw,pitch,0];
-        }
+        };
 
         function easeOut(t, val1, val2){
             return -(val2-val1) * t*(t-2) + val1;
-        }
+        };
 
         function nearestKey(time){
             var i, len = data.k.length,index,keyTime;
@@ -557,7 +558,7 @@ var ExpressionManager = (function(){
             ob.index = index;
             ob.time = keyTime/elem.comp.globalData.frameRate;
             return ob;
-        }
+        };
 
         function key(ind){
             if(!data.k.length || typeof(data.k[0]) === 'number'){
@@ -578,14 +579,14 @@ var ExpressionManager = (function(){
                 ob[i] = arr[i];
             }
             return ob;
-        }
+        };
 
         function framesToTime(frames,fps){
             if(!fps){
                 fps = elem.comp.globalData.frameRate;
             }
             return frames/fps;
-        }
+        };
 
         function timeToFrames(t,fps){
             if(!t){
@@ -595,37 +596,7 @@ var ExpressionManager = (function(){
                 fps = elem.comp.globalData.frameRate;
             }
             return t*fps;
-        }
-
-        var toworldMatrix = new Matrix();
-        function toWorld(arr){
-            toworldMatrix.reset();
-            elem.finalTransform.mProp.applyToMatrix(toworldMatrix);
-            if(elem.hierarchy && elem.hierarchy.length){
-                var i, len = elem.hierarchy.length;
-                for(i=0;i<len;i+=1){
-                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toworldMatrix);
-                }
-                return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
-            }
-            return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
-        }
-
-        var fromworldMatrix = new Matrix();
-        function fromWorld(arr){
-            fromworldMatrix.reset();
-            var pts = [];
-            pts.push(arr);
-            elem.finalTransform.mProp.applyToMatrix(fromworldMatrix);
-            if(elem.hierarchy && elem.hierarchy.length){
-                var i, len = elem.hierarchy.length;
-                for(i=0;i<len;i+=1){
-                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(fromworldMatrix);
-                }
-                return fromworldMatrix.inversePoints(pts)[0];
-            }
-            return fromworldMatrix.inversePoints(pts)[0];
-        }
+        };
 
         function seedRandom(seed){
             BMMath.seedrandom(randSeed + seed);
@@ -655,10 +626,14 @@ var ExpressionManager = (function(){
             if(!thisLayer){
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
+                 toWorld = thisLayer.toWorld.bind(thisLayer);
+                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
             }
+            anchorPoint = transform.anchorPoint
+            
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
             }
@@ -678,6 +653,7 @@ var ExpressionManager = (function(){
             if(needsVelocity){
                 velocity = velocityAtTime(time);
             }
+
             bindedFn();
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
@@ -723,7 +699,7 @@ var ExpressionManager = (function(){
             this.lock = false;
         }
         return execute;
-    }
+    };
 
     ob.initiateExpression = initiateExpression;
     return ob;

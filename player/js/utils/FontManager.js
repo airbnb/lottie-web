@@ -37,7 +37,7 @@ var FontManager = (function(){
                 loadedCount -= 1;
                 continue;
             }
-            if(this.fonts[i].fOrigin === 't'){
+            if(this.fonts[i].fOrigin === 't' || this.fonts[i].origin === 2){
                 if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
                     this.typekitLoaded = 1;
                     try{window.Typekit.load({
@@ -50,7 +50,7 @@ var FontManager = (function(){
                 if(this.typekitLoaded === 2) {
                     this.fonts[i].loaded = true;
                 }
-            } else if(this.fonts[i].fOrigin === 'n'){
+            } else if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
                 this.fonts[i].loaded = true;
             } else{
                 node = this.fonts[i].monoCase.node;
@@ -118,19 +118,19 @@ var FontManager = (function(){
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
-            }else if(fontArr[i].fOrigin === 'p'){
+            }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
                 var s = document.createElement('style');
                 s.type = "text/css";
                 s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                 defs.appendChild(s);
-            } else if(fontArr[i].fOrigin === 'g'){
+            } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var l = document.createElement('link');
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
                 defs.appendChild(l);
-            } else if(fontArr[i].fOrigin === 't'){
+            } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var sc = document.createElement('script');
                 sc.setAttribute('src',fontArr[i].fPath);
