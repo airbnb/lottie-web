@@ -265,7 +265,11 @@ var PropertyFactory = (function(){
 
     var TransformProperty = (function() {
         function positionGetter() {
-            return ExpressionValue(this.p);
+            if(this.p) {
+                return ExpressionValue(this.p);
+            } else {
+                return [this.px.v, this.py.v, this.pz ? this.pz.v : 0];
+            }
         }
         function xPositionGetter() {
             return ExpressionValue(this.px);

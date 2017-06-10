@@ -327,6 +327,7 @@ var ExpressionManager = (function(){
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
+
         var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
@@ -653,7 +654,6 @@ var ExpressionManager = (function(){
             if(needsVelocity){
                 velocity = velocityAtTime(time);
             }
-
             bindedFn();
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
