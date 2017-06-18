@@ -1,3 +1,7 @@
+## V 4.7.1
+- still images validation fix
+- expression for transform on separate dimensions fix
+
 ## V 4.7.0
 - hiding elements when opacity is at 0
 - colinear points fix
