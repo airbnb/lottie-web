@@ -20,8 +20,12 @@
     "**/.*",
     "bower_components",
     "node_modules",
-    "player",
+    "player/",
     "test",
     "tests"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bodymovin/bodymovin.git"
+  }
 }
