@@ -2,8 +2,10 @@
     This template is for bug reports. If you are reporting a bug, please answer all the questions below.
     If you are here for another reason (feature request, question, etc) please delete this template before continuing.
 
-    Note that leaving sections blank will make it difficult for us to troubleshoot, causing delays in our response,
+    Note that leaving sections blank will make it difficult for us to troubleshoot bugs, causing delays in our response,
     or result in closing this issue.
+
+    Please include screenshots where applicable.
 -->
 
 **Tell us about your environment**
