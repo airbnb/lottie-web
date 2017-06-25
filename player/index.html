@@ -120,12 +120,12 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/banner/data.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

@@ -168,7 +168,7 @@ function dataFunctionManager(){
     var checkChars = (function() {
         var minimumVersion = [4,7,99];
         return function (animationData){
-            if(animationData.chars && checkVersion(minimumVersion,animationData.v)){
+            if(animationData.chars && !checkVersion(minimumVersion,animationData.v)){
                 var i, len = animationData.chars.length, j, jLen, k, kLen;
                 var pathData, paths;
                 for(i = 0; i < len; i += 1) {
@@ -178,13 +178,7 @@ function dataFunctionManager(){
 
                         for(j = 0; j < jLen; j += 1) {
                             pathData = paths[j].ks.k;
-                            kLen = pathData.v.length;
-                            for(k = 0; k < kLen; k += 1) {
-                                pathData.i[k][0] = pathData.i[k][0] - pathData.v[k][0]; 
-                                pathData.i[k][1] = pathData.i[k][1] - pathData.v[k][1]; 
-                                pathData.o[k][0] = pathData.o[k][0] - pathData.v[k][0]; 
-                                pathData.o[k][1] = pathData.o[k][1] - pathData.v[k][1]; 
-                            }
+                            convertPathsToAbsoluteValues(paths[j].ks.k);
                         }
                     }
                 }

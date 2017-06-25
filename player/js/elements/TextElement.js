@@ -119,9 +119,9 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
             if(k==1){
                 shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
             }
-            shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0]+pathNodes.v[k-1][0],pathNodes.o[k-1][1]+pathNodes.v[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0]+pathNodes.v[k][0],pathNodes.i[k][1]+pathNodes.v[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
+            shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
         }
-        shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0]+pathNodes.v[k-1][0],pathNodes.o[k-1][1]+pathNodes.v[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0]+pathNodes.v[0][0],pathNodes.i[0][1]+pathNodes.v[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
+        shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
         shapeStr += 'z';
     }
     return shapeStr;
