@@ -131,7 +131,7 @@ SVGTextElement.prototype.buildNewText = function(){
             }
         }
         if(singleShape) {
-            xPos += letters[i].l;
+            xPos += letters[i].l || 0;
             xPos += documentData.tr/1000*documentData.s;
         }
         //

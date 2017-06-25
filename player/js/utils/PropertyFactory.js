@@ -287,7 +287,11 @@ var PropertyFactory = (function(){
             return ExpressionValue(this.or);
         }
         function rotationGetter() {
-            return ExpressionValue(this.r, 1/degToRads);
+            if(this.r) {
+                return ExpressionValue(this.r, 1/degToRads);
+            } else {
+                return ExpressionValue(this.rz, 1/degToRads);
+            }
         }
         function scaleGetter() {
             return ExpressionValue(this.s, 100);

@@ -165,6 +165,34 @@ function dataFunctionManager(){
         }
     }())
 
+    var checkChars = (function() {
+        var minimumVersion = [4,7,99];
+        return function (animationData){
+            if(animationData.chars && checkVersion(minimumVersion,animationData.v)){
+                var i, len = animationData.chars.length, j, jLen, k, kLen;
+                var pathData, paths;
+                for(i = 0; i < len; i += 1) {
+                    if(animationData.chars[i].data && animationData.chars[i].data.shapes) {
+                        paths = animationData.chars[i].data.shapes[0].it;
+                        jLen = paths.length;
+
+                        for(j = 0; j < jLen; j += 1) {
+                            pathData = paths[j].ks.k;
+                            kLen = pathData.v.length;
+                            for(k = 0; k < kLen; k += 1) {
+                                pathData.i[k][0] = pathData.i[k][0] - pathData.v[k][0]; 
+                                pathData.i[k][1] = pathData.i[k][1] - pathData.v[k][1]; 
+                                pathData.o[k][0] = pathData.o[k][0] - pathData.v[k][0]; 
+                                pathData.o[k][1] = pathData.o[k][1] - pathData.v[k][1]; 
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }())
+
     var checkColors = (function(){
         var minimumVersion = [4,1,9];
 
@@ -461,6 +489,7 @@ function dataFunctionManager(){
         }
         checkColors(animationData);
         checkText(animationData);
+        checkChars(animationData);
         checkShapes(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
