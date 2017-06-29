@@ -1,3 +1,10 @@
+## V 4.8.0
+- Fonts fix for Lottie compatibility
+- fonts reduced exported filesize
+- fonts fix for non-zero width character
+- expressions transform separate dimensions fix
+- expression shape rectangle size support
+
 ## V 4.7.1
 - still images validation fix
 - expression for transform on separate dimensions fix
