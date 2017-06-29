@@ -9,6 +9,7 @@ SVGTextElement.prototype.init = ITextElement.prototype.init;
 SVGTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 SVGTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
+SVGTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
 
 SVGTextElement.prototype.createElements = function(){
 
