@@ -61,6 +61,7 @@
     <script src="js/mask.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
+    <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
     <script src="js/elements/svgElements/SVGTextElement.js"></script>
     <script src="js/elements/svgElements/effects/SVGTintEffect.js"></script>
@@ -72,7 +73,6 @@
     <script src="js/elements/svgElements/SVGEffects.js"></script>
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
-    <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
     <script src="js/elements/canvasElements/CVBaseElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVCompElement.js" data-light-skip="true"></script>
@@ -120,7 +120,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false

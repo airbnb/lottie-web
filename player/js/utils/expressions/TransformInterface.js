@@ -5,23 +5,28 @@ var TransformExpressionInterface = (function (){
                 case "scale":
                 case "Scale":
                 case "ADBE Scale":
+                case 6:
                     return _thisFunction.scale;
                 case "rotation":
                 case "Rotation":
                 case "ADBE Rotation":
                 case "ADBE Rotate Z":
+                case 10:
                     return _thisFunction.rotation;
                 case "position":
                 case "Position":
                 case "ADBE Position":
+                case 2:
                     return transform.position;
                 case "anchorPoint":
                 case "AnchorPoint":
                 case "Anchor Point":
                 case "ADBE AnchorPoint":
+                case 1:
                     return _thisFunction.anchorPoint;
                 case "opacity":
                 case "Opacity":
+                case 11:
                     return _thisFunction.opacity;
             }
         }
