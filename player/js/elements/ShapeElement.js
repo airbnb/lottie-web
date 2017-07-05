@@ -242,15 +242,6 @@ IShapeElement.prototype.createShapeElement = function(data, ownTransformers, lev
     elementData.lvl = level;
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
-    /*jLen = this.stylesList.length;
-    for(j=0;j<jLen;j+=1){
-        if(!this.stylesList[j].closed){
-            elementData.elements.push({
-                ty:this.stylesList[j].type,
-                st: this.stylesList[j]
-            });
-        }
-    }*/
     return elementData;
 }
 
