@@ -1,14 +1,27 @@
 # bodymovin
-After Effects plugin for exporting animations to svg/canvas/html + js
+After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://github.com/airbnb/lottie-android)  
+
+## V 4.8.0
+- Fonts fix for Lottie compatibility
+- fonts reduced exported filesize
+- fonts fix for non-zero width character
+- expressions transform separate dimensions fix
+- expression shape rectangle size support
+
+## V 4.7.1
+- still images validation fix
+- expression for transform on separate dimensions fix
+
+## V 4.7.0
+- hiding elements when opacity is at 0
+- colinear points fix
+- anchor point expression fix
+- server side rendering window object validation (thanks @zephinzer)
 
 ## V 4.6.11
 - Non spatial interpolation fix
 - new expressions supported
 - fonts fix
-
-## V 4.6.10
-- AE language export fix
-- nearestKey expression fix
 
 # Plugin installation
 
@@ -58,8 +71,12 @@ Skip directly to "Install third-party extensions"
 - Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
 # HTML player installation
-```node
+```bash
+# with npm
 npm install bodymovin
+
+# with bower
+bower install bodymovin
 ```  
 Or you can use the script file from here:  
 https://cdnjs.com/libraries/bodymovin  
@@ -166,7 +183,9 @@ bodymovin.loadAnimation({
   rendererSettings: {
     context: canvasContext, // the canvas context
     scaleMode: 'noScale',
-    clearCanvas: false
+    clearCanvas: false,
+    progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
+    hideOnTransparent: true //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
   }
 });
 ```

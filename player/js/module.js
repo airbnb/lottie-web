@@ -119,7 +119,7 @@
     bodymovinjs.setQuality = setQuality;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.1.9';
+    bodymovinjs.version = '4.8.0';
 
     function checkReady(){
         if (document.readyState === "complete") {

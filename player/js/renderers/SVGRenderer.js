@@ -7,8 +7,10 @@ function SVGRenderer(animationItem, config){
     };
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
-        progressiveLoad: (config && config.progressiveLoad) || false
+        progressiveLoad: (config && config.progressiveLoad) || false,
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
     };
+    this.globalData.renderConfig = this.renderConfig;
     this.elements = [];
     this.pendingElements = [];
     this.destroyed = false;

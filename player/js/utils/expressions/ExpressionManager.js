@@ -327,6 +327,7 @@ var ExpressionManager = (function(){
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
+
         var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
@@ -626,13 +627,13 @@ var ExpressionManager = (function(){
             if(!thisLayer){
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
-                 toWorld = thisLayer.toWorld.bind(thisLayer);
-                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
+                toWorld = thisLayer.toWorld.bind(thisLayer);
+                fromWorld = thisLayer.fromWorld.bind(thisLayer);
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
+                anchorPoint = transform.anchorPoint;
             }
-            anchorPoint = transform.anchorPoint
             
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
@@ -653,7 +654,6 @@ var ExpressionManager = (function(){
             if(needsVelocity){
                 velocity = velocityAtTime(time);
             }
-
             bindedFn();
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;

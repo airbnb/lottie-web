@@ -169,6 +169,7 @@ var Matrix = (function(){
                 this.props[14] = this.props[12] * c2 + this.props[13] * g2 + this.props[14] * k2 + this.props[15] * o2 ;
                 this.props[15] = this.props[12] * d2 + this.props[13] * h2 + this.props[14] * l2 + this.props[15] * p2 ;
             }
+            this._identityCalculated = false;
             return this;
         }
 
@@ -214,7 +215,19 @@ var Matrix = (function(){
         this.props[14] = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
         this.props[15] = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
 
+        this._identityCalculated = false;
         return this;
+    }
+
+    function isIdentity() {
+        if(!this._identityCalculated){
+            this._identity = !(this.props[0] !== 1 || this.props[1] !== 0 || this.props[2] !== 0 || this.props[3] !== 0
+                || this.props[4] !== 0 || this.props[5] !== 1 || this.props[6] !== 0 || this.props[7] !== 0
+                || this.props[8] !== 0 || this.props[9] !== 0 || this.props[10] !== 1 || this.props[11] !== 0
+                || this.props[12] !== 0 || this.props[13] !== 0 || this.props[14] !== 0 || this.props[15] !== 1);
+            this._identityCalculated = true;
+        }
+        return this._identity;
     }
 
     function clone(matr){
@@ -282,6 +295,9 @@ var Matrix = (function(){
         return [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
     }
     function applyToPointStringified(x, y) {
+        if(this.isIdentity()) {
+            return x + ',' + y;
+        }
         return (bm_rnd(x * this.props[0] + y * this.props[4] + this.props[12]))+','+(bm_rnd(x * this.props[1] + y * this.props[5] + this.props[13]));
     }
 
@@ -334,6 +350,9 @@ var Matrix = (function(){
         this.inversePoints = inversePoints;
         this.inversePoint = inversePoint;
         this._t = this.transform;
+        this.isIdentity = isIdentity;
+        this._identity = true;
+        this._identityCalculated = false;
 
         this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 

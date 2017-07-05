@@ -1,6 +1,7 @@
 var ExpressionValue = (function() {
 	return function(elementProp, mult, type) {
         var expressionValue, arrayValue;
+
 		if (elementProp.k) {
             elementProp.getValue();
         }

@@ -9,6 +9,9 @@ function bezFunction(){
     }
 
     function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
+        if(z1 === 0 && z2 === 0 && z3 === 0) {
+            return pointOnLine2D(x1,y1, x2,y2, x3,y3);
+        }
         var dist1 = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
         var dist2 = Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2) + Math.pow(z3 - z1, 2));
         var dist3 = Math.sqrt(Math.pow(x3 - x2, 2) + Math.pow(y3 - y2, 2) + Math.pow(z3 - z2, 2));
