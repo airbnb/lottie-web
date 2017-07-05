@@ -403,20 +403,6 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                     pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes._length){
                         pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                        /*len = pathNodes._length;
-                        for (i = 1; i < len; i += 1) {
-                            if (i == 1) {
-                                pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            }
-                            pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
-                        }
-                        if (len == 1) {
-                            pathStringTransformed += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                        }
-                        if (pathNodes.c) {
-                            pathStringTransformed += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            pathStringTransformed += 'z';
-                        }*/
                     }
                 }
                 viewData.caches[l] = pathStringTransformed;
@@ -429,24 +415,6 @@ IShapeElement.prototype.renderPath = function(pathData,viewData){
                     pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes._length){
                         pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, this.identityMatrix);
-                        /*len = pathNodes._length;
-                        for (i = 1; i < len; i += 1) {
-                            if (i == 1) {
-                                //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                                pathStringTransformed += " M" + pathNodes.v[0].join(',');
-                            }
-                            //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
-                            pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[i].join(',') + " " + pathNodes.v[i].join(',');
-                        }
-                        if (len == 1) {
-                            //pathStringTransformed += " M" + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            pathStringTransformed += " M" + pathNodes.v[0].join(',');
-                        }
-                        if (pathNodes.c && len) {
-                            //pathStringTransformed += " C" + groupTransform.mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + groupTransform.mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-                            pathStringTransformed += " C" + pathNodes.o[i - 1].join(',') + " " + pathNodes.i[0].join(',') + " " + pathNodes.v[0].join(',');
-                            pathStringTransformed += 'z';
-                        }*/
                     }
                 }
                 viewData.caches[l] = pathStringTransformed;
