@@ -34,7 +34,6 @@ ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     this.mdf = false;
     this.closed = false;
     this.k = false;
-    this.isTrimming = false;
     this.comp = elem.comp;
     this.initModifierProperties(elem,data);
     if(this.dynamicProperties.length){
