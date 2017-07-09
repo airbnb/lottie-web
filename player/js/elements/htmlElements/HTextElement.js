@@ -18,6 +18,7 @@ HTextElement.prototype.init = ITextElement.prototype.init;
 HTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 HTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 HTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
+HTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
 
 HTextElement.prototype.createElements = function(){
     this.isMasked = this.checkMasks();
