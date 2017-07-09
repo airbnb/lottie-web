@@ -1,6 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://github.com/airbnb/lottie-android)  
 
+## V 4.9.0
+- Full repeaters support
+- Keyframes interpolation fix for stretched layers
+- inBrowser method added 
+
 ## V 4.8.0
 - Fonts fix for Lottie compatibility
 - fonts reduced exported filesize

@@ -130,7 +130,7 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
 IShapeElement.prototype.createStyleElement = function(data, level, dynamicProperties){
     var elementData = {
     };
-    styleOb = {
+    var styleOb = {
         data: data,
         type: data.ty,
         d: '',

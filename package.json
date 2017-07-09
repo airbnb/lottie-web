@@ -1,6 +1,6 @@
 {
   "name": "bodymovin",
-  "version": "4.8.0",
+  "version": "4.9.0",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
   "main": "./build/player/bodymovin.js",
   "repository": {
