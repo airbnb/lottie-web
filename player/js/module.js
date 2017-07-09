@@ -82,8 +82,12 @@
         }else{
             roundValues(true);
         }
-
     }
+
+    function inBrowser() {
+        return typeof navigator !== "undefined";
+    }
+    
     function installPlugin(type,plugin){
         if(type==='expressions'){
             expressionsPlugin = plugin;
@@ -112,6 +116,7 @@
     bodymovinjs.registerAnimation = registerAnimation;
     bodymovinjs.loadAnimation = loadAnimation;
     bodymovinjs.setSubframeRendering = setSubframeRendering;
+    bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.resize = resize;
     bodymovinjs.start = start;
     bodymovinjs.goToAndStop = goToAndStop;
