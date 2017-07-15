@@ -90,6 +90,12 @@ var ExpressionManager = (function(){
         var tOfA = typeof a;
         var tOfB = typeof b;
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
+            if(tOfA === 'string') {
+                a = parseInt(a);
+            }
+            if(tOfB === 'string') {
+                b = parseInt(b);
+            }
             return a - b;
         }
         if( a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
@@ -170,6 +176,15 @@ var ExpressionManager = (function(){
         }
         return 0;
     }
+    function mod(a,b) {
+        if(typeof a === 'string') {
+            a = parseInt(a);
+        }
+        if(typeof b === 'string') {
+            b = parseInt(b);
+        }
+        return a % b;
+    }
 
     function clamp(num, min, max) {
         if(min > max){
@@ -193,7 +208,7 @@ var ExpressionManager = (function(){
     var helperLengthArray = [0,0,0,0,0,0];
 
     function length(arr1,arr2){
-        if(typeof arr1 === "number"){
+        if(typeof arr1 === 'number' || arr1 instanceof Number){
             arr2 = arr2 || 0;
             return Math.abs(arr1 - arr2);
         }
@@ -590,7 +605,7 @@ var ExpressionManager = (function(){
         };
 
         function timeToFrames(t,fps){
-            if(!t){
+            if(!t && t !== 0){
                 t = time;
             }
             if(!fps){
@@ -672,7 +687,6 @@ var ExpressionManager = (function(){
                     }
                 }
             }
-
             if(this.v.length === 1){
                 this.v = this.v[0];
             }
