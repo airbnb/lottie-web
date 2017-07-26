@@ -133,10 +133,17 @@ function MaskElement(data,element,globalData) {
 
     this.maskElement.setAttribute('id', layerId);
     if(count > 0){
-        this.element.maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
+        // if (this.element.maskedElement.getElementsByTagName('foreignObject').item(0) != undefined)
+        //     console.log(this.element.maskedElement.getElementsByTagName('foreignObject').length);
+
+        // this.element.maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
+        this.element.maskedElement.style["clip-path"] = "url(#" + layerId + ")";
+        // this.element.maskedElement.setAttributeNS('http://www.w3.org/1999/xlink',maskRef, "url(#" + layerId + ")");
     }
 
+    // console.log(this.maskElement)
     defs.appendChild(this.maskElement);
+    // console.log(defs);
 };
 
 MaskElement.prototype.getMaskProperty = function(pos){

@@ -13,7 +13,9 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.createElements = function(){
+    // this.layerElement = document.createElementNS('http://www.w3.org/1999/xhtml','div');
     this.layerElement = document.createElementNS(svgNS,'g');
+
     this.transformedElement = this.layerElement;
     if(this.data.hasMask){
         this.maskedElement = this.layerElement;
@@ -108,27 +110,8 @@ SVGBaseElement.prototype.createElements = function(){
         }
     }
     if(this.data.ty === 0){
-            var cp = document.createElementNS(svgNS, 'clipPath');
-            var pt = document.createElementNS(svgNS,'path');
-            pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
-            var clipId = 'cp_'+randomString(8);
-            cp.setAttribute('id',clipId);
-            cp.appendChild(pt);
-            this.globalData.defs.appendChild(cp);
-        if(this.checkMasks()){
-            var cpGroup = document.createElementNS(svgNS,'g');
-            cpGroup.setAttribute('clip-path','url(#'+clipId+')');
-            cpGroup.appendChild(this.layerElement);
-            this.transformedElement = cpGroup;
-            if(layerElementParent){
-                layerElementParent.appendChild(this.transformedElement);
-            } else {
-                this.baseElement = this.transformedElement;
-            }
-        } else {
-            this.layerElement.setAttribute('clip-path','url(#'+clipId+')');
-        }
         
+
     }
     if(this.data.bm !== 0){
         this.setBlendMode();

@@ -18,6 +18,9 @@
     function togglePause(animation){
         animationManager.togglePause(animation);
     }
+    function mute(animation){
+        animationManager.mute(animation);
+    }
     function setSpeed(value,animation){
         animationManager.setSpeed(value, animation);
     }
@@ -104,6 +107,7 @@
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
     bodymovinjs.togglePause = togglePause;
+    bodymovinjs.mute = mute;
     bodymovinjs.setSpeed = setSpeed;
     bodymovinjs.setDirection = setDirection;
     bodymovinjs.stop = stop;

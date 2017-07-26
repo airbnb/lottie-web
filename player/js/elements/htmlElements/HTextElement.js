@@ -74,6 +74,7 @@ HTextElement.prototype.buildNewText = function(){
             this.innerElem.className = fontData.fClass;
         } else {
             ////this.innerElem.setAttribute('font-family', fontData.fFamily);
+            // this.innerElem.style.setProperty("font-family", "'" +  fontData.fFamily + "'", "important")
             this.innerElem.style.fontFamily = fontData.fFamily;
             var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
             ////this.innerElem.setAttribute('font-style', fStyle);

@@ -101,6 +101,7 @@ ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;
 ICompElement.prototype.createComp = SVGRenderer.prototype.createComp;
 ICompElement.prototype.createSolid = SVGRenderer.prototype.createSolid;
 ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
+// ICompElement.prototype.createVideo = HybridRenderer.prototype.createVideo;
 ICompElement.prototype.createVideo = SVGRenderer.prototype.createVideo;
 ICompElement.prototype.createAudio = SVGRenderer.prototype.createAudio;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;

@@ -17,6 +17,26 @@ function HCompElement(data,parentContainer,globalData,comp, placeholder){
     this.buildAllItems();
 
 }
+
+var isvideo = false
+
+function checkVideoLayer(layers){
+    // console.log(layers)
+
+    if (layers) {
+        for (var i = layers.length - 1; i >= 0; i--) {
+            if (layers[i].layers != undefined){
+                checkVideoLayer(layers[i].layers)
+            }
+
+            if(layers[i].ty == 9) {
+                isvideo = true;
+                // console.log(layers[i]);
+            }
+
+            // console.log(layers[i]);
+        }}
+}
 createElement(HBaseElement, HCompElement);
 
 HCompElement.prototype.createElements = function(){
@@ -27,17 +47,80 @@ HCompElement.prototype.createElements = function(){
     }
     divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
-        var compSvg = document.createElementNS(svgNS,'svg');
-        styleDiv(compSvg);
-        compSvg.setAttribute('width',this.data.w);
-        compSvg.setAttribute('height',this.data.h);
-        var g = document.createElementNS(svgNS,'g');
-        compSvg.appendChild(g);
-        divElement.appendChild(compSvg);
-        this.maskedElement = g;
-        this.baseElement = divElement;
-        this.layerElement = g;
-        this.transformedElement = divElement;
+        //
+        // var compSvg = document.createElementNS(svgNS,'svg');
+        // styleDiv(compSvg);
+        // compSvg.setAttribute('width',this.data.w);
+        // compSvg.setAttribute('height',this.data.h);
+        // var g = document.createElementNS(svgNS,'g');
+        // compSvg.appendChild(g);
+        //
+        // this.innerElem = document.createElementNS(svgNS,'foreignObject');
+        // // this.innerElem.setAttribute('width',this.assetData.w+"px");
+        // // this.innerElem.setAttribute('height',this.assetData.h+"px");
+        // g.appendChild(this.innerElem);
+        //
+        // divElement.appendChild(compSvg);
+        // this.maskedElement = this.innerElem;
+        // this.baseElement = divElement;
+        // this.layerElement = this.innerElem;
+        // this.transformedElement = divElement;
+
+        isvideo = false
+        checkVideoLayer(this.data.layers)
+        if (isvideo != true && this.data.layers[0].ty != 9) {
+
+            // console.log('aaaaa')
+            // console.log(this.isvideo)
+            var compSvg = document.createElementNS(svgNS, 'svg');
+
+            styleDiv(compSvg);
+            compSvg.setAttribute('width', this.data.w);
+            compSvg.setAttribute('height', this.data.h);
+
+            var g = document.createElementNS(svgNS, 'g');
+            compSvg.appendChild(g);
+            divElement.appendChild(compSvg);
+            this.maskedElement = g;
+            this.baseElement = divElement;
+            this.layerElement = g;
+            this.transformedElement = divElement;
+        }
+        else {
+            // console.log('ddd')
+// console.log(this.data.layers[0].ty)
+//
+// //             // alert(compSvg.hasAttribute('clip-path'))
+//             console.log(divElement.getElementsByTagName('foreignObject').length)
+// //             //
+//             var g = document.createElementNS(svgNS, 'g');
+//             divElement.appendChild(g)
+//             this.maskedElement = g;
+//             this.layerElement = g;
+//             this.baseElement = divElement;
+//             this.transformedElement = divElement;
+
+
+            var compSvg = document.createElementNS(svgNS,'svg');
+            styleDiv(compSvg);
+            compSvg.setAttribute('width',this.data.w);
+            compSvg.setAttribute('height',this.data.h);
+            var g = document.createElementNS(svgNS,'g');
+            compSvg.appendChild(g);
+
+
+            // this.innerElem = document.createElementNS(svgNS,'foreignObject');
+            // this.innerElem.setAttribute('width',this.assetData.w+"px");
+            // this.innerElem.setAttribute('height',this.assetData.h+"px");
+            // compSvg.appendChild(this.innerElem);
+
+            divElement.appendChild(compSvg);
+            this.maskedElement = g;
+            this.baseElement = divElement;
+            this.layerElement = g;
+            this.transformedElement = divElement;
+
+        }
     }else{
         this.layerElement = divElement;
         this.baseElement = this.layerElement;

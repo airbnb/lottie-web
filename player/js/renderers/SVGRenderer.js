@@ -22,7 +22,10 @@ SVGRenderer.prototype.createAudio = function (data) {
 };
 
 SVGRenderer.prototype.createVideo = function (data) {
-    throw new Error('You\'re using a video object. Try the html renderer.');
+// console.log(data);
+//     throw new Error('You\'re using a video object. Try the html renderer.');
+    return new IVideoElement(data, this.layerElement,this.globalData,this);
+
 };
 
 SVGRenderer.prototype.createBase = function (data) {
