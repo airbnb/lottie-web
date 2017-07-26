@@ -109,7 +109,7 @@ IVideoElement.prototype.renderFrame = function(parentMatrix){
 
         // cont.setAttribute('style','clip-path:'+this.parentContainer.getElementsByTagName('g').item(0).attributes.item(0).textContent);
 
-        if(this.baseElement.getElementsByTagName('video').length !=0) {
+        if(this.baseElement.getElementsByTagName('video').length !=0 && this.baseElement.getElementsByTagName('video')[0].currentTime == 0) {
             this.baseElement.getElementsByTagName('video')[0].play();
         }
 

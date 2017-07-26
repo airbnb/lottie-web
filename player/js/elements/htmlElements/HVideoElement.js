@@ -162,7 +162,7 @@ HVideoElement.prototype.renderFrame = function(parentMatrix){
     if(this.hidden){
 
 
-        if(this.baseElement.getElementsByTagName('video').length !=0) {
+        if(this.baseElement.getElementsByTagName('video').length !=0 && this.baseElement.getElementsByTagName('video')[0].currentTime == 0) {
             this.baseElement.getElementsByTagName('video')[0].play();
         }
 

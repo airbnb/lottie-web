@@ -347,6 +347,7 @@ AnimationItem.prototype.playAudioVideo = function (elements,action,goToTime) {
                         }
                         else if (action == 'goToTime') {
                             elements[i].baseElement.getElementsByTagName('video')[0].currentTime = goToTime;
+                            // if (elements[i].baseElement.getElementsByTagName('video')[0].readyState >= elements[i].baseElement.getElementsByTagName('video')[0].HAVE_METADATA)
                         }
                     }
                     else if (elements[i].baseElement.getElementsByTagName('audio').length != 0) {
@@ -572,6 +573,7 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
             if (typeof this.projectInterface.compositions[0].elements[i].elements == "object") {
                 var goToTime = (value - data.ip) /24;
                 if (this.projectInterface.compositions[0].elements[i].elements[0]) {
+                    this.playAudioVideo(this.projectInterface.compositions[0].elements[i].elements, 'pause', null);
                     this.playAudioVideo(this.projectInterface.compositions[0].elements[i].elements, 'goToTime', goToTime);
                 }
 
