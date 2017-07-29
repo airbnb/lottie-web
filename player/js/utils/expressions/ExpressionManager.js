@@ -503,9 +503,7 @@ var ExpressionManager = (function(){
             return this.getValueAtTime(t, 0);
         }.bind(this);
 
-        var velocityAtTime = function velocityAtTime(t) {
-            return this.getVelocityAtTime(t);
-        }.bind(this);
+        var velocityAtTime = this.getVelocityAtTime.bind(this);
 
         var comp = elem.comp.globalData.projectInterface.bind(elem.comp.globalData.projectInterface);
 
