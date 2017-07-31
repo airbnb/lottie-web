@@ -578,11 +578,12 @@ var ExpressionManager = (function(){
         };
 
         function key(ind){
+            var ob, i, len;
             if(!data.k.length || typeof(data.k[0]) === 'number'){
-                return {time:0};
+                throw new Error('The property has no keyframe at index ' + ind);
             }
             ind -= 1;
-            var ob = {
+            ob = {
                 time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
@@ -591,7 +592,7 @@ var ExpressionManager = (function(){
             }else{
                 arr = data.k[ind].s;
             }
-            var i, len = arr.length;
+            len = arr.length;
             for(i=0;i<len;i+=1){
                 ob[i] = arr[i];
             }
