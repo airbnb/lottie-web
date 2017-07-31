@@ -8174,11 +8174,6 @@ var animationManager = (function(){
         }
     }
 
-    function setLocationHref (locatiohref) {
-        console.log('--------set location href ran');
-        locationHref = location.href;
-    }
-
     //start();
 
     setTimeout(start,0);
@@ -8197,7 +8192,6 @@ var animationManager = (function(){
     moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
     moduleOb.destroy = destroy;
-    moduleOb.setLocationHref = setLocationHref;
     return moduleOb;
 }());
 var AnimationItem = function () {
