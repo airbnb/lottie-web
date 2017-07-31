@@ -1,3 +1,8 @@
+## V 4.10.0
+- Lots of new expressions
+- Ouroboros 2.0 support! (in beta just in case)
+- AVD Format export!
+
 ## V 4.9.0
 - Full repeaters support
 - Keyframes interpolation fix for stretched layers

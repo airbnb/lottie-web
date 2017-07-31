@@ -1,6 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://github.com/airbnb/lottie-android)  
 
+## V 4.10.0
+- Lots of new expressions
+- Ouroboros 2.0 support! (in beta just in case)
+- AVD Format export!
+
 ## V 4.9.0
 - Full repeaters support
 - Keyframes interpolation fix for stretched layers
@@ -12,21 +17,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js or nativel
 - fonts fix for non-zero width character
 - expressions transform separate dimensions fix
 - expression shape rectangle size support
-
-## V 4.7.1
-- still images validation fix
-- expression for transform on separate dimensions fix
-
-## V 4.7.0
-- hiding elements when opacity is at 0
-- colinear points fix
-- anchor point expression fix
-- server side rendering window object validation (thanks @zephinzer)
-
-## V 4.6.11
-- Non spatial interpolation fix
-- new expressions supported
-- fonts fix
 
 # Plugin installation
 
