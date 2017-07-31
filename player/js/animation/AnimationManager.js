@@ -6,6 +6,10 @@ var animationManager = (function(){
     var idled = true;
     var playingAnimationsNum = 0;
 
+    function setLocationHref (locatiohref) {
+        locationHref = location.href;
+    }
+
     function removeElement(ev){
         var i = 0;
         var animItem = ev.target;
