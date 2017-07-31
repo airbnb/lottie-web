@@ -131,6 +131,7 @@ animation instances have these main methods:
 **anim.play()** <br/>
 **anim.stop()** <br/>
 **anim.pause()** <br/>
+**anim.setLocationHref(locationHref)** -- one param usually pass as `location.href`. Its useful when you experience mask issue in safari where your url does not have `#` symbol. <br/>
 **anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
 **anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
 **anim.goToAndPlay(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
@@ -243,9 +244,14 @@ my email is **hernantorrisi@gmail.com**
 - Not supported: image sequences, videos and audio are not supported  
 - **No  negative layer stretching**! No idea why, but stretching a layer messes with all the data.
 
+## Development
+`npm install` or `bower install` first
+`npm start`
+
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
 - look at the great animations exported on codepen [See examples on codepen.](http://codepen.io/collection/nVYWZR/)
 - gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
 
-
+## Issues
+- For missing mask in Safari browser, please anim.setLocationHref(locationHref) before animation is generated. (see above for description of setLocationHref)
