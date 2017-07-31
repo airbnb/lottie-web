@@ -617,20 +617,8 @@ var ShapeExpressionInterface = (function(){
                 if(shape.r.ix === value){
                     return interfaceFunction.rotation;
                 }
-                if(shape.pt.ix === value){
-                    return interfaceFunction.points;
-                }
-                if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
-                    return interfaceFunction.outerRadius;
-                }
-                if(shape.os.ix === value){
-                    return interfaceFunction.outerRoundness;
-                }
-                if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
-                    return interfaceFunction.innerRadius;
-                }
-                if(shape.is && shape.is.ix === value){
-                    return interfaceFunction.innerRoundness;
+                if(shape.s.ix === value || value === 'Size'){
+                    return interfaceFunction.size;
                 }
 
             }
@@ -752,7 +740,7 @@ var ShapeExpressionInterface = (function(){
             prop.setGroupProperty(_propertyGroup);
 
             function interfaceFunction(val){
-                if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path'){
+                if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 2){
                     return interfaceFunction.path;
                 }
             }

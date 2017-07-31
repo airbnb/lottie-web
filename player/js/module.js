@@ -82,8 +82,12 @@
         }else{
             roundValues(true);
         }
-
     }
+
+    function inBrowser() {
+        return typeof navigator !== "undefined";
+    }
+    
     function installPlugin(type,plugin){
         if(type==='expressions'){
             expressionsPlugin = plugin;
@@ -112,6 +116,7 @@
     bodymovinjs.registerAnimation = registerAnimation;
     bodymovinjs.loadAnimation = loadAnimation;
     bodymovinjs.setSubframeRendering = setSubframeRendering;
+    bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.resize = resize;
     bodymovinjs.start = start;
     bodymovinjs.goToAndStop = goToAndStop;
@@ -119,7 +124,7 @@
     bodymovinjs.setQuality = setQuality;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.1.9';
+    bodymovinjs.version = '4.8.0';
 
     function checkReady(){
         if (document.readyState === "complete") {
@@ -145,7 +150,7 @@
     if(standalone) {
         var scripts = document.getElementsByTagName('script');
         var index = scripts.length - 1;
-        var myScript = scripts[index];
+        var myScript = scripts[index] || { src: '' };
         var queryString = myScript.src.replace(/^[^\?]+\??/,'');
         renderer = getQueryVariable('renderer');
     }

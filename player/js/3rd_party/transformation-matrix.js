@@ -169,6 +169,7 @@ var Matrix = (function(){
                 this.props[14] = this.props[12] * c2 + this.props[13] * g2 + this.props[14] * k2 + this.props[15] * o2 ;
                 this.props[15] = this.props[12] * d2 + this.props[13] * h2 + this.props[14] * l2 + this.props[15] * p2 ;
             }
+            this._identityCalculated = false;
             return this;
         }
 
@@ -214,7 +215,19 @@ var Matrix = (function(){
         this.props[14] = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
         this.props[15] = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
 
+        this._identityCalculated = false;
         return this;
+    }
+
+    function isIdentity() {
+        if(!this._identityCalculated){
+            this._identity = !(this.props[0] !== 1 || this.props[1] !== 0 || this.props[2] !== 0 || this.props[3] !== 0
+                || this.props[4] !== 0 || this.props[5] !== 1 || this.props[6] !== 0 || this.props[7] !== 0
+                || this.props[8] !== 0 || this.props[9] !== 0 || this.props[10] !== 1 || this.props[11] !== 0
+                || this.props[12] !== 0 || this.props[13] !== 0 || this.props[14] !== 0 || this.props[15] !== 1);
+            this._identityCalculated = true;
+        }
+        return this._identity;
     }
 
     function clone(matr){
@@ -253,8 +266,7 @@ var Matrix = (function(){
         return x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14];
     }
 
-    function inversePoints(pts){
-        //var determinant = this.a * this.d - this.b * this.c;
+    function inversePoint(pt) {
         var determinant = this.props[0] * this.props[5] - this.props[1] * this.props[4];
         var a = this.props[5]/determinant;
         var b = - this.props[1]/determinant;
@@ -262,9 +274,13 @@ var Matrix = (function(){
         var d = this.props[0]/determinant;
         var e = (this.props[4] * this.props[13] - this.props[5] * this.props[12])/determinant;
         var f = - (this.props[0] * this.props[13] - this.props[1] * this.props[12])/determinant;
+        return [pt[0] * a + pt[1] * c + e, pt[0] * b + pt[1] * d + f, 0];
+    }
+
+    function inversePoints(pts){
         var i, len = pts.length, retPts = [];
         for(i=0;i<len;i+=1){
-            retPts[i] = [pts[i][0] * a + pts[i][1] * c + e, pts[i][0] * b + pts[i][1] * d + f, 0]
+            retPts[i] = inversePoint(pts[i]);
         }
         return retPts;
     }
@@ -279,6 +295,9 @@ var Matrix = (function(){
         return [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
     }
     function applyToPointStringified(x, y) {
+        if(this.isIdentity()) {
+            return x + ',' + y;
+        }
         return (bm_rnd(x * this.props[0] + y * this.props[4] + this.props[12]))+','+(bm_rnd(x * this.props[1] + y * this.props[5] + this.props[13]));
     }
 
@@ -329,7 +348,11 @@ var Matrix = (function(){
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
         this.inversePoints = inversePoints;
+        this.inversePoint = inversePoint;
         this._t = this.transform;
+        this.isIdentity = isIdentity;
+        this._identity = true;
+        this._identityCalculated = false;
 
         this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 

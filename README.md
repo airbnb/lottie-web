@@ -1,53 +1,42 @@
 # bodymovin
-After Effects plugin for exporting animations to svg/canvas/html + js
+After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://github.com/airbnb/lottie-android)  
 
-## V 4.6.7
-- Trim path with Rectangle fix
+## V 4.10.0
+- Lots of new expressions
+- Ouroboros 2.0 support! (in beta just in case)
+- AVD Format export!
 
-## V 4.6.6
-- Text baseline supported (from After Effects 13.6 (CC 2015))
-- text animator fixes
+## V 4.9.0
+- Full repeaters support
+- Keyframes interpolation fix for stretched layers
+- inBrowser method added 
 
-## V 4.6.5
-- trim path full fix
+## V 4.8.0
+- Fonts fix for Lottie compatibility
+- fonts reduced exported filesize
+- fonts fix for non-zero width character
+- expressions transform separate dimensions fix
+- expression shape rectangle size support
 
-## V 4.6.4
-- velocityAtTime expression fix
-
-## V 4.6.3
-- bodymovin_light fix
-- rubberhose autoflop patch for inactive admin property
-
-## V 4.6.2
-- repeaters! (partially but should cover many cases)
-- new expressions
-- render improvements
-- reduced garbage collection
-
-## V 4.6.1
-- 3D orientation fix
-- render improvements
-
-## V 4.6.0
-- New UI!
-- Drop shadow effect support
-- performance improvement on animations with offsetted layers
-- big performance improvement on expressions
-- expressions expressions expressions
-
-**Get it directly from the store!**
-https://creative.adobe.com/addons/products/12557
-CC 2014 and up.
-
-If you need the latest latest version, you can still install it from here:
+# Plugin installation
 
 ### Option 1 (Recommended):
+**Download it from from AE scripts:**
+http://aescripts.com/bodymovin/
+
+### Option 2:
+**Or get it from the adobe store**  
+https://creative.adobe.com/addons/products/12557  
+CC 2014 and up.
+
+## Other installation options:
+
+### Option 3:
 - download the ZIP from the repo.
 - Extract content and get the .zxp file from '/build/extension'
 - Use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
 
-### Option 2:
-
+### Option 4:
 - Close After Effects<br/>
 - Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
 WINDOWS:<br/>
@@ -67,32 +56,44 @@ open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key name
 MAC:<br/>
 open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
 
-### Option 3:
+### Option 5:
 
 Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html  
 Skip directly to "Install third-party extensions"
 
-
-### For all of them
+### After installing
 - Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
+# HTML player installation
+```bash
+# with npm
+npm install bodymovin
+
+# with bower
+bower install bodymovin
+```  
+Or you can use the script file from here:  
+https://cdnjs.com/libraries/bodymovin  
+Or get it directly from the AE plugin clicking on Get Player  
+
+# Demo
+[See a basic implementation here.](https://codepen.io/airnan/project/editor/ZeNONO/) <br/>
+
+# Examples
+[See examples on codepen.](http://codepen.io/collection/nVYWZR/) <br/>
+
 ## How it works
+[Here's](https://www.youtube.com/watch?v=5XMUJdjI0L8) a video tutorial explaining how to export a basic animation and load it in an html page <br />
 ### After Effects
 - Open your AE project and select the bodymovin extension on Window > Extensions > bodymovin
-- A Panel will open with a Compositions tab.
-- On the Compositions tab, click Refresh to get a list of all you project Comps.
-- Select the composition you want to export
-- Select Destination Folder
+- A Panel will open with a Compositions tab listing all of your Project Compositions.
+- Select the composition you want to export.
+- Select a Destination Folder.
 - Click Render
 - look for the exported json file (if you had images or AI layers on your animation, there will be an images folder with the exported files)
 
-#### Settings:
-**segments:** export animation in segments. If you have a main comp with more than one layer you can export the animation in parts so you won't load all at once. The exporter will segment your main comp considering where a layer starts in time.<br/>
-**snapshot:** take an svg snapshot of the animation to use as poster. After you render your animation, you can take a snapshot of any frame in the animation and save it to your disk. I recommend to pass the svg through an svg optimizer like https://jakearchibald.github.io/svgomg/ and play around with their settings.<br/>
-
 ### HTML
-**Check the demos for different ways to load animations.**
 - get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
 ```html
@@ -106,18 +107,66 @@ It takes an object as a unique param with:
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
 - renderer: 'svg' / 'canvas' / 'html' to set the renderer
-- container: the dom element on which to render the animation
-<br />
-Returns the animation object you can control with play, pause, setSpeed, etc.
+- container: the dom element on which to render the animation  
+
+
+It returns the animation instance you can control with play, pause, setSpeed, etc.
+
 ```js
 bodymovin.loadAnimation({
-  container: element, // the dom element
+  container: element, // the dom element that will contain the animation
   renderer: 'svg',
   loop: true,
   autoplay: true,
-  animationData: JSON.parse(animationData) // the animation data
+  path: ‘data.json’ // the path to the animation json
 });
 ```
+
+#### Composition Settings:
+Check this wiki page for an explanation for each setting.  
+https://github.com/bodymovin/bodymovin/wiki/Composition-Settings  
+
+## Usage
+animation instances have these main methods:
+**anim.play()** <br/>
+**anim.stop()** <br/>
+**anim.pause()** <br/>
+**anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
+**anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
+**anim.goToAndPlay(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
+**anim.setDirection(direction)** -- one param direction (1 is normal direction.) <br/>
+**anim.playSegments(segments, forceFlag)** -- first param is a single array or multiple arrays of two values each(fromFrame,toFrame), second param is a boolean for forcing the new segment right away<br/>
+**anim.setSubframe(flag)** -- If false, it will respect the original AE fps. If true, it will update as much as possible. (true by default)<br/>
+**anim.destroy()**<br/>
+
+bodymovin has 8 main methods:
+**bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setSpeed()** -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
+**bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
+**bodymovin.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
+**bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
+**bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+
+## Events
+- onComplete
+- onLoopComplete
+- onEnterFrame
+- onSegmentStart
+
+you can also use addEventListener with the following events:
+- complete
+- loopComplete
+- enterFrame
+- segmentStart
+- config_ready (when initial config is done)
+- data_ready (when all parts of the animation have been loaded)
+- DOMLoaded (when elements have been added to the DOM)
+- destroy
+
+#### Other loading options
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
 ```js
 bodymovin.loadAnimation({
@@ -129,11 +178,13 @@ bodymovin.loadAnimation({
   rendererSettings: {
     context: canvasContext, // the canvas context
     scaleMode: 'noScale',
-    clearCanvas: false
+    clearCanvas: false,
+    progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
+    hideOnTransparent: true //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
   }
 });
 ```
-If you do this, you will have to handle the canvas clearing after each frame
+Doing this you will have to handle the canvas clearing after each frame
 <br/>
 Another way to load animations is adding specific attributes to a dom element.
 You have to include a div and set it's class to bodymovin.
@@ -160,43 +211,10 @@ Or you can call bodymovin.searchAnimations() after page load and it will search 
 ```
 <br/>
 
-## Usage
-animation instances have these main methods:
-**anim.play()** <br/>
-**anim.stop()** <br/>
-**anim.pause()** <br/>
-**anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
-**anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
-**anim.goToAndPlay(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
-**anim.setDirection(direction)** -- one param direction (1 is normal direction.) <br/>
-**anim.playSegments(segments, forceFlag)** -- first param is a single array or multiple arrays of two values each(fromFrame,toFrame), second param is a boolean for forcing the new segment right away<br/>
-**anim.destroy()**<br/>
-
-bodymovin has 8 main methods:
-**bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.setSpeed()** -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
-**bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**bodymovin.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
-**bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
-**bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
-
-## Events
-- onComplete
-- onLoopComplete
-- onEnterFrame
-- onSegmentStart
-
-you can also use addEventListener with the following events:
-- complete
-- loopComplete
-- enterFrame
-- segmentStart
 
 
-See the demo folders for examples or go to http://codepen.io/airnan/ to see some cool animations
+## Preview  
+You can preview or take an svg snapshot of the animation to use as poster. After you render your animation, you can take a snapshot of any frame in the animation and save it to your disk. I recommend to pass the svg through an svg optimizer like https://jakearchibald.github.io/svgomg/ and play around with their settings.<br/>
 
 ## Recommendations
 
@@ -215,21 +233,19 @@ If you have any animations that don't work or want me to export them, don't hesi
 I'm really interested in seeing what kind of problems the plugin has. <br/>
 my email is **hernantorrisi@gmail.com**
 
-## Examples
-[See examples on codepen.](http://codepen.io/collection/nVYWZR/) <br/>
 
-## Support
-- The script supports precomps, shapes, solids, images, null objects, texts
-- It supports masks and inverted masks. Maybe other modes will come but it has a huge performance hit.
-- It supports time remapping (yeah!)
-- The script supports shapes, rectangles and ellipses and stars.
-- Only slider effects are supported at the moment.
-- Expressions. Check the wiki page for [more info.](https://github.com/bodymovin/bodymovin/wiki/Expressions)
-- Not supported: image sequences, videos and audio are (maybe some of them coming soon)
-- **No layer stretching**! No idea why, but stretching a layer messes with all the data.
+## AE Feature Support
+- The script supports precomps, shapes, solids, images, null objects, texts  
+- It supports masks and inverted masks. Maybe other modes will come but it has a huge performance hit.  
+- It supports time remapping  
+- The script supports shapes, rectangles, ellipses and stars.  
+- Expressions. Check the wiki page for [more info.](https://github.com/bodymovin/bodymovin/wiki/Expressions)  
+- Not supported: image sequences, videos and audio are not supported  
+- **No  negative layer stretching**! No idea why, but stretching a layer messes with all the data.
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
 - look at the great animations exported on codepen [See examples on codepen.](http://codepen.io/collection/nVYWZR/)
 - gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
+
 

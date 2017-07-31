@@ -134,6 +134,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
     if(prerender === 'false'){
         params.prerender = false;
     }
+    console.log('animElements:', params)
     this.setParams(params);
 };
 

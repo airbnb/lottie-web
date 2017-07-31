@@ -1,14 +1,12 @@
 function HShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.shapes = [];
-    this.shapeModifiers = [];
     this.shapesData = data.shapes;
     this.stylesList = [];
-    this.viewData = [];
+    this.itemsData = [];
+    this.prevViewData = [];
+    this.shapeModifiers = [];
+    this.processedElements = [];
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    this.addedTransforms = {
-        mdf: false,
-        mats: [this.finalTransform.mat]
-    };
     this.currentBBox = {
         x:999999,
         y: -999999,
@@ -20,6 +18,7 @@ createElement(HBaseElement, HShapeElement);
 var parent = HShapeElement.prototype._parent;
 extendPrototype(IShapeElement, HShapeElement);
 HShapeElement.prototype._parent = parent;
+HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderFrame;
 
 HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
@@ -50,7 +49,8 @@ HShapeElement.prototype.createElements = function(){
     if(this.data.ln){
         this.innerElem.setAttribute('id',this.data.ln);
     }
-    this.searchShapes(this.shapesData,this.viewData,this.layerElement,this.dynamicProperties,0);
+
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties,0, [], true);
     this.buildExpressionInterface();
     this.layerElement = parent;
     this.transformedElement = parent;
@@ -62,22 +62,10 @@ HShapeElement.prototype.createElements = function(){
 };
 
 HShapeElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.layerElement.style.display = 'block';
-        this.hidden = false;
-    }
-    this.renderModifiers();
-    this.addedTransforms.mdf = this.finalTransform.matMdf;
-    this.addedTransforms.mats.length = 1;
-    this.addedTransforms.mats[0] = this.finalTransform.mat;
-    this.renderShape(null,null,true, null);
+    var firstFrame = this.firstFrame;
+    this._renderShapeFrame();
 
-    if(this.isVisible && (this.elemMdf || this.firstFrame)){
+    if(this.isVisible && (this.elemMdf || firstFrame)){
         var boundingBox = this.shapeCont.getBBox();
         var changed = false;
         if(this.currentBBox.w !== boundingBox.width){

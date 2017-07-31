@@ -1,3 +1,49 @@
+## V 4.10.0
+- Lots of new expressions
+- Ouroboros 2.0 support! (in beta just in case)
+- AVD Format export!
+
+## V 4.9.0
+- Full repeaters support
+- Keyframes interpolation fix for stretched layers
+- inBrowser method added 
+
+## V 4.8.0
+- Fonts fix for Lottie compatibility
+- fonts reduced exported filesize
+- fonts fix for non-zero width character
+- expressions transform separate dimensions fix
+- expression shape rectangle size support
+
+## V 4.7.1
+- still images validation fix
+- expression for transform on separate dimensions fix
+
+## V 4.7.0
+- hiding elements when opacity is at 0
+- colinear points fix
+- anchor point expression fix
+- server side rendering window object validation (thanks @zephinzer)
+
+## V 4.6.11
+- Non spatial interpolation fix
+- new expressions supported
+- fonts fix
+
+## V 4.6.10
+- AE language export fix
+- nearestKey expression fix
+
+## V 4.6.9
+- new expressions. More Rubberhose support
+- expression fixes
+- expression sandboxing window and document
+- pointInLine 3d fix
+
+## V 4.6.8
+- 3d camera fix
+- fix for tests
+
 ## V 4.6.7
 - Trim path with Rectangle fix
 

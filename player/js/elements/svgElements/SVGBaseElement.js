@@ -4,6 +4,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.data = data;
     this.matteElement = null;
     this.transformedElement = null;
+    this.isTransparent = false;
     this.parentContainer = parentContainer;
     this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.placeholder = placeholder;
@@ -251,6 +252,15 @@ SVGBaseElement.prototype.renderFrame = function(parentTransform){
         this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
     }
     if(this.finalTransform.opMdf && this.layerElement){
+        if(this.finalTransform.op.v <= 0) {
+            if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
+                this.isTransparent = true;
+                this.hide();
+            }
+        } else if(this.hidden && this.isTransparent){
+            this.isTransparent = false;
+            this.show();
+        }
         this.transformedElement.setAttribute('opacity',this.finalTransform.op.v);
     }
 
@@ -288,13 +298,16 @@ SVGBaseElement.prototype.setMatte = function(id){
     this.matteElement.setAttribute("mask", "url(" + location.href + "#" + id + ")");
 };
 
-SVGBaseElement.prototype.setMatte = function(id){
-    if(!this.matteElement){
-        return;
+SVGBaseElement.prototype.hide = function(){
+    if(!this.hidden){
+        this.layerElement.style.display = 'none';
+        this.hidden = true;
     }
-    this.matteElement.setAttribute("mask", "url(" + location.href + "#" + id + ")");
 };
 
-SVGBaseElement.prototype.hide = function(){
-
+SVGBaseElement.prototype.show = function(){
+    if(this.isVisible && !this.isTransparent){
+        this.hidden = false;
+        this.layerElement.style.display = 'block';
+    }
 };

@@ -1,6 +1,8 @@
 var ExpressionManager = (function(){
     var ob = {};
     var Math = BMMath;
+    var window = null;
+    var document = null;
 
     function duplicatePropertyValue(value, mult){
         mult = mult || 1;
@@ -62,15 +64,16 @@ var ExpressionManager = (function(){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b .constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
             b[0] = a + b[0];
             return b;
         }
         if(a.constructor === Array && b.constructor === Array){
+            
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
-                if(typeof a[i] === 'number' && typeof b[i] === 'number'){
+                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
                     retArr[i] = a[i] + b[i];
                 }else{
                     retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
@@ -87,6 +90,12 @@ var ExpressionManager = (function(){
         var tOfA = typeof a;
         var tOfB = typeof b;
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
+            if(tOfA === 'string') {
+                a = parseInt(a);
+            }
+            if(tOfB === 'string') {
+                b = parseInt(b);
+            }
             return a - b;
         }
         if( a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
@@ -101,7 +110,7 @@ var ExpressionManager = (function(){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
-                if(typeof a[i] === 'number' && typeof b[i] === 'number'){
+                if((typeof a[i] === 'number' || a[i] instanceof Number) && typeof (typeof b[i] === 'number' || b[i] instanceof Number)){
                     retArr[i] = a[i] - b[i];
                 }else{
                     retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
@@ -167,6 +176,15 @@ var ExpressionManager = (function(){
         }
         return 0;
     }
+    function mod(a,b) {
+        if(typeof a === 'string') {
+            a = parseInt(a);
+        }
+        if(typeof b === 'string') {
+            b = parseInt(b);
+        }
+        return a % b;
+    }
 
     function clamp(num, min, max) {
         if(min > max){
@@ -190,7 +208,7 @@ var ExpressionManager = (function(){
     var helperLengthArray = [0,0,0,0,0,0];
 
     function length(arr1,arr2){
-        if(typeof arr1 === "number"){
+        if(typeof arr1 === 'number' || arr1 instanceof Number){
             arr2 = arr2 || 0;
             return Math.abs(arr1 - arr2);
         }
@@ -318,10 +336,13 @@ var ExpressionManager = (function(){
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
-        var thisLayer,thisComp;
+        var width = elem.data.sw ? elem.data.sw : 0;
+        var height = elem.data.sh ? elem.data.sh : 0;
+        var toWorld,fromWorld,anchorPoint,thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
+
         var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
@@ -348,12 +369,16 @@ var ExpressionManager = (function(){
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
             var arr = Array.apply({length:len});
-            for(j=0;j<len;j+=1){
-                arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+            if(len>1){
+                for(j=0;j<len;j+=1){
+                    arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
+                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
+                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+                }
+                return arr;
+            } else {
+                return this.pv + addedAmps[0] + (-amp + amp*2*BMMath.random())*perc;
             }
-            return arr;
         }.bind(this);
 
         var loopIn = function loopIn(type,duration, durationFlag) {
@@ -493,9 +518,10 @@ var ExpressionManager = (function(){
             return this.getValueAtTime(t, 0);
         }.bind(this);
 
-        var velocityAtTime = function velocityAtTime(t) {
-            return this.getVelocityAtTime(t);
-        }.bind(this);
+        var velocityAtTime;
+        if(this.getVelocityAtTime) {
+            velocityAtTime = this.getVelocityAtTime.bind(this);
+        }
 
         var comp = elem.comp.globalData.projectInterface.bind(elem.comp.globalData.projectInterface);
 
@@ -504,11 +530,11 @@ var ExpressionManager = (function(){
             var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
             var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
             return [yaw,pitch,0];
-        }
+        };
 
         function easeOut(t, val1, val2){
             return -(val2-val1) * t*(t-2) + val1;
-        }
+        };
 
         function nearestKey(time){
             var i, len = data.k.length,index,keyTime;
@@ -518,39 +544,46 @@ var ExpressionManager = (function(){
             } else {
                 index = -1;
                 time *= elem.comp.globalData.frameRate;
-                for(i=0;i<len-1;i+=1){
-                    if(time === data.k[i].t){
-                        index = i + 1;
-                        keyTime = data.k[i].t;
-                        break;
-                    }else if(time>data.k[i].t && time<data.k[i+1].t){
-                        if(time-data.k[i].t > data.k[i+1].t - time){
-                            index = i + 2;
-                            keyTime = data.k[i+1].t;
-                        } else {
+                if (time < data.k[0].t) {
+                    index = 1;
+                    keyTime = data.k[0].t;
+                } else {
+                    for(i=0;i<len-1;i+=1){
+                        if(time === data.k[i].t){
                             index = i + 1;
                             keyTime = data.k[i].t;
+                            break;
+                        }else if(time>data.k[i].t && time<data.k[i+1].t){
+                            if(time-data.k[i].t > data.k[i+1].t - time){
+                                index = i + 2;
+                                keyTime = data.k[i+1].t;
+                            } else {
+                                index = i + 1;
+                                keyTime = data.k[i].t;
+                            }
+                            break;
                         }
-                        break;
+                    }
+                    if(index === -1){
+                        index = i + 1;
+                        keyTime = data.k[i].t;
                     }
                 }
-                if(index === -1){
-                    index = i + 1;
-                    keyTime = data.k[i].t;
-                }
+                
             }
             var ob = {};
             ob.index = index;
             ob.time = keyTime/elem.comp.globalData.frameRate;
             return ob;
-        }
+        };
 
         function key(ind){
+            var ob, i, len;
             if(!data.k.length || typeof(data.k[0]) === 'number'){
-                return {time:0};
+                throw new Error('The property has no keyframe at index ' + ind);
             }
             ind -= 1;
-            var ob = {
+            ob = {
                 time: data.k[ind].t/elem.comp.globalData.frameRate
             };
             var arr;
@@ -559,59 +592,29 @@ var ExpressionManager = (function(){
             }else{
                 arr = data.k[ind].s;
             }
-            var i, len = arr.length;
+            len = arr.length;
             for(i=0;i<len;i+=1){
                 ob[i] = arr[i];
             }
             return ob;
-        }
+        };
 
         function framesToTime(frames,fps){
             if(!fps){
                 fps = elem.comp.globalData.frameRate;
             }
             return frames/fps;
-        }
+        };
 
         function timeToFrames(t,fps){
-            if(!t){
+            if(!t && t !== 0){
                 t = time;
             }
             if(!fps){
                 fps = elem.comp.globalData.frameRate;
             }
             return t*fps;
-        }
-
-        var toworldMatrix = new Matrix();
-        function toWorld(arr){
-            toworldMatrix.reset();
-            elem.finalTransform.mProp.applyToMatrix(toworldMatrix);
-            if(elem.hierarchy && elem.hierarchy.length){
-                var i, len = elem.hierarchy.length;
-                for(i=0;i<len;i+=1){
-                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toworldMatrix);
-                }
-                return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
-            }
-            return toworldMatrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
-        }
-
-        var fromworldMatrix = new Matrix();
-        function fromWorld(arr){
-            fromworldMatrix.reset();
-            var pts = [];
-            pts.push(arr);
-            elem.finalTransform.mProp.applyToMatrix(fromworldMatrix);
-            if(elem.hierarchy && elem.hierarchy.length){
-                var i, len = elem.hierarchy.length;
-                for(i=0;i<len;i+=1){
-                    elem.hierarchy[i].finalTransform.mProp.applyToMatrix(fromworldMatrix);
-                }
-                return fromworldMatrix.inversePoints(pts)[0];
-            }
-            return fromworldMatrix.inversePoints(pts)[0];
-        }
+        };
 
         function seedRandom(seed){
             BMMath.seedrandom(randSeed + seed);
@@ -641,10 +644,14 @@ var ExpressionManager = (function(){
             if(!thisLayer){
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
+                toWorld = thisLayer.toWorld.bind(thisLayer);
+                fromWorld = thisLayer.fromWorld.bind(thisLayer);
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
+                anchorPoint = transform.anchorPoint;
             }
+            
             if(elemType === 4 && !content){
                 content = thisLayer("ADBE Root Vectors Group");
             }
@@ -653,7 +660,7 @@ var ExpressionManager = (function(){
             }
             hasParent = !!(elem.hierarchy && elem.hierarchy.length);
             if(hasParent && !parent){
-                parent = elem.hierarchy[elem.hierarchy.length - 1].layerInterface;
+                parent = elem.hierarchy[0].layerInterface;
             }
             this.lock = true;
             if(this.getPreValue){
@@ -682,7 +689,6 @@ var ExpressionManager = (function(){
                     }
                 }
             }
-
             if(this.v.length === 1){
                 this.v = this.v[0];
             }
@@ -709,7 +715,7 @@ var ExpressionManager = (function(){
             this.lock = false;
         }
         return execute;
-    }
+    };
 
     ob.initiateExpression = initiateExpression;
     return ob;

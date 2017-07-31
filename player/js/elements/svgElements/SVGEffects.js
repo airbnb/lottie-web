@@ -29,6 +29,10 @@ function SVGEffects(elem){
             count += 1;
             filterManager = new SVGDropShadowEffect(fil, elem.effects.effectElements[i]);
             this.filters.push(filterManager);
+        }else if(elem.data.ef[i].ty === 28){
+            //count += 1;
+            filterManager = new SVGMatte3Effect(fil, elem.effects.effectElements[i], elem);
+            this.filters.push(filterManager);
         }
     }
     if(count){
