@@ -10,7 +10,6 @@
     var bodymovinjs = {};
 
     function setLocationHref (locatiohref) {
-        console.log('--------set location href ran');
         locationHref = location.href;
     }
     function play(animation){
