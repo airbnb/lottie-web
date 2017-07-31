@@ -6,10 +6,6 @@ var animationManager = (function(){
     var idled = true;
     var playingAnimationsNum = 0;
 
-    function setLocationHref (locatiohref) {
-        locationHref = location.href;
-    }
-
     function removeElement(ev){
         var i = 0;
         var animItem = ev.target;
@@ -195,6 +191,11 @@ var animationManager = (function(){
         }
     }
 
+    function setLocationHref (locatiohref) {
+        console.log('--------set location href ran');
+        locationHref = location.href;
+    }
+
     //start();
 
     setTimeout(start,0);
@@ -213,5 +214,6 @@ var animationManager = (function(){
     moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
     moduleOb.destroy = destroy;
+    moduleOb.setLocationHref = setLocationHref;
     return moduleOb;
 }());
