@@ -1,3 +1,6 @@
+## V 4.10.1
+- Expression fix
+
 ## V 4.10.0
 - Lots of new expressions
 - Ouroboros 2.0 support! (in beta just in case)

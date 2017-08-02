@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://github.com/airbnb/lottie-android)  
 
+## V 4.10.1
+- Expression fix
+
 ## V 4.10.0
 - Lots of new expressions
 - Ouroboros 2.0 support! (in beta just in case)
