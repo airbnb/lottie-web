@@ -615,7 +615,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.position;
                 }
                 if(shape.r.ix === value){
-                    return interfaceFunction.rotation;
+                    return interfaceFunction.roundness;
                 }
                 if(shape.s.ix === value || value === 'Size'){
                     return interfaceFunction.size;
