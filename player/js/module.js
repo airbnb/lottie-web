@@ -1,69 +1,86 @@
-(function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        define( factory);
-    } else if(typeof module === "object" && module.exports) {
+var window = (typeof window === "undefined") ? {} : window;
+(function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(factory);
+    } else if (typeof module === "object" && module.exports) {
         module.exports = factory();
     } else {
         root.bodymovin = factory();
     }
 }(window, function() {
+    /*<%= contents %>*/
     var bodymovinjs = {};
 
-    function play(animation){
+    function play(animation) {
         animationManager.play(animation);
     }
-    function pause(animation){
+
+    function pause(animation) {
         animationManager.pause(animation);
     }
-    function togglePause(animation){
+
+    function togglePause(animation) {
         animationManager.togglePause(animation);
     }
-    function setSpeed(value,animation){
+
+    function setSpeed(value, animation) {
         animationManager.setSpeed(value, animation);
     }
-    function setDirection(value,animation){
+
+    function setDirection(value, animation) {
         animationManager.setDirection(value, animation);
     }
-    function stop(animation){
+
+    function stop(animation) {
         animationManager.stop(animation);
     }
-    function moveFrame(value){
+
+    function moveFrame(value) {
         animationManager.moveFrame(value);
     }
-    function searchAnimations(){
-        if(standalone === true){
-            animationManager.searchAnimations(animationData,standalone, renderer);
-        }else{
+
+    function searchAnimations() {
+        if (standalone === true) {
+            animationManager.searchAnimations(animationData, standalone, renderer);
+        } else {
             animationManager.searchAnimations();
         }
     }
-    function registerAnimation(elem){
+
+    function registerAnimation(elem) {
         return animationManager.registerAnimation(elem);
     }
-    function resize(){
+
+    function resize() {
         animationManager.resize();
     }
-    function start(){
+
+    function start() {
         animationManager.start();
     }
-    function goToAndStop(val,isFrame, animation){
-        animationManager.goToAndStop(val,isFrame, animation);
+
+    function goToAndStop(val, isFrame, animation) {
+        animationManager.goToAndStop(val, isFrame, animation);
     }
-    function setSubframeRendering(flag){
+
+    function setSubframeRendering(flag) {
         subframeEnabled = flag;
     }
-    function loadAnimation(params){
-        if(standalone === true){
+
+    function loadAnimation(params) {
+        if (standalone === true) {
             params.animationData = JSON.parse(animationData);
         }
         return animationManager.loadAnimation(params);
     }
-    function destroy(animation){
+
+    function destroy(animation) {
         return animationManager.destroy(animation);
     }
-    function setQuality(value){
-        if(typeof value === 'string'){
-            switch(value){
+
+    function setQuality(value) {
+        if (typeof value === 'string') {
+            switch (value) {
                 case 'high':
                     defaultCurveSegments = 200;
                     break;
@@ -74,28 +91,28 @@
                     defaultCurveSegments = 10;
                     break;
             }
-        }else if(!isNaN(value) && value > 1){
+        } else if (!isNaN(value) && value > 1) {
             defaultCurveSegments = value;
         }
-        if(defaultCurveSegments >= 50){
+        if (defaultCurveSegments >= 50) {
             roundValues(false);
-        }else{
+        } else {
             roundValues(true);
         }
     }
 
     function inBrowser() {
-        return typeof navigator !== "undefined";
+        return typeof navigator !== 'undefined';
     }
-    
-    function installPlugin(type,plugin){
-        if(type==='expressions'){
+
+    function installPlugin(type, plugin) {
+        if (type === 'expressions') {
             expressionsPlugin = plugin;
         }
     }
 
-    function getFactory(name){
-        switch(name){
+    function getFactory(name) {
+        switch (name) {
             case "propertyFactory":
                 return PropertyFactory;
             case "shapePropertyFactory":
@@ -104,7 +121,6 @@
                 return Matrix;
         }
     }
-
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
     bodymovinjs.togglePause = togglePause;
@@ -116,17 +132,17 @@
     bodymovinjs.registerAnimation = registerAnimation;
     bodymovinjs.loadAnimation = loadAnimation;
     bodymovinjs.setSubframeRendering = setSubframeRendering;
-    bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.resize = resize;
     bodymovinjs.start = start;
     bodymovinjs.goToAndStop = goToAndStop;
     bodymovinjs.destroy = destroy;
     bodymovinjs.setQuality = setQuality;
+    bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.8.0';
+    bodymovinjs.version = '[[BM_VERSION]]';
 
-    function checkReady(){
+    function checkReady() {
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
             searchAnimations();
@@ -142,20 +158,18 @@
             }
         }
     }
-
     var standalone = '__[STANDALONE]__';
     var animationData = '__[ANIMATIONDATA]__';
-
     var renderer = '';
-    if(standalone) {
+    if (standalone) {
         var scripts = document.getElementsByTagName('script');
         var index = scripts.length - 1;
-        var myScript = scripts[index] || { src: '' };
-        var queryString = myScript.src.replace(/^[^\?]+\??/,'');
+        var myScript = scripts[index] || {
+            src: ''
+        };
+        var queryString = myScript.src.replace(/^[^\?]+\??/, '');
         renderer = getQueryVariable('renderer');
     }
-
     var readyStateCheckInterval = setInterval(checkReady, 100);
-
     return bodymovinjs;
 }));
