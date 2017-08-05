@@ -24,7 +24,7 @@ After Effects plugin for exporting animations to svg/canvas/html + js or nativel
 # Plugin installation
 
 ### Option 1 (Recommended):
-**Download it from from AE scripts:**
+**Download it from from aescripts + aeplugins:**
 http://aescripts.com/bodymovin/
 
 ### Option 2:
