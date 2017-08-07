@@ -1,3 +1,6 @@
+## V 4.10.2
+- AVD fixes
+
 ## V 4.10.1
 - Expression fix
 
