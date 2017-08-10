@@ -5881,7 +5881,7 @@ IShapeElement.prototype.identityMatrix = new Matrix();
 IShapeElement.prototype.lcEnum = {
     '1': 'butt',
     '2': 'round',
-    '3': 'butt'
+    '3': 'square'
 }
 
 IShapeElement.prototype.ljEnum = {
@@ -13948,7 +13948,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.10.2';
+    bodymovinjs.version = '4.10.3';
 
     function checkReady() {
         if (document.readyState === "complete") {

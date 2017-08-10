@@ -1,6 +1,11 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)  
 
+## V 4.10.3
+- fix for AE CC2014 when reopening App
+- line cap - projecting cap support
+- AVD fix for AE CC2014
+
 ## V 4.10.2
 - AVD fixes
 
@@ -16,13 +21,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js or nativel
 - Full repeaters support
 - Keyframes interpolation fix for stretched layers
 - inBrowser method added 
-
-## V 4.8.0
-- Fonts fix for Lottie compatibility
-- fonts reduced exported filesize
-- fonts fix for non-zero width character
-- expressions transform separate dimensions fix
-- expression shape rectangle size support
 
 # Lottie + Bodymovin
 Lottie is the native engine that Airbnb's awesome team built. It uses Bodymovin as the animation exporter and is the ideal complement for getting animations to play natively everywhere.
