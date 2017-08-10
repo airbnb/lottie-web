@@ -30,6 +30,7 @@ var AnimationItem = function () {
     this.pendingSegment = false;
     this._idle = true;
     this.projectInterface = ProjectInterface();
+    this.hasSetParams = false;
 };
 
 AnimationItem.prototype.setParams = function(params) {
@@ -71,7 +72,8 @@ AnimationItem.prototype.setParams = function(params) {
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     if(params.animationData){
         self.configAnimation(params.animationData);
-    }else if(params.path){
+        self.hasSetParams = true
+    }else if(params.path && !self.hasSetParams){
         if(params.path.substr(-4) != 'json'){
             if (params.path.substr(-1, 1) != '/') {
                 params.path += '/';
