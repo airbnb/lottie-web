@@ -51,7 +51,7 @@ CC 2014 and up.
 ### Option 3:
 - download the ZIP from the repo.
 - Extract content and get the .zxp file from '/build/extension'
-- Use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
+- Use the [ZXP installer](http://zxpinstaller.com/) from zxpinstaller.com.
 
 ### Option 4:
 - Close After Effects<br/>
