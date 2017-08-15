@@ -1,6 +1,5 @@
 var window = (typeof window === "undefined") ? {} : window;
 (function(root, factory) {
-    console.log('---------------BODYMOVIN 1000');
     if (typeof define === "function" && define.amd) {
         define(factory);
     } else if (typeof module === "object" && module.exports) {
