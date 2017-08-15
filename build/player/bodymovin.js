@@ -1,7 +1,21 @@
+<<<<<<< HEAD
 var window=(typeof window === "undefined")?{}:window;(function (root, factory) { if(typeof define === "function" && define.amd) { define( factory); } else if(typeof module === "object" && module.exports) { module.exports = factory(); } else { root.bodymovin = factory(); } }(window, function() {var svgNS = "http://www.w3.org/2000/svg";
 
 var locationHref = '';
 
+=======
+var window = (typeof window === "undefined") ? {} : window;
+(function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(factory);
+    } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+    } else {
+        root.bodymovin = factory();
+    }
+}(window, function() {
+    var svgNS = "http://www.w3.org/2000/svg";
+>>>>>>> 26ac03d8c6f9e72f8e5ca8a05cf190191f11a86f
 var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -5627,9 +5641,17 @@ HybridRenderer.prototype.updateContainerSize = function () {
 
 HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
 
+<<<<<<< HEAD
 HybridRenderer.prototype.hide = function(){
     this.resizerElem.style.display = 'none';
 };
+=======
+IShapeElement.prototype.lcEnum = {
+    '1': 'butt',
+    '2': 'round',
+    '3': 'square'
+}
+>>>>>>> 26ac03d8c6f9e72f8e5ca8a05cf190191f11a86f
 
 HybridRenderer.prototype.show = function(){
     this.resizerElem.style.display = 'block';
@@ -7971,6 +7993,10 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
         var opacity = this.filterManager.effectElements[2].p.v/100;
         this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
+<<<<<<< HEAD
+=======
+    this.setParams(params);
+>>>>>>> 26ac03d8c6f9e72f8e5ca8a05cf190191f11a86f
 };
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
@@ -13095,7 +13121,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.position;
                 }
                 if(shape.r.ix === value){
-                    return interfaceFunction.rotation;
+                    return interfaceFunction.roundness;
                 }
                 if(shape.s.ix === value || value === 'Size'){
                     return interfaceFunction.size;
@@ -13810,4 +13836,168 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 break;
         }
     }
-};var bodymovinjs = {}; function play(animation){ animationManager.play(animation); } function pause(animation){ animationManager.pause(animation); } function togglePause(animation){ animationManager.togglePause(animation); } function setSpeed(value,animation){ animationManager.setSpeed(value, animation); } function setDirection(value,animation){ animationManager.setDirection(value, animation); } function stop(animation){ animationManager.stop(animation); } function moveFrame(value){ animationManager.moveFrame(value); } function searchAnimations(){ if(standalone === true){ animationManager.searchAnimations(animationData,standalone, renderer); }else{ animationManager.searchAnimations(); } } function registerAnimation(elem){ return animationManager.registerAnimation(elem); } function resize(){ animationManager.resize(); } function start(){ animationManager.start(); } function goToAndStop(val,isFrame, animation){ animationManager.goToAndStop(val,isFrame, animation); } function setSubframeRendering(flag){ subframeEnabled = flag; } function loadAnimation(params){ if(standalone === true){ params.animationData = JSON.parse(animationData); } return animationManager.loadAnimation(params); } function destroy(animation){ return animationManager.destroy(animation); } function setQuality(value){ if(typeof value === 'string'){ switch(value){ case 'high': defaultCurveSegments = 200; break; case 'medium': defaultCurveSegments = 50; break; case 'low': defaultCurveSegments = 10; break; } }else if(!isNaN(value) && value > 1){ defaultCurveSegments = value; } if(defaultCurveSegments >= 50){ roundValues(false); }else{ roundValues(true); } } function inBrowser() { return typeof navigator !== 'undefined'; } function installPlugin(type,plugin){ if(type==='expressions'){ expressionsPlugin = plugin; } } function getFactory(name){ switch(name){ case "propertyFactory": return PropertyFactory;case "shapePropertyFactory": return ShapePropertyFactory; case "matrix": return Matrix; } } bodymovinjs.play = play; bodymovinjs.pause = pause; bodymovinjs.togglePause = togglePause; bodymovinjs.setSpeed = setSpeed; bodymovinjs.setDirection = setDirection; bodymovinjs.stop = stop; bodymovinjs.moveFrame = moveFrame; bodymovinjs.searchAnimations = searchAnimations; bodymovinjs.registerAnimation = registerAnimation; bodymovinjs.loadAnimation = loadAnimation; bodymovinjs.setSubframeRendering = setSubframeRendering; bodymovinjs.resize = resize; bodymovinjs.start = start; bodymovinjs.goToAndStop = goToAndStop; bodymovinjs.destroy = destroy; bodymovinjs.setQuality = setQuality; bodymovinjs.inBrowser = inBrowser; bodymovinjs.installPlugin = installPlugin; bodymovinjs.__getFactory = getFactory; bodymovinjs.version = '4.10.0'; function checkReady(){ if (document.readyState === "complete") { clearInterval(readyStateCheckInterval); searchAnimations(); } } function getQueryVariable(variable) { var vars = queryString.split('&'); for (var i = 0; i < vars.length; i++) { var pair = vars[i].split('='); if (decodeURIComponent(pair[0]) == variable) { return decodeURIComponent(pair[1]); } } } var standalone = '__[STANDALONE]__'; var animationData = '__[ANIMATIONDATA]__'; var renderer = ''; if(standalone) { var scripts = document.getElementsByTagName('script'); var index = scripts.length - 1; var myScript = scripts[index] || { src: '' }; var queryString = myScript.src.replace(/^[^\?]+\??/,''); renderer = getQueryVariable('renderer'); } var readyStateCheckInterval = setInterval(checkReady, 100); return bodymovinjs; }));  
+};
+    var bodymovinjs = {};
+
+    function play(animation) {
+        animationManager.play(animation);
+    }
+
+    function pause(animation) {
+        animationManager.pause(animation);
+    }
+
+    function togglePause(animation) {
+        animationManager.togglePause(animation);
+    }
+
+    function setSpeed(value, animation) {
+        animationManager.setSpeed(value, animation);
+    }
+
+    function setDirection(value, animation) {
+        animationManager.setDirection(value, animation);
+    }
+
+    function stop(animation) {
+        animationManager.stop(animation);
+    }
+
+    function moveFrame(value) {
+        animationManager.moveFrame(value);
+    }
+
+    function searchAnimations() {
+        if (standalone === true) {
+            animationManager.searchAnimations(animationData, standalone, renderer);
+        } else {
+            animationManager.searchAnimations();
+        }
+    }
+
+    function registerAnimation(elem) {
+        return animationManager.registerAnimation(elem);
+    }
+
+    function resize() {
+        animationManager.resize();
+    }
+
+    function start() {
+        animationManager.start();
+    }
+
+    function goToAndStop(val, isFrame, animation) {
+        animationManager.goToAndStop(val, isFrame, animation);
+    }
+
+    function setSubframeRendering(flag) {
+        subframeEnabled = flag;
+    }
+
+    function loadAnimation(params) {
+        if (standalone === true) {
+            params.animationData = JSON.parse(animationData);
+        }
+        return animationManager.loadAnimation(params);
+    }
+
+    function destroy(animation) {
+        return animationManager.destroy(animation);
+    }
+
+    function setQuality(value) {
+        if (typeof value === 'string') {
+            switch (value) {
+                case 'high':
+                    defaultCurveSegments = 200;
+                    break;
+                case 'medium':
+                    defaultCurveSegments = 50;
+                    break;
+                case 'low':
+                    defaultCurveSegments = 10;
+                    break;
+            }
+        } else if (!isNaN(value) && value > 1) {
+            defaultCurveSegments = value;
+        }
+        if (defaultCurveSegments >= 50) {
+            roundValues(false);
+        } else {
+            roundValues(true);
+        }
+    }
+
+    function inBrowser() {
+        return typeof navigator !== 'undefined';
+    }
+
+    function installPlugin(type, plugin) {
+        if (type === 'expressions') {
+            expressionsPlugin = plugin;
+        }
+    }
+
+    function getFactory(name) {
+        switch (name) {
+            case "propertyFactory":
+                return PropertyFactory;
+            case "shapePropertyFactory":
+                return ShapePropertyFactory;
+            case "matrix":
+                return Matrix;
+        }
+    }
+    bodymovinjs.play = play;
+    bodymovinjs.pause = pause;
+    bodymovinjs.togglePause = togglePause;
+    bodymovinjs.setSpeed = setSpeed;
+    bodymovinjs.setDirection = setDirection;
+    bodymovinjs.stop = stop;
+    bodymovinjs.moveFrame = moveFrame;
+    bodymovinjs.searchAnimations = searchAnimations;
+    bodymovinjs.registerAnimation = registerAnimation;
+    bodymovinjs.loadAnimation = loadAnimation;
+    bodymovinjs.setSubframeRendering = setSubframeRendering;
+    bodymovinjs.resize = resize;
+    bodymovinjs.start = start;
+    bodymovinjs.goToAndStop = goToAndStop;
+    bodymovinjs.destroy = destroy;
+    bodymovinjs.setQuality = setQuality;
+    bodymovinjs.inBrowser = inBrowser;
+    bodymovinjs.installPlugin = installPlugin;
+    bodymovinjs.__getFactory = getFactory;
+    bodymovinjs.version = '4.10.3';
+
+    function checkReady() {
+        if (document.readyState === "complete") {
+            clearInterval(readyStateCheckInterval);
+            searchAnimations();
+        }
+    }
+
+    function getQueryVariable(variable) {
+        var vars = queryString.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            if (decodeURIComponent(pair[0]) == variable) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+    }
+    var standalone = '__[STANDALONE]__';
+    var animationData = '__[ANIMATIONDATA]__';
+    var renderer = '';
+    if (standalone) {
+        var scripts = document.getElementsByTagName('script');
+        var index = scripts.length - 1;
+        var myScript = scripts[index] || {
+            src: ''
+        };
+        var queryString = myScript.src.replace(/^[^\?]+\??/, '');
+        renderer = getQueryVariable('renderer');
+    }
+    var readyStateCheckInterval = setInterval(checkReady, 100);
+    return bodymovinjs;
+}));

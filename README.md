@@ -1,5 +1,16 @@
 # bodymovin
-After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://github.com/airbnb/lottie-android)  
+After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)  
+
+## V 4.10.3
+- fix for AE CC2014 when reopening App
+- line cap - projecting cap support
+- AVD fix for AE CC2014
+
+## V 4.10.2
+- AVD fixes
+
+## V 4.10.1
+- Expression fix
 
 ## V 4.10.0
 - Lots of new expressions
@@ -11,17 +22,23 @@ After Effects plugin for exporting animations to svg/canvas/html + js or nativel
 - Keyframes interpolation fix for stretched layers
 - inBrowser method added 
 
-## V 4.8.0
-- Fonts fix for Lottie compatibility
-- fonts reduced exported filesize
-- fonts fix for non-zero width character
-- expressions transform separate dimensions fix
-- expression shape rectangle size support
+# Lottie + Bodymovin
+Lottie is the native engine that Airbnb's awesome team built. It uses Bodymovin as the animation exporter and is the ideal complement for getting animations to play natively everywhere.
+Follow these links to get each player:  
+- [Android's player](https://github.com/airbnb/lottie-android)
+- [iOS's player](https://github.com/airbnb/lottie-ios)
+- [React Native's wrapper](https://github.com/airbnb/lottie-react-native)
+
+## Lottie and AVD
+Some animations can be exported for Android using the AVD format.  
+It can fit for some cases where you'll gain a performance improvement.  
+But Lottie brings much more features, a level of animation control and dynamic loading that couldn't be achieved with avd.  
+Here's a [link](http://airbnb.io/lottie/lottie-avd.html) with a full comparison of both technologies.  
 
 # Plugin installation
 
 ### Option 1 (Recommended):
-**Download it from from AE scripts:**
+**Download it from from aescripts + aeplugins:**
 http://aescripts.com/bodymovin/
 
 ### Option 2:

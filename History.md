@@ -1,3 +1,14 @@
+## V 4.10.3
+- fix for AE CC2014 when reopening App
+- line cap - projecting cap support
+- AVD fix for AE CC2014
+
+## V 4.10.2
+- AVD fixes
+
+## V 4.10.1
+- Expression fix
+
 ## V 4.10.0
 - Lots of new expressions
 - Ouroboros 2.0 support! (in beta just in case)
