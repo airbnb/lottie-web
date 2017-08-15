@@ -1,9 +1,8 @@
-<<<<<<< HEAD
-var window=(typeof window === "undefined")?{}:window;(function (root, factory) { if(typeof define === "function" && define.amd) { define( factory); } else if(typeof module === "object" && module.exports) { module.exports = factory(); } else { root.bodymovin = factory(); } }(window, function() {var svgNS = "http://www.w3.org/2000/svg";
-
-var locationHref = '';
-
-=======
+(function (root, factory) {
+    console.log('---------------BODYMOVIN 1000');
+    if(typeof define === "function" && define.amd) {
+        define( factory);
+    } else if(typeof module === "object" && module.exports) {
 var window = (typeof window === "undefined") ? {} : window;
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -15,7 +14,9 @@ var window = (typeof window === "undefined") ? {} : window;
     }
 }(window, function() {
     var svgNS = "http://www.w3.org/2000/svg";
->>>>>>> 26ac03d8c6f9e72f8e5ca8a05cf190191f11a86f
+
+var locationHref = '';
+
 var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -5641,17 +5642,9 @@ HybridRenderer.prototype.updateContainerSize = function () {
 
 HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
 
-<<<<<<< HEAD
 HybridRenderer.prototype.hide = function(){
     this.resizerElem.style.display = 'none';
 };
-=======
-IShapeElement.prototype.lcEnum = {
-    '1': 'butt',
-    '2': 'round',
-    '3': 'square'
-}
->>>>>>> 26ac03d8c6f9e72f8e5ca8a05cf190191f11a86f
 
 HybridRenderer.prototype.show = function(){
     this.resizerElem.style.display = 'block';
@@ -6508,7 +6501,7 @@ IShapeElement.prototype.identityMatrix = new Matrix();
 IShapeElement.prototype.lcEnum = {
     '1': 'butt',
     '2': 'round',
-    '3': 'butt'
+    '3': 'square'
 }
 
 IShapeElement.prototype.ljEnum = {
@@ -7993,10 +7986,6 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
         var opacity = this.filterManager.effectElements[2].p.v/100;
         this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
-<<<<<<< HEAD
-=======
-    this.setParams(params);
->>>>>>> 26ac03d8c6f9e72f8e5ca8a05cf190191f11a86f
 };
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
@@ -10939,7 +10928,6 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
     if(prerender === 'false'){
         params.prerender = false;
     }
-    console.log('animElements:', params)
     this.setParams(params);
 };
 
@@ -13839,7 +13827,10 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
 };
     var bodymovinjs = {};
 
-    function play(animation) {
+    function setLocationHref (href) {
+        locationHref = href;
+    }
+    function play(animation){
         animationManager.play(animation);
     }
 
@@ -13951,6 +13942,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     }
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
+    bodymovinjs.setLocationHref = setLocationHref;
     bodymovinjs.togglePause = togglePause;
     bodymovinjs.setSpeed = setSpeed;
     bodymovinjs.setDirection = setDirection;
