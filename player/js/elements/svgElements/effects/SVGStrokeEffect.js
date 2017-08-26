@@ -33,7 +33,7 @@ SVGStrokeEffect.prototype.initialize = function(){
         mask.appendChild(groupPath);
         this.elem.globalData.defs.appendChild(mask);
         var g = document.createElementNS(svgNS,'g');
-        g.setAttribute('mask','url(#'+id+')');
+        g.setAttribute('mask','url(' + locationHref + '#'+id+')');
         if(elemChildren[0]){
             g.appendChild(elemChildren[0]);
         }

@@ -11,7 +11,10 @@ var window = (typeof window === "undefined") ? {} : window;
     /*<%= contents %>*/
     var bodymovinjs = {};
 
-    function play(animation) {
+    function setLocationHref (href) {
+        locationHref = href;
+    }
+    function play(animation){
         animationManager.play(animation);
     }
 
@@ -123,6 +126,7 @@ var window = (typeof window === "undefined") ? {} : window;
     }
     bodymovinjs.play = play;
     bodymovinjs.pause = pause;
+    bodymovinjs.setLocationHref = setLocationHref;
     bodymovinjs.togglePause = togglePause;
     bodymovinjs.setSpeed = setSpeed;
     bodymovinjs.setDirection = setDirection;

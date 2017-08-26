@@ -100,7 +100,7 @@ function MaskElement(data,element,globalData) {
             mask.setAttribute('id',layerId+'_'+count);
             mask.appendChild(path);
             defs.appendChild(mask);
-            g.setAttribute('mask','url(#'+layerId+'_'+count+')');
+            g.setAttribute('mask','url(' + locationHref + '#'+layerId+'_'+count+')');
 
             currentMasks.length = 0;
             currentMasks.push(g);
@@ -133,7 +133,7 @@ function MaskElement(data,element,globalData) {
 
     this.maskElement.setAttribute('id', layerId);
     if(count > 0){
-        this.element.maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
+        this.element.maskedElement.setAttribute(maskRef, "url(" + locationHref + "#" + layerId + ")");
     }
 
     defs.appendChild(this.maskElement);
@@ -170,7 +170,7 @@ MaskElement.prototype.renderFrame = function (finalMat) {
                 if(this.storedData[i].x.v < 0){
                     if(this.storedData[i].lastOperator !== 'erode'){
                         this.storedData[i].lastOperator = 'erode';
-                        this.storedData[i].elem.setAttribute('filter','url(#'+this.storedData[i].filterId+')');
+                        this.storedData[i].elem.setAttribute('filter','url(' + locationHref + '#'+this.storedData[i].filterId+')');
                     }
                     feMorph.setAttribute('radius',-this.storedData[i].x.v);
                 }else{
