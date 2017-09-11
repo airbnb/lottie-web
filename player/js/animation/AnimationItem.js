@@ -340,14 +340,23 @@ AnimationItem.prototype.playAudioVideo = function (elements,action,goToTime) {
 
                     if (elements[i].baseElement.getElementsByTagName('video').length != 0) {
                         if (action == 'play') {
-                            elements[i].baseElement.getElementsByTagName('video')[0].play();
+                            videoCount = elements[i].baseElement.getElementsByTagName('video').length
+                            for (a = 0; a < videoCount; a++) {
+                                elements[i].baseElement.getElementsByTagName('video')[a].play();
+                            }
                         }
                         else if (action == 'pause') {
-                            elements[i].baseElement.getElementsByTagName('video')[0].pause();
+                            videoCount = elements[i].baseElement.getElementsByTagName('video').length;
+                            for (a = 0; a < videoCount; a++) {
+                                elements[i].baseElement.getElementsByTagName('video')[a].pause();
+                            }
                         }
                         else if (action == 'goToTime') {
-                            elements[i].baseElement.getElementsByTagName('video')[0].currentTime = goToTime;
-                            // if (elements[i].baseElement.getElementsByTagName('video')[0].readyState >= elements[i].baseElement.getElementsByTagName('video')[0].HAVE_METADATA)
+                            videoCount = elements[i].baseElement.getElementsByTagName('video').length;
+                            for (a = 0; a < videoCount; a++) {
+                                elements[i].baseElement.getElementsByTagName('video')[a].currentTime = goToTime;
+                                // if (elements[i].baseElement.getElementsByTagName('video')[0].readyState >= elements[i].baseElement.getElementsByTagName('video')[0].HAVE_METADATA)
+                            }
                         }
                     }
                     else if (elements[i].baseElement.getElementsByTagName('audio').length != 0) {
@@ -570,7 +579,9 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
         if (data.ip - data.st <= (value - this.layers[i].st) && data.op - data.st > (value - this.layers[i].st)) {
             //we want to find the relative time of the video (in the current layer) so we take the value and minus the in point time
             //after that we dvide by 24 to get seconds instead of frames.
+
             if (typeof this.projectInterface.compositions[0].elements[i].elements == "object") {
+
                 var goToTime = (value - data.ip) /24;
                 if (this.projectInterface.compositions[0].elements[i].elements[0]) {
                     this.playAudioVideo(this.projectInterface.compositions[0].elements[i].elements, 'pause', null);

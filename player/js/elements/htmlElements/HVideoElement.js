@@ -94,8 +94,11 @@ HVideoElement.prototype.createElements = function(){
         cont.setAttribute('height',this.assetData.h);
 
         // console.log(this.parentContainer.attributes);
-        if (this.parentContainer.getElementsByTagName('g').item(0) != undefined)
-        cont.setAttribute('style','clip-path:'+this.parentContainer.getElementsByTagName('g').item(0).attributes.item(0).textContent);
+        if (this.parentContainer.getElementsByTagName('g').item(0) != undefined){
+            if (this.parentContainer.getElementsByTagName('g').item(0).attributes.item(0) != undefined) {
+                cont.setAttribute('style', 'clip-path:' + this.parentContainer.getElementsByTagName('g').item(0).attributes.item(0).textContent);
+            }
+        }
 
         if (this.parentContainer.attributes.getNamedItem('clip-path') != undefined)
             cont.setAttribute('style','-webkit-mask:'+this.parentContainer.attributes.getNamedItem('clip-path').textContent);
