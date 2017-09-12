@@ -43,6 +43,7 @@ HVideoElement.prototype.createElements = function(){
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
         cont.setAttribute('objectfit','fill');
+
         parent.appendChild(cont);
 
         this.videoElem = document.createElementNS('http://www.w3.org/1999/xhtml','source');
@@ -93,6 +94,7 @@ HVideoElement.prototype.createElements = function(){
         cont.setAttribute('playsinline',''); //for iphone support
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
+        cont.setAttribute('objectfit','fill');
 
         // console.log(this.parentContainer.attributes);
         if (this.parentContainer.getElementsByTagName('g').item(0) != undefined){
