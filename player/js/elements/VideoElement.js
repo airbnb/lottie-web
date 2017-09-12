@@ -23,6 +23,8 @@ IVideoElement.prototype.createElements = function(){
     cont.setAttribute('playsinline',''); //for iphone support
     cont.setAttribute('width',this.assetData.w);
     cont.setAttribute('height',this.assetData.h);
+    cont.setAttribute('objectfit','fill');
+
 
     // console.log(this.parentContainer.farthestViewportElement);
     // if (this.parentContainer.getElementsByTagName('g').item(0) != undefined)
