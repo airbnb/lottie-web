@@ -42,7 +42,8 @@ HVideoElement.prototype.createElements = function(){
         cont.setAttribute('playsinline',''); //for iphone support
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
-        cont.setAttribute('objectFit','fill');
+        cont.setAttribute('style','object-fit: fill');
+
 
         parent.appendChild(cont);
 
@@ -94,7 +95,7 @@ HVideoElement.prototype.createElements = function(){
         cont.setAttribute('playsinline',''); //for iphone support
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
-        cont.setAttribute('objectFit','fill');
+        cont.setAttribute('style','object-fit: fill');
 
         // console.log(this.parentContainer.attributes);
         if (this.parentContainer.getElementsByTagName('g').item(0) != undefined){
