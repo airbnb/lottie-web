@@ -39,6 +39,7 @@ HVideoElement.prototype.createElements = function(){
 
         cont.setAttribute('muted',''); //iphone suuport - we need to mute audio to allow play/stop video from js
         cont.setAttribute('preload','');
+        cont.setAttribute('loop','loop');
         cont.setAttribute('playsinline',''); //for iphone support
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
@@ -92,6 +93,7 @@ HVideoElement.prototype.createElements = function(){
 
         cont.setAttribute('muted',''); //iphone suuport - we need to mute audio to allow play/stop video from js
         cont.setAttribute('preload','');
+        cont.setAttribute('loop','loop');
         cont.setAttribute('playsinline',''); //for iphone support
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);

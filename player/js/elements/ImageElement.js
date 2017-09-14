@@ -15,6 +15,7 @@ IImageElement.prototype.createElements = function(){
     this.innerElem.setAttribute('height',this.assetData.h+"px");
     this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
     this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+    this.innerElem.style.border =  '1px solid transparent';
     this.maskedElement = this.innerElem;
     this.layerElement.appendChild(this.innerElem);
     if(this.data.ln){

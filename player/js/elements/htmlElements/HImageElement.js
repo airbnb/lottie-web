@@ -21,6 +21,7 @@ HImageElement.prototype.createElements = function(){
         this.imageElem.setAttribute('width',this.assetData.w+"px");
         this.imageElem.setAttribute('height',this.assetData.h+"px");
         this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+        this.imageElem.style.border = '1px solid transparent';
         cont.appendChild(this.imageElem);
         this.layerElement = parent;
         this.transformedElement = parent;
@@ -29,6 +30,7 @@ HImageElement.prototype.createElements = function(){
         this.maskedElement = this.imageElem;
     } else {
         styleDiv(img);
+        img.style.border = '1px solid transparent';
         this.layerElement = img;
         this.baseElement = img;
         this.innerElem = img;
