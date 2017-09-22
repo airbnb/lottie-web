@@ -8,7 +8,8 @@ function SVGRenderer(animationItem, config){
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
         progressiveLoad: (config && config.progressiveLoad) || false,
-        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
+        viewBoxOnly: (config && config.viewBoxOnly) || false
     };
     this.globalData.renderConfig = this.renderConfig;
     this.elements = [];
@@ -49,7 +50,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.layerElement = document.createElementNS(svgNS,'svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
-    if(!animData.viewBoxOnly) {
+    if(!this.renderConfig.viewBoxOnly) {
         this.layerElement.setAttribute('width',animData.w);
         this.layerElement.setAttribute('height',animData.h);
         this.layerElement.style.width = '100%';
