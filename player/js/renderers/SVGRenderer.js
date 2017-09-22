@@ -8,7 +8,8 @@ function SVGRenderer(animationItem, config){
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
         progressiveLoad: (config && config.progressiveLoad) || false,
-        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
+        viewBoxOnly: (config && config.viewBoxOnly) || false
     };
     this.globalData.renderConfig = this.renderConfig;
     this.elements = [];
@@ -48,12 +49,14 @@ SVGRenderer.prototype.createSolid = function (data) {
 SVGRenderer.prototype.configAnimation = function(animData){
     this.layerElement = document.createElementNS(svgNS,'svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.layerElement.setAttribute('width',animData.w);
-    this.layerElement.setAttribute('height',animData.h);
     this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    if(!this.renderConfig.viewBoxOnly) {
+        this.layerElement.setAttribute('width',animData.w);
+        this.layerElement.setAttribute('height',animData.h);
+        this.layerElement.style.width = '100%';
+        this.layerElement.style.height = '100%';
+    }
     this.layerElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
-    this.layerElement.style.width = '100%';
-    this.layerElement.style.height = '100%';
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
     //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.layerElement);
