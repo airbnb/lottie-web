@@ -1,4 +1,6 @@
-var window = (typeof window === "undefined") ? {} : window;
+if(typeof window === "undefined") { 
+    window = {}; 
+}
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(factory);
