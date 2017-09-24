@@ -172,7 +172,7 @@ BaseElement.prototype.init = function(){
     if(!this.data.sr){
         this.data.sr = 1;
     }
-    this.dynamicProperties = [];
+    this.dynamicProperties = this.dynamicProperties || [];
     if(this.data.ef){
         this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
         //this.effect = this.effectsManager.bind(this.effectsManager);
@@ -238,6 +238,10 @@ BaseElement.prototype.getLayerSize = function(){
 };
 
 BaseElement.prototype.hide = function(){
+
+};
+
+BaseElement.prototype.sourceRectAtTime = function(){
 
 };
 

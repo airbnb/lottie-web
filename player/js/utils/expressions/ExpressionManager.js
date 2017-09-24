@@ -620,6 +620,10 @@ var ExpressionManager = (function(){
             BMMath.seedrandom(randSeed + seed);
         };
 
+        function sourceRectAtTime() {
+            return elem.sourceRectAtTime();
+        }
+
         var time,velocity, value,textIndex,textTotal,selectorValue;
         var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);

@@ -8,6 +8,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.parentContainer = parentContainer;
     this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.placeholder = placeholder;
+    this._sizeChanged = false;
     this.init();
 };
 
