@@ -1,5 +1,5 @@
 function TextAnimatorProperty(textData, renderType, elem){
-    this._mdf = false;
+    this.mdf = false;
     this._firstFrame = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
@@ -96,7 +96,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
 
 TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag){
     this.lettersChangedFlag = lettersChangedFlag;
-    if(!this._mdf && !this._firstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
+    if(!this.mdf && !this._firstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
         return;
     }
     this._firstFrame = false;
@@ -565,10 +565,10 @@ TextAnimatorProperty.prototype.getValue = function(){
     }
     this._frameId = this._elem.globalData.frameId;
 	var i, len = this._dynamicProperties.length;
-    this._mdf = false;
+    this.mdf = false;
 	for(i = 0; i < len; i += 1) {
 		this._dynamicProperties[i].getValue();
-        this._mdf = this._dynamicProperties[i].mdf || this._mdf;
+        this.mdf = this._dynamicProperties[i].mdf || this.mdf;
 	}
 }
 

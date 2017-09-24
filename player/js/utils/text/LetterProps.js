@@ -4,7 +4,7 @@ function LetterProps(o, sw, sc, fc, m, p){
     this.sc = sc;
     this.fc = fc;
     this.m = m;
-    this.props = p;
+    this.p = p;
     this.mdf = {
     	o: true,
     	sw: !!sw,
@@ -49,7 +49,8 @@ LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
 		this.mdf.m = true;
 		updated = true;
 	}
-	if(p.length && (this.p[0] !== p[0] || this.p[1] !== p[1] || this.p[2] !== p[2] || this.p[3] !== p[3] || this.p[4] !== p[4] || this.p[5] !== p[5] || this.p[6] !== p[6])) {
+	if(p.length && (this.p[0] !== p[0] || this.p[1] !== p[1] || this.p[4] !== p[4] || this.p[5] !== p[5] || this.p[12] !== p[12] || this.p[13] !== p[13])) {
+
 		this.p = p;
 		this.mdf.p = true;
 		updated = true;

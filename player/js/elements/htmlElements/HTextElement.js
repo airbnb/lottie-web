@@ -15,7 +15,6 @@ function HTextElement(data,parentContainer,globalData,comp, placeholder){
 createElement(HBaseElement, HTextElement);
 
 HTextElement.prototype.init = ITextElement.prototype.init;
-HTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 HTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 HTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 HTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
@@ -220,12 +219,12 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
 
-    this.getMeasures();
-    if(!this.lettersChangedFlag){
+    this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+    if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
         return;
     }
     var  i,len;
-    var renderedLetters = this.renderedLetters;
+    var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
 
