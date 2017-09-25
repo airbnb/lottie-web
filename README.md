@@ -1,6 +1,12 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)
 
+## V 4.11.0
+- bodymovin.setLocationHref method to set base url for svg fragments
+- optional viewBox only settings on renderConfig
+- sourceRectAtTime support for text on svg renderer
+- text fixes and performance improvements
+
 ## V 4.10.3
 - fix for AE CC2014 when reopening App
 - line cap - projecting cap support
