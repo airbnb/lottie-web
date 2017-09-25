@@ -11,7 +11,7 @@
         }
 
         #bodymovin{
-            background-color:#333;
+            background-color:#fff;
             width:100%;
             height:100%;
             /*width:800px;
@@ -50,6 +50,8 @@
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
+    <script src="js/utils/text/TextAnimatorProperty.js"></script>
+    <script src="js/utils/text/LetterProps.js"></script>
     <script src="js/utils/pooling/pooling.js"></script>
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
@@ -121,7 +123,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false

@@ -20,7 +20,6 @@ function CVTextElement(data, comp, globalData){
 createElement(CVBaseElement, CVTextElement);
 
 CVTextElement.prototype.init = ITextElement.prototype.init;
-CVTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 CVTextElement.prototype.getMult = ITextElement.prototype.getMult;
 CVTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 
@@ -143,11 +142,11 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
     ctx.miterLimit = 4;
 
     if(!this.data.singleShape){
-        this.getMeasures();
+        this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
     }
 
     var  i,len, j, jLen, k, kLen;
-    var renderedLetters = this.renderedLetters;
+    var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
 
@@ -161,7 +160,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
         renderedLetter = renderedLetters[i];
         if(renderedLetter){
             this.globalData.renderer.save();
-            this.globalData.renderer.ctxTransform(renderedLetter.props);
+            this.globalData.renderer.ctxTransform(renderedLetter.p);
             this.globalData.renderer.ctxOpacity(renderedLetter.o);
         }
         if(this.fill){
