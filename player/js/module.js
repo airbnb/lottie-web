@@ -1,15 +1,14 @@
-if(typeof window === "undefined") { 
-    window = {}; 
-}
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(factory);
+        define(function() {
+            return factory(root);
+        });
     } else if (typeof module === "object" && module.exports) {
-        module.exports = factory();
+        module.exports = factory(root);
     } else {
-        root.bodymovin = factory();
+        root.bodymovin = factory(root);
     }
-}(window, function() {
+}((window || {}), function(window) {
     /*<%= contents %>*/
     var bodymovinjs = {};
 
