@@ -1965,7 +1965,8 @@ function dataFunctionManager(){
                 }
                 len = documentData.t.length;
             }
-            lineWidth = 0;
+            var trackingOffset = documentData.tr/1000*documentData.s;
+            lineWidth = - trackingOffset;
             cLength = 0;
             for (i = 0;i < len ;i += 1) {
                 newLineFlag = false;
@@ -1974,7 +1975,7 @@ function dataFunctionManager(){
                 }else if(documentData.t.charCodeAt(i) === 13){
                     lineWidths.push(lineWidth);
                     maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
-                    lineWidth = 0;
+                    lineWidth = - 2 * trackingOffset;
                     val = '';
                     newLineFlag = true;
                     currentLine += 1;
@@ -1991,7 +1992,7 @@ function dataFunctionManager(){
                 }
 
                 //
-                lineWidth += cLength;
+                lineWidth += cLength + trackingOffset;
                 letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
                 if(anchorGrouping == 2){
                     currentSize += cLength;
@@ -7303,6 +7304,7 @@ SVGTextElement.prototype.buildNewText = function(){
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
     if (singleShape) {
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
+        var trackingOffset = documentData.tr/1000*documentData.s;
     }
     var cnt = 0;
     for (i = 0;i < len ;i += 1) {
@@ -7319,7 +7321,7 @@ SVGTextElement.prototype.buildNewText = function(){
         tSpan.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(singleShape && letters[i].n) {
-            xPos = 0;
+            xPos = -trackingOffset;
             yPos += documentData.yOffset;
             yPos += firstLine ? 1 : 0;
             firstLine = false;
@@ -7338,7 +7340,7 @@ SVGTextElement.prototype.buildNewText = function(){
                     matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
                     break;
                 case 2:
-                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
+                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line] )/2,0,0);
                     break;
             }
             matrixHelper.translate(xPos, yPos, 0);
@@ -7375,7 +7377,7 @@ SVGTextElement.prototype.buildNewText = function(){
         }
         if(singleShape) {
             xPos += letters[i].l || 0;
-            xPos += documentData.tr/1000*documentData.s;
+            xPos += trackingOffset;
         }
         //
         this.textSpans[cnt] = tSpan;
@@ -7416,7 +7418,7 @@ SVGTextElement.prototype.renderLetters = function(){
         this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
         if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag){
             this._sizeChanged = true;
-            var  i,len;
+            var  i,len,count=0;
             var renderedLetters = this.textAnimator.renderedLetters;
 
             var letters = this.currentTextDocumentData.l;
@@ -7427,7 +7429,8 @@ SVGTextElement.prototype.renderLetters = function(){
                 if(letters[i].n){
                     continue;
                 }
-                renderedLetter = renderedLetters[i];
+                renderedLetter = renderedLetters[count];
+                count += 1;
                 if(renderedLetter.mdf.m) {
                     this.textSpans[i].setAttribute('transform',renderedLetter.m);
                 }
@@ -9368,31 +9371,32 @@ HybridRenderer.prototype.checkPendingElements  = function(){
 };
 
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
-    var newElement = element.getBaseElement();
-    if(!newElement){
+    var newDOMElement = element.getBaseElement();
+    if(!newDOMElement){
         return;
     }
     var layer = this.layers[pos];
     if(!layer.ddd || !this.supports3d){
         var i = 0;
-        var nextElement;
+        var nextDOMElement, nextLayer;
         while(i<pos){
             if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
-                nextElement = this.elements[i].getBaseElement();
+                nextLayer = this.elements[i];
+                nextDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
             }
             i += 1;
         }
-        if(nextElement){
+        if(nextDOMElement){
             if(!layer.ddd || !this.supports3d){
-                this.layerElement.insertBefore(newElement, nextElement);
+                this.layerElement.insertBefore(newDOMElement, nextDOMElement);
             }
         } else {
             if(!layer.ddd || !this.supports3d){
-                this.layerElement.appendChild(newElement);
+                this.layerElement.appendChild(newDOMElement);
             }
         }
     } else {
-        this.addTo3dContainer(newElement,pos);
+        this.addTo3dContainer(newDOMElement,pos);
     }
 };
 
@@ -9442,7 +9446,17 @@ HybridRenderer.prototype.createSolid = function (data) {
     return new HSolidElement(data, this.layerElement,this.globalData,this);
 };
 
-HybridRenderer.prototype.getThreeDContainer = function(pos){
+HybridRenderer.prototype.getThreeDContainerByPos = function(pos){
+    var i = 0, len = this.threeDElements.length;
+    while(i<len) {
+        if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
+            return this.threeDElements[i].perspectiveElem;
+        }
+        i += 1;
+    }
+}
+
+HybridRenderer.prototype.createThreeDContainer = function(pos){
     var perspectiveElem = document.createElement('div');
     styleDiv(perspectiveElem);
     perspectiveElem.style.width = this.globalData.compSize.w+'px';
@@ -9469,7 +9483,7 @@ HybridRenderer.prototype.build3dContainers = function(){
     for(i=0;i<len;i+=1){
         if(this.layers[i].ddd){
             if(!lastThreeDContainerData){
-                lastThreeDContainerData = this.getThreeDContainer(i);
+                lastThreeDContainerData = this.createThreeDContainer(i);
             }
             lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
         } else {
@@ -10685,7 +10699,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
         this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
     }
 
-    var  i,len, j, jLen, k, kLen;
+    var  i,len, j, jLen, k, kLen,count=0;
     var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
@@ -10697,7 +10711,8 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
         if(letters[i].n){
             continue;
         }
-        renderedLetter = renderedLetters[i];
+        renderedLetter = renderedLetters[count];
+        count += 1;
         if(renderedLetter){
             this.globalData.renderer.save();
             this.globalData.renderer.ctxTransform(renderedLetter.p);
@@ -11373,7 +11388,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
     if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
         return;
     }
-    var  i,len;
+    var  i,len, count = 0;
     var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
@@ -11384,7 +11399,8 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         if(letters[i].n){
             continue;
         }
-        renderedLetter = renderedLetters[i];
+        renderedLetter = renderedLetters[count];
+        count += 1;
         if(!this.isMasked){
             this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
         }else{
@@ -14092,7 +14108,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.11.0';
+    bodymovinjs.version = '4.11.1';
 
     function checkReady() {
         if (document.readyState === "complete") {

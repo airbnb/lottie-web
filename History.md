@@ -1,3 +1,8 @@
+## V 4.11.1
+- 3d and 2d layers html renderer fix
+- text new lines fix
+- text tracking with alignment fix
+
 ## V 4.11.0
 - bodymovin.setLocationHref method to set base url for svg fragments
 - optional viewBox only settings on renderConfig
