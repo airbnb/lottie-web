@@ -568,7 +568,6 @@ function dataFunctionManager(){
                 len = documentData.t.length;
             }
             var trackingOffset = documentData.tr/1000*documentData.s;
-            trackingOffset = 0;
             lineWidth = - trackingOffset;
             cLength = 0;
             for (i = 0;i < len ;i += 1) {
@@ -578,7 +577,7 @@ function dataFunctionManager(){
                 }else if(documentData.t.charCodeAt(i) === 13){
                     lineWidths.push(lineWidth);
                     maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
-                    lineWidth = 0;
+                    lineWidth = - 2 * trackingOffset;
                     val = '';
                     newLineFlag = true;
                     currentLine += 1;
@@ -654,9 +653,6 @@ function dataFunctionManager(){
             }
             documentData.lineWidths = lineWidths;
 
-            //ToDo REMOVE!!
-            //data.t.a = [];
-            //
             var animators = data.t.a;
             jLen = animators.length;
             var based, ind, indexes = [];
