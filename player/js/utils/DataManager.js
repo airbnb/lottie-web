@@ -567,7 +567,9 @@ function dataFunctionManager(){
                 }
                 len = documentData.t.length;
             }
-            lineWidth = 0;
+            var trackingOffset = documentData.tr/1000*documentData.s;
+            trackingOffset = 0;
+            lineWidth = - trackingOffset;
             cLength = 0;
             for (i = 0;i < len ;i += 1) {
                 newLineFlag = false;
@@ -593,7 +595,7 @@ function dataFunctionManager(){
                 }
 
                 //
-                lineWidth += cLength;
+                lineWidth += cLength + trackingOffset;
                 letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
                 if(anchorGrouping == 2){
                     currentSize += cLength;
@@ -652,6 +654,9 @@ function dataFunctionManager(){
             }
             documentData.lineWidths = lineWidths;
 
+            //ToDo REMOVE!!
+            //data.t.a = [];
+            //
             var animators = data.t.a;
             jLen = animators.length;
             var based, ind, indexes = [];

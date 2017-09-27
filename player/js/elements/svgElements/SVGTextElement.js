@@ -137,6 +137,7 @@ SVGTextElement.prototype.buildNewText = function(){
         //
         this.textSpans[cnt] = tSpan;
         cnt += 1;
+        console.log(matrixHelper.props)
     }
     if(!singleShape){
         while(cnt < this.textSpans.length){
@@ -173,7 +174,7 @@ SVGTextElement.prototype.renderLetters = function(){
         this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
         if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag){
             this._sizeChanged = true;
-            var  i,len;
+            var  i,len,count=0;
             var renderedLetters = this.textAnimator.renderedLetters;
 
             var letters = this.currentTextDocumentData.l;
@@ -184,7 +185,8 @@ SVGTextElement.prototype.renderLetters = function(){
                 if(letters[i].n){
                     continue;
                 }
-                renderedLetter = renderedLetters[i];
+                renderedLetter = renderedLetters[count];
+                count += 1;
                 if(renderedLetter.mdf.m) {
                     this.textSpans[i].setAttribute('transform',renderedLetter.m);
                 }

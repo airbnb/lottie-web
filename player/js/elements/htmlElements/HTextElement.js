@@ -223,7 +223,7 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
     if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
         return;
     }
-    var  i,len;
+    var  i,len, count = 0;
     var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
@@ -234,7 +234,8 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         if(letters[i].n){
             continue;
         }
-        renderedLetter = renderedLetters[i];
+        renderedLetter = renderedLetters[count];
+        count += 1;
         if(!this.isMasked){
             this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
         }else{
