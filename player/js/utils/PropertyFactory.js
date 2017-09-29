@@ -388,7 +388,6 @@ var PropertyFactory = (function(){
                     this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
                 }
             }
-            //console.log(this.v.to2dCSS())
             this.frameId = this.elem.globalData.frameId;
         }
 

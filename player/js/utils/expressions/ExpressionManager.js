@@ -338,7 +338,7 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var toWorld,fromWorld,anchorPoint,thisLayer,thisComp;
+        var toWorld,fromWorld,fromComp,anchorPoint,thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
@@ -650,6 +650,7 @@ var ExpressionManager = (function(){
                 thisComp = elem.comp.compInterface;
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
+                fromComp = thisLayer.fromComp.bind(thisLayer);
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
