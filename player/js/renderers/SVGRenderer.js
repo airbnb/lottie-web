@@ -9,7 +9,8 @@ function SVGRenderer(animationItem, config){
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
         progressiveLoad: (config && config.progressiveLoad) || false,
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
-        viewBoxOnly: (config && config.viewBoxOnly) || false
+        viewBoxOnly: (config && config.viewBoxOnly) || false,
+        className: (config && config.className) || ''
     };
     this.globalData.renderConfig = this.renderConfig;
     this.elements = [];
@@ -55,6 +56,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
         this.layerElement.setAttribute('height',animData.h);
         this.layerElement.style.width = '100%';
         this.layerElement.style.height = '100%';
+    }
+    if(this.renderConfig.className) {
+        this.layerElement.setAttribute('class', this.renderConfig.className);
     }
     this.layerElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
