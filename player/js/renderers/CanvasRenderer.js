@@ -4,7 +4,8 @@ function CanvasRenderer(animationItem, config){
         clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
         context: (config && config.context) || null,
         progressiveLoad: (config && config.progressiveLoad) || false,
-        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet'
+        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
+        displayBlock: (config && config.displayBlock) || false
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {
@@ -144,6 +145,9 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
         this.canvasContext = this.animationItem.container.getContext('2d');
+        if(this.renderConfig.displayBlock) {
+            this.animationItem.container.style.display = 'block';
+        }
     }else{
         this.canvasContext = this.renderConfig.context;
     }
