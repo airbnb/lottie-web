@@ -145,7 +145,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
         this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
     }
 
-    var  i,len, j, jLen, k, kLen,count=0;
+    var  i,len, j, jLen, k, kLen;
     var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
@@ -157,8 +157,7 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
         if(letters[i].n){
             continue;
         }
-        renderedLetter = renderedLetters[count];
-        count += 1;
+        renderedLetter = renderedLetters[i];
         if(renderedLetter){
             this.globalData.renderer.save();
             this.globalData.renderer.ctxTransform(renderedLetter.p);

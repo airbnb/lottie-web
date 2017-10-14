@@ -50,7 +50,6 @@ LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
 		updated = true;
 	}
 	if(p.length && (this.p[0] !== p[0] || this.p[1] !== p[1] || this.p[4] !== p[4] || this.p[5] !== p[5] || this.p[12] !== p[12] || this.p[13] !== p[13])) {
-
 		this.p = p;
 		this.mdf.p = true;
 		updated = true;

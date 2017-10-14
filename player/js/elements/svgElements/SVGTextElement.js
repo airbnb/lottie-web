@@ -174,7 +174,7 @@ SVGTextElement.prototype.renderLetters = function(){
         this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
         if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag){
             this._sizeChanged = true;
-            var  i,len,count=0;
+            var  i,len;
             var renderedLetters = this.textAnimator.renderedLetters;
 
             var letters = this.currentTextDocumentData.l;
@@ -185,8 +185,7 @@ SVGTextElement.prototype.renderLetters = function(){
                 if(letters[i].n){
                     continue;
                 }
-                renderedLetter = renderedLetters[count];
-                count += 1;
+                renderedLetter = renderedLetters[i];
                 if(renderedLetter.mdf.m) {
                     this.textSpans[i].setAttribute('transform',renderedLetter.m);
                 }

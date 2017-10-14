@@ -189,7 +189,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var firstLine = true;
     var animatorProps, animatorSelector;
     var j, jLen;
-    var lettersValue = Array.apply(null,{length:len}), letterValue;
+    var letterValue;
 
     jLen = animators.length;
     if (lettersChangedFlag) {
@@ -225,7 +225,8 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 partialLength = currentPoint.partialLength;
                 segmentLength = 0;
             }
-            lettersValue[i] = this.emptyProp;
+            letterO = letterSw = letterFc = letterM = '';
+            letterP = this.defaultPropsArray;
         }else{
             if(this._hasMaskedPath) {
                 if(currentLine !== letters[i].line){
@@ -438,8 +439,6 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                                 fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0];
                             } else {
                                 fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult;
-                                //console.log('mult',mult);
-                                //console.log(Math.round(fc[k] + (animatorProps.fc.v[k] - fc[k])*mult));
                             }
                         }
                     }
@@ -545,16 +544,16 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5],matrixHelper.props[6],matrixHelper.props[7],matrixHelper.props[8],matrixHelper.props[9],matrixHelper.props[10],matrixHelper.props[11],matrixHelper.props[12],matrixHelper.props[13],matrixHelper.props[14],matrixHelper.props[15]];
             }
             letterO = elemOpacity;
+        }
 
-            if(renderedLettersCount <= i) {
-                letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM,letterP);
-                this.renderedLetters.push(letterValue);
-                renderedLettersCount += 1;
-                this.lettersChangedFlag = true;
-            } else {
-                letterValue = this.renderedLetters[i];
-                this.lettersChangedFlag = letterValue.update(letterO, letterSw, letterSc, letterFc, letterM, letterP) || this.lettersChangedFlag;
-            }
+        if(renderedLettersCount <= i) {
+            letterValue = new LetterProps(letterO,letterSw,letterSc,letterFc,letterM,letterP);
+            this.renderedLetters.push(letterValue);
+            renderedLettersCount += 1;
+            this.lettersChangedFlag = true;
+        } else {
+            letterValue = this.renderedLetters[i];
+            this.lettersChangedFlag = letterValue.update(letterO, letterSw, letterSc, letterFc, letterM, letterP) || this.lettersChangedFlag;
         }
     }
 }
