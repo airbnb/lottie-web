@@ -41,6 +41,7 @@ HImageElement.prototype.createElements = function(){
     this.checkParenting();
 };
 
+HImageElement.prototype.show = HSolidElement.prototype.show;
 HImageElement.prototype.hide = HSolidElement.prototype.hide;
 HImageElement.prototype.renderFrame = HSolidElement.prototype.renderFrame;
 HImageElement.prototype.destroy = HSolidElement.prototype.destroy;
