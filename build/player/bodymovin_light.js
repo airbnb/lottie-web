@@ -1501,10 +1501,10 @@ function dataFunctionManager(){
     function convertPathsToAbsoluteValues(path){
         var i, len = path.i.length;
         for(i=0;i<len;i+=1){
-            path.i[i][0] += path.v[i][0];
+            /*path.i[i][0] += path.v[i][0];
             path.i[i][1] += path.v[i][1];
             path.o[i][0] += path.v[i][0];
-            path.o[i][1] += path.v[i][1];
+            path.o[i][1] += path.v[i][1];*/
         }
     }
 
@@ -1570,7 +1570,7 @@ function dataFunctionManager(){
     var checkChars = (function() {
         var minimumVersion = [4,7,99];
         return function (animationData){
-            if(animationData.chars && !checkVersion(minimumVersion,animationData.v)){
+            if(animationData.chars && checkVersion(minimumVersion,animationData.v)){
                 var i, len = animationData.chars.length, j, jLen, k, kLen;
                 var pathData, paths;
                 for(i = 0; i < len; i += 1) {
@@ -3338,6 +3338,32 @@ var ShapePropertyFactory = (function(){
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
+    }
+
+    ShapeProperty.prototype.vertices = function(prop){
+        var i, len = this.v._length;
+        var vertices = this.v[prop];
+        var arr = Array.apply(null,{length:len})
+        for(i = 0; i < len; i += 1) {
+            arr[i] = [vertices[i][0],vertices[i][1]]
+        }
+        return arr;
+    }
+
+    ShapeProperty.prototype.points = function(){
+        return this.vertices('v');
+    }
+
+    ShapeProperty.prototype.inTangents = function(){
+        return this.vertices('i');
+    }
+
+    ShapeProperty.prototype.outTangents = function(){
+        return this.vertices('o');
+    }
+
+    ShapeProperty.prototype.isClosed = function(){
+        return this.v.c;
     }
 
     function KeyframedShapeProperty(elem,data,type){
@@ -5903,11 +5929,11 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     len = pathNodes._length;
     for(i=1;i<len;i+=1){
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
-        pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[i][0])+','+bm_rnd(pathNodes.i[i][1]) + " "+bm_rnd(pathNodes.v[i][0])+','+bm_rnd(pathNodes.v[i][1]);
+        pathString += " C"+bm_rnd(pathNodes.v[i-1][0] + pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.v[i-1][1] + pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.v[i][0] + pathNodes.i[i][0])+','+bm_rnd(pathNodes.v[i][1] + pathNodes.i[i][1]) + " "+bm_rnd(pathNodes.v[i][0])+','+bm_rnd(pathNodes.v[i][1]);
     }
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
     if(pathNodes.c && len > 1){
-        pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[0][0])+','+bm_rnd(pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
+        pathString += " C"+bm_rnd(pathNodes.v[i-1][0] + pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.v[i-1][1] + pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.v[0][0] + pathNodes.i[0][0])+','+bm_rnd(pathNodes.v[0][1] + pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
     }
     //pathNodes.__renderedString = pathString;
 
@@ -6990,13 +7016,13 @@ IShapeElement.prototype.buildShapeString = function(pathNodes, length, closed, m
         if (i === 1) {
             shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         }
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+        shapeString += " C" + mat.applyToPointStringified(pathNodes.v[i - 1][0] + pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0] + pathNodes.i[i][0], pathNodes.v[i][1] +  pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
     }
     if (length === 1) {
         shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
     }
     if (closed && length) {
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+        shapeString += " C" + mat.applyToPointStringified(pathNodes.v[i - 1][0] + pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0] + pathNodes.i[0][0], pathNodes.v[0][1] +  pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         shapeString += 'z';
     }
     return shapeString;

@@ -1501,10 +1501,10 @@ function dataFunctionManager(){
     function convertPathsToAbsoluteValues(path){
         var i, len = path.i.length;
         for(i=0;i<len;i+=1){
-            path.i[i][0] += path.v[i][0];
+            /*path.i[i][0] += path.v[i][0];
             path.i[i][1] += path.v[i][1];
             path.o[i][0] += path.v[i][0];
-            path.o[i][1] += path.v[i][1];
+            path.o[i][1] += path.v[i][1];*/
         }
     }
 
@@ -1570,7 +1570,7 @@ function dataFunctionManager(){
     var checkChars = (function() {
         var minimumVersion = [4,7,99];
         return function (animationData){
-            if(animationData.chars && !checkVersion(minimumVersion,animationData.v)){
+            if(animationData.chars && checkVersion(minimumVersion,animationData.v)){
                 var i, len = animationData.chars.length, j, jLen, k, kLen;
                 var pathData, paths;
                 for(i = 0; i < len; i += 1) {
@@ -3338,6 +3338,32 @@ var ShapePropertyFactory = (function(){
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
+    }
+
+    ShapeProperty.prototype.vertices = function(prop){
+        var i, len = this.v._length;
+        var vertices = this.v[prop];
+        var arr = Array.apply(null,{length:len})
+        for(i = 0; i < len; i += 1) {
+            arr[i] = [vertices[i][0],vertices[i][1]]
+        }
+        return arr;
+    }
+
+    ShapeProperty.prototype.points = function(){
+        return this.vertices('v');
+    }
+
+    ShapeProperty.prototype.inTangents = function(){
+        return this.vertices('i');
+    }
+
+    ShapeProperty.prototype.outTangents = function(){
+        return this.vertices('o');
+    }
+
+    ShapeProperty.prototype.isClosed = function(){
+        return this.v.c;
     }
 
     function KeyframedShapeProperty(elem,data,type){
@@ -5903,11 +5929,11 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     len = pathNodes._length;
     for(i=1;i<len;i+=1){
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
-        pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[i][0])+','+bm_rnd(pathNodes.i[i][1]) + " "+bm_rnd(pathNodes.v[i][0])+','+bm_rnd(pathNodes.v[i][1]);
+        pathString += " C"+bm_rnd(pathNodes.v[i-1][0] + pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.v[i-1][1] + pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.v[i][0] + pathNodes.i[i][0])+','+bm_rnd(pathNodes.v[i][1] + pathNodes.i[i][1]) + " "+bm_rnd(pathNodes.v[i][0])+','+bm_rnd(pathNodes.v[i][1]);
     }
         //pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
     if(pathNodes.c && len > 1){
-        pathString += " C"+bm_rnd(pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.i[0][0])+','+bm_rnd(pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
+        pathString += " C"+bm_rnd(pathNodes.v[i-1][0] + pathNodes.o[i-1][0])+','+bm_rnd(pathNodes.v[i-1][1] + pathNodes.o[i-1][1]) + " "+bm_rnd(pathNodes.v[0][0] + pathNodes.i[0][0])+','+bm_rnd(pathNodes.v[0][1] + pathNodes.i[0][1]) + " "+bm_rnd(pathNodes.v[0][0])+','+bm_rnd(pathNodes.v[0][1]);
     }
     //pathNodes.__renderedString = pathString;
 
@@ -6990,13 +7016,13 @@ IShapeElement.prototype.buildShapeString = function(pathNodes, length, closed, m
         if (i === 1) {
             shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         }
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+        shapeString += " C" + mat.applyToPointStringified(pathNodes.v[i - 1][0] + pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0] + pathNodes.i[i][0], pathNodes.v[i][1] +  pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
     }
     if (length === 1) {
         shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
     }
     if (closed && length) {
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+        shapeString += " C" + mat.applyToPointStringified(pathNodes.v[i - 1][0] + pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0] + pathNodes.i[0][0], pathNodes.v[0][1] +  pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         shapeString += 'z';
     }
     return shapeString;
@@ -10056,13 +10082,13 @@ CVMaskElement.prototype.renderFrame = function (transform) {
         ctx.moveTo(pt[0], pt[1]);
         var j, jLen = data._length;
         for (j = 1; j < jLen; j++) {
-            pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-            pt2 = transform ? transform.applyToPointArray(data.i[j][0],data.i[j][1],0) : data.i[j];
+            pt = transform ? transform.applyToPointArray(data.v[j - 1][0] + data.o[j - 1][0],data.v[j - 1][1] + data.o[j - 1][1],0) : [data.v[j - 1][0] + data.o[j - 1][0], data.v[j - 1][1] + data.o[j - 1][1]];
+            pt2 = transform ? transform.applyToPointArray(data.v[j][0] + data.i[j][0],data.v[j][1] + data.i[j][1],0) : [data.v[j][0] + data.i[j][0], data.v[j][1] + data.i[j][1]];
             pt3 = transform ? transform.applyToPointArray(data.v[j][0],data.v[j][1],0) : data.v[j];
             ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
         }
-        pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-        pt2 = transform ? transform.applyToPointArray(data.i[0][0],data.i[0][1],0) : data.i[0];
+        pt = transform ? transform.applyToPointArray(data.v[j - 1][0] + data.o[j - 1][0],data.v[j - 1][1] + data.o[j - 1][1],0) : [data.v[j - 1][0] + data.o[j - 1][0], data.v[j - 1][1] + data.o[j - 1][1]];
+        pt2 = transform ? transform.applyToPointArray(data.v[0][0] + data.i[0][0],data.v[0][1] + data.i[0][1],0) : [data.v[0][0] + data.i[0][0], data.v[0][1] + data.i[0][1]];
         pt3 = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0) : data.v[0];
         ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
     }
@@ -10452,8 +10478,8 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
                     }
                     pathStringTransformed.push({
                         t: 'c',
-                        p1: groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransform.mat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
+                        p1: groupTransform.mat.applyToPointArray(pathNodes.v[i - 1][0]+pathNodes.o[i - 1][0], pathNodes.v[i - 1][1]+pathNodes.o[i - 1][1], 0),
+                        p2: groupTransform.mat.applyToPointArray(pathNodes.v[i][0]+pathNodes.i[i][0], pathNodes.v[i][1]+pathNodes.i[i][1], 0),
                         p3: groupTransform.mat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
                     });
                 }
@@ -10466,8 +10492,8 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
                 if (pathNodes.c && len) {
                     pathStringTransformed.push({
                         t: 'c',
-                        p1: groupTransform.mat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransform.mat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
+                        p1: groupTransform.mat.applyToPointArray(pathNodes.v[i - 1][0]+pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1], 0),
+                        p2: groupTransform.mat.applyToPointArray(pathNodes.v[0][0] + pathNodes.i[0][0], pathNodes.v[0][1] + pathNodes.i[0][1], 0),
                         p3: groupTransform.mat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                     pathStringTransformed.push({
@@ -12241,6 +12267,23 @@ var ExpressionManager = (function(){
         return min + rndm*(max-min);
     }
 
+    function createPath(points, inTangents, outTangents, closed) {
+        inTangents = inTangents || points;
+        outTangents = outTangents || points;
+        var path = shape_pool.newShape();
+        var len = points.length;
+        path.setPathData(closed, len);
+        for(i = 0; i < len; i += 1) {
+            path.v[i][0] = points[i][0];
+            path.v[i][1] = points[i][1];
+            path.o[i][0] = outTangents[i][0];
+            path.o[i][1] = outTangents[i][1];
+            path.i[i][0] = inTangents[i][0];
+            path.i[i][1] = inTangents[i][1];
+        }
+        return path
+    }
+
     function initiateExpression(elem,data,property){
         var val = data.x;
         var needsVelocity = /velocity(?![\w\d])/.test(val);
@@ -12254,7 +12297,7 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var toWorld,fromWorld,fromComp,anchorPoint,thisLayer,thisComp;
+        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
@@ -12567,6 +12610,7 @@ var ExpressionManager = (function(){
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
                 fromComp = thisLayer.fromComp.bind(thisLayer);
+                fromCompToSurface = fromComp;
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
@@ -13387,6 +13431,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.path;
                 }
             }
+
             Object.defineProperty(interfaceFunction, 'path', {
                 get: function(){
                     if(prop.k){
@@ -13583,6 +13628,12 @@ var LayerExpressionInterface = (function (){
         Object.defineProperty(_thisLayerFunction, "source", {
             get: function () {
                 return elem.data.refId;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "index", {
+            get: function () {
+                return elem.data.ind;
             }
         });
 
