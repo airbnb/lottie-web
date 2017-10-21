@@ -103,10 +103,10 @@ function dataFunctionManager(){
     function convertPathsToAbsoluteValues(path){
         var i, len = path.i.length;
         for(i=0;i<len;i+=1){
-            /*path.i[i][0] += path.v[i][0];
+            path.i[i][0] += path.v[i][0];
             path.i[i][1] += path.v[i][1];
             path.o[i][0] += path.v[i][0];
-            path.o[i][1] += path.v[i][1];*/
+            path.o[i][1] += path.v[i][1];
         }
     }
 

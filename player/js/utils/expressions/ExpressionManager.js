@@ -334,10 +334,10 @@ var ExpressionManager = (function(){
         for(i = 0; i < len; i += 1) {
             path.v[i][0] = points[i][0];
             path.v[i][1] = points[i][1];
-            path.o[i][0] = outTangents[i][0];
-            path.o[i][1] = outTangents[i][1];
-            path.i[i][0] = inTangents[i][0];
-            path.i[i][1] = inTangents[i][1];
+            path.o[i][0] = outTangents[i][0] + points[i][0];
+            path.o[i][1] = outTangents[i][1] + points[i][1];
+            path.i[i][0] = inTangents[i][0] + points[i][0];
+            path.i[i][1] = inTangents[i][1] + points[i][1];
         }
         return path
     }

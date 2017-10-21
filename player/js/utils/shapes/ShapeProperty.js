@@ -148,9 +148,15 @@ var ShapePropertyFactory = (function(){
     ShapeProperty.prototype.vertices = function(prop){
         var i, len = this.v._length;
         var vertices = this.v[prop];
+        var points = this.v.v;
         var arr = Array.apply(null,{length:len})
         for(i = 0; i < len; i += 1) {
-            arr[i] = [vertices[i][0],vertices[i][1]]
+            if(prop === 'i' || prop === 'o') {
+                arr[i] = [vertices[i][0]-points[i][0],vertices[i][1]-points[i][1]]
+            } else {
+                arr[i] = [vertices[i][0],vertices[i][1]]
+            }
+            
         }
         return arr;
     }
