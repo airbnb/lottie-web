@@ -474,13 +474,13 @@ IShapeElement.prototype.buildShapeString = function(pathNodes, length, closed, m
         if (i === 1) {
             shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         }
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+        shapeString += " C" + mat.applyToPointStringified(pathNodes.v[i - 1][0] + pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0] + pathNodes.i[i][0], pathNodes.v[i][1] +  pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
     }
     if (length === 1) {
         shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
     }
     if (closed && length) {
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+        shapeString += " C" + mat.applyToPointStringified(pathNodes.v[i - 1][0] + pathNodes.o[i - 1][0], pathNodes.v[i - 1][1] + pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0] + pathNodes.i[0][0], pathNodes.v[0][1] +  pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         shapeString += 'z';
     }
     return shapeString;

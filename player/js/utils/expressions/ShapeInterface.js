@@ -744,6 +744,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.path;
                 }
             }
+
             Object.defineProperty(interfaceFunction, 'path', {
                 get: function(){
                     if(prop.k){

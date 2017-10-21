@@ -153,6 +153,12 @@ var LayerExpressionInterface = (function (){
             }
         });
 
+        Object.defineProperty(_thisLayerFunction, "index", {
+            get: function () {
+                return elem.data.ind;
+            }
+        });
+
         Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
         Object.defineProperty(_thisLayerFunction, "content", {
             get: function(){

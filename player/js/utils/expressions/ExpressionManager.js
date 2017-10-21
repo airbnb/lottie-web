@@ -325,6 +325,23 @@ var ExpressionManager = (function(){
         return min + rndm*(max-min);
     }
 
+    function createPath(points, inTangents, outTangents, closed) {
+        inTangents = inTangents || points;
+        outTangents = outTangents || points;
+        var path = shape_pool.newShape();
+        var len = points.length;
+        path.setPathData(closed, len);
+        for(i = 0; i < len; i += 1) {
+            path.v[i][0] = points[i][0];
+            path.v[i][1] = points[i][1];
+            path.o[i][0] = outTangents[i][0];
+            path.o[i][1] = outTangents[i][1];
+            path.i[i][0] = inTangents[i][0];
+            path.i[i][1] = inTangents[i][1];
+        }
+        return path
+    }
+
     function initiateExpression(elem,data,property){
         var val = data.x;
         var needsVelocity = /velocity(?![\w\d])/.test(val);
@@ -338,7 +355,7 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var toWorld,fromWorld,fromComp,anchorPoint,thisLayer,thisComp;
+        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
@@ -651,6 +668,7 @@ var ExpressionManager = (function(){
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
                 fromComp = thisLayer.fromComp.bind(thisLayer);
+                fromCompToSurface = fromComp;
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");

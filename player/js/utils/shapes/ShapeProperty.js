@@ -145,6 +145,32 @@ var ShapePropertyFactory = (function(){
         this.reset = resetShape;
     }
 
+    ShapeProperty.prototype.vertices = function(prop){
+        var i, len = this.v._length;
+        var vertices = this.v[prop];
+        var arr = Array.apply(null,{length:len})
+        for(i = 0; i < len; i += 1) {
+            arr[i] = [vertices[i][0],vertices[i][1]]
+        }
+        return arr;
+    }
+
+    ShapeProperty.prototype.points = function(){
+        return this.vertices('v');
+    }
+
+    ShapeProperty.prototype.inTangents = function(){
+        return this.vertices('i');
+    }
+
+    ShapeProperty.prototype.outTangents = function(){
+        return this.vertices('o');
+    }
+
+    ShapeProperty.prototype.isClosed = function(){
+        return this.v.c;
+    }
+
     function KeyframedShapeProperty(elem,data,type){
         this.comp = elem.comp;
         this.elem = elem;
