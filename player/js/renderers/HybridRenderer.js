@@ -1,9 +1,12 @@
-function HybridRenderer(animationItem){
+function HybridRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1
+    };
+    this.renderConfig = {
+        className: (config && config.className) || ''
     };
     this.pendingElements = [];
     this.elements = [];
@@ -178,6 +181,9 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.resizerElem = resizerElem;
     styleDiv(resizerElem);
     resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
+    if(this.renderConfig.className) {
+      wrapper.setAttribute('class', this.renderConfig.className);
+    }
     wrapper.appendChild(resizerElem);
 
     resizerElem.style.overflow = 'hidden';
