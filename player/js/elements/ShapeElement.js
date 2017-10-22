@@ -171,8 +171,8 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
     } else {
         elementData.g = PropertyFactory.getGradientProp(this,data.g,dynamicProperties);
         if(data.t == 2){
-            elementData.h = PropertyFactory.getProp(this,data.h,1,0.01,dynamicProperties);
-            elementData.a = PropertyFactory.getProp(this,data.a,1,degToRads,dynamicProperties);
+            elementData.h = PropertyFactory.getProp(this,data.h,0,0.01,dynamicProperties);
+            elementData.a = PropertyFactory.getProp(this,data.a,0,degToRads,dynamicProperties);
         }
         elementData.s = PropertyFactory.getProp(this,data.s,1,null,dynamicProperties);
         elementData.e = PropertyFactory.getProp(this,data.e,1,null,dynamicProperties);

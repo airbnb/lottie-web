@@ -4,154 +4,19 @@
         return this.pv;
     }
 
-    function getValueAtTime(frameNum, offsetTime) {
-        frameNum *= this.elem.globalData.frameRate;
-        var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
-        var keyData, nextKeyData;
-        offsetTime = offsetTime === undefined ? this.offsetTime : 0;
-        var retVal = typeof this.pv === 'object' ? [this.pv._length] : 0;
-
-        while(flag){
-            keyData = this.keyframes[i];
-            nextKeyData = this.keyframes[i+1];
-            if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
-                if(keyData.h){
-                    keyData = nextKeyData;
-                }
-                break;
-            }
-            if((nextKeyData.t - offsetTime) > frameNum){
-                break;
-            }
-            if(i < len - 1){
-                i += dir;
-            }else{
-                flag = false;
-            }
+    function getValueAtTime(frameNum) {
+        if(!this._cachingAtTime) {
+            this._cachingAtTime = {lastValue:-99999,lastIndex:0};
         }
-
-        var k, kLen,perc,jLen, j = 0, fnc;
-        if (keyData.to) {
-
-            if (!keyData.bezierData) {
-                bez.buildBezierData(keyData);
-            }
-            var bezierData = keyData.bezierData;
-            if (frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime) {
-                var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
-                kLen = bezierData.points[ind].point.length;
-                for(k = 0; k < kLen; k += 1){
-                    retVal[k] = bezierData.points[ind].point[k];
-                }
-            } else {
-                if (keyData.__fnct) {
-                    fnc = keyData.__fnct;
-                } else {
-                    //fnc = bez.getEasingCurve(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n);
-                    fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y, keyData.n).get;
-                    keyData.__fnct = fnc;
-                }
-                perc = fnc((frameNum - (keyData.t - offsetTime)) / ((nextKeyData.t - offsetTime) - (keyData.t - offsetTime)));
-                var distanceInLine = bezierData.segmentLength * perc;
-
-                var segmentPerc;
-                var addedLength = 0;
-                dir = 1;
-                flag = true;
-                jLen = bezierData.points.length;
-                while(flag) {
-                    addedLength += bezierData.points[j].partialLength*dir;
-                    if (distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1) {
-                        kLen = bezierData.points[j].point.length;
-                        for (k = 0; k < kLen; k += 1) {
-                            retVal[k] = bezierData.points[j].point[k];
-                        }
-                        break;
-                    } else if (distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
-                        segmentPerc = (distanceInLine - addedLength) / (bezierData.points[j + 1].partialLength);
-                        kLen = bezierData.points[j].point.length;
-                        for (k = 0; k < kLen; k += 1) {
-                            retVal[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k]) * segmentPerc;
-                        }
-                        break;
-                    }
-                    if (j < jLen - 1 && dir == 1 || j > 0 && dir == -1) {
-                        j += dir;
-                    } else {
-                        flag = false;
-                    }
-                }
-            }
-        } else {
-            var outX,outY,inX,inY, isArray = false, keyValue;
-            len = keyData.s.length;
-            for(i=0;i<len;i+=1){
-                if(keyData.h !== 1){
-                    if(keyData.o.x instanceof Array){
-                        isArray = true;
-                        if(!keyData.__fnct){
-                            keyData.__fnct = [];
-                        }
-                        if(!keyData.__fnct[i]){
-                            outX = keyData.o.x[i] || keyData.o.x[0];
-                            outY = keyData.o.y[i] || keyData.o.y[0];
-                            inX = keyData.i.x[i] || keyData.i.x[0];
-                            inY = keyData.i.y[i] || keyData.i.y[0];
-                        }
-                    }else{
-                        isArray = false;
-                        if(!keyData.__fnct) {
-                            outX = keyData.o.x;
-                            outY = keyData.o.y;
-                            inX = keyData.i.x;
-                            inY = keyData.i.y;
-                        }
-                    }
-                    if(isArray){
-                        if(keyData.__fnct[i]){
-                            fnc = keyData.__fnct[i];
-                        }else{
-                            //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                            fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                            keyData.__fnct[i] = fnc;
-                        }
-                    }else{
-                        if(keyData.__fnct){
-                            fnc = keyData.__fnct;
-                        }else{
-                            //fnc = bez.getEasingCurve(outX,outY,inX,inY);
-                            fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                            keyData.__fnct = fnc;
-                        }
-                    }
-                    if(frameNum >= nextKeyData.t-offsetTime){
-                        perc = 1;
-                    }else if(frameNum < keyData.t-offsetTime){
-                        perc = 0;
-                    }else{
-                        perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
-                    }
-                }
-                if(this.sh && keyData.h !== 1){
-                    var initP = keyData.s[i];
-                    var endP = keyData.e[i];
-                    if(initP-endP < -180){
-                        initP += 360;
-                    } else if(initP-endP > 180){
-                        initP -= 360;
-                    }
-                    keyValue = initP+(endP-initP)*perc;
-                } else {
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
-                }
-                if(len === 1){
-                    retVal = keyValue;
-                }else{
-                    retVal[i] = keyValue;
-                }
-            }
+        if(frameNum !== this._cachingAtTime.lastFrame) {
+            this._cachingAtTime.lastValue = frameNum;
+            frameNum *= this.elem.globalData.frameRate;
+            var interpolationResult = this.interpolateValue(frameNum, this._cachingAtTime.lastIndex, this.pv, this._cachingAtTime);
+            this._cachingAtTime.lastIndex = interpolationResult.iterationIndex;
+            this._cachingAtTime.value = interpolationResult.value;
         }
-        return retVal;
+        return this._cachingAtTime.value;
+
     }
 
     function getVelocityAtTime(frameNum) {
