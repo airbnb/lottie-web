@@ -9,9 +9,7 @@ function ShapePath(){
 
 ShapePath.prototype.setPathData = function(closed, len) {
 	this.c = closed;
-	while(len > this._maxLength){
-		this.doubleArrayLength();
-	}
+	this.setLength(len);
 	var i = 0;
 	while(i < len){
 		this.v[i] = point_pool.newPoint();
@@ -19,8 +17,14 @@ ShapePath.prototype.setPathData = function(closed, len) {
 		this.i[i] = point_pool.newPoint();
 		i += 1;
 	}
-	this._length = len;
 };
+
+ShapePath.prototype.setLength = function(len) {
+	while(this._maxLength < len) {
+		this.doubleArrayLength();
+	}
+	this._length = len;
+}
 
 ShapePath.prototype.doubleArrayLength = function() {
 	this.v = this.v.concat(Array.apply(null,{length:this._maxLength}))

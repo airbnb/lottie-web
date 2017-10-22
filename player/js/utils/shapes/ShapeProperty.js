@@ -160,13 +160,8 @@ var ShapePropertyFactory = (function(){
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
-        this.v = shape_pool.newShape();
         var pathData = type === 3 ? data.pt.k : data.ks.k;
-        this.v.v = pathData.v;
-        this.v.i = pathData.i;
-        this.v.o = pathData.o;
-        this.v.c = pathData.c;
-        this.v._length = this.v.v.length;
+        this.v = shape_pool.clone(pathData);
         this.pv = shape_pool.clone(this.v);
         this.localShapeCollection = shapeCollection_pool.newShapeCollection();
         this.paths = this.localShapeCollection;

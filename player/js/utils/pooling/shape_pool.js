@@ -48,9 +48,9 @@ var shape_pool = (function(){
 	}
 
 	function clone(shape, transform) {
-		var i, len = shape._length;
+		var i, len = shape._length === undefined ? shape.v.length : shape._length;
 		var cloned = newShape();
-		cloned._length = shape._length;
+		cloned.setLength(len);
 		cloned.c = shape.c;
 
 		var pt;
