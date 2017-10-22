@@ -332,12 +332,7 @@ var ExpressionManager = (function(){
         var len = points.length;
         path.setPathData(closed, len);
         for(i = 0; i < len; i += 1) {
-            path.v[i][0] = points[i][0];
-            path.v[i][1] = points[i][1];
-            path.o[i][0] = outTangents[i][0] + points[i][0];
-            path.o[i][1] = outTangents[i][1] + points[i][1];
-            path.i[i][0] = inTangents[i][0] + points[i][0];
-            path.i[i][1] = inTangents[i][1] + points[i][1];
+            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true)
         }
         return path
     }
@@ -355,12 +350,12 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp;
+        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
 
-        var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
+        var fn = eval('[function(){' + val+';if($bm_rt.__shapeObject){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
 
@@ -668,6 +663,7 @@ var ExpressionManager = (function(){
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
                 fromComp = thisLayer.fromComp.bind(thisLayer);
+                mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer):null;
                 fromCompToSurface = fromComp;
             }
             if(!transform){
@@ -720,7 +716,7 @@ var ExpressionManager = (function(){
                     this.lastValue = this.v;
                     this.mdf = true;
                 }
-            }else if(this.v._length){
+            }else if( this.v._length){
                 if(!shapesEqual(this.v,this.localShapeCollection.shapes[0])){
                     this.mdf = true;
                     this.localShapeCollection.releaseShapes();

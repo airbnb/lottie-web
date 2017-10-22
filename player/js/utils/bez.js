@@ -100,6 +100,25 @@ function bezFunction(){
         };
     }());
 
+    function getSegmentsLength(shapeData) {
+        var closed = shapeData.c;
+        var pathV = shapeData.v;
+        var pathO = shapeData.o;
+        var pathI = shapeData.i;
+        var i, len = shapeData._length;
+        var lengths = [];
+        var totalLength = 0;
+        for(i=0;i<len-1;i+=1){
+            lengths[i] = getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]);
+            totalLength += lengths[i].addedLength;
+        }
+        if(closed){
+            lengths[i] = getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]);
+            totalLength += lengths[i].addedLength;
+        }
+        return {lengths:lengths,totalLength:totalLength};
+    }
+
     function BezierData(length){
         this.segmentLength = 0;
         this.points = new Array(length);
@@ -190,6 +209,15 @@ function bezFunction(){
         this.pt4 = new Array(2);
     }
 
+    function getPointInSegment(pt1, pt2, pt3, pt4, percent, bezierData) {
+        var t1 = getDistancePerc(percent,bezierData);
+        var u0 = 1;
+        var u1 = 1 - t1;
+        var ptX = Math.round((u1*u1*u1* pt1[0] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[0] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[0] + t1*t1*t1* pt2[0])* 1000) / 1000;
+        var ptY = Math.round((u1*u1*u1* pt1[1] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[1] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[1] + t1*t1*t1* pt2[1])* 1000) / 1000;
+        return [ptX, ptY];
+    }
+
     function getNewSegment(pt1,pt2,pt3,pt4,startPerc,endPerc, bezierData){
 
         var pts = new SegmentPoints();
@@ -213,7 +241,9 @@ function bezFunction(){
     return {
         //getEasingCurve : getEasingCurve,
         getBezierLength : getBezierLength,
+        getSegmentsLength : getSegmentsLength,
         getNewSegment : getNewSegment,
+        getPointInSegment : getPointInSegment,
         buildBezierData : buildBezierData,
         pointOnLine2D : pointOnLine2D,
         pointOnLine3D : pointOnLine3D

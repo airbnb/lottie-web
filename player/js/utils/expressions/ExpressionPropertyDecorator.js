@@ -9,8 +9,7 @@
         var i = 0,len = this.keyframes.length- 1,dir= 1,flag = true;
         var keyData, nextKeyData;
         offsetTime = offsetTime === undefined ? this.offsetTime : 0;
-        //console.log(this.offsetTime);
-        var retVal = typeof this.pv === 'object' ? [this.pv.length] : 0;
+        var retVal = typeof this.pv === 'object' ? [this.pv._length] : 0;
 
         while(flag){
             keyData = this.keyframes[i];
@@ -267,15 +266,110 @@
         return prop;
     }
 
+    function getShapeValueAtTime(frameNum) {
+        if (!this._shapeValueAtTime) {
+            this._lastIndexAtTime = 0;
+            this._lastTimeAtTime = -999999;
+            this._shapeValueAtTime = shape_pool.clone(this.pv);
+        }
+        if(frameNum !== this._lastTimeAtTime) {
+            this._lastTimeAtTime = frameNum;
+            frameNum *= this.elem.globalData.frameRate;
+            var interpolationResult = this.interpolateShape(frameNum, this._lastIndexAtTime, this._shapeValueAtTime, false);
+            this._lastIndexAtTime = interpolationResult.iterationIndex;
+        }
+        return this._shapeValueAtTime;
+    }
+
+    var ShapePropertyConstructorFunction = ShapePropertyFactory.getConstructorFunction();
+    var KeyframedShapePropertyConstructorFunction = ShapePropertyFactory.getKeyframedConstructorFunction();
+
+    ShapePropertyConstructorFunction.prototype.vertices = function(prop, time){
+        var shapePath = this.v;
+        if(time !== undefined) {
+            shapePath = this.getValueAtTime(time, 0);
+        }
+        var i, len = shapePath._length;
+        var vertices = shapePath[prop];
+        var points = shapePath.v;
+        var arr = Array.apply(null,{length:len})
+        for(i = 0; i < len; i += 1) {
+            if(prop === 'i' || prop === 'o') {
+                arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]
+            } else {
+                arr[i] = [vertices[i][0], vertices[i][1]]
+            }
+            
+        }
+        return arr;
+    }
+
+    ShapePropertyConstructorFunction.prototype.points = function(time){
+        return this.vertices('v', time);
+    }
+
+    ShapePropertyConstructorFunction.prototype.inTangents = function(time){
+        return this.vertices('i', time);
+    }
+
+    ShapePropertyConstructorFunction.prototype.outTangents = function(time){
+        return this.vertices('o', time);
+    }
+
+    ShapePropertyConstructorFunction.prototype.isClosed = function(){
+        return this.v.c;
+    }
+
+    ShapePropertyConstructorFunction.prototype.pointOnPath = function(perc, time){
+        var shapePath = this.v;
+        if(time !== undefined) {
+            shapePath = this.getValueAtTime(time, 0);
+        }
+        if(!this._segmentsLength) {
+            this._segmentsLength = bez.getSegmentsLength(shapePath);
+        }
+
+        var segmentsLength = this._segmentsLength;
+        var lengths = segmentsLength.lengths;
+        var lengthPos = segmentsLength.totalLength * perc;
+        var i = 0, len = lengths.length;
+        var j = 0, jLen;
+        var accumulatedLength = 0;
+        var segments;
+        while(i < len) {
+            if(accumulatedLength + lengths[i].addedLength > lengthPos) {
+                segments = lengths[i].segments;
+                var initIndex = i;
+                var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
+                var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;
+                var pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i])
+                break;
+            } else {
+                accumulatedLength += lengths[i].addedLength;
+            }
+            i += 1;
+        }
+        if(!pt){
+            pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]]
+        }
+        return pt;
+    }
+
+    ShapePropertyConstructorFunction.prototype.setGroupProperty = setGroupProperty;
+    ShapePropertyConstructorFunction.prototype.getValueAtTime = getStaticValueAtTime;
+
+    KeyframedShapePropertyConstructorFunction.prototype.vertices = ShapePropertyConstructorFunction.prototype.vertices;
+    KeyframedShapePropertyConstructorFunction.prototype.points = ShapePropertyConstructorFunction.prototype.points;
+    KeyframedShapePropertyConstructorFunction.prototype.inTangents = ShapePropertyConstructorFunction.prototype.inTangents;
+    KeyframedShapePropertyConstructorFunction.prototype.outTangents = ShapePropertyConstructorFunction.prototype.outTangents;
+    KeyframedShapePropertyConstructorFunction.prototype.isClosed = ShapePropertyConstructorFunction.prototype.isClosed;
+    KeyframedShapePropertyConstructorFunction.prototype.pointOnPath = ShapePropertyConstructorFunction.prototype.pointOnPath;
+    KeyframedShapePropertyConstructorFunction.prototype.setGroupProperty = ShapePropertyConstructorFunction.prototype.setGroupProperty;
+    KeyframedShapePropertyConstructorFunction.prototype.getValueAtTime = getShapeValueAtTime;
+
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        prop.setGroupProperty = setGroupProperty;
-        if(prop.kf){
-            prop.getValueAtTime = getValueAtTime;
-        } else {
-            prop.getValueAtTime = getStaticValueAtTime;
-        }
         var isAdded = prop.k;
         if(data.ix !== undefined){
             Object.defineProperty(prop,'propertyIndex',{

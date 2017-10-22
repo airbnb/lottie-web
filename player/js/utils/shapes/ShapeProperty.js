@@ -2,115 +2,144 @@ var ShapePropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateShape() {
+    function interpolateShape(frameNum, iterationIndex, previousValue, isCurrentRender) {
+        var keyPropS,keyPropE,isHold;
+        if(frameNum < this.keyframes[0].t-this.offsetTime){
+            keyPropS = this.keyframes[0].s[0];
+            isHold = true;
+            iterationIndex = 0;
+        }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
+            if(this.keyframes[this.keyframes.length - 2].h === 1){
+                keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
+            }else{
+                keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
+            }
+            isHold = true;
+        }else{
+            var i = iterationIndex;
+            var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
+            while(flag){
+                keyData = this.keyframes[i];
+                nextKeyData = this.keyframes[i+1];
+                if((nextKeyData.t - this.offsetTime) > frameNum){
+                    break;
+                }
+                if(i < len - 1){
+                    i += 1;
+                }else{
+                    flag = false;
+                }
+            }
+            isHold = keyData.h === 1;
+            iterationIndex = i;
+
+            var perc;
+            if(!isHold){
+                if(frameNum >= nextKeyData.t-this.offsetTime){
+                    perc = 1;
+                }else if(frameNum < keyData.t-this.offsetTime){
+                    perc = 0;
+                }else{
+                    var fnc;
+                    if(keyData.__fnct){
+                        fnc = keyData.__fnct;
+                    }else{
+                        fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y).get;
+                        keyData.__fnct = fnc;
+                    }
+                    perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
+                }
+                keyPropE = keyData.e[0];
+            }
+            keyPropS = keyData.s[0];
+        }
+        jLen = previousValue._length;
+        kLen = keyPropS.i[0].length;
+        var hasModified = false;
+        var vertexValue;
+        for(j=0;j<jLen;j+=1){
+            for(k=0;k<kLen;k+=1){
+                if(isHold){
+                    vertexValue = keyPropS.i[j][k];
+                    if(previousValue.i[j][k] !== vertexValue){
+                        previousValue.i[j][k] = vertexValue;
+                        if(isCurrentRender) {
+                            this.pv.i[j][k] = vertexValue;
+                        }
+                        hasModified = true;
+                    }
+                    vertexValue = keyPropS.o[j][k];
+                    if(previousValue.o[j][k] !== vertexValue){
+                        previousValue.o[j][k] = vertexValue;
+                        if(isCurrentRender) {
+                            this.pv.o[j][k] = vertexValue;
+                        }
+                        hasModified = true;
+                    }
+                    vertexValue = keyPropS.v[j][k];
+                    if(previousValue.v[j][k] !== vertexValue){
+                        previousValue.v[j][k] = vertexValue;
+                        if(isCurrentRender) {
+                            this.pv.v[j][k] = vertexValue;
+                        }
+                        hasModified = true;
+                    }
+                }else{
+                    vertexValue = keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
+                    if(previousValue.i[j][k] !== vertexValue){
+                        previousValue.i[j][k] = vertexValue;
+                        if(isCurrentRender) {
+                            this.pv.i[j][k] = vertexValue;
+                        }
+                        hasModified = true;
+                    }
+                    vertexValue = keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
+                    if(previousValue.o[j][k] !== vertexValue){
+                        previousValue.o[j][k] = vertexValue;
+                        if(isCurrentRender) {
+                            this.pv.o[j][k] = vertexValue;
+                        }
+                        hasModified = true;
+                    }
+                    vertexValue = keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
+                    if(previousValue.v[j][k] !== vertexValue){
+                        previousValue.v[j][k] = vertexValue;
+                        if(isCurrentRender) {
+                            this.pv.v[j][k] = vertexValue;
+                        }
+                        hasModified = true;
+                    }
+                }
+            }
+        }
+        if(hasModified) {
+            previousValue.c = keyPropS.c;
+        }
+        return {
+            iterationIndex: iterationIndex,
+            hasModified: hasModified
+        }
+    }
+
+    function interpolateShapeCurrentTime(){
         if(this.elem.globalData.frameId === this.frameId){
             return;
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        if(!((this.lastFrame !== initFrame && ((this.lastFrame < this.keyframes[0].t-this.offsetTime && frameNum < this.keyframes[0].t-this.offsetTime) || (this.lastFrame > this.keyframes[this.keyframes.length - 1].t-this.offsetTime && frameNum > this.keyframes[this.keyframes.length - 1].t-this.offsetTime))))){
-            var keyPropS,keyPropE,isHold;
-            if(frameNum < this.keyframes[0].t-this.offsetTime){
-                keyPropS = this.keyframes[0].s[0];
-                isHold = true;
-                this._lastIndex = 0;
-            }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
-                if(this.keyframes[this.keyframes.length - 2].h === 1){
-                    keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
-                }else{
-                    keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
-                }
-                isHold = true;
-            }else{
-                var i = this.lastFrame < initFrame ? this._lastIndex : 0;
-                var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
-                while(flag){
-                    keyData = this.keyframes[i];
-                    nextKeyData = this.keyframes[i+1];
-                    if((nextKeyData.t - this.offsetTime) > frameNum){
-                        break;
-                    }
-                    if(i < len - 1){
-                        i += 1;
-                    }else{
-                        flag = false;
-                    }
-                }
-                isHold = keyData.h === 1;
-                this._lastIndex = i;
-
-                var perc;
-                if(!isHold){
-                    if(frameNum >= nextKeyData.t-this.offsetTime){
-                        perc = 1;
-                    }else if(frameNum < keyData.t-this.offsetTime){
-                        perc = 0;
-                    }else{
-                        var fnc;
-                        if(keyData.__fnct){
-                            fnc = keyData.__fnct;
-                        }else{
-                            fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y).get;
-                            keyData.__fnct = fnc;
-                        }
-                        perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
-                    }
-                    keyPropE = keyData.e[0];
-                }
-                keyPropS = keyData.s[0];
+        var initTime = this.keyframes[0].t - this.offsetTime;
+        var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
+        if(!(this.lastFrame !== initFrame && ((this.lastFrame < initTime && frameNum < initTime) || (this.lastFrame > endTime && frameNum > endTime)))){
+            ////
+            var i = this.lastFrame < frameNum ? this._lastIndex : 0;
+            var renderResult = this.interpolateShape(frameNum, i, this.v, true);
+            ////
+            this._lastIndex = renderResult.iterationIndex;
+            this.mdf = renderResult.hasModified;
+            if(renderResult.hasModified) {
+                this.paths = this.localShapeCollection;
             }
-            jLen = this.v._length;
-            kLen = keyPropS.i[0].length;
-            var hasModified = false;
-            var vertexValue;
-            for(j=0;j<jLen;j+=1){
-                for(k=0;k<kLen;k+=1){
-                    if(isHold){
-                        vertexValue = keyPropS.i[j][k];
-                        if(this.v.i[j][k] !== vertexValue){
-                            this.v.i[j][k] = vertexValue;
-                            this.pv.i[j][k] = vertexValue;
-                            hasModified = true;
-                        }
-                        vertexValue = keyPropS.o[j][k];
-                        if(this.v.o[j][k] !== vertexValue){
-                            this.v.o[j][k] = vertexValue;
-                            this.pv.o[j][k] = vertexValue;
-                            hasModified = true;
-                        }
-                        vertexValue = keyPropS.v[j][k];
-                        if(this.v.v[j][k] !== vertexValue){
-                            this.v.v[j][k] = vertexValue;
-                            this.pv.v[j][k] = vertexValue;
-                            hasModified = true;
-                        }
-                    }else{
-                        vertexValue = keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
-                        if(this.v.i[j][k] !== vertexValue){
-                            this.v.i[j][k] = vertexValue;
-                            this.pv.i[j][k] = vertexValue;
-                            hasModified = true;
-                        }
-                        vertexValue = keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
-                        if(this.v.o[j][k] !== vertexValue){
-                            this.v.o[j][k] = vertexValue;
-                            this.pv.o[j][k] = vertexValue;
-                            hasModified = true;
-                        }
-                        vertexValue = keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
-                        if(this.v.v[j][k] !== vertexValue){
-                            this.v.v[j][k] = vertexValue;
-                            this.pv.v[j][k] = vertexValue;
-                            hasModified = true;
-                        }
-                    }
-                }
-            }
-            this.mdf = hasModified;
-            this.v.c = keyPropS.c;
-            this.paths = this.localShapeCollection;
         }
-
         this.lastFrame = frameNum;
         this.frameId = this.elem.globalData.frameId;
     }
@@ -127,6 +156,7 @@ var ShapePropertyFactory = (function(){
     }
 
     function ShapeProperty(elem, data, type){
+        this.__shapeObject = 1;
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
@@ -137,52 +167,21 @@ var ShapePropertyFactory = (function(){
         this.v.o = pathData.o;
         this.v.c = pathData.c;
         this.v._length = this.v.v.length;
-        this.getValue = getShapeValue;
         this.pv = shape_pool.clone(this.v);
         this.localShapeCollection = shapeCollection_pool.newShapeCollection();
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
     }
-
-    ShapeProperty.prototype.vertices = function(prop){
-        var i, len = this.v._length;
-        var vertices = this.v[prop];
-        var points = this.v.v;
-        var arr = Array.apply(null,{length:len})
-        for(i = 0; i < len; i += 1) {
-            if(prop === 'i' || prop === 'o') {
-                arr[i] = [vertices[i][0]-points[i][0],vertices[i][1]-points[i][1]]
-            } else {
-                arr[i] = [vertices[i][0],vertices[i][1]]
-            }
-            
-        }
-        return arr;
-    }
-
-    ShapeProperty.prototype.points = function(){
-        return this.vertices('v');
-    }
-
-    ShapeProperty.prototype.inTangents = function(){
-        return this.vertices('i');
-    }
-
-    ShapeProperty.prototype.outTangents = function(){
-        return this.vertices('o');
-    }
-
-    ShapeProperty.prototype.isClosed = function(){
-        return this.v.c;
-    }
+    ShapeProperty.prototype.interpolateShape = interpolateShape;
+    ShapeProperty.prototype.getValue = getShapeValue;
 
     function KeyframedShapeProperty(elem,data,type){
+        this.__shapeObject = 1;
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
         this._lastIndex = 0;
-        this.getValue = interpolateShape;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
         this.kf = true;
@@ -197,6 +196,8 @@ var ShapePropertyFactory = (function(){
         this.lastFrame = initFrame;
         this.reset = resetShape;
     }
+    KeyframedShapeProperty.prototype.getValue = interpolateShapeCurrentTime;
+    KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
 
     var EllShapeProperty = (function(){
 
@@ -546,7 +547,17 @@ var ShapePropertyFactory = (function(){
         return prop;
     }
 
+    function getConstructorFunction() {
+        return ShapeProperty;
+    }
+
+    function getKeyframedConstructorFunction() {
+        return KeyframedShapeProperty;
+    }
+
     var ob = {};
     ob.getShapeProp = getShapeProp;
+    ob.getConstructorFunction = getConstructorFunction;
+    ob.getKeyframedConstructorFunction = getKeyframedConstructorFunction;
     return ob;
 }());
