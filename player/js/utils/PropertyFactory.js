@@ -459,6 +459,8 @@ var PropertyFactory = (function(){
                 this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
                 this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
                 this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
+                //sh Indicates it needs to be capped between -180 and 180
+                this.or.sh = true;
             }
             if(data.sk){
                 this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
@@ -471,7 +473,7 @@ var PropertyFactory = (function(){
                 this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this.dynamicProperties);
             }
             if(data.o){
-                this.o = PropertyFactory.getProp(elem,data.o,0,0.01,arr);
+                this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this.dynamicProperties);
             } else {
                 this.o = {mdf:false,v:1};
             }

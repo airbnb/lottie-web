@@ -150,12 +150,12 @@ HTextElement.prototype.buildNewText = function(){
                     document.body.appendChild(tCont);
 
                     var boundingBox = tCont.getBBox();
-                    tCont.setAttribute('width',boundingBox.width);
-                    tCont.setAttribute('height',boundingBox.height);
-                    tCont.setAttribute('viewBox',boundingBox.x+' '+ boundingBox.y+' '+ boundingBox.width+' '+ boundingBox.height);
-                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + boundingBox.x + 'px,' + boundingBox.y + 'px)';
+                    tCont.setAttribute('width',boundingBox.width + 2);
+                    tCont.setAttribute('height',boundingBox.height + 2);
+                    tCont.setAttribute('viewBox',(boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
+                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
 
-                    letters[i].yOffset = boundingBox.y;
+                    letters[i].yOffset = boundingBox.y-1;
                     tParent.appendChild(tCont);
 
                 } else{
@@ -266,11 +266,13 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
                 this.currentBBox.h = boundingBox.height;
                 this.cont.setAttribute('height',boundingBox.height);
             }
-            if(this.currentBBox.w !== boundingBox.width || this.currentBBox.h !== boundingBox.height  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
-                this.currentBBox.w = boundingBox.width;
-                this.currentBBox.h = boundingBox.height;
-                this.currentBBox.x = boundingBox.x;
-                this.currentBBox.y = boundingBox.y;
+
+            var margin = 1;
+            if(this.currentBBox.w !== (boundingBox.width + margin*2) || this.currentBBox.h !== (boundingBox.height + margin*2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)){
+                this.currentBBox.w = boundingBox.width + margin*2;
+                this.currentBBox.h = boundingBox.height + margin*2;
+                this.currentBBox.x = boundingBox.x - margin;
+                this.currentBBox.y = boundingBox.y - margin;
 
                 this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
                 this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
