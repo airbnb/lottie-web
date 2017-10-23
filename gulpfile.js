@@ -17,7 +17,7 @@ var htmlreplace = require('gulp-html-replace');
 var eventstream = require("event-stream");
 var jslint = require('gulp-jslint');
 
-var bm_version = '4.11.2';
+var bm_version = '4.12.0';
 
 var files = [
     {

@@ -400,6 +400,7 @@ var ExpressionManager = (function(){
             var currentFrame = time*elem.comp.globalData.frameRate;
             var keyframes = this.keyframes;
             var firstKeyFrame = keyframes[0].t;
+            var offsetTime = this.offsetTime || 0;
             if(currentFrame>=firstKeyFrame){
                 return this.pv;
             }else{
@@ -422,7 +423,7 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
-                        return this.getValueAtTime(((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                        return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
                     }
                 } else if(type === 'offset'){
                     var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
@@ -451,7 +452,8 @@ var ExpressionManager = (function(){
                     }
                     return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
                 }
-                return this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+
+                return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
             }
         }.bind(this);
 
@@ -484,11 +486,12 @@ var ExpressionManager = (function(){
                     }
                     firstKeyFrame = lastKeyFrame - cycleDuration;
                 }
+                var offsetTime = this.offsetTime || 0;
                 var i, len, ret;
-                if(type === 'pingpong') {
+                if(type.toLowerCase() === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
-                        return this.getValueAtTime((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                        return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
                     }
                 } else if(type === 'offset'){
                     var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
@@ -517,7 +520,7 @@ var ExpressionManager = (function(){
                     }
                     return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
                 }
-                return this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
             }
         }.bind(this);
         var loop_out = loopOut;

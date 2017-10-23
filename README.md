@@ -1,6 +1,14 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)
 
+## V 4.12.0
+- pointOnLine support
+- createPath support
+- points, inTangents, outTangents support
+- expressions fixes
+- className for  container via loading config
+- 3d orientation fix
+
 ## V 4.11.2
 - new line text fix
 - expression fromComp support
