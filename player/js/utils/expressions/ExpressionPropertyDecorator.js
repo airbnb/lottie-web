@@ -11,7 +11,7 @@
         if(frameNum !== this._cachingAtTime.lastFrame) {
             this._cachingAtTime.lastValue = frameNum;
             frameNum *= this.elem.globalData.frameRate;
-            var interpolationResult = this.interpolateValue(frameNum, this._cachingAtTime.lastIndex, this.pv, this._cachingAtTime);
+            var interpolationResult = this.interpolateValue(frameNum, this._cachingAtTime.lastIndex, this.pv, this._cachingAtTime, 0);
             this._cachingAtTime.lastIndex = interpolationResult.iterationIndex;
             this._cachingAtTime.value = interpolationResult.value;
         }
@@ -25,8 +25,8 @@
         }
         var delta = -0.01;
         //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum, 0);
-        var v2 = this.getValueAtTime(frameNum + delta, 0);
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
         var velocity;
         if(v1.length){
             velocity = Array.apply(null,{length:v1.length});
