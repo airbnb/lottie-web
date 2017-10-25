@@ -1,3 +1,6 @@
+## V 4.12.1
+- velocityAtTime fix
+
 ## V 4.12.0
 - pointOnLine support
 - createPath support

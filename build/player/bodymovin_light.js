@@ -2356,7 +2356,8 @@ var PropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateValue(frameNum, iterationIndex, previousValue, caching){
+    function interpolateValue(frameNum, iterationIndex, previousValue, caching, offsetTime){
+        offsetTime = offsetTime === undefined ? this.offsetTime : offsetTime;
         var newValue;
         if(previousValue.constructor === Array) {
             newValue = Array.apply(null,{length:previousValue.length})
@@ -2368,14 +2369,14 @@ var PropertyFactory = (function(){
         while(flag){
             keyData = this.keyframes[i];
             nextKeyData = this.keyframes[i+1];
-            if(i == len-1 && frameNum >= nextKeyData.t - this.offsetTime){
+            if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
                 if(keyData.h){
                     keyData = nextKeyData;
                 }
                 iterationIndex = 0;
                 break;
             }
-            if((nextKeyData.t - this.offsetTime) > frameNum){
+            if((nextKeyData.t - offsetTime) > frameNum){
                 iterationIndex = i;
                 break;
             }
@@ -2394,8 +2395,8 @@ var PropertyFactory = (function(){
                 bez.buildBezierData(keyData);
             }
             var bezierData = keyData.bezierData;
-            if(frameNum >= nextKeyData.t-this.offsetTime || frameNum < keyData.t-this.offsetTime){
-                var ind = frameNum >= nextKeyData.t-this.offsetTime ? bezierData.points.length - 1 : 0;
+            if(frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime){
+                var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
                 kLen = bezierData.points[ind].point.length;
                 for(k = 0; k < kLen; k += 1){
                     newValue[k] = bezierData.points[ind].point[k];
@@ -2408,7 +2409,7 @@ var PropertyFactory = (function(){
                     fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n).get;
                     keyData.__fnct = fnc;
                 }
-                perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
+                perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
                 var distanceInLine = bezierData.segmentLength*perc;
 
                 var segmentPerc;
@@ -2447,9 +2448,9 @@ var PropertyFactory = (function(){
             len = keyData.s.length;
             for(i=0;i<len;i+=1){
                 if(keyData.h !== 1){
-                    if(frameNum >= nextKeyData.t-this.offsetTime){
+                    if(frameNum >= nextKeyData.t-offsetTime){
                         perc = 1;
-                    }else if(frameNum < keyData.t-this.offsetTime){
+                    }else if(frameNum < keyData.t-offsetTime){
                         perc = 0;
                     }else{
                         if(keyData.o.x.constructor === Array){
@@ -2478,7 +2479,7 @@ var PropertyFactory = (function(){
                                 fnc = keyData.__fnct;
                             }
                         }
-                        perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
+                        perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
                     }
                 }
                 if(this.sh && keyData.h !== 1){
@@ -9164,7 +9165,7 @@ AnimationItem.prototype.triggerEvent = _triggerEvent;
     bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.12.0';
+    bodymovinjs.version = '4.12.1';
 
     function checkReady() {
         if (document.readyState === "complete") {
