@@ -9165,7 +9165,7 @@ AnimationItem.prototype.triggerEvent = _triggerEvent;
     bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.12.1';
+    bodymovinjs.version = '4.12.2';
 
     function checkReady() {
         if (document.readyState === "complete") {

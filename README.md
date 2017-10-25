@@ -1,6 +1,9 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)
 
+## 4.12.2
+- caching fix
+
 ## V 4.12.1
 - velocityAtTime fix
 
