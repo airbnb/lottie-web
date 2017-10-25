@@ -8,12 +8,14 @@
         if(!this._cachingAtTime) {
             this._cachingAtTime = {lastValue:-99999,lastIndex:0};
         }
+        //console.log('this._cachingAtTime', JSON.parse(JSON.stringify(this._cachingAtTime)))
         if(frameNum !== this._cachingAtTime.lastFrame) {
-            this._cachingAtTime.lastValue = frameNum;
             frameNum *= this.elem.globalData.frameRate;
-            var interpolationResult = this.interpolateValue(frameNum, this._cachingAtTime.lastIndex, this.pv, this._cachingAtTime, 0);
+            var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
+            var interpolationResult = this.interpolateValue(frameNum, i, this.pv, this._cachingAtTime, 0);
             this._cachingAtTime.lastIndex = interpolationResult.iterationIndex;
             this._cachingAtTime.value = interpolationResult.value;
+            this._cachingAtTime.lastFrame = frameNum;
         }
         return this._cachingAtTime.value;
 
