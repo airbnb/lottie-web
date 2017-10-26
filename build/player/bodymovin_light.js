@@ -2356,8 +2356,8 @@ var PropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateValue(frameNum, iterationIndex, previousValue, caching, offsetTime){
-        offsetTime = offsetTime === undefined ? this.offsetTime : offsetTime;
+    function interpolateValue(frameNum, iterationIndex, previousValue, caching){
+        var offsetTime = this.offsetTime;
         var newValue;
         if(previousValue.constructor === Array) {
             newValue = Array.apply(null,{length:previousValue.length})
@@ -9165,7 +9165,7 @@ AnimationItem.prototype.triggerEvent = _triggerEvent;
     bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.12.2';
+    bodymovinjs.version = '4.12.3';
 
     function checkReady() {
         if (document.readyState === "complete") {

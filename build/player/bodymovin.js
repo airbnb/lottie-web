@@ -2356,8 +2356,8 @@ var PropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateValue(frameNum, iterationIndex, previousValue, caching, offsetTime){
-        offsetTime = offsetTime === undefined ? this.offsetTime : offsetTime;
+    function interpolateValue(frameNum, iterationIndex, previousValue, caching){
+        var offsetTime = this.offsetTime;
         var newValue;
         if(previousValue.constructor === Array) {
             newValue = Array.apply(null,{length:previousValue.length})
@@ -11651,8 +11651,9 @@ expressionsPlugin = Expressions;
         //console.log('this._cachingAtTime', JSON.parse(JSON.stringify(this._cachingAtTime)))
         if(frameNum !== this._cachingAtTime.lastFrame) {
             frameNum *= this.elem.globalData.frameRate;
+            frameNum -= this.offsetTime;
             var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var interpolationResult = this.interpolateValue(frameNum, i, this.pv, this._cachingAtTime, 0);
+            var interpolationResult = this.interpolateValue(frameNum, i, this.pv, this._cachingAtTime);
             this._cachingAtTime.lastIndex = interpolationResult.iterationIndex;
             this._cachingAtTime.value = interpolationResult.value;
             this._cachingAtTime.lastFrame = frameNum;
@@ -14142,7 +14143,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     bodymovinjs.inBrowser = inBrowser;
     bodymovinjs.installPlugin = installPlugin;
     bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.12.2';
+    bodymovinjs.version = '4.12.3';
 
     function checkReady() {
         if (document.readyState === "complete") {

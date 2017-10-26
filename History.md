@@ -1,4 +1,7 @@
-## 4.12.2
+## V 4.12.3
+- valueAtTime fix
+
+## V 4.12.2
 - caching fix
 
 ## V 4.12.1
