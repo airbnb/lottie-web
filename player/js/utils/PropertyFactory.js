@@ -2,8 +2,8 @@ var PropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateValue(frameNum, iterationIndex, previousValue, caching, offsetTime){
-        offsetTime = offsetTime === undefined ? this.offsetTime : offsetTime;
+    function interpolateValue(frameNum, iterationIndex, previousValue, caching){
+        var offsetTime = this.offsetTime;
         var newValue;
         if(previousValue.constructor === Array) {
             newValue = Array.apply(null,{length:previousValue.length})
