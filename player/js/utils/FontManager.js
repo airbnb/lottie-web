@@ -74,9 +74,9 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            window.setTimeout(checkLoadedFonts.bind(this),20);
+            setTimeout(checkLoadedFonts.bind(this),20);
         }else{
-            window.setTimeout(function(){this.loaded = true;}.bind(this),0);
+            setTimeout(function(){this.loaded = true;}.bind(this),0);
 
         }
     };

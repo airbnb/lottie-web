@@ -193,7 +193,7 @@ var animationManager = (function(){
 
     //start();
 
-    window.setTimeout(start,0);
+    setTimeout(start,0);
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;

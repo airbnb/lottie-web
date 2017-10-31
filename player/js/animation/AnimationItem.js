@@ -264,7 +264,7 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
             //this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
-            window.setTimeout(checkFontsLoaded.bind(this),20);
+            setTimeout(checkFontsLoaded.bind(this),20);
         }
     }
 
@@ -288,7 +288,7 @@ AnimationItem.prototype.checkLoaded = function () {
             expressionsPlugin.initExpressions(this);
         }
         this.renderer.initItems();
-        window.setTimeout(function(){
+        setTimeout(function(){
             this.trigger('DOMLoaded');
         }.bind(this),0);
         this.isLoaded = true;
