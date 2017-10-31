@@ -2215,9 +2215,9 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            setTimeout(checkLoadedFonts.bind(this),20);
+            window.setTimeout(checkLoadedFonts.bind(this),20);
         }else{
-            setTimeout(function(){this.loaded = true;}.bind(this),0);
+            window.setTimeout(function(){this.loaded = true;}.bind(this),0);
 
         }
     };
@@ -2352,6 +2352,7 @@ var FontManager = (function(){
     return Font;
 
 }());
+
 var PropertyFactory = (function(){
 
     var initFrame = -999999;
@@ -8354,7 +8355,7 @@ var animationManager = (function(){
 
     //start();
 
-    setTimeout(start,0);
+    window.setTimeout(start,0);
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
@@ -8639,7 +8640,7 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
             //this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
-            setTimeout(checkFontsLoaded.bind(this),20);
+            window.setTimeout(checkFontsLoaded.bind(this),20);
         }
     }
 
@@ -8663,7 +8664,7 @@ AnimationItem.prototype.checkLoaded = function () {
             expressionsPlugin.initExpressions(this);
         }
         this.renderer.initItems();
-        setTimeout(function(){
+        window.setTimeout(function(){
             this.trigger('DOMLoaded');
         }.bind(this),0);
         this.isLoaded = true;
