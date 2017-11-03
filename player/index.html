@@ -113,6 +113,7 @@
     <script src="js/module.js" data-skip="true"></script>
     <!-- <script src="bodymovin.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
+
 </head>
 <body>
 <div id="bodymovin"></div>
@@ -124,14 +125,17 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:true
         },
-        path: 'exports/render/data_.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
+    elem.addEventListener('click', function() {
+        anim.play();
+    })
 
 </script>
 </body>

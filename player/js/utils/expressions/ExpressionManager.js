@@ -326,8 +326,8 @@ var ExpressionManager = (function(){
     }
 
     function createPath(points, inTangents, outTangents, closed) {
-        inTangents = inTangents || points;
-        outTangents = outTangents || points;
+        inTangents = inTangents && inTangents.length ? inTangents : points;
+        outTangents = outTangents && outTangents.length ? outTangents : points;
         var path = shape_pool.newShape();
         var len = points.length;
         path.setPathData(closed, len);

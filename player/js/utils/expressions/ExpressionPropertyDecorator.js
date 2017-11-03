@@ -223,6 +223,26 @@
         return pt;
     }
 
+    ShapePropertyConstructorFunction.prototype.vectorOnPath = function(perc, time, vectorType){
+        //perc doesn't use triple equality because can be a Number object, not a primitive.
+        perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
+        var pt1 = this.pointOnPath(perc, time);
+        var pt2 = this.pointOnPath(perc + 0.001, time);
+        var xLength = pt2[0] - pt1[0];
+        var yLength = pt2[1] - pt1[1];
+        var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
+        var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
+        return unitVector;
+    }
+
+    ShapePropertyConstructorFunction.prototype.tangentOnPath = function(perc, time){
+        return this.vectorOnPath(perc, time, 'tangent');
+    }
+
+    ShapePropertyConstructorFunction.prototype.normalOnPath = function(perc, time){
+        return this.vectorOnPath(perc, time, 'normal');
+    }
+
     ShapePropertyConstructorFunction.prototype.setGroupProperty = setGroupProperty;
     ShapePropertyConstructorFunction.prototype.getValueAtTime = getStaticValueAtTime;
 
@@ -232,6 +252,9 @@
     KeyframedShapePropertyConstructorFunction.prototype.outTangents = ShapePropertyConstructorFunction.prototype.outTangents;
     KeyframedShapePropertyConstructorFunction.prototype.isClosed = ShapePropertyConstructorFunction.prototype.isClosed;
     KeyframedShapePropertyConstructorFunction.prototype.pointOnPath = ShapePropertyConstructorFunction.prototype.pointOnPath;
+    KeyframedShapePropertyConstructorFunction.prototype.vectorOnPath = ShapePropertyConstructorFunction.prototype.vectorOnPath;
+    KeyframedShapePropertyConstructorFunction.prototype.tangentOnPath = ShapePropertyConstructorFunction.prototype.tangentOnPath;
+    KeyframedShapePropertyConstructorFunction.prototype.normalOnPath = ShapePropertyConstructorFunction.prototype.normalOnPath;
     KeyframedShapePropertyConstructorFunction.prototype.setGroupProperty = ShapePropertyConstructorFunction.prototype.setGroupProperty;
     KeyframedShapePropertyConstructorFunction.prototype.getValueAtTime = getShapeValueAtTime;
 

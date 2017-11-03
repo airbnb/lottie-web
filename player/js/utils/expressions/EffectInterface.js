@@ -30,9 +30,9 @@ var EffectsExpressionInterface = (function (){
         var i, len = data.ef.length;
         for(i=0;i<len;i+=1){
             if(data.ef[i].ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],propertyGroup, elem));
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
             } else {
-                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem));
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, propertyGroup));
             }
         }
         var groupInterface = function(name){
@@ -49,6 +49,15 @@ var EffectsExpressionInterface = (function (){
             }
             return effectElements[0]();
         }
+
+        groupInterface.propertyGroup = function(val){
+           if(val === 1){
+               return interfaceFunction;
+           } else{
+               return propertyGroup(val-1);
+           }
+        };
+
         if(data.mn === 'ADBE Color Control'){
             Object.defineProperty(groupInterface, 'color', {
                 get: function(){
@@ -65,13 +74,25 @@ var EffectsExpressionInterface = (function (){
         return groupInterface
     }
 
-    function createValueInterface(element, type, elem){
-        return function(){
+    function createValueInterface(element, type, elem, propertyGroup){
+        function interfaceFunction(){
             if(type === 10){
                 return elem.comp.compInterface(element.p.v);
             }
             return ExpressionValue(element.p);
         }
+
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
+        }
+
+        element.p.setGroupProperty(_propertyGroup);
+
+        return interfaceFunction;
     }
 
     return ob;
