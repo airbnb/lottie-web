@@ -263,6 +263,7 @@ ITextElement.prototype.completeTextData = function(documentData) {
         var currentInd = -1, newInd;
         if(animatorData.s.rn === 1){
             for(i = 0; i < len; i += 1){
+                letterData = letters[i];
                 if(currentInd != letterData.anIndexes[j]){
                     currentInd = letterData.anIndexes[j];
                     newInd = indexes.splice(Math.floor(Math.random()*indexes.length),1)[0];
