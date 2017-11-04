@@ -19,9 +19,7 @@ function CVTextElement(data, comp, globalData){
 }
 createElement(CVBaseElement, CVTextElement);
 
-CVTextElement.prototype.init = ITextElement.prototype.init;
-CVTextElement.prototype.getMult = ITextElement.prototype.getMult;
-CVTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
+extendPrototype(ITextElement, CVTextElement);
 
 CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2d');
 

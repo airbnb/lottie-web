@@ -498,6 +498,11 @@ function dataFunctionManager(){
     }
 
     function completeText(data, fontManager){
+
+        if(data.t.a.length === 0 && !('m' in data.t.p)){
+            data.singleShape = true;
+        }
+        /*return;
         var letters;
         var keys = data.t.d.k;
         var k, kLen = keys.length;
@@ -700,7 +705,7 @@ function dataFunctionManager(){
             documentData.yOffset = documentData.lh || documentData.s*1.2;
             documentData.ls = documentData.ls || 0;
             documentData.ascent = fontData.ascent*documentData.s/100;
-        }
+        }*/
 
     }
 

@@ -14,10 +14,7 @@ function HTextElement(data,parentContainer,globalData,comp, placeholder){
 }
 createElement(HBaseElement, HTextElement);
 
-HTextElement.prototype.init = ITextElement.prototype.init;
-HTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
-HTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
-HTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
+extendPrototype(ITextElement, HTextElement);
 
 HTextElement.prototype.createElements = function(){
     this.isMasked = this.checkMasks();

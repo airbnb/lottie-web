@@ -5,10 +5,7 @@ function SVGTextElement(data,parentContainer,globalData,comp, placeholder){
 }
 createElement(SVGBaseElement, SVGTextElement);
 
-SVGTextElement.prototype.init = ITextElement.prototype.init;
-SVGTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
-SVGTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
-SVGTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
+extendPrototype(ITextElement, SVGTextElement);
 
 SVGTextElement.prototype.createElements = function(){
 
@@ -20,6 +17,9 @@ SVGTextElement.prototype.createElements = function(){
     }
     if(this.data.cl){
         this.layerElement.setAttribute('class',this.data.cl);
+    }
+    if (this.data.singleShape && !this.globalData.fontManager.chars) {
+        this.textContainer = document.createElementNS(svgNS,'text');
     }
 };
 
@@ -48,9 +48,8 @@ SVGTextElement.prototype.buildNewText = function(){
         this.layerElement.setAttribute('font-weight', fWeight);
     }
 
-
-
     var letters = documentData.l || [];
+    var usesGlyphs = this.globalData.fontManager.chars;
     len = letters.length;
     if(!len){
         return;
@@ -62,93 +61,100 @@ SVGTextElement.prototype.buildNewText = function(){
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
         var trackingOffset = documentData.tr/1000*documentData.s;
     }
-    var cnt = 0;
-    for (i = 0;i < len ;i += 1) {
-        if(this.globalData.fontManager.chars){
-            if(!singleShape || i === 0){
-                tSpan = this.textSpans[cnt] ? this.textSpans[cnt] : document.createElementNS(svgNS,'path');
+    if(singleShape && !usesGlyphs) {
+        var tElement = this.textContainer;
+        var justify = '';
+        switch(documentData.j) {
+            case 1:
+                justify = 'end';
+                break;
+            case 2:
+                justify = 'middle';
+                break;
+            case 2:
+                justify = 'start';
+                break;
+        }
+        tElement.setAttribute('text-anchor',justify);
+        tElement.setAttribute('letter-spacing',trackingOffset);
+        var textContent = documentData.t.split(String.fromCharCode(13));
+        len = textContent.length;
+        for ( i = 0; i < len; i += 1) {
+            tSpan = this.textSpans[i] || document.createElementNS(svgNS,'tspan');
+            tSpan.textContent = textContent[i];
+            tSpan.setAttribute('x', 0);
+            tSpan.setAttribute('y', i * documentData.lh);
+            tSpan.style.display = 'inherit';
+            tElement.appendChild(tSpan);
+            this.textSpans[i] = tSpan;
+        }
+        
+        this.layerElement.appendChild(tElement);
+    } else {
+        var cachedSpansLength = this.textSpans.length;
+        for (i = 0; i < len; i += 1) {
+            if(!usesGlyphs || !singleShape || i === 0){
+                tSpan = cachedSpansLength > i ? this.textSpans[i] : document.createElementNS(svgNS,usesGlyphs?'path':'text');
+                if (cachedSpansLength <= i) {
+                    tSpan.setAttribute('stroke-linecap', 'butt');
+                    tSpan.setAttribute('stroke-linejoin','round');
+                    tSpan.setAttribute('stroke-miterlimit','4');
+                    this.textSpans[i] = tSpan;
+                    this.layerElement.appendChild(tSpan);
+                }
+                tSpan.style.display = 'inherit';
             }
-        }else{
-            tSpan = this.textSpans[cnt] ? this.textSpans[cnt] : document.createElementNS(svgNS,'text');
-        }
-        tSpan.style.display = 'inherit';
-        tSpan.setAttribute('stroke-linecap', 'butt');
-        tSpan.setAttribute('stroke-linejoin','round');
-        tSpan.setAttribute('stroke-miterlimit','4');
-        //tSpan.setAttribute('visibility', 'hidden');
-        if(singleShape && letters[i].n) {
-            xPos = -trackingOffset;
-            yPos += documentData.yOffset;
-            yPos += firstLine ? 1 : 0;
-            firstLine = false;
-        }
-        matrixHelper.reset();
-        if(this.globalData.fontManager.chars) {
-            matrixHelper.scale(documentData.s / 100, documentData.s / 100);
+            
+            matrixHelper.reset();
+            if(usesGlyphs) {
+                matrixHelper.scale(documentData.s / 100, documentData.s / 100);
+                if (singleShape) {
+                    if(letters[i].n) {
+                        xPos = -trackingOffset;
+                        yPos += documentData.yOffset;
+                        yPos += firstLine ? 1 : 0;
+                        firstLine = false;
+                    }
+                    if(documentData.ps){
+                        matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+                    }
+                    matrixHelper.translate(0,-documentData.ls,0);
+                    switch(documentData.j){
+                        case 1:
+                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
+                            break;
+                        case 2:
+                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line] )/2,0,0);
+                            break;
+                    }
+                    matrixHelper.translate(xPos, yPos, 0);
+                    xPos += letters[i].l || 0;
+                    xPos += trackingOffset;
+                }
+                var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+                var shapeData;
+                shapeData = charData && charData.data || {};
+                shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
+                if(!singleShape){
+                    tSpan.setAttribute('d',this.createPathShape(matrixHelper,shapes));
+                } else {
+                    shapeStr += this.createPathShape(matrixHelper,shapes);
+                }
+            } else {
+                tSpan.textContent = letters[i].val;
+                tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
+            }
+            //
         }
         if (singleShape) {
-            if(documentData.ps){
-                matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
-            }
-            matrixHelper.translate(0,-documentData.ls,0);
-            switch(documentData.j){
-                case 1:
-                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
-                    break;
-                case 2:
-                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line] )/2,0,0);
-                    break;
-            }
-            matrixHelper.translate(xPos, yPos, 0);
-        }
-        if(this.globalData.fontManager.chars){
-            var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-            var shapeData;
-            if(charData){
-                shapeData = charData.data;
-            } else {
-                shapeData = null;
-            }
-            if(shapeData && shapeData.shapes){
-                shapes = shapeData.shapes[0].it;
-                if(!singleShape){
-                    shapeStr = '';
-                }
-                shapeStr += this.createPathShape(matrixHelper,shapes);
-                if(!singleShape){
-
-                    tSpan.setAttribute('d',shapeStr);
-                }
-            }
-            if(!singleShape){
-                this.layerElement.appendChild(tSpan);
-            }
-        }else{
-            tSpan.textContent = letters[i].val;
-            tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-            this.layerElement.appendChild(tSpan);
-            if(singleShape){
-                tSpan.setAttribute('transform',matrixHelper.to2dCSS());
-            }
-        }
-        if(singleShape) {
-            xPos += letters[i].l || 0;
-            xPos += trackingOffset;
-        }
-        //
-        this.textSpans[cnt] = tSpan;
-        cnt += 1;
-    }
-    if(!singleShape){
-        while(cnt < this.textSpans.length){
-            this.textSpans[cnt].style.display = 'none';
-            cnt += 1;
+            tSpan.setAttribute('d',shapeStr);
         }
     }
-    if(singleShape && this.globalData.fontManager.chars){
-        tSpan.setAttribute('d',shapeStr);
-        this.layerElement.appendChild(tSpan);
+    while (i < this.textSpans.length){
+        this.textSpans[i].style.display = 'none';
+        i += 1;
     }
+    
     this._sizeChanged = true;
 }
 

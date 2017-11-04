@@ -694,7 +694,7 @@ var PropertyFactory = (function(){
                     }
                 }
             }
-            var totalChars = this.elem.currentTextDocumentData.l.length;
+            var totalChars = this.elem.currentTextDocumentData ? this.elem.currentTextDocumentData.l.length : 0;
             if(newCharsFlag && this.data.r === 2) {
                 this.e.v = totalChars;
             }
