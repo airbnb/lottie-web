@@ -29,12 +29,12 @@ SVGTextElement.prototype.buildNewText = function(){
     var documentData = this.currentTextDocumentData;
     this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
     if(documentData.fc) {
-        this.layerElement.setAttribute('fill', 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')');
+        this.layerElement.setAttribute('fill', this.buildColor(documentData.fc));
     }else{
         this.layerElement.setAttribute('fill', 'rgba(0,0,0,0)');
     }
     if(documentData.sc){
-        this.layerElement.setAttribute('stroke', 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')');
+        this.layerElement.setAttribute('stroke', this.buildColor(documentData.sc));
         this.layerElement.setAttribute('stroke-width', documentData.sw);
     }
     this.layerElement.setAttribute('font-size', documentData.s);
@@ -57,10 +57,8 @@ SVGTextElement.prototype.buildNewText = function(){
     var tSpan;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
-    if (singleShape) {
-        var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
-        var trackingOffset = documentData.tr/1000*documentData.s;
-    }
+    var xPos = 0, yPos = 0, firstLine = true;
+    var trackingOffset = documentData.tr/1000*documentData.s;
     if(singleShape && !usesGlyphs) {
         var tElement = this.textContainer;
         var justify = '';
@@ -83,7 +81,7 @@ SVGTextElement.prototype.buildNewText = function(){
             tSpan = this.textSpans[i] || document.createElementNS(svgNS,'tspan');
             tSpan.textContent = textContent[i];
             tSpan.setAttribute('x', 0);
-            tSpan.setAttribute('y', i * documentData.lh);
+            tSpan.setAttribute('y', (i - 0) * documentData.lh);
             tSpan.style.display = 'inherit';
             tElement.appendChild(tSpan);
             this.textSpans[i] = tSpan;
@@ -92,6 +90,7 @@ SVGTextElement.prototype.buildNewText = function(){
         this.layerElement.appendChild(tElement);
     } else {
         var cachedSpansLength = this.textSpans.length;
+        var shapeData, charData;
         for (i = 0; i < len; i += 1) {
             if(!usesGlyphs || !singleShape || i === 0){
                 tSpan = cachedSpansLength > i ? this.textSpans[i] : document.createElementNS(svgNS,usesGlyphs?'path':'text');
@@ -115,25 +114,12 @@ SVGTextElement.prototype.buildNewText = function(){
                         yPos += firstLine ? 1 : 0;
                         firstLine = false;
                     }
-                    if(documentData.ps){
-                        matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
-                    }
-                    matrixHelper.translate(0,-documentData.ls,0);
-                    switch(documentData.j){
-                        case 1:
-                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
-                            break;
-                        case 2:
-                            matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line] )/2,0,0);
-                            break;
-                    }
-                    matrixHelper.translate(xPos, yPos, 0);
+                    this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
                     xPos += letters[i].l || 0;
                     //xPos += letters[i].val === ' ' ? 0 : trackingOffset;
                     xPos += trackingOffset;
                 }
-                var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-                var shapeData;
+                charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
                 if(!singleShape){
@@ -228,8 +214,3 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     }
     this.renderLetters();
 }
-
-
-SVGTextElement.prototype.destroy = function(){
-    this._parent.destroy.call(this._parent);
-};

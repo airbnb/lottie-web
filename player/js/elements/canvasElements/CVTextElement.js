@@ -32,12 +32,12 @@ CVTextElement.prototype.createElements = function(){
 
 CVTextElement.prototype.buildNewText = function(){
     var documentData = this.currentTextDocumentData;
-    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
+    this.renderedLetters = Array.apply(null,{length:documentData.l ? documentData.l.length : 0});
 
     var hasFill = false;
     if(documentData.fc) {
         hasFill = true;
-        this.values.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';
+        this.values.fill = this.buildColor(documentData.fc);
     }else{
         this.values.fill = 'rgba(0,0,0,0)';
     }
@@ -45,7 +45,7 @@ CVTextElement.prototype.buildNewText = function(){
     var hasStroke = false;
     if(documentData.sc){
         hasStroke = true;
-        this.values.stroke = 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')';
+        this.values.stroke = this.buildColor(documentData.sc);
         this.values.sWidth = documentData.sw;
     }
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
@@ -55,21 +55,14 @@ CVTextElement.prototype.buildNewText = function(){
     this.stroke = hasStroke;
     this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
     len = documentData.t.length;
-    this.tHelper.font = this.values.fValue;
+    //this.tHelper.font = this.values.fValue;
     var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
-    if (singleShape) {
-        var trackingOffset = documentData.tr/1000*documentData.s;
-        var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
-    }
+    var trackingOffset = documentData.tr/1000*documentData.s;
+    var xPos = 0, yPos = 0, firstLine = true;
     var cnt = 0;
     for (i = 0; i < len; i += 1) {
         charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        var shapeData;
-        if(charData){
-            shapeData = charData.data;
-        } else {
-            shapeData = null;
-        }
+        shapeData = charData && charData.data || {};
         matrixHelper.reset();
         if(singleShape && letters[i].n) {
             xPos = -trackingOffset;
@@ -78,41 +71,25 @@ CVTextElement.prototype.buildNewText = function(){
             firstLine = false;
         }
 
-        if(shapeData && shapeData.shapes){
-            shapes = shapeData.shapes[0].it;
-            jLen = shapes.length;
-            matrixHelper.scale(documentData.s/100,documentData.s/100);
-            if(singleShape){
-                if(documentData.ps){
-                    matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+        shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
+        jLen = shapes.length;
+        matrixHelper.scale(documentData.s/100,documentData.s/100);
+        if(singleShape){
+            this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
+        }
+        commands = Array.apply(null,{length:jLen})
+        for(j=0;j<jLen;j+=1){
+            kLen = shapes[j].ks.k.i.length;
+            pathNodes = shapes[j].ks.k;
+            pathArr = [];
+            for(k=1;k<kLen;k+=1){
+                if(k==1){
+                    pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
                 }
-                matrixHelper.translate(0,-documentData.ls,0);
-                switch(documentData.j){
-                    case 1:
-                        matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
-                        break;
-                    case 2:
-                        matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
-                        break;
-                }
-                matrixHelper.translate(xPos,yPos,0);
+                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1],0),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1],0));
             }
-            commands = new Array(jLen);
-            for(j=0;j<jLen;j+=1){
-                kLen = shapes[j].ks.k.i.length;
-                pathNodes = shapes[j].ks.k;
-                pathArr = [];
-                for(k=1;k<kLen;k+=1){
-                    if(k==1){
-                        pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
-                    }
-                    pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1],0),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1],0));
-                }
-                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
-                commands[j] = pathArr;
-            }
-        }else{
-            commands = [];
+            pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
+            commands[j] = pathArr;
         }
         if(singleShape){
             xPos += letters[i].l;

@@ -277,6 +277,30 @@ ITextElement.prototype.completeTextData = function(documentData) {
     documentData.ascent = fontData.ascent*documentData.s/100;
 }
 
+ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
+    if(documentData.ps){
+        matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+    }
+    matrixHelper.translate(0,-documentData.ls,0);
+    switch(documentData.j){
+        case 1:
+            matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber]),0,0);
+            break;
+        case 2:
+            matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber] )/2,0,0);
+            break;
+    }
+    matrixHelper.translate(xPos, yPos, 0);
+}
+
+ITextElement.prototype.buildColor = function(colorData) {
+    return 'rgb(' + Math.round(colorData[0]*255) + ',' + Math.round(colorData[1]*255) + ',' + Math.round(colorData[2]*255) + ')';
+}
+
 ITextElement.prototype.buildShapeString = IShapeElement.prototype.buildShapeString;
 
 ITextElement.prototype.emptyProp = new LetterProps();
+
+ITextElement.prototype.destroy = function(){
+    this._parent.destroy.call(this._parent);
+};
