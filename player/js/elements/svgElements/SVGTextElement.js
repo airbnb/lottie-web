@@ -129,6 +129,7 @@ SVGTextElement.prototype.buildNewText = function(){
                     }
                     matrixHelper.translate(xPos, yPos, 0);
                     xPos += letters[i].l || 0;
+                    //xPos += letters[i].val === ' ' ? 0 : trackingOffset;
                     xPos += trackingOffset;
                 }
                 var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);

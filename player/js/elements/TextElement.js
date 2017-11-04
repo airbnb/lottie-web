@@ -123,7 +123,7 @@ ITextElement.prototype.completeTextData = function(documentData) {
                 //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
                 cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
             }
-            if(lineWidth + cLength > boxWidth){
+            if(lineWidth + cLength > boxWidth && documentData.t.charAt(i) !== ' '){
                 if(lastSpaceIndex === -1){
                     len += 1;
                 } else {
@@ -141,11 +141,15 @@ ITextElement.prototype.completeTextData = function(documentData) {
     }
     lineWidth = - trackingOffset;
     cLength = 0;
+    var uncollapsedSpaces = 0;
+    var currentChar;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
-        if(documentData.t.charAt(i) === ' '){
+        currentChar = documentData.t.charAt(i);
+        if(currentChar === ' '){
             val = '\u00A0';
-        }else if(documentData.t.charCodeAt(i) === 13){
+        }else if(currentChar.charCodeAt(0) === 13){
+            uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
             lineWidth = - 2 * trackingOffset;
@@ -156,7 +160,7 @@ ITextElement.prototype.completeTextData = function(documentData) {
             val = documentData.t.charAt(i);
         }
         if(fontManager.chars){
-            charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
+            charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
             cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
         }else{
             //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
@@ -165,7 +169,12 @@ ITextElement.prototype.completeTextData = function(documentData) {
         }
 
         //
-        lineWidth += cLength + trackingOffset;
+        if(currentChar === ' '){
+            uncollapsedSpaces += cLength + trackingOffset;
+        } else {
+            lineWidth += cLength + trackingOffset + uncollapsedSpaces;
+            uncollapsedSpaces = 0;
+        }
         letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
         if(anchorGrouping == 2){
             currentSize += cLength;

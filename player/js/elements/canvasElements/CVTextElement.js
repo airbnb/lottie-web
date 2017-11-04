@@ -58,10 +58,11 @@ CVTextElement.prototype.buildNewText = function(){
     this.tHelper.font = this.values.fValue;
     var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
     if (singleShape) {
+        var trackingOffset = documentData.tr/1000*documentData.s;
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
     }
     var cnt = 0;
-    for (i = 0;i < len ;i += 1) {
+    for (i = 0; i < len; i += 1) {
         charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
         var shapeData;
         if(charData){
@@ -71,7 +72,7 @@ CVTextElement.prototype.buildNewText = function(){
         }
         matrixHelper.reset();
         if(singleShape && letters[i].n) {
-            xPos = 0;
+            xPos = -trackingOffset;
             yPos += documentData.yOffset;
             yPos += firstLine ? 1 : 0;
             firstLine = false;
@@ -115,6 +116,7 @@ CVTextElement.prototype.buildNewText = function(){
         }
         if(singleShape){
             xPos += letters[i].l;
+            xPos += trackingOffset;
         }
         if(this.textSpans[cnt]){
             this.textSpans[cnt].elem = commands;
