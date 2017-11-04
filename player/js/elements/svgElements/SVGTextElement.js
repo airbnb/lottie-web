@@ -77,14 +77,16 @@ SVGTextElement.prototype.buildNewText = function(){
         tElement.setAttribute('letter-spacing',trackingOffset);
         var textContent = documentData.t.split(String.fromCharCode(13));
         len = textContent.length;
+        var yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
             tSpan = this.textSpans[i] || document.createElementNS(svgNS,'tspan');
             tSpan.textContent = textContent[i];
             tSpan.setAttribute('x', 0);
-            tSpan.setAttribute('y', (i - 0) * documentData.lh);
+            tSpan.setAttribute('y', yPos);
             tSpan.style.display = 'inherit';
             tElement.appendChild(tSpan);
             this.textSpans[i] = tSpan;
+            yPos += documentData.lh;
         }
         
         this.layerElement.appendChild(tElement);
