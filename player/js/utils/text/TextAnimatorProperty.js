@@ -426,9 +426,9 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 if (documentData.strokeColorAnim && 'sc' in animatorProps) {
                     for(k=0;k<3;k+=1){
                         if(mult.length) {
-                            sc[k] = Math.round(255*(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]));
+                            sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]
                         } else {
-                            sc[k] = Math.round(255*(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult));
+                            sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult;
                         }
                     }
                 }

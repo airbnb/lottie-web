@@ -26,8 +26,8 @@ SVGTextElement.prototype.createElements = function(){
 SVGTextElement.prototype.buildNewText = function(){
     var i, len;
 
-    var documentData = this.currentTextDocumentData;
-    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
+    var documentData = this.textProperty.currentData;
+    this.renderedLetters = Array.apply(null,{length:documentData ? documentData.l.length : 0});
     if(documentData.fc) {
         this.layerElement.setAttribute('fill', this.buildColor(documentData.fc));
     }else{
@@ -166,13 +166,13 @@ SVGTextElement.prototype.sourceRectAtTime = function(time){
 SVGTextElement.prototype.renderLetters = function(){
 
     if(!this.data.singleShape){
-        this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+        this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
         if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag){
             this._sizeChanged = true;
             var  i,len;
             var renderedLetters = this.textAnimator.renderedLetters;
 
-            var letters = this.currentTextDocumentData.l;
+            var letters = this.textProperty.currentData.l;
 
             len = letters.length;
             var renderedLetter;

@@ -697,7 +697,7 @@ var ExpressionManager = (function(){
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
-                if(typeof this.v === 'number' || this.v instanceof Number || typeof this.v === 'string'){
+                if(typeof this.v === 'number' || this.v instanceof Number || this.v instanceof String || typeof this.v === 'string'){
                     this.v *= this.mult;
                 }else if(this.v.length === 1){
                     this.v = this.v[0] * this.mult;
@@ -714,7 +714,7 @@ var ExpressionManager = (function(){
             if(this.v.length === 1){
                 this.v = this.v[0];
             }
-            if(typeof this.v === 'number' || this.v instanceof Number || typeof this.v === 'string'){
+            if(typeof this.v === 'number' || this.v instanceof Number || this.v instanceof String || typeof this.v === 'string'){
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
                     this.mdf = true;

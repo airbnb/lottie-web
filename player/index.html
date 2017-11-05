@@ -11,7 +11,7 @@
         }
 
         #bodymovin{
-            background-color:#fff;
+            background-color:#ccc;
             width:100%;
             height:100%;
             /*width:800px;
@@ -52,6 +52,7 @@
     <script src="js/utils/filters.js"></script>
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
+    <script src="js/utils/text/TextProperty.js"></script>
     <script src="js/utils/pooling/pooling.js"></script>
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
@@ -96,6 +97,7 @@
     <!-- Expressions -->
     <script src="js/utils/expressions/Expressions.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ExpressionManager.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ShapeInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/TextInterface.js" data-light-skip="true"></script>
@@ -124,13 +126,13 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'html',
+        renderer: 'svg',
         loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/banner_font/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 
