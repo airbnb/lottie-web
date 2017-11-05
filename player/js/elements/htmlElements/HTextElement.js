@@ -47,8 +47,8 @@ HTextElement.prototype.createElements = function(){
 };
 
 HTextElement.prototype.buildNewText = function(){
-    var documentData = this.currentTextDocumentData;
-    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
+    var documentData = this.textProperty.currentData;
+    this.renderedLetters = Array.apply(null,{length:this.textProperty.currentData.l ? this.textProperty.currentData.l.length : 0});
     if(documentData.fc) {
         this.innerElem.style.color = this.innerElem.style.fill = this.buildColor(documentData.fc);
         ////this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
@@ -216,14 +216,14 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
 
-    this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+    this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
         return;
     }
     var  i,len, count = 0;
     var renderedLetters = this.textAnimator.renderedLetters;
 
-    var letters = this.currentTextDocumentData.l;
+    var letters = this.textProperty.currentData.l;
 
     len = letters.length;
     var renderedLetter;

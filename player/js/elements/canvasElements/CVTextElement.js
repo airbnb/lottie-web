@@ -31,7 +31,7 @@ CVTextElement.prototype.createElements = function(){
 };
 
 CVTextElement.prototype.buildNewText = function(){
-    var documentData = this.currentTextDocumentData;
+    var documentData = this.textProperty.currentData;
     this.renderedLetters = Array.apply(null,{length:documentData.l ? documentData.l.length : 0});
 
     var hasFill = false;
@@ -119,13 +119,13 @@ CVTextElement.prototype.renderFrame = function(parentMatrix){
     ctx.miterLimit = 4;
 
     if(!this.data.singleShape){
-        this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+        this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     }
 
     var  i,len, j, jLen, k, kLen;
     var renderedLetters = this.textAnimator.renderedLetters;
 
-    var letters = this.currentTextDocumentData.l;
+    var letters = this.textProperty.currentData.l;
 
     len = letters.length;
     var renderedLetter;
