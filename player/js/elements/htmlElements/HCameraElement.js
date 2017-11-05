@@ -1,15 +1,16 @@
 function HCameraElement(data,parentContainer,globalData,comp, placeholder){
     this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    this.pe = PropertyFactory.getProp(this,data.pe,0,0,this.dynamicProperties);
+    var getProp = PropertyFactory.getProp;
+    this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
     if(data.ks.p.s){
-        this.px = PropertyFactory.getProp(this,data.ks.p.x,1,0,this.dynamicProperties);
-        this.py = PropertyFactory.getProp(this,data.ks.p.y,1,0,this.dynamicProperties);
-        this.pz = PropertyFactory.getProp(this,data.ks.p.z,1,0,this.dynamicProperties);
+        this.px = getProp(this,data.ks.p.x,1,0,this.dynamicProperties);
+        this.py = getProp(this,data.ks.p.y,1,0,this.dynamicProperties);
+        this.pz = getProp(this,data.ks.p.z,1,0,this.dynamicProperties);
     }else{
-        this.p = PropertyFactory.getProp(this,data.ks.p,1,0,this.dynamicProperties);
+        this.p = getProp(this,data.ks.p,1,0,this.dynamicProperties);
     }
     if(data.ks.a){
-        this.a = PropertyFactory.getProp(this,data.ks.a,1,0,this.dynamicProperties);
+        this.a = getProp(this,data.ks.a,1,0,this.dynamicProperties);
     }
     if(data.ks.or.k.length && data.ks.or.k[0].to){
         var i,len = data.ks.or.k.length;
@@ -18,11 +19,11 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
             data.ks.or.k[i].ti = null;
         }
     }
-    this.or = PropertyFactory.getProp(this,data.ks.or,1,degToRads,this.dynamicProperties);
+    this.or = getProp(this,data.ks.or,1,degToRads,this.dynamicProperties);
     this.or.sh = true;
-    this.rx = PropertyFactory.getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
-    this.ry = PropertyFactory.getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
-    this.rz = PropertyFactory.getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
+    this.rx = getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
+    this.ry = getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
+    this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
     this.mat = new Matrix();
 }
 createElement(HBaseElement, HCameraElement);

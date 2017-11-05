@@ -33,7 +33,6 @@
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
-    <script src="js/utils/MatrixManager.js"></script>
     <script src="js/utils/animationFramePolyFill.js"></script>
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
@@ -126,13 +125,13 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'html',
+        renderer: 'svg',
         loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/banner_font/data.json'
+        path: 'exports/render/data.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

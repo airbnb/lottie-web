@@ -175,26 +175,27 @@ SVGTextElement.prototype.renderLetters = function(){
             var letters = this.textProperty.currentData.l;
 
             len = letters.length;
-            var renderedLetter;
+            var renderedLetter, textSpan;
             for(i=0;i<len;i+=1){
                 if(letters[i].n){
                     continue;
                 }
                 renderedLetter = renderedLetters[i];
+                textSpan = this.textSpans[i];
                 if(renderedLetter.mdf.m) {
-                    this.textSpans[i].setAttribute('transform',renderedLetter.m);
+                    textSpan.setAttribute('transform',renderedLetter.m);
                 }
                 if(renderedLetter.mdf.o) {
-                    this.textSpans[i].setAttribute('opacity',renderedLetter.o);
+                    textSpan.setAttribute('opacity',renderedLetter.o);
                 }
                 if(renderedLetter.mdf.sw){
-                    this.textSpans[i].setAttribute('stroke-width',renderedLetter.sw);
+                    textSpan.setAttribute('stroke-width',renderedLetter.sw);
                 }
                 if(renderedLetter.mdf.sc){
-                    this.textSpans[i].setAttribute('stroke',renderedLetter.sc);
+                    textSpan.setAttribute('stroke',renderedLetter.sc);
                 }
                 if(renderedLetter.mdf.fc){
-                    this.textSpans[i].setAttribute('fill',renderedLetter.fc);
+                    textSpan.setAttribute('fill',renderedLetter.fc);
                 }
             }
         }
