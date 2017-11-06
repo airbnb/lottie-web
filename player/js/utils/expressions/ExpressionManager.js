@@ -350,7 +350,8 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask;
+        var loopIn, loop_in, loopOut, loop_out;
+        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
@@ -393,25 +394,28 @@ var ExpressionManager = (function(){
             }
         }.bind(this);
 
-        var loopIn = thisProperty.loopIn.bind(thisProperty);
-        var loop_in = loopIn;
+        if(thisProperty.loopIn) {
+            loopIn = thisProperty.loopIn.bind(thisProperty);
+            loop_in = loopIn;
+        }
+
+        if(thisProperty.loopOut) {
+            loopOut = thisProperty.loopOut.bind(thisProperty);
+            loop_out = loopOut;
+        }
 
         var loopInDuration = function loopInDuration(type,duration){
             return loopIn(type,duration,true);
         }.bind(this);
 
-        var loopOut = thisProperty.loopOut.bind(thisProperty);
-        var loop_out = loopOut;
-
         var loopOutDuration = function loopOutDuration(type,duration){
             return loopOut(type,duration,true);
         }.bind(this);
 
-        var valueAtTime = function valueAtTime(t) {
-            return this.getValueAtTime(t, 0);
-        }.bind(this);
+        if(this.getValueAtTime) {
+            valueAtTime = this.getValueAtTime.bind(this);
+        }
 
-        var velocityAtTime;
         if(this.getVelocityAtTime) {
             velocityAtTime = this.getVelocityAtTime.bind(this);
         }

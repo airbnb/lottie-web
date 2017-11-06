@@ -85,7 +85,9 @@ var EffectsExpressionInterface = (function (){
             return ExpressionValue(element.p);
         }
 
-        element.p.setGroupProperty(propertyGroup);
+        if(element.p.setGroupProperty) {
+            element.p.setGroupProperty(propertyGroup);
+        }
 
         return interfaceFunction;
     }

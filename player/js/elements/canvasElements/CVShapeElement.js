@@ -347,7 +347,7 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
     var len, i, j,jLen;
     var redraw = groupTransform.matMdf || itemData.sh.mdf || this.firstFrame;
     if(redraw) {
-        var paths = itemData.sh.paths, applyToPointArray = groupTransform.mat.applyToPointArray;
+        var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
         jLen = paths._length;
         var pathStringTransformed = itemData.trNodes;
         pathStringTransformed.length = 0;
@@ -359,28 +359,28 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
                     if (i == 1) {
                         pathStringTransformed.push({
                             t: 'm',
-                            p: applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                            p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                         });
                     }
                     pathStringTransformed.push({
                         t: 'c',
-                        p1: applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
-                        p3: applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
+                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
+                        p2: groupTransformMat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
+                        p3: groupTransformMat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
                     });
                 }
                 if (len == 1) {
                     pathStringTransformed.push({
                         t: 'm',
-                        p: applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                        p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                 }
                 if (pathNodes.c && len) {
                     pathStringTransformed.push({
                         t: 'c',
-                        p1: applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
-                        p3: applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
+                        p2: groupTransformMat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
+                        p3: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                     pathStringTransformed.push({
                         t: 'z'

@@ -228,10 +228,6 @@
 
 
     var propertyGetProp = PropertyFactory.getProp;
-    PropertyFactory.addFunctionToPrototypes('loopOut', loopOut);
-    PropertyFactory.addFunctionToPrototypes('loopIn', loopIn);
-    PropertyFactory.addFunctionToPrototypes('getVelocityAtTime', getVelocityAtTime);
-    PropertyFactory.addFunctionToPrototypes('setGroupProperty', setGroupProperty);
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
         var prop = propertyGetProp(elem,data,type, mult, arr);
         //prop.getVelocityAtTime = getVelocityAtTime;
@@ -250,7 +246,10 @@
                 prop.getValueAtTime = getStaticValueAtTime.bind(prop);
             }
         }
-        //prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = setGroupProperty;
+        prop.loopOut = loopOut;
+        prop.loopIn = loopIn;
+        prop.getVelocityAtTime = getVelocityAtTime;
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         var isAdded = prop.k;
         if(data.ix !== undefined){
