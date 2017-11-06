@@ -1,3 +1,11 @@
+## V 4.13.0
+- text expression support
+- text update support with updateDocumentData (check wiki)
+- tangentOnPath, normalOnPath and more expressions
+- loaded_images event
+- fixed global calls
+- fixed ie9 error
+
 ## V 4.12.3
 - valueAtTime fix
 

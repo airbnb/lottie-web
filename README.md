@@ -1,6 +1,14 @@
 # bodymovin
 After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)
 
+## V 4.13.0
+- text expression support
+- text update support with updateDocumentData (check wiki)
+- tangentOnPath, normalOnPath and more expressions
+- loaded_images event
+- fixed global calls
+- fixed ie9 error
+
 ## V 4.12.3
 - valueAtTime fix
 
@@ -17,43 +25,6 @@ After Effects plugin for exporting animations to svg/canvas/html + js or nativel
 - expressions fixes
 - className for  container via loading config
 - 3d orientation fix
-
-## V 4.11.2
-- new line text fix
-- expression fromComp support
-- rounding to decimals shapes to prevent exponential values
-
-## V 4.11.1
-- 3d and 2d layers html renderer fix
-- text new lines fix
-- text tracking with alignment fix
-
-## V 4.11.0
-- bodymovin.setLocationHref method to set base url for svg fragments
-- optional viewBox only settings on renderConfig
-- sourceRectAtTime support for text on svg renderer
-- text fixes and performance improvements
-
-## V 4.10.3
-- fix for AE CC2014 when reopening App
-- line cap - projecting cap support
-- AVD fix for AE CC2014
-
-## V 4.10.2
-- AVD fixes
-
-## V 4.10.1
-- Expression fix
-
-## V 4.10.0
-- Lots of new expressions
-- Ouroboros 2.0 support! (in beta just in case)
-- AVD Format export!
-
-## V 4.9.0
-- Full repeaters support
-- Keyframes interpolation fix for stretched layers
-- inBrowser method added
 
 # Lottie + Bodymovin
 Lottie is the native engine that Airbnb's awesome team built. It uses Bodymovin as the animation exporter and is the ideal complement for getting animations to play natively everywhere.
@@ -177,24 +148,58 @@ Check this wiki page for an explanation for each setting.
 https://github.com/bodymovin/bodymovin/wiki/Composition-Settings
 
 ## Usage
-animation instances have these main methods:
-**anim.play()** <br/>
-**anim.stop()** <br/>
-**anim.pause()** <br/>
-**anim.setLocationHref(locationHref)** -- one param usually pass as `location.href`. Its useful when you experience mask issue in safari where your url does not have `#` symbol. <br/>
-**anim.setSpeed(speed)** -- one param speed (1 is normal speed) <br/>
-**anim.goToAndStop(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
-**anim.goToAndPlay(value, isFrame)** first param is a numeric value. second param is a boolean that defines time or frames for first param <br/>
-**anim.setDirection(direction)** -- one param direction (1 is normal direction.) <br/>
-**anim.playSegments(segments, forceFlag)** -- first param is a single array or multiple arrays of two values each(fromFrame,toFrame), second param is a boolean for forcing the new segment right away<br/>
-**anim.setSubframe(flag)** -- If false, it will respect the original AE fps. If true, it will update as much as possible. (true by default)<br/>
-**anim.destroy()**<br/>
+Animation instances have these main methods: 
+### play 
 
-bodymovin has 8 main methods:
+***
+### stop
+
+***
+### pause
+
+***
+### setLocationHref(href)
+- `href`: usually pass as `location.href`. Its useful when you experience mask issue in safari where your url does not have `#` symbol.
+
+***
+### setSpeed(speed)
+- `speed`: 1 is normal speed.
+
+***
+### goToAndStop(value, isFrame)
+- `value`: numeric value.
+- `isFrame`: defines if first argument is a time based value or a frame based (default false).
+
+***
+### goToAndPlay(value, isFrame)
+- `value`: numeric value.
+- `isFrame`: defines if first argument is a time based value or a frame based (default false).
+
+***
+### setDirection(direction)
+- `direction`: 1 is forward, -1 is reverse.
+
+***
+### playSegments(segments, forceFlag)
+- `segments`: array. Can contain 2 numeric values that will be used as first and last frame of the animation. Or can contain a sequence of arrays each with 2 numeric values.
+- `forceFlag`: boolean. If set to false, it will wait until the current segment is complete. If true, it will update values immediately.
+***
+### setSubframe(useSubFrames)
+- `useSubFrames`:  If false, it will respect the original AE fps. If true, it will update on every requestAnimationFrame with intermediate values. Default is true.
+***
+### destroy()
+***
+
+### Aditional methods:
+- updateTextDocumentData -- updates a text layer's data  
+[More Info](https://github.com/bodymovin/bodymovin/wiki/TextLayer.updateDocumentData)
+***
+
+### bodymovin has 8 global methods that will affect all animations:
 **bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.setSpeed()** -- first param speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
-**bodymovin.setDirection()** -- first param direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setSpeed()** -- first argument speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setDirection()** -- first argument direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
 **bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
 **bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
 **bodymovin.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
@@ -214,7 +219,7 @@ you can also use addEventListener with the following events:
 - segmentStart
 - config_ready (when initial config is done)
 - data_ready (when all parts of the animation have been loaded)
-- loaded_images (when all image laods have either succeeded or errored)
+- loaded_images (when all image loads have either succeeded or errored)
 - DOMLoaded (when elements have been added to the DOM)
 - destroy
 
