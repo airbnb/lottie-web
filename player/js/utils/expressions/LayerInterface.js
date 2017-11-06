@@ -61,7 +61,7 @@ var LayerExpressionInterface = (function (){
         var transformInterface = TransformExpressionInterface(elem.transform);
 
         function _registerMaskInterface(maskManager){
-            _thisLayerFunction.mask = maskManager.getMask.bind(maskManager);
+            _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);
         }
         function _registerEffectsInterface(effects){
             _thisLayerFunction.effect = effects;
@@ -88,6 +88,7 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.fromWorld = fromWorld;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction.fromComp = fromComp;
+        _thisLayerFunction.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
         _thisLayerFunction._elem = elem;
         Object.defineProperty(_thisLayerFunction, 'hasParent', {
             get: function(){
@@ -149,6 +150,12 @@ var LayerExpressionInterface = (function (){
         Object.defineProperty(_thisLayerFunction, "source", {
             get: function () {
                 return elem.data.refId;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "index", {
+            get: function () {
+                return elem.data.ind;
             }
         });
 

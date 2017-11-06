@@ -1,9 +1,12 @@
-function HybridRenderer(animationItem){
+function HybridRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1
+    };
+    this.renderConfig = {
+        className: (config && config.className) || ''
     };
     this.pendingElements = [];
     this.elements = [];
@@ -26,31 +29,32 @@ HybridRenderer.prototype.checkPendingElements  = function(){
 };
 
 HybridRenderer.prototype.appendElementInPos = function(element, pos){
-    var newElement = element.getBaseElement();
-    if(!newElement){
+    var newDOMElement = element.getBaseElement();
+    if(!newDOMElement){
         return;
     }
     var layer = this.layers[pos];
     if(!layer.ddd || !this.supports3d){
         var i = 0;
-        var nextElement;
+        var nextDOMElement, nextLayer;
         while(i<pos){
             if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
-                nextElement = this.elements[i].getBaseElement();
+                nextLayer = this.elements[i];
+                nextDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
             }
             i += 1;
         }
-        if(nextElement){
+        if(nextDOMElement){
             if(!layer.ddd || !this.supports3d){
-                this.layerElement.insertBefore(newElement, nextElement);
+                this.layerElement.insertBefore(newDOMElement, nextDOMElement);
             }
         } else {
             if(!layer.ddd || !this.supports3d){
-                this.layerElement.appendChild(newElement);
+                this.layerElement.appendChild(newDOMElement);
             }
         }
     } else {
-        this.addTo3dContainer(newElement,pos);
+        this.addTo3dContainer(newDOMElement,pos);
     }
 };
 
@@ -100,7 +104,17 @@ HybridRenderer.prototype.createSolid = function (data) {
     return new HSolidElement(data, this.layerElement,this.globalData,this);
 };
 
-HybridRenderer.prototype.getThreeDContainer = function(pos){
+HybridRenderer.prototype.getThreeDContainerByPos = function(pos){
+    var i = 0, len = this.threeDElements.length;
+    while(i<len) {
+        if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
+            return this.threeDElements[i].perspectiveElem;
+        }
+        i += 1;
+    }
+}
+
+HybridRenderer.prototype.createThreeDContainer = function(pos){
     var perspectiveElem = document.createElement('div');
     styleDiv(perspectiveElem);
     perspectiveElem.style.width = this.globalData.compSize.w+'px';
@@ -127,7 +141,7 @@ HybridRenderer.prototype.build3dContainers = function(){
     for(i=0;i<len;i+=1){
         if(this.layers[i].ddd){
             if(!lastThreeDContainerData){
-                lastThreeDContainerData = this.getThreeDContainer(i);
+                lastThreeDContainerData = this.createThreeDContainer(i);
             }
             lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
         } else {
@@ -167,6 +181,9 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.resizerElem = resizerElem;
     styleDiv(resizerElem);
     resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
+    if(this.renderConfig.className) {
+      wrapper.setAttribute('class', this.renderConfig.className);
+    }
     wrapper.appendChild(resizerElem);
 
     resizerElem.style.overflow = 'hidden';

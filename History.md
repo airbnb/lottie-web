@@ -1,3 +1,36 @@
+## V 4.12.3
+- valueAtTime fix
+
+## V 4.12.2
+- caching fix
+
+## V 4.12.1
+- velocityAtTime fix
+
+## V 4.12.0
+- pointOnLine support
+- createPath support
+- points, inTangents, outTangents support
+- expressions fixes
+- className for  container via loading config
+- 3d orientation fix
+
+## V 4.11.2
+- new line text fix
+- expression fromComp support
+- rounding to decimals shapes to prevent exponential values
+
+## V 4.11.1
+- 3d and 2d layers html renderer fix
+- text new lines fix
+- text tracking with alignment fix
+
+## V 4.11.0
+- bodymovin.setLocationHref method to set base url for svg fragments
+- optional viewBox only settings on renderConfig
+- sourceRectAtTime support for text on svg renderer
+- text fixes and performance improvements
+
 ## V 4.10.3
 - fix for AE CC2014 when reopening App
 - line cap - projecting cap support

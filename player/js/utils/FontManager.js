@@ -96,7 +96,6 @@ var FontManager = (function(){
         var tCanvasHelper = document.createElement('canvas').getContext('2d');
         tCanvasHelper.font = '100px '+ fontData.fFamily;
         return tCanvasHelper;
-        return tHelper;
     }
 
     function addFonts(fontData, defs){

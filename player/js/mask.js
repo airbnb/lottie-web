@@ -3,10 +3,9 @@ function MaskElement(data,element,globalData) {
     this.data = data;
     this.element = element;
     this.globalData = globalData;
-    this.paths = [];
     this.storedData = [];
     this.masksProperties = this.data.masksProperties;
-    this.viewData = new Array(this.masksProperties.length);
+    this.viewData = Array.apply(null,{length:this.masksProperties.length});
     this.maskElement = null;
     this.firstFrame = true;
     var defs = this.globalData.defs;
@@ -229,23 +228,10 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     }
 };
 
-MaskElement.prototype.getMask = function(nm){
-    var i = 0, len = this.masksProperties.length;
-    while(i<len){
-        if(this.masksProperties[i].nm === nm){
-            return {
-                maskPath: this.viewData[i].prop.pv
-            }
-        }
-        i += 1;
-    }
-};
-
 MaskElement.prototype.destroy = function(){
     this.element = null;
     this.globalData = null;
     this.maskElement = null;
     this.data = null;
-    this.paths = null;
     this.masksProperties = null;
 };

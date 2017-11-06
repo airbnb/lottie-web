@@ -148,28 +148,6 @@ var ShapeExpressionInterface = (function(){
                     default:
                         return interfaceFunction.transform;
                 }
-                /*if(value === 'ADBE Vector Transform Group'){
-                    return interfaceFunction.transform;
-                    var i = 0, len = interfaces.length;
-                    while(i<len){
-                        if(interfaces[i].ty === 'tr'){
-                            return interfaces[i];
-                        }
-                        i+=1;
-                    }
-                    return null;
-                }
-                if(typeof value === 'number'){
-                    return interfaces[value-1];
-                } else {
-                    var i = 0, len = interfaces.length;
-                    while(i<len){
-                        if(interfaces[i]._name === value){
-                            return interfaces[i];
-                        }
-                        i+=1;
-                    }
-                }*/
             }
             interfaceFunction.propertyGroup = function(val){
                 if(val === 1){
@@ -729,7 +707,7 @@ var ShapeExpressionInterface = (function(){
 
     var pathInterfaceFactory = (function(){
         return function(shape,view,propertyGroup){
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+            var prop = view.sh;
             function _propertyGroup(val){
                 if(val == 1){
                     return interfaceFunction;
@@ -744,12 +722,13 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.path;
                 }
             }
+
             Object.defineProperty(interfaceFunction, 'path', {
                 get: function(){
                     if(prop.k){
                         prop.getValue();
                     }
-                    return prop.v;
+                    return prop;
                     //return shape_pool.clone(prop.v);
                 }
             });
@@ -758,7 +737,7 @@ var ShapeExpressionInterface = (function(){
                     if(prop.k){
                         prop.getValue();
                     }
-                    return prop.v;
+                    return prop;
                     //return shape_pool.clone(prop.v);
                 }
             });

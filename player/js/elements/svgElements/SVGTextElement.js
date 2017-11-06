@@ -7,7 +7,6 @@ createElement(SVGBaseElement, SVGTextElement);
 
 SVGTextElement.prototype.init = ITextElement.prototype.init;
 SVGTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
-SVGTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 SVGTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 SVGTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
 
@@ -61,6 +60,7 @@ SVGTextElement.prototype.buildNewText = function(){
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
     if (singleShape) {
         var xPos = 0, yPos = 0, lineWidths = documentData.lineWidths, boxWidth = documentData.boxWidth, firstLine = true;
+        var trackingOffset = documentData.tr/1000*documentData.s;
     }
     var cnt = 0;
     for (i = 0;i < len ;i += 1) {
@@ -77,7 +77,7 @@ SVGTextElement.prototype.buildNewText = function(){
         tSpan.setAttribute('stroke-miterlimit','4');
         //tSpan.setAttribute('visibility', 'hidden');
         if(singleShape && letters[i].n) {
-            xPos = 0;
+            xPos = -trackingOffset;
             yPos += documentData.yOffset;
             yPos += firstLine ? 1 : 0;
             firstLine = false;
@@ -96,7 +96,7 @@ SVGTextElement.prototype.buildNewText = function(){
                     matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line]),0,0);
                     break;
                 case 2:
-                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line])/2,0,0);
+                    matrixHelper.translate(documentData.justifyOffset + (boxWidth - lineWidths[letters[i].line] )/2,0,0);
                     break;
             }
             matrixHelper.translate(xPos, yPos, 0);
@@ -133,7 +133,7 @@ SVGTextElement.prototype.buildNewText = function(){
         }
         if(singleShape) {
             xPos += letters[i].l || 0;
-            xPos += documentData.tr/1000*documentData.s;
+            xPos += trackingOffset;
         }
         //
         this.textSpans[cnt] = tSpan;
@@ -149,6 +149,61 @@ SVGTextElement.prototype.buildNewText = function(){
         tSpan.setAttribute('d',shapeStr);
         this.layerElement.appendChild(tSpan);
     }
+    this._sizeChanged = true;
+}
+
+SVGTextElement.prototype.sourceRectAtTime = function(time){
+    this.prepareFrame(this.comp.renderedFrame - this.data.st);
+    this.renderLetters();
+    if(this._sizeChanged){
+        this._sizeChanged = false;
+        var textBox = this.layerElement.getBBox();
+        this.bbox = {
+            top: textBox.y,
+            left: textBox.x,
+            width: textBox.width,
+            height: textBox.height
+        }
+    }
+    return this.bbox;
+}
+
+SVGTextElement.prototype.renderLetters = function(){
+
+    if(!this.data.singleShape){
+        this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+        if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag){
+            this._sizeChanged = true;
+            var  i,len;
+            var renderedLetters = this.textAnimator.renderedLetters;
+
+            var letters = this.currentTextDocumentData.l;
+
+            len = letters.length;
+            var renderedLetter;
+            for(i=0;i<len;i+=1){
+                if(letters[i].n){
+                    continue;
+                }
+                renderedLetter = renderedLetters[i];
+                if(renderedLetter.mdf.m) {
+                    this.textSpans[i].setAttribute('transform',renderedLetter.m);
+                }
+                if(renderedLetter.mdf.o) {
+                    this.textSpans[i].setAttribute('opacity',renderedLetter.o);
+                }
+                if(renderedLetter.mdf.sw){
+                    this.textSpans[i].setAttribute('stroke-width',renderedLetter.sw);
+                }
+                if(renderedLetter.mdf.sc){
+                    this.textSpans[i].setAttribute('stroke',renderedLetter.sc);
+                }
+                if(renderedLetter.mdf.fc){
+                    this.textSpans[i].setAttribute('fill',renderedLetter.fc);
+                }
+            }
+        }
+    }
 }
 
 SVGTextElement.prototype.renderFrame = function(parentMatrix){
@@ -161,41 +216,10 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
     if(this.hidden){
         this.show();
     }
-
-    if(this.data.singleShape){
-        return;
-    }
-    this.getMeasures();
-    if(!this.lettersChangedFlag){
-        return;
-    }
-    var  i,len;
-    var renderedLetters = this.renderedLetters;
-
-    var letters = this.currentTextDocumentData.l;
-
-    len = letters.length;
-    var renderedLetter;
-    for(i=0;i<len;i+=1){
-        if(letters[i].n){
-            continue;
-        }
-        renderedLetter = renderedLetters[i];
-        this.textSpans[i].setAttribute('transform',renderedLetter.m);
-        this.textSpans[i].setAttribute('opacity',renderedLetter.o);
-        if(renderedLetter.sw){
-            this.textSpans[i].setAttribute('stroke-width',renderedLetter.sw);
-        }
-        if(renderedLetter.sc){
-            this.textSpans[i].setAttribute('stroke',renderedLetter.sc);
-        }
-        if(renderedLetter.fc){
-            this.textSpans[i].setAttribute('fill',renderedLetter.fc);
-        }
-    }
     if(this.firstFrame) {
         this.firstFrame = false;
     }
+    this.renderLetters();
 }
 
 

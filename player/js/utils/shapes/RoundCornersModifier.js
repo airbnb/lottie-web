@@ -53,12 +53,6 @@ RoundCornersModifier.prototype.processPath = function(path, round){
                 oX = vX-(vX-currentV[0])*roundCorner;
                 oY = vY-(vY-currentV[1])*roundCorner;
                 cloned_path.setTripleAt(vX,vY,oX,oY,iX,iY,index);
-                /*newV = [currentV[0]+(closerV[0]-currentV[0])*newPosPerc,currentV[1]-(currentV[1]-closerV[1])*newPosPerc];
-                newI = newV;
-                newO = [newV[0]-(newV[0]-currentV[0])*roundCorner,newV[1]-(newV[1]-currentV[1])*roundCorner];
-                cloned_path.v[index] = newV;
-                cloned_path.i[index] = newI;
-                cloned_path.o[index] = newO;*/
                 index += 1;
 
                 if(i === len - 1){
@@ -73,19 +67,9 @@ RoundCornersModifier.prototype.processPath = function(path, round){
                 iX = vX-(vX-currentV[0])*roundCorner;
                 iY = vY-(vY-currentV[1])*roundCorner;
                 cloned_path.setTripleAt(vX,vY,oX,oY,iX,iY,index);
-
-                /*newV = [currentV[0]+(closerV[0]-currentV[0])*newPosPerc,currentV[1]+(closerV[1]-currentV[1])*newPosPerc];
-                newI = [newV[0]-(newV[0]-currentV[0])*roundCorner,newV[1]-(newV[1]-currentV[1])*roundCorner];
-                newO = newV;
-                cloned_path.v[index] = newV;
-                cloned_path.i[index] = newI;
-                cloned_path.o[index] = newO;*/
                 index += 1;
             }
         } else {
-            /*cloned_path.v[index] = path.v[i];
-            cloned_path.o[index] = path.o[i];
-            cloned_path.i[index] = path.i[i];*/
             cloned_path.setTripleAt(path.v[i][0],path.v[i][1],path.o[i][0],path.o[i][1],path.i[i][0],path.i[i][1],index);
             index += 1;
         }

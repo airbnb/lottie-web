@@ -325,6 +325,18 @@ var ExpressionManager = (function(){
         return min + rndm*(max-min);
     }
 
+    function createPath(points, inTangents, outTangents, closed) {
+        inTangents = inTangents || points;
+        outTangents = outTangents || points;
+        var path = shape_pool.newShape();
+        var len = points.length;
+        path.setPathData(closed, len);
+        for(i = 0; i < len; i += 1) {
+            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true)
+        }
+        return path
+    }
+
     function initiateExpression(elem,data,property){
         var val = data.x;
         var needsVelocity = /velocity(?![\w\d])/.test(val);
@@ -338,12 +350,12 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
-        var toWorld,fromWorld,anchorPoint,thisLayer,thisComp;
+        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask;
         var fn = new Function();
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
 
-        var fn = eval('[function(){' + val+';this.v = $bm_rt;}' + ']')[0];
+        var fn = eval('[function(){' + val+';if($bm_rt.__shapeObject){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
 
@@ -388,6 +400,7 @@ var ExpressionManager = (function(){
             var currentFrame = time*elem.comp.globalData.frameRate;
             var keyframes = this.keyframes;
             var firstKeyFrame = keyframes[0].t;
+            var offsetTime = this.offsetTime || 0;
             if(currentFrame>=firstKeyFrame){
                 return this.pv;
             }else{
@@ -410,7 +423,7 @@ var ExpressionManager = (function(){
                 if(type === 'pingpong') {
                     var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                     if(iterations % 2 === 0){
-                        return this.getValueAtTime(((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                        return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
                     }
                 } else if(type === 'offset'){
                     var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
@@ -439,7 +452,8 @@ var ExpressionManager = (function(){
                     }
                     return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
                 }
-                return this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+
+                return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
             }
         }.bind(this);
 
@@ -472,11 +486,12 @@ var ExpressionManager = (function(){
                     }
                     firstKeyFrame = lastKeyFrame - cycleDuration;
                 }
+                var offsetTime = this.offsetTime || 0;
                 var i, len, ret;
-                if(type === 'pingpong') {
+                if(type.toLowerCase() === 'pingpong') {
                     var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                     if(iterations % 2 !== 0){
-                        return this.getValueAtTime((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                        return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
                     }
                 } else if(type === 'offset'){
                     var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
@@ -505,7 +520,7 @@ var ExpressionManager = (function(){
                     }
                     return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
                 }
-                return this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
             }
         }.bind(this);
         var loop_out = loopOut;
@@ -620,6 +635,10 @@ var ExpressionManager = (function(){
             BMMath.seedrandom(randSeed + seed);
         };
 
+        function sourceRectAtTime() {
+            return elem.sourceRectAtTime();
+        }
+
         var time,velocity, value,textIndex,textTotal,selectorValue;
         var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
@@ -646,6 +665,9 @@ var ExpressionManager = (function(){
                 thisComp = elem.comp.compInterface;
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
+                fromComp = thisLayer.fromComp.bind(thisLayer);
+                mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer):null;
+                fromCompToSurface = fromComp;
             }
             if(!transform){
                 transform = elem.layerInterface("ADBE Transform Group");
@@ -697,7 +719,7 @@ var ExpressionManager = (function(){
                     this.lastValue = this.v;
                     this.mdf = true;
                 }
-            }else if(this.v._length){
+            }else if( this.v._length){
                 if(!shapesEqual(this.v,this.localShapeCollection.shapes[0])){
                     this.mdf = true;
                     this.localShapeCollection.releaseShapes();

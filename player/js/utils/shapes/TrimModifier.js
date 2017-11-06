@@ -48,25 +48,6 @@ TrimModifier.prototype.initModifierProperties = function(elem,data){
     }
 };
 
-TrimModifier.prototype.getSegmentsLength = function(shapeData){
-    var closed = shapeData.c;
-    var pathV = shapeData.v;
-    var pathO = shapeData.o;
-    var pathI = shapeData.i;
-    var i, len = shapeData._length;
-    var lengths = [];
-    var totalLength = 0;
-    for(i=0;i<len-1;i+=1){
-        lengths[i] = bez.getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]);
-        totalLength += lengths[i].addedLength;
-    }
-    if(closed){
-        lengths[i] = bez.getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]);
-        totalLength += lengths[i].addedLength;
-    }
-    return {lengths:lengths,totalLength:totalLength};
-}
-
 TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLength, totalModifierLength) {
     var segments = []
     if(e <= 1){
@@ -145,7 +126,7 @@ TrimModifier.prototype.processShapes = function(firstFrame){
                 } else {
                     pathsData = [];
                     for(j=0;j<jLen;j+=1){
-                        pathData = this.getSegmentsLength(shapePaths.shapes[j]);
+                        pathData = bez.getSegmentsLength(shapePaths.shapes[j]);
                         pathsData.push(pathData);
                         totalShapeLength += pathData.totalLength;
                     }

@@ -11,7 +11,7 @@
         }
 
         #bodymovin{
-            background-color:#333;
+            background-color:#000;
             width:100%;
             height:100%;
             /*width:800px;
@@ -50,6 +50,8 @@
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
+    <script src="js/utils/text/TextAnimatorProperty.js"></script>
+    <script src="js/utils/text/LetterProps.js"></script>
     <script src="js/utils/pooling/pooling.js"></script>
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
@@ -102,6 +104,7 @@
     <script src="js/utils/expressions/TransformInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ProjectInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/EffectInterface.js" data-light-skip="true"></script>
+    <script src="js/utils/expressions/MaskInterface.js" data-light-skip="true"></script>
     <script src="js/utils/expressions/ExpressionValue.js" data-light-skip="true"></script>
     <script src="js/effects/SliderEffect.js" data-light-skip="true"></script>
     <script src="js/effects.js" data-light-skip="true"></script>
@@ -126,7 +129,7 @@
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/logo_reveal.json'
+        path: 'exports/render/data_.json'
     };
     anim = bodymovin.loadAnimation(animData);
 

@@ -182,7 +182,10 @@ function dataFunctionManager(){
 
                         for(j = 0; j < jLen; j += 1) {
                             pathData = paths[j].ks.k;
-                            convertPathsToAbsoluteValues(paths[j].ks.k);
+                            if(!pathData.__converted) {
+                                convertPathsToAbsoluteValues(paths[j].ks.k);
+                                pathData.__converted = true;
+                            }
                         }
                     }
                 }
@@ -514,18 +517,20 @@ function dataFunctionManager(){
 
             var fWeight = 'normal', fStyle = 'normal';
             len = styles.length;
+            var styleName;
             for(i=0;i<len;i+=1){
-                if (styles[i].toLowerCase() === 'italic') {
+                styleName = styles[i].toLowerCase();
+                if (styleName === 'italic') {
                     fStyle = 'italic';
-                }else if (styles[i].toLowerCase() === 'bold') {
+                }else if (styleName === 'bold') {
                     fWeight = '700';
-                } else if (styles[i].toLowerCase() === 'black') {
+                } else if (styleName === 'black') {
                     fWeight = '900';
-                } else if (styles[i].toLowerCase() === 'medium') {
+                } else if (styleName === 'medium') {
                     fWeight = '500';
-                } else if (styles[i].toLowerCase() === 'regular' || styles[i].toLowerCase() === 'normal') {
+                } else if (styleName === 'regular' || styleName === 'normal') {
                     fWeight = '400';
-                } else if (styles[i].toLowerCase() === 'light' || styles[i].toLowerCase() === 'thin') {
+                } else if (styleName === 'light' || styleName === 'thin') {
                     fWeight = '200';
                 }
             }
@@ -567,7 +572,8 @@ function dataFunctionManager(){
                 }
                 len = documentData.t.length;
             }
-            lineWidth = 0;
+            var trackingOffset = documentData.tr/1000*documentData.s;
+            lineWidth = - trackingOffset;
             cLength = 0;
             for (i = 0;i < len ;i += 1) {
                 newLineFlag = false;
@@ -576,7 +582,7 @@ function dataFunctionManager(){
                 }else if(documentData.t.charCodeAt(i) === 13){
                     lineWidths.push(lineWidth);
                     maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
-                    lineWidth = 0;
+                    lineWidth = - 2 * trackingOffset;
                     val = '';
                     newLineFlag = true;
                     currentLine += 1;
@@ -593,7 +599,7 @@ function dataFunctionManager(){
                 }
 
                 //
-                lineWidth += cLength;
+                lineWidth += cLength + trackingOffset;
                 letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
                 if(anchorGrouping == 2){
                     currentSize += cLength;

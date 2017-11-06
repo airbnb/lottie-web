@@ -15,7 +15,6 @@ function HTextElement(data,parentContainer,globalData,comp, placeholder){
 createElement(HBaseElement, HTextElement);
 
 HTextElement.prototype.init = ITextElement.prototype.init;
-HTextElement.prototype.getMeasures = ITextElement.prototype.getMeasures;
 HTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
 HTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
 HTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
@@ -151,12 +150,12 @@ HTextElement.prototype.buildNewText = function(){
                     document.body.appendChild(tCont);
 
                     var boundingBox = tCont.getBBox();
-                    tCont.setAttribute('width',boundingBox.width);
-                    tCont.setAttribute('height',boundingBox.height);
-                    tCont.setAttribute('viewBox',boundingBox.x+' '+ boundingBox.y+' '+ boundingBox.width+' '+ boundingBox.height);
-                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + boundingBox.x + 'px,' + boundingBox.y + 'px)';
+                    tCont.setAttribute('width',boundingBox.width + 2);
+                    tCont.setAttribute('height',boundingBox.height + 2);
+                    tCont.setAttribute('viewBox',(boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
+                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
 
-                    letters[i].yOffset = boundingBox.y;
+                    letters[i].yOffset = boundingBox.y-1;
                     tParent.appendChild(tCont);
 
                 } else{
@@ -220,12 +219,12 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
 
-    this.getMeasures();
-    if(!this.lettersChangedFlag){
+    this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+    if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
         return;
     }
-    var  i,len;
-    var renderedLetters = this.renderedLetters;
+    var  i,len, count = 0;
+    var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.currentTextDocumentData.l;
 
@@ -235,7 +234,8 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         if(letters[i].n){
             continue;
         }
-        renderedLetter = renderedLetters[i];
+        renderedLetter = renderedLetters[count];
+        count += 1;
         if(!this.isMasked){
             this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
         }else{
@@ -266,11 +266,13 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
                 this.currentBBox.h = boundingBox.height;
                 this.cont.setAttribute('height',boundingBox.height);
             }
-            if(this.currentBBox.w !== boundingBox.width || this.currentBBox.h !== boundingBox.height  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
-                this.currentBBox.w = boundingBox.width;
-                this.currentBBox.h = boundingBox.height;
-                this.currentBBox.x = boundingBox.x;
-                this.currentBBox.y = boundingBox.y;
+
+            var margin = 1;
+            if(this.currentBBox.w !== (boundingBox.width + margin*2) || this.currentBBox.h !== (boundingBox.height + margin*2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)){
+                this.currentBBox.w = boundingBox.width + margin*2;
+                this.currentBBox.h = boundingBox.height + margin*2;
+                this.currentBBox.x = boundingBox.x - margin;
+                this.currentBBox.y = boundingBox.y - margin;
 
                 this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
                 this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
