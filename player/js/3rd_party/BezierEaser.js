@@ -153,5 +153,4 @@ var BezierFactory = (function(){
 
     return ob;
 
-}())
-
+}());

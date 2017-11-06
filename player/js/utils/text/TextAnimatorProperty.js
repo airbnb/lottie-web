@@ -19,6 +19,7 @@ function TextAnimatorProperty(textData, renderType, elem){
 
 TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
     var i, len = this._textData.a.length, animatorData, animatorProps;
+    var getProp = PropertyFactory.getProp;
     for(i=0;i<len;i+=1){
         animatorProps = this._textData.a[i];
         animatorData = {
@@ -26,52 +27,52 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
             s: {}
         };
         if('r' in animatorProps.a) {
-            animatorData.a.r = PropertyFactory.getProp(this._elem,animatorProps.a.r,0,degToRads,this._dynamicProperties);
+            animatorData.a.r = getProp(this._elem,animatorProps.a.r,0,degToRads,this._dynamicProperties);
         }
         if('rx' in animatorProps.a) {
-            animatorData.a.rx = PropertyFactory.getProp(this._elem,animatorProps.a.rx,0,degToRads,this._dynamicProperties);
+            animatorData.a.rx = getProp(this._elem,animatorProps.a.rx,0,degToRads,this._dynamicProperties);
         }
         if('ry' in animatorProps.a) {
-            animatorData.a.ry = PropertyFactory.getProp(this._elem,animatorProps.a.ry,0,degToRads,this._dynamicProperties);
+            animatorData.a.ry = getProp(this._elem,animatorProps.a.ry,0,degToRads,this._dynamicProperties);
         }
         if('sk' in animatorProps.a) {
-            animatorData.a.sk = PropertyFactory.getProp(this._elem,animatorProps.a.sk,0,degToRads,this._dynamicProperties);
+            animatorData.a.sk = getProp(this._elem,animatorProps.a.sk,0,degToRads,this._dynamicProperties);
         }
         if('sa' in animatorProps.a) {
-            animatorData.a.sa = PropertyFactory.getProp(this._elem,animatorProps.a.sa,0,degToRads,this._dynamicProperties);
+            animatorData.a.sa = getProp(this._elem,animatorProps.a.sa,0,degToRads,this._dynamicProperties);
         }
         if('s' in animatorProps.a) {
-            animatorData.a.s = PropertyFactory.getProp(this._elem,animatorProps.a.s,1,0.01,this._dynamicProperties);
+            animatorData.a.s = getProp(this._elem,animatorProps.a.s,1,0.01,this._dynamicProperties);
         }
         if('a' in animatorProps.a) {
-            animatorData.a.a = PropertyFactory.getProp(this._elem,animatorProps.a.a,1,0,this._dynamicProperties);
+            animatorData.a.a = getProp(this._elem,animatorProps.a.a,1,0,this._dynamicProperties);
         }
         if('o' in animatorProps.a) {
-            animatorData.a.o = PropertyFactory.getProp(this._elem,animatorProps.a.o,0,0.01,this._dynamicProperties);
+            animatorData.a.o = getProp(this._elem,animatorProps.a.o,0,0.01,this._dynamicProperties);
         }
         if('p' in animatorProps.a) {
-            animatorData.a.p = PropertyFactory.getProp(this._elem,animatorProps.a.p,1,0,this._dynamicProperties);
+            animatorData.a.p = getProp(this._elem,animatorProps.a.p,1,0,this._dynamicProperties);
         }
         if('sw' in animatorProps.a) {
-            animatorData.a.sw = PropertyFactory.getProp(this._elem,animatorProps.a.sw,0,0,this._dynamicProperties);
+            animatorData.a.sw = getProp(this._elem,animatorProps.a.sw,0,0,this._dynamicProperties);
         }
         if('sc' in animatorProps.a) {
-            animatorData.a.sc = PropertyFactory.getProp(this._elem,animatorProps.a.sc,1,0,this._dynamicProperties);
+            animatorData.a.sc = getProp(this._elem,animatorProps.a.sc,1,0,this._dynamicProperties);
         }
         if('fc' in animatorProps.a) {
-            animatorData.a.fc = PropertyFactory.getProp(this._elem,animatorProps.a.fc,1,0,this._dynamicProperties);
+            animatorData.a.fc = getProp(this._elem,animatorProps.a.fc,1,0,this._dynamicProperties);
         }
         if('fh' in animatorProps.a) {
-            animatorData.a.fh = PropertyFactory.getProp(this._elem,animatorProps.a.fh,0,0,this._dynamicProperties);
+            animatorData.a.fh = getProp(this._elem,animatorProps.a.fh,0,0,this._dynamicProperties);
         }
         if('fs' in animatorProps.a) {
-            animatorData.a.fs = PropertyFactory.getProp(this._elem,animatorProps.a.fs,0,0.01,this._dynamicProperties);
+            animatorData.a.fs = getProp(this._elem,animatorProps.a.fs,0,0.01,this._dynamicProperties);
         }
         if('fb' in animatorProps.a) {
-            animatorData.a.fb = PropertyFactory.getProp(this._elem,animatorProps.a.fb,0,0.01,this._dynamicProperties);
+            animatorData.a.fb = getProp(this._elem,animatorProps.a.fb,0,0.01,this._dynamicProperties);
         }
         if('t' in animatorProps.a) {
-            animatorData.a.t = PropertyFactory.getProp(this._elem,animatorProps.a.t,0,0,this._dynamicProperties);
+            animatorData.a.t = getProp(this._elem,animatorProps.a.t,0,0,this._dynamicProperties);
         }
         animatorData.s = PropertyFactory.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
         animatorData.s.t = animatorProps.s.t;
@@ -79,8 +80,8 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
     }
     if(this._textData.p && 'm' in this._textData.p){
         this._pathData = {
-            f: PropertyFactory.getProp(this._elem,this._textData.p.f,0,0,this._dynamicProperties),
-            l: PropertyFactory.getProp(this._elem,this._textData.p.l,0,0,this._dynamicProperties),
+            f: getProp(this._elem,this._textData.p.f,0,0,this._dynamicProperties),
+            l: getProp(this._elem,this._textData.p.l,0,0,this._dynamicProperties),
             r: this._textData.p.r,
             m: this._elem.maskManager.getMaskProperty(this._textData.p.m)
         };
@@ -88,7 +89,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
     } else {
         this._hasMaskedPath = false;
     }
-    this._moreOptions.alignment = PropertyFactory.getProp(this._elem,this._textData.m.a,1,0,this._dynamicProperties);
+    this._moreOptions.alignment = getProp(this._elem,this._textData.m.a,1,0,this._dynamicProperties);
     if(this._dynamicProperties.length) {
     	dynamicProperties.push(this);
     }
@@ -426,9 +427,9 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 if (documentData.strokeColorAnim && 'sc' in animatorProps) {
                     for(k=0;k<3;k+=1){
                         if(mult.length) {
-                            sc[k] = Math.round(255*(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]));
+                            sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]
                         } else {
-                            sc[k] = Math.round(255*(sc[k] + (animatorProps.sc.v[k] - sc[k])*mult));
+                            sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult;
                         }
                     }
                 }

@@ -251,7 +251,9 @@ CanvasRenderer.prototype.destroy = function () {
     }
     var i, len = this.layers ? this.layers.length : 0;
     for (i = len - 1; i >= 0; i-=1) {
-        this.elements[i].destroy();
+        if(this.elements[i]) {
+            this.elements[i].destroy();
+        }
     }
     this.elements.length = 0;
     this.globalData.canvasContext = null;

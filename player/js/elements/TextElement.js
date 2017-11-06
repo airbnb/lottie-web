@@ -1,37 +1,20 @@
 function ITextElement(data, animationItem,parentContainer,globalData){
 }
 ITextElement.prototype.init = function(){
-    this._frameId = -1;
     this.lettersChangedFlag = true;
-    this.currentTextDocumentData = this.data.t.d.k[0].s;
     this.dynamicProperties = this.dynamicProperties || [];
     this.textAnimator = new TextAnimatorProperty(this.data.t, this.renderType, this);
+    this.textProperty = new TextProperty(this, this.data.t, this.dynamicProperties);
     this._parent.init.call(this);
     this.textAnimator.searchProperties(this.dynamicProperties);
-    this.buildNewText();
 };
 
 ITextElement.prototype.prepareFrame = function(num) {
-    if(this._frameId === this.globalData.frameId) {
-         return;
-    }
-    this._frameId = this.globalData.frameId;
-    var textKeys = this.data.t.d.k;
-    var i = 0, len = textKeys.length;
-    while(i < len) {
-        textDocumentData = textKeys[i].s;
-        i += 1;
-        if(i === len || textKeys[i].t > num){
-            break;
-        }
-    } 
-    this.lettersChangedFlag = false;
-    if(textDocumentData !== this.currentTextDocumentData){
-        this.currentTextDocumentData = textDocumentData;
-        this.lettersChangedFlag = true;
-        this.buildNewText();
-    }
     this._parent.prepareFrame.call(this, num);
+    if(this.textProperty.mdf || this.textProperty.firstFrame) {
+        this.buildNewText();
+        this.textProperty.firstFrame = false;
+    }
 }
 
 ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
@@ -41,19 +24,38 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
     for(j=0;j<jLen;j+=1){
         pathNodes = shapes[j].ks.k;
         shapeStr += this.buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
-        /*kLen = pathNodes.i.length;
-        for(k=1;k<kLen;k+=1){
-            if(k==1){
-                shapeStr += " M"+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
-            }
-            shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[k][0],pathNodes.i[k][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[k][0],pathNodes.v[k][1]);
-        }
-        shapeStr += " C"+matrixHelper.applyToPointStringified(pathNodes.o[k-1][0],pathNodes.o[k-1][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.i[0][0],pathNodes.i[0][1]) + " "+matrixHelper.applyToPointStringified(pathNodes.v[0][0],pathNodes.v[0][1]);
-        shapeStr += 'z';*/
     }
     return shapeStr;
 };
 
+ITextElement.prototype.updateDocumentData = function(newData, index) {
+    this.textProperty.updateDocumentData(newData, index);
+}
+
+ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
+    if(documentData.ps){
+        matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
+    }
+    matrixHelper.translate(0,-documentData.ls,0);
+    switch(documentData.j){
+        case 1:
+            matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber]),0,0);
+            break;
+        case 2:
+            matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber] )/2,0,0);
+            break;
+    }
+    matrixHelper.translate(xPos, yPos, 0);
+}
+
+ITextElement.prototype.buildColor = function(colorData) {
+    return 'rgb(' + Math.round(colorData[0]*255) + ',' + Math.round(colorData[1]*255) + ',' + Math.round(colorData[2]*255) + ')';
+}
+
 ITextElement.prototype.buildShapeString = IShapeElement.prototype.buildShapeString;
 
 ITextElement.prototype.emptyProp = new LetterProps();
+
+ITextElement.prototype.destroy = function(){
+    this._parent.destroy.call(this._parent);
+};

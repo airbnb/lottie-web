@@ -4,6 +4,133 @@
         return this.pv;
     }
 
+    function loopOut(type,duration,durationFlag){
+        if(!this.k || !this.keyframes){
+            return this.pv;
+        }
+        var currentFrame = this.comp.renderedFrame;
+        var keyframes = this.keyframes;
+        var lastKeyFrame = keyframes[keyframes.length - 1].t;
+        if(currentFrame<=lastKeyFrame){
+            return this.pv;
+        }else{
+            var cycleDuration, firstKeyFrame;
+            if(!durationFlag){
+                if(!duration || duration > keyframes.length - 1){
+                    duration = keyframes.length - 1;
+                }
+                firstKeyFrame = keyframes[keyframes.length - 1 - duration].t;
+                cycleDuration = lastKeyFrame - firstKeyFrame;
+            } else {
+                if(!duration){
+                    cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
+                } else {
+                    cycleDuration = Math.abs(lastKeyFrame - elem.comp.globalData.frameRate*duration);
+                }
+                firstKeyFrame = lastKeyFrame - cycleDuration;
+            }
+            var offsetTime = this.offsetTime || 0;
+            var i, len, ret;
+            if(type.toLowerCase() === 'pingpong') {
+                var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
+                if(iterations % 2 !== 0){
+                    return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+                }
+            } else if(type === 'offset'){
+                var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
+                var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
+                var current = this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
+                if(this.pv.length){
+                    ret = new Array(initV.length);
+                    len = ret.length;
+                    for(i=0;i<len;i+=1){
+                        ret[i] = (endV[i]-initV[i])*repeats + current[i];
+                    }
+                    return ret;
+                }
+                return (endV-initV)*repeats + current;
+            } else if(type === 'continue'){
+                var lastValue = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
+                var nextLastValue = this.getValueAtTime((lastKeyFrame - 0.001) / this.comp.globalData.frameRate, 0);
+                if(this.pv.length){
+                    ret = new Array(lastValue.length);
+                    len = ret.length;
+                    for(i=0;i<len;i+=1){
+                        ret[i] = lastValue[i] + (lastValue[i]-nextLastValue[i])*((currentFrame - lastKeyFrame)/ this.comp.globalData.frameRate)/0.0005;
+                    }
+                    return ret;
+                }
+                return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
+            }
+            return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+        }
+    }
+
+    function loopIn(type,duration, durationFlag) {
+        if(!this.k){
+            return this.pv;
+        }
+        var currentFrame = time*elem.comp.globalData.frameRate;
+        var keyframes = this.keyframes;
+        var firstKeyFrame = keyframes[0].t;
+        var offsetTime = this.offsetTime || 0;
+        if(currentFrame>=firstKeyFrame){
+            return this.pv;
+        }else{
+            var cycleDuration, lastKeyFrame;
+            if(!durationFlag){
+                if(!duration || duration > keyframes.length - 1){
+                    duration = keyframes.length - 1;
+                }
+                lastKeyFrame = keyframes[duration].t;
+                cycleDuration = lastKeyFrame - firstKeyFrame;
+            } else {
+                if(!duration){
+                    cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
+                } else {
+                    cycleDuration = Math.abs(elem.comp.globalData.frameRate*duration);
+                }
+                lastKeyFrame = firstKeyFrame + cycleDuration;
+            }
+            var i, len, ret;
+            if(type === 'pingpong') {
+                var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
+                if(iterations % 2 === 0){
+                    return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+                }
+            } else if(type === 'offset'){
+                var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
+                var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
+                var current = this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+                var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
+                if(this.pv.length){
+                    ret = new Array(initV.length);
+                    len = ret.length;
+                    for(i=0;i<len;i+=1){
+                        ret[i] = current[i]-(endV[i]-initV[i])*repeats;
+                    }
+                    return ret;
+                }
+                return current-(endV-initV)*repeats;
+            } else if(type === 'continue'){
+                var firstValue = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
+                var nextFirstValue = this.getValueAtTime((firstKeyFrame + 0.001) / this.comp.globalData.frameRate, 0);
+                if(this.pv.length){
+                    ret = new Array(firstValue.length);
+                    len = ret.length;
+                    for(i=0;i<len;i+=1){
+                        ret[i] = firstValue[i] + (firstValue[i]-nextFirstValue[i])*(firstKeyFrame - currentFrame)/0.001;
+                    }
+                    return ret;
+                }
+                return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
+            }
+
+            return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+        }
+    }
+
     function getValueAtTime(frameNum) {
         if(!this._cachingAtTime) {
             this._cachingAtTime = {lastValue:-99999,lastIndex:0};
@@ -103,7 +230,9 @@
     var propertyGetProp = PropertyFactory.getProp;
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
         var prop = propertyGetProp(elem,data,type, mult, arr);
-        prop.getVelocityAtTime = getVelocityAtTime;
+        //prop.getVelocityAtTime = getVelocityAtTime;
+        //prop.loopOut = loopOut;
+        //prop.loopIn = loopIn;
         if(type === 2) {
             if(prop.dynamicProperties.length) {
                 prop.getValueAtTime = getTransformValueAtTime.bind(prop);
@@ -118,6 +247,10 @@
             }
         }
         prop.setGroupProperty = setGroupProperty;
+        prop.loopOut = loopOut;
+        prop.loopIn = loopIn;
+        prop.getVelocityAtTime = getVelocityAtTime;
+        prop.numKeys = data.a === 1 ? data.k.length : 0;
         var isAdded = prop.k;
         if(data.ix !== undefined){
             Object.defineProperty(prop,'propertyIndex',{

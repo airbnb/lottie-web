@@ -14,10 +14,7 @@ function HTextElement(data,parentContainer,globalData,comp, placeholder){
 }
 createElement(HBaseElement, HTextElement);
 
-HTextElement.prototype.init = ITextElement.prototype.init;
-HTextElement.prototype.createPathShape = ITextElement.prototype.createPathShape;
-HTextElement.prototype.prepareFrame = ITextElement.prototype.prepareFrame;
-HTextElement.prototype.buildShapeString = ITextElement.prototype.buildShapeString;
+extendPrototype(ITextElement, HTextElement);
 
 HTextElement.prototype.createElements = function(){
     this.isMasked = this.checkMasks();
@@ -50,36 +47,25 @@ HTextElement.prototype.createElements = function(){
 };
 
 HTextElement.prototype.buildNewText = function(){
-    var documentData = this.currentTextDocumentData;
-    this.renderedLetters = Array.apply(null,{length:this.currentTextDocumentData.l ? this.currentTextDocumentData.l.length : 0});
-    if(documentData.fc) {
-        this.innerElem.style.color = this.innerElem.style.fill = 'rgb(' + Math.round(documentData.fc[0]*255) + ',' + Math.round(documentData.fc[1]*255) + ',' + Math.round(documentData.fc[2]*255) + ')';
-        ////this.innerElem.setAttribute('fill', 'rgb(' + documentData.fc[0] + ',' + documentData.fc[1] + ',' + documentData.fc[2] + ')');
-    }else{
-        this.innerElem.style.color = this.innerElem.style.fill = 'rgba(0,0,0,0)';
-        ////this.innerElem.setAttribute('fill', 'rgba(0,0,0,0)');
-    }
+    var documentData = this.textProperty.currentData;
+    this.renderedLetters = Array.apply(null,{length:this.textProperty.currentData.l ? this.textProperty.currentData.l.length : 0});
+    var innerElemStyle = this.innerElem.style;
+    innerElemStyle.color = innerElemStyle.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
     if(documentData.sc){
-        ////this.innerElem.setAttribute('stroke', 'rgb(' + documentData.sc[0] + ',' + documentData.sc[1] + ',' + documentData.sc[2] + ')');
-        this.innerElem.style.stroke = 'rgb(' + Math.round(documentData.sc[0]*255) + ',' + Math.round(documentData.sc[1]*255) + ',' + Math.round(documentData.sc[2]*255) + ')';
-        ////this.innerElem.setAttribute('stroke-width', documentData.sw);
-        this.innerElem.style.strokeWidth = documentData.sw+'px';
+        innerElemStyle.stroke = this.buildColor(documentData.sc);
+        innerElemStyle.strokeWidth = documentData.sw+'px';
     }
-    ////this.innerElem.setAttribute('font-size', documentData.s);
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     if(!this.globalData.fontManager.chars){
-        this.innerElem.style.fontSize = documentData.s+'px';
-        this.innerElem.style.lineHeight = documentData.s+'px';
+        innerElemStyle.fontSize = documentData.s+'px';
+        innerElemStyle.lineHeight = documentData.s+'px';
         if(fontData.fClass){
             this.innerElem.className = fontData.fClass;
         } else {
-            ////this.innerElem.setAttribute('font-family', fontData.fFamily);
-            this.innerElem.style.fontFamily = fontData.fFamily;
+            innerElemStyle.fontFamily = fontData.fFamily;
             var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
-            ////this.innerElem.setAttribute('font-style', fStyle);
-            this.innerElem.style.fontStyle = fStyle;
-            ////this.innerElem.setAttribute('font-weight', fWeight);
-            this.innerElem.style.fontWeight = fWeight;
+            innerElemStyle.fontStyle = fStyle;
+            innerElemStyle.fontWeight = fWeight;
         }
     }
     var i, len;
@@ -219,39 +205,42 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         }
     }
 
-    this.textAnimator.getMeasures(this.currentTextDocumentData, this.lettersChangedFlag);
+    this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
         return;
     }
     var  i,len, count = 0;
     var renderedLetters = this.textAnimator.renderedLetters;
 
-    var letters = this.currentTextDocumentData.l;
+    var letters = this.textProperty.currentData.l;
 
     len = letters.length;
-    var renderedLetter;
+    var renderedLetter, textSpan, textPath;
     for(i=0;i<len;i+=1){
         if(letters[i].n){
+            count += 1;
             continue;
         }
+        textSpan = this.textSpans[i];
+        textPath = this.textPaths[i];
         renderedLetter = renderedLetters[count];
         count += 1;
         if(!this.isMasked){
-            this.textSpans[i].style.transform = this.textSpans[i].style.webkitTransform = renderedLetter.m;
+            textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
         }else{
-            this.textSpans[i].setAttribute('transform',renderedLetter.m);
+            textSpan.setAttribute('transform',renderedLetter.m);
         }
-        ////this.textSpans[i].setAttribute('opacity',renderedLetter.o);
-        this.textSpans[i].style.opacity = renderedLetter.o;
+        ////textSpan.setAttribute('opacity',renderedLetter.o);
+        textSpan.style.opacity = renderedLetter.o;
         if(renderedLetter.sw){
-            this.textPaths[i].setAttribute('stroke-width',renderedLetter.sw);
+            textPath.setAttribute('stroke-width',renderedLetter.sw);
         }
         if(renderedLetter.sc){
-            this.textPaths[i].setAttribute('stroke',renderedLetter.sc);
+            textPath.setAttribute('stroke',renderedLetter.sc);
         }
         if(renderedLetter.fc){
-            this.textPaths[i].setAttribute('fill',renderedLetter.fc);
-            this.textPaths[i].style.color = renderedLetter.fc;
+            textPath.setAttribute('fill',renderedLetter.fc);
+            textPath.style.color = renderedLetter.fc;
         }
     }
     if(this.isVisible && (this.elemMdf || this.firstFrame)){
@@ -283,6 +272,3 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
         this.firstFrame = false;
     }
 }
-
-
-HTextElement.prototype.destroy = SVGTextElement.prototype.destroy;
