@@ -1141,7 +1141,7 @@ var MatrixManager = matrixManagerFunction;
         window.requestAnimationFrame = function (callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function () {
+            var id = setTimeout(function () {
                     callback(currTime + timeToCall);
                 },
                 timeToCall);
@@ -1153,6 +1153,7 @@ var MatrixManager = matrixManagerFunction;
             clearTimeout(id);
         };
 }());
+
 function createElement(parent,child,params){
     if(child){
         child.prototype = Object.create(parent.prototype);
@@ -8176,7 +8177,7 @@ var animationManager = (function(){
                 i -= 1;
                 len -= 1;
                 if(!animItem.isPaused){
-                    subtractPlayingCount();   
+                    subtractPlayingCount();
                 }
             }
             i += 1;
@@ -8266,13 +8267,13 @@ var animationManager = (function(){
         }
         initTime = nowTime;
         if(!idled) {
-            requestAnimationFrame(resume);
+            window.requestAnimationFrame(resume);
         }
     }
 
     function first(nowTime){
         initTime = nowTime;
-        requestAnimationFrame(resume);
+        window.requestAnimationFrame(resume);
     }
 
     function pause(animation) {
@@ -8342,13 +8343,13 @@ var animationManager = (function(){
     }
 
     function start(){
-        requestAnimationFrame(first);
+        window.requestAnimationFrame(first);
     }
 
     function activate(){
         if(idled){
             idled = false;
-            requestAnimationFrame(first);
+            window.requestAnimationFrame(first);
         }
     }
 
@@ -8372,6 +8373,7 @@ var animationManager = (function(){
     moduleOb.destroy = destroy;
     return moduleOb;
 }());
+
 var AnimationItem = function () {
     this._cbs = [];
     this.name = '';
