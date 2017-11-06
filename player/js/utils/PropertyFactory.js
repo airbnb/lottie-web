@@ -816,10 +816,18 @@ var PropertyFactory = (function(){
         return new TextSelectorProp(elem, data, arr);
     };
 
+    function addFunctionToPrototypes(name, fn) {
+        ValueProperty.prototype[name] = fn;
+        MultiDimensionalProperty.prototype[name] = fn;
+        KeyframedValueProperty.prototype[name] = fn;
+        KeyframedMultidimensionalProperty.prototype[name] = fn;
+    }
+
     var ob = {
         getProp: getProp,
         getDashProp: getDashProp,
         getTextSelectorProp: getTextSelectorProp,
+        addFunctionToPrototypes: addFunctionToPrototypes,
         getGradientProp: getGradientProp
     };
     return ob;
