@@ -301,25 +301,23 @@ var Matrix = (function(){
         return (bm_rnd(x * this.props[0] + y * this.props[4] + this.props[12]))+','+(bm_rnd(x * this.props[1] + y * this.props[5] + this.props[13]));
     }
 
-    function toArray() {
-        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5],this.props[6],this.props[7],this.props[8],this.props[9],this.props[10],this.props[11],this.props[12],this.props[13],this.props[14],this.props[15]];
-    }
-
     function toCSS() {
-        if(isSafari){
-            return "matrix3d(" + roundTo2Decimals(this.props[0]) + ',' + roundTo2Decimals(this.props[1]) + ',' + roundTo2Decimals(this.props[2]) + ',' + roundTo2Decimals(this.props[3]) + ',' + roundTo2Decimals(this.props[4]) + ',' + roundTo2Decimals(this.props[5]) + ',' + roundTo2Decimals(this.props[6]) + ',' + roundTo2Decimals(this.props[7]) + ',' + roundTo2Decimals(this.props[8]) + ',' + roundTo2Decimals(this.props[9]) + ',' + roundTo2Decimals(this.props[10]) + ',' + roundTo2Decimals(this.props[11]) + ',' + roundTo2Decimals(this.props[12]) + ',' + roundTo2Decimals(this.props[13]) + ',' + roundTo2Decimals(this.props[14]) + ',' + roundTo2Decimals(this.props[15]) + ')';
-        } else {
-            this.cssParts[1] = this.props.join(',');
-            return this.cssParts.join('');
+        var i = 0;
+        var props = this.props;
+        var cssValue = 'matrix3d(';
+        var v = 10000;
+        while(i<16){
+            cssValue += Math.round(props[i]*v)/v
+            cssValue += i === 15 ? ')':',';
+            i += 1;
         }
+        return cssValue;
     }
 
     function to2dCSS() {
-        return "matrix(" + roundTo2Decimals(this.props[0]) + ',' + roundTo2Decimals(this.props[1]) + ',' + roundTo2Decimals(this.props[4]) + ',' + roundTo2Decimals(this.props[5]) + ',' + roundTo2Decimals(this.props[12]) + ',' + roundTo2Decimals(this.props[13]) + ")";
-    }
-
-    function toString() {
-        return "" + this.toArray();
+        var v = 10000;
+        var props = this.props;
+        return "matrix(" + Math.round(props[0]*v)/v + ',' + Math.round(props[1]*v)/v + ',' + Math.round(props[4]*v)/v + ',' + Math.round(props[5]*v)/v + ',' + Math.round(props[12]*v)/v + ',' + Math.round(props[13]*v)/v + ")";
     }
 
     return function(){
@@ -341,10 +339,8 @@ var Matrix = (function(){
         this.applyToZ = applyToZ;
         this.applyToPointArray = applyToPointArray;
         this.applyToPointStringified = applyToPointStringified;
-        this.toArray = toArray;
         this.toCSS = toCSS;
         this.to2dCSS = to2dCSS;
-        this.toString = toString;
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
         this.inversePoints = inversePoints;
@@ -354,9 +350,8 @@ var Matrix = (function(){
         this._identity = true;
         this._identityCalculated = false;
 
-        this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
-
-        this.cssParts = ['matrix3d(','',')'];
+        this.props = createTypedArray('float32', 16);
+        this.reset();
     }
 }());
 
