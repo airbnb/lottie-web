@@ -31,6 +31,7 @@
     <!-- build:js bodymovin.js -->
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
+    <script src="js/utils/helpers/arrays.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
@@ -47,6 +48,8 @@
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/shapes/RepeaterModifier.js"></script>
     <script src="js/utils/shapes/ShapeCollection.js"></script>
+    <script src="js/utils/shapes/DashProperty.js"></script>
+    <script src="js/utils/shapes/GradientProperty.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
@@ -127,8 +130,8 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'canvas',
-        loop: true,
+        renderer: 'svg',
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false

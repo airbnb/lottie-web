@@ -155,11 +155,11 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
 
         elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
         if(data.d){
-            var d = PropertyFactory.getDashProp(this,data.d,'svg',dynamicProperties);
+            var d = new DashProperty(this,data.d,'svg',dynamicProperties);
             if(!d.k){
                 pathElement.setAttribute('stroke-dasharray', d.dasharray);
                 ////pathElement.style.strokeDasharray = d.dasharray;
-                pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
+                pathElement.setAttribute('stroke-dashoffset', d.dashoffset[0]);
                 ////pathElement.style.strokeDashoffset = d.dashoffset;
             }
             elementData.d = d;
@@ -169,7 +169,7 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
     if(data.ty == 'fl' || data.ty == 'st'){
         elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
     } else {
-        elementData.g = PropertyFactory.getGradientProp(this,data.g,dynamicProperties);
+        elementData.g = new GradientProperty(this,data.g,dynamicProperties);
         if(data.t == 2){
             elementData.h = PropertyFactory.getProp(this,data.h,0,0.01,dynamicProperties);
             elementData.a = PropertyFactory.getProp(this,data.a,0,degToRads,dynamicProperties);
@@ -635,18 +635,13 @@ IShapeElement.prototype.renderGradient = function(styleData,itemData){
 
 IShapeElement.prototype.renderStroke = function(styleData,itemData){
     var styleElem = itemData.style;
-    //TODO fix dashes
     var d = itemData.d;
-    var dasharray,dashoffset;
-    if(d && d.k && (d.mdf || this.firstFrame)){
-        styleElem.pElem.setAttribute('stroke-dasharray', d.dasharray);
-        ////styleElem.pElem.style.strokeDasharray = d.dasharray;
+    if(d && (d.mdf || this.firstFrame)){
+        styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
         styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
-        ////styleElem.pElem.style.strokeDashoffset = d.dashoffset;
     }
     if(itemData.c && (itemData.c.mdf || this.firstFrame)){
         styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
-        ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
     if(itemData.o.mdf || this.firstFrame){
         styleElem.pElem.setAttribute('stroke-opacity',itemData.o.v);
@@ -656,7 +651,6 @@ IShapeElement.prototype.renderStroke = function(styleData,itemData){
         if(styleElem.msElem){
             styleElem.msElem.setAttribute('stroke-width',itemData.w.v);
         }
-        ////styleElem.pElem.style.strokeWidth = itemData.w.v;
     }
 };
 
