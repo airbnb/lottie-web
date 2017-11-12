@@ -53,6 +53,7 @@
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
     <script src="js/utils/text/TextProperty.js"></script>
+    <script src="js/utils/text/TextSelectorProperty.js"></script>
     <script src="js/utils/pooling/pooling.js"></script>
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
@@ -126,7 +127,7 @@
     var elem = document.getElementById('bodymovin')
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
         autoplay: true,
         rendererSettings: {

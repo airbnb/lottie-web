@@ -413,8 +413,8 @@
         return prop;
     }
 
-    var propertyGetTextProp = PropertyFactory.getTextSelectorProp;
-    PropertyFactory.getTextSelectorProp = function(elem, data,arr){
+    var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
+    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
         if(data.t === 1){
             return new TextExpressionSelectorProp(elem, data,arr);
         } else {

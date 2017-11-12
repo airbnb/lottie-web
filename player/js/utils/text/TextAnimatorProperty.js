@@ -74,7 +74,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
         if('t' in animatorProps.a) {
             animatorData.a.t = getProp(this._elem,animatorProps.a.t,0,0,this._dynamicProperties);
         }
-        animatorData.s = PropertyFactory.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
+        animatorData.s = TextSelectorProp.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
         animatorData.s.t = animatorProps.s.t;
         this._animatorsData[i] = animatorData;
     }
