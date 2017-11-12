@@ -217,7 +217,8 @@ IShapeElement.prototype.createTransformElement = function(data, dynamicPropertie
     var elementData = {
         transform : {
             op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
-            mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
+            mProps: TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties)
+            //mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
         },
         elements: []
     };

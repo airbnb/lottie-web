@@ -226,6 +226,17 @@
         }
     }());
 
+    var getTransformProperty = TransformPropertyFactory.getTransformProperty;
+    TransformPropertyFactory.getTransformProperty = function(elem, data, arr) {
+        var prop = getTransformProperty(elem, data, arr);
+        if(prop.dynamicProperties.length) {
+            prop.getValueAtTime = getTransformValueAtTime.bind(prop);
+        } else {
+            prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
+        }
+        prop.setGroupProperty = setGroupProperty;
+        return prop;
+    }
 
     var propertyGetProp = PropertyFactory.getProp;
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
@@ -233,18 +244,10 @@
         //prop.getVelocityAtTime = getVelocityAtTime;
         //prop.loopOut = loopOut;
         //prop.loopIn = loopIn;
-        if(type === 2) {
-            if(prop.dynamicProperties.length) {
-                prop.getValueAtTime = getTransformValueAtTime.bind(prop);
-            } else {
-                prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
-            }
+        if(prop.kf){
+            prop.getValueAtTime = getValueAtTime.bind(prop);
         } else {
-            if(prop.kf){
-                prop.getValueAtTime = getValueAtTime.bind(prop);
-            } else {
-                prop.getValueAtTime = getStaticValueAtTime.bind(prop);
-            }
+            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
         }
         prop.setGroupProperty = setGroupProperty;
         prop.loopOut = loopOut;

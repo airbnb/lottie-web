@@ -78,7 +78,8 @@ CVShapeElement.prototype.createTransformElement = function(data, dynamicProperti
             matMdf:false,
             opMdf:false,
             op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
-            mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
+            //mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
+            mProps: TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties)
         },
         elements: []
     };
