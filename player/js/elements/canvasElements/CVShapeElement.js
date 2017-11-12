@@ -49,7 +49,7 @@ CVShapeElement.prototype.createStyleElement = function(data, dynamicProperties){
             elementData.d = d;
             if(!elementData.d.k){
                 styleElem.da = elementData.d.dashArray;
-                styleElem.do = elementData.d.dashoffset;
+                styleElem.do = elementData.d.dashoffset[0];
             }
         }
 

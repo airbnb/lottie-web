@@ -638,7 +638,7 @@ IShapeElement.prototype.renderStroke = function(styleData,itemData){
     var d = itemData.d;
     if(d && (d.mdf || this.firstFrame)){
         styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
-        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
+        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
     }
     if(itemData.c && (itemData.c.mdf || this.firstFrame)){
         styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
