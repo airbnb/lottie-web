@@ -235,11 +235,6 @@ function addHueToRGB(color,offset) {
     return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 }
 
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? '0' + hex : hex;
-}
-
 var rgbToHex = (function(){
     var colorMap = [];
     var i;
@@ -262,73 +257,3 @@ var rgbToHex = (function(){
         return '#' + colorMap[r] + colorMap[g] + colorMap[b];
     };
 }());
-
-function fillToRgba(hex,alpha){
-    if(!cachedColors[hex]){
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        cachedColors[hex] = parseInt(result[1], 16)+','+parseInt(result[2], 16)+','+parseInt(result[3], 16);
-    }
-    return 'rgba('+cachedColors[hex]+','+alpha+')';
-}
-
-var fillColorToString = (function(){
-
-    var colorMap = [];
-    return function(colorArr,alpha){
-        if(alpha !== undefined){
-            colorArr[3] = alpha;
-        }
-        if(!colorMap[colorArr[0]]){
-            colorMap[colorArr[0]] = {};
-        }
-        if(!colorMap[colorArr[0]][colorArr[1]]){
-            colorMap[colorArr[0]][colorArr[1]] = {};
-        }
-        if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]]){
-            colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = {};
-        }
-        if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]]){
-            colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]] = 'rgba(' + colorArr.join(',')+')';
-        }
-        return colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]];
-    };
-}());
-
-function RenderedFrame(tr,o) {
-    this.tr = tr;
-    this.o = o;
-}
-
-function iterateDynamicProperties(num){
-    var i, len = this.dynamicProperties;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
-    }
-}
-
-function reversePath(paths){
-    var newI = [], newO = [], newV = [];
-    var i, len, newPaths = {};
-    var init = 0;
-    if (paths.c) {
-        newI[0] = paths.o[0];
-        newO[0] = paths.i[0];
-        newV[0] = paths.v[0];
-        init = 1;
-    }
-    len = paths.i.length;
-    var cnt = len - 1;
-
-    for (i = init; i < len; i += 1) {
-        newI.push(paths.o[cnt]);
-        newO.push(paths.i[cnt]);
-        newV.push(paths.v[cnt]);
-        cnt -= 1;
-    }
-
-    newPaths.i = newI;
-    newPaths.o = newO;
-    newPaths.v = newV;
-
-    return newPaths;
-}

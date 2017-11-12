@@ -116,7 +116,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
         if(!this._pathData.n || this._pathData.mdf){
             var paths = mask.v;
             if(this._pathData.r){
-                paths = reversePath(paths);
+                paths = paths.reverse();
             }
             var pathInfo = {
                 tLength: 0,
