@@ -29,6 +29,11 @@
 
 var Matrix = (function(){
 
+    var _cos = Math.cos;
+    var _sin = Math.sin;
+    var _tan = Math.tan;
+    var _rnd = Math.round;
+
     function reset(){
         this.props[0] = 1;
         this.props[1] = 0;
@@ -53,8 +58,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos, -mSin,  0, 0
             , mSin,  mCos, 0, 0
             , 0,  0,  1, 0
@@ -65,8 +70,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(1, 0, 0, 0
             , 0, mCos, -mSin, 0
             , 0, mSin,  mCos, 0
@@ -77,8 +82,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos,  0,  mSin, 0
             , 0, 1, 0, 0
             , -mSin,  0,  mCos, 0
@@ -89,8 +94,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos, -mSin,  0, 0
             , mSin,  mCos, 0, 0
             , 0,  0,  1, 0
@@ -102,25 +107,25 @@ var Matrix = (function(){
     }
 
     function skew(ax, ay){
-        return this.shear(Math.tan(ax), Math.tan(ay));
+        return this.shear(_tan(ax), _tan(ay));
     }
 
     function skewFromAxis(ax, angle){
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos, mSin,  0, 0
             , -mSin,  mCos, 0, 0
             , 0,  0,  1, 0
             , 0, 0, 0, 1)
             ._t(1, 0,  0, 0
-            , Math.tan(ax),  1, 0, 0
+            , _tan(ax),  1, 0, 0
             , 0,  0,  1, 0
             , 0, 0, 0, 1)
             ._t(mCos, -mSin,  0, 0
             , mSin,  mCos, 0, 0
             , 0,  0,  1, 0
             , 0, 0, 0, 1);
-        //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, Math.tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
+        //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, _tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
     function scale(sx, sy, sz) {
@@ -311,7 +316,7 @@ var Matrix = (function(){
         var cssValue = 'matrix3d(';
         var v = 10000;
         while(i<16){
-            cssValue += Math.round(props[i]*v)/v
+            cssValue += _rnd(props[i]*v)/v
             cssValue += i === 15 ? ')':',';
             i += 1;
         }
@@ -326,7 +331,7 @@ var Matrix = (function(){
         }*/
         var v = 10000;
         var props = this.props;
-        return "matrix(" + Math.round(props[0]*v)/v + ',' + Math.round(props[1]*v)/v + ',' + Math.round(props[4]*v)/v + ',' + Math.round(props[5]*v)/v + ',' + Math.round(props[12]*v)/v + ',' + Math.round(props[13]*v)/v + ")";
+        return "matrix(" + _rnd(props[0]*v)/v + ',' + _rnd(props[1]*v)/v + ',' + _rnd(props[4]*v)/v + ',' + _rnd(props[5]*v)/v + ',' + _rnd(props[12]*v)/v + ',' + _rnd(props[13]*v)/v + ")";
     }
 
     return function(){
