@@ -302,6 +302,10 @@ var Matrix = (function(){
     }
 
     function toCSS() {
+        //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
+        /*if(this.isIdentity()) {
+            return '';
+        }*/
         var i = 0;
         var props = this.props;
         var cssValue = 'matrix3d(';
@@ -315,6 +319,11 @@ var Matrix = (function(){
     }
 
     function to2dCSS() {
+        //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
+        /*if(this.isIdentity()) {
+            console.log(new Error().stack)
+            return '';
+        }*/
         var v = 10000;
         var props = this.props;
         return "matrix(" + Math.round(props[0]*v)/v + ',' + Math.round(props[1]*v)/v + ',' + Math.round(props[4]*v)/v + ',' + Math.round(props[5]*v)/v + ',' + Math.round(props[12]*v)/v + ',' + Math.round(props[13]*v)/v + ")";
