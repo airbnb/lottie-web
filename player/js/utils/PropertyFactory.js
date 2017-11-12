@@ -568,7 +568,7 @@ var PropertyFactory = (function(){
                     val = Math.round(this.prop.v[i]*mult);
                     if(this.c[i] !== val){
                         this.c[i] = val;
-                        this.cmdf = true;
+                        this.cmdf = !forceRender;
                     }
                 }
                 if(this.o.length){
@@ -578,7 +578,7 @@ var PropertyFactory = (function(){
                         val = i%2 === 0 ?  Math.round(this.prop.v[i]*100):this.prop.v[i];
                         if(this.o[i-this.data.p*4] !== val){
                             this.o[i-this.data.p*4] = val;
-                            this.omdf = true;
+                            this.omdf = !forceRender;
                         }
                     }
                 }
@@ -586,7 +586,7 @@ var PropertyFactory = (function(){
 
         }
 
-        function gradientProp(elem,data,arr){
+        function GradientProp(elem,data,arr){
             this.prop = getProp(elem,data.k,1,null,[]);
             this.data = data;
             this.k = this.prop.k;
@@ -603,7 +603,7 @@ var PropertyFactory = (function(){
         }
 
         return function getGradientProp(elem,data,arr){
-            return new gradientProp(elem,data,arr);
+            return new GradientProp(elem,data,arr);
         }
     }());
 
