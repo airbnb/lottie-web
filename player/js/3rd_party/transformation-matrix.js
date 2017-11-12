@@ -368,8 +368,3 @@ var Matrix = (function(){
         this.reset();
     }
 }());
-
-function Matrix() {
-
-
-}
