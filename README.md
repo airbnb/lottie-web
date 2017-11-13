@@ -84,7 +84,8 @@ https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
 Skip directly to "Install third-party extensions"
 
 ### After installing
-- Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
+- **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
+- **Mac:** Go to Adobe After Effects > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
 # HTML player installation
 ```bash
