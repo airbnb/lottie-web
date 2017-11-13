@@ -2,9 +2,12 @@ function SVGRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
-    this.globalData = {
-        frameNum: -1
-    };
+    this.svgElement = document.createElementNS(svgNS,'svg');
+    var maskElement = document.createElementNS(svgNS,'g');
+    this.svgElement.appendChild(maskElement)
+    this.layerElement = maskElement;
+    var defs = document.createElementNS(svgNS, 'defs');
+    this.svgElement.appendChild(defs);
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
         progressiveLoad: (config && config.progressiveLoad) || false,
@@ -12,7 +15,14 @@ function SVGRenderer(animationItem, config){
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         className: (config && config.className) || ''
     };
-    this.globalData.renderConfig = this.renderConfig;
+    this.globalData = {
+        frameNum: -1,
+        defs: defs,
+        frameId: 0,
+        compSize: {w:0,h:0},
+        renderConfig: this.renderConfig,
+        fontManager: new FontManager()
+    };
     this.elements = [];
     this.pendingElements = [];
     this.destroyed = false;
@@ -48,37 +58,31 @@ SVGRenderer.prototype.createSolid = function (data) {
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
-    this.layerElement = document.createElementNS(svgNS,'svg');
-    this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    this.svgElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    this.svgElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
     if(!this.renderConfig.viewBoxOnly) {
-        this.layerElement.setAttribute('width',animData.w);
-        this.layerElement.setAttribute('height',animData.h);
-        this.layerElement.style.width = '100%';
-        this.layerElement.style.height = '100%';
+        this.svgElement.setAttribute('width',animData.w);
+        this.svgElement.setAttribute('height',animData.h);
+        this.svgElement.style.width = '100%';
+        this.svgElement.style.height = '100%';
     }
     if(this.renderConfig.className) {
-        this.layerElement.setAttribute('class', this.renderConfig.className);
+        this.svgElement.setAttribute('class', this.renderConfig.className);
     }
-    this.layerElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
+    this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
     //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this.layerElement);
+    this.animationItem.wrapper.appendChild(this.svgElement);
     //Mask animation
-    var defs = document.createElementNS(svgNS, 'defs');
-    this.globalData.defs = defs;
-    this.layerElement.appendChild(defs);
+    var defs = this.globalData.defs;
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
-    this.globalData.frameId = 0;
     this.globalData.nm = animData.nm;
-    this.globalData.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this.data = animData;
+    this.globalData.compSize.w = animData.w;
+    this.globalData.compSize.h = animData.h;
     this.globalData.frameRate = animData.fr;
+    this.data = animData;
     var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',animData.w);
@@ -88,13 +92,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
     var maskId = 'animationMask_'+randomString(10);
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
-    var maskedElement = document.createElementNS(svgNS,'g');
-    maskedElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
-    this.layerElement.appendChild(maskedElement);
+    this.layerElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
     defs.appendChild(maskElement);
-    this.layerElement = maskedElement;
     this.layers = animData.layers;
-    this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,defs);
     this.elements = Array.apply(null,{length:animData.layers.length});
