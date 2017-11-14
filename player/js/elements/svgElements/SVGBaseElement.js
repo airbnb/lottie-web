@@ -1,5 +1,5 @@
 function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
-    this.globalData = globalData;
+    /*this.globalData = globalData;
     this.comp = comp;
     this.data = data;
     this.matteElement = null;
@@ -9,12 +9,21 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
     this.placeholder = placeholder;
     this._sizeChanged = false;
-    this.init();
+    this.init();*/
 };
 
-createElement(BaseElement, SVGBaseElement);
+//createElement(BaseElement, SVGBaseElement);
 
-SVGBaseElement.prototype.createElements = function(){
+SVGBaseElement.prototype.initSvgElement = function(parentContainer, placeholder) {
+    this.matteElement = null;
+    this.transformedElement = null;
+    this.isTransparent = false;
+    this._sizeChanged = false;
+    this.parentContainer = parentContainer;
+    this.placeholder = placeholder;
+}
+
+SVGBaseElement.prototype.createContainerElements = function(){
     this.layerElement = document.createElementNS(svgNS,'g');
     this.transformedElement = this.layerElement;
     if(this.data.hasMask){
@@ -138,71 +147,6 @@ SVGBaseElement.prototype.createElements = function(){
     if(this.layerElement !== this.parentContainer){
         this.placeholder = null;
     }
-    /* Todo performance killer
-    if(this.data.sy){
-        var filterID = 'st_'+randomString(10);
-        var c = this.data.sy[0].c.k;
-        var r = this.data.sy[0].s.k;
-        var expansor = document.createElementNS(svgNS,'filter');
-        expansor.setAttribute('id',filterID);
-        var feFlood = document.createElementNS(svgNS,'feFlood');
-        this.feFlood = feFlood;
-        if(!c[0].e){
-            feFlood.setAttribute('flood-color','rgb('+c[0]+','+c[1]+','+c[2]+')');
-        }
-        feFlood.setAttribute('result','base');
-        expansor.appendChild(feFlood);
-        var feMorph = document.createElementNS(svgNS,'feMorphology');
-        feMorph.setAttribute('operator','dilate');
-        feMorph.setAttribute('in','SourceGraphic');
-        feMorph.setAttribute('result','bigger');
-        this.feMorph = feMorph;
-        if(!r.length){
-            feMorph.setAttribute('radius',this.data.sy[0].s.k);
-        }
-        expansor.appendChild(feMorph);
-        var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
-        feColorMatrix.setAttribute('result','mask');
-        feColorMatrix.setAttribute('in','bigger');
-        feColorMatrix.setAttribute('type','matrix');
-        feColorMatrix.setAttribute('values','0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0');
-        expansor.appendChild(feColorMatrix);
-        var feComposite = document.createElementNS(svgNS,'feComposite');
-        feComposite.setAttribute('result','drop');
-        feComposite.setAttribute('in','base');
-        feComposite.setAttribute('in2','mask');
-        feComposite.setAttribute('operator','in');
-        expansor.appendChild(feComposite);
-        var feBlend = document.createElementNS(svgNS,'feBlend');
-        feBlend.setAttribute('in','SourceGraphic');
-        feBlend.setAttribute('in2','drop');
-        feBlend.setAttribute('mode','normal');
-        expansor.appendChild(feBlend);
-        this.globalData.defs.appendChild(expansor);
-        var cont = document.createElementNS(svgNS,'g');
-        if(this.layerElement === this.parentContainer){
-            this.layerElement = cont;
-        }else{
-            cont.appendChild(this.layerElement);
-        }
-        cont.setAttribute('filter','url(#'+filterID+')');
-        if(this.data.td){
-            cont.setAttribute('data-td',this.data.td);
-        }
-        if(this.data.td == 3){
-            this.globalData.defs.appendChild(cont);
-        }else if(this.data.td == 2){
-            maskGrouper.appendChild(cont);
-        }else if(this.data.td == 1){
-            masker.appendChild(cont);
-        }else{
-            if(this.data.hasMask && this.data.tt){
-                this.matteElement.appendChild(cont);
-            }else{
-                this.appendNodeToParent(cont);
-            }
-        }
-    }*/
     if(this.data.ef){
         this.effectsManager = new SVGEffects(this);
     }
@@ -212,43 +156,15 @@ SVGBaseElement.prototype.createElements = function(){
 
 SVGBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
-SVGBaseElement.prototype.renderFrame = function(parentTransform){
+SVGBaseElement.prototype.renderElement = function(){
     if(this.data.ty === 3 || this.data.hd || !this.isVisible){
         return false;
     }
 
     this.lastNum = this.currentFrameNum;
-    this.finalTransform.opMdf = this.firstFrame || this.finalTransform.op.mdf;
-    this.finalTransform.matMdf = this.firstFrame || this.finalTransform.mProp.mdf;
-    this.finalTransform.opacity = this.finalTransform.op.v;
 
-    var mat;
-    var finalMat = this.finalTransform.mat;
-
-    if(this.hierarchy){
-        var i = 0, len = this.hierarchy.length;
-        if(!this.finalTransform.matMdf) {
-            while(i < len) {
-                if(this.hierarchy[i].finalTransform.mProp.mdf) {
-                    this.finalTransform.matMdf = true;
-                    break;
-                }
-                i += 1;
-            }
-        }
-        
-        if(this.finalTransform.matMdf) {
-            mat = this.finalTransform.mProp.v.props;
-            finalMat.cloneFromProps(mat);
-            for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.v.props;
-                finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
-            }
-        }
-        
-    }else if(this.isVisible){
-        finalMat = this.finalTransform.mProp.v;
-    }
+    var finalMat = this.finalMat;
+    
     if(this.finalTransform.matMdf && this.layerElement){
         this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
     }

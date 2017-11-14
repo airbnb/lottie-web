@@ -1,10 +1,15 @@
 function ISolidElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    //this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initHierarchy();
+    this.initSvgElement(parentContainer, placeholder);
+    this.createContainerElements();
+    this.createSolid();
 }
-createElement(SVGBaseElement, ISolidElement);
+//createElement(SVGBaseElement, ISolidElement);
 
-ISolidElement.prototype.createElements = function(){
-    this._parent.createElements.call(this);
+ISolidElement.prototype.createSolid = function(){
 
     var rect = document.createElementNS(svgNS,'rect');
     ////rect.style.width = this.data.sw;
@@ -23,5 +28,19 @@ ISolidElement.prototype.createElements = function(){
     }
 };
 
-ISolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
+ISolidElement.prototype.prepareFrame = function(num) {
+    this.prepareFrameData(num);
+};
+
+ISolidElement.prototype.renderFrame = function() {
+    this.renderTransform();
+    this.renderElement();
+};
+
 ISolidElement.prototype.destroy = IImageElement.prototype.destroy;
+
+extendPrototype(BaseElement, ISolidElement);
+extendPrototype(TransformElement, ISolidElement);
+extendPrototype(SVGBaseElement, ISolidElement);
+extendPrototype(HierarchyElement, ISolidElement);
+extendPrototype(FrameElement, ISolidElement);
