@@ -1,43 +1,29 @@
-# bodymovin
-After Effects plugin for exporting animations to svg/canvas/html + js or natively on Android and iOS through [Lottie](https://medium.com/airbnb-engineering/introducing-lottie-4ff4a0afac0e)
+# Lottie for Web, [Android](https://github.com/airbnb/lottie-android), [iOS](https://github.com/airbnb/lottie-ios), and [React Native](https://github.com/airbnb/lottie-react-native)
 
-## V 4.13.0
-- text expression support
-- text update support with updateDocumentData (check wiki)
-- tangentOnPath, normalOnPath and more expressions
-- loaded_images event
-- fixed global calls
-- fixed ie9 error
+Lottie is a mobile library for Web,  and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile!
 
-## V 4.12.3
-- valueAtTime fix
+For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it by hand. They say a picture is worth 1,000 words so here are 13,000:
 
-## V 4.12.2
-- caching fix
 
-## V 4.12.1
-- velocityAtTime fix
 
-## V 4.12.0
-- pointOnLine support
-- createPath support
-- points, inTangents, outTangents support
-- expressions fixes
-- className for  container via loading config
-- 3d orientation fix
+# View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](http://airbnb.io/lottie/)
 
-# Lottie + Bodymovin
-Lottie is the native engine that Airbnb's awesome team built. It uses Bodymovin as the animation exporter and is the ideal complement for getting animations to play natively everywhere.
-Follow these links to get each player:
-- [Android's player](https://github.com/airbnb/lottie-android)
-- [iOS's player](https://github.com/airbnb/lottie-ios)
-- [React Native's wrapper](https://github.com/airbnb/lottie-react-native)
 
-## Lottie and AVD
-Some animations can be exported for Android using the AVD format.
-It can fit for some cases where you'll gain a performance improvement.
-But Lottie brings much more features, a level of animation control and dynamic loading that couldn't be achieved with avd.
-Here's a [link](http://airbnb.io/lottie/lottie-avd.html) with a full comparison of both technologies.
+
+![Example1](gifs/Example1.gif)
+
+
+![Example2](gifs/Example2.gif)
+
+
+![Example3](gifs/Example3.gif)
+
+
+![Community](gifs/Community%202_3.gif)
+
+
+![Example4](gifs/Example4.gif)
+
 
 # Plugin installation
 
@@ -149,8 +135,8 @@ Check this wiki page for an explanation for each setting.
 https://github.com/bodymovin/bodymovin/wiki/Composition-Settings
 
 ## Usage
-Animation instances have these main methods: 
-### play 
+Animation instances have these main methods:
+### play
 
 ***
 ### stop
@@ -192,7 +178,7 @@ Animation instances have these main methods:
 ***
 
 ### Aditional methods:
-- updateTextDocumentData -- updates a text layer's data  
+- updateTextDocumentData -- updates a text layer's data
 [More Info](https://github.com/bodymovin/bodymovin/wiki/TextLayer.updateDocumentData)
 ***
 
