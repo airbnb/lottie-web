@@ -10,7 +10,7 @@
             overflow-y: auto;
         }
 
-        #bodymovin{
+        #lottie{
             background-color:#000;
             width:100%;
             height:100%;
@@ -20,6 +20,7 @@
             overflow: hidden;
             transform: translate3d(0,0,0);
             margin: auto;
+            /*display:none;*/
         }
 
         .botas_loop_3,.botas_loop_2{
@@ -27,9 +28,10 @@
         }
 
     </style>
-    <!-- build:js bodymovin.js -->
+    <!-- build:js lottie.js -->
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
+    <script src="js/utils/helpers/arrays.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
@@ -39,6 +41,7 @@
     <script src="js/utils/DataManager.js"></script>
     <script src="js/utils/FontManager.js"></script>
     <script src="js/utils/PropertyFactory.js"></script>
+    <script src="js/utils/TransformProperty.js"></script>
     <script src="js/utils/shapes/ShapePath.js"></script>
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
@@ -46,12 +49,15 @@
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/shapes/RepeaterModifier.js"></script>
     <script src="js/utils/shapes/ShapeCollection.js"></script>
+    <script src="js/utils/shapes/DashProperty.js"></script>
+    <script src="js/utils/shapes/GradientProperty.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
     <script src="js/utils/text/TextProperty.js"></script>
+    <script src="js/utils/text/TextSelectorProperty.js"></script>
     <script src="js/utils/pooling/pooling.js"></script>
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
@@ -117,23 +123,23 @@
 
 </head>
 <body>
-<div id="bodymovin"></div>
+<div id="lottie"></div>
 
 <script>
 
     var anim;
-    var elem = document.getElementById('bodymovin')
+    var elem = document.getElementById('lottie')
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
         path: 'exports/render/data.json'
     };
-    anim = bodymovin.loadAnimation(animData);
+    anim = lottie.loadAnimation(animData);
 
 </script>
 </body>

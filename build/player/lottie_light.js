@@ -6,7 +6,8 @@
     } else if (typeof module === "object" && module.exports) {
         module.exports = factory(root);
     } else {
-        root.bodymovin = factory(root);
+        root.lottie = factory(root);
+        root.bodymovin = root.lottie;
     }
 }((window || {}), function(window) {
     var svgNS = "http://www.w3.org/2000/svg";
@@ -66,14 +67,6 @@ function roundValues(flag){
     }
 }
 roundValues(false);
-
-function roundTo2Decimals(val){
-    return Math.round(val*10000)/10000;
-}
-
-function roundTo3Decimals(val){
-    return Math.round(val*100)/100;
-}
 
 function styleDiv(element){
     element.style.position = 'absolute';
@@ -258,11 +251,6 @@ function addHueToRGB(color,offset) {
     return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 }
 
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? '0' + hex : hex;
-}
-
 var rgbToHex = (function(){
     var colorMap = [];
     var i;
@@ -285,76 +273,38 @@ var rgbToHex = (function(){
         return '#' + colorMap[r] + colorMap[g] + colorMap[b];
     };
 }());
-
-function fillToRgba(hex,alpha){
-    if(!cachedColors[hex]){
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        cachedColors[hex] = parseInt(result[1], 16)+','+parseInt(result[2], 16)+','+parseInt(result[3], 16);
-    }
-    return 'rgba('+cachedColors[hex]+','+alpha+')';
-}
-
-var fillColorToString = (function(){
-
-    var colorMap = [];
-    return function(colorArr,alpha){
-        if(alpha !== undefined){
-            colorArr[3] = alpha;
-        }
-        if(!colorMap[colorArr[0]]){
-            colorMap[colorArr[0]] = {};
-        }
-        if(!colorMap[colorArr[0]][colorArr[1]]){
-            colorMap[colorArr[0]][colorArr[1]] = {};
-        }
-        if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]]){
-            colorMap[colorArr[0]][colorArr[1]][colorArr[2]] = {};
-        }
-        if(!colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]]){
-            colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]] = 'rgba(' + colorArr.join(',')+')';
-        }
-        return colorMap[colorArr[0]][colorArr[1]][colorArr[2]][colorArr[3]];
-    };
-}());
-
-function RenderedFrame(tr,o) {
-    this.tr = tr;
-    this.o = o;
-}
-
-function iterateDynamicProperties(num){
-    var i, len = this.dynamicProperties;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
-    }
-}
-
-function reversePath(paths){
-    var newI = [], newO = [], newV = [];
-    var i, len, newPaths = {};
-    var init = 0;
-    if (paths.c) {
-        newI[0] = paths.o[0];
-        newO[0] = paths.i[0];
-        newV[0] = paths.v[0];
-        init = 1;
-    }
-    len = paths.i.length;
-    var cnt = len - 1;
-
-    for (i = init; i < len; i += 1) {
-        newI.push(paths.o[cnt]);
-        newO.push(paths.i[cnt]);
-        newV.push(paths.v[cnt]);
-        cnt -= 1;
-    }
-
-    newPaths.i = newI;
-    newPaths.o = newO;
-    newPaths.v = newV;
-
-    return newPaths;
-}
+var createTypedArray = (function(){
+	function createRegularArray(type, len){
+		var i = 0, arr = [], value;
+		switch(type) {
+			case 'int16':
+			case 'uint8c':
+				value = 1;
+				break;
+			default:
+				value = 1.1;
+				break;
+		}
+		for(i = 0; i < len; i += 1) {
+			arr.push(value);
+		}
+		return arr;
+	}
+	function createTypedArray(type, len){
+		if(type === 'float32') {
+			return new Float32Array(len);
+		} else if(type === 'int16') {
+			return new Int16Array(len);
+		} else if(type === 'uint8c') {
+			return new Uint8ClampedArray(len);
+		}
+	}
+	if(typeof Float32Array === 'function') {
+		return createTypedArray
+	} else {
+		return createRegularArray
+	}
+}())
 /*!
  Transformation Matrix v2.0
  (c) Epistemex 2014-2015
@@ -386,6 +336,11 @@ function reversePath(paths){
 
 var Matrix = (function(){
 
+    var _cos = Math.cos;
+    var _sin = Math.sin;
+    var _tan = Math.tan;
+    var _rnd = Math.round;
+
     function reset(){
         this.props[0] = 1;
         this.props[1] = 0;
@@ -410,8 +365,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos, -mSin,  0, 0
             , mSin,  mCos, 0, 0
             , 0,  0,  1, 0
@@ -422,8 +377,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(1, 0, 0, 0
             , 0, mCos, -mSin, 0
             , 0, mSin,  mCos, 0
@@ -434,8 +389,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos,  0,  mSin, 0
             , 0, 1, 0, 0
             , -mSin,  0,  mCos, 0
@@ -446,8 +401,8 @@ var Matrix = (function(){
         if(angle === 0){
             return this;
         }
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos, -mSin,  0, 0
             , mSin,  mCos, 0, 0
             , 0,  0,  1, 0
@@ -459,25 +414,25 @@ var Matrix = (function(){
     }
 
     function skew(ax, ay){
-        return this.shear(Math.tan(ax), Math.tan(ay));
+        return this.shear(_tan(ax), _tan(ay));
     }
 
     function skewFromAxis(ax, angle){
-        var mCos = Math.cos(angle);
-        var mSin = Math.sin(angle);
+        var mCos = _cos(angle);
+        var mSin = _sin(angle);
         return this._t(mCos, mSin,  0, 0
             , -mSin,  mCos, 0, 0
             , 0,  0,  1, 0
             , 0, 0, 0, 1)
             ._t(1, 0,  0, 0
-            , Math.tan(ax),  1, 0, 0
+            , _tan(ax),  1, 0, 0
             , 0,  0,  1, 0
             , 0, 0, 0, 1)
             ._t(mCos, -mSin,  0, 0
             , mSin,  mCos, 0, 0
             , 0,  0,  1, 0
             , 0, 0, 0, 1);
-        //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, Math.tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
+        //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, _tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
     function scale(sx, sy, sz) {
@@ -658,25 +613,32 @@ var Matrix = (function(){
         return (bm_rnd(x * this.props[0] + y * this.props[4] + this.props[12]))+','+(bm_rnd(x * this.props[1] + y * this.props[5] + this.props[13]));
     }
 
-    function toArray() {
-        return [this.props[0],this.props[1],this.props[2],this.props[3],this.props[4],this.props[5],this.props[6],this.props[7],this.props[8],this.props[9],this.props[10],this.props[11],this.props[12],this.props[13],this.props[14],this.props[15]];
-    }
-
     function toCSS() {
-        if(isSafari){
-            return "matrix3d(" + roundTo2Decimals(this.props[0]) + ',' + roundTo2Decimals(this.props[1]) + ',' + roundTo2Decimals(this.props[2]) + ',' + roundTo2Decimals(this.props[3]) + ',' + roundTo2Decimals(this.props[4]) + ',' + roundTo2Decimals(this.props[5]) + ',' + roundTo2Decimals(this.props[6]) + ',' + roundTo2Decimals(this.props[7]) + ',' + roundTo2Decimals(this.props[8]) + ',' + roundTo2Decimals(this.props[9]) + ',' + roundTo2Decimals(this.props[10]) + ',' + roundTo2Decimals(this.props[11]) + ',' + roundTo2Decimals(this.props[12]) + ',' + roundTo2Decimals(this.props[13]) + ',' + roundTo2Decimals(this.props[14]) + ',' + roundTo2Decimals(this.props[15]) + ')';
-        } else {
-            this.cssParts[1] = this.props.join(',');
-            return this.cssParts.join('');
+        //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
+        /*if(this.isIdentity()) {
+            return '';
+        }*/
+        var i = 0;
+        var props = this.props;
+        var cssValue = 'matrix3d(';
+        var v = 10000;
+        while(i<16){
+            cssValue += _rnd(props[i]*v)/v
+            cssValue += i === 15 ? ')':',';
+            i += 1;
         }
+        return cssValue;
     }
 
     function to2dCSS() {
-        return "matrix(" + roundTo2Decimals(this.props[0]) + ',' + roundTo2Decimals(this.props[1]) + ',' + roundTo2Decimals(this.props[4]) + ',' + roundTo2Decimals(this.props[5]) + ',' + roundTo2Decimals(this.props[12]) + ',' + roundTo2Decimals(this.props[13]) + ")";
-    }
-
-    function toString() {
-        return "" + this.toArray();
+        //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
+        /*if(this.isIdentity()) {
+            console.log(new Error().stack)
+            return '';
+        }*/
+        var v = 10000;
+        var props = this.props;
+        return "matrix(" + _rnd(props[0]*v)/v + ',' + _rnd(props[1]*v)/v + ',' + _rnd(props[4]*v)/v + ',' + _rnd(props[5]*v)/v + ',' + _rnd(props[12]*v)/v + ',' + _rnd(props[13]*v)/v + ")";
     }
 
     return function(){
@@ -698,10 +660,8 @@ var Matrix = (function(){
         this.applyToZ = applyToZ;
         this.applyToPointArray = applyToPointArray;
         this.applyToPointStringified = applyToPointStringified;
-        this.toArray = toArray;
         this.toCSS = toCSS;
         this.to2dCSS = to2dCSS;
-        this.toString = toString;
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
         this.inversePoints = inversePoints;
@@ -711,16 +671,10 @@ var Matrix = (function(){
         this._identity = true;
         this._identityCalculated = false;
 
-        this.props = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
-
-        this.cssParts = ['matrix3d(','',')'];
+        this.props = createTypedArray('float32', 16);
+        this.reset();
     }
 }());
-
-function Matrix() {
-
-
-}
 
 /*
  Copyright 2014 David Bau.
@@ -1232,7 +1186,7 @@ function bezFunction(){
             var point = [],lastPoint = [];
             var lengthData = {
                 addedLength: 0,
-                segments: []
+                segments: Array.apply(null,{length:curveSegments})
             };
             len = pt3.length;
             for(k=0;k<curveSegments;k+=1){
@@ -1250,7 +1204,7 @@ function bezFunction(){
                     ptDistance = bm_sqrt(ptDistance);
                     addedLength += ptDistance;
                 }
-                lengthData.segments.push(new Segment(addedLength,perc));
+                lengthData.segments[k] = new Segment(addedLength,perc);
             }
             lengthData.addedLength = addedLength;
             return lengthData;
@@ -2411,253 +2365,9 @@ var PropertyFactory = (function(){
         this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
     }
 
-    var TransformProperty = (function() {
-        function positionGetter() {
-            if(this.p) {
-                return ExpressionValue(this.p);
-            } else {
-                return [this.px.v, this.py.v, this.pz ? this.pz.v : 0];
-            }
-        }
-        function xPositionGetter() {
-            return ExpressionValue(this.px);
-        }
-        function yPositionGetter() {
-            return ExpressionValue(this.py);
-        }
-        function zPositionGetter() {
-            return ExpressionValue(this.pz);
-        }
-        function anchorGetter() {
-            return ExpressionValue(this.a);
-        }
-        function orientationGetter() {
-            return ExpressionValue(this.or);
-        }
-        function rotationGetter() {
-            if(this.r) {
-                return ExpressionValue(this.r, 1/degToRads);
-            } else {
-                return ExpressionValue(this.rz, 1/degToRads);
-            }
-        }
-        function scaleGetter() {
-            return ExpressionValue(this.s, 100);
-        }
-        function opacityGetter() {
-            return ExpressionValue(this.o, 100);
-        }
-        function skewGetter() {
-            return ExpressionValue(this.sk);
-        }
-        function skewAxisGetter() {
-            return ExpressionValue(this.sa);
-        }
-        function applyToMatrix(mat) {
-            var i, len = this.dynamicProperties.length;
-            for(i = 0; i < len; i += 1) {
-                this.dynamicProperties[i].getValue();
-                if (this.dynamicProperties[i].mdf) {
-                    this.mdf = true;
-                }
-            }
-            if (this.a) {
-                mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
-            }
-            if (this.s) {
-                mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
-            }
-            if (this.r) {
-                mat.rotate(-this.r.v);
-            } else {
-                mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
-            }
-            if (this.data.p.s) {
-                if (this.data.p.z) {
-                    mat.translate(this.px.v, this.py.v, -this.pz.v);
-                } else {
-                    mat.translate(this.px.v, this.py.v, 0);
-                }
-            } else {
-                mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
-            }
-        }
-        function processKeys(){
-            if (this.elem.globalData.frameId === this.frameId) {
-                return;
-            }
-
-            this.mdf = false;
-            var i, len = this.dynamicProperties.length;
-
-            for(i = 0; i < len; i += 1) {
-                this.dynamicProperties[i].getValue();
-                if (this.dynamicProperties[i].mdf) {
-                    this.mdf = true;
-                }
-            }
-            if (this.mdf) {
-                this.v.reset();
-                if (this.a) {
-                    this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
-                }
-                if(this.s) {
-                    this.v.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
-                }
-                if (this.sk) {
-                    this.v.skewFromAxis(-this.sk.v, this.sa.v);
-                }
-                if (this.r) {
-                    this.v.rotate(-this.r.v);
-                } else {
-                    this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
-                }
-                if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
-                    var v1,v2;
-                    if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
-                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
-                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
-                    } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
-                        v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
-                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
-                    } else {
-                        v1 = this.p.pv;
-                        v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
-                    }
-                    this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
-                }
-                if(this.data.p.s){
-                    if(this.data.p.z) {
-                        this.v.translate(this.px.v, this.py.v, -this.pz.v);
-                    } else {
-                        this.v.translate(this.px.v, this.py.v, 0);
-                    }
-                }else{
-                    this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
-                }
-            }
-            this.frameId = this.elem.globalData.frameId;
-        }
-
-        function setInverted(){
-            this.inverted = true;
-            this.iv = new Matrix();
-            if(!this.k){
-                if(this.data.p.s){
-                    this.iv.translate(this.px.v,this.py.v,-this.pz.v);
-                }else{
-                    this.iv.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
-                }
-                if(this.r){
-                    this.iv.rotate(-this.r.v);
-                }else{
-                    this.iv.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
-                }
-                if(this.s){
-                    this.iv.scale(this.s.v[0],this.s.v[1],1);
-                }
-                if(this.a){
-                    this.iv.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-                }
-            }
-        }
-
-        function autoOrient(){
-            //
-            //var prevP = this.getValueAtTime();
-        }
-
-        return function TransformProperty(elem,data,arr){
-            this.elem = elem;
-            this.frameId = -1;
-            this.type = 'transform';
-            this.dynamicProperties = [];
-            this.mdf = false;
-            this.data = data;
-            this.getValue = processKeys;
-            this.applyToMatrix = applyToMatrix;
-            this.setInverted = setInverted;
-            this.autoOrient = autoOrient;
-            this.v = new Matrix();
-            if(data.p.s){
-                this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this.dynamicProperties);
-                this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this.dynamicProperties);
-                if(data.p.z){
-                    this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this.dynamicProperties);
-                }
-            }else{
-                this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
-            }
-            if(data.r) {
-                this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this.dynamicProperties);
-            } else if(data.rx) {
-                this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this.dynamicProperties);
-                this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
-                this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
-                this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
-                //sh Indicates it needs to be capped between -180 and 180
-                this.or.sh = true;
-            }
-            if(data.sk){
-                this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
-                this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this.dynamicProperties);
-            }
-            if(data.a) {
-                this.a = PropertyFactory.getProp(elem,data.a,1,0,this.dynamicProperties);
-            }
-            if(data.s) {
-                this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this.dynamicProperties);
-            }
-            if(data.o){
-                this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this.dynamicProperties);
-            } else {
-                this.o = {mdf:false,v:1};
-            }
-            if(this.dynamicProperties.length){
-                arr.push(this);
-            }else{
-                if(this.a){
-                    this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-                }
-                if(this.s){
-                    this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
-                }
-                if(this.sk){
-                    this.v.skewFromAxis(-this.sk.v,this.sa.v);
-                }
-                if(this.r){
-                    this.v.rotate(-this.r.v);
-                }else{
-                    this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
-                }
-                if(this.data.p.s){
-                    if(data.p.z) {
-                        this.v.translate(this.px.v, this.py.v, -this.pz.v);
-                    } else {
-                        this.v.translate(this.px.v, this.py.v, 0);
-                    }
-                }else{
-                    this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
-                }
-            }
-            Object.defineProperty(this, "position", { get: positionGetter});
-            Object.defineProperty(this, "xPosition", { get: xPositionGetter});
-            Object.defineProperty(this, "yPosition", { get: yPositionGetter});
-            Object.defineProperty(this, "orientation", { get: orientationGetter});
-            Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
-            Object.defineProperty(this, "rotation", { get: rotationGetter});
-            Object.defineProperty(this, "scale", { get: scaleGetter});
-            Object.defineProperty(this, "opacity", { get: opacityGetter});
-            Object.defineProperty(this, "skew", { get: skewGetter});
-            Object.defineProperty(this, "skewAxis", { get: skewAxisGetter});
-        }
-    }());
-
     function getProp(elem,data,type, mult, arr) {
         var p;
-        if(type === 2){
-            p = new TransformProperty(elem, data, arr);
-        } else if(data.a === 0){
+        if(data.a === 0){
             if(type === 0) {
                 p = new ValueProperty(elem,data,mult);
             } else {
@@ -2689,275 +2399,261 @@ var PropertyFactory = (function(){
         return p;
     }
 
-    var getGradientProp = (function(){
-
-        function getValue(forceRender){
-            this.prop.getValue();
-            this.cmdf = false;
-            this.omdf = false;
-            if(this.prop.mdf || forceRender){
-                var i, len = this.data.p*4;
-                var mult, val;
-                for(i=0;i<len;i+=1){
-                    mult = i%4 === 0 ? 100 : 255;
-                    val = Math.round(this.prop.v[i]*mult);
-                    if(this.c[i] !== val){
-                        this.c[i] = val;
-                        this.cmdf = true;
-                    }
-                }
-                if(this.o.length){
-                    len = this.prop.v.length;
-                    for(i=this.data.p*4;i<len;i+=1){
-                        mult = i%2 === 0 ? 100 : 1;
-                        val = i%2 === 0 ?  Math.round(this.prop.v[i]*100):this.prop.v[i];
-                        if(this.o[i-this.data.p*4] !== val){
-                            this.o[i-this.data.p*4] = val;
-                            this.omdf = true;
-                        }
-                    }
-                }
-            }
-
-        }
-
-        function gradientProp(elem,data,arr){
-            this.prop = getProp(elem,data.k,1,null,[]);
-            this.data = data;
-            this.k = this.prop.k;
-            this.c = Array.apply(null,{length:data.p*4});
-            var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
-            this.o = Array.apply(null,{length:cLength});
-            this.cmdf = false;
-            this.omdf = false;
-            this.getValue = getValue;
-            if(this.prop.k){
-                arr.push(this);
-            }
-            this.getValue(true);
-        }
-
-        return function getGradientProp(elem,data,arr){
-            return new gradientProp(elem,data,arr);
-        }
-    }());
-
-
-
-
-    var DashProperty = (function(){
-
-        function processKeys(forceRender){
-            var i = 0, len = this.dataProps.length;
-
-            if(this.elem.globalData.frameId === this.frameId && !forceRender){
-                return;
-            }
-            this.mdf = false;
-            this.frameId = this.elem.globalData.frameId;
-            while(i<len){
-                if(this.dataProps[i].p.mdf){
-                    this.mdf = true;
-                    break;
-                }
-                i+=1;
-            }
-            if(this.mdf || forceRender){
-                if(this.renderer === 'svg') {
-                    this.dasharray = '';
-                }
-                for(i=0;i<len;i+=1){
-                    if(this.dataProps[i].n != 'o'){
-                        if(this.renderer === 'svg') {
-                            this.dasharray += ' ' + this.dataProps[i].p.v;
-                        }else{
-                            this.dasharray[i] = this.dataProps[i].p.v;
-                        }
-                    }else{
-                        this.dashoffset = this.dataProps[i].p.v;
-                    }
-                }
-            }
-        }
-
-        return function(elem, data,renderer, dynamicProperties){
-            this.elem = elem;
-            this.frameId = -1;
-            this.dataProps = new Array(data.length);
-            this.renderer = renderer;
-            this.mdf = false;
-            this.k = false;
-            if(this.renderer === 'svg'){
-                this.dasharray = '';
-            }else{
-
-                this.dasharray = new Array(data.length - 1);
-            }
-            this.dashoffset = 0;
-            var i, len = data.length, prop;
-            for(i=0;i<len;i+=1){
-                prop = PropertyFactory.getProp(elem,data[i].v,0, 0, dynamicProperties);
-                this.k = prop.k ? true : this.k;
-                this.dataProps[i] = {n:data[i].n,p:prop};
-            }
-            this.getValue = processKeys;
-            if(this.k){
-                dynamicProperties.push(this);
-            }else{
-                this.getValue(true);
-            }
-
-        }
-    }());
-
-    function getDashProp(elem, data,renderer, dynamicProperties) {
-        return new DashProperty(elem, data,renderer, dynamicProperties);
-    };
-
-    var TextSelectorProp = (function(){
-        var max = Math.max;
-        var min = Math.min;
-        var floor = Math.floor;
-        function updateRange(newCharsFlag){
-            this.mdf = newCharsFlag || false;
-            if(this.dynamicProperties.length){
-                var i, len = this.dynamicProperties.length;
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue();
-                    if(this.dynamicProperties[i].mdf){
-                        this.mdf = true;
-                    }
-                }
-            }
-            var totalChars = this.elem.textProperty.currentData ? this.elem.textProperty.currentData.l.length : 0;
-            if(newCharsFlag && this.data.r === 2) {
-                this.e.v = totalChars;
-            }
-            var divisor = this.data.r === 2 ? 1 : 100 / totalChars;
-            var o = this.o.v/divisor;
-            var s = this.s.v/divisor + o;
-            var e = (this.e.v/divisor) + o;
-            if(s>e){
-                var _s = s;
-                s = e;
-                e = _s;
-            }
-            this.finalS = s;
-            this.finalE = e;
-        }
-
-        function getMult(ind){
-            //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
-            var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
-            var mult = 0;
-            var s = this.finalS;
-            var e = this.finalE;
-            var type = this.data.sh;
-            if(type == 2){
-                if(e === s){
-                    mult = ind >= e ? 1 : 0;
-                }else{
-                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                }
-                mult = easer(mult);
-            }else if(type == 3){
-                if(e === s){
-                    mult = ind >= e ? 0 : 1;
-                }else{
-                    mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                }
-
-                mult = easer(mult);
-            }else if(type == 4){
-                if(e === s){
-                    mult = 0;
-                }else{
-                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                    if(mult<.5){
-                        mult *= 2;
-                    }else{
-                        mult = 1 - 2*(mult-0.5);
-                    }
-                }
-                mult = easer(mult);
-            }else if(type == 5){
-                if(e === s){
-                    mult = 0;
-                }else{
-                    var tot = e - s;
-                    /*ind += 0.5;
-                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
-                    ind = min(max(0,ind+0.5-s),e-s);
-                    var x = -tot/2+ind;
-                    var a = tot/2;
-                    mult = Math.sqrt(1 - (x*x)/(a*a));
-                }
-                mult = easer(mult);
-            }else if(type == 6){
-                if(e === s){
-                    mult = 0;
-                }else{
-                    ind = min(max(0,ind+0.5-s),e-s);
-                    mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
-                    /*
-                     ind = Math.min(Math.max(s,ind),e-1);
-                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
-                     mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
-                }
-                mult = easer(mult);
-            }else {
-                if(ind >= floor(s)){
-                    if(ind-s < 0){
-                        mult = 1 - (s - ind);
-                    }else{
-                        mult = max(0,min(e-ind,1));
-                    }
-                }
-                mult = easer(mult);
-            }
-            return mult*this.a.v;
-        }
-
-        return function TextSelectorProp(elem,data, arr){
-            this.mdf = false;
-            this.k = false;
-            this.data = data;
-            this.dynamicProperties = [];
-            this.getValue = updateRange;
-            this.getMult = getMult;
-            this.elem = elem;
-            this.comp = elem.comp;
-            this.finalS = 0;
-            this.finalE = 0;
-            this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this.dynamicProperties);
-            if('e' in data){
-                this.e = PropertyFactory.getProp(elem,data.e,0,0,this.dynamicProperties);
-            }else{
-                this.e = {v:100};
-            }
-            this.o = PropertyFactory.getProp(elem,data.o || {k:0},0,0,this.dynamicProperties);
-            this.xe = PropertyFactory.getProp(elem,data.xe || {k:0},0,0,this.dynamicProperties);
-            this.ne = PropertyFactory.getProp(elem,data.ne || {k:0},0,0,this.dynamicProperties);
-            this.a = PropertyFactory.getProp(elem,data.a,0,0.01,this.dynamicProperties);
-            if(this.dynamicProperties.length){
-                arr.push(this);
-            }else{
-                this.getValue();
-            }
-        }
-    }());
-
-    function getTextSelectorProp(elem, data,arr) {
-        return new TextSelectorProp(elem, data, arr);
-    };
-
     var ob = {
-        getProp: getProp,
-        getDashProp: getDashProp,
-        getTextSelectorProp: getTextSelectorProp,
-        getGradientProp: getGradientProp
+        getProp: getProp
     };
     return ob;
+}());
+var TransformPropertyFactory = (function() {
+    function positionGetter() {
+        if(this.p) {
+            return ExpressionValue(this.p);
+        } else {
+            return [this.px.v, this.py.v, this.pz ? this.pz.v : 0];
+        }
+    }
+    function xPositionGetter() {
+        return ExpressionValue(this.px);
+    }
+    function yPositionGetter() {
+        return ExpressionValue(this.py);
+    }
+    function zPositionGetter() {
+        return ExpressionValue(this.pz);
+    }
+    function anchorGetter() {
+        return ExpressionValue(this.a);
+    }
+    function orientationGetter() {
+        return ExpressionValue(this.or);
+    }
+    function rotationGetter() {
+        if(this.r) {
+            return ExpressionValue(this.r, 1/degToRads);
+        } else {
+            return ExpressionValue(this.rz, 1/degToRads);
+        }
+    }
+    function scaleGetter() {
+        return ExpressionValue(this.s, 100);
+    }
+    function opacityGetter() {
+        return ExpressionValue(this.o, 100);
+    }
+    function skewGetter() {
+        return ExpressionValue(this.sk);
+    }
+    function skewAxisGetter() {
+        return ExpressionValue(this.sa);
+    }
+    function applyToMatrix(mat) {
+        var i, len = this.dynamicProperties.length;
+        for(i = 0; i < len; i += 1) {
+            this.dynamicProperties[i].getValue();
+            if (this.dynamicProperties[i].mdf) {
+                this.mdf = true;
+            }
+        }
+        if (this.a) {
+            mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
+        }
+        if (this.s) {
+            mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
+        }
+        if (this.r) {
+            mat.rotate(-this.r.v);
+        } else {
+            mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+        }
+        if (this.data.p.s) {
+            if (this.data.p.z) {
+                mat.translate(this.px.v, this.py.v, -this.pz.v);
+            } else {
+                mat.translate(this.px.v, this.py.v, 0);
+            }
+        } else {
+            mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
+        }
+    }
+    function processKeys(){
+        if (this.elem.globalData.frameId === this.frameId) {
+            return;
+        }
+
+        this.mdf = false;
+        var i, len = this.dynamicProperties.length;
+
+        for(i = 0; i < len; i += 1) {
+            this.dynamicProperties[i].getValue();
+            if (this.dynamicProperties[i].mdf) {
+                this.mdf = true;
+            }
+        }
+        if (this.mdf) {
+            this.v.reset();
+            if (this.a) {
+                this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
+            }
+            if(this.s) {
+                this.v.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
+            }
+            if (this.sk) {
+                this.v.skewFromAxis(-this.sk.v, this.sa.v);
+            }
+            if (this.r) {
+                this.v.rotate(-this.r.v);
+            } else {
+                this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+            }
+            if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
+                var v1,v2;
+                if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
+                    v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
+                    v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
+                } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
+                    v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
+                    v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
+                } else {
+                    v1 = this.p.pv;
+                    v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
+                }
+                this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
+            }
+            if(this.data.p.s){
+                if(this.data.p.z) {
+                    this.v.translate(this.px.v, this.py.v, -this.pz.v);
+                } else {
+                    this.v.translate(this.px.v, this.py.v, 0);
+                }
+            }else{
+                this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            }
+        }
+        this.frameId = this.elem.globalData.frameId;
+    }
+
+    function setInverted(){
+        this.inverted = true;
+        this.iv = new Matrix();
+        if(!this.k){
+            if(this.data.p.s){
+                this.iv.translate(this.px.v,this.py.v,-this.pz.v);
+            }else{
+                this.iv.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            }
+            if(this.r){
+                this.iv.rotate(-this.r.v);
+            }else{
+                this.iv.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
+            }
+            if(this.s){
+                this.iv.scale(this.s.v[0],this.s.v[1],1);
+            }
+            if(this.a){
+                this.iv.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+            }
+        }
+    }
+
+    function autoOrient(){
+        //
+        //var prevP = this.getValueAtTime();
+    }
+
+    function TransformProperty(elem,data,arr){
+        this.elem = elem;
+        this.frameId = -1;
+        this.type = 'transform';
+        this.dynamicProperties = [];
+        this.mdf = false;
+        this.data = data;
+        this.v = new Matrix();
+        if(data.p.s){
+            this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this.dynamicProperties);
+            this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this.dynamicProperties);
+            if(data.p.z){
+                this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this.dynamicProperties);
+            }
+        }else{
+            this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
+        }
+        if(data.r) {
+            this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this.dynamicProperties);
+        } else if(data.rx) {
+            this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this.dynamicProperties);
+            this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
+            this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
+            this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
+            //sh Indicates it needs to be capped between -180 and 180
+            this.or.sh = true;
+        }
+        if(data.sk){
+            this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
+            this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this.dynamicProperties);
+        }
+        if(data.a) {
+            this.a = PropertyFactory.getProp(elem,data.a,1,0,this.dynamicProperties);
+        }
+        if(data.s) {
+            this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this.dynamicProperties);
+        }
+        if(data.o){
+            this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this.dynamicProperties);
+        } else {
+            this.o = {mdf:false,v:1};
+        }
+        if(this.dynamicProperties.length){
+            arr.push(this);
+        }else{
+            if(this.a){
+                this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
+            }
+            if(this.s){
+                this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
+            }
+            if(this.sk){
+                this.v.skewFromAxis(-this.sk.v,this.sa.v);
+            }
+            if(this.r){
+                this.v.rotate(-this.r.v);
+            }else{
+                this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+            }
+            if(this.data.p.s){
+                if(data.p.z) {
+                    this.v.translate(this.px.v, this.py.v, -this.pz.v);
+                } else {
+                    this.v.translate(this.px.v, this.py.v, 0);
+                }
+            }else{
+                this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+            }
+        }
+        Object.defineProperty(this, "position", { get: positionGetter});
+        Object.defineProperty(this, "xPosition", { get: xPositionGetter});
+        Object.defineProperty(this, "yPosition", { get: yPositionGetter});
+        Object.defineProperty(this, "orientation", { get: orientationGetter});
+        Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
+        Object.defineProperty(this, "rotation", { get: rotationGetter});
+        Object.defineProperty(this, "scale", { get: scaleGetter});
+        Object.defineProperty(this, "opacity", { get: opacityGetter});
+        Object.defineProperty(this, "skew", { get: skewGetter});
+        Object.defineProperty(this, "skewAxis", { get: skewAxisGetter});
+    }
+
+    TransformProperty.prototype.applyToMatrix = applyToMatrix;
+    TransformProperty.prototype.getValue = processKeys;
+    TransformProperty.prototype.setInverted = setInverted;
+    TransformProperty.prototype.autoOrient = autoOrient;
+
+    function getTransformProperty(elem,data,arr){
+        return new TransformProperty(elem,data,arr)
+    }
+
+    return {
+        getTransformProperty: getTransformProperty
+    };
+
 }());
 function ShapePath(){
 	this.c = false;
@@ -3022,6 +2718,25 @@ ShapePath.prototype.setTripleAt = function(vX,vY,oX,oY,iX,iY,pos, replace) {
 	this.setXYAt(vX,vY,'v',pos, replace);
 	this.setXYAt(oX,oY,'o',pos, replace);
 	this.setXYAt(iX,iY,'i',pos, replace);
+};
+
+ShapePath.prototype.reverse = function() {
+	var newPath = new ShapePath();
+	newPath.setPathData(this.c, this._length);
+	var vertices = this.v, outPoints = this.o, inPoints = this.i;
+	var init = 0;
+	if (this.c) {
+		newPath.setTripleAt(vertices[0][0], vertices[0][1], inPoints[0][0], inPoints[0][1], outPoints[0][0], outPoints[0][1], 0, false);
+        init = 1;
+    }
+    var cnt = this._length - 1;
+    var len = this._length;
+
+    for (i = init; i < len; i += 1) {
+    	newPath.setTripleAt(vertices[cnt][0], vertices[cnt][1], inPoints[cnt][0], inPoints[cnt][1], outPoints[cnt][0], outPoints[cnt][1], i, false);
+        cnt -= 1;
+    }
+    return newPath;
 };
 var ShapePropertyFactory = (function(){
 
@@ -4071,7 +3786,7 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this.dynamicProperties);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this.dynamicProperties);
-    this.tr = PropertyFactory.getProp(elem,data.tr,2,null,this.dynamicProperties);
+    this.tr = TransformPropertyFactory.getTransformProperty(elem,data.tr,this.dynamicProperties);
     this.data = data;
     if(!this.dynamicProperties.length){
         this.getValue(true);
@@ -4279,6 +3994,103 @@ ShapeCollection.prototype.releaseShapes = function(){
 	}
 	this._length = 0;
 };
+function DashProperty(elem, data, renderer, dynamicProperties) {
+    this.elem = elem;
+    this.frameId = -1;
+    this.dataProps = Array.apply(null,{length:data.length});
+    this.renderer = renderer;
+    this.mdf = false;
+    this.k = false;
+    this.dashStr = '';
+    this.dashArray = createTypedArray('float32',  data.length - 1);
+    this.dashoffset = createTypedArray('float32',  1);
+    var i, len = data.length, prop;
+    for(i=0;i<len;i+=1){
+        prop = PropertyFactory.getProp(elem,data[i].v,0, 0, dynamicProperties);
+        this.k = prop.k ? true : this.k;
+        this.dataProps[i] = {n:data[i].n,p:prop};
+    }
+    if(this.k){
+        dynamicProperties.push(this);
+    }else{
+        this.getValue(true);
+    }
+}
+
+DashProperty.prototype.getValue = function(forceRender) {
+    if(this.elem.globalData.frameId === this.frameId && !forceRender){
+        return;
+    }
+    var i = 0, len = this.dataProps.length;
+    this.mdf = false;
+    this.frameId = this.elem.globalData.frameId;
+    while(i<len){
+        if(this.dataProps[i].p.mdf){
+            this.mdf = !forceRender;
+            break;
+        }
+        i+=1;
+    }
+    if(this.mdf || forceRender){
+        if(this.renderer === 'svg') {
+            this.dashStr = '';
+        }
+        for(i=0;i<len;i+=1){
+            if(this.dataProps[i].n != 'o'){
+                if(this.renderer === 'svg') {
+                    this.dashStr += ' ' + this.dataProps[i].p.v;
+                }else{
+                    this.dashArray[i] = this.dataProps[i].p.v;
+                }
+            }else{
+                this.dashoffset[0] = this.dataProps[i].p.v;
+            }
+        }
+    }
+}
+function GradientProperty(elem,data,arr){
+    this.prop = PropertyFactory.getProp(elem,data.k,1,null,[]);
+    this.data = data;
+    this.k = this.prop.k;
+    this.c = createTypedArray('uint8c', data.p*4)
+    var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
+    this.o = createTypedArray('float32', cLength);
+    this.cmdf = false;
+    this.omdf = false;
+    if(this.prop.k){
+        arr.push(this);
+    }
+    this.getValue(true);
+}
+
+GradientProperty.prototype.getValue = function(forceRender){
+    this.prop.getValue();
+    this.cmdf = false;
+    this.omdf = false;
+    if(this.prop.mdf || forceRender){
+        var i, len = this.data.p*4;
+        var mult, val;
+        for(i=0;i<len;i+=1){
+            mult = i%4 === 0 ? 100 : 255;
+            val = Math.round(this.prop.v[i]*mult);
+            if(this.c[i] !== val){
+                this.c[i] = val;
+                this.cmdf = !forceRender;
+            }
+        }
+        if(this.o.length){
+            len = this.prop.v.length;
+            for(i=this.data.p*4;i<len;i+=1){
+                mult = i%2 === 0 ? 100 : 1;
+                val = i%2 === 0 ?  Math.round(this.prop.v[i]*100):this.prop.v[i];
+                if(this.o[i-this.data.p*4] !== val){
+                    this.o[i-this.data.p*4] = val;
+                    this.omdf = !forceRender;
+                }
+            }
+        }
+    }
+}
 var ImagePreloader = (function(){
 
     var imagesLoadedCb;
@@ -4456,7 +4268,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
         if('t' in animatorProps.a) {
             animatorData.a.t = getProp(this._elem,animatorProps.a.t,0,0,this._dynamicProperties);
         }
-        animatorData.s = PropertyFactory.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
+        animatorData.s = TextSelectorProp.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
         animatorData.s.t = animatorProps.s.t;
         this._animatorsData[i] = animatorData;
     }
@@ -4498,7 +4310,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
         if(!this._pathData.n || this._pathData.mdf){
             var paths = mask.v;
             if(this._pathData.r){
-                paths = reversePath(paths);
+                paths = paths.reverse();
             }
             var pathInfo = {
                 tLength: 0,
@@ -4575,12 +4387,13 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var letterValue;
 
     jLen = animators.length;
-    if (lettersChangedFlag) {
+    //Todo Confirm this is not necessary here. Text Animator Selectors should not be called without a text index. And it is later correctly called.
+    /*if (lettersChangedFlag) {
         for (j = 0; j < jLen; j += 1) {
             animatorSelector = animators[j].s;
-            animatorSelector.getValue(true);
+            //animatorSelector.getValue(true);
         }
-    }
+    }*/
     var lastLetter;
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
@@ -5345,6 +5158,148 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
     this.getValue();
 }
 
+var TextSelectorProp = (function(){
+    var max = Math.max;
+    var min = Math.min;
+    var floor = Math.floor;
+    function updateRange(newCharsFlag){
+        this.mdf = newCharsFlag || false;
+        if(this.dynamicProperties.length){
+            var i, len = this.dynamicProperties.length;
+            for(i=0;i<len;i+=1){
+                this.dynamicProperties[i].getValue();
+                if(this.dynamicProperties[i].mdf){
+                    this.mdf = true;
+                }
+            }
+        }
+        var totalChars = this.elem.textProperty.currentData ? this.elem.textProperty.currentData.l.length : 0;
+        if(newCharsFlag && this.data.r === 2) {
+            this.e.v = totalChars;
+        }
+        var divisor = this.data.r === 2 ? 1 : 100 / totalChars;
+        var o = this.o.v/divisor;
+        var s = this.s.v/divisor + o;
+        var e = (this.e.v/divisor) + o;
+        if(s>e){
+            var _s = s;
+            s = e;
+            e = _s;
+        }
+        this.finalS = s;
+        this.finalE = e;
+    }
+
+    function getMult(ind){
+        //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+        var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
+        var mult = 0;
+        var s = this.finalS;
+        var e = this.finalE;
+        var type = this.data.sh;
+        if(type == 2){
+            if(e === s){
+                mult = ind >= e ? 1 : 0;
+            }else{
+                mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+            }
+            mult = easer(mult);
+        }else if(type == 3){
+            if(e === s){
+                mult = ind >= e ? 0 : 1;
+            }else{
+                mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+            }
+
+            mult = easer(mult);
+        }else if(type == 4){
+            if(e === s){
+                mult = 0;
+            }else{
+                mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                if(mult<.5){
+                    mult *= 2;
+                }else{
+                    mult = 1 - 2*(mult-0.5);
+                }
+            }
+            mult = easer(mult);
+        }else if(type == 5){
+            if(e === s){
+                mult = 0;
+            }else{
+                var tot = e - s;
+                /*ind += 0.5;
+                mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
+                ind = min(max(0,ind+0.5-s),e-s);
+                var x = -tot/2+ind;
+                var a = tot/2;
+                mult = Math.sqrt(1 - (x*x)/(a*a));
+            }
+            mult = easer(mult);
+        }else if(type == 6){
+            if(e === s){
+                mult = 0;
+            }else{
+                ind = min(max(0,ind+0.5-s),e-s);
+                mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
+                /*
+                 ind = Math.min(Math.max(s,ind),e-1);
+                 mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
+                 mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
+            }
+            mult = easer(mult);
+        }else {
+            if(ind >= floor(s)){
+                if(ind-s < 0){
+                    mult = 1 - (s - ind);
+                }else{
+                    mult = max(0,min(e-ind,1));
+                }
+            }
+            mult = easer(mult);
+        }
+        return mult*this.a.v;
+    }
+
+    function TextSelectorProp(elem,data, arr){
+        this.mdf = false;
+        this.k = false;
+        this.data = data;
+        this.dynamicProperties = [];
+        this.getValue = updateRange;
+        this.getMult = getMult;
+        this.elem = elem;
+        this.comp = elem.comp;
+        this.finalS = 0;
+        this.finalE = 0;
+        this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this.dynamicProperties);
+        if('e' in data){
+            this.e = PropertyFactory.getProp(elem,data.e,0,0,this.dynamicProperties);
+        }else{
+            this.e = {v:100};
+        }
+        this.o = PropertyFactory.getProp(elem,data.o || {k:0},0,0,this.dynamicProperties);
+        this.xe = PropertyFactory.getProp(elem,data.xe || {k:0},0,0,this.dynamicProperties);
+        this.ne = PropertyFactory.getProp(elem,data.ne || {k:0},0,0,this.dynamicProperties);
+        this.a = PropertyFactory.getProp(elem,data.a,0,0.01,this.dynamicProperties);
+        if(this.dynamicProperties.length){
+            arr.push(this);
+        }else{
+            this.getValue();
+        }
+    }
+
+    function getTextSelectorProp(elem, data,arr) {
+        return new TextSelectorProp(elem, data, arr);
+    };
+
+    return {
+        getTextSelectorProp: getTextSelectorProp
+    }
+}());
+
+    
 var pooling = (function(){
 
 	function double(arr){
@@ -5371,7 +5326,7 @@ var point_pool = (function(){
 			_length -= 1;
 			point = pool[_length];
 		} else {
-			point = [0.1,0.1];
+			point = createTypedArray('float32', 2);
 		}
 		return point;
 	}
@@ -6283,7 +6238,8 @@ BaseElement.prototype.init = function(){
     this.lastNum = -99999;
     if(this.data.ks){
         this.finalTransform = {
-            mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
+            mProp: TransformPropertyFactory.getTransformProperty(this,this.data.ks,this.dynamicProperties),
+            //mProp: PropertyFactory.getProp(this,this.data.ks,2,null,this.dynamicProperties),
             matMdf: false,
             opMdf: false,
             mat: new Matrix(),
@@ -6820,11 +6776,11 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
 
         elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
         if(data.d){
-            var d = PropertyFactory.getDashProp(this,data.d,'svg',dynamicProperties);
+            var d = new DashProperty(this,data.d,'svg',dynamicProperties);
             if(!d.k){
                 pathElement.setAttribute('stroke-dasharray', d.dasharray);
                 ////pathElement.style.strokeDasharray = d.dasharray;
-                pathElement.setAttribute('stroke-dashoffset', d.dashoffset);
+                pathElement.setAttribute('stroke-dashoffset', d.dashoffset[0]);
                 ////pathElement.style.strokeDashoffset = d.dashoffset;
             }
             elementData.d = d;
@@ -6834,7 +6790,7 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
     if(data.ty == 'fl' || data.ty == 'st'){
         elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
     } else {
-        elementData.g = PropertyFactory.getGradientProp(this,data.g,dynamicProperties);
+        elementData.g = new GradientProperty(this,data.g,dynamicProperties);
         if(data.t == 2){
             elementData.h = PropertyFactory.getProp(this,data.h,0,0.01,dynamicProperties);
             elementData.a = PropertyFactory.getProp(this,data.a,0,degToRads,dynamicProperties);
@@ -6882,7 +6838,8 @@ IShapeElement.prototype.createTransformElement = function(data, dynamicPropertie
     var elementData = {
         transform : {
             op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
-            mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
+            mProps: TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties)
+            //mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
         },
         elements: []
     };
@@ -7300,18 +7257,13 @@ IShapeElement.prototype.renderGradient = function(styleData,itemData){
 
 IShapeElement.prototype.renderStroke = function(styleData,itemData){
     var styleElem = itemData.style;
-    //TODO fix dashes
     var d = itemData.d;
-    var dasharray,dashoffset;
-    if(d && d.k && (d.mdf || this.firstFrame)){
-        styleElem.pElem.setAttribute('stroke-dasharray', d.dasharray);
-        ////styleElem.pElem.style.strokeDasharray = d.dasharray;
-        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset);
-        ////styleElem.pElem.style.strokeDashoffset = d.dashoffset;
+    if(d && (d.mdf || this.firstFrame)){
+        styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
+        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
     }
     if(itemData.c && (itemData.c.mdf || this.firstFrame)){
         styleElem.pElem.setAttribute('stroke','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
-        ////styleElem.pElem.style.stroke = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
     if(itemData.o.mdf || this.firstFrame){
         styleElem.pElem.setAttribute('stroke-opacity',itemData.o.v);
@@ -7321,7 +7273,6 @@ IShapeElement.prototype.renderStroke = function(styleData,itemData){
         if(styleElem.msElem){
             styleElem.msElem.setAttribute('stroke-width',itemData.w.v);
         }
-        ////styleElem.pElem.style.strokeWidth = itemData.w.v;
     }
 };
 
@@ -8422,7 +8373,8 @@ var animationManager = (function(){
     }
 
     function searchAnimations(animationData, standalone, renderer){
-        var animElements = document.getElementsByClassName('bodymovin');
+        var animElements = [].concat([].slice.call(document.getElementsByClassName('lottie')),
+                  [].slice.call(document.getElementsByClassName('bodymovin')));
         var i, len = animElements.length;
         for(i=0;i<len;i+=1){
             if(renderer){
@@ -9147,5043 +9099,7 @@ AnimationItem.prototype.addEventListener = _addEventListener;
 AnimationItem.prototype.removeEventListener = _removeEventListener;
 AnimationItem.prototype.triggerEvent = _triggerEvent;
 
-function CanvasRenderer(animationItem, config){
-    this.animationItem = animationItem;
-    this.renderConfig = {
-        clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
-        context: (config && config.context) || null,
-        progressiveLoad: (config && config.progressiveLoad) || false,
-        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
-        className: (config && config.className) || ''
-    };
-    this.renderConfig.dpr = (config && config.dpr) || 1;
-    if (this.animationItem.wrapper) {
-        this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
-    }
-    this.renderedFrame = -1;
-    this.globalData = {
-        frameNum: -1
-    };
-    this.contextData = {
-        saved : Array.apply(null,{length:15}),
-        savedOp: Array.apply(null,{length:15}),
-        cArrPos : 0,
-        cTr : new Matrix(),
-        cO : 1
-    };
-    var i, len = 15;
-    for(i=0;i<len;i+=1){
-        this.contextData.saved[i] = Array.apply(null,{length:16});
-    }
-    this.elements = [];
-    this.pendingElements = [];
-    this.transformMat = new Matrix();
-    this.completeLayers = false;
-}
-extendPrototype(BaseRenderer,CanvasRenderer);
-
-CanvasRenderer.prototype.createBase = function (data) {
-    return new CVBaseElement(data, this, this.globalData);
-};
-
-CanvasRenderer.prototype.createShape = function (data) {
-    return new CVShapeElement(data, this, this.globalData);
-};
-
-CanvasRenderer.prototype.createText = function (data) {
-    return new CVTextElement(data, this, this.globalData);
-};
-
-CanvasRenderer.prototype.createImage = function (data) {
-    return new CVImageElement(data, this, this.globalData);
-};
-
-CanvasRenderer.prototype.createComp = function (data) {
-    return new CVCompElement(data, this, this.globalData);
-};
-
-CanvasRenderer.prototype.createSolid = function (data) {
-    return new CVSolidElement(data, this, this.globalData);
-};
-
-CanvasRenderer.prototype.ctxTransform = function(props){
-    if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0){
-        return;
-    }
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.transform(props[0],props[1],props[4],props[5],props[12],props[13]);
-        return;
-    }
-    this.transformMat.cloneFromProps(props);
-    this.transformMat.transform(this.contextData.cTr.props[0],this.contextData.cTr.props[1],this.contextData.cTr.props[2],this.contextData.cTr.props[3],this.contextData.cTr.props[4],this.contextData.cTr.props[5],this.contextData.cTr.props[6],this.contextData.cTr.props[7],this.contextData.cTr.props[8],this.contextData.cTr.props[9],this.contextData.cTr.props[10],this.contextData.cTr.props[11],this.contextData.cTr.props[12],this.contextData.cTr.props[13],this.contextData.cTr.props[14],this.contextData.cTr.props[15])
-    //this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-    this.contextData.cTr.cloneFromProps(this.transformMat.props);
-    var trProps = this.contextData.cTr.props;
-    this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
-};
-
-CanvasRenderer.prototype.ctxOpacity = function(op){
-    if(op === 1){
-        return;
-    }
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-        return;
-    }
-    this.contextData.cO *= op < 0 ? 0 : op;
-    this.canvasContext.globalAlpha = this.contextData.cO;
-};
-
-CanvasRenderer.prototype.reset = function(){
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.restore();
-        return;
-    }
-    this.contextData.cArrPos = 0;
-    this.contextData.cTr.reset();
-    this.contextData.cO = 1;
-};
-
-CanvasRenderer.prototype.save = function(actionFlag){
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.save();
-        return;
-    }
-    if(actionFlag){
-        this.canvasContext.save();
-    }
-    var props = this.contextData.cTr.props;
-    if(this.contextData.saved[this.contextData.cArrPos] === null || this.contextData.saved[this.contextData.cArrPos] === undefined){
-        this.contextData.saved[this.contextData.cArrPos] = new Array(16);
-    }
-    var i,arr = this.contextData.saved[this.contextData.cArrPos];
-    for(i=0;i<16;i+=1){
-        arr[i] = props[i];
-    }
-    this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
-    this.contextData.cArrPos += 1;
-};
-
-CanvasRenderer.prototype.restore = function(actionFlag){
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.restore();
-        return;
-    }
-    if(actionFlag){
-        this.canvasContext.restore();
-    }
-    this.contextData.cArrPos -= 1;
-    var popped = this.contextData.saved[this.contextData.cArrPos];
-    var i,arr = this.contextData.cTr.props;
-    for(i=0;i<16;i+=1){
-        arr[i] = popped[i];
-    }
-    this.canvasContext.setTransform(popped[0],popped[1],popped[4],popped[5],popped[12],popped[13]);
-    popped = this.contextData.savedOp[this.contextData.cArrPos];
-    this.contextData.cO = popped;
-    this.canvasContext.globalAlpha = popped;
-};
-
-CanvasRenderer.prototype.configAnimation = function(animData){
-    if(this.animationItem.wrapper){
-        this.animationItem.container = document.createElement('canvas');
-        this.animationItem.container.style.width = '100%';
-        this.animationItem.container.style.height = '100%';
-        //this.animationItem.container.style.transform = 'translate3d(0,0,0)';
-        //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
-        this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
-        this.animationItem.wrapper.appendChild(this.animationItem.container);
-        this.canvasContext = this.animationItem.container.getContext('2d');
-        if(this.renderConfig.className) {
-            this.animationItem.container.setAttribute('class', this.renderConfig.className);
-        }
-    }else{
-        this.canvasContext = this.renderConfig.context;
-    }
-    this.data = animData;
-    this.globalData.canvasContext = this.canvasContext;
-    this.globalData.renderer = this;
-    this.globalData.isDashed = false;
-    this.globalData.totalFrames = Math.floor(animData.tf);
-    this.globalData.compWidth = animData.w;
-    this.globalData.compHeight = animData.h;
-    this.globalData.frameRate = animData.fr;
-    this.globalData.frameId = 0;
-    this.globalData.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
-    this.layers = animData.layers;
-    this.transformCanvas = {};
-    this.transformCanvas.w = animData.w;
-    this.transformCanvas.h = animData.h;
-    this.globalData.fontManager = new FontManager();
-    this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,document.body);
-    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
-    this.globalData.transformCanvas = this.transformCanvas;
-    this.elements = Array.apply(null,{length:animData.layers.length});
-
-    this.updateContainerSize();
-};
-
-CanvasRenderer.prototype.updateContainerSize = function () {
-    var elementWidth,elementHeight;
-    if(this.animationItem.wrapper && this.animationItem.container){
-        elementWidth = this.animationItem.wrapper.offsetWidth;
-        elementHeight = this.animationItem.wrapper.offsetHeight;
-        this.animationItem.container.setAttribute('width',elementWidth * this.renderConfig.dpr );
-        this.animationItem.container.setAttribute('height',elementHeight * this.renderConfig.dpr);
-    }else{
-        elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
-        elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
-    }
-    var elementRel,animationRel;
-    if(this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1){
-        var par = this.renderConfig.preserveAspectRatio.split(' ');
-        var fillType = par[1] || 'meet';
-        var pos = par[0] || 'xMidYMid';
-        var xPos = pos.substr(0,4);
-        var yPos = pos.substr(4);
-        elementRel = elementWidth/elementHeight;
-        animationRel = this.transformCanvas.w/this.transformCanvas.h;
-        if(animationRel>elementRel && fillType === 'meet' || animationRel<elementRel && fillType === 'slice'){
-            this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-            this.transformCanvas.sy = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-        }else{
-            this.transformCanvas.sx = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
-            this.transformCanvas.sy = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
-        }
-
-        if(xPos === 'xMid' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))){
-            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
-        } else if(xPos === 'xMax' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))){
-            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))*this.renderConfig.dpr;
-        } else {
-            this.transformCanvas.tx = 0;
-        }
-        if(yPos === 'YMid' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))){
-            this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2)*this.renderConfig.dpr;
-        } else if(yPos === 'YMax' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))){
-            this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w)))*this.renderConfig.dpr;
-        } else {
-            this.transformCanvas.ty = 0;
-        }
-
-    }else if(this.renderConfig.preserveAspectRatio == 'none'){
-        this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-        this.transformCanvas.sy = elementHeight/(this.transformCanvas.h/this.renderConfig.dpr);
-        this.transformCanvas.tx = 0;
-        this.transformCanvas.ty = 0;
-    }else{
-        this.transformCanvas.sx = this.renderConfig.dpr;
-        this.transformCanvas.sy = this.renderConfig.dpr;
-        this.transformCanvas.tx = 0;
-        this.transformCanvas.ty = 0;
-    }
-    this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
-    var i, len = this.elements.length;
-    for(i=0;i<len;i+=1){
-        if(this.elements[i] && this.elements[i].data.ty === 0){
-            this.elements[i].resize(this.globalData.transformCanvas);
-        }
-    }
-};
-
-CanvasRenderer.prototype.destroy = function () {
-    if(this.renderConfig.clearCanvas) {
-        this.animationItem.wrapper.innerHTML = '';
-    }
-    var i, len = this.layers ? this.layers.length : 0;
-    for (i = len - 1; i >= 0; i-=1) {
-        if(this.elements[i]) {
-            this.elements[i].destroy();
-        }
-    }
-    this.elements.length = 0;
-    this.globalData.canvasContext = null;
-    this.animationItem.container = null;
-    this.destroyed = true;
-};
-
-CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === null){
-        return;
-    }
-    this.renderedFrame = num;
-    this.globalData.frameNum = num - this.animationItem.firstFrame;
-    this.globalData.frameId += 1;
-    this.globalData.projectInterface.currentFrame = num;
-    if(this.renderConfig.clearCanvas === true){
-        this.reset();
-        this.canvasContext.save();
-        //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-        this.canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w*this.transformCanvas.sx, this.transformCanvas.h*this.transformCanvas.sy);
-    }else{
-        this.save();
-    }
-    this.ctxTransform(this.transformCanvas.props);
-    this.canvasContext.beginPath();
-    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
-    this.canvasContext.closePath();
-    this.canvasContext.clip();
-
-    //console.log('--------');
-    //console.log('NEW: ',num);
-    var i, len = this.layers.length;
-    if(!this.completeLayers){
-        this.checkLayers(num);
-    }
-
-    for (i = 0; i < len; i++) {
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(num - this.layers[i].st);
-        }
-    }
-    for (i = len - 1; i >= 0; i-=1) {
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].renderFrame();
-        }
-    }
-    if(this.renderConfig.clearCanvas !== true){
-        this.restore();
-    } else {
-        this.canvasContext.restore();
-    }
-};
-
-CanvasRenderer.prototype.buildItem = function(pos){
-    var elements = this.elements;
-    if(elements[pos] || this.layers[pos].ty == 99){
-        return;
-    }
-    var element = this.createItem(this.layers[pos], this,this.globalData);
-    elements[pos] = element;
-    element.initExpressions();
-    if(this.layers[pos].ty === 0){
-        element.resize(this.globalData.transformCanvas);
-    }
-};
-
-CanvasRenderer.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
-        var element = this.pendingElements.pop();
-        element.checkParenting();
-    }
-};
-
-CanvasRenderer.prototype.hide = function(){
-    this.animationItem.container.style.display = 'none';
-};
-
-CanvasRenderer.prototype.show = function(){
-    this.animationItem.container.style.display = 'block';
-};
-
-CanvasRenderer.prototype.searchExtraCompositions = function(assets){
-    var i, len = assets.length;
-    var floatingContainer = document.createElementNS(svgNS,'g');
-    for(i=0;i<len;i+=1){
-        if(assets[i].xt){
-            var comp = this.createComp(assets[i],this.globalData.comp,this.globalData);
-            comp.initExpressions();
-            //comp.compInterface = CompExpressionInterface(comp);
-            //Expressions.addLayersInterface(comp.elements, this.globalData.projectInterface);
-            this.globalData.projectInterface.registerComposition(comp);
-        }
-    }
-};
-
-function HybridRenderer(animationItem, config){
-    this.animationItem = animationItem;
-    this.layers = null;
-    this.renderedFrame = -1;
-    this.globalData = {
-        frameNum: -1
-    };
-    this.renderConfig = {
-        className: (config && config.className) || ''
-    };
-    this.pendingElements = [];
-    this.elements = [];
-    this.threeDElements = [];
-    this.destroyed = false;
-    this.camera = null;
-    this.supports3d = true;
-
-}
-
-extendPrototype(BaseRenderer,HybridRenderer);
-
-HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
-
-HybridRenderer.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
-        var element = this.pendingElements.pop();
-        element.checkParenting();
-    }
-};
-
-HybridRenderer.prototype.appendElementInPos = function(element, pos){
-    var newDOMElement = element.getBaseElement();
-    if(!newDOMElement){
-        return;
-    }
-    var layer = this.layers[pos];
-    if(!layer.ddd || !this.supports3d){
-        var i = 0;
-        var nextDOMElement, nextLayer;
-        while(i<pos){
-            if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
-                nextLayer = this.elements[i];
-                nextDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
-            }
-            i += 1;
-        }
-        if(nextDOMElement){
-            if(!layer.ddd || !this.supports3d){
-                this.layerElement.insertBefore(newDOMElement, nextDOMElement);
-            }
-        } else {
-            if(!layer.ddd || !this.supports3d){
-                this.layerElement.appendChild(newDOMElement);
-            }
-        }
-    } else {
-        this.addTo3dContainer(newDOMElement,pos);
-    }
-};
-
-
-HybridRenderer.prototype.createBase = function (data) {
-    return new SVGBaseElement(data, this.layerElement,this.globalData,this);
-};
-
-HybridRenderer.prototype.createShape = function (data) {
-    if(!this.supports3d){
-        return new IShapeElement(data, this.layerElement,this.globalData,this);
-    }
-    return new HShapeElement(data, this.layerElement,this.globalData,this);
-};
-
-HybridRenderer.prototype.createText = function (data) {
-    if(!this.supports3d){
-        return new SVGTextElement(data, this.layerElement,this.globalData,this);
-    }
-    return new HTextElement(data, this.layerElement,this.globalData,this);
-};
-
-HybridRenderer.prototype.createCamera = function (data) {
-    this.camera = new HCameraElement(data, this.layerElement,this.globalData,this);
-    return this.camera;
-};
-
-HybridRenderer.prototype.createImage = function (data) {
-    if(!this.supports3d){
-        return new IImageElement(data, this.layerElement,this.globalData,this);
-    }
-    return new HImageElement(data, this.layerElement,this.globalData,this);
-};
-
-HybridRenderer.prototype.createComp = function (data) {
-    if(!this.supports3d){
-        return new ICompElement(data, this.layerElement,this.globalData,this);
-    }
-    return new HCompElement(data, this.layerElement,this.globalData,this);
-
-};
-
-HybridRenderer.prototype.createSolid = function (data) {
-    if(!this.supports3d){
-        return new ISolidElement(data, this.layerElement,this.globalData,this);
-    }
-    return new HSolidElement(data, this.layerElement,this.globalData,this);
-};
-
-HybridRenderer.prototype.getThreeDContainerByPos = function(pos){
-    var i = 0, len = this.threeDElements.length;
-    while(i<len) {
-        if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
-            return this.threeDElements[i].perspectiveElem;
-        }
-        i += 1;
-    }
-}
-
-HybridRenderer.prototype.createThreeDContainer = function(pos){
-    var perspectiveElem = document.createElement('div');
-    styleDiv(perspectiveElem);
-    perspectiveElem.style.width = this.globalData.compSize.w+'px';
-    perspectiveElem.style.height = this.globalData.compSize.h+'px';
-    perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "50% 50%";
-    var container = document.createElement('div');
-    styleDiv(container);
-    container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
-    perspectiveElem.appendChild(container);
-    this.resizerElem.appendChild(perspectiveElem);
-    var threeDContainerData = {
-        container:container,
-        perspectiveElem:perspectiveElem,
-        startPos: pos,
-        endPos: pos
-    };
-    this.threeDElements.push(threeDContainerData);
-    return threeDContainerData;
-};
-
-HybridRenderer.prototype.build3dContainers = function(){
-    var i, len = this.layers.length;
-    var lastThreeDContainerData;
-    for(i=0;i<len;i+=1){
-        if(this.layers[i].ddd){
-            if(!lastThreeDContainerData){
-                lastThreeDContainerData = this.createThreeDContainer(i);
-            }
-            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
-        } else {
-            lastThreeDContainerData = null;
-        }
-    }
-};
-
-HybridRenderer.prototype.addTo3dContainer = function(elem,pos){
-    var i = 0, len = this.threeDElements.length;
-    while(i<len){
-        if(pos <= this.threeDElements[i].endPos){
-            var j = this.threeDElements[i].startPos;
-            var nextElement;
-            while(j<pos){
-                if(this.elements[j] && this.elements[j].getBaseElement){
-                    nextElement = this.elements[j].getBaseElement();
-                }
-                j += 1;
-            }
-            if(nextElement){
-                this.threeDElements[i].container.insertBefore(elem, nextElement);
-            } else {
-                this.threeDElements[i].container.appendChild(elem);
-            }
-            break;
-        }
-        i += 1;
-    }
-};
-
-HybridRenderer.prototype.configAnimation = function(animData){
-    var resizerElem = document.createElement('div');
-    var wrapper = this.animationItem.wrapper;
-    resizerElem.style.width = animData.w+'px';
-    resizerElem.style.height = animData.h+'px';
-    this.resizerElem = resizerElem;
-    styleDiv(resizerElem);
-    resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
-    if(this.renderConfig.className) {
-      wrapper.setAttribute('class', this.renderConfig.className);
-    }
-    wrapper.appendChild(resizerElem);
-
-    resizerElem.style.overflow = 'hidden';
-    var svg = document.createElementNS(svgNS,'svg');
-    svg.setAttribute('width','1');
-    svg.setAttribute('height','1');
-    styleDiv(svg);
-    this.resizerElem.appendChild(svg);
-    var defs = document.createElementNS(svgNS,'defs');
-    svg.appendChild(defs);
-    this.globalData.defs = defs;
-    this.data = animData;
-    //Mask animation
-    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this.globalData.frameId = 0;
-    this.globalData.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this.globalData.frameRate = animData.fr;
-    this.layers = animData.layers;
-    this.globalData.fontManager = new FontManager();
-    this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,svg);
-    this.layerElement = this.resizerElem;
-    this.build3dContainers();
-    this.updateContainerSize();
-};
-
-HybridRenderer.prototype.destroy = function () {
-    this.animationItem.wrapper.innerHTML = '';
-    this.animationItem.container = null;
-    this.globalData.defs = null;
-    var i, len = this.layers ? this.layers.length : 0;
-    for (i = 0; i < len; i++) {
-        this.elements[i].destroy();
-    }
-    this.elements.length = 0;
-    this.destroyed = true;
-    this.animationItem = null;
-};
-
-HybridRenderer.prototype.updateContainerSize = function () {
-    var elementWidth = this.animationItem.wrapper.offsetWidth;
-    var elementHeight = this.animationItem.wrapper.offsetHeight;
-    var elementRel = elementWidth/elementHeight;
-    var animationRel = this.globalData.compSize.w/this.globalData.compSize.h;
-    var sx,sy,tx,ty;
-    if(animationRel>elementRel){
-        sx = elementWidth/(this.globalData.compSize.w);
-        sy = elementWidth/(this.globalData.compSize.w);
-        tx = 0;
-        ty = ((elementHeight-this.globalData.compSize.h*(elementWidth/this.globalData.compSize.w))/2);
-    }else{
-        sx = elementHeight/(this.globalData.compSize.h);
-        sy = elementHeight/(this.globalData.compSize.h);
-        tx = (elementWidth-this.globalData.compSize.w*(elementHeight/this.globalData.compSize.h))/2;
-        ty = 0;
-    }
-    this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
-};
-
-HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
-
-HybridRenderer.prototype.hide = function(){
-    this.resizerElem.style.display = 'none';
-};
-
-HybridRenderer.prototype.show = function(){
-    this.resizerElem.style.display = 'block';
-};
-
-HybridRenderer.prototype.initItems = function(){
-    this.buildAllItems();
-    if(this.camera){
-        this.camera.setup();
-    } else {
-        var cWidth = this.globalData.compSize.w;
-        var cHeight = this.globalData.compSize.h;
-        var i, len = this.threeDElements.length;
-        for(i=0;i<len;i+=1){
-            this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
-        }
-    }
-};
-
-HybridRenderer.prototype.searchExtraCompositions = function(assets){
-    var i, len = assets.length;
-    var floatingContainer = document.createElement('div');
-    for(i=0;i<len;i+=1){
-        if(assets[i].xt){
-            var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
-            comp.initExpressions();
-            this.globalData.projectInterface.registerComposition(comp);
-        }
-    }
-};
-
-function CVBaseElement(data, comp,globalData){
-    this.globalData = globalData;
-    this.data = data;
-    this.comp = comp;
-    this.canvasContext = globalData.canvasContext;
-    this.init();
-}
-
-createElement(BaseElement, CVBaseElement);
-
-CVBaseElement.prototype.createElements = function(){
-    this.checkParenting();
-};
-
-CVBaseElement.prototype.checkBlendMode = function(globalData){
-    if(globalData.blendMode !== this.data.bm) {
-        globalData.blendMode = this.data.bm;
-
-        var blendModeValue = '';
-        switch (this.data.bm) {
-            case 0:
-                blendModeValue = 'normal';
-                break;
-            case 1:
-                blendModeValue = 'multiply';
-                break;
-            case 2:
-                blendModeValue = 'screen';
-                break;
-            case 3:
-                blendModeValue = 'overlay';
-                break;
-            case 4:
-                blendModeValue = 'darken';
-                break;
-            case 5:
-                blendModeValue = 'lighten';
-                break;
-            case 6:
-                blendModeValue = 'color-dodge';
-                break;
-            case 7:
-                blendModeValue = 'color-burn';
-                break;
-            case 8:
-                blendModeValue = 'hard-light';
-                break;
-            case 9:
-                blendModeValue = 'soft-light';
-                break;
-            case 10:
-                blendModeValue = 'difference';
-                break;
-            case 11:
-                blendModeValue = 'exclusion';
-                break;
-            case 12:
-                blendModeValue = 'hue';
-                break;
-            case 13:
-                blendModeValue = 'saturation';
-                break;
-            case 14:
-                blendModeValue = 'color';
-                break;
-            case 15:
-                blendModeValue = 'luminosity';
-                break;
-        }
-        globalData.canvasContext.globalCompositeOperation = blendModeValue;
-    }
-};
-
-
-CVBaseElement.prototype.renderFrame = function(parentTransform){
-    if(this.data.ty === 3){
-        return false;
-    }
-        this.checkBlendMode(this.data.ty === 0?this.parentGlobalData:this.globalData);
-
-    if(!this.isVisible){
-        return this.isVisible;
-    }
-    this.finalTransform.opMdf = this.finalTransform.op.mdf;
-    this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
-    this.finalTransform.opacity = this.finalTransform.op.v;
-
-    var mat;
-    var finalMat = this.finalTransform.mat;
-
-    if(this.hierarchy){
-        var i, len = this.hierarchy.length;
-        mat = this.finalTransform.mProp.v.props;
-        finalMat.cloneFromProps(mat);
-        for(i=0;i<len;i+=1){
-            this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
-            mat = this.hierarchy[i].finalTransform.mProp.v.props;
-            finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
-        }
-    }else{
-        if(!parentTransform){
-            finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
-        }else{
-            mat = this.finalTransform.mProp.v.props;
-            finalMat.cloneFromProps(mat);
-        }
-    }
-
-    if(parentTransform){
-        mat = parentTransform.mat.props;
-        finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
-        this.finalTransform.opacity *= parentTransform.opacity;
-        this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
-        this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
-    }
-
-    if(this.data.hasMask){
-        this.globalData.renderer.save(true);
-        this.maskManager.renderFrame(this.data.ty === 0?null:finalMat);
-    }
-    if(this.data.hd){
-        this.isVisible = false;
-    }
-    return this.isVisible;
-
-};
-
-CVBaseElement.prototype.addMasks = function(data){
-    this.maskManager = new CVMaskElement(data,this,this.globalData);
-};
-
-
-CVBaseElement.prototype.destroy = function(){
-    this.canvasContext = null;
-    this.data = null;
-    this.globalData = null;
-    if(this.maskManager) {
-        this.maskManager.destroy();
-    }
-};
-
-CVBaseElement.prototype.mHelper = new Matrix();
-
-function CVCompElement(data, comp,globalData){
-    this._parent.constructor.call(this,data, comp,globalData);
-    var compGlobalData = {};
-    for(var s in globalData){
-        if(globalData.hasOwnProperty(s)){
-            compGlobalData[s] = globalData[s];
-        }
-    }
-    compGlobalData.renderer = this;
-    compGlobalData.compHeight = this.data.h;
-    compGlobalData.compWidth = this.data.w;
-    this.renderConfig = {
-        clearCanvas: true
-    };
-    this.contextData = {
-        saved : Array.apply(null,{length:15}),
-        savedOp: Array.apply(null,{length:15}),
-        cArrPos : 0,
-        cTr : new Matrix(),
-        cO : 1
-    };
-    this.completeLayers = false;
-    var i, len = 15;
-    for(i=0;i<len;i+=1){
-        this.contextData.saved[i] = Array.apply(null,{length:16});
-    }
-    this.transformMat = new Matrix();
-    this.parentGlobalData = this.globalData;
-    var cv = document.createElement('canvas');
-    //document.body.appendChild(cv);
-    compGlobalData.canvasContext = cv.getContext('2d');
-    this.canvasContext = compGlobalData.canvasContext;
-    cv.width = this.data.w;
-    cv.height = this.data.h;
-    this.canvas = cv;
-    this.globalData = compGlobalData;
-    this.layers = data.layers;
-    this.pendingElements = [];
-    this.elements = Array.apply(null,{length:this.layers.length});
-    if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
-    }
-    if(this.data.xt || !globalData.progressiveLoad){
-        this.buildAllItems();
-    }
-}
-createElement(CVBaseElement, CVCompElement);
-
-CVCompElement.prototype.ctxTransform = CanvasRenderer.prototype.ctxTransform;
-CVCompElement.prototype.ctxOpacity = CanvasRenderer.prototype.ctxOpacity;
-CVCompElement.prototype.save = CanvasRenderer.prototype.save;
-CVCompElement.prototype.restore = CanvasRenderer.prototype.restore;
-CVCompElement.prototype.reset =  function(){
-    this.contextData.cArrPos = 0;
-    this.contextData.cTr.reset();
-    this.contextData.cO = 1;
-};
-CVCompElement.prototype.resize = function(transformCanvas){
-    var maxScale = Math.max(transformCanvas.sx,transformCanvas.sy);
-    this.canvas.width = this.data.w*maxScale;
-    this.canvas.height = this.data.h*maxScale;
-    this.transformCanvas = {
-        sc:maxScale,
-        w:this.data.w*maxScale,
-        h:this.data.h*maxScale,
-        props:[maxScale,0,0,0,0,maxScale,0,0,0,0,1,0,0,0,0,1]
-    }
-    var i,len = this.elements.length;
-    for( i = 0; i < len; i+=1 ){
-        if(this.elements[i] && this.elements[i].data.ty === 0){
-            this.elements[i].resize(transformCanvas);
-        }
-    }
-};
-
-CVCompElement.prototype.prepareFrame = function(num){
-    this.globalData.frameId = this.parentGlobalData.frameId;
-    this.globalData.mdf = false;
-    this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false && !this.data.xt){
-        return;
-    }
-    var timeRemapped = num;
-    if(this.tm){
-        timeRemapped = this.tm.v;
-        if(timeRemapped === this.data.op){
-            timeRemapped = this.data.op - 1;
-        }
-    }
-    this.renderedFrame = timeRemapped/this.data.sr;
-    var i,len = this.elements.length;
-
-    if(!this.completeLayers){
-        this.checkLayers(num);
-    }
-
-    for( i = 0; i < len; i+=1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
-            if(this.elements[i].data.ty === 0 && this.elements[i].globalData.mdf){
-                this.globalData.mdf = true;
-            }
-        }
-    }
-    if(this.globalData.mdf && !this.data.xt){
-        this.canvasContext.clearRect(0, 0, this.data.w, this.data.h);
-        this.ctxTransform(this.transformCanvas.props);
-    }
-};
-
-CVCompElement.prototype.renderFrame = function(parentMatrix){
-    if(this._parent.renderFrame.call(this,parentMatrix)===false){
-        return;
-    }
-    if(this.globalData.mdf){
-        var i,len = this.layers.length;
-        for( i = len - 1; i >= 0; i -= 1 ){
-            if(this.completeLayers || this.elements[i]){
-                this.elements[i].renderFrame();
-            }
-        }
-    }
-    if(this.data.hasMask){
-        this.globalData.renderer.restore(true);
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-    this.parentGlobalData.renderer.save();
-    this.parentGlobalData.renderer.ctxTransform(this.finalTransform.mat.props);
-    this.parentGlobalData.renderer.ctxOpacity(this.finalTransform.opacity);
-    this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0,this.data.w,this.data.h);
-    this.parentGlobalData.renderer.restore();
-
-    if(this.globalData.mdf){
-        this.reset();
-    }
-};
-
-CVCompElement.prototype.setElements = function(elems){
-    this.elements = elems;
-};
-
-CVCompElement.prototype.getElements = function(){
-    return this.elements;
-};
-
-CVCompElement.prototype.destroy = function(){
-    var i,len = this.layers.length;
-    for( i = len - 1; i >= 0; i -= 1 ){
-        this.elements[i].destroy();
-    }
-    this.layers = null;
-    this.elements = null;
-    this._parent.destroy.call(this._parent);
-};
-CVCompElement.prototype.checkLayers = CanvasRenderer.prototype.checkLayers;
-CVCompElement.prototype.buildItem = CanvasRenderer.prototype.buildItem;
-CVCompElement.prototype.checkPendingElements = CanvasRenderer.prototype.checkPendingElements;
-CVCompElement.prototype.addPendingElement = CanvasRenderer.prototype.addPendingElement;
-CVCompElement.prototype.buildAllItems = CanvasRenderer.prototype.buildAllItems;
-CVCompElement.prototype.createItem = CanvasRenderer.prototype.createItem;
-CVCompElement.prototype.createImage = CanvasRenderer.prototype.createImage;
-CVCompElement.prototype.createComp = CanvasRenderer.prototype.createComp;
-CVCompElement.prototype.createSolid = CanvasRenderer.prototype.createSolid;
-CVCompElement.prototype.createShape = CanvasRenderer.prototype.createShape;
-CVCompElement.prototype.createText = CanvasRenderer.prototype.createText;
-CVCompElement.prototype.createBase = CanvasRenderer.prototype.createBase;
-CVCompElement.prototype.buildElementParenting = CanvasRenderer.prototype.buildElementParenting;
-function CVImageElement(data, comp,globalData){
-    this.assetData = globalData.getAssetData(data.refId);
-    this._parent.constructor.call(this,data, comp,globalData);
-    this.globalData.addPendingElement();
-}
-createElement(CVBaseElement, CVImageElement);
-
-CVImageElement.prototype.createElements = function(){
-    var imageLoaded = function(){
-        this.globalData.elementLoaded();
-        if(this.assetData.w !== this.img.width || this.assetData.h !== this.img.height){
-            var canvas = document.createElement('canvas');
-            canvas.width = this.assetData.w;
-            canvas.height = this.assetData.h;
-            var ctx = canvas.getContext('2d');
-
-            var imgW = this.img.width;
-            var imgH = this.img.height;
-            var imgRel = imgW / imgH;
-            var canvasRel = this.assetData.w/this.assetData.h;
-            var widthCrop, heightCrop;
-            if(imgRel>canvasRel){
-                heightCrop = imgH;
-                widthCrop = heightCrop*canvasRel;
-            } else {
-                widthCrop = imgW;
-                heightCrop = widthCrop/canvasRel;
-            }
-            ctx.drawImage(this.img,(imgW-widthCrop)/2,(imgH-heightCrop)/2,widthCrop,heightCrop,0,0,this.assetData.w,this.assetData.h);
-            this.img = canvas;
-        }
-    }.bind(this);
-    var imageFailed = function(){
-        this.failed = true;
-        this.globalData.elementLoaded();
-    }.bind(this);
-
-    this.img = new Image();
-    this.img.addEventListener('load', imageLoaded, false);
-    this.img.addEventListener('error', imageFailed, false);
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
-    this.img.src = assetPath;
-
-    this._parent.createElements.call(this);
-
-};
-
-CVImageElement.prototype.renderFrame = function(parentMatrix){
-    if(this.failed){
-        return;
-    }
-    if(this._parent.renderFrame.call(this,parentMatrix)===false){
-        return;
-    }
-    var ctx = this.canvasContext;
-    this.globalData.renderer.save();
-    var finalMat = this.finalTransform.mat.props;
-    this.globalData.renderer.ctxTransform(finalMat);
-    this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
-    ctx.drawImage(this.img,0,0);
-    this.globalData.renderer.restore(this.data.hasMask);
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-
-CVImageElement.prototype.destroy = function(){
-    this.img = null;
-    this._parent.destroy.call(this._parent);
-};
-
-function CVMaskElement(data,element){
-    this.data = data;
-    this.element = element;
-    this.dynamicProperties = [];
-    this.masksProperties = this.data.masksProperties;
-    this.viewData = Array.apply(null,{length:this.masksProperties.length});
-    var i, len = this.masksProperties.length;
-    for (i = 0; i < len; i++) {
-        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
-    }
-}
-
-CVMaskElement.prototype.prepareFrame = function(num){
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
-        if(this.dynamicProperties[i].mdf){
-            this.element.globalData.mdf = true;
-        }
-    }
-};
-
-CVMaskElement.prototype.renderFrame = function (transform) {
-    var ctx = this.element.canvasContext;
-    var i, len = this.data.masksProperties.length;
-    var pt,pt2,pt3,data, hasMasks = false;
-    for (i = 0; i < len; i++) {
-        if(this.masksProperties[i].mode === 'n'){
-            continue;
-        }
-        if(hasMasks === false){
-            ctx.beginPath();
-            hasMasks = true;
-        }
-        if (this.masksProperties[i].inv) {
-            ctx.moveTo(0, 0);
-            ctx.lineTo(this.element.globalData.compWidth, 0);
-            ctx.lineTo(this.element.globalData.compWidth, this.element.globalData.compHeight);
-            ctx.lineTo(0, this.element.globalData.compHeight);
-            ctx.lineTo(0, 0);
-        }
-        data = this.viewData[i].v;
-        pt = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0):data.v[0];
-        ctx.moveTo(pt[0], pt[1]);
-        var j, jLen = data._length;
-        for (j = 1; j < jLen; j++) {
-            pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-            pt2 = transform ? transform.applyToPointArray(data.i[j][0],data.i[j][1],0) : data.i[j];
-            pt3 = transform ? transform.applyToPointArray(data.v[j][0],data.v[j][1],0) : data.v[j];
-            ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
-        }
-        pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-        pt2 = transform ? transform.applyToPointArray(data.i[0][0],data.i[0][1],0) : data.i[0];
-        pt3 = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0) : data.v[0];
-        ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
-    }
-    if(hasMasks){
-        ctx.clip();
-    }
-};
-
-CVMaskElement.prototype.getMaskProperty = MaskElement.prototype.getMaskProperty;
-
-CVMaskElement.prototype.destroy = function(){
-    this.element = null;
-};
-function CVShapeElement(data, comp,globalData){
-    this.shapes = [];
-    this.shapesData = data.shapes;
-    this.stylesList = [];
-    this.itemsData = [];
-    this.prevViewData = [];
-    this.shapeModifiers = [];
-    this.processedElements = [];
-    this._parent.constructor.call(this,data, comp,globalData);
-}
-createElement(CVBaseElement, CVShapeElement);
-
-CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
-
-CVShapeElement.prototype.dashResetter = [];
-
-CVShapeElement.prototype.createElements = function(){
-
-    this._parent.createElements.call(this);
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
-};
-
-CVShapeElement.prototype.createStyleElement = function(data, dynamicProperties){
-    var styleElem = {
-        data: data,
-        type: data.ty,
-        elements: []
-    };
-    var elementData = {};
-    if(data.ty == 'fl' || data.ty == 'st'){
-        elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
-        if(!elementData.c.k){
-            styleElem.co = 'rgb('+bm_floor(elementData.c.v[0])+','+bm_floor(elementData.c.v[1])+','+bm_floor(elementData.c.v[2])+')';
-        }
-    }
-    elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
-    if(data.ty == 'st') {
-        styleElem.lc = this.lcEnum[data.lc] || 'round';
-        styleElem.lj = this.ljEnum[data.lj] || 'round';
-        if(data.lj == 1) {
-            styleElem.ml = data.ml;
-        }
-        elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
-        if(!elementData.w.k){
-            styleElem.wi = elementData.w.v;
-        }
-        if(data.d){
-            var d = PropertyFactory.getDashProp(this,data.d,'canvas',dynamicProperties);
-            elementData.d = d;
-            if(!elementData.d.k){
-                styleElem.da = elementData.d.dasharray;
-                styleElem.do = elementData.d.dashoffset;
-            }
-        }
-
-    } else {
-
-        styleElem.r = data.r === 2 ? 'evenodd' : 'nonzero';
-    }
-    this.stylesList.push(styleElem);
-    elementData.style = styleElem;
-    return elementData;
-}
-
-CVShapeElement.prototype.createGroupElement = function(data) {
-    var elementData = {
-        it: [],
-        prevViewData: []
-    };
-    return elementData;
-}
-
-CVShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
-    var elementData = {
-        transform : {
-            mat: new Matrix(),
-            opacity: 1,
-            matMdf:false,
-            opMdf:false,
-            op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
-            mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
-        },
-        elements: []
-    };
-    return elementData;
-}
-
-CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) {
-    var elementData = {
-        nodes:[],
-        trNodes:[],
-        tr:[0,0,0,0,0,0]
-    };
-    var ty = 4;
-    if(data.ty == 'rc'){
-        ty = 5;
-    }else if(data.ty == 'el'){
-        ty = 6;
-    }else if(data.ty == 'sr'){
-        ty = 7;
-    }
-    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
-    this.shapes.push(elementData.sh);
-    this.addShapeToModifiers(elementData);
-    jLen = this.stylesList.length;
-    var hasStrokes = false, hasFills = false;
-    for(j=0;j<jLen;j+=1){
-        if(!this.stylesList[j].closed){
-            this.stylesList[j].elements.push(elementData);
-            if(this.stylesList[j].type === 'st'){
-                hasStrokes = true;
-            }else{
-                hasFills = true;
-            }
-        }
-    }
-    elementData.st = hasStrokes;
-    elementData.fl = hasFills;
-    return elementData;
-}
-
-CVShapeElement.prototype.reloadShapes = function(){
-    this.firstFrame = true;
-    var i, len = this.itemsData.length;
-    for(i=0;i<len;i+=1){
-        this.prevViewData[i] = this.itemsData[i];
-    }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-    }
-    this.renderModifiers();
-}
-
-CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, render){
-    var i, len = arr.length - 1;
-    var j, jLen;
-    var ownArrays = [], ownModifiers = [], processedPos;
-    for(i=len;i>=0;i-=1){
-        processedPos = this.searchProcessedElement(arr[i]);
-        if(!processedPos){
-            arr[i]._render = render;
-        } else {
-            itemsData[i] = prevViewData[processedPos - 1];
-        }
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-            if(!processedPos){
-                itemsData[i] = this.createStyleElement(arr[i], dynamicProperties);
-            } else {
-                itemsData[i].style.closed = false;
-            }
-            
-            ownArrays.push(itemsData[i].style);
-        }else if(arr[i].ty == 'gr'){
-            if(!processedPos){
-                itemsData[i] = this.createGroupElement(arr[i]);
-            } else {
-                jLen = itemsData[i].it.length;
-                for(j=0;j<jLen;j+=1){
-                    itemsData[i].prevViewData[j] = itemsData[i].it[j];
-                }
-            }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, render);
-        }else if(arr[i].ty == 'tr'){
-            if(!processedPos){
-                itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
-            }
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], dynamicProperties);
-            }
-            
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
-            if(!processedPos){
-                var modifier = ShapeModifiers.getModifier(arr[i].ty);
-                modifier.init(this,arr[i],dynamicProperties);
-                itemsData[i] = modifier;
-                this.shapeModifiers.push(modifier);
-            } else {
-                modifier = itemsData[i];
-                modifier.closed = false;
-            }
-            ownModifiers.push(modifier);
-        } else if(arr[i].ty == 'rp'){
-            if(!processedPos){
-                modifier = ShapeModifiers.getModifier(arr[i].ty);
-                itemsData[i] = modifier;
-                modifier.init(this,arr,i,itemsData,dynamicProperties);
-                this.shapeModifiers.push(modifier);
-                render = false;
-            }else{
-                modifier = itemsData[i];
-                modifier.closed = true;
-            }
-            ownModifiers.push(modifier);
-        }
-        this.addProcessedElement(arr[i], i + 1);
-    }
-    len = ownArrays.length;
-    for(i=0;i<len;i+=1){
-        ownArrays[i].closed = true;
-    }
-    len = ownModifiers.length;
-    for(i=0;i<len;i+=1){
-        ownModifiers[i].closed = true;
-    }
-};
-
-CVShapeElement.prototype.addShapeToModifiers = IShapeElement.prototype.addShapeToModifiers;
-CVShapeElement.prototype.renderModifiers = IShapeElement.prototype.renderModifiers;
-CVShapeElement.prototype.lcEnum = IShapeElement.prototype.lcEnum;
-CVShapeElement.prototype.ljEnum = IShapeElement.prototype.ljEnum;
-CVShapeElement.prototype.searchProcessedElement = IShapeElement.prototype.searchProcessedElement;
-CVShapeElement.prototype.addProcessedElement = IShapeElement.prototype.addProcessedElement;
-
-CVShapeElement.prototype.renderFrame = function(parentMatrix){
-    if(this._parent.renderFrame.call(this, parentMatrix)===false){
-        return;
-    }
-    this.transformHelper.mat.reset();
-    this.transformHelper.opacity = this.finalTransform.opacity;
-    this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = this.finalTransform.opMdf;
-    this.renderModifiers();
-    this.renderShape(this.transformHelper,null,null,true);
-    if(this.data.hasMask){
-        this.globalData.renderer.restore(true);
-    }
-};
-
-CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain){
-    var i, len;
-    if(!items){
-        items = this.shapesData;
-        len = this.stylesList.length;
-        for(i=0;i<len;i+=1){
-            this.stylesList[i].d = '';
-            this.stylesList[i].mdf = false;
-        }
-    }
-    if(!data){
-        data = this.itemsData;
-    }
-    ///
-    ///
-    len = items.length - 1;
-    var groupTransform,groupMatrix;
-    groupTransform = parentTransform;
-    for(i=len;i>=0;i-=1){
-        if(items[i].ty == 'tr'){
-            groupTransform = data[i].transform;
-            var mtArr = data[i].transform.mProps.v.props;
-            groupTransform.matMdf = groupTransform.mProps.mdf;
-            groupTransform.opMdf = groupTransform.op.mdf;
-            groupMatrix = groupTransform.mat;
-            groupMatrix.cloneFromProps(mtArr);
-            if(parentTransform){
-                var props = parentTransform.mat.props;
-                groupTransform.opacity = parentTransform.opacity;
-                groupTransform.opacity *= data[i].transform.op.v;
-                groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
-                groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-            }else{
-                groupTransform.opacity = groupTransform.op.o;
-            }
-        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
-            this.renderPath(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'fl'){
-            this.renderFill(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'gr'){
-            this.renderShape(groupTransform,items[i].it,data[i].it);
-        }else if(items[i].ty == 'tm'){
-            //
-        }
-    }
-    if(!isMain){
-        return;
-    }
-    len = this.stylesList.length;
-    var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type;
-    renderer.save();
-    renderer.ctxTransform(this.finalTransform.mat.props);
-    for(i=0;i<len;i+=1){
-        type = this.stylesList[i].type;
-        if((type === 'st' && this.stylesList[i].wi === 0) || !this.stylesList[i].data._render){
-            continue;
-        }
-        renderer.save();
-        elems = this.stylesList[i].elements;
-        if(type === 'st'){
-            ctx.strokeStyle = this.stylesList[i].co;
-            ctx.lineWidth = this.stylesList[i].wi;
-            ctx.lineCap = this.stylesList[i].lc;
-            ctx.lineJoin = this.stylesList[i].lj;
-            ctx.miterLimit = this.stylesList[i].ml || 0;
-        }else{
-            ctx.fillStyle = this.stylesList[i].co;
-        }
-        renderer.ctxOpacity(this.stylesList[i].coOp);
-        if(type !== 'st'){
-            ctx.beginPath();
-        }
-        jLen = elems.length;
-        for(j=0;j<jLen;j+=1){
-            if(type === 'st'){
-                ctx.beginPath();
-                if(this.stylesList[i].da){
-                    ctx.setLineDash(this.stylesList[i].da);
-                    ctx.lineDashOffset = this.stylesList[i].do;
-                    this.globalData.isDashed = true;
-                }else if(this.globalData.isDashed){
-                    ctx.setLineDash(this.dashResetter);
-                    this.globalData.isDashed = false;
-                }
-            }
-            nodes = elems[j].trNodes;
-            kLen = nodes.length;
-
-            for(k=0;k<kLen;k+=1){
-                if(nodes[k].t == 'm'){
-                    ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
-                }else if(nodes[k].t == 'c'){
-                    ctx.bezierCurveTo(nodes[k].p1[0],nodes[k].p1[1],nodes[k].p2[0],nodes[k].p2[1],nodes[k].p3[0],nodes[k].p3[1]);
-                }else{
-                    ctx.closePath();
-                }
-            }
-            if(type === 'st'){
-                ctx.stroke();
-            }
-        }
-        if(type !== 'st'){
-            ctx.fill(this.stylesList[i].r);
-        }
-        renderer.restore();
-    }
-    renderer.restore();
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
-    var len, i, j,jLen;
-    var redraw = groupTransform.matMdf || itemData.sh.mdf || this.firstFrame;
-    if(redraw) {
-        var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
-        jLen = paths._length;
-        var pathStringTransformed = itemData.trNodes;
-        pathStringTransformed.length = 0;
-        for(j=0;j<jLen;j+=1){
-            var pathNodes = paths.shapes[j];
-            if(pathNodes && pathNodes.v){
-                len = pathNodes._length;
-                for (i = 1; i < len; i += 1) {
-                    if (i == 1) {
-                        pathStringTransformed.push({
-                            t: 'm',
-                            p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                        });
-                    }
-                    pathStringTransformed.push({
-                        t: 'c',
-                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransformMat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
-                        p3: groupTransformMat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
-                    });
-                }
-                if (len == 1) {
-                    pathStringTransformed.push({
-                        t: 'm',
-                        p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                    });
-                }
-                if (pathNodes.c && len) {
-                    pathStringTransformed.push({
-                        t: 'c',
-                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransformMat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
-                        p3: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                    });
-                    pathStringTransformed.push({
-                        t: 'z'
-                    });
-                }
-                itemData.lStr = pathStringTransformed;
-            }
-
-        }
-
-        if (itemData.st) {
-            for (i = 0; i < 16; i += 1) {
-                itemData.tr[i] = groupTransform.mat.props[i];
-            }
-        }
-        itemData.trNodes = pathStringTransformed;
-
-    }
-};
-
-
-
-CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransform){
-    var styleElem = itemData.style;
-
-    if(itemData.c.mdf || this.firstFrame){
-        styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
-    }
-    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.coOp = itemData.o.v*groupTransform.opacity;
-    }
-};
-
-CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransform){
-    var styleElem = itemData.style;
-    //TODO fix dashes
-    var d = itemData.d;
-    var dasharray,dashoffset;
-    if(d && (d.mdf  || this.firstFrame)){
-        styleElem.da = d.dasharray;
-        styleElem.do = d.dashoffset;
-    }
-    if(itemData.c.mdf || this.firstFrame){
-        styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
-    }
-    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.coOp = itemData.o.v*groupTransform.opacity;
-    }
-    if(itemData.w.mdf || this.firstFrame){
-        styleElem.wi = itemData.w.v;
-    }
-};
-
-
-CVShapeElement.prototype.destroy = function(){
-    this.shapesData = null;
-    this.globalData = null;
-    this.canvasContext = null;
-    this.stylesList.length = 0;
-    this.itemData.length = 0;
-    this._parent.destroy.call(this._parent);
-};
-
-
-function CVSolidElement(data, comp,globalData){
-    this._parent.constructor.call(this,data, comp,globalData);
-}
-createElement(CVBaseElement, CVSolidElement);
-
-CVSolidElement.prototype.renderFrame = function(parentMatrix){
-    if(this._parent.renderFrame.call(this, parentMatrix)===false){
-        return;
-    }
-    var ctx = this.canvasContext;
-    this.globalData.renderer.save();
-    this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
-    this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
-    ctx.fillStyle=this.data.sc;
-    ctx.fillRect(0,0,this.data.sw,this.data.sh);
-    this.globalData.renderer.restore(this.data.hasMask);
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-function CVTextElement(data, comp, globalData){
-    this.textSpans = [];
-    this.yOffset = 0;
-    this.fillColorAnim = false;
-    this.strokeColorAnim = false;
-    this.strokeWidthAnim = false;
-    this.stroke = false;
-    this.fill = false;
-    this.justifyOffset = 0;
-    this.currentRender = null;
-    this.renderType = 'canvas';
-    this.values = {
-        fill: 'rgba(0,0,0,0)',
-        stroke: 'rgba(0,0,0,0)',
-        sWidth: 0,
-        fValue: ''
-    }
-    this._parent.constructor.call(this,data,comp, globalData);
-}
-createElement(CVBaseElement, CVTextElement);
-
-extendPrototype(ITextElement, CVTextElement);
-
-CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2d');
-
-CVTextElement.prototype.createElements = function(){
-
-    this._parent.createElements.call(this);
-    //console.log('this.data: ',this.data);
-
-};
-
-CVTextElement.prototype.buildNewText = function(){
-    var documentData = this.textProperty.currentData;
-    this.renderedLetters = Array.apply(null,{length:documentData.l ? documentData.l.length : 0});
-
-    var hasFill = false;
-    if(documentData.fc) {
-        hasFill = true;
-        this.values.fill = this.buildColor(documentData.fc);
-    }else{
-        this.values.fill = 'rgba(0,0,0,0)';
-    }
-    this.fill = hasFill;
-    var hasStroke = false;
-    if(documentData.sc){
-        hasStroke = true;
-        this.values.stroke = this.buildColor(documentData.sc);
-        this.values.sWidth = documentData.sw;
-    }
-    var fontData = this.globalData.fontManager.getFontByName(documentData.f);
-    var i, len;
-    var letters = documentData.l;
-    var matrixHelper = this.mHelper;
-    this.stroke = hasStroke;
-    this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
-    len = documentData.t.length;
-    //this.tHelper.font = this.values.fValue;
-    var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
-    var trackingOffset = documentData.tr/1000*documentData.s;
-    var xPos = 0, yPos = 0, firstLine = true;
-    var cnt = 0;
-    for (i = 0; i < len; i += 1) {
-        charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        shapeData = charData && charData.data || {};
-        matrixHelper.reset();
-        if(singleShape && letters[i].n) {
-            xPos = -trackingOffset;
-            yPos += documentData.yOffset;
-            yPos += firstLine ? 1 : 0;
-            firstLine = false;
-        }
-
-        shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
-        jLen = shapes.length;
-        matrixHelper.scale(documentData.s/100,documentData.s/100);
-        if(singleShape){
-            this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
-        }
-        commands = Array.apply(null,{length:jLen})
-        for(j=0;j<jLen;j+=1){
-            kLen = shapes[j].ks.k.i.length;
-            pathNodes = shapes[j].ks.k;
-            pathArr = [];
-            for(k=1;k<kLen;k+=1){
-                if(k==1){
-                    pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
-                }
-                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1],0),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1],0));
-            }
-            pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
-            commands[j] = pathArr;
-        }
-        if(singleShape){
-            xPos += letters[i].l;
-            xPos += trackingOffset;
-        }
-        if(this.textSpans[cnt]){
-            this.textSpans[cnt].elem = commands;
-        } else {
-            this.textSpans[cnt] = {elem: commands};
-        }
-        cnt +=1;
-    }
-}
-
-CVTextElement.prototype.renderFrame = function(parentMatrix){
-    if(this._parent.renderFrame.call(this, parentMatrix)===false){
-        return;
-    }
-    var ctx = this.canvasContext;
-    var finalMat = this.finalTransform.mat.props;
-    this.globalData.renderer.save();
-    this.globalData.renderer.ctxTransform(finalMat);
-    this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
-    ctx.font = this.values.fValue;
-    ctx.lineCap = 'butt';
-    ctx.lineJoin = 'miter';
-    ctx.miterLimit = 4;
-
-    if(!this.data.singleShape){
-        this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
-    }
-
-    var  i,len, j, jLen, k, kLen;
-    var renderedLetters = this.textAnimator.renderedLetters;
-
-    var letters = this.textProperty.currentData.l;
-
-    len = letters.length;
-    var renderedLetter;
-    var lastFill = null, lastStroke = null, lastStrokeW = null, commands, pathArr;
-    for(i=0;i<len;i+=1){
-        if(letters[i].n){
-            continue;
-        }
-        renderedLetter = renderedLetters[i];
-        if(renderedLetter){
-            this.globalData.renderer.save();
-            this.globalData.renderer.ctxTransform(renderedLetter.p);
-            this.globalData.renderer.ctxOpacity(renderedLetter.o);
-        }
-        if(this.fill){
-            if(renderedLetter && renderedLetter.fc){
-                if(lastFill !== renderedLetter.fc){
-                    lastFill = renderedLetter.fc;
-                    ctx.fillStyle = renderedLetter.fc;
-                }
-            }else if(lastFill !== this.values.fill){
-                lastFill = this.values.fill;
-                ctx.fillStyle = this.values.fill;
-            }
-            commands = this.textSpans[i].elem;
-            jLen = commands.length;
-            this.globalData.canvasContext.beginPath();
-            for(j=0;j<jLen;j+=1) {
-                pathArr = commands[j];
-                kLen = pathArr.length;
-                this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
-                for (k = 2; k < kLen; k += 6) {
-                    this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
-                }
-            }
-            this.globalData.canvasContext.closePath();
-            this.globalData.canvasContext.fill();
-            ///ctx.fillText(this.textSpans[i].val,0,0);
-        }
-        if(this.stroke){
-            if(renderedLetter && renderedLetter.sw){
-                if(lastStrokeW !== renderedLetter.sw){
-                    lastStrokeW = renderedLetter.sw;
-                    ctx.lineWidth = renderedLetter.sw;
-                }
-            }else if(lastStrokeW !== this.values.sWidth){
-                lastStrokeW = this.values.sWidth;
-                ctx.lineWidth = this.values.sWidth;
-            }
-            if(renderedLetter && renderedLetter.sc){
-                if(lastStroke !== renderedLetter.sc){
-                    lastStroke = renderedLetter.sc;
-                    ctx.strokeStyle = renderedLetter.sc;
-                }
-            }else if(lastStroke !== this.values.stroke){
-                lastStroke = this.values.stroke;
-                ctx.strokeStyle = this.values.stroke;
-            }
-            commands = this.textSpans[i].elem;
-            jLen = commands.length;
-            this.globalData.canvasContext.beginPath();
-            for(j=0;j<jLen;j+=1) {
-                pathArr = commands[j];
-                kLen = pathArr.length;
-                this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
-                for (k = 2; k < kLen; k += 6) {
-                    this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
-                }
-            }
-            this.globalData.canvasContext.closePath();
-            this.globalData.canvasContext.stroke();
-            ///ctx.strokeText(letters[i].val,0,0);
-        }
-        if(renderedLetter) {
-            this.globalData.renderer.restore();
-        }
-    }
-    /*if(this.data.hasMask){
-     this.globalData.renderer.restore(true);
-     }*/
-    this.globalData.renderer.restore(this.data.hasMask);
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-function HBaseElement(data,parentContainer,globalData,comp, placeholder){
-    this.globalData = globalData;
-    this.comp = comp;
-    this.data = data;
-    this.matteElement = null;
-    this.parentContainer = parentContainer;
-    this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
-    this.placeholder = placeholder;
-    this.init();
-};
-
-createElement(BaseElement, HBaseElement);
-HBaseElement.prototype.checkBlendMode = function(){
-
-};
-HBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
-
-/*HBaseElement.prototype.appendNodeToParent = function(node) {
-    if(this.data.hd){
-        return;
-    }
-    if(this.placeholder){
-        var g = this.placeholder.phElement;
-        g.parentNode.insertBefore(node, g);
-        //g.parentNode.removeChild(g);
-    }else{
-        this.parentContainer.appendChild(node);
-    }
-};*/
-
-
-HBaseElement.prototype.getBaseElement = function(){
-    return this.baseElement;
-};
-
-HBaseElement.prototype.createElements = function(){
-    if(this.data.hasMask){
-        this.layerElement = document.createElementNS(svgNS,'svg');
-        styleDiv(this.layerElement);
-        //this.appendNodeToParent(this.layerElement);
-        this.baseElement = this.layerElement;
-        this.maskedElement = this.layerElement;
-    }else{
-        this.layerElement = this.parentContainer;
-    }
-    this.transformedElement = this.layerElement;
-    if(this.data.ln && (this.data.ty === 4 || this.data.ty === 0)){
-        if(this.layerElement === this.parentContainer){
-            this.layerElement = document.createElementNS(svgNS,'g');
-            //this.appendNodeToParent(this.layerElement);
-            this.baseElement = this.layerElement;
-        }
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    this.setBlendMode();
-    if(this.layerElement !== this.parentContainer){
-        this.placeholder = null;
-    }
-    this.checkParenting();
-};
-
-HBaseElement.prototype.renderFrame = function(parentTransform){
-    if(this.data.ty === 3){
-        return false;
-    }
-
-    if(this.currentFrameNum === this.lastNum || !this.isVisible){
-        return this.isVisible;
-    }
-    this.lastNum = this.currentFrameNum;
-
-    this.finalTransform.opMdf = this.finalTransform.op.mdf;
-    this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
-    this.finalTransform.opacity = this.finalTransform.op.v;
-    if(this.firstFrame){
-        this.finalTransform.opMdf = true;
-        this.finalTransform.matMdf = true;
-    }
-
-    var mat;
-    var finalMat = this.finalTransform.mat;
-
-    if(this.hierarchy){
-        var i, len = this.hierarchy.length;
-
-        mat = this.finalTransform.mProp.v.props;
-        finalMat.cloneFromProps(mat);
-        for(i=0;i<len;i+=1){
-            this.finalTransform.matMdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : this.finalTransform.matMdf;
-            mat = this.hierarchy[i].finalTransform.mProp.v.props;
-            finalMat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],mat[12],mat[13],mat[14],mat[15]);
-        }
-    }else{
-        if(this.isVisible && this.finalTransform.matMdf){
-            if(!parentTransform){
-                finalMat.cloneFromProps(this.finalTransform.mProp.v.props);
-            }else{
-                mat = this.finalTransform.mProp.v.props;
-                finalMat.cloneFromProps(mat);
-            }
-        }
-    }
-    if(this.data.hasMask){
-        this.maskManager.renderFrame(finalMat);
-    }
-
-    if(parentTransform){
-        mat = parentTransform.mat.props;
-        finalMat.cloneFromProps(mat);
-        this.finalTransform.opacity *= parentTransform.opacity;
-        this.finalTransform.opMdf = parentTransform.opMdf ? true : this.finalTransform.opMdf;
-        this.finalTransform.matMdf = parentTransform.matMdf ? true : this.finalTransform.matMdf
-    }
-
-    if(this.finalTransform.matMdf){
-        this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = finalMat.toCSS();
-        this.finalMat = finalMat;
-    }
-    if(this.finalTransform.opMdf){
-        this.transformedElement.style.opacity = this.finalTransform.opacity;
-    }
-    return this.isVisible;
-};
-
-HBaseElement.prototype.destroy = function(){
-    this.layerElement = null;
-    this.transformedElement = null;
-    this.parentContainer = null;
-    if(this.matteElement) {
-        this.matteElement = null;
-    }
-    if(this.maskManager) {
-        this.maskManager.destroy();
-        this.maskManager = null;
-    }
-};
-
-HBaseElement.prototype.getDomElement = function(){
-    return this.layerElement;
-};
-HBaseElement.prototype.addMasks = function(data){
-    this.maskManager = new MaskElement(data,this,this.globalData);
-};
-
-HBaseElement.prototype.hide = function(){
-};
-
-HBaseElement.prototype.setMatte = function(){
-
-}
-
-HBaseElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
-function HSolidElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-}
-createElement(HBaseElement, HSolidElement);
-
-HSolidElement.prototype.createElements = function(){
-    var parent = document.createElement('div');
-    styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
-    styleDiv(cont);
-    cont.setAttribute('width',this.data.sw);
-    cont.setAttribute('height',this.data.sh);
-    parent.appendChild(cont);
-    this.layerElement = parent;
-    this.transformedElement = parent;
-    //this.appendNodeToParent(parent);
-    this.baseElement = parent;
-    this.innerElem = parent;
-    if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
-    }
-    if(this.data.bm !== 0){
-        this.setBlendMode();
-    }
-    var rect = document.createElementNS(svgNS,'rect');
-    rect.setAttribute('width',this.data.sw);
-    rect.setAttribute('height',this.data.sh);
-    rect.setAttribute('fill',this.data.sc);
-    cont.appendChild(rect);
-    if(this.data.hasMask){
-        this.maskedElement = rect;
-    }
-    this.checkParenting();
-};
-
-
-
-HSolidElement.prototype.hide = SVGBaseElement.prototype.hide;
-HSolidElement.prototype.show = SVGBaseElement.prototype.show;
-HSolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
-HSolidElement.prototype.destroy = IImageElement.prototype.destroy;
-function HCompElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    this.layers = data.layers;
-    this.supports3d = true;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this.elements = Array.apply(null,{length:this.layers.length});
-    if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
-    }
-    if(this.data.hasMask) {
-        this.supports3d = false;
-    }
-    if(this.data.xt){
-        this.layerElement = document.createElement('div');
-    }
-    this.buildAllItems();
-
-}
-createElement(HBaseElement, HCompElement);
-
-HCompElement.prototype.createElements = function(){
-    var divElement = document.createElement('div');
-    styleDiv(divElement);
-    if(this.data.ln){
-        divElement.setAttribute('id',this.data.ln);
-    }
-    divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
-    if(this.data.hasMask){
-        var compSvg = document.createElementNS(svgNS,'svg');
-        styleDiv(compSvg);
-        compSvg.setAttribute('width',this.data.w);
-        compSvg.setAttribute('height',this.data.h);
-        var g = document.createElementNS(svgNS,'g');
-        compSvg.appendChild(g);
-        divElement.appendChild(compSvg);
-        this.maskedElement = g;
-        this.baseElement = divElement;
-        this.layerElement = g;
-        this.transformedElement = divElement;
-    }else{
-        this.layerElement = divElement;
-        this.baseElement = this.layerElement;
-        this.transformedElement = divElement;
-    }
-    //this.appendNodeToParent(this.layerElement);
-    this.checkParenting();
-};
-
-HCompElement.prototype.hide = ICompElement.prototype.hide;
-HCompElement.prototype.prepareFrame = ICompElement.prototype.prepareFrame;
-HCompElement.prototype.setElements = ICompElement.prototype.setElements;
-HCompElement.prototype.getElements = ICompElement.prototype.getElements;
-HCompElement.prototype.destroy = ICompElement.prototype.destroy;
-
-HCompElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    var i,len = this.layers.length;
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-
-    this.hidden = false;
-
-    for( i = 0; i < len; i+=1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].renderFrame();
-        }
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-
-HCompElement.prototype.checkLayers = BaseRenderer.prototype.checkLayers;
-HCompElement.prototype.buildItem = HybridRenderer.prototype.buildItem;
-HCompElement.prototype.checkPendingElements = HybridRenderer.prototype.checkPendingElements;
-HCompElement.prototype.addPendingElement = HybridRenderer.prototype.addPendingElement;
-HCompElement.prototype.buildAllItems = BaseRenderer.prototype.buildAllItems;
-HCompElement.prototype.createItem = HybridRenderer.prototype.createItem;
-HCompElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
-HCompElement.prototype.createImage = HybridRenderer.prototype.createImage;
-HCompElement.prototype.createComp = HybridRenderer.prototype.createComp;
-HCompElement.prototype.createSolid = HybridRenderer.prototype.createSolid;
-HCompElement.prototype.createShape = HybridRenderer.prototype.createShape;
-HCompElement.prototype.createText = HybridRenderer.prototype.createText;
-HCompElement.prototype.createBase = HybridRenderer.prototype.createBase;
-HCompElement.prototype.appendElementInPos = HybridRenderer.prototype.appendElementInPos;
-function HShapeElement(data,parentContainer,globalData,comp, placeholder){
-    this.shapes = [];
-    this.shapesData = data.shapes;
-    this.stylesList = [];
-    this.itemsData = [];
-    this.prevViewData = [];
-    this.shapeModifiers = [];
-    this.processedElements = [];
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    this.currentBBox = {
-        x:999999,
-        y: -999999,
-        h: 0,
-        w: 0
-    };
-}
-createElement(HBaseElement, HShapeElement);
-var parent = HShapeElement.prototype._parent;
-extendPrototype(IShapeElement, HShapeElement);
-HShapeElement.prototype._parent = parent;
-HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderFrame;
-
-HShapeElement.prototype.createElements = function(){
-    var parent = document.createElement('div');
-    styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
-    styleDiv(cont);
-    var size = this.comp.data ? this.comp.data : this.globalData.compSize;
-    cont.setAttribute('width',size.w);
-    cont.setAttribute('height',size.h);
-    if(this.data.hasMask){
-        var g = document.createElementNS(svgNS,'g');
-        parent.appendChild(cont);
-        cont.appendChild(g);
-        this.maskedElement = g;
-        this.layerElement = g;
-        this.shapesContainer = g;
-    }else{
-        parent.appendChild(cont);
-        this.layerElement = cont;
-        this.shapesContainer = document.createElementNS(svgNS,'g');
-        this.layerElement.appendChild(this.shapesContainer);
-    }
-    if(!this.data.hd){
-        //this.parentContainer.appendChild(parent);
-        this.baseElement = parent;
-    }
-    this.innerElem = parent;
-    if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
-    }
-
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties,0, [], true);
-    this.buildExpressionInterface();
-    this.layerElement = parent;
-    this.transformedElement = parent;
-    this.shapeCont = cont;
-    if(this.data.bm !== 0){
-        this.setBlendMode();
-    }
-    this.checkParenting();
-};
-
-HShapeElement.prototype.renderFrame = function(parentMatrix){
-    var firstFrame = this.firstFrame;
-    this._renderShapeFrame();
-
-    if(this.isVisible && (this.elemMdf || firstFrame)){
-        var boundingBox = this.shapeCont.getBBox();
-        var changed = false;
-        if(this.currentBBox.w !== boundingBox.width){
-            this.currentBBox.w = boundingBox.width;
-            this.shapeCont.setAttribute('width',boundingBox.width);
-            changed = true;
-        }
-        if(this.currentBBox.h !== boundingBox.height){
-            this.currentBBox.h = boundingBox.height;
-            this.shapeCont.setAttribute('height',boundingBox.height);
-            changed = true;
-        }
-        if(changed  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
-            this.currentBBox.w = boundingBox.width;
-            this.currentBBox.h = boundingBox.height;
-            this.currentBBox.x = boundingBox.x;
-            this.currentBBox.y = boundingBox.y;
-
-            this.shapeCont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
-        }
-    }
-
-};
-function HTextElement(data,parentContainer,globalData,comp, placeholder){
-    this.textSpans = [];
-    this.textPaths = [];
-    this.currentBBox = {
-        x:999999,
-        y: -999999,
-        h: 0,
-        w: 0
-    }
-    this.renderType = 'svg';
-    this.isMasked = false;
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-
-}
-createElement(HBaseElement, HTextElement);
-
-extendPrototype(ITextElement, HTextElement);
-
-HTextElement.prototype.createElements = function(){
-    this.isMasked = this.checkMasks();
-    var parent = document.createElement('div');
-    styleDiv(parent);
-    this.layerElement = parent;
-    this.transformedElement = parent;
-    if(this.isMasked){
-        this.renderType = 'svg';
-        var cont = document.createElementNS(svgNS,'svg');
-        styleDiv(cont);
-        this.cont = cont;
-        this.compW = this.comp.data.w;
-        this.compH = this.comp.data.h;
-        cont.setAttribute('width',this.compW);
-        cont.setAttribute('height',this.compH);
-        var g = document.createElementNS(svgNS,'g');
-        cont.appendChild(g);
-        parent.appendChild(cont);
-        this.maskedElement = g;
-        this.innerElem = g;
-    } else {
-        this.renderType = 'html';
-        this.innerElem = parent;
-    }
-    this.baseElement = parent;
-
-    this.checkParenting();
-
-};
-
-HTextElement.prototype.buildNewText = function(){
-    var documentData = this.textProperty.currentData;
-    this.renderedLetters = Array.apply(null,{length:this.textProperty.currentData.l ? this.textProperty.currentData.l.length : 0});
-    var innerElemStyle = this.innerElem.style;
-    innerElemStyle.color = innerElemStyle.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
-    if(documentData.sc){
-        innerElemStyle.stroke = this.buildColor(documentData.sc);
-        innerElemStyle.strokeWidth = documentData.sw+'px';
-    }
-    var fontData = this.globalData.fontManager.getFontByName(documentData.f);
-    if(!this.globalData.fontManager.chars){
-        innerElemStyle.fontSize = documentData.s+'px';
-        innerElemStyle.lineHeight = documentData.s+'px';
-        if(fontData.fClass){
-            this.innerElem.className = fontData.fClass;
-        } else {
-            innerElemStyle.fontFamily = fontData.fFamily;
-            var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
-            innerElemStyle.fontStyle = fStyle;
-            innerElemStyle.fontWeight = fWeight;
-        }
-    }
-    var i, len;
-
-    var letters = documentData.l;
-    len = letters.length;
-    var tSpan,tParent,tCont;
-    var matrixHelper = this.mHelper;
-    var shapes, shapeStr = '';
-    var cnt = 0;
-    for (i = 0;i < len ;i += 1) {
-        if(this.globalData.fontManager.chars){
-            if(!this.textPaths[cnt]){
-                tSpan = document.createElementNS(svgNS,'path');
-                tSpan.setAttribute('stroke-linecap', 'butt');
-                tSpan.setAttribute('stroke-linejoin','round');
-                tSpan.setAttribute('stroke-miterlimit','4');
-            } else {
-                tSpan = this.textPaths[cnt];
-            }
-            if(!this.isMasked){
-                if(this.textSpans[cnt]){
-                    tParent = this.textSpans[cnt];
-                    tCont = tParent.children[0];
-                } else {
-
-                    tParent = document.createElement('div');
-                    tCont = document.createElementNS(svgNS,'svg');
-                    tCont.appendChild(tSpan);
-                    styleDiv(tParent);
-                }
-            }
-        }else{
-            if(!this.isMasked){
-                if(this.textSpans[cnt]){
-                    tParent = this.textSpans[cnt];
-                    tSpan = this.textPaths[cnt];
-                } else {
-                    tParent = document.createElement('span');
-                    styleDiv(tParent);
-                    tSpan = document.createElement('span');
-                    styleDiv(tSpan);
-                    tParent.appendChild(tSpan);
-                }
-            } else {
-                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : document.createElementNS(svgNS,'text');
-            }
-        }
-        //tSpan.setAttribute('visibility', 'hidden');
-        if(this.globalData.fontManager.chars){
-            var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-            var shapeData;
-            if(charData){
-                shapeData = charData.data;
-            } else {
-                shapeData = null;
-            }
-            matrixHelper.reset();
-            if(shapeData && shapeData.shapes){
-                shapes = shapeData.shapes[0].it;
-                matrixHelper.scale(documentData.s/100,documentData.s/100);
-                shapeStr = this.createPathShape(matrixHelper,shapes);
-                tSpan.setAttribute('d',shapeStr);
-            }
-            if(!this.isMasked){
-                this.innerElem.appendChild(tParent);
-                if(shapeData && shapeData.shapes){
-                    document.body.appendChild(tCont);
-
-                    var boundingBox = tCont.getBBox();
-                    tCont.setAttribute('width',boundingBox.width + 2);
-                    tCont.setAttribute('height',boundingBox.height + 2);
-                    tCont.setAttribute('viewBox',(boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
-                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
-
-                    letters[i].yOffset = boundingBox.y-1;
-                    tParent.appendChild(tCont);
-
-                } else{
-                    tCont.setAttribute('width',1);
-                    tCont.setAttribute('height',1);
-                }
-            }else{
-                this.innerElem.appendChild(tSpan);
-            }
-        }else{
-            tSpan.textContent = letters[i].val;
-            tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-            if(!this.isMasked){
-                this.innerElem.appendChild(tParent);
-                //
-                tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,'+ -documentData.s/1.2+'px,0)';
-            } else {
-                this.innerElem.appendChild(tSpan);
-            }
-        }
-        //
-        if(!this.isMasked){
-            this.textSpans[cnt] = tParent;
-        }else{
-            this.textSpans[cnt] = tSpan;
-        }
-        this.textSpans[cnt].style.display = 'block';
-        this.textPaths[cnt] = tSpan;
-        cnt += 1;
-    }
-    while(cnt < this.textSpans.length){
-        this.textSpans[cnt].style.display = 'none';
-        cnt += 1;
-    }
-}
-
-HTextElement.prototype.hide = SVGTextElement.prototype.hide;
-
-HTextElement.prototype.renderFrame = function(parentMatrix){
-
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.hidden = false;
-        this.innerElem.style.display = 'block';
-        this.layerElement.style.display = 'block';
-    }
-
-    if(this.data.singleShape){
-        if(!this.firstFrame && !this.lettersChangedFlag){
-            return;
-        } else {
-            // Todo Benchmark if using this is better than getBBox
-             if(this.isMasked && this.finalTransform.matMdf){
-                 this.cont.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
-                this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
-             }
-        }
-    }
-
-    this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
-    if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
-        return;
-    }
-    var  i,len, count = 0;
-    var renderedLetters = this.textAnimator.renderedLetters;
-
-    var letters = this.textProperty.currentData.l;
-
-    len = letters.length;
-    var renderedLetter, textSpan, textPath;
-    for(i=0;i<len;i+=1){
-        if(letters[i].n){
-            count += 1;
-            continue;
-        }
-        textSpan = this.textSpans[i];
-        textPath = this.textPaths[i];
-        renderedLetter = renderedLetters[count];
-        count += 1;
-        if(!this.isMasked){
-            textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
-        }else{
-            textSpan.setAttribute('transform',renderedLetter.m);
-        }
-        ////textSpan.setAttribute('opacity',renderedLetter.o);
-        textSpan.style.opacity = renderedLetter.o;
-        if(renderedLetter.sw){
-            textPath.setAttribute('stroke-width',renderedLetter.sw);
-        }
-        if(renderedLetter.sc){
-            textPath.setAttribute('stroke',renderedLetter.sc);
-        }
-        if(renderedLetter.fc){
-            textPath.setAttribute('fill',renderedLetter.fc);
-            textPath.style.color = renderedLetter.fc;
-        }
-    }
-    if(this.isVisible && (this.elemMdf || this.firstFrame)){
-        if(this.innerElem.getBBox){
-            var boundingBox = this.innerElem.getBBox();
-
-            if(this.currentBBox.w !== boundingBox.width){
-                this.currentBBox.w = boundingBox.width;
-                this.cont.setAttribute('width',boundingBox.width);
-            }
-            if(this.currentBBox.h !== boundingBox.height){
-                this.currentBBox.h = boundingBox.height;
-                this.cont.setAttribute('height',boundingBox.height);
-            }
-
-            var margin = 1;
-            if(this.currentBBox.w !== (boundingBox.width + margin*2) || this.currentBBox.h !== (boundingBox.height + margin*2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)){
-                this.currentBBox.w = boundingBox.width + margin*2;
-                this.currentBBox.h = boundingBox.height + margin*2;
-                this.currentBBox.x = boundingBox.x - margin;
-                this.currentBBox.y = boundingBox.y - margin;
-
-                this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-                this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
-            }
-        }
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-}
-function HImageElement(data,parentContainer,globalData,comp, placeholder){
-    this.assetData = globalData.getAssetData(data.refId);
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-}
-createElement(HBaseElement, HImageElement);
-
-HImageElement.prototype.createElements = function(){
-
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
-    var img = new Image();
-
-    if(this.data.hasMask){
-        var parent = document.createElement('div');
-        styleDiv(parent);
-        var cont = document.createElementNS(svgNS,'svg');
-        styleDiv(cont);
-        cont.setAttribute('width',this.assetData.w);
-        cont.setAttribute('height',this.assetData.h);
-        parent.appendChild(cont);
-        this.imageElem = document.createElementNS(svgNS,'image');
-        this.imageElem.setAttribute('width',this.assetData.w+"px");
-        this.imageElem.setAttribute('height',this.assetData.h+"px");
-        this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
-        cont.appendChild(this.imageElem);
-        this.layerElement = parent;
-        this.transformedElement = parent;
-        this.baseElement = parent;
-        this.innerElem = parent;
-        this.maskedElement = this.imageElem;
-    } else {
-        styleDiv(img);
-        this.layerElement = img;
-        this.baseElement = img;
-        this.innerElem = img;
-        this.transformedElement = img;
-    }
-    img.src = assetPath;
-    if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
-    }
-    this.checkParenting();
-};
-
-HImageElement.prototype.show = HSolidElement.prototype.show;
-HImageElement.prototype.hide = HSolidElement.prototype.hide;
-HImageElement.prototype.renderFrame = HSolidElement.prototype.renderFrame;
-HImageElement.prototype.destroy = HSolidElement.prototype.destroy;
-function HCameraElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    var getProp = PropertyFactory.getProp;
-    this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
-    if(data.ks.p.s){
-        this.px = getProp(this,data.ks.p.x,1,0,this.dynamicProperties);
-        this.py = getProp(this,data.ks.p.y,1,0,this.dynamicProperties);
-        this.pz = getProp(this,data.ks.p.z,1,0,this.dynamicProperties);
-    }else{
-        this.p = getProp(this,data.ks.p,1,0,this.dynamicProperties);
-    }
-    if(data.ks.a){
-        this.a = getProp(this,data.ks.a,1,0,this.dynamicProperties);
-    }
-    if(data.ks.or.k.length && data.ks.or.k[0].to){
-        var i,len = data.ks.or.k.length;
-        for(i=0;i<len;i+=1){
-            data.ks.or.k[i].to = null;
-            data.ks.or.k[i].ti = null;
-        }
-    }
-    this.or = getProp(this,data.ks.or,1,degToRads,this.dynamicProperties);
-    this.or.sh = true;
-    this.rx = getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
-    this.ry = getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
-    this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
-    this.mat = new Matrix();
-}
-createElement(HBaseElement, HCameraElement);
-
-HCameraElement.prototype.setup = function() {
-    var i, len = this.comp.threeDElements.length, comp;
-    for(i=0;i<len;i+=1){
-        //[perspectiveElem,container]
-        comp = this.comp.threeDElements[i];
-        comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
-        comp.container.style.transformOrigin = comp.container.style.mozTransformOrigin = comp.container.style.webkitTransformOrigin = "0px 0px 0px";
-        comp.perspectiveElem.style.transform = comp.perspectiveElem.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
-    }
-};
-
-HCameraElement.prototype.createElements = function(){
-};
-
-HCameraElement.prototype.hide = function(){
-};
-
-HCameraElement.prototype.renderFrame = function(){
-    var mdf = this.firstFrame;
-    var i, len;
-    if(this.hierarchy){
-        len = this.hierarchy.length;
-        for(i=0;i<len;i+=1){
-            mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
-        }
-    }
-    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || this.or.mdf || (this.a && this.a.mdf)) {
-        this.mat.reset();
-
-        if(this.p){
-            this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
-        }else{
-            this.mat.translate(-this.px.v,-this.py.v,this.pz.v);
-        }
-        if(this.a){
-            var diffVector = [this.p.v[0]-this.a.v[0],this.p.v[1]-this.a.v[1],this.p.v[2]-this.a.v[2]];
-            var mag = Math.sqrt(Math.pow(diffVector[0],2)+Math.pow(diffVector[1],2)+Math.pow(diffVector[2],2));
-            //var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
-            var lookDir = [diffVector[0]/mag,diffVector[1]/mag,diffVector[2]/mag];
-            var lookLengthOnXZ = Math.sqrt( lookDir[2]*lookDir[2] + lookDir[0]*lookDir[0] );
-            var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));
-            var m_rotationY = (Math.atan2( lookDir[0], -lookDir[2]));
-            this.mat.rotateY(m_rotationY).rotateX(-m_rotationX);
-
-        }
-        this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
-        this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
-        this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
-        this.mat.translate(0,0,this.pe.v);
-        if(this.hierarchy){
-            var mat;
-            len = this.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.iv.props;
-                this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
-            }
-        }
-        len = this.comp.threeDElements.length;
-        var comp;
-        for(i=0;i<len;i+=1){
-            comp = this.comp.threeDElements[i];
-            comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
-        }
-    }
-    this.firstFrame = false;
-};
-
-HCameraElement.prototype.destroy = function(){
-};
-var Expressions = (function(){
-    var ob = {};
-    ob.initExpressions = initExpressions;
-
-
-    function initExpressions(animation){
-        animation.renderer.compInterface = CompExpressionInterface(animation.renderer);
-        animation.renderer.globalData.projectInterface.registerComposition(animation.renderer);
-    }
-   return ob;
-}());
-
-expressionsPlugin = Expressions;
-
-(function addPropertyDecorator() {
-
-    function getStaticValueAtTime() {
-        return this.pv;
-    }
-
-    function loopOut(type,duration,durationFlag){
-        if(!this.k || !this.keyframes){
-            return this.pv;
-        }
-        var currentFrame = this.comp.renderedFrame;
-        var keyframes = this.keyframes;
-        var lastKeyFrame = keyframes[keyframes.length - 1].t;
-        if(currentFrame<=lastKeyFrame){
-            return this.pv;
-        }else{
-            var cycleDuration, firstKeyFrame;
-            if(!durationFlag){
-                if(!duration || duration > keyframes.length - 1){
-                    duration = keyframes.length - 1;
-                }
-                firstKeyFrame = keyframes[keyframes.length - 1 - duration].t;
-                cycleDuration = lastKeyFrame - firstKeyFrame;
-            } else {
-                if(!duration){
-                    cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
-                } else {
-                    cycleDuration = Math.abs(lastKeyFrame - elem.comp.globalData.frameRate*duration);
-                }
-                firstKeyFrame = lastKeyFrame - cycleDuration;
-            }
-            var offsetTime = this.offsetTime || 0;
-            var i, len, ret;
-            if(type.toLowerCase() === 'pingpong') {
-                var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
-                if(iterations % 2 !== 0){
-                    return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
-                }
-            } else if(type === 'offset'){
-                var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
-                var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
-                var current = this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
-                var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
-                if(this.pv.length){
-                    ret = new Array(initV.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = (endV[i]-initV[i])*repeats + current[i];
-                    }
-                    return ret;
-                }
-                return (endV-initV)*repeats + current;
-            } else if(type === 'continue'){
-                var lastValue = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
-                var nextLastValue = this.getValueAtTime((lastKeyFrame - 0.001) / this.comp.globalData.frameRate, 0);
-                if(this.pv.length){
-                    ret = new Array(lastValue.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = lastValue[i] + (lastValue[i]-nextLastValue[i])*((currentFrame - lastKeyFrame)/ this.comp.globalData.frameRate)/0.0005;
-                    }
-                    return ret;
-                }
-                return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
-            }
-            return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
-        }
-    }
-
-    function loopIn(type,duration, durationFlag) {
-        if(!this.k){
-            return this.pv;
-        }
-        var currentFrame = time*elem.comp.globalData.frameRate;
-        var keyframes = this.keyframes;
-        var firstKeyFrame = keyframes[0].t;
-        var offsetTime = this.offsetTime || 0;
-        if(currentFrame>=firstKeyFrame){
-            return this.pv;
-        }else{
-            var cycleDuration, lastKeyFrame;
-            if(!durationFlag){
-                if(!duration || duration > keyframes.length - 1){
-                    duration = keyframes.length - 1;
-                }
-                lastKeyFrame = keyframes[duration].t;
-                cycleDuration = lastKeyFrame - firstKeyFrame;
-            } else {
-                if(!duration){
-                    cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
-                } else {
-                    cycleDuration = Math.abs(elem.comp.globalData.frameRate*duration);
-                }
-                lastKeyFrame = firstKeyFrame + cycleDuration;
-            }
-            var i, len, ret;
-            if(type === 'pingpong') {
-                var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
-                if(iterations % 2 === 0){
-                    return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
-                }
-            } else if(type === 'offset'){
-                var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
-                var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
-                var current = this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
-                var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
-                if(this.pv.length){
-                    ret = new Array(initV.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = current[i]-(endV[i]-initV[i])*repeats;
-                    }
-                    return ret;
-                }
-                return current-(endV-initV)*repeats;
-            } else if(type === 'continue'){
-                var firstValue = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
-                var nextFirstValue = this.getValueAtTime((firstKeyFrame + 0.001) / this.comp.globalData.frameRate, 0);
-                if(this.pv.length){
-                    ret = new Array(firstValue.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = firstValue[i] + (firstValue[i]-nextFirstValue[i])*(firstKeyFrame - currentFrame)/0.001;
-                    }
-                    return ret;
-                }
-                return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
-            }
-
-            return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
-        }
-    }
-
-    function getValueAtTime(frameNum) {
-        if(!this._cachingAtTime) {
-            this._cachingAtTime = {lastValue:-99999,lastIndex:0};
-        }
-        //console.log('this._cachingAtTime', JSON.parse(JSON.stringify(this._cachingAtTime)))
-        if(frameNum !== this._cachingAtTime.lastFrame) {
-            frameNum *= this.elem.globalData.frameRate;
-            frameNum -= this.offsetTime;
-            var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var interpolationResult = this.interpolateValue(frameNum, i, this.pv, this._cachingAtTime);
-            this._cachingAtTime.lastIndex = interpolationResult.iterationIndex;
-            this._cachingAtTime.value = interpolationResult.value;
-            this._cachingAtTime.lastFrame = frameNum;
-        }
-        return this._cachingAtTime.value;
-
-    }
-
-    function getVelocityAtTime(frameNum) {
-        if(this.vel !== undefined){
-            return this.vel;
-        }
-        var delta = -0.01;
-        //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var velocity;
-        if(v1.length){
-            velocity = Array.apply(null,{length:v1.length});
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                //removing frameRate
-                //if needed, don't add it here
-                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
-                velocity[i] = (v2[i] - v1[i])/delta;
-            }
-        } else {
-            velocity = (v2 - v1)/delta;
-        }
-        return velocity;
-    };
-
-    function setGroupProperty(propertyGroup){
-        this.propertyGroup = propertyGroup;
-    }
-
-    function searchExpressions(elem,data,prop){
-        if(data.x){
-            prop.k = true;
-            prop.x = true;
-            if(prop.getValue) {
-                prop.getPreValue = prop.getValue;
-            }
-            prop.getValue = ExpressionManager.initiateExpression.bind(prop)(elem,data,prop);
-        }
-    }
-
-    function getTransformValueAtTime(time) {
-        console.log('time:', time)
-    }
-
-    function getTransformStaticValueAtTime(time) {
-
-    }
-
-    var TextExpressionSelectorProp = (function(){
-
-        function getValueProxy(index,total){
-            this.textIndex = index+1;
-            this.textTotal = total;
-            this.getValue();
-            return this.v;
-        }
-
-        return function TextExpressionSelectorProp(elem,data){
-            this.pv = 1;
-            this.comp = elem.comp;
-            this.elem = elem;
-            this.mult = .01;
-            this.type = 'textSelector';
-            this.textTotal = data.totalChars;
-            this.selectorValue = 100;
-            this.lastValue = [1,1,1];
-            searchExpressions.bind(this)(elem,data,this);
-            this.getMult = getValueProxy;
-            this.getVelocityAtTime = getVelocityAtTime;
-            if(this.kf){
-                this.getValueAtTime = getValueAtTime.bind(this);
-            } else {
-                this.getValueAtTime = getStaticValueAtTime.bind(this);
-            }
-            this.setGroupProperty = setGroupProperty;
-        }
-    }());
-
-
-    var propertyGetProp = PropertyFactory.getProp;
-    PropertyFactory.getProp = function(elem,data,type, mult, arr){
-        var prop = propertyGetProp(elem,data,type, mult, arr);
-        //prop.getVelocityAtTime = getVelocityAtTime;
-        //prop.loopOut = loopOut;
-        //prop.loopIn = loopIn;
-        if(type === 2) {
-            if(prop.dynamicProperties.length) {
-                prop.getValueAtTime = getTransformValueAtTime.bind(prop);
-            } else {
-                prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
-            }
-        } else {
-            if(prop.kf){
-                prop.getValueAtTime = getValueAtTime.bind(prop);
-            } else {
-                prop.getValueAtTime = getStaticValueAtTime.bind(prop);
-            }
-        }
-        prop.setGroupProperty = setGroupProperty;
-        prop.loopOut = loopOut;
-        prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime;
-        prop.numKeys = data.a === 1 ? data.k.length : 0;
-        var isAdded = prop.k;
-        if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
-        }
-        searchExpressions(elem,data,prop);
-        if(!isAdded && prop.x){
-            arr.push(prop);
-        }
-
-        return prop;
-    }
-
-    function getShapeValueAtTime(frameNum) {
-        if (!this._shapeValueAtTime) {
-            this._lastIndexAtTime = 0;
-            this._lastTimeAtTime = -999999;
-            this._shapeValueAtTime = shape_pool.clone(this.pv);
-        }
-        if(frameNum !== this._lastTimeAtTime) {
-            this._lastTimeAtTime = frameNum;
-            frameNum *= this.elem.globalData.frameRate;
-            var interpolationResult = this.interpolateShape(frameNum, this._lastIndexAtTime, this._shapeValueAtTime, false);
-            this._lastIndexAtTime = interpolationResult.iterationIndex;
-        }
-        return this._shapeValueAtTime;
-    }
-
-    var ShapePropertyConstructorFunction = ShapePropertyFactory.getConstructorFunction();
-    var KeyframedShapePropertyConstructorFunction = ShapePropertyFactory.getKeyframedConstructorFunction();
-
-    ShapePropertyConstructorFunction.prototype.vertices = function(prop, time){
-        var shapePath = this.v;
-        if(time !== undefined) {
-            shapePath = this.getValueAtTime(time, 0);
-        }
-        var i, len = shapePath._length;
-        var vertices = shapePath[prop];
-        var points = shapePath.v;
-        var arr = Array.apply(null,{length:len})
-        for(i = 0; i < len; i += 1) {
-            if(prop === 'i' || prop === 'o') {
-                arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]
-            } else {
-                arr[i] = [vertices[i][0], vertices[i][1]]
-            }
-            
-        }
-        return arr;
-    }
-
-    ShapePropertyConstructorFunction.prototype.points = function(time){
-        return this.vertices('v', time);
-    }
-
-    ShapePropertyConstructorFunction.prototype.inTangents = function(time){
-        return this.vertices('i', time);
-    }
-
-    ShapePropertyConstructorFunction.prototype.outTangents = function(time){
-        return this.vertices('o', time);
-    }
-
-    ShapePropertyConstructorFunction.prototype.isClosed = function(){
-        return this.v.c;
-    }
-
-    ShapePropertyConstructorFunction.prototype.pointOnPath = function(perc, time){
-        var shapePath = this.v;
-        if(time !== undefined) {
-            shapePath = this.getValueAtTime(time, 0);
-        }
-        if(!this._segmentsLength) {
-            this._segmentsLength = bez.getSegmentsLength(shapePath);
-        }
-
-        var segmentsLength = this._segmentsLength;
-        var lengths = segmentsLength.lengths;
-        var lengthPos = segmentsLength.totalLength * perc;
-        var i = 0, len = lengths.length;
-        var j = 0, jLen;
-        var accumulatedLength = 0;
-        var segments;
-        while(i < len) {
-            if(accumulatedLength + lengths[i].addedLength > lengthPos) {
-                segments = lengths[i].segments;
-                var initIndex = i;
-                var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
-                var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;
-                var pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i])
-                break;
-            } else {
-                accumulatedLength += lengths[i].addedLength;
-            }
-            i += 1;
-        }
-        if(!pt){
-            pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]]
-        }
-        return pt;
-    }
-
-    ShapePropertyConstructorFunction.prototype.vectorOnPath = function(perc, time, vectorType){
-        //perc doesn't use triple equality because can be a Number object, not a primitive.
-        perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
-        var pt1 = this.pointOnPath(perc, time);
-        var pt2 = this.pointOnPath(perc + 0.001, time);
-        var xLength = pt2[0] - pt1[0];
-        var yLength = pt2[1] - pt1[1];
-        var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
-        var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
-        return unitVector;
-    }
-
-    ShapePropertyConstructorFunction.prototype.tangentOnPath = function(perc, time){
-        return this.vectorOnPath(perc, time, 'tangent');
-    }
-
-    ShapePropertyConstructorFunction.prototype.normalOnPath = function(perc, time){
-        return this.vectorOnPath(perc, time, 'normal');
-    }
-
-    ShapePropertyConstructorFunction.prototype.setGroupProperty = setGroupProperty;
-    ShapePropertyConstructorFunction.prototype.getValueAtTime = getStaticValueAtTime;
-
-    KeyframedShapePropertyConstructorFunction.prototype.vertices = ShapePropertyConstructorFunction.prototype.vertices;
-    KeyframedShapePropertyConstructorFunction.prototype.points = ShapePropertyConstructorFunction.prototype.points;
-    KeyframedShapePropertyConstructorFunction.prototype.inTangents = ShapePropertyConstructorFunction.prototype.inTangents;
-    KeyframedShapePropertyConstructorFunction.prototype.outTangents = ShapePropertyConstructorFunction.prototype.outTangents;
-    KeyframedShapePropertyConstructorFunction.prototype.isClosed = ShapePropertyConstructorFunction.prototype.isClosed;
-    KeyframedShapePropertyConstructorFunction.prototype.pointOnPath = ShapePropertyConstructorFunction.prototype.pointOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.vectorOnPath = ShapePropertyConstructorFunction.prototype.vectorOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.tangentOnPath = ShapePropertyConstructorFunction.prototype.tangentOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.normalOnPath = ShapePropertyConstructorFunction.prototype.normalOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.setGroupProperty = ShapePropertyConstructorFunction.prototype.setGroupProperty;
-    KeyframedShapePropertyConstructorFunction.prototype.getValueAtTime = getShapeValueAtTime;
-
-    var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
-    ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
-        var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        var isAdded = prop.k;
-        if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
-        }
-        if(type === 3){
-            searchExpressions(elem,data.pt,prop);
-        } else if(type === 4){
-            searchExpressions(elem,data.ks,prop);
-        }
-        if(!isAdded && prop.x){
-            arr.push(prop);
-        }
-        return prop;
-    }
-
-    var propertyGetTextProp = PropertyFactory.getTextSelectorProp;
-    PropertyFactory.getTextSelectorProp = function(elem, data,arr){
-        if(data.t === 1){
-            return new TextExpressionSelectorProp(elem, data,arr);
-        } else {
-            return propertyGetTextProp(elem,data,arr);
-        }
-    }
-}());
-(function addTextPropertyDecorator() {
-
-    function searchExpressions(){
-        if(this.data.d.x){
-            this.comp = this.elem.comp;
-            if(this.getValue) {
-                this.getPreValue = this.getValue;
-            }
-            this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem,this.data.d,this);
-            this.getValue = this.getExpressionValue;
-            return true;
-        }
-        return false;
-    }
-
-    TextProperty.prototype.searchProperty = function(){
-        this.kf = this.searchExpressions() || this.data.d.k.length > 1;
-        return this.kf;
-    }
-
-    TextProperty.prototype.getExpressionValue = function(num){
-        this.calculateExpression();
-        if(this.mdf) {
-            this.currentData.t = this.v.toString();
-            this.completeTextData(this.currentData);
-        }
-    }
-
-    TextProperty.prototype.searchExpressions = searchExpressions;
-    
-}());
-var ExpressionManager = (function(){
-    var ob = {};
-    var Math = BMMath;
-    var window = null;
-    var document = null;
-
-    function duplicatePropertyValue(value, mult){
-        mult = mult || 1;
-
-        if(typeof value === 'number'  || value instanceof Number){
-            return value*mult;
-        }else if(value.i){
-            return JSON.parse(JSON.stringify(value));
-        }else{
-            var arr = Array.apply(null,{length:value.length});
-            var i, len = value.length;
-            for(i=0;i<len;i+=1){
-                arr[i]=value[i]*mult;
-            }
-            return arr;
-        }
-    }
-
-    function shapesEqual(shape1, shape2) {
-        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
-            return false;
-        }
-        var i, len = shape1._length;
-        for(i = 0; i < len; i += 1) {
-            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1]
-                || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1]
-                || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function $bm_neg(a){
-        var tOfA = typeof a;
-        if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
-            return -a;
-        }
-        if(a.constructor === Array){
-            var i, lenA = a.length;
-            var retArr = [];
-            for(i=0;i<lenA;i+=1){
-                retArr[i] = -a[i];
-            }
-            return retArr;
-        }
-    }
-
-    function sum(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        if(tOfA === 'string' || tOfB === 'string'){
-            return a + b;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string'  || b instanceof Number)) {
-            return a + b;
-        }
-        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
-            a[0] = a[0] + b;
-            return a;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
-            b[0] = a + b[0];
-            return b;
-        }
-        if(a.constructor === Array && b.constructor === Array){
-            
-            var i = 0, lenA = a.length, lenB = b.length;
-            var retArr = [];
-            while(i<lenA || i < lenB){
-                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
-                    retArr[i] = a[i] + b[i];
-                }else{
-                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
-                }
-                i += 1;
-            }
-            return retArr;
-        }
-        return 0;
-    }
-    var add = sum;
-
-    function sub(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
-            if(tOfA === 'string') {
-                a = parseInt(a);
-            }
-            if(tOfB === 'string') {
-                b = parseInt(b);
-            }
-            return a - b;
-        }
-        if( a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
-            a[0] = a[0] - b;
-            return a;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  b.constructor === Array){
-            b[0] = a - b[0];
-            return b;
-        }
-        if(a.constructor === Array && b.constructor === Array){
-            var i = 0, lenA = a.length, lenB = b.length;
-            var retArr = [];
-            while(i<lenA || i < lenB){
-                if((typeof a[i] === 'number' || a[i] instanceof Number) && typeof (typeof b[i] === 'number' || b[i] instanceof Number)){
-                    retArr[i] = a[i] - b[i];
-                }else{
-                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
-                }
-                i += 1;
-            }
-            return retArr;
-        }
-        return 0;
-    }
-
-    function mul(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        var arr;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
-            return a * b;
-        }
-
-        var i, len;
-        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
-            len = a.length;
-            arr = Array.apply(null,{length:len});
-            for(i=0;i<len;i+=1){
-                arr[i] = a[i] * b;
-            }
-            return arr;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
-            len = b.length;
-            arr = Array.apply(null,{length:len});
-            for(i=0;i<len;i+=1){
-                arr[i] = a * b[i];
-            }
-            return arr;
-        }
-        return 0;
-    }
-
-    function div(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        var arr;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
-            return a / b;
-        }
-        var i, len;
-        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number  )){
-            len = a.length;
-            arr = Array.apply(null,{length:len});
-            for(i=0;i<len;i+=1){
-                arr[i] = a[i] / b;
-            }
-            return arr;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
-            len = b.length;
-            arr = Array.apply(null,{length:len});
-            for(i=0;i<len;i+=1){
-                arr[i] = a / b[i];
-            }
-            return arr;
-        }
-        return 0;
-    }
-    function mod(a,b) {
-        if(typeof a === 'string') {
-            a = parseInt(a);
-        }
-        if(typeof b === 'string') {
-            b = parseInt(b);
-        }
-        return a % b;
-    }
-
-    function clamp(num, min, max) {
-        if(min > max){
-            var mm = max;
-            max = min;
-            min = mm;
-        }
-        return Math.min(Math.max(num, min), max);
-    }
-
-    function radiansToDegrees(val) {
-        return val/degToRads;
-    }
-    var radians_to_degrees = radiansToDegrees;
-
-    function degreesToRadians(val) {
-        return val*degToRads;
-    }
-    var degrees_to_radians = radiansToDegrees;
-
-    var helperLengthArray = [0,0,0,0,0,0];
-
-    function length(arr1,arr2){
-        if(typeof arr1 === 'number' || arr1 instanceof Number){
-            arr2 = arr2 || 0;
-            return Math.abs(arr1 - arr2);
-        }
-        if(!arr2){
-            arr2 = helperLengthArray;
-        }
-        var i,len = Math.min(arr1.length,arr2.length);
-        var addedLength = 0;
-        for(i=0;i<len;i+=1){
-            addedLength += Math.pow(arr2[i]-arr1[i],2);
-        }
-        return Math.sqrt(addedLength);
-    }
-
-    function normalize(vec){
-        return div(vec, length(vec));
-    }
-
-    function rgbToHsl(val){
-        var r = val[0]; var g = val[1]; var b = val[2];
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var h, s, l = (max + min) / 2;
-
-        if(max == min){
-            h = s = 0; // achromatic
-        }else{
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch(max){
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6;
-        }
-
-        return [h, s, l,val[3]];
-    }
-    function hslToRgb(val){
-        var h = val[0];
-        var s = val[1];
-        var l = val[2];
-
-        var r, g, b;
-
-        if(s == 0){
-            r = g = b = l; // achromatic
-        }else{
-            function hue2rgb(p, q, t){
-                if(t < 0) t += 1;
-                if(t > 1) t -= 1;
-                if(t < 1/6) return p + (q - p) * 6 * t;
-                if(t < 1/2) return q;
-                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                return p;
-            }
-
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
-        }
-
-        return [r, g , b, val[3]];
-    }
-
-    function linear(t, tMin, tMax, value1, value2){
-        if(value1 === undefined || value2 === undefined){
-            return linear(t,0,1,tMin,tMax);
-        }
-        if(t <= tMin) {
-            return value1;
-        }else if(t >= tMax){
-            return value2;
-        }
-        var perc = tMax === tMin ? 0 : (t-tMin)/(tMax-tMin);
-        if(!value1.length){
-            return value1 + (value2-value1)*perc;
-        }
-        var i, len = value1.length;
-        var arr = Array.apply( null, { length: len } );
-        for(i=0;i<len;i+=1){
-            arr[i] = value1[i] + (value2[i]-value1[i])*perc;
-        }
-        return arr;
-    }
-    function random(min,max){
-        if(max === undefined){
-            if(min === undefined){
-                min = 0;
-                max = 1;
-            } else {
-                max = min;
-                min = undefined;
-            }
-        }
-        if(max.length){
-            var i, len = max.length;
-            if(!min){
-                min = Array.apply(null,{length:len});
-            }
-            var arr = Array.apply(null,{length:len});
-            var rnd = BMMath.random();
-            for(i=0;i<len;i+=1){
-                arr[i] = min[i] + rnd*(max[i]-min[i])
-            }
-            return arr;
-        }
-        if(min === undefined){
-            min = 0;
-        }
-        var rndm = BMMath.random();
-        return min + rndm*(max-min);
-    }
-
-    function createPath(points, inTangents, outTangents, closed) {
-        inTangents = inTangents && inTangents.length ? inTangents : points;
-        outTangents = outTangents && outTangents.length ? outTangents : points;
-        var path = shape_pool.newShape();
-        var len = points.length;
-        path.setPathData(closed, len);
-        for(i = 0; i < len; i += 1) {
-            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true)
-        }
-        return path
-    }
-
-    function initiateExpression(elem,data,property){
-        var val = data.x;
-        var needsVelocity = /velocity(?![\w\d])/.test(val);
-        var _needsRandom = val.indexOf('random') !== -1;
-        var elemType = elem.data.ty;
-        var transform,content,effect;
-        var thisComp = elem.comp;
-        var thisProperty = property;
-        elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
-        var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
-        var outPoint = elem.data.op/elem.comp.globalData.frameRate;
-        var width = elem.data.sw ? elem.data.sw : 0;
-        var height = elem.data.sh ? elem.data.sh : 0;
-        var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
-        var fn = new Function();
-        //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        //eval(fnStr);
-
-        var fn = eval('[function(){' + val+';if($bm_rt.__shapeObject){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
-        var bindedFn = fn.bind(this);
-        var numKeys = property.kf ? data.k.length : 0;
-
-        var wiggle = function wiggle(freq,amp){
-            var i,j, len = this.pv.length ? this.pv.length : 1;
-            var addedAmps = Array.apply(null,{len:len});
-            for(j=0;j<len;j+=1){
-                addedAmps[j] = 0;
-            }
-            freq = 5;
-            var iterations = Math.floor(time*freq);
-            i = 0;
-            j = 0;
-            while(i<iterations){
-                //var rnd = BMMath.random();
-                for(j=0;j<len;j+=1){
-                    addedAmps[j] += -amp + amp*2*BMMath.random();
-                    //addedAmps[j] += -amp + amp*2*rnd;
-                }
-                i += 1;
-            }
-            //var rnd2 = BMMath.random();
-            var periods = time*freq;
-            var perc = periods - Math.floor(periods);
-            var arr = Array.apply({length:len});
-            if(len>1){
-                for(j=0;j<len;j+=1){
-                    arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
-                }
-                return arr;
-            } else {
-                return this.pv + addedAmps[0] + (-amp + amp*2*BMMath.random())*perc;
-            }
-        }.bind(this);
-
-        if(thisProperty.loopIn) {
-            loopIn = thisProperty.loopIn.bind(thisProperty);
-            loop_in = loopIn;
-        }
-
-        if(thisProperty.loopOut) {
-            loopOut = thisProperty.loopOut.bind(thisProperty);
-            loop_out = loopOut;
-        }
-
-        var loopInDuration = function loopInDuration(type,duration){
-            return loopIn(type,duration,true);
-        }.bind(this);
-
-        var loopOutDuration = function loopOutDuration(type,duration){
-            return loopOut(type,duration,true);
-        }.bind(this);
-
-        if(this.getValueAtTime) {
-            valueAtTime = this.getValueAtTime.bind(this);
-        }
-
-        if(this.getVelocityAtTime) {
-            velocityAtTime = this.getVelocityAtTime.bind(this);
-        }
-
-        var comp = elem.comp.globalData.projectInterface.bind(elem.comp.globalData.projectInterface);
-
-        function lookAt(elem1,elem2){
-            var fVec = [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
-            var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
-            var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
-            return [yaw,pitch,0];
-        };
-
-        function easeOut(t, val1, val2){
-            return -(val2-val1) * t*(t-2) + val1;
-        };
-
-        function nearestKey(time){
-            var i, len = data.k.length,index,keyTime;
-            if(!data.k.length || typeof(data.k[0]) === 'number'){
-                index = 0;
-                keyTime = 0;
-            } else {
-                index = -1;
-                time *= elem.comp.globalData.frameRate;
-                if (time < data.k[0].t) {
-                    index = 1;
-                    keyTime = data.k[0].t;
-                } else {
-                    for(i=0;i<len-1;i+=1){
-                        if(time === data.k[i].t){
-                            index = i + 1;
-                            keyTime = data.k[i].t;
-                            break;
-                        }else if(time>data.k[i].t && time<data.k[i+1].t){
-                            if(time-data.k[i].t > data.k[i+1].t - time){
-                                index = i + 2;
-                                keyTime = data.k[i+1].t;
-                            } else {
-                                index = i + 1;
-                                keyTime = data.k[i].t;
-                            }
-                            break;
-                        }
-                    }
-                    if(index === -1){
-                        index = i + 1;
-                        keyTime = data.k[i].t;
-                    }
-                }
-                
-            }
-            var ob = {};
-            ob.index = index;
-            ob.time = keyTime/elem.comp.globalData.frameRate;
-            return ob;
-        };
-
-        function key(ind){
-            var ob, i, len;
-            if(!data.k.length || typeof(data.k[0]) === 'number'){
-                throw new Error('The property has no keyframe at index ' + ind);
-            }
-            ind -= 1;
-            ob = {
-                time: data.k[ind].t/elem.comp.globalData.frameRate
-            };
-            var arr;
-            if(ind === data.k.length - 1 && !data.k[ind].h){
-                arr = data.k[ind-1].e;
-            }else{
-                arr = data.k[ind].s;
-            }
-            len = arr.length;
-            for(i=0;i<len;i+=1){
-                ob[i] = arr[i];
-            }
-            return ob;
-        };
-
-        function framesToTime(frames,fps){
-            if(!fps){
-                fps = elem.comp.globalData.frameRate;
-            }
-            return frames/fps;
-        };
-
-        function timeToFrames(t,fps){
-            if(!t && t !== 0){
-                t = time;
-            }
-            if(!fps){
-                fps = elem.comp.globalData.frameRate;
-            }
-            return t*fps;
-        };
-
-        function seedRandom(seed){
-            BMMath.seedrandom(randSeed + seed);
-        };
-
-        function sourceRectAtTime() {
-            return elem.sourceRectAtTime();
-        }
-
-        var time,velocity, value,textIndex,textTotal,selectorValue;
-        var index = elem.data.ind;
-        var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
-        var parent;
-        var randSeed = Math.floor(Math.random()*1000000);
-        function executeExpression(){
-            if(_needsRandom){
-                seedRandom(randSeed);
-            }
-            if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
-                return;
-            }
-            if(this.lock){
-                this.v = duplicatePropertyValue(this.pv,this.mult);
-                return true;
-            }
-            if(this.type === 'textSelector'){
-                textIndex = this.textIndex;
-                textTotal = this.textTotal;
-                selectorValue = this.selectorValue;
-            }
-            if(!thisLayer){
-                thisLayer = elem.layerInterface;
-                thisComp = elem.comp.compInterface;
-                toWorld = thisLayer.toWorld.bind(thisLayer);
-                fromWorld = thisLayer.fromWorld.bind(thisLayer);
-                fromComp = thisLayer.fromComp.bind(thisLayer);
-                mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer):null;
-                fromCompToSurface = fromComp;
-            }
-            if(!transform){
-                transform = elem.layerInterface("ADBE Transform Group");
-                anchorPoint = transform.anchorPoint;
-            }
-            
-            if(elemType === 4 && !content){
-                content = thisLayer("ADBE Root Vectors Group");
-            }
-            if(!effect){
-                effect = thisLayer(4);
-            }
-            hasParent = !!(elem.hierarchy && elem.hierarchy.length);
-            if(hasParent && !parent){
-                parent = elem.hierarchy[0].layerInterface;
-            }
-            this.lock = true;
-            if(this.getPreValue){
-                this.getPreValue();
-            }
-            value = this.pv;
-            time = this.comp.renderedFrame/this.comp.globalData.frameRate;
-            if(needsVelocity){
-                velocity = velocityAtTime(time);
-            }
-            bindedFn();
-            this.frameExpressionId = elem.globalData.frameId;
-            var i,len;
-            if(this.mult){
-                if(typeof this.v === 'number' || this.v instanceof Number || this.v instanceof String || typeof this.v === 'string'){
-                    this.v *= this.mult;
-                }else if(this.v.length === 1){
-                    this.v = this.v[0] * this.mult;
-                }else{
-                    len = this.v.length;
-                    if(value === this.v){
-                        this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
-                    }
-                    for(i = 0; i < len; i += 1){
-                        this.v[i] *= this.mult;
-                    }
-                }
-            }
-            if(this.v.length === 1){
-                this.v = this.v[0];
-            }
-            if(typeof this.v === 'number' || this.v instanceof Number || this.v instanceof String || typeof this.v === 'string'){
-                if(this.lastValue !== this.v){
-                    this.lastValue = this.v;
-                    this.mdf = true;
-                }
-            }else if( this.v._length){
-                if(!shapesEqual(this.v,this.localShapeCollection.shapes[0])){
-                    this.mdf = true;
-                    this.localShapeCollection.releaseShapes();
-                    this.localShapeCollection.addShape(shape_pool.clone(this.v));
-                }
-            }else{
-                len = this.v.length;
-                for(i = 0; i < len; i += 1){
-                    if(this.v[i] !== this.lastValue[i]){
-                        this.lastValue[i] = this.v[i];
-                        this.mdf = true;
-                    }
-                }
-            }
-            this.lock = false;
-        }
-        return executeExpression;
-    };
-
-    ob.initiateExpression = initiateExpression;
-    return ob;
-}());
-var ShapeExpressionInterface = (function(){
-    var ob = {
-        createShapeInterface:createShapeInterface,
-        createGroupInterface:createGroupInterface,
-        createTrimInterface:createTrimInterface,
-        createStrokeInterface:createStrokeInterface,
-        createTransformInterface:createTransformInterface,
-        createEllipseInterface:createEllipseInterface,
-        createStarInterface:createStarInterface,
-        createRectInterface:createRectInterface,
-        createRoundedInterface:createRoundedInterface,
-        createRepatearInterface:createRepatearInterface,
-        createPathInterface:createPathInterface,
-        createFillInterface:createFillInterface
-    };
-    function createShapeInterface(shapes,view,propertyGroup){
-        return shapeInterfaceFactory(shapes,view,propertyGroup);
-    }
-    function createGroupInterface(shapes,view,propertyGroup){
-        return groupInterfaceFactory(shapes,view,propertyGroup);
-    }
-    function createFillInterface(shape,view,propertyGroup){
-        return fillInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createStrokeInterface(shape,view,propertyGroup){
-        return strokeInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createTrimInterface(shape,view,propertyGroup){
-        return trimInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createTransformInterface(shape,view,propertyGroup){
-        return transformInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createEllipseInterface(shape,view,propertyGroup){
-        return ellipseInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createStarInterface(shape,view,propertyGroup){
-        return starInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createRectInterface(shape,view,propertyGroup){
-        return rectInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createRoundedInterface(shape,view,propertyGroup){
-        return roundedInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createRepatearInterface(shape,view,propertyGroup){
-        return repeaterInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createPathInterface(shape,view,propertyGroup){
-        return pathInterfaceFactory(shape,view,propertyGroup);
-    }
-
-    function iterateElements(shapes,view, propertyGroup){
-        var arr = [];
-        var i, len = shapes ? shapes.length : 0;
-        for(i=0;i<len;i+=1){
-            if(shapes[i].ty == 'gr'){
-                arr.push(ShapeExpressionInterface.createGroupInterface(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'fl'){
-                arr.push(ShapeExpressionInterface.createFillInterface(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'st'){
-                arr.push(ShapeExpressionInterface.createStrokeInterface(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'tm'){
-                arr.push(ShapeExpressionInterface.createTrimInterface(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'tr'){
-                //arr.push(ShapeExpressionInterface.createTransformInterface(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'el'){
-                arr.push(ShapeExpressionInterface.createEllipseInterface(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'sr'){
-                arr.push(ShapeExpressionInterface.createStarInterface(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'sh'){
-                arr.push(ShapeExpressionInterface.createPathInterface(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'rc'){
-                arr.push(ShapeExpressionInterface.createRectInterface(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'rd'){
-                arr.push(ShapeExpressionInterface.createRoundedInterface(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'rp'){
-                arr.push(ShapeExpressionInterface.createRepatearInterface(shapes[i],view[i],propertyGroup));
-            } else{
-                //console.log(shapes[i].ty);
-            }
-        }
-        return arr;
-    }
-
-    var shapeInterfaceFactory = (function(){
-        return function(shapes,view,propertyGroup){
-            var interfaces;
-            function _interfaceFunction(value){
-                if(typeof value === 'number'){
-                    return interfaces[value-1];
-                } else {
-                    var i = 0, len = interfaces.length;
-                    while(i<len){
-                        if(interfaces[i]._name === value){
-                            return interfaces[i];
-                        }
-                        i+=1;
-                    }
-                }
-            }
-            _interfaceFunction.propertyGroup = propertyGroup;
-            interfaces = iterateElements(shapes, view, _interfaceFunction);
-            return _interfaceFunction;
-        }
-    }());
-
-    var contentsInterfaceFactory = (function(){
-       return function(shape,view, propertyGroup){
-           var interfaces;
-           var interfaceFunction = function _interfaceFunction(value){
-               var i = 0, len = interfaces.length;
-                while(i<len){
-                    if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value){
-                       return interfaces[i];
-                    }
-                    i+=1;
-                }
-                if(typeof value === 'number'){
-                   return interfaces[value-1];
-                }
-           };
-           interfaceFunction.propertyGroup = function(val){
-               if(val === 1){
-                   return interfaceFunction;
-               } else{
-                   return propertyGroup(val-1);
-               }
-           };
-           interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
-           interfaceFunction.numProperties = interfaces.length;
-           interfaceFunction.propertyIndex = shape.cix;
-
-           return interfaceFunction;
-       }
-    }());
-
-    var groupInterfaceFactory = (function(){
-        return function(shape,view, propertyGroup){
-            var interfaceFunction = function _interfaceFunction(value){
-                switch(value){
-                    case 'ADBE Vectors Group':
-                    case 'Contents':
-                    case 2:
-                        return interfaceFunction.content;
-                    case 'ADBE Vector Transform Group':
-                    case 3:
-                    default:
-                        return interfaceFunction.transform;
-                }
-            }
-            interfaceFunction.propertyGroup = function(val){
-                if(val === 1){
-                    return interfaceFunction;
-                } else{
-                    return propertyGroup(val-1);
-                }
-            };
-            var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
-            var transformInterface = ShapeExpressionInterface.createTransformInterface(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
-            interfaceFunction.content = content;
-            interfaceFunction.transform = transformInterface;
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            //interfaceFunction.content = interfaceFunction;
-            interfaceFunction.numProperties = shape.np;
-            interfaceFunction.propertyIndex = shape.ix;
-            interfaceFunction.nm = shape.nm;
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var fillInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-
-            function interfaceFunction(val){
-                if(val === 'Color' || val === 'color'){
-                    return interfaceFunction.color;
-                } else if(val === 'Opacity' || val === 'opacity'){
-                    return interfaceFunction.opacity;
-                }
-            }
-            Object.defineProperty(interfaceFunction, 'color', {
-                get: function(){
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'opacity', {
-                get: function(){
-                    return ExpressionValue(view.o, 100);
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
-            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
-
-            view.c.setGroupProperty(propertyGroup);
-            view.o.setGroupProperty(propertyGroup);
-            return interfaceFunction;
-        }
-    }());
-
-    var strokeInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val === 1){
-                    return ob;
-                } else{
-                    return propertyGroup(val-1);
-                }
-            };
-            function _dashPropertyGroup(val){
-                if(val === 1){
-                    return dashOb;
-                } else{
-                    return _propertyGroup(val-1);
-                }
-            };
-            function addPropertyToDashOb(i) {
-                Object.defineProperty(dashOb, shape.d[i].nm, {
-                    get: function(){
-                        return ExpressionValue(view.d.dataProps[i].p)
-                    }
-                });
-            }
-            var i, len = shape.d ? shape.d.length : 0;
-            var dashOb = {}
-            for (i = 0; i < len; i += 1) {
-                addPropertyToDashOb(i);
-                view.d.dataProps[i].p.setGroupProperty(_dashPropertyGroup);
-            }
-
-            function interfaceFunction(val){
-                if(val === 'Color' || val === 'color'){
-                    return interfaceFunction.color;
-                } else if(val === 'Opacity' || val === 'opacity'){
-                    return interfaceFunction.opacity;
-                } else if(val === 'Stroke Width' || val === 'stroke width'){
-                    return interfaceFunction.strokeWidth;
-                }
-            }
-            Object.defineProperty(interfaceFunction, 'color', {
-                get: function(){
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'opacity', {
-                get: function(){
-                    return ExpressionValue(view.o, 100);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'strokeWidth', {
-                get: function(){
-                    return ExpressionValue(view.w);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'dash', {
-                get: function(){
-                    return dashOb;
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
-            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
-
-            view.c.setGroupProperty(_propertyGroup);
-            view.o.setGroupProperty(_propertyGroup);
-            view.w.setGroupProperty(_propertyGroup);
-            return interfaceFunction;
-        }
-    }());
-
-    var trimInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            interfaceFunction.propertyIndex = shape.ix;
-
-            view.s.setGroupProperty(_propertyGroup);
-            view.e.setGroupProperty(_propertyGroup);
-            view.o.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(val){
-                if(val === shape.e.ix || val === 'End' || val === 'end'){
-                    return interfaceFunction.end;
-                }
-                if(val === shape.s.ix){
-                    return interfaceFunction.start;
-                }
-                if(val === shape.o.ix){
-                    return interfaceFunction.offset;
-                }
-            }
-            interfaceFunction.propertyIndex = shape.ix;
-            Object.defineProperty(interfaceFunction, 'start', {
-                get: function(){
-                    return ExpressionValue(view.s, 1 / view.s.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'end', {
-                get: function(){
-                    return ExpressionValue(view.e, 1 / view.e.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'offset', {
-                get: function(){
-                    return ExpressionValue(view.o);
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var transformInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            view.transform.mProps.o.setGroupProperty(_propertyGroup);
-            view.transform.mProps.p.setGroupProperty(_propertyGroup);
-            view.transform.mProps.a.setGroupProperty(_propertyGroup);
-            view.transform.mProps.s.setGroupProperty(_propertyGroup);
-            view.transform.mProps.r.setGroupProperty(_propertyGroup);
-            if(view.transform.mProps.sk){
-                view.transform.mProps.sk.setGroupProperty(_propertyGroup);
-                view.transform.mProps.sa.setGroupProperty(_propertyGroup);
-            }
-            view.transform.op.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(value){
-                if(shape.a.ix === value){
-                    return interfaceFunction.anchorPoint;
-                }
-                if(shape.o.ix === value){
-                    return interfaceFunction.opacity;
-                }
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.r.ix === value){
-                    return interfaceFunction.rotation;
-                }
-                if(shape.s.ix === value){
-                    return interfaceFunction.scale;
-                }
-                if(shape.sk && shape.sk.ix === value){
-                    return interfaceFunction.skew;
-                }
-                if(shape.sa && shape.sa.ix === value){
-                    return interfaceFunction.skewAxis;
-                }
-                if(value === 'Opacity') {
-                    return interfaceFunction.opacity;
-                }
-                if(value === 'Position') {
-                    return interfaceFunction.position;
-                }
-                if(value === 'Anchor Point') {
-                    return interfaceFunction.anchorPoint;
-                }
-                if(value === 'Scale') {
-                    return interfaceFunction.scale;
-                }
-                if(value === 'Rotation' || value === 'ADBE Vector Rotation') {
-                    return interfaceFunction.rotation;
-                }
-                if(value === 'Skew') {
-                    return interfaceFunction.skew;
-                }
-                if(value === 'Skew Axis') {
-                    return interfaceFunction.skewAxis;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'opacity', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.o, 1/view.transform.mProps.o.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'position', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.p);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'anchorPoint', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.a);
-                }
-            });
-            var scaleArray = [];
-            Object.defineProperty(interfaceFunction, 'scale', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.s, 1 / view.transform.mProps.s.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'rotation', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.r, 1 / view.transform.mProps.r.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'skew', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sk);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'skewAxis', {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sa);
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.ty = 'tr';
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var ellipseInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            interfaceFunction.propertyIndex = shape.ix;
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            prop.s.setGroupProperty(_propertyGroup);
-            prop.p.setGroupProperty(_propertyGroup);
-            function interfaceFunction(value){
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.s.ix === value){
-                    return interfaceFunction.size;
-                }
-            }
-            Object.defineProperty(interfaceFunction, 'size', {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'position', {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var starInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.or.setGroupProperty(_propertyGroup);
-            prop.os.setGroupProperty(_propertyGroup);
-            prop.pt.setGroupProperty(_propertyGroup);
-            prop.p.setGroupProperty(_propertyGroup);
-            prop.r.setGroupProperty(_propertyGroup);
-            if(shape.ir){
-                prop.ir.setGroupProperty(_propertyGroup);
-                prop.is.setGroupProperty(_propertyGroup);
-            }
-
-            function interfaceFunction(value){
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.r.ix === value){
-                    return interfaceFunction.rotation;
-                }
-                if(shape.pt.ix === value){
-                    return interfaceFunction.points;
-                }
-                if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
-                    return interfaceFunction.outerRadius;
-                }
-                if(shape.os.ix === value){
-                    return interfaceFunction.outerRoundness;
-                }
-                if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
-                    return interfaceFunction.innerRadius;
-                }
-                if(shape.is && shape.is.ix === value){
-                    return interfaceFunction.innerRoundness;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'position', {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'rotation', {
-                get: function(){
-                    return ExpressionValue(prop.r, 1 / prop.r.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'points', {
-                get: function(){
-                    return ExpressionValue(prop.pt);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'outerRadius', {
-                get: function(){
-                    return ExpressionValue(prop.or);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'outerRoundness', {
-                get: function(){
-                    return ExpressionValue(prop.os);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'innerRadius', {
-                get: function(){
-                    if(!prop.ir){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.ir);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'innerRoundness', {
-                get: function(){
-                    if(!prop.is){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.is, 1 / prop.is.mult);
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var rectInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.p.setGroupProperty(_propertyGroup);
-            prop.s.setGroupProperty(_propertyGroup);
-            prop.r.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(value){
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.r.ix === value){
-                    return interfaceFunction.roundness;
-                }
-                if(shape.s.ix === value || value === 'Size'){
-                    return interfaceFunction.size;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'position', {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'roundness', {
-                get: function(){
-                    return ExpressionValue(prop.r);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'size', {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
-            });
-
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var roundedInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            var prop = view;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.rd.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(value){
-                if(shape.r.ix === value || 'Round Corners 1' === value){
-                    return interfaceFunction.radius;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'radius', {
-                get: function(){
-                    return ExpressionValue(prop.rd);
-                }
-            });
-
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var repeaterInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            var prop = view;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.c.setGroupProperty(_propertyGroup);
-            prop.o.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(value){
-                if(shape.c.ix === value || 'Copies' === value){
-                    return interfaceFunction.copies;
-                } else if(shape.o.ix === value || 'Offset' === value){
-                    return interfaceFunction.offset;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'copies', {
-                get: function(){
-                    return ExpressionValue(prop.c);
-                }
-            });
-
-            Object.defineProperty(interfaceFunction, 'offset', {
-                get: function(){
-                    return ExpressionValue(prop.o);
-                }
-            });
-
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
-
-    var pathInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            var prop = view.sh;
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
-            }
-            prop.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(val){
-                if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
-                    return interfaceFunction.path;
-                }
-            }
-
-            Object.defineProperty(interfaceFunction, 'path', {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                    //return shape_pool.clone(prop.v);
-                }
-            });
-            Object.defineProperty(interfaceFunction, 'shape', {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                    //return shape_pool.clone(prop.v);
-                }
-            });
-            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
-            Object.defineProperty(interfaceFunction, 'ix', { value: shape.ix });
-            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
-            return interfaceFunction;
-        }
-    }());
-
-
-    return ob;
-}())
-
-var TextExpressionInterface = (function(){
-	return function(elem){
-        var _prevValue, _sourceText;
-        function _thisLayerFunction(){
-        }
-        Object.defineProperty(_thisLayerFunction, "sourceText", {
-            get: function(){
-                var stringValue = elem.textProperty.currentData.t;
-                if(elem.textProperty.currentData.t !== _prevValue) {
-                    elem.textProperty.currentData.t = _prevValue;
-                    _sourceText = new String(stringValue);
-                    //If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive
-                    _sourceText.value = stringValue ? stringValue : new String(stringValue);
-                }
-                return _sourceText;
-            }
-        });
-        return _thisLayerFunction;
-    }
-}())
-var LayerExpressionInterface = (function (){
-    function toWorld(arr, time){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
-        } else {
-            transformMat = this._elem.finalTransform.mProp;
-        }
-        transformMat.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
-            var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-            }
-            return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-        }
-        return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-    }
-    function fromWorld(arr, time){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
-        } else {
-            transformMat = this._elem.finalTransform.mProp;
-        }
-        transformMat.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
-            var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-            }
-            return toWorldMat.inversePoint(arr);
-        }
-        return toWorldMat.inversePoint(arr);
-    }
-    function fromComp(arr){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
-            var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-            }
-            return toWorldMat.inversePoint(arr);
-        }
-        return toWorldMat.inversePoint(arr);
-    }
-
-
-    return function(elem){
-
-        var transformInterface = TransformExpressionInterface(elem.transform);
-
-        function _registerMaskInterface(maskManager){
-            _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);
-        }
-        function _registerEffectsInterface(effects){
-            _thisLayerFunction.effect = effects;
-        }
-
-        function _thisLayerFunction(name){
-            switch(name){
-                case "ADBE Root Vectors Group":
-                case "Contents":
-                case 2:
-                    return _thisLayerFunction.shapeInterface;
-                case 1:
-                case 6:
-                case "Transform":
-                case "transform":
-                case "ADBE Transform Group":
-                    return transformInterface;
-                case 4:
-                case "ADBE Effect Parade":
-                    return _thisLayerFunction.effect;
-            }
-        }
-        _thisLayerFunction.toWorld = toWorld;
-        _thisLayerFunction.fromWorld = fromWorld;
-        _thisLayerFunction.toComp = toWorld;
-        _thisLayerFunction.fromComp = fromComp;
-        _thisLayerFunction.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
-        _thisLayerFunction._elem = elem;
-        Object.defineProperty(_thisLayerFunction, 'hasParent', {
-            get: function(){
-                return !!elem.hierarchy;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, 'parent', {
-            get: function(){
-                return elem.hierarchy[0].layerInterface;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, "rotation", {
-            get: function(){
-                return transformInterface.rotation;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, "scale", {
-            get: function () {
-                return transformInterface.scale;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "position", {
-            get: function () {
-                return transformInterface.position;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", {
-            get: function () {
-                return transformInterface.anchorPoint;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "transform", {
-            get: function () {
-                return transformInterface;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "width", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.w
-                }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "height", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.h
-                }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "source", {
-            get: function () {
-                return elem.data.refId;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "index", {
-            get: function () {
-                return elem.data.ind;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
-        Object.defineProperty(_thisLayerFunction, "content", {
-            get: function(){
-                return _thisLayerFunction.shapeInterface;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "active", {
-            get: function(){
-                return elem.isVisible;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "text", {
-            get: function(){
-                return _thisLayerFunction.textInterface;
-            }
-        });
-
-        _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
-        _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;
-        return _thisLayerFunction;
-    }
-}());
-
-var CompExpressionInterface = (function (){
-    return function(comp){
-        function _thisLayerFunction(name){
-            var i=0, len = comp.layers.length;
-            while(i<len){
-                if(comp.layers[i].nm === name || comp.layers[i].ind === name){
-                    return comp.elements[i].layerInterface;
-                }
-                i += 1;
-            }
-            return {active:false}
-        }
-        Object.defineProperty(_thisLayerFunction, "_name", { value:comp.data.nm });
-        _thisLayerFunction.layer = _thisLayerFunction;
-        _thisLayerFunction.pixelAspect = 1;
-        _thisLayerFunction.height = comp.globalData.compSize.h;
-        _thisLayerFunction.width = comp.globalData.compSize.w;
-        _thisLayerFunction.pixelAspect = 1;
-        _thisLayerFunction.frameDuration = 1/comp.globalData.frameRate;
-        return _thisLayerFunction;
-    }
-}());
-var TransformExpressionInterface = (function (){
-    return function(transform){
-        function _thisFunction(name){
-            switch(name){
-                case "scale":
-                case "Scale":
-                case "ADBE Scale":
-                case 6:
-                    return _thisFunction.scale;
-                case "rotation":
-                case "Rotation":
-                case "ADBE Rotation":
-                case "ADBE Rotate Z":
-                case 10:
-                    return _thisFunction.rotation;
-                case "position":
-                case "Position":
-                case "ADBE Position":
-                case 2:
-                    return transform.position;
-                case "anchorPoint":
-                case "AnchorPoint":
-                case "Anchor Point":
-                case "ADBE AnchorPoint":
-                case 1:
-                    return _thisFunction.anchorPoint;
-                case "opacity":
-                case "Opacity":
-                case 11:
-                    return _thisFunction.opacity;
-            }
-        }
-
-        Object.defineProperty(_thisFunction, "rotation", {
-            get: function(){
-                return transform.rotation;
-            }
-        });
-        Object.defineProperty(_thisFunction, "scale", {
-            get: function () {
-                return transform.scale;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "position", {
-            get: function () {
-                return transform.position;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "xPosition", {
-            get: function () {
-                return transform.xPosition;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "yPosition", {
-            get: function () {
-                return transform.yPosition;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "anchorPoint", {
-            get: function () {
-                return transform.anchorPoint;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "opacity", {
-            get: function () {
-                return transform.opacity;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "skew", {
-            get: function () {
-                return transform.skew;
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "skewAxis", {
-            get: function () {
-                return transform.skewAxis;
-            }
-        });
-
-        return _thisFunction;
-    }
-}());
-var ProjectInterface = (function (){
-
-    function registerComposition(comp){
-        this.compositions.push(comp);
-    }
-
-    return function(){
-        function _thisProjectFunction(name){
-            var i = 0, len = this.compositions.length;
-            while(i<len){
-                if(this.compositions[i].data && this.compositions[i].data.nm === name){
-                    if(this.compositions[i].prepareFrame) {
-                        this.compositions[i].prepareFrame(this.currentFrame);
-                    }
-                    return this.compositions[i].compInterface;
-                }
-                i+=1;
-            }
-        }
-
-        _thisProjectFunction.compositions = [];
-        _thisProjectFunction.currentFrame = 0;
-
-        _thisProjectFunction.registerComposition = registerComposition;
-
-
-
-        return _thisProjectFunction;
-    }
-}());
-var EffectsExpressionInterface = (function (){
-    var ob = {
-        createEffectsInterface: createEffectsInterface
-    };
-
-    function createEffectsInterface(elem, propertyGroup){
-        if(elem.effects){
-
-            var effectElements = [];
-            var effectsData = elem.data.ef;
-            var i, len = elem.effects.effectElements.length;
-            for(i=0;i<len;i+=1){
-                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup,elem));
-            }
-
-            return function(name){
-                var effects = elem.data.ef, i = 0, len = effects.length;
-                while(i<len) {
-                    if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
-                        return effectElements[i];
-                    }
-                    i += 1;
-                }
-            }
-        }
-    }
-
-    function createGroupInterface(data,elements, propertyGroup, elem){
-        var effectElements = [];
-        var i, len = data.ef.length;
-        for(i=0;i<len;i+=1){
-            if(data.ef[i].ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
-            } else {
-                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
-            }
-        }
-
-        function _propertyGroup(val) {
-            if(val === 1){
-               return groupInterface;
-            } else{
-               return propertyGroup(val-1);
-            }
-        }
-
-        var groupInterface = function(name){
-            var effects = data.ef, i = 0, len = effects.length;
-            while(i<len) {
-                if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
-                    if(effects[i].ty === 5){
-                        return effectElements[i];
-                    } else {
-                        return effectElements[i]();
-                    }
-                }
-                i += 1;
-            }
-            return effectElements[0]();
-        }
-
-        groupInterface.propertyGroup = _propertyGroup;
-
-        if(data.mn === 'ADBE Color Control'){
-            Object.defineProperty(groupInterface, 'color', {
-                get: function(){
-                    return effectElements[0]();
-                }
-            });
-        }
-        Object.defineProperty(groupInterface, 'numProperties', {
-            get: function(){
-                return data.np;
-            }
-        });
-        groupInterface.active = data.en !== 0;
-        return groupInterface
-    }
-
-    function createValueInterface(element, type, elem, propertyGroup){
-        function interfaceFunction(){
-            if(type === 10){
-                return elem.comp.compInterface(element.p.v);
-            }
-            return ExpressionValue(element.p);
-        }
-
-        if(element.p.setGroupProperty) {
-            element.p.setGroupProperty(propertyGroup);
-        }
-
-        return interfaceFunction;
-    }
-
-    return ob;
-
-}());
-var MaskManagerInterface = (function(){
-
-	function MaskInterface(mask, data){
-		this._mask = mask;
-		this._data = data;
-	}
-	Object.defineProperty(MaskInterface.prototype, 'maskPath', {
-        get: function(){
-                if(this._mask.prop.k){
-                    this._mask.prop.getValue();
-                }
-                return this._mask.prop;
-            }
-        });
-
-	var MaskManager = function(maskManager, elem){
-		var _maskManager = maskManager;
-		var _elem = elem;
-		var _masksInterfaces = Array.apply(null,{length: maskManager.viewData.length});
-		var i, len = maskManager.viewData.length;
-		for(i = 0; i < len; i += 1) {
-			_masksInterfaces[i] = new MaskInterface(maskManager.viewData[i], maskManager.masksProperties[i]);
-		}
-
-		var maskFunction = function(name){
-			i = 0;
-		    while(i<len){
-		        if(maskManager.masksProperties[i].nm === name){
-		            return _masksInterfaces[i];
-		        }
-		        i += 1;
-		    }
-		}
-		return maskFunction
-	}
-	return MaskManager
-}())
-
-
-var ExpressionValue = (function() {
-	return function(elementProp, mult, type) {
-        var expressionValue, arrayValue;
-
-		if (elementProp.k) {
-            elementProp.getValue();
-        }
-        var i, len, arrValue;
-        if (type) {
-        	if(type === 'color') {
-        		len = 4;
-		        expressionValue = Array.apply(null, {length: len});
-		        arrValue = Array.apply(null, {length: len});
-		        for (i = 0; i < len; i += 1) {
-		            expressionValue[i] = arrValue[i] = (mult && i < 3) ? elementProp.v[i] * mult : 1;
-		        }
-	        	expressionValue.value = arrValue;
-        	}
-        } else if (typeof elementProp.v === 'number' || elementProp.v instanceof Number){
-            expressionValue = mult ? new Number(elementProp.v * mult) : new Number(elementProp.v);
-            expressionValue.value = mult ? elementProp.v * mult : elementProp.v;
-        } else {
-        	len = elementProp.v.length;
-	        expressionValue = Array.apply(null, {length: len});
-	        arrValue = Array.apply(null, {length: len});
-	        for (i = 0; i < len; i += 1) {
-	            expressionValue[i] = arrValue[i] = mult ? elementProp.v[i] * mult : elementProp.v[i];
-	        }
-	        expressionValue.value = arrValue;
-        }
-        
-        expressionValue.numKeys = elementProp.keyframes ? elementProp.keyframes.length : 0;
-        expressionValue.key = function(pos) {
-            if (!expressionValue.numKeys) {
-                return 0;
-            } else {
-                return elementProp.keyframes[pos-1].t;
-            }
-        };
-        expressionValue.valueAtTime = elementProp.getValueAtTime;
-        expressionValue.propertyGroup = elementProp.propertyGroup;
-        return expressionValue;
-	}
-}())
-function SliderEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
-}
-function AngleEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
-}
-function ColorEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
-}
-function PointEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
-}
-function LayerIndexEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
-}
-function MaskIndexEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
-}
-function CheckboxEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
-}
-function NoValueEffect(){
-    this.p = {};
-}
-function EffectsManager(data,element,dynamicProperties){
-    var effects = data.ef;
-    this.effectElements = [];
-    var i,len = effects.length;
-    var effectItem;
-    for(i=0;i<len;i++) {
-        effectItem = new GroupEffect(effects[i],element,dynamicProperties);
-        this.effectElements.push(effectItem);
-    }
-}
-
-function GroupEffect(data,element,dynamicProperties){
-    this.dynamicProperties = [];
-    this.init(data,element,this.dynamicProperties);
-    if(this.dynamicProperties.length){
-        dynamicProperties.push(this);
-    }
-}
-
-GroupEffect.prototype.getValue = function(){
-    this.mdf = false;
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        this.mdf = this.dynamicProperties[i].mdf ? true : this.mdf;
-    }
-};
-
-GroupEffect.prototype.init = function(data,element,dynamicProperties){
-    this.data = data;
-    this.mdf = false;
-    this.effectElements = [];
-    var i, len = this.data.ef.length;
-    var eff, effects = this.data.ef;
-    for(i=0;i<len;i+=1){
-        switch(effects[i].ty){
-            case 0:
-                eff = new SliderEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 1:
-                eff = new AngleEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 2:
-                eff = new ColorEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 3:
-                eff = new PointEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 4:
-            case 7:
-                eff = new CheckboxEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 10:
-                eff = new LayerIndexEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 11:
-                eff = new MaskIndexEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 5:
-                eff = new EffectsManager(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 6:
-                eff = new NoValueEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-        }
-    }
-};
-    var bodymovinjs = {};
+    var lottiejs = {};
 
     function setLocationHref (href) {
         locationHref = href;
@@ -14298,27 +9214,27 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 return Matrix;
         }
     }
-    bodymovinjs.play = play;
-    bodymovinjs.pause = pause;
-    bodymovinjs.setLocationHref = setLocationHref;
-    bodymovinjs.togglePause = togglePause;
-    bodymovinjs.setSpeed = setSpeed;
-    bodymovinjs.setDirection = setDirection;
-    bodymovinjs.stop = stop;
-    bodymovinjs.moveFrame = moveFrame;
-    bodymovinjs.searchAnimations = searchAnimations;
-    bodymovinjs.registerAnimation = registerAnimation;
-    bodymovinjs.loadAnimation = loadAnimation;
-    bodymovinjs.setSubframeRendering = setSubframeRendering;
-    bodymovinjs.resize = resize;
-    bodymovinjs.start = start;
-    bodymovinjs.goToAndStop = goToAndStop;
-    bodymovinjs.destroy = destroy;
-    bodymovinjs.setQuality = setQuality;
-    bodymovinjs.inBrowser = inBrowser;
-    bodymovinjs.installPlugin = installPlugin;
-    bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.13.0';
+    lottiejs.play = play;
+    lottiejs.pause = pause;
+    lottiejs.setLocationHref = setLocationHref;
+    lottiejs.togglePause = togglePause;
+    lottiejs.setSpeed = setSpeed;
+    lottiejs.setDirection = setDirection;
+    lottiejs.stop = stop;
+    lottiejs.moveFrame = moveFrame;
+    lottiejs.searchAnimations = searchAnimations;
+    lottiejs.registerAnimation = registerAnimation;
+    lottiejs.loadAnimation = loadAnimation;
+    lottiejs.setSubframeRendering = setSubframeRendering;
+    lottiejs.resize = resize;
+    lottiejs.start = start;
+    lottiejs.goToAndStop = goToAndStop;
+    lottiejs.destroy = destroy;
+    lottiejs.setQuality = setQuality;
+    lottiejs.inBrowser = inBrowser;
+    lottiejs.installPlugin = installPlugin;
+    lottiejs.__getFactory = getFactory;
+    lottiejs.version = '5.0.0';
 
     function checkReady() {
         if (document.readyState === "complete") {
@@ -14349,5 +9265,5 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
         renderer = getQueryVariable('renderer');
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
-    return bodymovinjs;
+    return lottiejs;
 }));

@@ -74,7 +74,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
         if('t' in animatorProps.a) {
             animatorData.a.t = getProp(this._elem,animatorProps.a.t,0,0,this._dynamicProperties);
         }
-        animatorData.s = PropertyFactory.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
+        animatorData.s = TextSelectorProp.getTextSelectorProp(this._elem,animatorProps.s,this._dynamicProperties);
         animatorData.s.t = animatorProps.s.t;
         this._animatorsData[i] = animatorData;
     }
@@ -116,7 +116,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
         if(!this._pathData.n || this._pathData.mdf){
             var paths = mask.v;
             if(this._pathData.r){
-                paths = reversePath(paths);
+                paths = paths.reverse();
             }
             var pathInfo = {
                 tLength: 0,
@@ -193,12 +193,13 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var letterValue;
 
     jLen = animators.length;
-    if (lettersChangedFlag) {
+    //Todo Confirm this is not necessary here. Text Animator Selectors should not be called without a text index. And it is later correctly called.
+    /*if (lettersChangedFlag) {
         for (j = 0; j < jLen; j += 1) {
             animatorSelector = animators[j].s;
-            animatorSelector.getValue(true);
+            //animatorSelector.getValue(true);
         }
-    }
+    }*/
     var lastLetter;
 
     var mult, ind = -1, offf, xPathPos, yPathPos;
