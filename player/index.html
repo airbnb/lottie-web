@@ -10,7 +10,7 @@
             overflow-y: auto;
         }
 
-        #bodymovin{
+        #lottie{
             background-color:#000;
             width:100%;
             height:100%;
@@ -28,7 +28,7 @@
         }
 
     </style>
-    <!-- build:js bodymovin.js -->
+    <!-- build:js lottie.js -->
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
     <script src="js/utils/helpers/arrays.js"></script>
@@ -123,12 +123,12 @@
 
 </head>
 <body>
-<div id="bodymovin"></div>
+<div id="lottie"></div>
 
 <script>
 
     var anim;
-    var elem = document.getElementById('bodymovin')
+    var elem = document.getElementById('lottie')
     var animData = {
         container: elem,
         renderer: 'svg',
@@ -139,7 +139,7 @@
         },
         path: 'exports/render/data.json'
     };
-    anim = bodymovin.loadAnimation(animData);
+    anim = lottie.loadAnimation(animData);
 
 </script>
 </body>

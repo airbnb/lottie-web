@@ -17,7 +17,7 @@ var htmlreplace = require('gulp-html-replace');
 var eventstream = require("event-stream");
 var jslint = require('gulp-jslint');
 
-var bm_version = '4.13.0';
+var bm_version = '5.0.0';
 
 var files = [
     {
@@ -55,7 +55,7 @@ gulp.task('buildUnminifiedPlayer', function(){
     gulp.src('./player/index.html')
         //.pipe(wrap('(function(window){"use strict";<%= contents %>}(window));'))
         .pipe(wrap(moduleWrap))
-        .pipe(gulp.dest('build/player/bodymovin.min.js'));
+        .pipe(gulp.dest('build/player/lottie.min.js'));
 });
 
 gulp.task('zipPlayer',['buildPlayer','buildUnminifiedPlayer'], function(){
@@ -126,14 +126,14 @@ gulp.task('buildLightSources', function() {
 
 gulp.task('buildLight',['buildLightSources'], function() {
     return gulp.src(srcs)
-        .pipe(concat('bodymovin_light.js'))
+        .pipe(concat('lottie_light.js'))
         .pipe(wrap(moduleWrap))
         .pipe(gulp.dest('build/player/'));
 });
 
 gulp.task('buildLightMin',['buildLightSources'], function() {
     return gulp.src(srcs)
-        .pipe(concat('bodymovin_light.min.js'))
+        .pipe(concat('lottie_light.min.js'))
         .pipe(wrap(moduleWrap))
         .pipe(uglify(uglifyOptions))
         .pipe(gulp.dest('build/player/'));
@@ -141,7 +141,7 @@ gulp.task('buildLightMin',['buildLightSources'], function() {
 
 gulp.task('buildFullMin',['buildSources'], function() {
     return gulp.src(srcs)
-        .pipe(concat('bodymovin.min.js'))
+        .pipe(concat('lottie.min.js'))
         .pipe(wrap(moduleWrap))
         .pipe(uglify(uglifyOptions))
         .pipe(gulp.dest('build/player/'));
@@ -149,7 +149,7 @@ gulp.task('buildFullMin',['buildSources'], function() {
 
 gulp.task('buildFull',['buildSources'], function() {
     return gulp.src(srcs)
-        .pipe(concat('bodymovin.js'))
+        .pipe(concat('lottie.js'))
         .pipe(wrap(moduleWrap))
         .pipe(gulp.dest('build/player/'));
 });
