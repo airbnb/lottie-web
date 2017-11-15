@@ -1,35 +1,29 @@
-# Lottie for Android, [iOS](https://github.com/airbnb/lottie-ios), [React Native](https://github.com/airbnb/lottie-react-native), and [Web](https://github.com/airbnb/lottie-web)
-[![Build Status](https://travis-ci.org/airbnb/lottie-android.svg?branch=master)](https://travis-ci.org/airbnb/lottie-android)
+# Lottie for Web, [Android](https://github.com/airbnb/lottie-android), [iOS](https://github.com/airbnb/lottie-ios), and [React Native](https://github.com/airbnb/lottie-react-native)
 
-## V 5.0.0
-- bodymovin renamed to lottie!
-- gradients performance improved
-- cleaned up code
+Lottie is a mobile library for Web,  and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile!
 
-## V 4.13.0
-- text expression support
-- text update support with updateDocumentData (check wiki)
-- tangentOnPath, normalOnPath and more expressions
-- loaded_images event
-- fixed global calls
-- fixed ie9 error
+For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it by hand. They say a picture is worth 1,000 words so here are 13,000:
 
-# Migration from version 4.x.x to 5.x.x
-- rename bodymovin to lottie
-- done!
 
-# Lottie + Bodymovin
-Lottie is the native engine that Airbnb's awesome team built. It uses Bodymovin as the animation exporter and is the ideal complement for getting animations to play natively everywhere.
-Follow these links to get each player:
-- [Android's player](https://github.com/airbnb/lottie-android)
-- [iOS's player](https://github.com/airbnb/lottie-ios)
-- [React Native's wrapper](https://github.com/airbnb/lottie-react-native)
 
-## Lottie and AVD
-Some animations can be exported for Android using the AVD format.
-It can fit for some cases where you'll gain a performance improvement.
-But Lottie brings much more features, a level of animation control and dynamic loading that couldn't be achieved with avd.
-Here's a [link](http://airbnb.io/lottie/lottie-avd.html) with a full comparison of both technologies.
+# View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](http://airbnb.io/lottie/)
+
+
+
+![Example1](gifs/Example1.gif)
+
+
+![Example2](gifs/Example2.gif)
+
+
+![Example3](gifs/Example3.gif)
+
+
+![Community](gifs/Community%202_3.gif)
+
+
+![Example4](gifs/Example4.gif)
+
 
 # Plugin installation
 
@@ -108,12 +102,12 @@ Or get it directly from the AE plugin clicking on Get Player
 - look for the exported json file (if you had images or AI layers on your animation, there will be an images folder with the exported files)
 
 ### HTML
-- get the lottie.js file from the build/player/ folder for the latest build
+- get the bodymovin.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
 ```html
-<script src="js/lottie.js" type="text/javascript"></script>
+<script src="js/bodymovin.js" type="text/javascript"></script>
 ```
-You can call lottie.loadAnimation() to start an animation.
+You can call bodymovin.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
 - path: the relative path to the animation object. (animationData and path are mutually exclusive)
@@ -127,7 +121,7 @@ It takes an object as a unique param with:
 It returns the animation instance you can control with play, pause, setSpeed, etc.
 
 ```js
-lottie.loadAnimation({
+bodymovin.loadAnimation({
   container: element, // the dom element that will contain the animation
   renderer: 'svg',
   loop: true,
@@ -138,11 +132,11 @@ lottie.loadAnimation({
 
 #### Composition Settings:
 Check this wiki page for an explanation for each setting.
-https://github.com/airbnb/lottie-web/wiki/Composition-Settings
+https://github.com/bodymovin/bodymovin/wiki/Composition-Settings
 
 ## Usage
-Animation instances have these main methods: 
-### play 
+Animation instances have these main methods:
+### play
 
 ***
 ### stop
@@ -184,20 +178,20 @@ Animation instances have these main methods:
 ***
 
 ### Aditional methods:
-- updateTextDocumentData -- updates a text layer's data  
-[More Info](https://github.com/airbnb/lottie-web/wiki/TextLayer.updateDocumentData)
+- updateTextDocumentData -- updates a text layer's data
+[More Info](https://github.com/bodymovin/bodymovin/wiki/TextLayer.updateDocumentData)
 ***
 
-### lottie has 8 global methods that will affect all animations:
-**lottie.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.setSpeed()** -- first argument speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.setDirection()** -- first argument direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.searchAnimations()** -- looks for elements with class "lottie" or "bodymovin" <br/>
-**lottie.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**lottie.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
-**lottie.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
-**lottie.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+### bodymovin has 8 global methods that will affect all animations:
+**bodymovin.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setSpeed()** -- first argument speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.setDirection()** -- first argument direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
+**bodymovin.searchAnimations()** -- looks for elements with class "bodymovin" <br/>
+**bodymovin.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
+**bodymovin.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
+**bodymovin.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
+**bodymovin.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
 
 ## Events
 - onComplete
@@ -219,7 +213,7 @@ you can also use addEventListener with the following events:
 #### Other loading options
 - if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
 ```js
-lottie.loadAnimation({
+bodymovin.loadAnimation({
   container: element, // the dom element
   renderer: 'svg',
   loop: true,
@@ -238,16 +232,16 @@ lottie.loadAnimation({
 Doing this you will have to handle the canvas clearing after each frame
 <br/>
 Another way to load animations is adding specific attributes to a dom element.
-You have to include a div and set it's class to bodymovin or lottie.
-If you do it before page load, it will automatically search for all tags with the class "bodymovin" or "lottie".
-Or you can call lottie.searchAnimations() after page load and it will search all elements with the class "bodymovin" or "lottie".
+You have to include a div and set it's class to bodymovin.
+If you do it before page load, it will automatically search for all tags with the class "bodymovin".
+Or you can call bodymovin.searchAnimations() after page load and it will search all elements with the class "bodymovin".
 <br/>
 - add the data.json to a folder relative to the html
 - create a div that will contain the animation.
 <br/>
  **Required**
  <br/>
- . a class called "bodymovin" or "lottie"
+ . a class called "bodymovin"
  . a "data-animation-path" attribute with relative path to the data.json
  <br/>
 **Optional**
@@ -258,7 +252,7 @@ Or you can call lottie.searchAnimations() after page load and it will search all
  **Example**
  <br/>
 ```html
- <div style="width:1067px;height:600px" class="lottie" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
+ <div style="width:1067px;height:600px" class="bodymovin" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 <br/>
 
@@ -290,7 +284,7 @@ my email is **hernantorrisi@gmail.com**
 - It supports masks and inverted masks. Maybe other modes will come but it has a huge performance hit.
 - It supports time remapping
 - The script supports shapes, rectangles, ellipses and stars.
-- Expressions. Check the wiki page for [more info.](https://github.com/airbnb/lottie-web/wiki/Expressions)
+- Expressions. Check the wiki page for [more info.](https://github.com/bodymovin/bodymovin/wiki/Expressions)
 - Not supported: image sequences, videos and audio are not supported
 - **No  negative layer stretching**! No idea why, but stretching a layer messes with all the data.
 
