@@ -71,7 +71,7 @@
         if(!this.k){
             return this.pv;
         }
-        var currentFrame = time*elem.comp.globalData.frameRate;
+        var currentFrame = this.comp.renderedFrame;
         var keyframes = this.keyframes;
         var firstKeyFrame = keyframes[0].t;
         var offsetTime = this.offsetTime || 0;
