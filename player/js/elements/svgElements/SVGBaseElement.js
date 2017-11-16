@@ -1,4 +1,4 @@
-function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
+function SVGBaseElement(data,parentContainer,globalData,comp){
     /*this.globalData = globalData;
     this.comp = comp;
     this.data = data;
@@ -6,30 +6,25 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
     this.transformedElement = null;
     this.isTransparent = false;
     this.parentContainer = parentContainer;
-    this.layerId = placeholder ? placeholder.layerId : 'ly_'+randomString(10);
-    this.placeholder = placeholder;
     this._sizeChanged = false;
     this.init();*/
 };
 
 //createElement(BaseElement, SVGBaseElement);
 
-SVGBaseElement.prototype.initSvgElement = function(parentContainer, placeholder) {
-    this.matteElement = null;
-    this.transformedElement = null;
-    this.isTransparent = false;
+SVGBaseElement.prototype.initSvgElement = function(parentContainer) {
+    this.matteElement = document.createElementNS(svgNS,'g');
+    this.layerElement = document.createElementNS(svgNS,'g');
+    this.transformedElement = this.layerElement;
     this._sizeChanged = false;
     this.parentContainer = parentContainer;
-    this.placeholder = placeholder;
 }
 
 SVGBaseElement.prototype.createContainerElements = function(){
-    this.layerElement = document.createElementNS(svgNS,'g');
     this.transformedElement = this.layerElement;
-    if(this.data.hasMask){
-        this.maskedElement = this.layerElement;
-    }
+    this.maskedElement = this.layerElement;
     var layerElementParent = null;
+    //If this layer acts as a mask for the following layer
     if(this.data.td){
         if(this.data.td == 3 || this.data.td == 1){
             var masker = document.createElementNS(svgNS,'mask');
@@ -38,7 +33,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
             masker.appendChild(this.layerElement);
             layerElementParent = masker;
             this.globalData.defs.appendChild(masker);
-            ////// This is only for IE and Edge when mask if of type alpha
+            // This is only for IE and Edge when mask if of type alpha
             if(!featureSupport.maskType && this.data.td == 1){
                 masker.setAttribute('mask-type','luminance');
                 var filId = randomString(10);
@@ -98,15 +93,10 @@ SVGBaseElement.prototype.createContainerElements = function(){
             }
             this.globalData.defs.appendChild(maskGroup);
         }
-    }else if(this.data.hasMask || this.data.tt){
-        if(this.data.tt){
-            this.matteElement = document.createElementNS(svgNS,'g');
-            this.matteElement.appendChild(this.layerElement);
-            layerElementParent = this.matteElement;
-            this.baseElement = this.matteElement;
-        }else{
-            this.baseElement = this.layerElement;
-        }
+    }else if(this.data.tt){
+        this.matteElement.appendChild(this.layerElement);
+        layerElementParent = this.matteElement;
+        this.baseElement = this.matteElement;
     }else{
         this.baseElement = this.layerElement;
     }
@@ -118,14 +108,15 @@ SVGBaseElement.prototype.createContainerElements = function(){
             this.layerElement.setAttribute('class',this.data.cl);
         }
     }
+    //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
     if(this.data.ty === 0){
-            var cp = document.createElementNS(svgNS, 'clipPath');
-            var pt = document.createElementNS(svgNS,'path');
-            pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
-            var clipId = 'cp_'+randomString(8);
-            cp.setAttribute('id',clipId);
-            cp.appendChild(pt);
-            this.globalData.defs.appendChild(cp);
+        var cp = document.createElementNS(svgNS, 'clipPath');
+        var pt = document.createElementNS(svgNS,'path');
+        pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
+        var clipId = 'cp_'+randomString(8);
+        cp.setAttribute('id',clipId);
+        cp.appendChild(pt);
+        this.globalData.defs.appendChild(cp);
         if(this.checkMasks()){
             var cpGroup = document.createElementNS(svgNS,'g');
             cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
@@ -144,12 +135,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
     if(this.data.bm !== 0){
         this.setBlendMode();
     }
-    if(this.layerElement !== this.parentContainer){
-        this.placeholder = null;
-    }
-    if(this.data.ef){
-        this.effectsManager = new SVGEffects(this);
-    }
+    this.effectsManager = new SVGEffects(this);
     this.checkParenting();
 };
 
@@ -157,7 +143,10 @@ SVGBaseElement.prototype.createContainerElements = function(){
 SVGBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
 SVGBaseElement.prototype.renderElement = function(){
-    if(this.data.ty === 3 || this.data.hd || !this.isVisible){
+    //If this layer is of type null (ty === 3) no need to render
+    //If it is exported as hidden (data.hd === true) no need to render
+    //If it is not visible no need to render
+    if(this.data.ty === 3 || this.data.hd || this.hidden){
         return false;
     }
 
@@ -169,15 +158,6 @@ SVGBaseElement.prototype.renderElement = function(){
         this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
     }
     if(this.finalTransform.opMdf && this.layerElement){
-        if(this.finalTransform.op.v <= 0) {
-            if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
-                this.isTransparent = true;
-                this.hide();
-            }
-        } else if(this.hidden && this.isTransparent){
-            this.isTransparent = false;
-            this.show();
-        }
         this.transformedElement.setAttribute('opacity',this.finalTransform.op.v);
     }
 
@@ -204,8 +184,8 @@ SVGBaseElement.prototype.destroy = function(){
 SVGBaseElement.prototype.getBaseElement = function(){
     return this.baseElement;
 };
-SVGBaseElement.prototype.addMasks = function(data){
-    this.maskManager = new MaskElement(data,this,this.globalData);
+SVGBaseElement.prototype.addMasks = function(){
+    this.maskManager = new MaskElement(this.data,this,this.globalData);
 };
 
 SVGBaseElement.prototype.setMatte = function(id){
@@ -216,7 +196,7 @@ SVGBaseElement.prototype.setMatte = function(id){
 };
 
 SVGBaseElement.prototype.hide = function(){
-    if(!this.hidden){
+    if(!this.hidden && (!this.isVisible || this.isTransparent)){
         this.layerElement.style.display = 'none';
         this.hidden = true;
     }

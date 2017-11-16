@@ -1,4 +1,4 @@
-function IShapeElement(data,parentContainer,globalData,comp, placeholder){
+function IShapeElement(data,parentContainer,globalData,comp){
     this.shapes = [];
     this.shapesData = data.shapes;
     this.stylesList = [];
@@ -6,7 +6,7 @@ function IShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.prevViewData = [];
     this.shapeModifiers = [];
     this.processedElements = [];
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
 }
 createElement(SVGBaseElement, IShapeElement);
 
@@ -660,5 +660,4 @@ IShapeElement.prototype.destroy = function(){
     this.shapeData = null;
     this.itemsData = null;
     this.parentContainer = null;
-    this.placeholder = null;
 };

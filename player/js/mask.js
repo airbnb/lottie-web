@@ -5,11 +5,11 @@ function MaskElement(data,element,globalData) {
     this.globalData = globalData;
     this.storedData = [];
     this.masksProperties = this.data.masksProperties;
-    this.viewData = Array.apply(null,{length:this.masksProperties.length});
     this.maskElement = null;
     this.firstFrame = true;
     var defs = this.globalData.defs;
-    var i, len = this.masksProperties.length;
+    var i, len = this.masksProperties ? this.masksProperties.length : 0;
+    this.viewData = Array.apply(null,{length:len});
 
 
     var path, properties = this.masksProperties;

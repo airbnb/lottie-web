@@ -20,9 +20,6 @@ TransformElement.prototype.initTransform = function(){
         if(this.data.ty !== 11){
             //this.createElements();
         }
-        if(this.data.hasMask){
-            this.addMasks(this.data);
-        }
 
         this.finalMat = new Matrix();
     }
@@ -37,8 +34,19 @@ TransformElement.prototype.renderTransform = function(){
     this.finalTransform.matMdf = this.firstFrame || this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;
 
+    if(this.finalTransform.op.v <= 0) {
+        if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
+            this.isTransparent = true;
+            this.hide();
+        }
+    } else if(this.isTransparent) {
+        this.isTransparent = false;
+        this.show();
+    }
+
     if(this.hierarchy){
         var i = 0, len = this.hierarchy.length;
+        //Checking if any of the transformation matrices in the hierarchy chain has changed.
         if(!this.finalTransform.matMdf) {
             while(i < len) {
                 if(this.hierarchy[i].finalTransform.mProp.mdf) {
@@ -58,7 +66,7 @@ TransformElement.prototype.renderTransform = function(){
             }
         }
         
-    }else if(this.isVisible){
+    } else if(this.isVisible) {
         finalMat = this.finalTransform.mProp.v;
     }
 

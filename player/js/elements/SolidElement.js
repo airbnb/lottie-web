@@ -1,11 +1,13 @@
-function ISolidElement(data,parentContainer,globalData,comp, placeholder){
-    //this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+function ISolidElement(data,parentContainer,globalData,comp){
+    //this._parent.constructor.call(this,data,parentContainer,globalData,comp);
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
+    this.addMasks();
     this.initHierarchy();
-    this.initSvgElement(parentContainer, placeholder);
+    this.initSvgElement(parentContainer);
     this.createContainerElements();
     this.createSolid();
+    this.hide();
 }
 //createElement(SVGBaseElement, ISolidElement);
 

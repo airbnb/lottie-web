@@ -1,6 +1,6 @@
-function IImageElement(data,parentContainer,globalData,comp,placeholder){
+function IImageElement(data,parentContainer,globalData,comp){
     this.assetData = globalData.getAssetData(data.refId);
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp,placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
 }
 createElement(SVGBaseElement, IImageElement);
 

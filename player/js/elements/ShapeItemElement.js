@@ -1,7 +1,6 @@
-function ShapeItemElement(data,parentElement,parentContainer,placeholder,dynamicProperties,globalData){
+function ShapeItemElement(data,parentElement,parentContainer,dynamicProperties,globalData){
     this.shape = parentElement;
     this.parentContainer = parentContainer;
-    this.placeholder = placeholder;
 
     this.lcEnum = {
         '1': 'butt',
@@ -395,5 +394,4 @@ ShapeItemElement.prototype.destroy = function(items, data){
     this.data = null;
     this.viewData = null;
     this.parentContainer = null;
-    this.placeholder = null;
 };

@@ -14,10 +14,12 @@ function FrameElement(){}
  */
 
 FrameElement.prototype.initFrame = function(){
-	//layer's visibility related to inpoint and outpoint
+	//layer's visibility related to inpoint and outpoint. Rename isVisible to isInRange
 	this.isVisible = false;
 	//layer's display state
 	this.hidden = false;
+    // If layer's transparency equals 0, it can be hidden
+    this.isTransparent = false;
 	//used to update dynamic properties when inpoint or outpoint are rendered. Check if it can be removed
 	this.elemMdf = false;
 	//set to true when inpoint is rendered
@@ -49,12 +51,14 @@ FrameElement.prototype.checkLayerLimits = function(num) {
             if(this.data.hasMask){
                 this.maskManager.firstFrame = true;
             }
+            this.show();
         }
     }else{
         if(this.isVisible !== false){
             this.elemMdf = true;
             this.globalData.mdf = true;
             this.isVisible = false;
+            this.hide();
         }
     }
 }
@@ -70,14 +74,14 @@ FrameElement.prototype.prepareProperties = function(num) {
     for(i=0;i<len;i+=1){
         if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
             this.dynamicProperties[i].getValue();
-            //OPTIMIZATION: check if elemMdf is already set to true
+            //OPTIMIZATION: check if validating that elemMdf is already set to true would be quicker
             if(this.dynamicProperties[i].mdf){
                 this.elemMdf = true;
                 this.globalData.mdf = true;
             }
         }
     }
-    if(this.data.hasMask && this.isVisible){
+    if(this.isVisible){
         this.maskManager.prepareFrame(num*this.data.sr);
     }
 

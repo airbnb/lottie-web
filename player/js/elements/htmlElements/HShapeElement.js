@@ -1,4 +1,4 @@
-function HShapeElement(data,parentContainer,globalData,comp, placeholder){
+function HShapeElement(data,parentContainer,globalData,comp){
     this.shapes = [];
     this.shapesData = data.shapes;
     this.stylesList = [];
@@ -6,7 +6,7 @@ function HShapeElement(data,parentContainer,globalData,comp, placeholder){
     this.prevViewData = [];
     this.shapeModifiers = [];
     this.processedElements = [];
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
     this.currentBBox = {
         x:999999,
         y: -999999,

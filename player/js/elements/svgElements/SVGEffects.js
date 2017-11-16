@@ -1,5 +1,5 @@
 function SVGEffects(elem){
-    var i, len = elem.data.ef.length;
+    var i, len = elem.data.ef ? elem.data.ef.length : 0;
     var filId = randomString(10);
     var fil = filtersFactory.createFilter(filId);
     var count = 0;
