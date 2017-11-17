@@ -429,8 +429,24 @@ var ExpressionManager = (function(){
             return [yaw,pitch,0];
         };
 
-        function easeOut(t, val1, val2){
+        function easeOut(t, tMin, tMax, val1, val2){
+            if(val1 === undefined){
+                val1 = tMin;
+                val2 = tMax;
+            } else {
+                t = (t - tMin) / (tMax - tMin);
+            }
             return -(val2-val1) * t*(t-2) + val1;
+        };
+
+        function easeIn(t, tMin, tMax, val1, val2){
+            if(val1 === undefined){
+                val1 = tMin;
+                val2 = tMax;
+            } else {
+                t = (t - tMin) / (tMax - tMin);
+            }
+            return (val2-val1)*t*t + val1;
         };
 
         function nearestKey(time){

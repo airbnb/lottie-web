@@ -117,6 +117,12 @@ var LayerExpressionInterface = (function (){
             }
         });
 
+        Object.defineProperty(_thisLayerFunction, "opacity", {
+            get: function () {
+                return transformInterface.opacity;
+            }
+        });
+
         Object.defineProperty(_thisLayerFunction, "anchorPoint", {
             get: function () {
                 return transformInterface.anchorPoint;
