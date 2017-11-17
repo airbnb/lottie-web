@@ -14,12 +14,6 @@ function FrameElement(){}
  */
 
 FrameElement.prototype.initFrame = function(){
-	//layer's visibility related to inpoint and outpoint. Rename isVisible to isInRange
-	this.isVisible = false;
-	//layer's display state
-	this.hidden = false;
-    // If layer's transparency equals 0, it can be hidden
-    this.isTransparent = false;
 	//used to update dynamic properties when inpoint or outpoint are rendered. Check if it can be removed
 	this.elemMdf = false;
 	//set to true when inpoint is rendered
@@ -31,48 +25,19 @@ FrameElement.prototype.initFrame = function(){
 	this.dynamicProperties = [];
 }
 
+
 /**
  * @function 
- * Initializes frame related properties.
+ * Calculates all dynamic values
  *
  * @param {number} num
  * current frame number in Layer's time
  * 
  */
-
-FrameElement.prototype.checkLayerLimits = function(num) {
-	if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
-    {
-        if(this.isVisible !== true){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
-            this.isVisible = true;
-            this.firstFrame = true;
-            if(this.data.hasMask){
-                this.maskManager.firstFrame = true;
-            }
-            this.show();
-        }
-    }else{
-        if(this.isVisible !== false){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
-            this.isVisible = false;
-            this.hide();
-        }
-    }
-}
-
-FrameElement.prototype.prepareFrameData = function(num) {
-	this.checkLayerLimits(num);
-	this.prepareProperties(num);
-}
-
-//Calculates all dynamic values
-FrameElement.prototype.prepareProperties = function(num) {
+FrameElement.prototype.prepareProperties = function(num, isVisible) {
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
-        if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
+        if(isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
             this.dynamicProperties[i].getValue();
             //OPTIMIZATION: check if validating that elemMdf is already set to true would be quicker
             if(this.dynamicProperties[i].mdf){
@@ -81,10 +46,6 @@ FrameElement.prototype.prepareProperties = function(num) {
             }
         }
     }
-    if(this.isVisible){
-        this.maskManager.prepareFrame(num*this.data.sr);
-    }
 
     this.currentFrameNum = num*this.data.sr;
-    return this.isVisible;
 }

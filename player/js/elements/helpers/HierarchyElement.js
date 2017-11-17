@@ -2,6 +2,7 @@ function HierarchyElement(){}
 
 HierarchyElement.prototype.initHierarchy = function() {
     this.hierarchy = [];
+    this._isParent = false;
 }
 
 HierarchyElement.prototype.resetHierarchy = function(){

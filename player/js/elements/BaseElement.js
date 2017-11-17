@@ -166,9 +166,7 @@ BaseElement.prototype.initBaseData = function(data, globalData, comp){
         this.data.sr = 1;
     }
     /****this.dynamicProperties = this.dynamicProperties || [];*/
-    if(this.data.ef){
-        this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
-    }
+    this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
     this.initFrame();
     /*****this.hidden = false;
     this.firstFrame = true;

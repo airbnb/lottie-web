@@ -1,25 +1,36 @@
 function ICompElement(data,parentContainer,globalData,comp){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
     this.pendingElements = [];
     this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
-    }
-    if(this.data.xt){
-        this.layerElement = document.createElementNS(svgNS,'g');
-        this.buildAllItems();
-    } else if(!globalData.progressiveLoad){
-        this.buildAllItems();
-    }
+    this.tm = PropertyFactory.getProp(this,data.tm||{k:0},0,globalData.frameRate,this.dynamicProperties);
+    //this.layerElement = document.createElementNS(svgNS,'g');
+    this.initElement(data,parentContainer,globalData,comp);
+    
 }
-createElement(SVGBaseElement, ICompElement);
+
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ICompElement);
+
+ICompElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initRenderable();
+    this.initHierarchy();
+    this.initSvgElement(parentContainer);
+    this.createContainerElements();
+    this.addMasks();
+    if(this.data.xt || !globalData.progressiveLoad){
+        this.createContent();
+    }
+    this.hide();
+};
+
+ICompElement.prototype.show = ICompElement.prototype.showElement;
 
 ICompElement.prototype.hide = function(){
     if(!this.hidden){
-        this._parent.hide.call(this);
+        this.hideElement();
         var i,len = this.elements.length;
         for( i = 0; i < len; i+=1 ){
             if(this.elements[i]){
@@ -30,12 +41,13 @@ ICompElement.prototype.hide = function(){
 };
 
 ICompElement.prototype.prepareFrame = function(num){
-    this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false && !this.data.xt){
+    this.prepareProperties(num, this.isVisible);
+    this.prepareRenderableFrame(num);
+    if(!this.isVisible && !this.data.xt){
         return;
     }
 
-    if(this.tm){
+    if(this.data.tm){
         var timeRemapped = this.tm.v;
         if(timeRemapped === this.data.op){
             timeRemapped = this.data.op - 1;
@@ -55,23 +67,21 @@ ICompElement.prototype.prepareFrame = function(num){
     }
 };
 
-ICompElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    var i,len = this.layers.length;
-    if(renderParent===false){
-        this.hide();
+ICompElement.prototype.renderFrame = function() {
+    if(!this.isVisible) {
         return;
     }
-
-    if(this.hidden) {
-        this.show();
-    }
-    for( i = 0; i < len; i+=1 ){
+    this.renderTransform();
+    this.renderRenderable();
+    this.renderElement();
+    
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i += 1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
     }
-    if(this.firstFrame){
+    if (this.firstFrame) {
         this.firstFrame = false;
     }
 };
@@ -96,7 +106,7 @@ ICompElement.prototype.destroy = function(){
 
 ICompElement.prototype.checkLayers = SVGRenderer.prototype.checkLayers;
 ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
-ICompElement.prototype.buildAllItems = SVGRenderer.prototype.buildAllItems;
+ICompElement.prototype.createContent = SVGRenderer.prototype.buildAllItems;
 ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
 ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
 ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;

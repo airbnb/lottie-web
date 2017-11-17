@@ -1,5 +1,5 @@
 function EffectsManager(data,element,dynamicProperties){
-    var effects = data.ef;
+    var effects = data.ef || [];
     this.effectElements = [];
     var i,len = effects.length;
     var effectItem;

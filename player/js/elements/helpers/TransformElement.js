@@ -20,8 +20,6 @@ TransformElement.prototype.initTransform = function(){
         if(this.data.ty !== 11){
             //this.createElements();
         }
-
-        this.finalMat = new Matrix();
     }
 }
 
@@ -69,6 +67,4 @@ TransformElement.prototype.renderTransform = function(){
     } else if(this.isVisible) {
         finalMat = this.finalTransform.mProp.v;
     }
-
-    this.finalMat = finalMat;
 }

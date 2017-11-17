@@ -1,41 +1,53 @@
 function IImageElement(data,parentContainer,globalData,comp){
     this.assetData = globalData.getAssetData(data.refId);
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
+    this.initElement(data,parentContainer,globalData,comp);
 }
-createElement(SVGBaseElement, IImageElement);
 
-IImageElement.prototype.createElements = function(){
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IImageElement);
+
+IImageElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initHierarchy();
+    this.initRenderable();
+    this.initSvgElement(parentContainer);
+    this.createContainerElements();
+    this.addMasks();
+    this.createContent();
+    this.hide();
+}
+
+IImageElement.prototype.createContent = function(){
 
     var assetPath = this.globalData.getAssetsPath(this.assetData);
-
-    this._parent.createElements.call(this);
 
     this.innerElem = document.createElementNS(svgNS,'image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
     this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
     this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
-    this.maskedElement = this.innerElem;
+    
+    //TODO check if this is needed. Doesn't look like it is
+    //this.maskedElement = this.innerElem;
     this.layerElement.appendChild(this.innerElem);
-    if(this.data.ln){
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    if(this.data.cl){
-        this.layerElement.setAttribute('class',this.data.cl);
-    }
+
 
 };
 
-IImageElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.show();
-    }
-    if(this.firstFrame){
+IImageElement.prototype.hide = IImageElement.prototype.hideElement;
+IImageElement.prototype.show = IImageElement.prototype.showElement;
+
+
+IImageElement.prototype.prepareFrame = function(num) {
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isVisible);
+};
+
+IImageElement.prototype.renderFrame = function() {
+    this.renderTransform();
+    this.renderRenderable();
+    this.renderElement();
+    if(this.isVisible) {
         this.firstFrame = false;
     }
 };

@@ -143,7 +143,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
 SVGBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
 SVGBaseElement.prototype.renderElement = function(){
-    //If this layer is of type null (ty === 3) no need to render
+    //If this layer is of type Null Object (ty === 3) no need to render
     //If it is exported as hidden (data.hd === true) no need to render
     //If it is not visible no need to render
     if(this.data.ty === 3 || this.data.hd || this.hidden){
@@ -152,22 +152,14 @@ SVGBaseElement.prototype.renderElement = function(){
 
     this.lastNum = this.currentFrameNum;
 
-    var finalMat = this.finalMat;
+    var finalMat = this.finalTransform.mat;
     
-    if(this.finalTransform.matMdf && this.layerElement){
+    if(this.finalTransform.matMdf && this.transformedElement){
         this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
     }
-    if(this.finalTransform.opMdf && this.layerElement){
+    if(this.finalTransform.opMdf && this.transformedElement){
         this.transformedElement.setAttribute('opacity',this.finalTransform.op.v);
     }
-
-    if(this.data.hasMask){
-        this.maskManager.renderFrame(finalMat);
-    }
-    if(this.effectsManager){
-        this.effectsManager.renderFrame(this.firstFrame);
-    }
-    return this.isVisible;
 };
 
 SVGBaseElement.prototype.destroy = function(){
@@ -195,16 +187,16 @@ SVGBaseElement.prototype.setMatte = function(id){
     this.matteElement.setAttribute("mask", "url(" + locationHref + "#" + id + ")");
 };
 
-SVGBaseElement.prototype.hide = function(){
+SVGBaseElement.prototype.hideElement = function(){
     if(!this.hidden && (!this.isVisible || this.isTransparent)){
         this.layerElement.style.display = 'none';
         this.hidden = true;
     }
 };
 
-SVGBaseElement.prototype.show = function(){
+SVGBaseElement.prototype.showElement = function(){
     if(this.isVisible && !this.isTransparent){
-        this.hidden = false;
         this.layerElement.style.display = 'block';
+        this.hidden = false;
     }
 };

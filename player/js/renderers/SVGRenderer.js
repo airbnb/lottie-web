@@ -35,6 +35,10 @@ SVGRenderer.prototype.createBase = function (data) {
     return new SVGBaseElement(data, this.layerElement,this.globalData,this);
 };
 
+SVGRenderer.prototype.createNull = function (data) {
+    return new NullElement(data, this.layerElement,this.globalData,this);
+};
+
 SVGRenderer.prototype.createShape = function (data) {
     return new IShapeElement(data, this.layerElement,this.globalData,this);
 };

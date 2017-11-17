@@ -1,15 +1,17 @@
 function MaskElement(data,element,globalData) {
+    //TODO: check if dynamic properties array can be used from element
     this.dynamicProperties = [];
     this.data = data;
     this.element = element;
     this.globalData = globalData;
     this.storedData = [];
-    this.masksProperties = this.data.masksProperties;
+    this.masksProperties = this.data.masksProperties || [];
     this.maskElement = null;
     this.firstFrame = true;
     var defs = this.globalData.defs;
     var i, len = this.masksProperties ? this.masksProperties.length : 0;
     this.viewData = Array.apply(null,{length:len});
+    this.solidPath = '';
 
 
     var path, properties = this.masksProperties;
@@ -38,6 +40,7 @@ function MaskElement(data,element,globalData) {
 
         path = document.createElementNS(svgNS, 'path');
         if(properties[i].mode == 'n') {
+            // TODO move this to a factory or to a constructor
             this.viewData[i] = {
                 op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
                 prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null),
@@ -48,14 +51,10 @@ function MaskElement(data,element,globalData) {
         }
         count += 1;
 
-        if(properties[i].mode == 's'){
-            path.setAttribute('fill', '#000000');
-        }else{
-            path.setAttribute('fill', '#ffffff');
-        }
+        path.setAttribute('fill', properties[i].mode === 's' ? '#000000':'#ffffff');
         path.setAttribute('clip-rule','nonzero');
 
-        if(properties[i].x.k !== 0){
+        if (properties[i].x.k !== 0) {
             maskType = 'mask';
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
@@ -68,17 +67,13 @@ function MaskElement(data,element,globalData) {
             feMorph.setAttribute('radius','0');
             expansor.appendChild(feMorph);
             defs.appendChild(expansor);
-            if(properties[i].mode == 's'){
-                path.setAttribute('stroke', '#000000');
-            }else{
-                path.setAttribute('stroke', '#ffffff');
-            }
-        }else{
+            path.setAttribute('stroke', properties[i].mode === 's' ? '#000000':'#ffffff');
+        } else {
             feMorph = null;
             x = null;
         }
 
-
+        // TODO move this to a factory or to a constructor
         this.storedData[i] = {
              elem: path,
              x: x,
@@ -109,6 +104,7 @@ function MaskElement(data,element,globalData) {
         if(properties[i].inv && !this.solidPath){
             this.solidPath = this.createLayerSolidPath();
         }
+        // TODO move this to a factory or to a constructor
         this.viewData[i] = {
             elem: path,
             lastPath: '',
@@ -116,6 +112,7 @@ function MaskElement(data,element,globalData) {
             prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
         };
         if(rect){
+            //TODO: move the invRect property to the object definition in order to prevent a new hidden class creation.
             this.viewData[i].invRect = rect;
         }
         if(!this.viewData[i].prop.k){
@@ -215,14 +212,12 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
 
 
     if(viewData.lastPath !== pathString){
+        var pathShapeValue = '';
         if(viewData.elem){
-            if(!pathNodes.c){
-                viewData.elem.setAttribute('d','');
-            }else if(pathData.inv){
-                viewData.elem.setAttribute('d',this.solidPath + pathString);
-            }else{
-                viewData.elem.setAttribute('d',pathString);
+            if(pathNodes.c){
+                pathShapeValue = pathData.inv ? this.solidPath + pathString : pathString;
             }
+            viewData.elem.setAttribute('d',pathShapeValue);
         }
         viewData.lastPath = pathString;
     }

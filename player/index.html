@@ -70,7 +70,9 @@
     <script src="js/elements/helpers/HierarchyElement.js"></script>
     <script src="js/elements/helpers/FrameElement.js"></script>
     <script src="js/elements/helpers/TransformElement.js"></script>
+    <script src="js/elements/helpers/RenderableElement.js"></script>
     <script src="js/elements/BaseElement.js"></script>
+    <script src="js/elements/NullElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
@@ -135,17 +137,17 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:true
         },
         path: 'exports/render/data.json'
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
         bodymovin.loadAnimation(animData);
-        //document.getElementById("bodymovin").style['background-color'] = 'darkblue';
+        // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
     }, 1)
 
 </script>
