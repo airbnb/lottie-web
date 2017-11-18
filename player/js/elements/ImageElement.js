@@ -5,17 +5,7 @@ function IImageElement(data,parentContainer,globalData,comp){
 
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IImageElement);
 
-IImageElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initHierarchy();
-    this.initRenderable();
-    this.initSvgElement(parentContainer);
-    this.createContainerElements();
-    this.addMasks();
-    this.createContent();
-    this.hide();
-}
+IImageElement.prototype.initElement = IShapeElement.prototype.initElement;
 
 IImageElement.prototype.createContent = function(){
 

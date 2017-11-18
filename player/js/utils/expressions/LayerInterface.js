@@ -117,6 +117,12 @@ var LayerExpressionInterface = (function (){
             }
         });
 
+        Object.defineProperty(_thisLayerFunction, "opacity", {
+            get: function () {
+                return transformInterface.opacity;
+            }
+        });
+
         Object.defineProperty(_thisLayerFunction, "anchorPoint", {
             get: function () {
                 return transformInterface.anchorPoint;
@@ -175,6 +181,13 @@ var LayerExpressionInterface = (function (){
         Object.defineProperty(_thisLayerFunction, "text", {
             get: function(){
                 return _thisLayerFunction.textInterface;
+            }
+        });
+
+        Object.defineProperty(_thisLayerFunction, "startTime", {
+
+            get: function(){
+                return elem.data.st;
             }
         });
 

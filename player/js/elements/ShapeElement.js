@@ -77,9 +77,6 @@ IShapeElement.prototype.buildExpressionInterface = function(){};
 
 IShapeElement.prototype.createContent = function(){
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
-    if(!this.data.hd || this.data.td){
-        styleUnselectableDiv(this.layerElement);
-    }
 };
 
 IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
@@ -439,7 +436,7 @@ IShapeElement.prototype.show = IShapeElement.prototype.showElement;
 IShapeElement.prototype.renderShape = function(items,data, container){
     var i, len = items.length - 1;
     var ty;
-    for(i=len;i>=0;i-=1){
+    for(i=0;i<=len;i+=1){
         ty = items[i].ty;
         if(ty == 'tr'){
             if(this.firstFrame || data[i].transform.op.mdf && container){

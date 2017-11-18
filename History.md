@@ -1,3 +1,8 @@
+## V 5.0.0
+- bodymovin renamed to lottie
+- gradients performance improved
+- cleaned up code
+
 ## V 4.13.0
 - text expression support
 - text update support with updateDocumentData (check wiki)

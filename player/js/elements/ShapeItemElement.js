@@ -19,7 +19,6 @@ function ShapeItemElement(data,parentElement,parentContainer,dynamicProperties,g
     this.globalData = globalData;
     this.firstFrame = true;
     this.searchShapes(this.data,this.viewData,dynamicProperties,[]);
-    styleUnselectableDiv(this.shape);
 }
 
 ShapeItemElement.prototype.appendNodeToParent = SVGBaseElement.prototype.appendNodeToParent;

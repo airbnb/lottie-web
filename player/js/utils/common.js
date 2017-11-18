@@ -62,14 +62,6 @@ function styleDiv(element){
     element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
-function styleUnselectableDiv(element){
-    element.style.userSelect = 'none';
-    element.style.MozUserSelect = 'none';
-    element.style.webkitUserSelect = 'none';
-    element.style.oUserSelect = 'none';
-
-}
-
 function BMEnterFrameEvent(n,c,t,d){
     this.type = n;
     this.currentTime = c;

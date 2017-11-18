@@ -150,7 +150,8 @@ var animationManager = (function(){
     }
 
     function searchAnimations(animationData, standalone, renderer){
-        var animElements = document.getElementsByClassName('bodymovin');
+        var animElements = [].concat([].slice.call(document.getElementsByClassName('lottie')),
+                  [].slice.call(document.getElementsByClassName('bodymovin')));
         var i, len = animElements.length;
         for(i=0;i<len;i+=1){
             if(renderer){

@@ -3,19 +3,19 @@
 <head>
     <style>
         body, html{
-            background-color:#ddd;
+            background-color:#000;
             margin: 0px;
             height: 100%;
             overflow-x: hidden;
             overflow-y: auto;
         }
 
-        #bodymovin{
-            background-color:#000;
+        #lottie{
+            background-color:#fff;
             width:100%;
             height:100%;
-            /*width:800px;
-            height:500px;*/
+            width:360px;
+            height:640px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -28,7 +28,7 @@
         }
 
     </style>
-    <!-- build:js bodymovin.js -->
+    <!-- build:js lottie.js -->
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
     <script src="js/utils/helpers/arrays.js"></script>
@@ -128,12 +128,12 @@
 
 </head>
 <body>
-<div id="bodymovin"></div>
+<div id="lottie"></div>
 
 <script>
 
     var anim;
-    var elem = document.getElementById('bodymovin')
+    var elem = document.getElementById('lottie')
     var animData = {
         container: elem,
         renderer: 'svg',
@@ -146,7 +146,7 @@
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
-        bodymovin.loadAnimation(animData);
+        lottie.loadAnimation(animData);
         // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
     }, 1)
 

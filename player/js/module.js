@@ -6,11 +6,12 @@
     } else if (typeof module === "object" && module.exports) {
         module.exports = factory(root);
     } else {
-        root.bodymovin = factory(root);
+        root.lottie = factory(root);
+        root.bodymovin = root.lottie;
     }
 }((window || {}), function(window) {
     /*<%= contents %>*/
-    var bodymovinjs = {};
+    var lottiejs = {};
 
     function setLocationHref (href) {
         locationHref = href;
@@ -125,27 +126,27 @@
                 return Matrix;
         }
     }
-    bodymovinjs.play = play;
-    bodymovinjs.pause = pause;
-    bodymovinjs.setLocationHref = setLocationHref;
-    bodymovinjs.togglePause = togglePause;
-    bodymovinjs.setSpeed = setSpeed;
-    bodymovinjs.setDirection = setDirection;
-    bodymovinjs.stop = stop;
-    bodymovinjs.moveFrame = moveFrame;
-    bodymovinjs.searchAnimations = searchAnimations;
-    bodymovinjs.registerAnimation = registerAnimation;
-    bodymovinjs.loadAnimation = loadAnimation;
-    bodymovinjs.setSubframeRendering = setSubframeRendering;
-    bodymovinjs.resize = resize;
-    bodymovinjs.start = start;
-    bodymovinjs.goToAndStop = goToAndStop;
-    bodymovinjs.destroy = destroy;
-    bodymovinjs.setQuality = setQuality;
-    bodymovinjs.inBrowser = inBrowser;
-    bodymovinjs.installPlugin = installPlugin;
-    bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '[[BM_VERSION]]';
+    lottiejs.play = play;
+    lottiejs.pause = pause;
+    lottiejs.setLocationHref = setLocationHref;
+    lottiejs.togglePause = togglePause;
+    lottiejs.setSpeed = setSpeed;
+    lottiejs.setDirection = setDirection;
+    lottiejs.stop = stop;
+    lottiejs.moveFrame = moveFrame;
+    lottiejs.searchAnimations = searchAnimations;
+    lottiejs.registerAnimation = registerAnimation;
+    lottiejs.loadAnimation = loadAnimation;
+    lottiejs.setSubframeRendering = setSubframeRendering;
+    lottiejs.resize = resize;
+    lottiejs.start = start;
+    lottiejs.goToAndStop = goToAndStop;
+    lottiejs.destroy = destroy;
+    lottiejs.setQuality = setQuality;
+    lottiejs.inBrowser = inBrowser;
+    lottiejs.installPlugin = installPlugin;
+    lottiejs.__getFactory = getFactory;
+    lottiejs.version = '[[BM_VERSION]]';
 
     function checkReady() {
         if (document.readyState === "complete") {
@@ -176,5 +177,5 @@
         renderer = getQueryVariable('renderer');
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
-    return bodymovinjs;
+    return lottiejs;
 }));

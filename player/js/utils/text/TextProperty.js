@@ -27,6 +27,8 @@ function TextProperty(elem, data, dynamicProperties){
         sw: 0,
         t: 0,
         tr: 0,
+        sz:0,
+        ps:[0,0],
         fillColorAnim: false,
         strokeColorAnim: false,
         strokeWidthAnim: false,
@@ -59,6 +61,8 @@ TextProperty.prototype.setCurrentData = function(data){
         currentData.s = data.s;
         currentData.sc = data.sc;
         currentData.sw = data.sw;
+        currentData.sz = data.sz;
+        currentData.ps = data.ps;
         currentData.t = data.t;
         currentData.tr = data.tr;
         currentData.fillColorAnim = data.fillColorAnim || currentData.fillColorAnim;
