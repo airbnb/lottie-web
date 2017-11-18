@@ -6,7 +6,7 @@ var PropertyFactory = (function(){
         var offsetTime = this.offsetTime;
         var newValue;
         if(previousValue.constructor === Array) {
-            newValue = Array.apply(null,{length:previousValue.length})
+            newValue = createTypedArray('float32', previousValue.length);
         }
         var i = iterationIndex;
         var len = this.keyframes.length- 1,flag = true;
@@ -212,10 +212,10 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = Array.apply(null, {length:data.k.length});
-        this.pv = Array.apply(null, {length:data.k.length});
-        this.lastValue = Array.apply(null, {length:data.k.length});
-        var arr = Array.apply(null, {length:data.k.length});
+        this.v = createTypedArray('float32', data.k.length);
+        this.pv = createTypedArray('float32', data.k.length);
+        this.lastValue = createTypedArray('float32', data.k.length);
+        var arr = createTypedArray('float32', data.k.length);
         this.vel = arr.map(function () { return 0 });
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
@@ -270,10 +270,11 @@ var PropertyFactory = (function(){
         this.getValue = getValueAtCurrentTime;
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
-        this.v = Array.apply(null, {length:data.k[0].s.length});
-        this.pv = Array.apply(null, {length:data.k[0].s.length});
-        this.lastValue = Array.apply(null, {length:data.k[0].s.length});
-        this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
+        var arrLen = data.k[0].s.length;
+        this.v = createTypedArray('float32', arrLen);
+        this.pv = createTypedArray('float32', arrLen);
+        this.lastValue = createTypedArray('float32', arrLen);
+        this.lastPValue = createTypedArray('float32', arrLen);
     }
 
     function getProp(elem,data,type, mult, arr) {

@@ -79,12 +79,7 @@ IShapeElement.prototype.createContent = function(){
 IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
 
     var gradientId = 'gr_'+randomString(10);
-    var gfill;
-    if(arr.t === 1){
-        gfill = createNS('linearGradient');
-    } else {
-        gfill = createNS('radialGradient');
-    }
+    var gfill = createNS(arr.t === 1 ? 'linearGradient' : 'radialGradient');
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
     gfill.setAttribute('gradientUnits','userSpaceOnUse');
@@ -104,7 +99,6 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
 
 IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
     if((arr.g.k.k[0].s && arr.g.k.k[0].s.length > arr.g.p*4) || arr.g.k.k.length > arr.g.p*4){
-        var opFill;
         var stop, j, jLen;
         var mask = createNS("mask");
         var maskElement = createNS( 'path');
@@ -112,11 +106,7 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
         var opacityId = 'op_'+randomString(10);
         var maskId = 'mk_'+randomString(10);
         mask.setAttribute('id',maskId);
-        if(arr.t === 1){
-            opFill = createNS('linearGradient');
-        } else {
-            opFill = createNS('radialGradient');
-        }
+        var opFill = createNS(arr.t === 1 ? 'linearGradient' : 'radialGradient');
         opFill.setAttribute('id',opacityId);
         opFill.setAttribute('spreadMethod','pad');
         opFill.setAttribute('gradientUnits','userSpaceOnUse');
@@ -182,7 +172,7 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
         }
         elementData.s = PropertyFactory.getProp(this,data.s,1,null,dynamicProperties);
         elementData.e = PropertyFactory.getProp(this,data.e,1,null,dynamicProperties);
-        this.setGradientData(pathElement,data,elementData, styleOb);
+        this.setGradientData(pathElement,data,elementData);
         var maskId = this.setGradientOpacity(data,elementData, styleOb);
         if(maskId){
             pathElement.setAttribute('mask','url(#'+maskId+')');
