@@ -6,7 +6,7 @@ createElement(HBaseElement, HSolidElement);
 HSolidElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
+    var cont = createNS('svg');
     styleDiv(cont);
     cont.setAttribute('width',this.data.sw);
     cont.setAttribute('height',this.data.sh);
@@ -22,7 +22,7 @@ HSolidElement.prototype.createElements = function(){
     if(this.data.bm !== 0){
         this.setBlendMode();
     }
-    var rect = document.createElementNS(svgNS,'rect');
+    var rect = createNS('rect');
     rect.setAttribute('width',this.data.sw);
     rect.setAttribute('height',this.data.sh);
     rect.setAttribute('fill',this.data.sc);

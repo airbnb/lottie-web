@@ -20,7 +20,7 @@ HBaseElement.prototype.getBaseElement = function(){
 
 HBaseElement.prototype.createElements = function(){
     if(this.data.hasMask){
-        this.layerElement = document.createElementNS(svgNS,'svg');
+        this.layerElement = createNS('svg');
         styleDiv(this.layerElement);
         //this.appendNodeToParent(this.layerElement);
         this.baseElement = this.layerElement;
@@ -31,7 +31,7 @@ HBaseElement.prototype.createElements = function(){
     this.transformedElement = this.layerElement;
     if(this.data.ln && (this.data.ty === 4 || this.data.ty === 0)){
         if(this.layerElement === this.parentContainer){
-            this.layerElement = document.createElementNS(svgNS,'g');
+            this.layerElement = createNS('g');
             //this.appendNodeToParent(this.layerElement);
             this.baseElement = this.layerElement;
         }

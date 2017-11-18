@@ -5,7 +5,7 @@ extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,F
 
 ISolidElement.prototype.createContent = function(){
 
-    var rect = document.createElementNS(svgNS,'rect');
+    var rect = createNS('rect');
     ////rect.style.width = this.data.sw;
     ////rect.style.height = this.data.sh;
     ////rect.style.fill = this.data.sc;

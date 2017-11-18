@@ -13,8 +13,8 @@ function SVGBaseElement(data,parentContainer,globalData,comp){
 //createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.initSvgElement = function(parentContainer) {
-    this.matteElement = document.createElementNS(svgNS,'g');
-    this.layerElement = document.createElementNS(svgNS,'g');
+    this.matteElement = createNS('g');
+    this.layerElement = createNS('g');
     this.transformedElement = this.layerElement;
     this._sizeChanged = false;
     this.parentContainer = parentContainer;
@@ -27,7 +27,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
     //If this layer acts as a mask for the following layer
     if(this.data.td){
         if(this.data.td == 3 || this.data.td == 1){
-            var masker = document.createElementNS(svgNS,'mask');
+            var masker = createNS('mask');
             masker.setAttribute('id',this.layerId);
             masker.setAttribute('mask-type',this.data.td == 3 ? 'luminance':'alpha');
             masker.appendChild(this.layerElement);
@@ -40,38 +40,38 @@ SVGBaseElement.prototype.createContainerElements = function(){
                 var fil = filtersFactory.createFilter(filId);
                 this.globalData.defs.appendChild(fil);
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = document.createElementNS(svgNS,'g');
+                var gg = createNS('g');
                 gg.appendChild(this.layerElement);
                 layerElementParent = gg;
                 masker.appendChild(gg);
                 gg.setAttribute('filter','url(' + locationHref + '#'+filId+')');
             }
         }else if(this.data.td == 2){
-            var maskGroup = document.createElementNS(svgNS,'mask');
+            var maskGroup = createNS('mask');
             maskGroup.setAttribute('id',this.layerId);
             maskGroup.setAttribute('mask-type','alpha');
-            var maskGrouper = document.createElementNS(svgNS,'g');
+            var maskGrouper = createNS('g');
             maskGroup.appendChild(maskGrouper);
             var filId = randomString(10);
             var fil = filtersFactory.createFilter(filId);
             ////
 
-            var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+            var feColorMatrix = createNS('feColorMatrix');
             feColorMatrix.setAttribute('type','matrix');
             feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
             feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
             fil.appendChild(feColorMatrix);
 
             ////
-            /*var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
+            /*var feCTr = createNS('feComponentTransfer');
             feCTr.setAttribute('in','SourceGraphic');
             fil.appendChild(feCTr);
-            var feFunc = document.createElementNS(svgNS,'feFuncA');
+            var feFunc = createNS('feFuncA');
             feFunc.setAttribute('type','table');
             feFunc.setAttribute('tableValues','1.0 0.0');
             feCTr.appendChild(feFunc);*/
             this.globalData.defs.appendChild(fil);
-            var alphaRect = document.createElementNS(svgNS,'rect');
+            var alphaRect = createNS('rect');
             alphaRect.setAttribute('width',this.comp.data.w);
             alphaRect.setAttribute('height',this.comp.data.h);
             alphaRect.setAttribute('x','0');
@@ -85,7 +85,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
             if(!featureSupport.maskType){
                 maskGroup.setAttribute('mask-type','luminance');
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = document.createElementNS(svgNS,'g');
+                var gg = createNS('g');
                 maskGrouper.appendChild(alphaRect);
                 gg.appendChild(this.layerElement);
                 layerElementParent = gg;
@@ -110,15 +110,15 @@ SVGBaseElement.prototype.createContainerElements = function(){
     }
     //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
     if(this.data.ty === 0){
-        var cp = document.createElementNS(svgNS, 'clipPath');
-        var pt = document.createElementNS(svgNS,'path');
+        var cp = createNS( 'clipPath');
+        var pt = createNS('path');
         pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
         var clipId = 'cp_'+randomString(8);
         cp.setAttribute('id',clipId);
         cp.appendChild(pt);
         this.globalData.defs.appendChild(cp);
         if(this.checkMasks()){
-            var cpGroup = document.createElementNS(svgNS,'g');
+            var cpGroup = createNS('g');
             cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
             cpGroup.appendChild(this.layerElement);
             this.transformedElement = cpGroup;

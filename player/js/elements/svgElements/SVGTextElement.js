@@ -19,7 +19,7 @@ SVGTextElement.prototype.createElements = function(){
         this.layerElement.setAttribute('class',this.data.cl);
     }
     if (this.data.singleShape && !this.globalData.fontManager.chars) {
-        this.textContainer = document.createElementNS(svgNS,'text');
+        this.textContainer = createNS('text');
     }
 };
 
@@ -79,7 +79,7 @@ SVGTextElement.prototype.buildNewText = function(){
         len = textContent.length;
         var yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
-            tSpan = this.textSpans[i] || document.createElementNS(svgNS,'tspan');
+            tSpan = this.textSpans[i] || createNS('tspan');
             tSpan.textContent = textContent[i];
             tSpan.setAttribute('x', 0);
             tSpan.setAttribute('y', yPos);
@@ -95,7 +95,7 @@ SVGTextElement.prototype.buildNewText = function(){
         var shapeData, charData;
         for (i = 0; i < len; i += 1) {
             if(!usesGlyphs || !singleShape || i === 0){
-                tSpan = cachedSpansLength > i ? this.textSpans[i] : document.createElementNS(svgNS,usesGlyphs?'path':'text');
+                tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs?'path':'text');
                 if (cachedSpansLength <= i) {
                     tSpan.setAttribute('stroke-linecap', 'butt');
                     tSpan.setAttribute('stroke-linejoin','round');

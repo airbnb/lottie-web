@@ -3,11 +3,11 @@ function StrokeEffectManager(){}
 StrokeEffectManager.prototype.init = function(){
     this.element.maskManager.registerEffect(this);
     this.layerSize = this.element.getLayerSize();
-    this.svgElement = document.createElementNS(svgNS,'svg');
+    this.svgElement = createNS('svg');
     this.svgElement.setAttribute('width',this.layerSize.w);
     this.svgElement.setAttribute('height',this.layerSize.h);
-    this.pathGroup = document.createElementNS(svgNS,'g');
-    this.path = document.createElementNS(svgNS,'path');
+    this.pathGroup = createNS('g');
+    this.path = createNS('path');
     this.path.setAttribute('stroke-linecap','round');
     this.path.setAttribute('fill','none');
     this.svgElement.appendChild(this.path);

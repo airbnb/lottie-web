@@ -5,7 +5,7 @@ function ICompElement(data,parentContainer,globalData,comp){
     this.pendingElements = [];
     this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
     this.tm = PropertyFactory.getProp(this,data.tm||{k:0},0,globalData.frameRate,this.dynamicProperties);
-    //this.layerElement = document.createElementNS(svgNS,'g');
+    //this.layerElement = createNS('g');
     this.initElement(data,parentContainer,globalData,comp);
     
 }

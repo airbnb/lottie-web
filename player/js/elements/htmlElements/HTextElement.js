@@ -24,14 +24,14 @@ HTextElement.prototype.createElements = function(){
     this.transformedElement = parent;
     if(this.isMasked){
         this.renderType = 'svg';
-        var cont = document.createElementNS(svgNS,'svg');
+        var cont = createNS('svg');
         styleDiv(cont);
         this.cont = cont;
         this.compW = this.comp.data.w;
         this.compH = this.comp.data.h;
         cont.setAttribute('width',this.compW);
         cont.setAttribute('height',this.compH);
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         cont.appendChild(g);
         parent.appendChild(cont);
         this.maskedElement = g;
@@ -79,7 +79,7 @@ HTextElement.prototype.buildNewText = function(){
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
             if(!this.textPaths[cnt]){
-                tSpan = document.createElementNS(svgNS,'path');
+                tSpan = createNS('path');
                 tSpan.setAttribute('stroke-linecap', 'butt');
                 tSpan.setAttribute('stroke-linejoin','round');
                 tSpan.setAttribute('stroke-miterlimit','4');
@@ -93,7 +93,7 @@ HTextElement.prototype.buildNewText = function(){
                 } else {
 
                     tParent = document.createElement('div');
-                    tCont = document.createElementNS(svgNS,'svg');
+                    tCont = createNS('svg');
                     tCont.appendChild(tSpan);
                     styleDiv(tParent);
                 }
@@ -111,7 +111,7 @@ HTextElement.prototype.buildNewText = function(){
                     tParent.appendChild(tSpan);
                 }
             } else {
-                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : document.createElementNS(svgNS,'text');
+                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : createNS('text');
             }
         }
         //tSpan.setAttribute('visibility', 'hidden');

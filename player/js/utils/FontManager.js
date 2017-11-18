@@ -82,7 +82,7 @@ var FontManager = (function(){
     };
 
     function createHelper(def, fontData){
-        var tHelper = document.createElementNS(svgNS,'text');
+        var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
         tHelper.style.fontFamily = fontData.fFamily;
         tHelper.textContent = '1';

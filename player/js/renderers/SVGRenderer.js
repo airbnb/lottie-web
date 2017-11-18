@@ -2,11 +2,11 @@ function SVGRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
-    this.svgElement = document.createElementNS(svgNS,'svg');
-    var maskElement = document.createElementNS(svgNS,'g');
+    this.svgElement = createNS('svg');
+    var maskElement = createNS('g');
     this.svgElement.appendChild(maskElement)
     this.layerElement = maskElement;
-    var defs = document.createElementNS(svgNS, 'defs');
+    var defs = createNS( 'defs');
     this.svgElement.appendChild(defs);
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
@@ -87,8 +87,8 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.compSize.h = animData.h;
     this.globalData.frameRate = animData.fr;
     this.data = animData;
-    var maskElement = document.createElementNS(svgNS, 'clipPath');
-    var rect = document.createElementNS(svgNS,'rect');
+    var maskElement = createNS( 'clipPath');
+    var rect = createNS('rect');
     rect.setAttribute('width',animData.w);
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
@@ -227,7 +227,7 @@ SVGRenderer.prototype.show = function(){
 
 SVGRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;
-    var floatingContainer = document.createElementNS(svgNS,'g');
+    var floatingContainer = createNS('g');
     for(i=0;i<len;i+=1){
         if(assets[i].xt){
             var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);

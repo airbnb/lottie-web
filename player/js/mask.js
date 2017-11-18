@@ -29,7 +29,7 @@ function MaskElement(data,element,globalData) {
         }
 
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
-            rect = document.createElementNS(svgNS, 'rect');
+            rect = createNS( 'rect');
             rect.setAttribute('fill', '#ffffff');
             rect.setAttribute('width', this.element.comp.data.w);
             rect.setAttribute('height', this.element.comp.data.h);
@@ -38,7 +38,7 @@ function MaskElement(data,element,globalData) {
             rect = null;
         }
 
-        path = document.createElementNS(svgNS, 'path');
+        path = createNS( 'path');
         if(properties[i].mode == 'n') {
             // TODO move this to a factory or to a constructor
             this.viewData[i] = {
@@ -59,9 +59,9 @@ function MaskElement(data,element,globalData) {
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
             var filterID = 'fi_'+randomString(10);
-            expansor = document.createElementNS(svgNS,'filter');
+            expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
-            feMorph = document.createElementNS(svgNS,'feMorphology');
+            feMorph = createNS('feMorphology');
             feMorph.setAttribute('operator','dilate');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
@@ -85,11 +85,11 @@ function MaskElement(data,element,globalData) {
         };
         if(properties[i].mode == 'i'){
             jLen = currentMasks.length;
-            var g = document.createElementNS(svgNS,'g');
+            var g = createNS('g');
             for(j=0;j<jLen;j+=1){
                 g.appendChild(currentMasks[j]);
             }
-            var mask = document.createElementNS(svgNS,'mask');
+            var mask = createNS('mask');
             mask.setAttribute('mask-type','alpha');
             mask.setAttribute('id',layerId+'_'+count);
             mask.appendChild(path);
@@ -120,7 +120,7 @@ function MaskElement(data,element,globalData) {
         }
     }
 
-    this.maskElement = document.createElementNS(svgNS, maskType);
+    this.maskElement = createNS( maskType);
 
     len = currentMasks.length;
     for(i=0;i<len;i+=1){

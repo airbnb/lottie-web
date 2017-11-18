@@ -1,7 +1,7 @@
 function SVGProLevelsFilter(filter, filterManager){
     this.filterManager = filterManager;
     var effectElements = this.filterManager.effectElements;
-    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    var feComponentTransfer = createNS('feComponentTransfer');
     var feFuncR, feFuncG, feFuncB;
     
     if(effectElements[9].p.k || effectElements[9].p.v !== 0 || effectElements[10].p.k || effectElements[10].p.v !== 1 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 0 || effectElements[13].p.k || effectElements[13].p.v !== 1){
@@ -20,7 +20,7 @@ function SVGProLevelsFilter(filter, filterManager){
     if(this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA){
         feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
         filter.appendChild(feComponentTransfer);
-        feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+        feComponentTransfer = createNS('feComponentTransfer');
     }
 
     if(effectElements[2].p.k || effectElements[2].p.v !== 0 || effectElements[3].p.k || effectElements[3].p.v !== 1 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 0 || effectElements[6].p.k || effectElements[6].p.v !== 1){
@@ -34,7 +34,7 @@ function SVGProLevelsFilter(filter, filterManager){
 }
 
 SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfer) {
-    var feFunc = document.createElementNS(svgNS,type);
+    var feFunc = createNS(type);
     feFunc.setAttribute('type','table');
     feComponentTransfer.appendChild(feFunc);
     return feFunc;
