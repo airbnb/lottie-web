@@ -1,14 +1,35 @@
 function IShapeElement(data,parentContainer,globalData,comp){
+    //List of drawable elements
     this.shapes = [];
+    // Full shape data
     this.shapesData = data.shapes;
+    //List of styles that will be applied to shapes
     this.stylesList = [];
-    this.itemsData = [];
-    this.prevViewData = [];
+    //List of modifiers that will be applied to shapes
     this.shapeModifiers = [];
+    //List of items in shape tree
+    this.itemsData = [];
+    //List of items in previous shape tree
+    this.prevViewData = [];
+    // List of elements that have been created
     this.processedElements = [];
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
+    this.initElement(data,parentContainer,globalData,comp);
 }
-createElement(SVGBaseElement, IShapeElement);
+
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IShapeElement);
+
+IShapeElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
+    
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initHierarchy();
+    this.initRenderable();
+    this.initSvgElement(parentContainer);
+    this.createContainerElements();
+    this.addMasks();
+    this.createContent();
+    this.hide();
+}
 
 IShapeElement.prototype.identityMatrix = new Matrix();
 
@@ -25,12 +46,12 @@ IShapeElement.prototype.ljEnum = {
 }
 
 IShapeElement.prototype.searchProcessedElement = function(elem){
-    var i = this.processedElements.length;
+    var i = 0, len = this.processedElements.length;
     while(i){
-        i -= 1;
         if(this.processedElements[i].elem === elem){
             return this.processedElements[i].pos;
         }
+        i += 1;
     }
     return 0;
 };
@@ -54,9 +75,7 @@ IShapeElement.prototype.addProcessedElement = function(elem, pos){
 
 IShapeElement.prototype.buildExpressionInterface = function(){};
 
-IShapeElement.prototype.createElements = function(){
-    //TODO check if I can use symbol so i can set its viewBox
-    this._parent.createElements.call(this);
+IShapeElement.prototype.createContent = function(){
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
     if(!this.data.hd || this.data.td){
         styleUnselectableDiv(this.layerElement);
@@ -382,17 +401,16 @@ IShapeElement.prototype.renderModifiers = function() {
     }
 };
 
+IShapeElement.prototype.prepareFrame = function(num) {
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isVisible);
+};
+
 IShapeElement.prototype.renderFrame = function(parentMatrix){
-    //this.reloadShapes();
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.layerElement.style.display = 'block';
-        this.hidden = false;
-    }
+    this.renderTransform();
+    this.renderRenderable();
+    this.renderElement();
+
     this.renderModifiers();
     var i, len = this.stylesList.length;
     for(i=0;i<len;i+=1){
@@ -402,11 +420,6 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     this.renderShape(this.shapesData,this.itemsData, null);
 
     for (i = 0; i < len; i += 1) {
-        if (this.stylesList[i].ld === '0') {
-            this.stylesList[i].ld = '1';
-            this.stylesList[i].pElem.style.display = 'block';
-            //this.stylesList[i].parent.appendChild(this.stylesList[i].pElem);
-        }
         if (this.stylesList[i].mdf || this.firstFrame) {
             this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
             if(this.stylesList[i].msElem){
@@ -419,23 +432,9 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     }
 };
 
-IShapeElement.prototype.hide = function(){
-    if(!this.hidden){
-        this.layerElement.style.display = 'none';
-        var i, len = this.stylesList.length;
-        for(i=len-1;i>=0;i-=1){
-            if(this.stylesList[i].ld !== '0'){
-                this.stylesList[i].ld = '0';
-                this.stylesList[i].pElem.style.display = 'none';
-                if(this.stylesList[i].pElem.parentNode){
-                    this.stylesList[i].parent = this.stylesList[i].pElem.parentNode;
-                    //this.stylesList[i].pElem.parentNode.removeChild(this.stylesList[i].pElem);
-                }
-            }
-        }
-        this.hidden = true;
-    }
-};
+IShapeElement.prototype.hide = IShapeElement.prototype.hideElement;
+IShapeElement.prototype.show = IShapeElement.prototype.showElement;
+
 
 IShapeElement.prototype.renderShape = function(items,data, container){
     var i, len = items.length - 1;
