@@ -440,7 +440,7 @@ IShapeElement.prototype.hide = function(){
 IShapeElement.prototype.renderShape = function(items,data, container){
     var i, len = items.length - 1;
     var ty;
-    for(i=len;i>=0;i-=1){
+    for(i=0;i<=len;i+=1){
         ty = items[i].ty;
         if(ty == 'tr'){
             if(this.firstFrame || data[i].transform.op.mdf && container){
