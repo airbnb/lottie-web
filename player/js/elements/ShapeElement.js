@@ -76,110 +76,34 @@ IShapeElement.prototype.createContent = function(){
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
 };
 
-IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
-
-    var gradientId = 'gr_'+randomString(10);
-    var gfill = createNS(arr.t === 1 ? 'linearGradient' : 'radialGradient');
-    gfill.setAttribute('id',gradientId);
-    gfill.setAttribute('spreadMethod','pad');
-    gfill.setAttribute('gradientUnits','userSpaceOnUse');
-    var stops = [];
-    var stop, j, jLen;
-    jLen = arr.g.p*4;
-    for(j=0;j<jLen;j+=4){
-        stop = createNS('stop');
-        gfill.appendChild(stop);
-        stops.push(stop);
-    }
-    pathElement.setAttribute( arr.ty === 'gf' ? 'fill':'stroke','url(#'+gradientId+')');
-    this.globalData.defs.appendChild(gfill);
-    data.gf = gfill;
-    data.cst = stops;
-}
-
-IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
-    if((arr.g.k.k[0].s && arr.g.k.k[0].s.length > arr.g.p*4) || arr.g.k.k.length > arr.g.p*4){
-        var stop, j, jLen;
-        var mask = createNS("mask");
-        var maskElement = createNS( 'path');
-        mask.appendChild(maskElement);
-        var opacityId = 'op_'+randomString(10);
-        var maskId = 'mk_'+randomString(10);
-        mask.setAttribute('id',maskId);
-        var opFill = createNS(arr.t === 1 ? 'linearGradient' : 'radialGradient');
-        opFill.setAttribute('id',opacityId);
-        opFill.setAttribute('spreadMethod','pad');
-        opFill.setAttribute('gradientUnits','userSpaceOnUse');
-        jLen = arr.g.k.k[0].s ? arr.g.k.k[0].s.length : arr.g.k.k.length;
-        var stops = [];
-        for(j=arr.g.p*4;j<jLen;j+=2){
-            stop = createNS('stop');
-            stop.setAttribute('stop-color','rgb(255,255,255)');
-            //stop.setAttribute('offset',Math.round(arr.y[j][0]*100)+'%');
-            //stop.setAttribute('style','stop-color:rgb(255,255,255);stop-opacity:'+arr.y[j][1]);
-            opFill.appendChild(stop);
-            stops.push(stop);
-        }
-        maskElement.setAttribute( arr.ty === 'gf' ? 'fill':'stroke','url(#'+opacityId+')');
-        this.globalData.defs.appendChild(opFill);
-        this.globalData.defs.appendChild(mask);
-        data.of = opFill;
-        data.ost = stops;
-        styleOb.msElem = maskElement;
-        return maskId;
-    }
-};
-
 IShapeElement.prototype.createStyleElement = function(data, level, dynamicProperties){
-    var elementData = {
-    };
+    var elementData;
     var styleOb = new SVGStyleData(data, level);
 
     var pathElement = styleOb.pElem;
-    elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
+    if(data.ty == 'st') {
+        elementData = new SVGStrokeStyleData(this, data, dynamicProperties, styleOb);
+    } else if(data.ty == 'fl') {
+        elementData = new SVGFillStyleData(this, data, dynamicProperties, styleOb);
+    } else if(data.ty == 'gf' || data.ty == 'gs') {
+        var gradientConstructor = data.ty === 'gf' ? SVGGradientFillStyleData : SVGGradientStrokeStyleData;
+        elementData = new gradientConstructor(this, data, dynamicProperties, styleOb);
+        this.globalData.defs.appendChild(elementData.gf);
+        if (elementData.maskId) {
+            this.globalData.defs.appendChild(elementData.ms);
+            this.globalData.defs.appendChild(elementData.of);
+            pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
+        }
+    }
     if(data.ty == 'st' || data.ty == 'gs') {
         pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
-        ////pathElement.style.strokeLinecap = this.lcEnum[data.lc] || 'round';
         pathElement.setAttribute('stroke-linejoin',this.ljEnum[data.lj] || 'round');
-        ////pathElement.style.strokeLinejoin = this.ljEnum[data.lj] || 'round';
         pathElement.setAttribute('fill-opacity','0');
-        ////pathElement.style.fillOpacity = 0;
         if(data.lj == 1) {
             pathElement.setAttribute('stroke-miterlimit',data.ml);
-            ////pathElement.style.strokeMiterlimit = data.ml;
-        }
-
-        elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
-        if(data.d){
-            var d = new DashProperty(this,data.d,'svg',dynamicProperties);
-            if(!d.k){
-                pathElement.setAttribute('stroke-dasharray', d.dasharray);
-                ////pathElement.style.strokeDasharray = d.dasharray;
-                pathElement.setAttribute('stroke-dashoffset', d.dashoffset[0]);
-                ////pathElement.style.strokeDashoffset = d.dashoffset;
-            }
-            elementData.d = d;
-        }
-
-    }
-    if(data.ty == 'fl' || data.ty == 'st'){
-        elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
-    } else {
-        elementData.g = new GradientProperty(this,data.g,dynamicProperties);
-        if(data.t == 2){
-            elementData.h = PropertyFactory.getProp(this,data.h,0,0.01,dynamicProperties);
-            elementData.a = PropertyFactory.getProp(this,data.a,0,degToRads,dynamicProperties);
-        }
-        elementData.s = PropertyFactory.getProp(this,data.s,1,null,dynamicProperties);
-        elementData.e = PropertyFactory.getProp(this,data.e,1,null,dynamicProperties);
-        this.setGradientData(pathElement,data,elementData);
-        var maskId = this.setGradientOpacity(data,elementData, styleOb);
-        if(maskId){
-            pathElement.setAttribute('mask','url(#'+maskId+')');
         }
     }
-    elementData.elem = pathElement;
-    //container.appendChild(pathElement);
+
     if(data.r === 2) {
         pathElement.setAttribute('fill-rule', 'evenodd');
     }
@@ -191,7 +115,6 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
         pathElement.setAttribute('class',data.cl);
     }
     this.stylesList.push(styleOb);
-    elementData.style = styleOb;
     return elementData;
 }
 
@@ -209,25 +132,10 @@ IShapeElement.prototype.createGroupElement = function(data) {
 }
 
 IShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
-    var elementData = {
-        transform : {
-            op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
-            mProps: TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties)
-            //mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
-        },
-        elements: []
-    };
-    return elementData;
+    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties), PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties))
 }
 
 IShapeElement.prototype.createShapeElement = function(data, ownTransformers, level, dynamicProperties) {
-    var elementData = {
-        elements : [],
-        caches:[],
-        styles : [],
-        transformers: ownTransformers,
-        lStr: ''
-    };
     var ty = 4;
     if(data.ty == 'rc'){
         ty = 5;
@@ -236,24 +144,21 @@ IShapeElement.prototype.createShapeElement = function(data, ownTransformers, lev
     }else if(data.ty == 'sr'){
         ty = 7;
     }
-    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
-    elementData.lvl = level;
+    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
+    var elementData = new SVGShapeData(ownTransformers, level, shapeProperty)
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
     return elementData;
 }
 
-var cont = 0;
-
-IShapeElement.prototype.setElementStyles = function(){
+IShapeElement.prototype.setElementStyles = function(elementData){
+    var arr = elementData.styles;
     var j, jLen = this.stylesList.length;
-    var arr = [];
     for(j=0;j<jLen;j+=1){
         if(!this.stylesList[j].closed){
             arr.push(this.stylesList[j]);
         }
     }
-    return arr;
 }
 
 IShapeElement.prototype.reloadShapes = function(){
@@ -289,7 +194,7 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
                 itemsData[i].style.closed = false;
             }
             if(arr[i]._render){
-                container.appendChild(itemsData[i].elem);
+                container.appendChild(itemsData[i].style.pElem);
             }
             ownStyles.push(itemsData[i].style);
         }else if(arr[i].ty == 'gr'){
@@ -315,7 +220,7 @@ IShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,conta
             if(!processedPos){
                 itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
             }
-            itemsData[i].elements = this.setElementStyles();
+            this.setElementStyles(itemsData[i]);
 
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
             if(!processedPos){
@@ -390,14 +295,14 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
     this.renderModifiers();
     var i, len = this.stylesList.length;
     for(i=0;i<len;i+=1){
-        this.stylesList[i].d = '';
-        this.stylesList[i].mdf = false;
+        this.stylesList[i].reset();
     }
     this.renderShape(this.shapesData,this.itemsData, null);
 
+    var pathString;
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i].mdf || this.firstFrame) {
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
+            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
             if(this.stylesList[i].msElem){
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
             }
@@ -463,21 +368,22 @@ IShapeElement.prototype.buildShapeString = function(pathNodes, length, closed, m
 };
 
 IShapeElement.prototype.renderPath = function(pathData,itemData){
-    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.elements.length;
+    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
     var lvl = itemData.lvl;
     if(!pathData._render){
         return;
     }
+    var paths, mat, props, iterations, k;
     for(l=0;l<lLen;l+=1){
-        if(itemData.elements[l].data._render){
+        if(itemData.styles[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;
-            pathStringTransformed = 'M0 0';
-            var paths = itemData.sh.paths;
+            pathStringTransformed = '';
+            paths = itemData.sh.paths;
             jLen = paths._length;
-            if(itemData.elements[l].lvl < lvl){
-                var mat = this.mHelper.reset(), props;
-                var iterations = lvl - itemData.elements[l].lvl;
-                var k = itemData.transformers.length-1;
+            if(itemData.styles[l].lvl < lvl){
+                mat = this.mHelper.reset();
+                iterations = lvl - itemData.styles[l].lvl;
+                k = itemData.transformers.length-1;
                 while(iterations > 0) {
                     redraw = itemData.transformers[k].mProps.mdf || redraw;
                     props = itemData.transformers[k].mProps.v.props;
@@ -485,34 +391,24 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
                     iterations --;
                     k --;
                 }
-                if(redraw){
-                    for(j=0;j<jLen;j+=1){
-                        pathNodes = paths.shapes[j];
-                        if(pathNodes && pathNodes._length){
-                            pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                        }
-                    }
-                    itemData.caches[l] = pathStringTransformed;
-                } else {
-                    pathStringTransformed = itemData.caches[l];
-                }
             } else {
-                if(redraw){
-                    for(j=0;j<jLen;j+=1){
-                        pathNodes = paths.shapes[j];
-                        if(pathNodes && pathNodes._length){
-                            pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, this.identityMatrix);
-                        }
-                    }
-                    itemData.caches[l] = pathStringTransformed;
-                } else {
-                    pathStringTransformed = itemData.caches[l];
-                }
+                mat = this.identityMatrix;
             }
-            itemData.elements[l].d += pathStringTransformed;
-            itemData.elements[l].mdf = redraw || itemData.elements[l].mdf;
+            if(redraw){
+                for(j=0;j<jLen;j+=1){
+                    pathNodes = paths.shapes[j];
+                    if(pathNodes && pathNodes._length){
+                        pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
+                    }
+                }
+                itemData.caches[l] = pathStringTransformed;
+            } else {
+                pathStringTransformed = itemData.caches[l];
+            }
+            itemData.styles[l].d += pathStringTransformed;
+            itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
         } else {
-            itemData.elements[l].mdf = true;
+            itemData.styles[l].mdf = true;
         }
     }
 };
@@ -536,7 +432,7 @@ IShapeElement.prototype.renderGradient = function(styleData,itemData){
 
     if(itemData.o.mdf || this.firstFrame){
         var attr = styleData.ty === 'gf' ? 'fill-opacity':'stroke-opacity';
-        itemData.elem.setAttribute(attr,itemData.o.v);
+        itemData.style.pElem.setAttribute(attr,itemData.o.v);
     }
     //clippedElement.setAttribute('transform','matrix(1,0,0,1,-100,0)');
     if(itemData.s.mdf || this.firstFrame){
