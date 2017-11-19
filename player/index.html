@@ -14,8 +14,8 @@
             background-color:#fff;
             width:100%;
             height:100%;
-            width:360px;
-            height:640px;
+            /*width:360px;
+            height:640px;*/
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -80,6 +80,7 @@
     <script src="js/elements/helpers/shapes/SVGFillStyleData.js"></script>
     <script src="js/elements/helpers/shapes/SVGGradientFillStyleData.js"></script>
     <script src="js/elements/helpers/shapes/SVGGradientStrokeStyleData.js"></script>
+    <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/NullElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
@@ -147,9 +148,9 @@
         container: elem,
         renderer: 'svg',
         loop: true,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:false
         },
         path: 'exports/render/data.json'
     };

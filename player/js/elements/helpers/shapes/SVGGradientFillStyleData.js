@@ -1,13 +1,19 @@
 function SVGGradientFillStyleData(elem, data, dynamicProperties, styleOb){
-	this.o = PropertyFactory.getProp(elem,data.o,0,0.01,dynamicProperties);
-	this.s = PropertyFactory.getProp(elem,data.s,1,null,dynamicProperties);
+    this.initGradientData(elem, data, dynamicProperties, styleOb);
+}
+
+SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, dynamicProperties, styleOb){
+    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,dynamicProperties);
+    this.s = PropertyFactory.getProp(elem,data.s,1,null,dynamicProperties);
     this.e = PropertyFactory.getProp(elem,data.e,1,null,dynamicProperties);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,dynamicProperties);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,dynamicProperties);
     this.g = new GradientProperty(elem,data.g,dynamicProperties);
-	this.style = styleOb;
-	this.setGradientData(styleOb.pElem, data);
-	this.setGradientOpacity(data, styleOb);
+    this.style = styleOb;
+    this.stops = [];
+    this.setGradientData(styleOb.pElem, data);
+    this.setGradientOpacity(data, styleOb);
+
 }
 
 SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
@@ -45,7 +51,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         opFill.setAttribute('spreadMethod','pad');
         opFill.setAttribute('gradientUnits','userSpaceOnUse');
         jLen = data.g.k.k[0].s ? data.g.k.k[0].s.length : data.g.k.k.length;
-        var stops = [];
+        var stops = this.stops;
         for(j=data.g.p*4;j<jLen;j+=2){
             stop = createNS('stop');
             stop.setAttribute('stop-color','rgb(255,255,255)');

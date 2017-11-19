@@ -399,11 +399,7 @@
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         var isAdded = prop.k;
         if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
+            prop.propertyIndex = data.ix;
         }
         if(type === 3){
             searchExpressions(elem,data.pt,prop);

@@ -4,9 +4,9 @@ function ICompElement(data,parentContainer,globalData,comp){
     this.completeLayers = false;
     this.pendingElements = [];
     this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    this.tm = PropertyFactory.getProp(this,data.tm||{k:0},0,globalData.frameRate,this.dynamicProperties);
     //this.layerElement = createNS('g');
     this.initElement(data,parentContainer,globalData,comp);
+    this.tm = PropertyFactory.getProp(this,data.tm||{k:0},0,globalData.frameRate,this.dynamicProperties);
     
 }
 
@@ -113,6 +113,7 @@ ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;
 ICompElement.prototype.createComp = SVGRenderer.prototype.createComp;
 ICompElement.prototype.createSolid = SVGRenderer.prototype.createSolid;
 ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
+ICompElement.prototype.createNull = SVGRenderer.prototype.createNull;
 ICompElement.prototype.createText = SVGRenderer.prototype.createText;
 ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
 ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
