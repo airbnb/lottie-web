@@ -9,7 +9,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
     if(this.data.xt){
-        this.layerElement = document.createElementNS(svgNS,'g');
+        this.layerElement = createNS('g');
         this.buildAllItems();
     } else if(!globalData.progressiveLoad){
         this.buildAllItems();

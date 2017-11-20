@@ -15,7 +15,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.createElements = function(){
-    this.layerElement = document.createElementNS(svgNS,'g');
+    this.layerElement = createNS('g');
     this.transformedElement = this.layerElement;
     if(this.data.hasMask){
         this.maskedElement = this.layerElement;
@@ -23,7 +23,7 @@ SVGBaseElement.prototype.createElements = function(){
     var layerElementParent = null;
     if(this.data.td){
         if(this.data.td == 3 || this.data.td == 1){
-            var masker = document.createElementNS(svgNS,'mask');
+            var masker = createNS('mask');
             masker.setAttribute('id',this.layerId);
             masker.setAttribute('mask-type',this.data.td == 3 ? 'luminance':'alpha');
             masker.appendChild(this.layerElement);
@@ -36,38 +36,38 @@ SVGBaseElement.prototype.createElements = function(){
                 var fil = filtersFactory.createFilter(filId);
                 this.globalData.defs.appendChild(fil);
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = document.createElementNS(svgNS,'g');
+                var gg = createNS('g');
                 gg.appendChild(this.layerElement);
                 layerElementParent = gg;
                 masker.appendChild(gg);
                 gg.setAttribute('filter','url(' + locationHref + '#'+filId+')');
             }
         }else if(this.data.td == 2){
-            var maskGroup = document.createElementNS(svgNS,'mask');
+            var maskGroup = createNS('mask');
             maskGroup.setAttribute('id',this.layerId);
             maskGroup.setAttribute('mask-type','alpha');
-            var maskGrouper = document.createElementNS(svgNS,'g');
+            var maskGrouper = createNS('g');
             maskGroup.appendChild(maskGrouper);
             var filId = randomString(10);
             var fil = filtersFactory.createFilter(filId);
             ////
 
-            var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+            var feColorMatrix = createNS('feColorMatrix');
             feColorMatrix.setAttribute('type','matrix');
             feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
             feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
             fil.appendChild(feColorMatrix);
 
             ////
-            /*var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
+            /*var feCTr = createNS('feComponentTransfer');
             feCTr.setAttribute('in','SourceGraphic');
             fil.appendChild(feCTr);
-            var feFunc = document.createElementNS(svgNS,'feFuncA');
+            var feFunc = createNS('feFuncA');
             feFunc.setAttribute('type','table');
             feFunc.setAttribute('tableValues','1.0 0.0');
             feCTr.appendChild(feFunc);*/
             this.globalData.defs.appendChild(fil);
-            var alphaRect = document.createElementNS(svgNS,'rect');
+            var alphaRect = createNS('rect');
             alphaRect.setAttribute('width',this.comp.data.w);
             alphaRect.setAttribute('height',this.comp.data.h);
             alphaRect.setAttribute('x','0');
@@ -81,7 +81,7 @@ SVGBaseElement.prototype.createElements = function(){
             if(!featureSupport.maskType){
                 maskGroup.setAttribute('mask-type','luminance');
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = document.createElementNS(svgNS,'g');
+                var gg = createNS('g');
                 maskGrouper.appendChild(alphaRect);
                 gg.appendChild(this.layerElement);
                 layerElementParent = gg;
@@ -91,7 +91,7 @@ SVGBaseElement.prototype.createElements = function(){
         }
     }else if(this.data.hasMask || this.data.tt){
         if(this.data.tt){
-            this.matteElement = document.createElementNS(svgNS,'g');
+            this.matteElement = createNS('g');
             this.matteElement.appendChild(this.layerElement);
             layerElementParent = this.matteElement;
             this.baseElement = this.matteElement;
@@ -110,15 +110,15 @@ SVGBaseElement.prototype.createElements = function(){
         }
     }
     if(this.data.ty === 0){
-            var cp = document.createElementNS(svgNS, 'clipPath');
-            var pt = document.createElementNS(svgNS,'path');
+            var cp = createNS( 'clipPath');
+            var pt = createNS('path');
             pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
             var clipId = 'cp_'+randomString(8);
             cp.setAttribute('id',clipId);
             cp.appendChild(pt);
             this.globalData.defs.appendChild(cp);
         if(this.checkMasks()){
-            var cpGroup = document.createElementNS(svgNS,'g');
+            var cpGroup = createNS('g');
             cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
             cpGroup.appendChild(this.layerElement);
             this.transformedElement = cpGroup;
@@ -143,16 +143,16 @@ SVGBaseElement.prototype.createElements = function(){
         var filterID = 'st_'+randomString(10);
         var c = this.data.sy[0].c.k;
         var r = this.data.sy[0].s.k;
-        var expansor = document.createElementNS(svgNS,'filter');
+        var expansor = createNS('filter');
         expansor.setAttribute('id',filterID);
-        var feFlood = document.createElementNS(svgNS,'feFlood');
+        var feFlood = createNS('feFlood');
         this.feFlood = feFlood;
         if(!c[0].e){
             feFlood.setAttribute('flood-color','rgb('+c[0]+','+c[1]+','+c[2]+')');
         }
         feFlood.setAttribute('result','base');
         expansor.appendChild(feFlood);
-        var feMorph = document.createElementNS(svgNS,'feMorphology');
+        var feMorph = createNS('feMorphology');
         feMorph.setAttribute('operator','dilate');
         feMorph.setAttribute('in','SourceGraphic');
         feMorph.setAttribute('result','bigger');
@@ -161,25 +161,25 @@ SVGBaseElement.prototype.createElements = function(){
             feMorph.setAttribute('radius',this.data.sy[0].s.k);
         }
         expansor.appendChild(feMorph);
-        var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+        var feColorMatrix = createNS('feColorMatrix');
         feColorMatrix.setAttribute('result','mask');
         feColorMatrix.setAttribute('in','bigger');
         feColorMatrix.setAttribute('type','matrix');
         feColorMatrix.setAttribute('values','0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0');
         expansor.appendChild(feColorMatrix);
-        var feComposite = document.createElementNS(svgNS,'feComposite');
+        var feComposite = createNS('feComposite');
         feComposite.setAttribute('result','drop');
         feComposite.setAttribute('in','base');
         feComposite.setAttribute('in2','mask');
         feComposite.setAttribute('operator','in');
         expansor.appendChild(feComposite);
-        var feBlend = document.createElementNS(svgNS,'feBlend');
+        var feBlend = createNS('feBlend');
         feBlend.setAttribute('in','SourceGraphic');
         feBlend.setAttribute('in2','drop');
         feBlend.setAttribute('mode','normal');
         expansor.appendChild(feBlend);
         this.globalData.defs.appendChild(expansor);
-        var cont = document.createElementNS(svgNS,'g');
+        var cont = createNS('g');
         if(this.layerElement === this.parentContainer){
             this.layerElement = cont;
         }else{

@@ -12,12 +12,12 @@ HImageElement.prototype.createElements = function(){
     if(this.data.hasMask){
         var parent = document.createElement('div');
         styleDiv(parent);
-        var cont = document.createElementNS(svgNS,'svg');
+        var cont = createNS('svg');
         styleDiv(cont);
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
         parent.appendChild(cont);
-        this.imageElem = document.createElementNS(svgNS,'image');
+        this.imageElem = createNS('image');
         this.imageElem.setAttribute('width',this.assetData.w+"px");
         this.imageElem.setAttribute('height',this.assetData.h+"px");
         this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);

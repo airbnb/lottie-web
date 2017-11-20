@@ -23,13 +23,13 @@ HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderFrame;
 HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
+    var cont = createNS('svg');
     styleDiv(cont);
     var size = this.comp.data ? this.comp.data : this.globalData.compSize;
     cont.setAttribute('width',size.w);
     cont.setAttribute('height',size.h);
     if(this.data.hasMask){
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         parent.appendChild(cont);
         cont.appendChild(g);
         this.maskedElement = g;
@@ -38,7 +38,7 @@ HShapeElement.prototype.createElements = function(){
     }else{
         parent.appendChild(cont);
         this.layerElement = cont;
-        this.shapesContainer = document.createElementNS(svgNS,'g');
+        this.shapesContainer = createNS('g');
         this.layerElement.appendChild(this.shapesContainer);
     }
     if(!this.data.hd){

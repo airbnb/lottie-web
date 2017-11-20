@@ -1,12 +1,12 @@
 function SVGTintFilter(filter, filterManager){
     this.filterManager = filterManager;
-    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
     feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
     feColorMatrix.setAttribute('result','f1');
     filter.appendChild(feColorMatrix);
-    feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
     feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
@@ -14,13 +14,13 @@ function SVGTintFilter(filter, filterManager){
     filter.appendChild(feColorMatrix);
     this.matrixFilter = feColorMatrix;
     if(filterManager.effectElements[2].p.v !== 100 || filterManager.effectElements[2].p.k){
-        var feMerge = document.createElementNS(svgNS,'feMerge');
+        var feMerge = createNS('feMerge');
         filter.appendChild(feMerge);
         var feMergeNode;
-        feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+        feMergeNode = createNS('feMergeNode');
         feMergeNode.setAttribute('in','SourceGraphic');
         feMerge.appendChild(feMergeNode);
-        feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+        feMergeNode = createNS('feMergeNode');
         feMergeNode.setAttribute('in','f2');
         feMerge.appendChild(feMergeNode);
     }

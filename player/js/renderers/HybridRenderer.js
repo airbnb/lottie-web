@@ -187,12 +187,12 @@ HybridRenderer.prototype.configAnimation = function(animData){
     wrapper.appendChild(resizerElem);
 
     resizerElem.style.overflow = 'hidden';
-    var svg = document.createElementNS(svgNS,'svg');
+    var svg = createNS('svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
     styleDiv(svg);
     this.resizerElem.appendChild(svg);
-    var defs = document.createElementNS(svgNS,'defs');
+    var defs = createNS('defs');
     svg.appendChild(defs);
     this.globalData.defs = defs;
     this.data = animData;

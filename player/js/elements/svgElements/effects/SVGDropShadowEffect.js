@@ -12,28 +12,28 @@ function SVGDropShadowEffect(filter, filterManager){
     filter.setAttribute('height','400%');
     this.filterManager = filterManager;
 
-    var feGaussianBlur = document.createElementNS(svgNS,'feGaussianBlur');
+    var feGaussianBlur = createNS('feGaussianBlur');
     feGaussianBlur.setAttribute('in','SourceAlpha');
     feGaussianBlur.setAttribute('result','drop_shadow_1');
     feGaussianBlur.setAttribute('stdDeviation','0');
     this.feGaussianBlur = feGaussianBlur;
     filter.appendChild(feGaussianBlur);
 
-    var feOffset = document.createElementNS(svgNS,'feOffset');
+    var feOffset = createNS('feOffset');
     feOffset.setAttribute('dx','25');
     feOffset.setAttribute('dy','0');
     feOffset.setAttribute('in','drop_shadow_1');
     feOffset.setAttribute('result','drop_shadow_2');
     this.feOffset = feOffset;
     filter.appendChild(feOffset);
-    var feFlood = document.createElementNS(svgNS,'feFlood');
+    var feFlood = createNS('feFlood');
     feFlood.setAttribute('flood-color','#00ff00');
     feFlood.setAttribute('flood-opacity','1');
     feFlood.setAttribute('result','drop_shadow_3');
     this.feFlood = feFlood;
     filter.appendChild(feFlood);
 
-    var feComposite = document.createElementNS(svgNS,'feComposite');
+    var feComposite = createNS('feComposite');
     feComposite.setAttribute('in','drop_shadow_3');
     feComposite.setAttribute('in2','drop_shadow_2');
     feComposite.setAttribute('operator','in');
@@ -41,12 +41,12 @@ function SVGDropShadowEffect(filter, filterManager){
     filter.appendChild(feComposite);
 
 
-    var feMerge = document.createElementNS(svgNS,'feMerge');
+    var feMerge = createNS('feMerge');
     filter.appendChild(feMerge);
     var feMergeNode;
-    feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+    feMergeNode = createNS('feMergeNode');
     feMerge.appendChild(feMergeNode);
-    feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+    feMergeNode = createNS('feMergeNode');
     feMergeNode.setAttribute('in','SourceGraphic');
     this.feMergeNode = feMergeNode;
     this.feMerge = feMerge;

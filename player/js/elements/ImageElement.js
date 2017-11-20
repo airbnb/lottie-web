@@ -10,7 +10,7 @@ IImageElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
 
-    this.innerElem = document.createElementNS(svgNS,'image');
+    this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
     this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');

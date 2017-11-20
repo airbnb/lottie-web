@@ -6,7 +6,7 @@ createElement(SVGBaseElement, ISolidElement);
 ISolidElement.prototype.createElements = function(){
     this._parent.createElements.call(this);
 
-    var rect = document.createElementNS(svgNS,'rect');
+    var rect = createNS('rect');
     ////rect.style.width = this.data.sw;
     ////rect.style.height = this.data.sh;
     ////rect.style.fill = this.data.sc;

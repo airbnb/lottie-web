@@ -3,14 +3,14 @@ function SVGMatte3Effect(filterElem, filterManager, elem){
     this.filterManager = filterManager;
     this.filterElem = filterElem;
     this.elem = elem;
-    elem.matteElement = document.createElementNS(svgNS,'g');
+    elem.matteElement = createNS('g');
     elem.matteElement.appendChild(elem.layerElement);
     elem.matteElement.appendChild(elem.transformedElement);
     elem.baseElement = elem.matteElement;
 }
 
 SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
-    var masker = document.createElementNS(svgNS,'mask');
+    var masker = createNS('mask');
     masker.setAttribute('id',mask.layerId);
     masker.setAttribute('mask-type','alpha');
     masker.appendChild(mask.layerElement);

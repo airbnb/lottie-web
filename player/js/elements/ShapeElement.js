@@ -68,9 +68,9 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
     var gradientId = 'gr_'+randomString(10);
     var gfill;
     if(arr.t === 1){
-        gfill = document.createElementNS(svgNS,'linearGradient');
+        gfill = createNS('linearGradient');
     } else {
-        gfill = document.createElementNS(svgNS,'radialGradient');
+        gfill = createNS('radialGradient');
     }
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
@@ -79,7 +79,7 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
     var stop, j, jLen;
     jLen = arr.g.p*4;
     for(j=0;j<jLen;j+=4){
-        stop = document.createElementNS(svgNS,'stop');
+        stop = createNS('stop');
         gfill.appendChild(stop);
         stops.push(stop);
     }
@@ -93,16 +93,16 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
     if((arr.g.k.k[0].s && arr.g.k.k[0].s.length > arr.g.p*4) || arr.g.k.k.length > arr.g.p*4){
         var opFill;
         var stop, j, jLen;
-        var mask = document.createElementNS(svgNS,"mask");
-        var maskElement = document.createElementNS(svgNS, 'path');
+        var mask = createNS("mask");
+        var maskElement = createNS( 'path');
         mask.appendChild(maskElement);
         var opacityId = 'op_'+randomString(10);
         var maskId = 'mk_'+randomString(10);
         mask.setAttribute('id',maskId);
         if(arr.t === 1){
-            opFill = document.createElementNS(svgNS,'linearGradient');
+            opFill = createNS('linearGradient');
         } else {
-            opFill = document.createElementNS(svgNS,'radialGradient');
+            opFill = createNS('radialGradient');
         }
         opFill.setAttribute('id',opacityId);
         opFill.setAttribute('spreadMethod','pad');
@@ -110,7 +110,7 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
         jLen = arr.g.k.k[0].s ? arr.g.k.k[0].s.length : arr.g.k.k.length;
         var stops = [];
         for(j=arr.g.p*4;j<jLen;j+=2){
-            stop = document.createElementNS(svgNS,'stop');
+            stop = createNS('stop');
             stop.setAttribute('stop-color','rgb(255,255,255)');
             //stop.setAttribute('offset',Math.round(arr.y[j][0]*100)+'%');
             //stop.setAttribute('style','stop-color:rgb(255,255,255);stop-opacity:'+arr.y[j][1]);
@@ -139,7 +139,7 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
         mdf: false,
         closed: false
     };
-    var pathElement = document.createElementNS(svgNS, "path");
+    var pathElement = createNS( "path");
     elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
     if(data.ty == 'st' || data.ty == 'gs') {
         pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
@@ -205,7 +205,7 @@ IShapeElement.prototype.createGroupElement = function(data) {
         it: [],
         prevViewData: []
     };
-    var g = document.createElementNS(svgNS,'g');
+    var g = createNS('g');
     elementData.gr = g;
     if(data.ln){
         elementData.gr.setAttribute('id',data.ln);

@@ -48,7 +48,7 @@ SVGRenderer.prototype.createSolid = function (data) {
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
-    this.layerElement = document.createElementNS(svgNS,'svg');
+    this.layerElement = createNS('svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
     if(!this.renderConfig.viewBoxOnly) {
@@ -65,7 +65,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.layerElement);
     //Mask animation
-    var defs = document.createElementNS(svgNS, 'defs');
+    var defs = createNS( 'defs');
     this.globalData.defs = defs;
     this.layerElement.appendChild(defs);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
@@ -79,8 +79,8 @@ SVGRenderer.prototype.configAnimation = function(animData){
     };
     this.data = animData;
     this.globalData.frameRate = animData.fr;
-    var maskElement = document.createElementNS(svgNS, 'clipPath');
-    var rect = document.createElementNS(svgNS,'rect');
+    var maskElement = createNS( 'clipPath');
+    var rect = createNS('rect');
     rect.setAttribute('width',animData.w);
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
@@ -88,7 +88,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     var maskId = 'animationMask_'+randomString(10);
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
-    var maskedElement = document.createElementNS(svgNS,'g');
+    var maskedElement = createNS('g');
     maskedElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
     this.layerElement.appendChild(maskedElement);
     defs.appendChild(maskElement);
@@ -223,7 +223,7 @@ SVGRenderer.prototype.show = function(){
 
 SVGRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;
-    var floatingContainer = document.createElementNS(svgNS,'g');
+    var floatingContainer = createNS('g');
     for(i=0;i<len;i+=1){
         if(assets[i].xt){
             var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);

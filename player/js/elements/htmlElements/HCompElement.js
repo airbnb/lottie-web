@@ -27,11 +27,11 @@ HCompElement.prototype.createElements = function(){
     }
     divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
-        var compSvg = document.createElementNS(svgNS,'svg');
+        var compSvg = createNS('svg');
         styleDiv(compSvg);
         compSvg.setAttribute('width',this.data.w);
         compSvg.setAttribute('height',this.data.h);
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         compSvg.appendChild(g);
         divElement.appendChild(compSvg);
         this.maskedElement = g;

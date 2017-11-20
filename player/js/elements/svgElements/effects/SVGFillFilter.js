@@ -1,6 +1,6 @@
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
-    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
     feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
