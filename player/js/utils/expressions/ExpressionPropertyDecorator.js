@@ -255,13 +255,7 @@
         prop.getVelocityAtTime = getVelocityAtTime;
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         var isAdded = prop.k;
-        if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
-        }
+        prop.propertyIndex = data.ix;
         searchExpressions(elem,data,prop);
         if(!isAdded && prop.x){
             arr.push(prop);
@@ -398,13 +392,7 @@
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         var isAdded = prop.k;
-        if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
-        }
+        prop.propertyIndex = data.ix;
         if(type === 3){
             searchExpressions(elem,data.pt,prop);
         } else if(type === 4){
