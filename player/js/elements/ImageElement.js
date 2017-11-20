@@ -34,10 +34,13 @@ IImageElement.prototype.prepareFrame = function(num) {
 };
 
 IImageElement.prototype.renderFrame = function() {
+    if(!this.isVisible) {
+        return;
+    }
     this.renderTransform();
     this.renderRenderable();
     this.renderElement();
-    if(this.isVisible) {
+    if(this.firstFrame) {
         this.firstFrame = false;
     }
 };

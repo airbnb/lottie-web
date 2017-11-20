@@ -53,8 +53,6 @@ RenderableElement.prototype.prepareMasks = function() {
 }
 
 RenderableElement.prototype.renderRenderable = function() {
-	if(this.isVisible) {
-        this.maskManager.renderFrame(this.finalTransform.mat);
-        this.effectsManager.renderFrame(this.firstFrame);
-	}
+    this.maskManager.renderFrame(this.finalTransform.mat);
+    this.effectsManager.renderFrame(this.firstFrame);
 }

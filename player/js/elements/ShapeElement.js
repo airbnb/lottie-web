@@ -282,6 +282,9 @@ IShapeElement.prototype.prepareFrame = function(num) {
 };
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
+    if (!this.isVisible) {
+        return;
+    }
     this.renderTransform();
     this.renderRenderable();
     this.renderElement();
