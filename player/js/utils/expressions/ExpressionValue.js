@@ -9,8 +9,8 @@ var ExpressionValue = (function() {
         if (type) {
         	if(type === 'color') {
         		len = 4;
-		        expressionValue = Array.apply(null, {length: len});
-		        arrValue = Array.apply(null, {length: len});
+                expressionValue = createTypedArray('float32', len);
+                arrValue = createTypedArray('float32', len);
 		        for (i = 0; i < len; i += 1) {
 		            expressionValue[i] = arrValue[i] = (mult && i < 3) ? elementProp.v[i] * mult : 1;
 		        }
@@ -21,8 +21,8 @@ var ExpressionValue = (function() {
             expressionValue.value = mult ? elementProp.v * mult : elementProp.v;
         } else {
         	len = elementProp.v.length;
-	        expressionValue = Array.apply(null, {length: len});
-	        arrValue = Array.apply(null, {length: len});
+            expressionValue = createTypedArray('float32', len);
+            arrValue = createTypedArray('float32', len);
 	        for (i = 0; i < len; i += 1) {
 	            expressionValue[i] = arrValue[i] = mult ? elementProp.v[i] * mult : elementProp.v[i];
 	        }

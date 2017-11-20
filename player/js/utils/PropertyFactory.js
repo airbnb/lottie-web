@@ -5,8 +5,8 @@ var PropertyFactory = (function(){
     function interpolateValue(frameNum, iterationIndex, previousValue, caching){
         var offsetTime = this.offsetTime;
         var newValue;
-        if(previousValue.constructor === Array) {
-            newValue = Array.apply(null,{length:previousValue.length})
+        if(this.propType === 'multidimensional') {
+            newValue = createTypedArray('float32', previousValue.length);
         }
         var i = iterationIndex;
         var len = this.keyframes.length- 1,flag = true;
@@ -165,7 +165,7 @@ var PropertyFactory = (function(){
             var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
             var renderResult = this.interpolateValue(frameNum, i, this.pv, this._caching);
             this._caching.lastIndex = renderResult.iterationIndex;
-            if(this.pv.constructor === Array){
+            if(this.propType === 'multidimensional'){
                 i = 0;
                 while(i<this.v.length){
                     this.pv[i] = renderResult.value[i];
@@ -193,6 +193,7 @@ var PropertyFactory = (function(){
     function getNoValue(){}
 
     function ValueProperty(elem,data, mult){
+        this.propType = 'unidimensional';
         this.mult = mult;
         this.v = mult ? data.k * mult : data.k;
         this.pv = data.k;
@@ -205,6 +206,7 @@ var PropertyFactory = (function(){
     }
 
     function MultiDimensionalProperty(elem,data, mult){
+        this.propType = 'multidimensional';
         this.mult = mult;
         this.data = data;
         this.mdf = false;
@@ -212,10 +214,10 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = Array.apply(null, {length:data.k.length});
-        this.pv = Array.apply(null, {length:data.k.length});
-        this.lastValue = Array.apply(null, {length:data.k.length});
-        var arr = Array.apply(null, {length:data.k.length});
+        this.v = createTypedArray('float32', data.k.length);
+        this.pv = createTypedArray('float32', data.k.length);
+        this.lastValue = createTypedArray('float32', data.k.length);
+        var arr = createTypedArray('float32', data.k.length);
         this.vel = arr.map(function () { return 0 });
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
@@ -226,6 +228,7 @@ var PropertyFactory = (function(){
     }
 
     function KeyframedValueProperty(elem, data, mult){
+        this.propType = 'unidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.lastValue = -99999;
@@ -259,6 +262,7 @@ var PropertyFactory = (function(){
                 }
             }
         }
+        this.propType = 'multidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
@@ -270,10 +274,11 @@ var PropertyFactory = (function(){
         this.getValue = getValueAtCurrentTime;
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
-        this.v = Array.apply(null, {length:data.k[0].s.length});
-        this.pv = Array.apply(null, {length:data.k[0].s.length});
-        this.lastValue = Array.apply(null, {length:data.k[0].s.length});
-        this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
+        var arrLen = data.k[0].s.length;
+        this.v = createTypedArray('float32', arrLen);
+        this.pv = createTypedArray('float32', arrLen);
+        this.lastValue = createTypedArray('float32', arrLen);
+        this.lastPValue = createTypedArray('float32', arrLen);
     }
 
     function getProp(elem,data,type, mult, arr) {

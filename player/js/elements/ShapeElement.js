@@ -408,7 +408,7 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pElem);
         }
         if (this.stylesList[i].mdf || this.firstFrame) {
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
+            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
             if(this.stylesList[i].msElem){
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
             }
@@ -496,13 +496,14 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
     for(l=0;l<lLen;l+=1){
         if(itemData.elements[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;
-            pathStringTransformed = 'M0 0';
+            pathStringTransformed = '';
             var paths = itemData.sh.paths;
             jLen = paths._length;
+
             if(itemData.elements[l].lvl < lvl){
-                var mat = this.mHelper.reset(), props;
-                var iterations = lvl - itemData.elements[l].lvl;
-                var k = itemData.transformers.length-1;
+                mat = this.mHelper.reset();
+                iterations = lvl - itemData.elements[l].lvl;
+                k = itemData.transformers.length-1;
                 while(iterations > 0) {
                     redraw = itemData.transformers[k].mProps.mdf || redraw;
                     props = itemData.transformers[k].mProps.v.props;
@@ -510,29 +511,19 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
                     iterations --;
                     k --;
                 }
-                if(redraw){
-                    for(j=0;j<jLen;j+=1){
-                        pathNodes = paths.shapes[j];
-                        if(pathNodes && pathNodes._length){
-                            pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                        }
-                    }
-                    itemData.caches[l] = pathStringTransformed;
-                } else {
-                    pathStringTransformed = itemData.caches[l];
-                }
             } else {
-                if(redraw){
-                    for(j=0;j<jLen;j+=1){
-                        pathNodes = paths.shapes[j];
-                        if(pathNodes && pathNodes._length){
-                            pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, this.identityMatrix);
-                        }
+                mat = this.identityMatrix;
+            }
+            if(redraw){
+                for(j=0;j<jLen;j+=1){
+                    pathNodes = paths.shapes[j];
+                    if(pathNodes && pathNodes._length){
+                        pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
                     }
-                    itemData.caches[l] = pathStringTransformed;
-                } else {
-                    pathStringTransformed = itemData.caches[l];
                 }
+                itemData.caches[l] = pathStringTransformed;
+            } else {
+                pathStringTransformed = itemData.caches[l];
             }
             itemData.elements[l].d += pathStringTransformed;
             itemData.elements[l].mdf = redraw || itemData.elements[l].mdf;

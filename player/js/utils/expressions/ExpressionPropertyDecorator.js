@@ -159,7 +159,7 @@
         var v2 = this.getValueAtTime(frameNum + delta);
         var velocity;
         if(v1.length){
-            velocity = Array.apply(null,{length:v1.length});
+            velocity = createTypedArray('float32', v1.length);
             var i;
             for(i=0;i<v1.length;i+=1){
                 //removing frameRate
