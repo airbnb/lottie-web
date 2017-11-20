@@ -64,6 +64,7 @@ SVGRenderer.prototype.createSolid = function (data) {
 SVGRenderer.prototype.configAnimation = function(animData){
     this.svgElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     this.svgElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+
     if(!this.renderConfig.viewBoxOnly) {
         this.svgElement.setAttribute('width',animData.w);
         this.svgElement.setAttribute('height',animData.h);
@@ -79,6 +80,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.animationItem.wrapper.appendChild(this.svgElement);
     //Mask animation
     var defs = this.globalData.defs;
+
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
@@ -87,6 +89,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.globalData.compSize.h = animData.h;
     this.globalData.frameRate = animData.fr;
     this.data = animData;
+
     var maskElement = createNS( 'clipPath');
     var rect = createNS('rect');
     rect.setAttribute('width',animData.w);
@@ -97,6 +100,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
     this.layerElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
+
     defs.appendChild(maskElement);
     this.layers = animData.layers;
     this.globalData.fontManager.addChars(animData.chars);

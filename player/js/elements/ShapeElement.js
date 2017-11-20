@@ -96,6 +96,7 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
             pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
         }
     }
+    
     if(data.ty === 'st' || data.ty === 'gs') {
         pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
         pathElement.setAttribute('stroke-linejoin',this.ljEnum[data.lj] || 'round');

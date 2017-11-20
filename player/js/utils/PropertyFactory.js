@@ -263,6 +263,7 @@ var PropertyFactory = (function(){
                 }
             }
         }
+        this.propType = 'multidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;

@@ -113,42 +113,7 @@ var LayerExpressionInterface = (function (){
             }
         });
 
-        Object.defineProperty(_thisLayerFunction, "width", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.w
-                }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "height", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.h
-                }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "source", {
-            get: function () {
-                return elem.data.refId;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "index", {
-            get: function () {
-                return elem.data.ind;
-            }
-        });
-
         Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
-        Object.defineProperty(_thisLayerFunction, "content", {
-            get: function(){
-                return _thisLayerFunction.shapeInterface;
-            }
-        });
 
         Object.defineProperty(_thisLayerFunction, "active", {
             get: function(){
@@ -156,18 +121,11 @@ var LayerExpressionInterface = (function (){
             }
         });
 
-        Object.defineProperty(_thisLayerFunction, "text", {
-            get: function(){
-                return _thisLayerFunction.textInterface;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "startTime", {
-
-            get: function(){
-                return elem.data.st;
-            }
-        });
+        _thisLayerFunction.startTime = elem.data.st;
+        _thisLayerFunction.index = elem.data.ind;
+        _thisLayerFunction.source = elem.data.refId;
+        _thisLayerFunction.height = elem.data.ty === 0 ? elem.data.h : 100;
+        _thisLayerFunction.width = elem.data.ty === 0 ? elem.data.w : 100;
 
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;

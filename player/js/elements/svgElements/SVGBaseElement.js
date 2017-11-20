@@ -117,6 +117,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
         cp.setAttribute('id',clipId);
         cp.appendChild(pt);
         this.globalData.defs.appendChild(cp);
+
         if(this.checkMasks()){
             var cpGroup = createNS('g');
             cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
@@ -136,6 +137,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
         this.setBlendMode();
     }
     this.effectsManager = new SVGEffects(this);
+
     this.checkParenting();
 };
 
