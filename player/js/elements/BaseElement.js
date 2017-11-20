@@ -97,8 +97,6 @@ BaseElement.prototype.globalToLocal = function(pt){
 
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
-    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
-    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
     if(this.data.hasMask){
         this.layerInterface.registerMaskInterface(this.maskManager);
     }
@@ -109,8 +107,10 @@ BaseElement.prototype.initExpressions = function(){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
         this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.itemsData,this.layerInterface);
+        this.layerInterface.content = this.layerInterface.shapeInterface;
     } else if(this.data.ty === 5){
         this.layerInterface.textInterface = TextExpressionInterface(this);
+        this.layerInterface.text = this.layerInterface.textInterface;
     }
 }
 
