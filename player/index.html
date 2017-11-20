@@ -147,16 +147,16 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
-        autoplay: false,
+        loop: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/bm_ronda/data.json'
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
-        lottie.loadAnimation(animData);
+        anim = lottie.loadAnimation(animData);
         // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
     }, 1)
 

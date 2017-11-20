@@ -28,3 +28,7 @@ function extendPrototype2(sources,destination){
         }
     }
 }
+
+function getDescriptor(object, prop) {
+    return Object.getOwnPropertyDescriptor(object, prop);
+}

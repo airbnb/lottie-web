@@ -95,39 +95,17 @@ var LayerExpressionInterface = (function (){
                 return elem.hierarchy.length;
             }
         });
+
         Object.defineProperty(_thisLayerFunction, 'parent', {
             get: function(){
                 return elem.hierarchy[0].layerInterface;
             }
         });
-        Object.defineProperty(_thisLayerFunction, "rotation", {
-            get: function(){
-                return transformInterface.rotation;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, "scale", {
-            get: function () {
-                return transformInterface.scale;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "position", {
-            get: function () {
-                return transformInterface.position;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "opacity", {
-            get: function () {
-                return transformInterface.opacity;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", {
-            get: function () {
-                return transformInterface.anchorPoint;
-            }
-        });
+        Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
+        Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
+        Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
+        Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
+        Object.defineProperty(_thisLayerFunction, "anchorPoint", getDescriptor(transformInterface, 'anchorPoint'));
 
         Object.defineProperty(_thisLayerFunction, "transform", {
             get: function () {
