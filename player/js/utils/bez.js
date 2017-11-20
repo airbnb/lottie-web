@@ -138,7 +138,7 @@ function bezFunction(){
             var pt2 = keyData.e;
             var pt3 = keyData.to;
             var pt4 = keyData.ti;
-            var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
+            var bezierName = (pt1[0]+'_'+pt1[1]+'_'+pt2[0]+'_'+pt2[1]+'_'+pt3[0]+'_'+pt3[1]+'_'+pt4[0]+'_'+pt4[1]).replace(/\./g, 'p');
             if(storedData[bezierName]){
                 keyData.bezierData = storedData[bezierName];
                 return;
