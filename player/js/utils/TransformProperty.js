@@ -1,45 +1,5 @@
 var TransformPropertyFactory = (function() {
-    function positionGetter() {
-        if(this.p) {
-            return ExpressionValue(this.p);
-        } else {
-            return [this.px.v, this.py.v, this.pz ? this.pz.v : 0];
-        }
-    }
-    function xPositionGetter() {
-        return ExpressionValue(this.px);
-    }
-    function yPositionGetter() {
-        return ExpressionValue(this.py);
-    }
-    function zPositionGetter() {
-        return ExpressionValue(this.pz);
-    }
-    function anchorGetter() {
-        return ExpressionValue(this.a);
-    }
-    function orientationGetter() {
-        return ExpressionValue(this.or);
-    }
-    function rotationGetter() {
-        if(this.r) {
-            return ExpressionValue(this.r, 1/degToRads);
-        } else {
-            return ExpressionValue(this.rz, 1/degToRads);
-        }
-    }
-    function scaleGetter() {
-        return ExpressionValue(this.s, 100);
-    }
-    function opacityGetter() {
-        return ExpressionValue(this.o, 100);
-    }
-    function skewGetter() {
-        return ExpressionValue(this.sk);
-    }
-    function skewAxisGetter() {
-        return ExpressionValue(this.sa);
-    }
+    
     function applyToMatrix(mat) {
         var i, len = this.dynamicProperties.length;
         for(i = 0; i < len; i += 1) {
@@ -223,16 +183,6 @@ var TransformPropertyFactory = (function() {
                 this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
             }
         }
-        Object.defineProperty(this, "position", { get: positionGetter});
-        Object.defineProperty(this, "xPosition", { get: xPositionGetter});
-        Object.defineProperty(this, "yPosition", { get: yPositionGetter});
-        Object.defineProperty(this, "orientation", { get: orientationGetter});
-        Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
-        Object.defineProperty(this, "rotation", { get: rotationGetter});
-        Object.defineProperty(this, "scale", { get: scaleGetter});
-        Object.defineProperty(this, "opacity", { get: opacityGetter});
-        Object.defineProperty(this, "skew", { get: skewGetter});
-        Object.defineProperty(this, "skewAxis", { get: skewAxisGetter});
     }
 
     TransformProperty.prototype.applyToMatrix = applyToMatrix;

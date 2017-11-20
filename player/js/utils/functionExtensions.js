@@ -18,3 +18,7 @@ function extendPrototype(source,destination){
         if (source.prototype.hasOwnProperty(attr)) destination.prototype[attr] = source.prototype[attr];
     }
 }
+
+function getDescriptor(object, prop) {
+    return Object.getOwnPropertyDescriptor(object, prop);
+}
