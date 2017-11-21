@@ -1,7 +1,13 @@
+## V 5.0.1
+- expression fixes
+- text box fix
+- performance improvements
+
 ## V 5.0.0
 - bodymovin renamed to lottie
 - gradients performance improved
 - cleaned up code
+- new expressions
 
 ## V 4.13.0
 - text expression support

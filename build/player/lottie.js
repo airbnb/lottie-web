@@ -305,6 +305,9 @@ var createTypedArray = (function(){
 		return createRegularArray
 	}
 }())
+function createNS(type) {
+	return document.createElementNS(svgNS, type);
+}
 /*!
  Transformation Matrix v2.0
  (c) Epistemex 2014-2015
@@ -1109,6 +1112,10 @@ function extendPrototype(source,destination){
         if (source.prototype.hasOwnProperty(attr)) destination.prototype[attr] = source.prototype[attr];
     }
 }
+
+function getDescriptor(object, prop) {
+    return Object.getOwnPropertyDescriptor(object, prop);
+}
 function bezFunction(){
 
     var easingFunctions = [];
@@ -1249,7 +1256,7 @@ function bezFunction(){
             var pt2 = keyData.e;
             var pt3 = keyData.to;
             var pt4 = keyData.ti;
-            var bezierName = (pt1.join('_')+'_'+pt2.join('_')+'_'+pt3.join('_')+'_'+pt4.join('_')).replace(/\./g, 'p');
+            var bezierName = (pt1[0]+'_'+pt1[1]+'_'+pt2[0]+'_'+pt2[1]+'_'+pt3[0]+'_'+pt3[1]+'_'+pt4[0]+'_'+pt4[1]).replace(/\./g, 'p');
             if(storedData[bezierName]){
                 keyData.bezierData = storedData[bezierName];
                 return;
@@ -1958,7 +1965,7 @@ var FontManager = (function(){
     };
 
     function createHelper(def, fontData){
-        var tHelper = document.createElementNS(svgNS,'text');
+        var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
         tHelper.style.fontFamily = fontData.fFamily;
         tHelper.textContent = '1';
@@ -2094,8 +2101,8 @@ var PropertyFactory = (function(){
     function interpolateValue(frameNum, iterationIndex, previousValue, caching){
         var offsetTime = this.offsetTime;
         var newValue;
-        if(previousValue.constructor === Array) {
-            newValue = Array.apply(null,{length:previousValue.length})
+        if(this.propType === 'multidimensional') {
+            newValue = createTypedArray('float32', previousValue.length);
         }
         var i = iterationIndex;
         var len = this.keyframes.length- 1,flag = true;
@@ -2254,7 +2261,7 @@ var PropertyFactory = (function(){
             var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
             var renderResult = this.interpolateValue(frameNum, i, this.pv, this._caching);
             this._caching.lastIndex = renderResult.iterationIndex;
-            if(this.pv.constructor === Array){
+            if(this.propType === 'multidimensional'){
                 i = 0;
                 while(i<this.v.length){
                     this.pv[i] = renderResult.value[i];
@@ -2282,6 +2289,7 @@ var PropertyFactory = (function(){
     function getNoValue(){}
 
     function ValueProperty(elem,data, mult){
+        this.propType = 'unidimensional';
         this.mult = mult;
         this.v = mult ? data.k * mult : data.k;
         this.pv = data.k;
@@ -2294,6 +2302,7 @@ var PropertyFactory = (function(){
     }
 
     function MultiDimensionalProperty(elem,data, mult){
+        this.propType = 'multidimensional';
         this.mult = mult;
         this.data = data;
         this.mdf = false;
@@ -2301,10 +2310,10 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = Array.apply(null, {length:data.k.length});
-        this.pv = Array.apply(null, {length:data.k.length});
-        this.lastValue = Array.apply(null, {length:data.k.length});
-        var arr = Array.apply(null, {length:data.k.length});
+        this.v = createTypedArray('float32', data.k.length);
+        this.pv = createTypedArray('float32', data.k.length);
+        this.lastValue = createTypedArray('float32', data.k.length);
+        var arr = createTypedArray('float32', data.k.length);
         this.vel = arr.map(function () { return 0 });
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
@@ -2315,6 +2324,7 @@ var PropertyFactory = (function(){
     }
 
     function KeyframedValueProperty(elem, data, mult){
+        this.propType = 'unidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.lastValue = -99999;
@@ -2348,6 +2358,7 @@ var PropertyFactory = (function(){
                 }
             }
         }
+        this.propType = 'multidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
@@ -2359,10 +2370,11 @@ var PropertyFactory = (function(){
         this.getValue = getValueAtCurrentTime;
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
-        this.v = Array.apply(null, {length:data.k[0].s.length});
-        this.pv = Array.apply(null, {length:data.k[0].s.length});
-        this.lastValue = Array.apply(null, {length:data.k[0].s.length});
-        this.lastPValue = Array.apply(null, {length:data.k[0].s.length});
+        var arrLen = data.k[0].s.length;
+        this.v = createTypedArray('float32', arrLen);
+        this.pv = createTypedArray('float32', arrLen);
+        this.lastValue = createTypedArray('float32', arrLen);
+        this.lastPValue = createTypedArray('float32', arrLen);
     }
 
     function getProp(elem,data,type, mult, arr) {
@@ -2405,47 +2417,7 @@ var PropertyFactory = (function(){
     return ob;
 }());
 var TransformPropertyFactory = (function() {
-    function positionGetter() {
-        if(this.p) {
-            return ExpressionValue(this.p);
-        } else {
-            return [this.px.v, this.py.v, this.pz ? this.pz.v : 0];
-        }
-    }
-    function xPositionGetter() {
-        return ExpressionValue(this.px);
-    }
-    function yPositionGetter() {
-        return ExpressionValue(this.py);
-    }
-    function zPositionGetter() {
-        return ExpressionValue(this.pz);
-    }
-    function anchorGetter() {
-        return ExpressionValue(this.a);
-    }
-    function orientationGetter() {
-        return ExpressionValue(this.or);
-    }
-    function rotationGetter() {
-        if(this.r) {
-            return ExpressionValue(this.r, 1/degToRads);
-        } else {
-            return ExpressionValue(this.rz, 1/degToRads);
-        }
-    }
-    function scaleGetter() {
-        return ExpressionValue(this.s, 100);
-    }
-    function opacityGetter() {
-        return ExpressionValue(this.o, 100);
-    }
-    function skewGetter() {
-        return ExpressionValue(this.sk);
-    }
-    function skewAxisGetter() {
-        return ExpressionValue(this.sa);
-    }
+    
     function applyToMatrix(mat) {
         var i, len = this.dynamicProperties.length;
         for(i = 0; i < len; i += 1) {
@@ -2629,16 +2601,6 @@ var TransformPropertyFactory = (function() {
                 this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
             }
         }
-        Object.defineProperty(this, "position", { get: positionGetter});
-        Object.defineProperty(this, "xPosition", { get: xPositionGetter});
-        Object.defineProperty(this, "yPosition", { get: yPositionGetter});
-        Object.defineProperty(this, "orientation", { get: orientationGetter});
-        Object.defineProperty(this, "anchorPoint", { get: anchorGetter});
-        Object.defineProperty(this, "rotation", { get: rotationGetter});
-        Object.defineProperty(this, "scale", { get: scaleGetter});
-        Object.defineProperty(this, "opacity", { get: opacityGetter});
-        Object.defineProperty(this, "skew", { get: skewGetter});
-        Object.defineProperty(this, "skewAxis", { get: skewAxisGetter});
     }
 
     TransformProperty.prototype.applyToMatrix = applyToMatrix;
@@ -4172,7 +4134,7 @@ var filtersFactory = (function(){
 	ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
 	function createFilter(filId){
-        	var fil = document.createElementNS(svgNS,'filter');
+        	var fil = createNS('filter');
         	fil.setAttribute('id',filId);
                 fil.setAttribute('filterUnits','objectBoundingBox');
                 fil.setAttribute('x','0%');
@@ -4183,7 +4145,7 @@ var filtersFactory = (function(){
 	}
 
 	function createAlphaToLuminanceFilter(){
-                var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+                var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type','matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
                 feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 1 1');
@@ -4856,6 +4818,8 @@ function TextProperty(elem, data, dynamicProperties){
         sw: 0,
         t: 0,
         tr: 0,
+        sz:0,
+        ps:[0,0],
         fillColorAnim: false,
         strokeColorAnim: false,
         strokeWidthAnim: false,
@@ -4888,6 +4852,8 @@ TextProperty.prototype.setCurrentData = function(data){
         currentData.s = data.s;
         currentData.sc = data.sc;
         currentData.sw = data.sw;
+        currentData.sz = data.sz;
+        currentData.ps = data.ps;
         currentData.t = data.t;
         currentData.tr = data.tr;
         currentData.fillColorAnim = data.fillColorAnim || currentData.fillColorAnim;
@@ -5626,7 +5592,7 @@ SVGRenderer.prototype.createSolid = function (data) {
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){
-    this.layerElement = document.createElementNS(svgNS,'svg');
+    this.layerElement = createNS('svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
     if(!this.renderConfig.viewBoxOnly) {
@@ -5643,7 +5609,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.layerElement);
     //Mask animation
-    var defs = document.createElementNS(svgNS, 'defs');
+    var defs = createNS( 'defs');
     this.globalData.defs = defs;
     this.layerElement.appendChild(defs);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
@@ -5657,8 +5623,8 @@ SVGRenderer.prototype.configAnimation = function(animData){
     };
     this.data = animData;
     this.globalData.frameRate = animData.fr;
-    var maskElement = document.createElementNS(svgNS, 'clipPath');
-    var rect = document.createElementNS(svgNS,'rect');
+    var maskElement = createNS( 'clipPath');
+    var rect = createNS('rect');
     rect.setAttribute('width',animData.w);
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
@@ -5666,7 +5632,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     var maskId = 'animationMask_'+randomString(10);
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
-    var maskedElement = document.createElementNS(svgNS,'g');
+    var maskedElement = createNS('g');
     maskedElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
     this.layerElement.appendChild(maskedElement);
     defs.appendChild(maskElement);
@@ -5801,7 +5767,7 @@ SVGRenderer.prototype.show = function(){
 
 SVGRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;
-    var floatingContainer = document.createElementNS(svgNS,'g');
+    var floatingContainer = createNS('g');
     for(i=0;i<len;i+=1){
         if(assets[i].xt){
             var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
@@ -5842,7 +5808,7 @@ function MaskElement(data,element,globalData) {
         }
 
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
-            rect = document.createElementNS(svgNS, 'rect');
+            rect = createNS( 'rect');
             rect.setAttribute('fill', '#ffffff');
             rect.setAttribute('width', this.element.comp.data.w);
             rect.setAttribute('height', this.element.comp.data.h);
@@ -5851,7 +5817,7 @@ function MaskElement(data,element,globalData) {
             rect = null;
         }
 
-        path = document.createElementNS(svgNS, 'path');
+        path = createNS( 'path');
         if(properties[i].mode == 'n') {
             this.viewData[i] = {
                 op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
@@ -5875,9 +5841,9 @@ function MaskElement(data,element,globalData) {
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
             var filterID = 'fi_'+randomString(10);
-            expansor = document.createElementNS(svgNS,'filter');
+            expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
-            feMorph = document.createElementNS(svgNS,'feMorphology');
+            feMorph = createNS('feMorphology');
             feMorph.setAttribute('operator','dilate');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
@@ -5905,11 +5871,11 @@ function MaskElement(data,element,globalData) {
         };
         if(properties[i].mode == 'i'){
             jLen = currentMasks.length;
-            var g = document.createElementNS(svgNS,'g');
+            var g = createNS('g');
             for(j=0;j<jLen;j+=1){
                 g.appendChild(currentMasks[j]);
             }
-            var mask = document.createElementNS(svgNS,'mask');
+            var mask = createNS('mask');
             mask.setAttribute('mask-type','alpha');
             mask.setAttribute('id',layerId+'_'+count);
             mask.appendChild(path);
@@ -5938,7 +5904,7 @@ function MaskElement(data,element,globalData) {
         }
     }
 
-    this.maskElement = document.createElementNS(svgNS, maskType);
+    this.maskElement = createNS( maskType);
 
     len = currentMasks.length;
     for(i=0;i<len;i+=1){
@@ -6149,8 +6115,6 @@ BaseElement.prototype.globalToLocal = function(pt){
 
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
-    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
-    //layers[i].layerInterface = LayerExpressionInterface(layers[i]);
     if(this.data.hasMask){
         this.layerInterface.registerMaskInterface(this.maskManager);
     }
@@ -6161,8 +6125,10 @@ BaseElement.prototype.initExpressions = function(){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
         this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.itemsData,this.layerInterface);
+        this.layerInterface.content = this.layerInterface.shapeInterface;
     } else if(this.data.ty === 5){
         this.layerInterface.textInterface = TextExpressionInterface(this);
+        this.layerInterface.text = this.layerInterface.textInterface;
     }
 }
 
@@ -6321,7 +6287,7 @@ function SVGBaseElement(data,parentContainer,globalData,comp, placeholder){
 createElement(BaseElement, SVGBaseElement);
 
 SVGBaseElement.prototype.createElements = function(){
-    this.layerElement = document.createElementNS(svgNS,'g');
+    this.layerElement = createNS('g');
     this.transformedElement = this.layerElement;
     if(this.data.hasMask){
         this.maskedElement = this.layerElement;
@@ -6329,7 +6295,7 @@ SVGBaseElement.prototype.createElements = function(){
     var layerElementParent = null;
     if(this.data.td){
         if(this.data.td == 3 || this.data.td == 1){
-            var masker = document.createElementNS(svgNS,'mask');
+            var masker = createNS('mask');
             masker.setAttribute('id',this.layerId);
             masker.setAttribute('mask-type',this.data.td == 3 ? 'luminance':'alpha');
             masker.appendChild(this.layerElement);
@@ -6342,38 +6308,38 @@ SVGBaseElement.prototype.createElements = function(){
                 var fil = filtersFactory.createFilter(filId);
                 this.globalData.defs.appendChild(fil);
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = document.createElementNS(svgNS,'g');
+                var gg = createNS('g');
                 gg.appendChild(this.layerElement);
                 layerElementParent = gg;
                 masker.appendChild(gg);
                 gg.setAttribute('filter','url(' + locationHref + '#'+filId+')');
             }
         }else if(this.data.td == 2){
-            var maskGroup = document.createElementNS(svgNS,'mask');
+            var maskGroup = createNS('mask');
             maskGroup.setAttribute('id',this.layerId);
             maskGroup.setAttribute('mask-type','alpha');
-            var maskGrouper = document.createElementNS(svgNS,'g');
+            var maskGrouper = createNS('g');
             maskGroup.appendChild(maskGrouper);
             var filId = randomString(10);
             var fil = filtersFactory.createFilter(filId);
             ////
 
-            var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+            var feColorMatrix = createNS('feColorMatrix');
             feColorMatrix.setAttribute('type','matrix');
             feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
             feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
             fil.appendChild(feColorMatrix);
 
             ////
-            /*var feCTr = document.createElementNS(svgNS,'feComponentTransfer');
+            /*var feCTr = createNS('feComponentTransfer');
             feCTr.setAttribute('in','SourceGraphic');
             fil.appendChild(feCTr);
-            var feFunc = document.createElementNS(svgNS,'feFuncA');
+            var feFunc = createNS('feFuncA');
             feFunc.setAttribute('type','table');
             feFunc.setAttribute('tableValues','1.0 0.0');
             feCTr.appendChild(feFunc);*/
             this.globalData.defs.appendChild(fil);
-            var alphaRect = document.createElementNS(svgNS,'rect');
+            var alphaRect = createNS('rect');
             alphaRect.setAttribute('width',this.comp.data.w);
             alphaRect.setAttribute('height',this.comp.data.h);
             alphaRect.setAttribute('x','0');
@@ -6387,7 +6353,7 @@ SVGBaseElement.prototype.createElements = function(){
             if(!featureSupport.maskType){
                 maskGroup.setAttribute('mask-type','luminance');
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = document.createElementNS(svgNS,'g');
+                var gg = createNS('g');
                 maskGrouper.appendChild(alphaRect);
                 gg.appendChild(this.layerElement);
                 layerElementParent = gg;
@@ -6397,7 +6363,7 @@ SVGBaseElement.prototype.createElements = function(){
         }
     }else if(this.data.hasMask || this.data.tt){
         if(this.data.tt){
-            this.matteElement = document.createElementNS(svgNS,'g');
+            this.matteElement = createNS('g');
             this.matteElement.appendChild(this.layerElement);
             layerElementParent = this.matteElement;
             this.baseElement = this.matteElement;
@@ -6416,15 +6382,15 @@ SVGBaseElement.prototype.createElements = function(){
         }
     }
     if(this.data.ty === 0){
-            var cp = document.createElementNS(svgNS, 'clipPath');
-            var pt = document.createElementNS(svgNS,'path');
+            var cp = createNS( 'clipPath');
+            var pt = createNS('path');
             pt.setAttribute('d','M0,0 L'+this.data.w+',0'+' L'+this.data.w+','+this.data.h+' L0,'+this.data.h+'z');
             var clipId = 'cp_'+randomString(8);
             cp.setAttribute('id',clipId);
             cp.appendChild(pt);
             this.globalData.defs.appendChild(cp);
         if(this.checkMasks()){
-            var cpGroup = document.createElementNS(svgNS,'g');
+            var cpGroup = createNS('g');
             cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
             cpGroup.appendChild(this.layerElement);
             this.transformedElement = cpGroup;
@@ -6449,16 +6415,16 @@ SVGBaseElement.prototype.createElements = function(){
         var filterID = 'st_'+randomString(10);
         var c = this.data.sy[0].c.k;
         var r = this.data.sy[0].s.k;
-        var expansor = document.createElementNS(svgNS,'filter');
+        var expansor = createNS('filter');
         expansor.setAttribute('id',filterID);
-        var feFlood = document.createElementNS(svgNS,'feFlood');
+        var feFlood = createNS('feFlood');
         this.feFlood = feFlood;
         if(!c[0].e){
             feFlood.setAttribute('flood-color','rgb('+c[0]+','+c[1]+','+c[2]+')');
         }
         feFlood.setAttribute('result','base');
         expansor.appendChild(feFlood);
-        var feMorph = document.createElementNS(svgNS,'feMorphology');
+        var feMorph = createNS('feMorphology');
         feMorph.setAttribute('operator','dilate');
         feMorph.setAttribute('in','SourceGraphic');
         feMorph.setAttribute('result','bigger');
@@ -6467,25 +6433,25 @@ SVGBaseElement.prototype.createElements = function(){
             feMorph.setAttribute('radius',this.data.sy[0].s.k);
         }
         expansor.appendChild(feMorph);
-        var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+        var feColorMatrix = createNS('feColorMatrix');
         feColorMatrix.setAttribute('result','mask');
         feColorMatrix.setAttribute('in','bigger');
         feColorMatrix.setAttribute('type','matrix');
         feColorMatrix.setAttribute('values','0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0');
         expansor.appendChild(feColorMatrix);
-        var feComposite = document.createElementNS(svgNS,'feComposite');
+        var feComposite = createNS('feComposite');
         feComposite.setAttribute('result','drop');
         feComposite.setAttribute('in','base');
         feComposite.setAttribute('in2','mask');
         feComposite.setAttribute('operator','in');
         expansor.appendChild(feComposite);
-        var feBlend = document.createElementNS(svgNS,'feBlend');
+        var feBlend = createNS('feBlend');
         feBlend.setAttribute('in','SourceGraphic');
         feBlend.setAttribute('in2','drop');
         feBlend.setAttribute('mode','normal');
         expansor.appendChild(feBlend);
         this.globalData.defs.appendChild(expansor);
-        var cont = document.createElementNS(svgNS,'g');
+        var cont = createNS('g');
         if(this.layerElement === this.parentContainer){
             this.layerElement = cont;
         }else{
@@ -6689,9 +6655,9 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
     var gradientId = 'gr_'+randomString(10);
     var gfill;
     if(arr.t === 1){
-        gfill = document.createElementNS(svgNS,'linearGradient');
+        gfill = createNS('linearGradient');
     } else {
-        gfill = document.createElementNS(svgNS,'radialGradient');
+        gfill = createNS('radialGradient');
     }
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
@@ -6700,7 +6666,7 @@ IShapeElement.prototype.setGradientData = function(pathElement,arr,data){
     var stop, j, jLen;
     jLen = arr.g.p*4;
     for(j=0;j<jLen;j+=4){
-        stop = document.createElementNS(svgNS,'stop');
+        stop = createNS('stop');
         gfill.appendChild(stop);
         stops.push(stop);
     }
@@ -6714,16 +6680,16 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
     if((arr.g.k.k[0].s && arr.g.k.k[0].s.length > arr.g.p*4) || arr.g.k.k.length > arr.g.p*4){
         var opFill;
         var stop, j, jLen;
-        var mask = document.createElementNS(svgNS,"mask");
-        var maskElement = document.createElementNS(svgNS, 'path');
+        var mask = createNS("mask");
+        var maskElement = createNS( 'path');
         mask.appendChild(maskElement);
         var opacityId = 'op_'+randomString(10);
         var maskId = 'mk_'+randomString(10);
         mask.setAttribute('id',maskId);
         if(arr.t === 1){
-            opFill = document.createElementNS(svgNS,'linearGradient');
+            opFill = createNS('linearGradient');
         } else {
-            opFill = document.createElementNS(svgNS,'radialGradient');
+            opFill = createNS('radialGradient');
         }
         opFill.setAttribute('id',opacityId);
         opFill.setAttribute('spreadMethod','pad');
@@ -6731,7 +6697,7 @@ IShapeElement.prototype.setGradientOpacity = function(arr, data, styleOb){
         jLen = arr.g.k.k[0].s ? arr.g.k.k[0].s.length : arr.g.k.k.length;
         var stops = [];
         for(j=arr.g.p*4;j<jLen;j+=2){
-            stop = document.createElementNS(svgNS,'stop');
+            stop = createNS('stop');
             stop.setAttribute('stop-color','rgb(255,255,255)');
             //stop.setAttribute('offset',Math.round(arr.y[j][0]*100)+'%');
             //stop.setAttribute('style','stop-color:rgb(255,255,255);stop-opacity:'+arr.y[j][1]);
@@ -6760,7 +6726,7 @@ IShapeElement.prototype.createStyleElement = function(data, level, dynamicProper
         mdf: false,
         closed: false
     };
-    var pathElement = document.createElementNS(svgNS, "path");
+    var pathElement = createNS( "path");
     elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
     if(data.ty == 'st' || data.ty == 'gs') {
         pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
@@ -6826,7 +6792,7 @@ IShapeElement.prototype.createGroupElement = function(data) {
         it: [],
         prevViewData: []
     };
-    var g = document.createElementNS(svgNS,'g');
+    var g = createNS('g');
     elementData.gr = g;
     if(data.ln){
         elementData.gr.setAttribute('id',data.ln);
@@ -7029,7 +6995,7 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pElem);
         }
         if (this.stylesList[i].mdf || this.firstFrame) {
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d);
+            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
             if(this.stylesList[i].msElem){
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
             }
@@ -7061,7 +7027,7 @@ IShapeElement.prototype.hide = function(){
 IShapeElement.prototype.renderShape = function(items,data, container){
     var i, len = items.length - 1;
     var ty;
-    for(i=len;i>=0;i-=1){
+    for(i=0;i<=len;i+=1){
         ty = items[i].ty;
         if(ty == 'tr'){
             if(this.firstFrame || data[i].transform.op.mdf && container){
@@ -7117,13 +7083,14 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
     for(l=0;l<lLen;l+=1){
         if(itemData.elements[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;
-            pathStringTransformed = 'M0 0';
+            pathStringTransformed = '';
             var paths = itemData.sh.paths;
             jLen = paths._length;
+
             if(itemData.elements[l].lvl < lvl){
-                var mat = this.mHelper.reset(), props;
-                var iterations = lvl - itemData.elements[l].lvl;
-                var k = itemData.transformers.length-1;
+                mat = this.mHelper.reset();
+                iterations = lvl - itemData.elements[l].lvl;
+                k = itemData.transformers.length-1;
                 while(iterations > 0) {
                     redraw = itemData.transformers[k].mProps.mdf || redraw;
                     props = itemData.transformers[k].mProps.v.props;
@@ -7131,29 +7098,19 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
                     iterations --;
                     k --;
                 }
-                if(redraw){
-                    for(j=0;j<jLen;j+=1){
-                        pathNodes = paths.shapes[j];
-                        if(pathNodes && pathNodes._length){
-                            pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                        }
-                    }
-                    itemData.caches[l] = pathStringTransformed;
-                } else {
-                    pathStringTransformed = itemData.caches[l];
-                }
             } else {
-                if(redraw){
-                    for(j=0;j<jLen;j+=1){
-                        pathNodes = paths.shapes[j];
-                        if(pathNodes && pathNodes._length){
-                            pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, this.identityMatrix);
-                        }
+                mat = this.identityMatrix;
+            }
+            if(redraw){
+                for(j=0;j<jLen;j+=1){
+                    pathNodes = paths.shapes[j];
+                    if(pathNodes && pathNodes._length){
+                        pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
                     }
-                    itemData.caches[l] = pathStringTransformed;
-                } else {
-                    pathStringTransformed = itemData.caches[l];
                 }
+                itemData.caches[l] = pathStringTransformed;
+            } else {
+                pathStringTransformed = itemData.caches[l];
             }
             itemData.elements[l].d += pathStringTransformed;
             itemData.elements[l].mdf = redraw || itemData.elements[l].mdf;
@@ -7366,7 +7323,7 @@ SVGTextElement.prototype.createElements = function(){
         this.layerElement.setAttribute('class',this.data.cl);
     }
     if (this.data.singleShape && !this.globalData.fontManager.chars) {
-        this.textContainer = document.createElementNS(svgNS,'text');
+        this.textContainer = createNS('text');
     }
 };
 
@@ -7426,7 +7383,7 @@ SVGTextElement.prototype.buildNewText = function(){
         len = textContent.length;
         var yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
-            tSpan = this.textSpans[i] || document.createElementNS(svgNS,'tspan');
+            tSpan = this.textSpans[i] || createNS('tspan');
             tSpan.textContent = textContent[i];
             tSpan.setAttribute('x', 0);
             tSpan.setAttribute('y', yPos);
@@ -7442,7 +7399,7 @@ SVGTextElement.prototype.buildNewText = function(){
         var shapeData, charData;
         for (i = 0; i < len; i += 1) {
             if(!usesGlyphs || !singleShape || i === 0){
-                tSpan = cachedSpansLength > i ? this.textSpans[i] : document.createElementNS(svgNS,usesGlyphs?'path':'text');
+                tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs?'path':'text');
                 if (cachedSpansLength <= i) {
                     tSpan.setAttribute('stroke-linecap', 'butt');
                     tSpan.setAttribute('stroke-linejoin','round');
@@ -7566,13 +7523,13 @@ SVGTextElement.prototype.renderFrame = function(parentMatrix){
 }
 function SVGTintFilter(filter, filterManager){
     this.filterManager = filterManager;
-    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
     feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
     feColorMatrix.setAttribute('result','f1');
     filter.appendChild(feColorMatrix);
-    feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
     feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
@@ -7580,13 +7537,13 @@ function SVGTintFilter(filter, filterManager){
     filter.appendChild(feColorMatrix);
     this.matrixFilter = feColorMatrix;
     if(filterManager.effectElements[2].p.v !== 100 || filterManager.effectElements[2].p.k){
-        var feMerge = document.createElementNS(svgNS,'feMerge');
+        var feMerge = createNS('feMerge');
         filter.appendChild(feMerge);
         var feMergeNode;
-        feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+        feMergeNode = createNS('feMergeNode');
         feMergeNode.setAttribute('in','SourceGraphic');
         feMerge.appendChild(feMergeNode);
-        feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+        feMergeNode = createNS('feMergeNode');
         feMergeNode.setAttribute('in','f2');
         feMerge.appendChild(feMergeNode);
     }
@@ -7602,7 +7559,7 @@ SVGTintFilter.prototype.renderFrame = function(forceRender){
 };
 function SVGFillFilter(filter, filterManager){
     this.filterManager = filterManager;
-    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
     feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
@@ -7634,23 +7591,23 @@ SVGStrokeEffect.prototype.initialize = function(){
         i = this.filterManager.effectElements[0].p.v - 1;
         len = i + 1;
     }
-    groupPath = document.createElementNS(svgNS,'g'); 
+    groupPath = createNS('g'); 
     groupPath.setAttribute('fill','none');
     groupPath.setAttribute('stroke-linecap','round');
     groupPath.setAttribute('stroke-dashoffset',1);
     for(i;i<len;i+=1){
-        path = document.createElementNS(svgNS,'path');
+        path = createNS('path');
         groupPath.appendChild(path);
         this.paths.push({p:path,m:i});
     }
     if(this.filterManager.effectElements[10].p.v === 3){
-        var mask = document.createElementNS(svgNS,'mask');
+        var mask = createNS('mask');
         var id = 'stms_' + randomString(10);
         mask.setAttribute('id',id);
         mask.setAttribute('mask-type','alpha');
         mask.appendChild(groupPath);
         this.elem.globalData.defs.appendChild(mask);
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         g.setAttribute('mask','url(' + locationHref + '#'+id+')');
         if(elemChildren[0]){
             g.appendChild(elemChildren[0]);
@@ -7722,25 +7679,25 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
 };
 function SVGTritoneFilter(filter, filterManager){
     this.filterManager = filterManager;
-    var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+    var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
     feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
     feColorMatrix.setAttribute('result','f1');
     filter.appendChild(feColorMatrix);
-    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    var feComponentTransfer = createNS('feComponentTransfer');
     feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
     filter.appendChild(feComponentTransfer);
     this.matrixFilter = feComponentTransfer;
-    var feFuncR = document.createElementNS(svgNS,'feFuncR');
+    var feFuncR = createNS('feFuncR');
     feFuncR.setAttribute('type','table');
     feComponentTransfer.appendChild(feFuncR);
     this.feFuncR = feFuncR;
-    var feFuncG = document.createElementNS(svgNS,'feFuncG');
+    var feFuncG = createNS('feFuncG');
     feFuncG.setAttribute('type','table');
     feComponentTransfer.appendChild(feFuncG);
     this.feFuncG = feFuncG;
-    var feFuncB = document.createElementNS(svgNS,'feFuncB');
+    var feFuncB = createNS('feFuncB');
     feFuncB.setAttribute('type','table');
     feComponentTransfer.appendChild(feFuncB);
     this.feFuncB = feFuncB;
@@ -7764,7 +7721,7 @@ SVGTritoneFilter.prototype.renderFrame = function(forceRender){
 function SVGProLevelsFilter(filter, filterManager){
     this.filterManager = filterManager;
     var effectElements = this.filterManager.effectElements;
-    var feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+    var feComponentTransfer = createNS('feComponentTransfer');
     var feFuncR, feFuncG, feFuncB;
     
     if(effectElements[9].p.k || effectElements[9].p.v !== 0 || effectElements[10].p.k || effectElements[10].p.v !== 1 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 0 || effectElements[13].p.k || effectElements[13].p.v !== 1){
@@ -7783,7 +7740,7 @@ function SVGProLevelsFilter(filter, filterManager){
     if(this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA){
         feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
         filter.appendChild(feComponentTransfer);
-        feComponentTransfer = document.createElementNS(svgNS,'feComponentTransfer');
+        feComponentTransfer = createNS('feComponentTransfer');
     }
 
     if(effectElements[2].p.k || effectElements[2].p.v !== 0 || effectElements[3].p.k || effectElements[3].p.v !== 1 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 0 || effectElements[6].p.k || effectElements[6].p.v !== 1){
@@ -7797,7 +7754,7 @@ function SVGProLevelsFilter(filter, filterManager){
 }
 
 SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfer) {
-    var feFunc = document.createElementNS(svgNS,type);
+    var feFunc = createNS(type);
     feFunc.setAttribute('type','table');
     feComponentTransfer.appendChild(feFunc);
     return feFunc;
@@ -7876,28 +7833,28 @@ function SVGDropShadowEffect(filter, filterManager){
     filter.setAttribute('height','400%');
     this.filterManager = filterManager;
 
-    var feGaussianBlur = document.createElementNS(svgNS,'feGaussianBlur');
+    var feGaussianBlur = createNS('feGaussianBlur');
     feGaussianBlur.setAttribute('in','SourceAlpha');
     feGaussianBlur.setAttribute('result','drop_shadow_1');
     feGaussianBlur.setAttribute('stdDeviation','0');
     this.feGaussianBlur = feGaussianBlur;
     filter.appendChild(feGaussianBlur);
 
-    var feOffset = document.createElementNS(svgNS,'feOffset');
+    var feOffset = createNS('feOffset');
     feOffset.setAttribute('dx','25');
     feOffset.setAttribute('dy','0');
     feOffset.setAttribute('in','drop_shadow_1');
     feOffset.setAttribute('result','drop_shadow_2');
     this.feOffset = feOffset;
     filter.appendChild(feOffset);
-    var feFlood = document.createElementNS(svgNS,'feFlood');
+    var feFlood = createNS('feFlood');
     feFlood.setAttribute('flood-color','#00ff00');
     feFlood.setAttribute('flood-opacity','1');
     feFlood.setAttribute('result','drop_shadow_3');
     this.feFlood = feFlood;
     filter.appendChild(feFlood);
 
-    var feComposite = document.createElementNS(svgNS,'feComposite');
+    var feComposite = createNS('feComposite');
     feComposite.setAttribute('in','drop_shadow_3');
     feComposite.setAttribute('in2','drop_shadow_2');
     feComposite.setAttribute('operator','in');
@@ -7905,12 +7862,12 @@ function SVGDropShadowEffect(filter, filterManager){
     filter.appendChild(feComposite);
 
 
-    var feMerge = document.createElementNS(svgNS,'feMerge');
+    var feMerge = createNS('feMerge');
     filter.appendChild(feMerge);
     var feMergeNode;
-    feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+    feMergeNode = createNS('feMergeNode');
     feMerge.appendChild(feMergeNode);
-    feMergeNode = document.createElementNS(svgNS,'feMergeNode');
+    feMergeNode = createNS('feMergeNode');
     feMergeNode.setAttribute('in','SourceGraphic');
     this.feMergeNode = feMergeNode;
     this.feMerge = feMerge;
@@ -7954,14 +7911,14 @@ function SVGMatte3Effect(filterElem, filterManager, elem){
     this.filterManager = filterManager;
     this.filterElem = filterElem;
     this.elem = elem;
-    elem.matteElement = document.createElementNS(svgNS,'g');
+    elem.matteElement = createNS('g');
     elem.matteElement.appendChild(elem.layerElement);
     elem.matteElement.appendChild(elem.transformedElement);
     elem.baseElement = elem.matteElement;
 }
 
 SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
-    var masker = document.createElementNS(svgNS,'mask');
+    var masker = createNS('mask');
     masker.setAttribute('id',mask.layerId);
     masker.setAttribute('mask-type','alpha');
     masker.appendChild(mask.layerElement);
@@ -8048,7 +8005,7 @@ function ICompElement(data,parentContainer,globalData,comp, placeholder){
         this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
     }
     if(this.data.xt){
-        this.layerElement = document.createElementNS(svgNS,'g');
+        this.layerElement = createNS('g');
         this.buildAllItems();
     } else if(!globalData.progressiveLoad){
         this.buildAllItems();
@@ -8159,7 +8116,7 @@ IImageElement.prototype.createElements = function(){
 
     this._parent.createElements.call(this);
 
-    this.innerElem = document.createElementNS(svgNS,'image');
+    this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
     this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
@@ -8201,7 +8158,7 @@ createElement(SVGBaseElement, ISolidElement);
 ISolidElement.prototype.createElements = function(){
     this._parent.createElements.call(this);
 
-    var rect = document.createElementNS(svgNS,'rect');
+    var rect = createNS('rect');
     ////rect.style.width = this.data.sw;
     ////rect.style.height = this.data.sh;
     ////rect.style.fill = this.data.sc;
@@ -9438,7 +9395,7 @@ CanvasRenderer.prototype.show = function(){
 
 CanvasRenderer.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;
-    var floatingContainer = document.createElementNS(svgNS,'g');
+    var floatingContainer = createNS('g');
     for(i=0;i<len;i+=1){
         if(assets[i].xt){
             var comp = this.createComp(assets[i],this.globalData.comp,this.globalData);
@@ -9639,12 +9596,12 @@ HybridRenderer.prototype.configAnimation = function(animData){
     wrapper.appendChild(resizerElem);
 
     resizerElem.style.overflow = 'hidden';
-    var svg = document.createElementNS(svgNS,'svg');
+    var svg = createNS('svg');
     svg.setAttribute('width','1');
     svg.setAttribute('height','1');
     styleDiv(svg);
     this.resizerElem.appendChild(svg);
-    var defs = document.createElementNS(svgNS,'defs');
+    var defs = createNS('defs');
     svg.appendChild(defs);
     this.globalData.defs = defs;
     this.data = animData;
@@ -10902,7 +10859,7 @@ HBaseElement.prototype.getBaseElement = function(){
 
 HBaseElement.prototype.createElements = function(){
     if(this.data.hasMask){
-        this.layerElement = document.createElementNS(svgNS,'svg');
+        this.layerElement = createNS('svg');
         styleDiv(this.layerElement);
         //this.appendNodeToParent(this.layerElement);
         this.baseElement = this.layerElement;
@@ -10913,7 +10870,7 @@ HBaseElement.prototype.createElements = function(){
     this.transformedElement = this.layerElement;
     if(this.data.ln && (this.data.ty === 4 || this.data.ty === 0)){
         if(this.layerElement === this.parentContainer){
-            this.layerElement = document.createElementNS(svgNS,'g');
+            this.layerElement = createNS('g');
             //this.appendNodeToParent(this.layerElement);
             this.baseElement = this.layerElement;
         }
@@ -11025,7 +10982,7 @@ createElement(HBaseElement, HSolidElement);
 HSolidElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
+    var cont = createNS('svg');
     styleDiv(cont);
     cont.setAttribute('width',this.data.sw);
     cont.setAttribute('height',this.data.sh);
@@ -11041,7 +10998,7 @@ HSolidElement.prototype.createElements = function(){
     if(this.data.bm !== 0){
         this.setBlendMode();
     }
-    var rect = document.createElementNS(svgNS,'rect');
+    var rect = createNS('rect');
     rect.setAttribute('width',this.data.sw);
     rect.setAttribute('height',this.data.sh);
     rect.setAttribute('fill',this.data.sc);
@@ -11087,11 +11044,11 @@ HCompElement.prototype.createElements = function(){
     }
     divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
-        var compSvg = document.createElementNS(svgNS,'svg');
+        var compSvg = createNS('svg');
         styleDiv(compSvg);
         compSvg.setAttribute('width',this.data.w);
         compSvg.setAttribute('height',this.data.h);
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         compSvg.appendChild(g);
         divElement.appendChild(compSvg);
         this.maskedElement = g;
@@ -11172,13 +11129,13 @@ HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderFrame;
 HShapeElement.prototype.createElements = function(){
     var parent = document.createElement('div');
     styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
+    var cont = createNS('svg');
     styleDiv(cont);
     var size = this.comp.data ? this.comp.data : this.globalData.compSize;
     cont.setAttribute('width',size.w);
     cont.setAttribute('height',size.h);
     if(this.data.hasMask){
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         parent.appendChild(cont);
         cont.appendChild(g);
         this.maskedElement = g;
@@ -11187,7 +11144,7 @@ HShapeElement.prototype.createElements = function(){
     }else{
         parent.appendChild(cont);
         this.layerElement = cont;
-        this.shapesContainer = document.createElementNS(svgNS,'g');
+        this.shapesContainer = createNS('g');
         this.layerElement.appendChild(this.shapesContainer);
     }
     if(!this.data.hd){
@@ -11265,14 +11222,14 @@ HTextElement.prototype.createElements = function(){
     this.transformedElement = parent;
     if(this.isMasked){
         this.renderType = 'svg';
-        var cont = document.createElementNS(svgNS,'svg');
+        var cont = createNS('svg');
         styleDiv(cont);
         this.cont = cont;
         this.compW = this.comp.data.w;
         this.compH = this.comp.data.h;
         cont.setAttribute('width',this.compW);
         cont.setAttribute('height',this.compH);
-        var g = document.createElementNS(svgNS,'g');
+        var g = createNS('g');
         cont.appendChild(g);
         parent.appendChild(cont);
         this.maskedElement = g;
@@ -11320,7 +11277,7 @@ HTextElement.prototype.buildNewText = function(){
     for (i = 0;i < len ;i += 1) {
         if(this.globalData.fontManager.chars){
             if(!this.textPaths[cnt]){
-                tSpan = document.createElementNS(svgNS,'path');
+                tSpan = createNS('path');
                 tSpan.setAttribute('stroke-linecap', 'butt');
                 tSpan.setAttribute('stroke-linejoin','round');
                 tSpan.setAttribute('stroke-miterlimit','4');
@@ -11334,7 +11291,7 @@ HTextElement.prototype.buildNewText = function(){
                 } else {
 
                     tParent = document.createElement('div');
-                    tCont = document.createElementNS(svgNS,'svg');
+                    tCont = createNS('svg');
                     tCont.appendChild(tSpan);
                     styleDiv(tParent);
                 }
@@ -11352,7 +11309,7 @@ HTextElement.prototype.buildNewText = function(){
                     tParent.appendChild(tSpan);
                 }
             } else {
-                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : document.createElementNS(svgNS,'text');
+                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : createNS('text');
             }
         }
         //tSpan.setAttribute('visibility', 'hidden');
@@ -11527,12 +11484,12 @@ HImageElement.prototype.createElements = function(){
     if(this.data.hasMask){
         var parent = document.createElement('div');
         styleDiv(parent);
-        var cont = document.createElementNS(svgNS,'svg');
+        var cont = createNS('svg');
         styleDiv(cont);
         cont.setAttribute('width',this.assetData.w);
         cont.setAttribute('height',this.assetData.h);
         parent.appendChild(cont);
-        this.imageElem = document.createElementNS(svgNS,'image');
+        this.imageElem = createNS('image');
         this.imageElem.setAttribute('width',this.assetData.w+"px");
         this.imageElem.setAttribute('height',this.assetData.h+"px");
         this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
@@ -11746,7 +11703,7 @@ expressionsPlugin = Expressions;
         if(!this.k){
             return this.pv;
         }
-        var currentFrame = time*elem.comp.globalData.frameRate;
+        var currentFrame = this.comp.renderedFrame;
         var keyframes = this.keyframes;
         var firstKeyFrame = keyframes[0].t;
         var offsetTime = this.offsetTime || 0;
@@ -11834,7 +11791,7 @@ expressionsPlugin = Expressions;
         var v2 = this.getValueAtTime(frameNum + delta);
         var velocity;
         if(v1.length){
-            velocity = Array.apply(null,{length:v1.length});
+            velocity = createTypedArray('float32', v1.length);
             var i;
             for(i=0;i<v1.length;i+=1){
                 //removing frameRate
@@ -11930,13 +11887,7 @@ expressionsPlugin = Expressions;
         prop.getVelocityAtTime = getVelocityAtTime;
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         var isAdded = prop.k;
-        if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
-        }
+        prop.propertyIndex = data.ix;
         searchExpressions(elem,data,prop);
         if(!isAdded && prop.x){
             arr.push(prop);
@@ -12073,13 +12024,7 @@ expressionsPlugin = Expressions;
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         var isAdded = prop.k;
-        if(data.ix !== undefined){
-            Object.defineProperty(prop,'propertyIndex',{
-                get: function(){
-                    return data.ix;
-                }
-            })
-        }
+        prop.propertyIndex = data.ix;
         if(type === 3){
             searchExpressions(elem,data.pt,prop);
         } else if(type === 4){
@@ -12145,13 +12090,17 @@ var ExpressionManager = (function(){
         }else if(value.i){
             return JSON.parse(JSON.stringify(value));
         }else{
-            var arr = Array.apply(null,{length:value.length});
+            var arr = createTypedArray('int16', value.length);
             var i, len = value.length;
             for(i=0;i<len;i+=1){
                 arr[i]=value[i]*mult;
             }
             return arr;
         }
+    }
+
+    function isTypeOfArray(arr) {
+        return arr.constructor === Array || arr.constructor === Float32Array;
     }
 
     function shapesEqual(shape1, shape2) {
@@ -12174,7 +12123,7 @@ var ExpressionManager = (function(){
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
             return -a;
         }
-        if(a.constructor === Array){
+        if(isTypeOfArray(a)){
             var i, lenA = a.length;
             var retArr = [];
             for(i=0;i<lenA;i+=1){
@@ -12193,15 +12142,15 @@ var ExpressionManager = (function(){
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string'  || b instanceof Number)) {
             return a + b;
         }
-        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+        if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             a[0] = a[0] + b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
             b[0] = a + b[0];
             return b;
         }
-        if(a.constructor === Array && b.constructor === Array){
+        if(isTypeOfArray(a) && isTypeOfArray(b)){
             
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
@@ -12231,15 +12180,15 @@ var ExpressionManager = (function(){
             }
             return a - b;
         }
-        if( a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+        if( isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             a[0] = a[0] - b;
             return a;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  b.constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  isTypeOfArray(b)){
             b[0] = a - b[0];
             return b;
         }
-        if(a.constructor === Array && b.constructor === Array){
+        if(isTypeOfArray(a) && isTypeOfArray(b)){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -12264,17 +12213,17 @@ var ExpressionManager = (function(){
         }
 
         var i, len;
-        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+        if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
             len = a.length;
-            arr = Array.apply(null,{length:len});
+            arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
                 arr[i] = a[i] * b;
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
             len = b.length;
-            arr = Array.apply(null,{length:len});
+            arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
                 arr[i] = a * b[i];
             }
@@ -12291,17 +12240,17 @@ var ExpressionManager = (function(){
             return a / b;
         }
         var i, len;
-        if(a.constructor === Array && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number  )){
+        if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number  )){
             len = a.length;
-            arr = Array.apply(null,{length:len});
+            arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
                 arr[i] = a[i] / b;
             }
             return arr;
         }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && b.constructor === Array){
+        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
             len = b.length;
-            arr = Array.apply(null,{length:len});
+            arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
                 arr[i] = a / b[i];
             }
@@ -12423,7 +12372,7 @@ var ExpressionManager = (function(){
             return value1 + (value2-value1)*perc;
         }
         var i, len = value1.length;
-        var arr = Array.apply( null, { length: len } );
+        var arr = createTypedArray('float32', len);
         for(i=0;i<len;i+=1){
             arr[i] = value1[i] + (value2[i]-value1[i])*perc;
         }
@@ -12442,9 +12391,9 @@ var ExpressionManager = (function(){
         if(max.length){
             var i, len = max.length;
             if(!min){
-                min = Array.apply(null,{length:len});
+                min = createTypedArray('float32', len);
             }
-            var arr = Array.apply(null,{length:len});
+            var arr = createTypedArray('float32', len);
             var rnd = BMMath.random();
             for(i=0;i<len;i+=1){
                 arr[i] = min[i] + rnd*(max[i]-min[i])
@@ -12495,10 +12444,7 @@ var ExpressionManager = (function(){
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
-            var addedAmps = Array.apply(null,{len:len});
-            for(j=0;j<len;j+=1){
-                addedAmps[j] = 0;
-            }
+            var addedAmps = createTypedArray('float32', len);
             freq = 5;
             var iterations = Math.floor(time*freq);
             i = 0;
@@ -12514,7 +12460,7 @@ var ExpressionManager = (function(){
             //var rnd2 = BMMath.random();
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
-            var arr = Array.apply({length:len});
+            var arr = createTypedArray('float32', len);
             if(len>1){
                 for(j=0;j<len;j+=1){
                     arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
@@ -12562,8 +12508,24 @@ var ExpressionManager = (function(){
             return [yaw,pitch,0];
         };
 
-        function easeOut(t, val1, val2){
+        function easeOut(t, tMin, tMax, val1, val2){
+            if(val1 === undefined){
+                val1 = tMin;
+                val2 = tMax;
+            } else {
+                t = (t - tMin) / (tMax - tMin);
+            }
             return -(val2-val1) * t*(t-2) + val1;
+        };
+
+        function easeIn(t, tMin, tMax, val1, val2){
+            if(val1 === undefined){
+                val1 = tMin;
+                val2 = tMax;
+            } else {
+                t = (t - tMin) / (tMax - tMin);
+            }
+            return (val2-val1)*t*t + val1;
         };
 
         function nearestKey(time){
@@ -13633,28 +13595,11 @@ var LayerExpressionInterface = (function (){
                 return elem.hierarchy[0].layerInterface;
             }
         });
-        Object.defineProperty(_thisLayerFunction, "rotation", {
-            get: function(){
-                return transformInterface.rotation;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, "scale", {
-            get: function () {
-                return transformInterface.scale;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "position", {
-            get: function () {
-                return transformInterface.position;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", {
-            get: function () {
-                return transformInterface.anchorPoint;
-            }
-        });
+        Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
+        Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
+        Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
+        Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
+        Object.defineProperty(_thisLayerFunction, "anchorPoint", getDescriptor(transformInterface, 'anchorPoint'));
 
         Object.defineProperty(_thisLayerFunction, "transform", {
             get: function () {
@@ -13662,42 +13607,7 @@ var LayerExpressionInterface = (function (){
             }
         });
 
-        Object.defineProperty(_thisLayerFunction, "width", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.w
-                }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "height", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.h
-                }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "source", {
-            get: function () {
-                return elem.data.refId;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "index", {
-            get: function () {
-                return elem.data.ind;
-            }
-        });
-
         Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
-        Object.defineProperty(_thisLayerFunction, "content", {
-            get: function(){
-                return _thisLayerFunction.shapeInterface;
-            }
-        });
 
         Object.defineProperty(_thisLayerFunction, "active", {
             get: function(){
@@ -13705,11 +13615,11 @@ var LayerExpressionInterface = (function (){
             }
         });
 
-        Object.defineProperty(_thisLayerFunction, "text", {
-            get: function(){
-                return _thisLayerFunction.textInterface;
-            }
-        });
+        _thisLayerFunction.startTime = elem.data.st;
+        _thisLayerFunction.index = elem.data.ind;
+        _thisLayerFunction.source = elem.data.refId;
+        _thisLayerFunction.height = elem.data.ty === 0 ? elem.data.h : 100;
+        _thisLayerFunction.width = elem.data.ty === 0 ? elem.data.w : 100;
 
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;
@@ -13758,7 +13668,7 @@ var TransformExpressionInterface = (function (){
                 case "Position":
                 case "ADBE Position":
                 case 2:
-                    return transform.position;
+                    return _thisFunction.position;
                 case "anchorPoint":
                 case "AnchorPoint":
                 case "Anchor Point":
@@ -13774,54 +13684,74 @@ var TransformExpressionInterface = (function (){
 
         Object.defineProperty(_thisFunction, "rotation", {
             get: function(){
-                return transform.rotation;
+                if(transform.r) {
+                    return ExpressionValue(transform.r, 1/degToRads);
+                } else {
+                    return ExpressionValue(transform.rz, 1/degToRads);
+                }
             }
         });
         Object.defineProperty(_thisFunction, "scale", {
             get: function () {
-                return transform.scale;
+                return ExpressionValue(transform.s, 100);
             }
         });
 
         Object.defineProperty(_thisFunction, "position", {
             get: function () {
-                return transform.position;
+                if(transform.p) {
+                    return ExpressionValue(transform.p);
+                } else {
+                    return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
+                };
             }
         });
 
         Object.defineProperty(_thisFunction, "xPosition", {
             get: function () {
-                return transform.xPosition;
+                return ExpressionValue(transform.px);
             }
         });
 
         Object.defineProperty(_thisFunction, "yPosition", {
             get: function () {
-                return transform.yPosition;
+                return ExpressionValue(transform.py);
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "zPosition", {
+            get: function () {
+                return ExpressionValue(transform.pz);
             }
         });
 
         Object.defineProperty(_thisFunction, "anchorPoint", {
             get: function () {
-                return transform.anchorPoint;
+                return ExpressionValue(transform.a);
             }
         });
 
         Object.defineProperty(_thisFunction, "opacity", {
             get: function () {
-                return transform.opacity;
+                return ExpressionValue(transform.o, 100);
             }
         });
 
         Object.defineProperty(_thisFunction, "skew", {
             get: function () {
-                return transform.skew;
+                return ExpressionValue(transform.sk);
             }
         });
 
         Object.defineProperty(_thisFunction, "skewAxis", {
             get: function () {
-                return transform.skewAxis;
+                return ExpressionValue(transform.sa);
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "orientation", {
+            get: function () {
+                return ExpressionValue(transform.or);
             }
         });
 
@@ -14005,8 +13935,8 @@ var ExpressionValue = (function() {
         if (type) {
         	if(type === 'color') {
         		len = 4;
-		        expressionValue = Array.apply(null, {length: len});
-		        arrValue = Array.apply(null, {length: len});
+                expressionValue = createTypedArray('float32', len);
+                arrValue = createTypedArray('float32', len);
 		        for (i = 0; i < len; i += 1) {
 		            expressionValue[i] = arrValue[i] = (mult && i < 3) ? elementProp.v[i] * mult : 1;
 		        }
@@ -14017,8 +13947,8 @@ var ExpressionValue = (function() {
             expressionValue.value = mult ? elementProp.v * mult : elementProp.v;
         } else {
         	len = elementProp.v.length;
-	        expressionValue = Array.apply(null, {length: len});
-	        arrValue = Array.apply(null, {length: len});
+            expressionValue = createTypedArray('float32', len);
+            arrValue = createTypedArray('float32', len);
 	        for (i = 0; i < len; i += 1) {
 	            expressionValue[i] = arrValue[i] = mult ? elementProp.v[i] * mult : elementProp.v[i];
 	        }
@@ -14273,7 +14203,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.0.0';
+    lottiejs.version = '5.0.1';
 
     function checkReady() {
         if (document.readyState === "complete") {
