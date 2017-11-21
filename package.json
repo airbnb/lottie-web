@@ -1,11 +1,11 @@
 {
-  "name": "bodymovin",
-  "version": "4.13.0",
+  "name": "lottie-web",
+  "version": "5.0.1",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
-  "main": "./build/player/bodymovin.js",
+  "main": "./build/player/lottie.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bodymovin/bodymovin.git"
+    "url": "https://github.com/airbnb/lottie-web.git"
   },
   "scripts": {
     "start": "gulp buildAll"
