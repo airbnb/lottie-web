@@ -126,7 +126,6 @@
                 }
                 return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
             }
-
             return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
         }
     }
