@@ -1,4 +1,5 @@
 function NullElement(data,parentContainer,globalData,comp){
+    this.initFrame();
 	this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
     this.initHierarchy();

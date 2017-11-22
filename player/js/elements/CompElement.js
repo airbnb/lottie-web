@@ -13,6 +13,7 @@ function ICompElement(data,parentContainer,globalData,comp){
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ICompElement);
 
 ICompElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
+    this.initFrame();
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
     this.initRenderable();
