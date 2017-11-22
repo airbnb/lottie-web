@@ -218,7 +218,7 @@ var PropertyFactory = (function(){
         this.pv = createTypedArray('float32', data.k.length);
         this.lastValue = createTypedArray('float32', data.k.length);
         var arr = createTypedArray('float32', data.k.length);
-        this.vel = arr.map(function () { return 0 });
+        this.vel = createTypedArray('float32', data.k.length);
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
