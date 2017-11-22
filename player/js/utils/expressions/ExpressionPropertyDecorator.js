@@ -8,6 +8,7 @@
         if(!this.k || !this.keyframes){
             return this.pv;
         }
+        type = type.toLowerCase();
         var currentFrame = this.comp.renderedFrame;
         var keyframes = this.keyframes;
         var lastKeyFrame = keyframes[keyframes.length - 1].t;
@@ -29,12 +30,11 @@
                 }
                 firstKeyFrame = lastKeyFrame - cycleDuration;
             }
-            var offsetTime = this.offsetTime || 0;
             var i, len, ret;
-            if(type.toLowerCase() === 'pingpong') {
+            if(type === 'pingpong') {
                 var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
                 if(iterations % 2 !== 0){
-                    return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+                    return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
                 }
             } else if(type === 'offset'){
                 var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
@@ -63,7 +63,7 @@
                 }
                 return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
             }
-            return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+            return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
         }
     }
 
@@ -71,10 +71,10 @@
         if(!this.k){
             return this.pv;
         }
+        type = type.toLowerCase();
         var currentFrame = this.comp.renderedFrame;
         var keyframes = this.keyframes;
         var firstKeyFrame = keyframes[0].t;
-        var offsetTime = this.offsetTime || 0;
         if(currentFrame>=firstKeyFrame){
             return this.pv;
         }else{
@@ -97,7 +97,7 @@
             if(type === 'pingpong') {
                 var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
                 if(iterations % 2 === 0){
-                    return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+                    return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
                 }
             } else if(type === 'offset'){
                 var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
@@ -126,7 +126,7 @@
                 }
                 return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
             }
-            return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) - offsetTime) / this.comp.globalData.frameRate, 0);
+            return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
         }
     }
 
@@ -134,7 +134,6 @@
         if(!this._cachingAtTime) {
             this._cachingAtTime = {lastValue:-99999,lastIndex:0};
         }
-        //console.log('this._cachingAtTime', JSON.parse(JSON.stringify(this._cachingAtTime)))
         if(frameNum !== this._cachingAtTime.lastFrame) {
             frameNum *= this.elem.globalData.frameRate;
             frameNum -= this.offsetTime;
@@ -188,7 +187,7 @@
     }
 
     function getTransformValueAtTime(time) {
-        console.log('time:', time)
+        //console.log('time:', time)
     }
 
     function getTransformStaticValueAtTime(time) {
