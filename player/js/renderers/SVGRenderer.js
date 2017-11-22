@@ -171,7 +171,7 @@ SVGRenderer.prototype.checkPendingElements  = function(){
 };
 
 SVGRenderer.prototype.renderFrame = function(num){
-    if(this.renderedFrame == num || this.destroyed){
+    if(this.renderedFrame === num || this.destroyed){
         return;
     }
     if(num === null){
@@ -194,7 +194,7 @@ SVGRenderer.prototype.renderFrame = function(num){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
-    for (i = len - 1; i >= 0; i--) {
+    for (i = 0; i < len; i += 1) {
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
