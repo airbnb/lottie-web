@@ -2314,7 +2314,7 @@ var PropertyFactory = (function(){
         this.pv = createTypedArray('float32', data.k.length);
         this.lastValue = createTypedArray('float32', data.k.length);
         var arr = createTypedArray('float32', data.k.length);
-        this.vel = arr.map(function () { return 0 });
+        this.vel = createTypedArray('float32', data.k.length);
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
@@ -9191,7 +9191,7 @@ AnimationItem.prototype.triggerEvent = _triggerEvent;
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.0.1';
+    lottiejs.version = '5.0.2';
 
     function checkReady() {
         if (document.readyState === "complete") {

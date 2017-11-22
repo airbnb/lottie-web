@@ -1,3 +1,7 @@
+## V 5.0.2
+- IE 10 fix
+- loopIn and loopOut fix
+
 ## V 5.0.1
 - expression fixes
 - text box fix
