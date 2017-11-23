@@ -142,6 +142,11 @@
     };
     anim = lottie.loadAnimation(animData);
 
+    setTimeout(function(){
+        anim.destroy();
+        anim = null;
+    }, 1000)
+
 </script>
 </body>
 </html>

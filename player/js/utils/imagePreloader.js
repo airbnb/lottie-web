@@ -1,12 +1,10 @@
 var ImagePreloader = (function(){
 
-    var imagesLoadedCb;
-
     function imageLoaded(){
         this.loadedAssets += 1;
         if(this.loadedAssets === this.totalImages){
-            if(imagesLoadedCb) {
-                imagesLoadedCb(null);
+            if(this.imagesLoadedCb) {
+                this.imagesLoadedCb(null);
             }
         }
     }
@@ -34,7 +32,7 @@ var ImagePreloader = (function(){
         img.src = path;
     }
     function loadAssets(assets, cb){
-        imagesLoadedCb = cb;
+        this.imagesLoadedCb = cb;
         this.totalAssets = assets.length;
         var i;
         for(i=0;i<this.totalAssets;i+=1){
@@ -53,14 +51,20 @@ var ImagePreloader = (function(){
         this.assetsPath = path || '';
     }
 
+    function destroy() {
+        this.imagesLoadedCb = null;
+    }
+
     return function ImagePreloader(){
         this.loadAssets = loadAssets;
         this.setAssetsPath = setAssetsPath;
         this.setPath = setPath;
+        this.destroy = destroy;
         this.assetsPath = '';
         this.path = '';
         this.totalAssets = 0;
         this.totalImages = 0;
         this.loadedAssets = 0;
+        this.imagesLoadedCb = null;
     }
 }());
