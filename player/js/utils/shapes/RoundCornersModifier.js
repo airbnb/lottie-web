@@ -18,9 +18,6 @@ RoundCornersModifier.prototype.processKeys = function(forceRender){
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.rd = PropertyFactory.getProp(elem,data.r,0,null,this.dynamicProperties);
-    if(!this.dynamicProperties.length){
-        this.getValue(true);
-    }
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){

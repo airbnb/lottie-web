@@ -1,5 +1,6 @@
-function TrimModifier(){};
-extendPrototype(ShapeModifier,TrimModifier);
+function TrimModifier(){
+};
+extendPrototype2([ShapeModifier],TrimModifier);
 TrimModifier.prototype.processKeys = function(forceRender){
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;
@@ -35,17 +36,14 @@ TrimModifier.prototype.processKeys = function(forceRender){
     }
 }
 TrimModifier.prototype.initModifierProperties = function(elem,data){
+    this.s = PropertyFactory.getProp(elem,data.s,0,0.01,this.dynamicProperties);
+    this.e = PropertyFactory.getProp(elem,data.e,0,0.01,this.dynamicProperties);
+    this.o = PropertyFactory.getProp(elem,data.o,0,0,this.dynamicProperties);
     this.sValue = 0;
     this.eValue = 0;
     this.oValue = 0;
     this.getValue = this.processKeys;
-    this.s = PropertyFactory.getProp(elem,data.s,0,0.01,this.dynamicProperties);
-    this.e = PropertyFactory.getProp(elem,data.e,0,0.01,this.dynamicProperties);
-    this.o = PropertyFactory.getProp(elem,data.o,0,0,this.dynamicProperties);
     this.m = data.m;
-    if(!this.dynamicProperties.length){
-        this.getValue(true);
-    }
 };
 
 TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLength, totalModifierLength) {
