@@ -160,6 +160,11 @@
         // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
     }, 1)
 
+    setTimeout(function(){
+        anim.destroy();
+        anim = null;
+    }, 1000)
+
 </script>
 </body>
 </html>
