@@ -16,6 +16,9 @@ NullElement.prototype.getBaseElement = function() {
 	return null;
 };
 
+NullElement.prototype.destroy = function() {
+};
+
 extendPrototype(BaseElement, NullElement);
 extendPrototype(TransformElement, NullElement);
 extendPrototype(HierarchyElement, NullElement);

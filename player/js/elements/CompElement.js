@@ -95,14 +95,18 @@ ICompElement.prototype.getElements = function(){
     return this.elements;
 };
 
-ICompElement.prototype.destroy = function(){
-    this._parent.destroy.call(this._parent);
+ICompElement.prototype.destroyElements = function(){
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
         if(this.elements[i]){
             this.elements[i].destroy();
         }
     }
+};
+
+ICompElement.prototype.destroy = function(){
+    this.destroyElements();
+    this.destroyBaseElement();
 };
 
 ICompElement.prototype.checkLayers = SVGRenderer.prototype.checkLayers;

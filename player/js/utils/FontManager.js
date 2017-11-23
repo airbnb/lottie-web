@@ -1,6 +1,11 @@
 var FontManager = (function(){
 
     var maxWaitingTime = 5000;
+    var emptyChar = {
+        w: 0,
+        size:0,
+        shapes:[]
+    }
 
     function setUpNode(font, family){
         var parentNode = document.createElement('span');
@@ -174,6 +179,10 @@ var FontManager = (function(){
             }
             i+= 1;
         }
+        if(console && console.warn) {
+            console.warn('Missing character from exported characters list: ', char, style, font);
+        }
+        return emptyChar;
     }
 
     function measureText(char, fontName, size){

@@ -164,15 +164,11 @@ SVGBaseElement.prototype.renderElement = function(){
     }
 };
 
-SVGBaseElement.prototype.destroy = function(){
+SVGBaseElement.prototype.destroyBaseElement = function(){
     this.layerElement = null;
     this.parentContainer = null;
-    if(this.matteElement) {
-        this.matteElement = null;
-    }
-    if(this.maskManager) {
-        this.maskManager.destroy();
-    }
+    this.matteElement = null;
+    this.maskManager.destroy();
 };
 
 SVGBaseElement.prototype.getBaseElement = function(){

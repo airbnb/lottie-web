@@ -376,7 +376,8 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
     for(l=0;l<lLen;l+=1){
         if(itemData.styles[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;
-            pathStringTransformed = '';
+            //M0 0 is needed for IE and Edge bug. If it's missing, and shape has a mask with a gradient fill, it won't show up. :/
+            pathStringTransformed = 'M0 0';
             paths = itemData.sh.paths;
             jLen = paths._length;
             if(itemData.styles[l].lvl < lvl){
@@ -524,7 +525,7 @@ IShapeElement.prototype.renderStroke = function(styleData, itemData) {
 };
 
 IShapeElement.prototype.destroy = function(){
-    this._parent.destroy.call(this._parent);
+    this.destroyBaseElement();
     this.shapeData = null;
     this.itemsData = null;
     this.parentContainer = null;

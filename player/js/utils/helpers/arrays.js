@@ -24,7 +24,7 @@ var createTypedArray = (function(){
 			return new Uint8ClampedArray(len);
 		}
 	}
-	if(typeof Float32Array === 'function') {
+	if(typeof Uint8ClampedArray === 'function' && typeof Float32Array === 'function') {
 		return createTypedArray
 	} else {
 		return createRegularArray
