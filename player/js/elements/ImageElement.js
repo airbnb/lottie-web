@@ -1,6 +1,6 @@
-function IImageElement(data,parentContainer,globalData,comp){
+function IImageElement(data,globalData,comp){
     this.assetData = globalData.getAssetData(data.refId);
-    this.initElement(data,parentContainer,globalData,comp);
+    this.initElement(data,globalData,comp);
 }
 
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IImageElement);

@@ -1,27 +1,24 @@
-function SVGBaseElement(data,parentContainer,globalData,comp){
+function SVGBaseElement(data,globalData,comp){
     /*this.globalData = globalData;
     this.comp = comp;
     this.data = data;
     this.matteElement = null;
     this.transformedElement = null;
     this.isTransparent = false;
-    this.parentContainer = parentContainer;
     this._sizeChanged = false;
     this.init();*/
 };
 
 //createElement(BaseElement, SVGBaseElement);
 
-SVGBaseElement.prototype.initSvgElement = function(parentContainer) {
-    this.matteElement = createNS('g');
+SVGBaseElement.prototype.initSvgElement = function() {
     this.layerElement = createNS('g');
-    this.transformedElement = this.layerElement;
-    this._sizeChanged = false;
-    this.parentContainer = parentContainer;
 }
 
 SVGBaseElement.prototype.createContainerElements = function(){
+    this.matteElement = createNS('g');
     this.transformedElement = this.layerElement;
+    this._sizeChanged = false;
     this.maskedElement = this.layerElement;
     var layerElementParent = null;
     //If this layer acts as a mask for the following layer
@@ -166,7 +163,6 @@ SVGBaseElement.prototype.renderElement = function(){
 
 SVGBaseElement.prototype.destroyBaseElement = function(){
     this.layerElement = null;
-    this.parentContainer = null;
     this.matteElement = null;
     this.maskManager.destroy();
 };

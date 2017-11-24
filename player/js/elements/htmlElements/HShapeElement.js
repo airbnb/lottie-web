@@ -1,4 +1,4 @@
-function HShapeElement(data,parentContainer,globalData,comp){
+function HShapeElement(data,globalData,comp){
     this.shapes = [];
     this.shapesData = data.shapes;
     this.stylesList = [];
@@ -6,7 +6,7 @@ function HShapeElement(data,parentContainer,globalData,comp){
     this.prevViewData = [];
     this.shapeModifiers = [];
     this.processedElements = [];
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
+    this._parent.constructor.call(this,data,globalData,comp);
     this.currentBBox = {
         x:999999,
         y: -999999,
@@ -42,7 +42,6 @@ HShapeElement.prototype.createElements = function(){
         this.layerElement.appendChild(this.shapesContainer);
     }
     if(!this.data.hd){
-        //this.parentContainer.appendChild(parent);
         this.baseElement = parent;
     }
     this.innerElem = parent;

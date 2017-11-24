@@ -1,6 +1,5 @@
-function ShapeItemElement(data,parentElement,parentContainer,dynamicProperties,globalData){
+function ShapeItemElement(data,parentElement,dynamicProperties,globalData){
     this.shape = parentElement;
-    this.parentContainer = parentContainer;
 
     this.lcEnum = {
         '1': 'butt',

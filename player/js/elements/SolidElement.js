@@ -1,5 +1,5 @@
-function ISolidElement(data,parentContainer,globalData,comp){
-    this.initElement(data,parentContainer,globalData,comp);
+function ISolidElement(data,globalData,comp){
+    this.initElement(data,globalData,comp);
 }
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ISolidElement);
 

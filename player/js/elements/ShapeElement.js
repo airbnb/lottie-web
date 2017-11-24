@@ -1,4 +1,4 @@
-function IShapeElement(data,parentContainer,globalData,comp){
+function IShapeElement(data,globalData,comp){
     //List of drawable elements
     this.shapes = [];
     // Full shape data
@@ -9,26 +9,29 @@ function IShapeElement(data,parentContainer,globalData,comp){
     this.shapeModifiers = [];
     //List of items in shape tree
     this.itemsData = [];
+    this.initElement(data,globalData,comp);
+    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     //List of items in previous shape tree
-    this.prevViewData = [];
-    // List of elements that have been created
     this.processedElements = [];
-    this.initElement(data,parentContainer,globalData,comp);
+    // List of elements that have been created
+    this.prevViewData = [];
 }
 
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IShapeElement);
 
-IShapeElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
-    
+IShapeElement.prototype.initElement = function(data,globalData,comp) {
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
     this.initHierarchy();
     this.initRenderable();
-    this.initSvgElement(parentContainer);
+    this.initSvgElement();
     this.createContainerElements();
     this.addMasks();
     this.createContent();
     this.hide();
+}
+
+IShapeElement.prototype.initSecondaryElement = function() {
 }
 
 IShapeElement.prototype.identityMatrix = new Matrix();
@@ -47,7 +50,7 @@ IShapeElement.prototype.ljEnum = {
 
 IShapeElement.prototype.searchProcessedElement = function(elem){
     var i = 0, len = this.processedElements.length;
-    while(i){
+    while(i < len){
         if(this.processedElements[i].elem === elem){
             return this.processedElements[i].pos;
         }
@@ -528,5 +531,4 @@ IShapeElement.prototype.destroy = function(){
     this.destroyBaseElement();
     this.shapeData = null;
     this.itemsData = null;
-    this.parentContainer = null;
 };

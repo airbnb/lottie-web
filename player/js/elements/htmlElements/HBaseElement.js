@@ -1,9 +1,8 @@
-function HBaseElement(data,parentContainer,globalData,comp){
+function HBaseElement(data,globalData,comp){
     this.globalData = globalData;
     this.comp = comp;
     this.data = data;
     this.matteElement = null;
-    this.parentContainer = parentContainer;
     this.layerId = 'ly_'+randomString(10);
     this.init();
 };
@@ -107,7 +106,6 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
 HBaseElement.prototype.destroy = function(){
     this.layerElement = null;
     this.transformedElement = null;
-    this.parentContainer = null;
     if(this.matteElement) {
         this.matteElement = null;
     }

@@ -32,33 +32,33 @@ function SVGRenderer(animationItem, config){
 extendPrototype(BaseRenderer,SVGRenderer);
 
 SVGRenderer.prototype.createBase = function (data) {
-    return new SVGBaseElement(data, this.layerElement,this.globalData,this);
+    return new SVGBaseElement(data,this.globalData,this);
 };
 
 SVGRenderer.prototype.createNull = function (data) {
-    return new NullElement(data, this.layerElement,this.globalData,this);
+    return new NullElement(data,this.globalData,this);
 };
 
 SVGRenderer.prototype.createShape = function (data) {
-    return new IShapeElement(data, this.layerElement,this.globalData,this);
+    return new IShapeElement(data,this.globalData,this);
 };
 
 SVGRenderer.prototype.createText = function (data) {
-    return new SVGTextElement(data, this.layerElement,this.globalData,this);
+    return new SVGTextElement(data,this.globalData,this);
 
 };
 
 SVGRenderer.prototype.createImage = function (data) {
-    return new IImageElement(data, this.layerElement,this.globalData,this);
+    return new IImageElement(data,this.globalData,this);
 };
 
 SVGRenderer.prototype.createComp = function (data) {
-    return new ICompElement(data, this.layerElement,this.globalData,this);
+    return new ICompElement(data,this.globalData,this);
 
 };
 
 SVGRenderer.prototype.createSolid = function (data) {
-    return new ISolidElement(data, this.layerElement,this.globalData,this);
+    return new ISolidElement(data,this.globalData,this);
 };
 
 SVGRenderer.prototype.configAnimation = function(animData){

@@ -1,5 +1,5 @@
-function HSolidElement(data,parentContainer,globalData,comp){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
+function HSolidElement(data,globalData,comp){
+    this._parent.constructor.call(this,data,globalData,comp);
 }
 createElement(HBaseElement, HSolidElement);
 

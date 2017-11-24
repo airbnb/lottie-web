@@ -1,24 +1,24 @@
-function ICompElement(data,parentContainer,globalData,comp){
+function ICompElement(data,globalData,comp){
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;
     this.pendingElements = [];
     this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
     //this.layerElement = createNS('g');
-    this.initElement(data,parentContainer,globalData,comp);
+    this.initElement(data,globalData,comp);
     this.tm = PropertyFactory.getProp(this,data.tm||{k:0},0,globalData.frameRate,this.dynamicProperties);
     
 }
 
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ICompElement);
 
-ICompElement.prototype.initElement = function(data,parentContainer,globalData,comp) {
+ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initFrame();
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
     this.initRenderable();
     this.initHierarchy();
-    this.initSvgElement(parentContainer);
+    this.initSvgElement();
     this.createContainerElements();
     this.addMasks();
     if(this.data.xt || !globalData.progressiveLoad){

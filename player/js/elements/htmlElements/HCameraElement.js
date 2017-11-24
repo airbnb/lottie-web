@@ -1,5 +1,5 @@
-function HCameraElement(data,parentContainer,globalData,comp){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp);
+function HCameraElement(data,globalData,comp){
+    this._parent.constructor.call(this,data,globalData,comp);
     var getProp = PropertyFactory.getProp;
     this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
     if(data.ks.p.s){
