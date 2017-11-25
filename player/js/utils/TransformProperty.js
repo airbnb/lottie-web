@@ -152,7 +152,7 @@ var TransformPropertyFactory = (function() {
             this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this.dynamicProperties);
         }
         if(data.o){
-            this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this.dynamicProperties);
+            this.o = PropertyFactory.getProp(elem,data.o,0,0.01,arr);
         } else {
             this.o = {mdf:false,v:1};
         }
