@@ -45,9 +45,9 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
         return false;
     }
     
-    this.finalTransform.opMdf = this.finalTransform.op.mdf;
+    this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
-    this.finalTransform.opacity = this.finalTransform.op.v;
+    this.finalTransform.opacity = this.finalTransform.mProp.o.v;
     if(this.firstFrame){
         this.finalTransform.opMdf = true;
         this.finalTransform.matMdf = true;

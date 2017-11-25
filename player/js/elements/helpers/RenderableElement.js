@@ -53,6 +53,15 @@ RenderableElement.prototype.prepareMasks = function() {
 }
 
 RenderableElement.prototype.renderRenderable = function() {
+    if(this.finalTransform.mProp.o.v <= 0) {
+        if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
+            this.isTransparent = true;
+            this.hide();
+        }
+    } else if(this.isTransparent) {
+        this.isTransparent = false;
+        this.show();
+    }
     this.maskManager.renderFrame(this.finalTransform.mat);
     this.effectsManager.renderFrame(this.firstFrame);
 }

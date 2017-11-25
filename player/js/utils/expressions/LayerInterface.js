@@ -57,8 +57,7 @@ var LayerExpressionInterface = (function (){
 
 
     return function(elem){
-
-        var transformInterface = TransformExpressionInterface(elem.transform);
+        var transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
 
         function _registerMaskInterface(maskManager){
             _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);

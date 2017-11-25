@@ -18,8 +18,8 @@ SVGBaseElement.prototype.initSvgElement = function() {
 SVGBaseElement.prototype.createContainerElements = function(){
     this.matteElement = createNS('g');
     this.transformedElement = this.layerElement;
-    this._sizeChanged = false;
     this.maskedElement = this.layerElement;
+    this._sizeChanged = false;
     var layerElementParent = null;
     //If this layer acts as a mask for the following layer
     if(this.data.td){
@@ -149,13 +149,11 @@ SVGBaseElement.prototype.renderElement = function(){
         return false;
     }
 
-    var finalMat = this.finalTransform.mat;
-    
-    if(this.finalTransform.matMdf && this.transformedElement){
-        this.transformedElement.setAttribute('transform',finalMat.to2dCSS());
+    if (this.finalTransform.matMdf) {
+        this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
     }
-    if(this.finalTransform.opMdf && this.transformedElement){
-        this.transformedElement.setAttribute('opacity',this.finalTransform.op.v);
+    if (this.finalTransform.opMdf) {
+        this.transformedElement.setAttribute('opacity', this.finalTransform.mProp.o.v);
     }
 };
 
