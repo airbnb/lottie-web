@@ -59,6 +59,7 @@
     <script src="js/utils/text/LetterProps.js"></script>
     <script src="js/utils/text/TextProperty.js"></script>
     <script src="js/utils/text/TextSelectorProperty.js"></script>
+    <script src="js/utils/pooling/pool_factory.js"></script>
     <script src="js/utils/pooling/pooling.js"></script>
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
@@ -150,12 +151,12 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:true
         },
-        path: 'exports/render/data_.json'
+        path: 'exports/bm_ronda/data.json'
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){

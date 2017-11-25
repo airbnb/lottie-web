@@ -12,9 +12,9 @@ ShapePath.prototype.setPathData = function(closed, len) {
 	this.setLength(len);
 	var i = 0;
 	while(i < len){
-		this.v[i] = point_pool.newPoint();
-		this.o[i] = point_pool.newPoint();
-		this.i[i] = point_pool.newPoint();
+		this.v[i] = point_pool.newElement();
+		this.o[i] = point_pool.newElement();
+		this.i[i] = point_pool.newElement();
 		i += 1;
 	}
 };
@@ -51,7 +51,7 @@ ShapePath.prototype.setXYAt = function(x, y, type, pos, replace) {
 			break;
 	}
 	if(!arr[pos] || (arr[pos] && !replace)){
-		arr[pos] = point_pool.newPoint();
+		arr[pos] = point_pool.newElement();
 	}
 	arr[pos][0] = x;
 	arr[pos][1] = y;

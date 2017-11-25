@@ -182,7 +182,7 @@ var ShapePropertyFactory = (function(){
         this.kf = true;
         var i, len = this.keyframes[0].s[0].i.length;
         var jLen = this.keyframes[0].s[0].i[0].length;
-        this.v = shape_pool.newShape();
+        this.v = shape_pool.newElement();
         this.v.setPathData(this.keyframes[0].s[0].c, len);
         this.pv = shape_pool.clone(this.v);
         this.localShapeCollection = shapeCollection_pool.newShapeCollection();
@@ -279,7 +279,7 @@ var ShapePropertyFactory = (function(){
                 o: Array.apply(null,{length:4}),
                 c: true
             };*/
-            this.v = shape_pool.newShape();
+            this.v = shape_pool.newElement();
             this.v.setPathData(true, 4);
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
             this.paths = this.localShapeCollection;
@@ -399,7 +399,7 @@ var ShapePropertyFactory = (function(){
                 o: [],
                 c: true
             };*/
-            this.v = shape_pool.newShape();
+            this.v = shape_pool.newElement();
             this.v.setPathData(true, 0);
             this.elem = elem;
             this.comp = elem.comp;
@@ -494,7 +494,7 @@ var ShapePropertyFactory = (function(){
         }
 
         return function RectShapeProperty(elem,data) {
-            this.v = shape_pool.newShape();
+            this.v = shape_pool.newElement();
             this.v.c = true;
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
             this.localShapeCollection.addShape(this.v);
