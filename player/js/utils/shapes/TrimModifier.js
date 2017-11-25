@@ -221,6 +221,16 @@ TrimModifier.prototype.addSegment = function(pt1, pt2, pt3, pt4, shapePath, pos,
     shapePath.setXYAt(pt4[0], pt4[1], 'v', pos + 1);
 }
 
+TrimModifier.prototype.addSegmentFromArray = function(points, shapePath, pos, newShape) {
+    shapePath.setXYAt(points[1], points[5], 'o', pos);
+    shapePath.setXYAt(points[2], points[6], 'i', pos + 1);
+    if(newShape){
+        shapePath.setXYAt(points[0], points[4], 'v', pos);
+    }
+    shapePath.setXYAt(points[3], points[7], 'v', pos + 1);
+    bezier_segment_pool.release(points);
+}
+
 TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) {
     var pathsData = shapeData.pathsData;
     var shapePaths = shapeData.shape.paths.shapes;
@@ -259,7 +269,8 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) 
                     newShape = false;
                 } else {
                     segment = bez.getNewSegment(shapePaths[i].v[j - 1], shapePaths[i].v[j], shapePaths[i].o[j - 1], shapePaths[i].i[j], (shapeSegment.s - addedLength)/currentLengthData.addedLength,(shapeSegment.e - addedLength)/currentLengthData.addedLength, lengths[j-1]);
-                    this.addSegment(segment.pt1, segment.pt3, segment.pt4, segment.pt2, shapePath, segmentCount, newShape);
+                    this.addSegmentFromArray(segment, shapePath, segmentCount, newShape);
+                    // this.addSegment(segment.pt1, segment.pt3, segment.pt4, segment.pt2, shapePath, segmentCount, newShape);
                     newShape = false;
                     shapePath.c = false;
                 }
@@ -276,7 +287,8 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) 
                     newShape = false;
                 } else {
                     segment = bez.getNewSegment(shapePaths[i].v[j - 1], shapePaths[i].v[0], shapePaths[i].o[j - 1], shapePaths[i].i[0], (shapeSegment.s - addedLength) / segmentLength, (shapeSegment.e - addedLength) / segmentLength, lengths[j - 1]);
-                    this.addSegment(segment.pt1, segment.pt3, segment.pt4, segment.pt2, shapePath, segmentCount, newShape);
+                    this.addSegmentFromArray(segment, shapePath, segmentCount, newShape);
+                    // this.addSegment(segment.pt1, segment.pt3, segment.pt4, segment.pt2, shapePath, segmentCount, newShape);
                     newShape = false;
                     shapePath.c = false;
                 }

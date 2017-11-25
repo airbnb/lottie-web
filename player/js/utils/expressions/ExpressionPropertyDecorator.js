@@ -334,10 +334,8 @@
         var i = 0, len = lengths.length;
         var j = 0, jLen;
         var accumulatedLength = 0;
-        var segments;
         while(i < len) {
             if(accumulatedLength + lengths[i].addedLength > lengthPos) {
-                segments = lengths[i].segments;
                 var initIndex = i;
                 var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
                 var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;

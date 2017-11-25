@@ -148,16 +148,19 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/render/data.json'
+        path: 'exports/catrim/data.json'
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
         anim = lottie.loadAnimation(animData);
+        anim.addEventListener('DOMLoaded', function() {
+            //anim.goToAndStop(10, true);
+        })
         // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
     }, 1)
 

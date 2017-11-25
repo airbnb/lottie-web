@@ -30,41 +30,7 @@ function bezFunction(){
         return diffDist > -0.0001 && diffDist < 0.0001;
     }
 
-    /*function getEasingCurve(aa,bb,cc,dd,encodedFuncName) {
-        if(!encodedFuncName){
-            encodedFuncName = ('bez_' + aa+'_'+bb+'_'+cc+'_'+dd).replace(/\./g, 'p');
-        }
-        if(easingFunctions[encodedFuncName]){
-            return easingFunctions[encodedFuncName];
-        }
-        var A0, B0, C0;
-        var A1, B1, C1;
-        easingFunctions[encodedFuncName] = function(tt) {
-            var x = tt;
-            var i = 0, z;
-            while (++i < 20) {
-                C0 = 3 * aa;
-                B0 = 3 * (cc - aa) - C0;
-                A0 = 1 - C0 - B0;
-                z = (x * (C0 + x * (B0 + x * A0))) - tt;
-                if (bm_abs(z) < 1e-3) break;
-                x -= z / (C0 + x * (2 * B0 + 3 * A0 * x));
-            }
-            C1 = 3 * bb;
-            B1 = 3 * (dd - bb) - C1;
-            A1 = 1 - C1 - B1;
-            var polyB = x * (C1 + x * (B1 + x * A1));
-            //return c * polyB + b;
-            return polyB;
-        };
-        return easingFunctions[encodedFuncName];
-    }*/
     var getBezierLength = (function(){
-
-        function Segment(l,p){
-            this.l = l;
-            this.p = p;
-        }
 
         return function(pt1,pt2,pt3,pt4){
             var curveSegments = defaultCurveSegments;
@@ -75,7 +41,8 @@ function bezFunction(){
             var point = [],lastPoint = [];
             var lengthData = {
                 addedLength: 0,
-                segments: Array.apply(null,{length:curveSegments})
+                percents: createTypedArray('float32', curveSegments),
+                lengths: createTypedArray('float32', curveSegments),
             };
             len = pt3.length;
             for(k=0;k<curveSegments;k+=1){
@@ -93,7 +60,8 @@ function bezFunction(){
                     ptDistance = bm_sqrt(ptDistance);
                     addedLength += ptDistance;
                 }
-                lengthData.segments[k] = new Segment(addedLength,perc);
+                lengthData.percents[k] = perc;
+                lengthData.lengths[k] = addedLength;
             }
             lengthData.addedLength = addedLength;
             return lengthData;
@@ -177,36 +145,41 @@ function bezFunction(){
     }());
 
     function getDistancePerc(perc,bezierData){
-        var segments = bezierData.segments;
-        var len = segments.length;
+        var percents = bezierData.percents;
+        var lengths = bezierData.lengths;
+        var len = percents.length;
         var initPos = bm_floor((len-1)*perc);
         var lengthPos = perc*bezierData.addedLength;
         var lPerc = 0;
-        if(lengthPos == segments[initPos].l){
-            return segments[initPos].p;
+        if(initPos === len - 1 || initPos === 0 || lengthPos === lengths[initPos]){
+            return percents[initPos];
         }else{
-            var dir = segments[initPos].l > lengthPos ? -1 : 1;
+            var dir = lengths[initPos] > lengthPos ? -1 : 1;
             var flag = true;
             while(flag){
-                if(segments[initPos].l <= lengthPos && segments[initPos+1].l > lengthPos){
-                    lPerc = (lengthPos - segments[initPos].l)/(segments[initPos+1].l-segments[initPos].l);
+                if(lengths[initPos] <= lengthPos && lengths[initPos+1] > lengthPos){
+                    lPerc = (lengthPos - lengths[initPos]) / (lengths[initPos+1] - lengths[initPos]);
                     flag = false;
                 }else{
                     initPos += dir;
                 }
                 if(initPos < 0 || initPos >= len - 1){
+                    //FIX for TypedArrays that don't store floating point values with their precise value
+                    if(initPos === len - 1) {
+                        return percents[initPos];
+                    }
                     flag = false;
                 }
             }
-            return segments[initPos].p + (segments[initPos+1].p - segments[initPos].p)*lPerc;
+            return percents[initPos] + (percents[initPos+1] - percents[initPos])*lPerc;
         }
     }
 
     function SegmentPoints(){
-        this.pt1 = new Array(2);
-        this.pt2 = new Array(2);
-        this.pt3 = new Array(2);
-        this.pt4 = new Array(2);
+        this.pt1 = createTypedArray('float32', 2);
+        this.pt2 = createTypedArray('float32', 2);
+        this.pt3 = createTypedArray('float32', 2);
+        this.pt4 = createTypedArray('float32', 2);
     }
 
     function getPointInSegment(pt1, pt2, pt3, pt4, percent, bezierData) {
@@ -218,9 +191,15 @@ function bezFunction(){
         return [ptX, ptY];
     }
 
+    function getSegmentArray() {
+
+    }
+
+    var bezier_segment_points = createTypedArray('float32', 8);
+
     function getNewSegment(pt1,pt2,pt3,pt4,startPerc,endPerc, bezierData){
 
-        var pts = new SegmentPoints();
+        // var pts = new SegmentPoints();
         startPerc = startPerc < 0 ? 0 : startPerc > 1 ? 1 : startPerc;
         var t0 = getDistancePerc(startPerc,bezierData);
         endPerc = endPerc > 1 ? 1 : endPerc;
@@ -228,14 +207,42 @@ function bezFunction(){
         var i, len = pt1.length;
         var u0 = 1 - t0;
         var u1 = 1 - t1;
+        var u0u0u0 = u0*u0*u0;
+        var t0u0u0_3 = t0*u0*u0*3; // t0*u0*u0 + u0*t0*u0 + u0*u0*t0
+        var t0t0u0_3 = t0*t0*u0*3; // t0*t0*u0 + u0*t0*t0 + t0*u0*t0
+        var t0t0t0 = t0*t0*t0;
+        //
+        var u0u0u1 = u0*u0*u1;
+        var t0u0u1_3 = t0*u0*u1 + u0*t0*u1 + u0*u0*t1;
+        var t0t0u1_3 = t0*t0*u1 + u0*t0*t1 + t0*u0*t1;
+        var t0t0t1 = t0*t0*t1;
+        //
+        var u0u1u1 = u0*u1*u1;
+        var t0u1u1_3 = t0*u1*u1 + u0*t1*u1 + u0*u1*t1;
+        var t0t1u1_3 = t0*t1*u1 + u0*t1*t1 + t0*u1*t1;
+        var t0t1t1 = t0*t1*t1;
+        //
+        var u1u1u1 = u1*u1*u1;
+        var t1u1u1_3 = t1*u1*u1 + u1*t1*u1 + u1*u1*t1;
+        var t1t1u1_3 = t1*t1*u1 + u1*t1*t1 + t1*u1*t1;
+        var t1t1t1 = t1*t1*t1;
         //Math.round(num * 100) / 100
         for(i=0;i<len;i+=1){
-            pts.pt1[i] =  Math.round((u0*u0*u0* pt1[i] + (t0*u0*u0 + u0*t0*u0 + u0*u0*t0) * pt3[i] + (t0*t0*u0 + u0*t0*t0 + t0*u0*t0)* pt4[i] + t0*t0*t0* pt2[i])* 1000) / 1000;
-            pts.pt3[i] = Math.round((u0*u0*u1*pt1[i] + (t0*u0*u1 + u0*t0*u1 + u0*u0*t1)* pt3[i] + (t0*t0*u1 + u0*t0*t1 + t0*u0*t1)* pt4[i] + t0*t0*t1* pt2[i])* 1000) / 1000;
-            pts.pt4[i] = Math.round((u0*u1*u1* pt1[i] + (t0*u1*u1 + u0*t1*u1 + u0*u1*t1)* pt3[i] + (t0*t1*u1 + u0*t1*t1 + t0*u1*t1)* pt4[i] + t0*t1*t1* pt2[i])* 1000) / 1000;
-            pts.pt2[i] = Math.round((u1*u1*u1* pt1[i] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[i] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[i] + t1*t1*t1* pt2[i])* 1000) / 1000;
+            bezier_segment_points[i * 4] = Math.round((u0u0u0 * pt1[i] + t0u0u0_3 * pt3[i] + t0t0u0_3 * pt4[i] + t0t0t0 * pt2[i]) * 1000) / 1000;
+            bezier_segment_points[i * 4 + 1] = Math.round((u0u0u1 * pt1[i] + t0u0u1_3 * pt3[i] + t0t0u1_3 * pt4[i] + t0t0t1 * pt2[i]) * 1000) / 1000;
+            bezier_segment_points[i * 4 + 2] = Math.round((u0u1u1 * pt1[i] + t0u1u1_3 * pt3[i] + t0t1u1_3 * pt4[i] + t0t1t1 * pt2[i]) * 1000) / 1000;
+            bezier_segment_points[i * 4 + 3] = Math.round((u1u1u1 * pt1[i] + t1u1u1_3 * pt3[i] + t1t1u1_3 * pt4[i] + t1t1t1 * pt2[i]) * 1000) / 1000;
+            // pts.pt1[i] = Math.round((u0u0u0 * pt1[i] + t0u0u0_3 * pt3[i] + t0t0u0_3 * pt4[i] + t0t0t0 * pt2[i]) * 1000) / 1000;
+            // pts.pt3[i] = Math.round((u0u0u1 * pt1[i] + t0u0u1_3 * pt3[i] + t0t0u1_3 * pt4[i] + t0t0t1 * pt2[i]) * 1000) / 1000;
+            // pts.pt4[i] = Math.round((u0u1u1 * pt1[i] + t0u1u1_3 * pt3[i] + t0t1u1_3 * pt4[i] + t0t1t1 * pt2[i]) * 1000) / 1000;
+            // pts.pt2[i] = Math.round((u1u1u1 * pt1[i] + t1u1u1_3 * pt3[i] + t1t1u1_3 * pt4[i] + t1t1t1 * pt2[i]) * 1000) / 1000;
+            // pts.pt1[i] =  Math.round((u0*u0*u0* pt1[i] + (t0*u0*u0 + u0*t0*u0 + u0*u0*t0) * pt3[i] + (t0*t0*u0 + u0*t0*t0 + t0*u0*t0)* pt4[i] + t0*t0*t0* pt2[i])* 1000) / 1000;
+            // pts.pt3[i] = Math.round((u0*u0*u1*pt1[i] + (t0*u0*u1 + u0*t0*u1 + u0*u0*t1)* pt3[i] + (t0*t0*u1 + u0*t0*t1 + t0*u0*t1)* pt4[i] + t0*t0*t1* pt2[i])* 1000) / 1000;
+            // pts.pt4[i] = Math.round((u0*u1*u1* pt1[i] + (t0*u1*u1 + u0*t1*u1 + u0*u1*t1)* pt3[i] + (t0*t1*u1 + u0*t1*t1 + t0*u1*t1)* pt4[i] + t0*t1*t1* pt2[i])* 1000) / 1000;
+            // pts.pt2[i] = Math.round((u1*u1*u1* pt1[i] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[i] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[i] + t1*t1*t1* pt2[i])* 1000) / 1000;
         }
-        return pts;
+
+        return bezier_segment_points;
     }
 
     return {
