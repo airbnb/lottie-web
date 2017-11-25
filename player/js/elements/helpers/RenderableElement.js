@@ -9,6 +9,8 @@ RenderableElement.prototype.initRenderable = function() {
 	this.hidden = false;
     // If layer's transparency equals 0, it can be hidden
     this.isTransparent = false;
+    // effects manager
+    this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
 }
 
 RenderableElement.prototype.prepareRenderableFrame = function(num) {
@@ -56,3 +58,20 @@ RenderableElement.prototype.renderRenderable = function() {
     this.maskManager.renderFrame(this.finalTransform.mat);
     this.effectsManager.renderFrame(this.firstFrame);
 }
+
+RenderableElement.prototype.sourceRectAtTime = function(){
+    return {
+        top:0,
+        left:0,
+        width:100,
+        height:100
+    }
+};
+
+RenderableElement.prototype.getLayerSize = function(){
+    if(this.data.ty === 5){
+        return {w:this.data.textData.width,h:this.data.textData.height};
+    }else{
+        return {w:this.data.width,h:this.data.height};
+    }
+};

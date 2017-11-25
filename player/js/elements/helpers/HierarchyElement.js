@@ -5,11 +5,11 @@ HierarchyElement.prototype.initHierarchy = function() {
     this._isParent = false;
 }
 
-HierarchyElement.prototype.resetHierarchy = function(){
+HierarchyElement.prototype.resetHierarchy = function() {
     this.hierarchy.length = 0;
 };
 
-HierarchyElement.prototype.getHierarchy = function(){
+HierarchyElement.prototype.getHierarchy = function() {
     return this.hierarchy;
 };
 
@@ -18,8 +18,8 @@ HierarchyElement.prototype.setHierarchy = function(hierarchy){
 };
 
 HierarchyElement.prototype.checkParenting = function(){
-    if(this.data.parent !== undefined){
-        this.comp.buildElementParenting(this, this.data.parent);
+    if (this.data.parent !== undefined){
+        this.comp.buildElementParenting(this, this.data.parent, []);
     }
 };
 

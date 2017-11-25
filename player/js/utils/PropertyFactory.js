@@ -159,7 +159,7 @@ var PropertyFactory = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        var initTime = this.keyframes[0].t-this.offsetTime;
+        var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;

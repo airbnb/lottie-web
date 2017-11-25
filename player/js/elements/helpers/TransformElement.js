@@ -68,3 +68,29 @@ TransformElement.prototype.renderTransform = function(){
         finalMat = this.finalTransform.mProp.v;
     }
 }
+
+TransformElement.prototype.globalToLocal = function(pt){
+    var transforms = [];
+    transforms.push(this.finalTransform);
+    var flag = true;
+    var comp = this.comp;
+    while(flag){
+        if(comp.finalTransform){
+            if(comp.data.hasMask){
+                transforms.splice(0,0,comp.finalTransform);
+            }
+            comp = comp.comp;
+        } else {
+            flag = false;
+        }
+    }
+    var i, len = transforms.length,ptNew;
+    for(i=0;i<len;i+=1){
+        ptNew = transforms[i].mat.applyToPointArray(0,0,0);
+        //ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
+        pt = [pt[0] - ptNew[0],pt[1] - ptNew[1],0];
+    }
+    return pt;
+};
+
+TransformElement.prototype.mHelper = new Matrix();

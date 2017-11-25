@@ -58,30 +58,6 @@ BaseElement.prototype.checkMasks = function(){
     return this.isVisible;
 };****/
 
-BaseElement.prototype.globalToLocal = function(pt){
-    var transforms = [];
-    transforms.push(this.finalTransform);
-    var flag = true;
-    var comp = this.comp;
-    while(flag){
-        if(comp.finalTransform){
-            if(comp.data.hasMask){
-                transforms.splice(0,0,comp.finalTransform);
-            }
-            comp = comp.comp;
-        } else {
-            flag = false;
-        }
-    }
-    var i, len = transforms.length,ptNew;
-    for(i=0;i<len;i+=1){
-        ptNew = transforms[i].mat.applyToPointArray(0,0,0);
-        //ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
-        pt = [pt[0] - ptNew[0],pt[1] - ptNew[1],0];
-    }
-    return pt;
-};
-
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
     if(this.data.hasMask){
@@ -161,13 +137,12 @@ BaseElement.prototype.initBaseData = function(data, globalData, comp){
     this.data = data;
     this.layerId = 'ly_'+randomString(10);
     
-    //Stretch factor for old animations.
+    //Stretch factor for old animations missing this property.
     if(!this.data.sr){
         this.data.sr = 1;
     }
     /****this.dynamicProperties = this.dynamicProperties || [];*/
     this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
-    this.initFrame();
     /*****this.hidden = false;
     this.firstFrame = true;
     this.isVisible = false;
@@ -177,32 +152,7 @@ BaseElement.prototype.initBaseData = function(data, globalData, comp){
     this.elemMdf = false;*****/
     
 };
+
 BaseElement.prototype.getType = function(){
     return this.type;
 };
-
-BaseElement.prototype.getLayerSize = function(){
-    if(this.data.ty === 5){
-        return {w:this.data.textData.width,h:this.data.textData.height};
-    }else{
-        return {w:this.data.width,h:this.data.height};
-    }
-};
-
-BaseElement.prototype.hide = function(){
-
-};
-
-BaseElement.prototype.sourceRectAtTime = function(){
-    return {
-        top:0,
-        left:0,
-        width:100,
-        height:100
-    }
-};
-
-BaseElement.prototype.mHelper = new Matrix();
-
-extendPrototype(HierarchyElement, BaseElement);
-extendPrototype(FrameElement, BaseElement);

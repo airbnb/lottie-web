@@ -44,12 +44,7 @@ HBaseElement.prototype.renderFrame = function(parentTransform){
     if(this.data.ty === 3){
         return false;
     }
-
-    if(this.currentFrameNum === this.lastNum || !this.isVisible){
-        return this.isVisible;
-    }
-    this.lastNum = this.currentFrameNum;
-
+    
     this.finalTransform.opMdf = this.finalTransform.op.mdf;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf;
     this.finalTransform.opacity = this.finalTransform.op.v;

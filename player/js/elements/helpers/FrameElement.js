@@ -18,9 +18,6 @@ FrameElement.prototype.initFrame = function(){
 	this.elemMdf = false;
 	//set to true when inpoint is rendered
 	this.firstFrame = false;
-	//current frame number and last frame number. Used in HBaseElement. Check if needed.
-	this.currentFrameNum = -99999;
-	this.lastNum = -99999;
 	//list of animated properties
 	this.dynamicProperties = [];
 }
@@ -46,6 +43,4 @@ FrameElement.prototype.prepareProperties = function(num, isVisible) {
             }
         }
     }
-
-    this.currentFrameNum = num*this.data.sr;
 }

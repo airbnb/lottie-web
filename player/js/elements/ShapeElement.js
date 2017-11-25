@@ -20,6 +20,7 @@ function IShapeElement(data,globalData,comp){
 extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IShapeElement);
 
 IShapeElement.prototype.initElement = function(data,globalData,comp) {
+    this.initFrame();
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
     this.initHierarchy();

@@ -149,8 +149,6 @@ SVGBaseElement.prototype.renderElement = function(){
         return false;
     }
 
-    this.lastNum = this.currentFrameNum;
-
     var finalMat = this.finalTransform.mat;
     
     if(this.finalTransform.matMdf && this.transformedElement){

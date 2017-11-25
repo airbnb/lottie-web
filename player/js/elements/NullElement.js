@@ -1,6 +1,7 @@
 function NullElement(data,globalData,comp){
     this.initFrame();
 	this.initBaseData(data, globalData, comp);
+    this.initFrame();
     this.initTransform(data, globalData, comp);
     this.initHierarchy();
 }
@@ -19,7 +20,4 @@ NullElement.prototype.getBaseElement = function() {
 NullElement.prototype.destroy = function() {
 };
 
-extendPrototype(BaseElement, NullElement);
-extendPrototype(TransformElement, NullElement);
-extendPrototype(HierarchyElement, NullElement);
-extendPrototype(FrameElement, NullElement);
+extendPrototype2([BaseElement,TransformElement,HierarchyElement,FrameElement], NullElement);
