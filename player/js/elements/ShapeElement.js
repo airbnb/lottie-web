@@ -9,10 +9,10 @@ function IShapeElement(data,globalData,comp){
     this.shapeModifiers = [];
     //List of items in shape tree
     this.itemsData = [];
-    this.initElement(data,globalData,comp);
-    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     //List of items in previous shape tree
     this.processedElements = [];
+    this.initElement(data,globalData,comp);
+    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     // List of elements that have been created
     this.prevViewData = [];
 }

@@ -20,4 +20,10 @@ NullElement.prototype.getBaseElement = function() {
 NullElement.prototype.destroy = function() {
 };
 
+NullElement.prototype.sourceRectAtTime = function() {
+};
+
+NullElement.prototype.hide = function() {
+};
+
 extendPrototype2([BaseElement,TransformElement,HierarchyElement,FrameElement], NullElement);
