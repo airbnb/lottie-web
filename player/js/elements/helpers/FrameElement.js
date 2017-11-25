@@ -14,8 +14,6 @@ function FrameElement(){}
  */
 
 FrameElement.prototype.initFrame = function(){
-	//used to update dynamic properties when inpoint or outpoint are rendered. Check if it can be removed
-	this.elemMdf = false;
 	//set to true when inpoint is rendered
 	this.firstFrame = false;
 	//list of animated properties
@@ -33,12 +31,10 @@ FrameElement.prototype.initFrame = function(){
  */
 FrameElement.prototype.prepareProperties = function(num, isVisible) {
     var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        if(isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
+    for (i = 0;i < len; i += 1) {
+        if (isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')) {
             this.dynamicProperties[i].getValue();
-            //OPTIMIZATION: check if validating that elemMdf is already set to true would be quicker
-            if(this.dynamicProperties[i].mdf){
-                this.elemMdf = true;
+            if (this.dynamicProperties[i].mdf) {
                 this.globalData.mdf = true;
             }
         }

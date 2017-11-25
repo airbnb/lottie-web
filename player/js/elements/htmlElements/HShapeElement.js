@@ -64,7 +64,8 @@ HShapeElement.prototype.renderFrame = function(parentMatrix){
     var firstFrame = this.firstFrame;
     this._renderShapeFrame();
 
-    if(this.isVisible && (this.elemMdf || firstFrame)){
+    //TODO: this also needs to be recalculated every time a property changes.
+    if(this.isVisible && firstFrame){
         var boundingBox = this.shapeCont.getBBox();
         var changed = false;
         if(this.currentBBox.w !== boundingBox.width){

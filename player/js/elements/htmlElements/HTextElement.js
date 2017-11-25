@@ -243,7 +243,9 @@ HTextElement.prototype.renderFrame = function(parentMatrix){
             textPath.style.color = renderedLetter.fc;
         }
     }
-    if(this.isVisible && (this.elemMdf || this.firstFrame)){
+
+    //TODO: this also needs to be recalculated every time a property changes.
+    if(this.isVisible && (this.firstFrame)){
         if(this.innerElem.getBBox){
             var boundingBox = this.innerElem.getBBox();
 

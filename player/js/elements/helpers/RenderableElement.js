@@ -31,7 +31,6 @@ RenderableElement.prototype.checkLayerLimits = function(num) {
 	if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
         if(this.isVisible !== true){
-            this.elemMdf = true;
             this.globalData.mdf = true;
             this.isVisible = true;
             this.firstFrame = true;
@@ -40,7 +39,6 @@ RenderableElement.prototype.checkLayerLimits = function(num) {
         }
     } else {
         if(this.isVisible !== false){
-            this.elemMdf = true;
             this.globalData.mdf = true;
             this.isVisible = false;
             this.hide();
