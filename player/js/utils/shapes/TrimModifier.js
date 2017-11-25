@@ -46,6 +46,10 @@ TrimModifier.prototype.initModifierProperties = function(elem, data) {
     this.m = data.m;
 };
 
+TrimModifier.prototype.addShapeToModifier = function(shapeData){
+    shapeData.pathsData = [];
+};
+
 TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLength, totalModifierLength) {
     var segments = []
     if (e <= 1) {
@@ -95,6 +99,15 @@ TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLe
     return shapeSegments;
 }
 
+TrimModifier.prototype.releasePathsData = function(pathsData) {
+    var i, len = pathsData.length;
+    for (i = 0; i < len; i += 1) {
+        segments_length_pool.release(pathsData[i]);
+    }
+    pathsData.length = 0;
+    return pathsData;
+}
+
 TrimModifier.prototype.processShapes = function(firstFrame) {
     var shapePaths;
     var i, len = this.shapes.length;
@@ -120,10 +133,10 @@ TrimModifier.prototype.processShapes = function(firstFrame) {
                 shapePaths = shapeData.shape.paths;
                 jLen = shapePaths._length;
                 totalShapeLength = 0;
-                if (!shapeData.shape.mdf && shapeData.pathsData) {
+                if (!shapeData.shape.mdf && shapeData.pathsData.length) {
                     totalShapeLength = shapeData.totalShapeLength;
                 } else {
-                    pathsData = [];
+                    pathsData = this.releasePathsData(shapeData.pathsData);
                     for (j = 0; j < jLen; j += 1) {
                         pathData = bez.getSegmentsLength(shapePaths.shapes[j]);
                         pathsData.push(pathData);

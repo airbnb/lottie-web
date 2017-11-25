@@ -63,6 +63,8 @@
     <script src="js/utils/pooling/point_pool.js"></script>
     <script src="js/utils/pooling/shape_pool.js"></script>
     <script src="js/utils/pooling/shapeCollection_pool.js"></script>
+    <script src="js/utils/pooling/segments_length_pool.js"></script>
+    <script src="js/utils/pooling/bezier_length_pool.js"></script>
     <script src="js/renderers/BaseRenderer.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js" data-light-skip="true"></script>
@@ -148,18 +150,18 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/catrim/data.json'
+        path: 'exports/render/data_.json'
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){
         anim = lottie.loadAnimation(animData);
         anim.addEventListener('DOMLoaded', function() {
-            //anim.goToAndStop(10, true);
+            //anim.playSegments([50,52], true)
         })
         // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
     }, 1)

@@ -39,11 +39,7 @@ function bezFunction(){
             var ptCoord,perc,addedLength = 0;
             var ptDistance;
             var point = [],lastPoint = [];
-            var lengthData = {
-                addedLength: 0,
-                percents: createTypedArray('float32', curveSegments),
-                lengths: createTypedArray('float32', curveSegments),
-            };
+            var lengthData = bezier_length_pool.newElement();
             len = pt3.length;
             for(k=0;k<curveSegments;k+=1){
                 perc = k/(curveSegments-1);
@@ -69,12 +65,13 @@ function bezFunction(){
     }());
 
     function getSegmentsLength(shapeData) {
+        var segmentsLength = segments_length_pool.newElement();
         var closed = shapeData.c;
         var pathV = shapeData.v;
         var pathO = shapeData.o;
         var pathI = shapeData.i;
         var i, len = shapeData._length;
-        var lengths = [];
+        var lengths = segmentsLength.lengths;
         var totalLength = 0;
         for(i=0;i<len-1;i+=1){
             lengths[i] = getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]);
@@ -84,7 +81,8 @@ function bezFunction(){
             lengths[i] = getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]);
             totalLength += lengths[i].addedLength;
         }
-        return {lengths:lengths,totalLength:totalLength};
+        segmentsLength.totalLength = totalLength;
+        return segmentsLength;
     }
 
     function BezierData(length){

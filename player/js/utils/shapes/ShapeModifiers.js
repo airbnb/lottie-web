@@ -22,8 +22,9 @@ ShapeModifier.prototype.initModifierProperties = function(){};
 ShapeModifier.prototype.addShapeToModifier = function(){};
 ShapeModifier.prototype.addShape = function(data){
     if(!this.closed){
-        this.shapes.push({shape:data.sh, data: data, localShapeCollection:shapeCollection_pool.newShapeCollection()});
-        this.addShapeToModifier(data.sh);
+        var shapeData = {shape:data.sh, data: data, localShapeCollection:shapeCollection_pool.newShapeCollection()};
+        this.shapes.push(shapeData);
+        this.addShapeToModifier(shapeData);
     }
 }
 ShapeModifier.prototype.init = function(elem,data,dynamicProperties){

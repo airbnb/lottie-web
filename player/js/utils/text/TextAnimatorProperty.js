@@ -118,6 +118,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             if(this._pathData.r){
                 paths = paths.reverse();
             }
+            // TODO: release bezier data cached from previous pathInfo: this._pathData.pi
             var pathInfo = {
                 tLength: 0,
                 segments: []
