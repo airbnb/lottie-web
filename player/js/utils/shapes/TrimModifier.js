@@ -228,7 +228,6 @@ TrimModifier.prototype.addSegmentFromArray = function(points, shapePath, pos, ne
         shapePath.setXYAt(points[0], points[4], 'v', pos);
     }
     shapePath.setXYAt(points[3], points[7], 'v', pos + 1);
-    bezier_segment_pool.release(points);
 }
 
 TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) {

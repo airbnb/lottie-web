@@ -175,13 +175,6 @@ function bezFunction(){
         }
     }
 
-    function SegmentPoints(){
-        this.pt1 = createTypedArray('float32', 2);
-        this.pt2 = createTypedArray('float32', 2);
-        this.pt3 = createTypedArray('float32', 2);
-        this.pt4 = createTypedArray('float32', 2);
-    }
-
     function getPointInSegment(pt1, pt2, pt3, pt4, percent, bezierData) {
         var t1 = getDistancePerc(percent,bezierData);
         var u0 = 1;
@@ -199,7 +192,6 @@ function bezFunction(){
 
     function getNewSegment(pt1,pt2,pt3,pt4,startPerc,endPerc, bezierData){
 
-        // var pts = new SegmentPoints();
         startPerc = startPerc < 0 ? 0 : startPerc > 1 ? 1 : startPerc;
         var t0 = getDistancePerc(startPerc,bezierData);
         endPerc = endPerc > 1 ? 1 : endPerc;
