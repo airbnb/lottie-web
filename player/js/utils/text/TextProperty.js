@@ -1,5 +1,5 @@
 function TextProperty(elem, data, dynamicProperties){
-	this._frameId = -99999;
+	this._frameId = initialDefaultFrame;
 	this.pv = '';
 	this.v = '';
 	this.kf = false;

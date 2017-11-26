@@ -1,16 +1,12 @@
 function SVGTextElement(data,globalData,comp){
     this.textSpans = [];
     this.renderType = 'svg';
-    this._parent.constructor.call(this,data,globalData,comp);
+    this.initElement(data,globalData,comp);
 }
-createElement(SVGBaseElement, SVGTextElement);
 
-extendPrototype(ITextElement, SVGTextElement);
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], SVGTextElement);
 
-SVGTextElement.prototype.createElements = function(){
-
-    this._parent.createElements.call(this);
-
+SVGTextElement.prototype.createContent = function(){
 
     if(this.data.ln){
         this.layerElement.setAttribute('id',this.data.ln);
@@ -202,18 +198,20 @@ SVGTextElement.prototype.renderLetters = function(){
     }
 }
 
-SVGTextElement.prototype.renderFrame = function(parentMatrix){
-
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
+SVGTextElement.prototype.renderFrame = function(){
+    if (!this.isVisible) {
         return;
     }
-    if(this.hidden){
-        this.show();
-    }
+
+    this.renderRenderable();
+    this.renderTransform();
+    this.renderElement();
+    this.renderLetters();
+
     if(this.firstFrame) {
         this.firstFrame = false;
     }
-    this.renderLetters();
 }
+
+SVGTextElement.prototype.hide = SVGTextElement.prototype.hideElement;
+SVGTextElement.prototype.show = SVGTextElement.prototype.showElement;

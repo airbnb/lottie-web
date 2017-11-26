@@ -56,6 +56,7 @@
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
+    <script src="js/utils/text/TextAnimatorDataProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
     <script src="js/utils/text/TextProperty.js"></script>
     <script src="js/utils/text/TextSelectorProperty.js"></script>
@@ -154,9 +155,9 @@
         loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true
+            progressiveLoad:false
         },
-        path: 'exports/bm_ronda/data.json'
+        path: 'exports/render/data.json'
     };
     //anim = bodymovin.loadAnimation(animData);
     setTimeout(function(){

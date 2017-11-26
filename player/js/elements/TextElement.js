@@ -1,16 +1,27 @@
-function ITextElement(data, animationItem,globalData){
+function ITextElement(){
 }
-ITextElement.prototype.init = function(){
+
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ITextElement);
+
+ITextElement.prototype.initElement = function(data,globalData,comp){
     this.lettersChangedFlag = true;
-    this.dynamicProperties = this.dynamicProperties || [];
-    this.textAnimator = new TextAnimatorProperty(this.data.t, this.renderType, this);
-    this.textProperty = new TextProperty(this, this.data.t, this.dynamicProperties);
-    this._parent.init.call(this);
+    this.initFrame();
+    this.initBaseData(data, globalData, comp);
+    this.textAnimator = new TextAnimatorProperty(data.t, this.renderType, this);
+    this.textProperty = new TextProperty(this, data.t, this.dynamicProperties);
+    this.initTransform(data, globalData, comp);
+    this.initHierarchy();
+    this.initRenderable();
+    this.initSvgElement();
+    this.createContainerElements();
+    this.addMasks();
+    this.createContent();
     this.textAnimator.searchProperties(this.dynamicProperties);
 };
 
 ITextElement.prototype.prepareFrame = function(num) {
-    this._parent.prepareFrame.call(this, num);
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isVisible);
     if(this.textProperty.mdf || this.textProperty.firstFrame) {
         this.buildNewText();
         this.textProperty.firstFrame = false;
