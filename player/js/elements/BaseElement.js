@@ -14,50 +14,6 @@ BaseElement.prototype.checkMasks = function(){
     return false;
 }
 
-/****BaseElement.prototype.checkParenting = function(){
-    if(this.data.parent !== undefined){
-        this.comp.buildElementParenting(this, this.data.parent);
-    }
-}****/
-
-/****BaseElement.prototype.prepareFrame = function(num){
-    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
-    {
-        if(this.isVisible !== true){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
-            this.isVisible = true;
-            this.firstFrame = true;
-            if(this.data.hasMask){
-                this.maskManager.firstFrame = true;
-            }
-        }
-    }else{
-        if(this.isVisible !== false){
-            this.elemMdf = true;
-            this.globalData.mdf = true;
-            this.isVisible = false;
-        }
-    }
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
-            this.dynamicProperties[i].getValue();
-            if(this.dynamicProperties[i].mdf){
-                this.elemMdf = true;
-                this.globalData.mdf = true;
-            }
-        }
-    }
-    if(this.data.hasMask && this.isVisible){
-        this.maskManager.prepareFrame(num*this.data.sr);
-    }
-
-
-    this.currentFrameNum = num*this.data.sr;
-    return this.isVisible;
-};****/
-
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
     if(this.data.hasMask){
@@ -141,15 +97,7 @@ BaseElement.prototype.initBaseData = function(data, globalData, comp){
     if(!this.data.sr){
         this.data.sr = 1;
     }
-    /****this.dynamicProperties = this.dynamicProperties || [];*/
     this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
-    /*****this.hidden = false;
-    this.firstFrame = true;
-    this.isVisible = false;
-    this._isParent = false;
-    this.currentFrameNum = -99999;
-    this.lastNum = -99999;
-    this.elemMdf = false;*****/
     
 };
 

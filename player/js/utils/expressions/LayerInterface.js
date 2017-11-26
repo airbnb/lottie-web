@@ -116,7 +116,7 @@ var LayerExpressionInterface = (function (){
 
         Object.defineProperty(_thisLayerFunction, "active", {
             get: function(){
-                return elem.isVisible;
+                return elem.isInRange;
             }
         });
 

@@ -283,11 +283,11 @@ IShapeElement.prototype.renderModifiers = function() {
 
 IShapeElement.prototype.prepareFrame = function(num) {
     this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isVisible);
+    this.prepareProperties(num, this.isInRange);
 };
 
 IShapeElement.prototype.renderFrame = function(parentMatrix){
-    if (!this.isVisible) {
+    if (this.hidden) {
         return;
     }
     this.renderTransform();

@@ -21,7 +21,7 @@ ITextElement.prototype.initElement = function(data,globalData,comp){
 
 ITextElement.prototype.prepareFrame = function(num) {
     this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isVisible);
+    this.prepareProperties(num, this.isInRange);
     if(this.textProperty.mdf || this.textProperty.firstFrame) {
         this.buildNewText();
         this.textProperty.firstFrame = false;

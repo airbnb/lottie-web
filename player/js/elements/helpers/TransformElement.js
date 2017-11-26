@@ -22,13 +22,12 @@ TransformElement.prototype.initTransform = function() {
 
 TransformElement.prototype.renderTransform = function() {
 
-	var mat;
-    var finalMat = this.finalTransform.mat;
-
 	this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf || this.firstFrame;
     this.finalTransform.matMdf = this.finalTransform.mProp.mdf || this.firstFrame;
 
     if (this.hierarchy) {
+        var mat;
+        var finalMat = this.finalTransform.mat;
         var i = 0, len = this.hierarchy.length;
         //Checking if any of the transformation matrices in the hierarchy chain has changed.
         if (!this.finalTransform.matMdf) {

@@ -30,11 +30,11 @@ IImageElement.prototype.show = IImageElement.prototype.showElement;
 
 IImageElement.prototype.prepareFrame = function(num) {
     this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isVisible);
+    this.prepareProperties(num, this.isInRange);
 };
 
 IImageElement.prototype.renderFrame = function() {
-    if(!this.isVisible) {
+    if(this.hidden) {
         return;
     }
     this.renderTransform();

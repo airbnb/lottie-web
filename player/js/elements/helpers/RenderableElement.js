@@ -4,7 +4,7 @@ function RenderableElement(){
 
 RenderableElement.prototype.initRenderable = function() {
 	//layer's visibility related to inpoint and outpoint. Rename isVisible to isInRange
-	this.isVisible = false;
+	this.isInRange = false;
 	//layer's display state
 	this.hidden = false;
     // If layer's transparency equals 0, it can be hidden
@@ -16,6 +16,15 @@ RenderableElement.prototype.initRenderable = function() {
 RenderableElement.prototype.prepareRenderableFrame = function(num) {
 	this.checkLayerLimits(num);
 	this.prepareMasks(num);
+    if(this.finalTransform.mProp.o.v <= 0) {
+        if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
+            this.isTransparent = true;
+            this.hide();
+        }
+    } else if(this.isTransparent) {
+        this.isTransparent = false;
+        this.show();
+    }
 }
 
 /**
@@ -30,38 +39,27 @@ RenderableElement.prototype.prepareRenderableFrame = function(num) {
 RenderableElement.prototype.checkLayerLimits = function(num) {
 	if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
     {
-        if(this.isVisible !== true){
+        if(this.isInRange !== true){
             this.globalData.mdf = true;
-            this.isVisible = true;
-            this.firstFrame = true;
-            this.maskManager.firstFrame = true;
+            this.isInRange = true;
             this.show();
         }
     } else {
-        if(this.isVisible !== false){
+        if(this.isInRange !== false){
             this.globalData.mdf = true;
-            this.isVisible = false;
+            this.isInRange = false;
             this.hide();
         }
     }
 }
 
 RenderableElement.prototype.prepareMasks = function() {
-	if(this.isVisible) {
+	if(this.isInRange) {
         this.maskManager.prepareFrame();
 	}
 }
 
 RenderableElement.prototype.renderRenderable = function() {
-    if(this.finalTransform.mProp.o.v <= 0) {
-        if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
-            this.isTransparent = true;
-            this.hide();
-        }
-    } else if(this.isTransparent) {
-        this.isTransparent = false;
-        this.show();
-    }
     this.maskManager.renderFrame(this.finalTransform.mat);
     this.effectsManager.renderFrame(this.firstFrame);
 }

@@ -178,15 +178,17 @@ SVGBaseElement.prototype.setMatte = function(id){
 };
 
 SVGBaseElement.prototype.hideElement = function(){
-    if(!this.hidden && (!this.isVisible || this.isTransparent)){
+    if(!this.hidden && (!this.isInRange || this.isTransparent)){
         this.layerElement.style.display = 'none';
         this.hidden = true;
     }
 };
 
 SVGBaseElement.prototype.showElement = function(){
-    if(this.isVisible && !this.isTransparent){
+    if(this.isInRange && !this.isTransparent){
         this.layerElement.style.display = 'block';
         this.hidden = false;
+        this.firstFrame = true;
+        this.maskManager.firstFrame = true;
     }
 };

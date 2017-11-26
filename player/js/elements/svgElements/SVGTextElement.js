@@ -199,7 +199,7 @@ SVGTextElement.prototype.renderLetters = function(){
 }
 
 SVGTextElement.prototype.renderFrame = function(){
-    if (!this.isVisible) {
+    if (this.hidden) {
         return;
     }
 

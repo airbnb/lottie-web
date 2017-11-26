@@ -42,9 +42,9 @@ ICompElement.prototype.hide = function(){
 };
 
 ICompElement.prototype.prepareFrame = function(num){
-    this.prepareProperties(num, this.isVisible);
     this.prepareRenderableFrame(num);
-    if(!this.isVisible && !this.data.xt){
+    this.prepareProperties(num, this.isInRange);
+    if(!this.isInRange && !this.data.xt){
         return;
     }
 
@@ -69,7 +69,7 @@ ICompElement.prototype.prepareFrame = function(num){
 };
 
 ICompElement.prototype.renderFrame = function() {
-    if(!this.isVisible) {
+    if(this.hidden) {
         return;
     }
     this.renderTransform();
