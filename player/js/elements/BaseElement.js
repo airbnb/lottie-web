@@ -97,6 +97,7 @@ BaseElement.prototype.initBaseData = function(data, globalData, comp){
     if(!this.data.sr){
         this.data.sr = 1;
     }
+    // effects manager
     this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
     
 };

@@ -29,12 +29,12 @@ var TransformPropertyFactory = (function() {
             mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
         }
     }
-    function processKeys(){
+    function processKeys(firstFrame){
         if (this.elem.globalData.frameId === this.frameId) {
             return;
         }
 
-        this.mdf = false;
+        this.mdf = firstFrame;
         var i, len = this.dynamicProperties.length;
 
         for(i = 0; i < len; i += 1) {
@@ -160,29 +160,7 @@ var TransformPropertyFactory = (function() {
         if(this.dynamicProperties.length){
             arr.push(this);
         }else{
-            if(this.a){
-                this.v.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-            }
-            if(this.s){
-                this.v.scale(this.s.v[0],this.s.v[1],this.s.v[2]);
-            }
-            if(this.sk){
-                this.v.skewFromAxis(-this.sk.v,this.sa.v);
-            }
-            if(this.r){
-                this.v.rotate(-this.r.v);
-            }else{
-                this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
-            }
-            if(this.data.p.s){
-                if(data.p.z) {
-                    this.v.translate(this.px.v, this.py.v, -this.pz.v);
-                } else {
-                    this.v.translate(this.px.v, this.py.v, 0);
-                }
-            }else{
-                this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
-            }
+            this.getValue(true);
         }
     }
 

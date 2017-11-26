@@ -68,6 +68,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
                 this.effectElements.push(eff);
                 break;
             case 6:
+            default:
                 eff = new NoValueEffect(effects[i],element,dynamicProperties);
                 this.effectElements.push(eff);
                 break;

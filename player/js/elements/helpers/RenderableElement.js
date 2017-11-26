@@ -9,8 +9,6 @@ RenderableElement.prototype.initRenderable = function() {
 	this.hidden = false;
     // If layer's transparency equals 0, it can be hidden
     this.isTransparent = false;
-    // effects manager
-    this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
 }
 
 RenderableElement.prototype.prepareRenderableFrame = function(num) {

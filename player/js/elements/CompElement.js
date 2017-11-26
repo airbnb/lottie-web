@@ -6,7 +6,7 @@ function ICompElement(data,globalData,comp){
     this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
     //this.layerElement = createNS('g');
     this.initElement(data,globalData,comp);
-    this.tm = PropertyFactory.getProp(this,data.tm||{k:0},0,globalData.frameRate,this.dynamicProperties);
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
     
 }
 
@@ -48,7 +48,7 @@ ICompElement.prototype.prepareFrame = function(num){
         return;
     }
 
-    if(this.data.tm){
+    if (!this.tm._placeholder) {
         var timeRemapped = this.tm.v;
         if(timeRemapped === this.data.op){
             timeRemapped = this.data.op - 1;

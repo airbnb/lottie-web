@@ -32,6 +32,9 @@ var EffectsExpressionInterface = (function (){
             if(data.ef[i].ty === 5){
                 effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
             } else {
+                // console.log('i: ', i)
+                // console.log('data.ef[i].ty: ', data.ef[i].ty)
+                // console.log('elements.effectElements: ', elements.effectElements[i])
                 effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
             }
         }
