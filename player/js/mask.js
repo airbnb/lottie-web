@@ -127,12 +127,12 @@ function MaskElement(data,element,globalData) {
         this.maskElement.appendChild(currentMasks[i]);
     }
 
-    this.maskElement.setAttribute('id', layerId);
     if(count > 0){
+        this.maskElement.setAttribute('id', layerId);
         this.element.maskedElement.setAttribute(maskRef, "url(" + locationHref + "#" + layerId + ")");
+        defs.appendChild(this.maskElement);
     }
 
-    defs.appendChild(this.maskElement);
 };
 
 MaskElement.prototype.getMaskProperty = function(pos){
