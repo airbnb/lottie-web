@@ -326,7 +326,6 @@ var Matrix = (function(){
     function to2dCSS() {
         //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
         /*if(this.isIdentity()) {
-            console.log(new Error().stack)
             return '';
         }*/
         var v = 10000;
