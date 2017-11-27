@@ -33,7 +33,7 @@ FrameElement.prototype.prepareProperties = function(num, isVisible) {
     var i, len = this.dynamicProperties.length;
     for (i = 0;i < len; i += 1) {
         //TODO change .type to .propType
-        if (isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')) {
+        if (isVisible || (this._isParent && this.dynamicProperties[i].propType === 'transform')) {
             this.dynamicProperties[i].getValue(this.firstFrame);
             if (this.dynamicProperties[i].mdf) {
                 this.globalData.mdf = true;

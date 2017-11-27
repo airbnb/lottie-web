@@ -117,7 +117,7 @@ var TransformPropertyFactory = (function() {
     function TransformProperty(elem,data,arr){
         this.elem = elem;
         this.frameId = -1;
-        this.type = 'transform';
+        this.propType = 'transform';
         this.dynamicProperties = [];
         this.mdf = false;
         this.data = data;

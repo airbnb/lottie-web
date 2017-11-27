@@ -210,7 +210,7 @@
             this.comp = elem.comp;
             this.elem = elem;
             this.mult = .01;
-            this.type = 'textSelector';
+            this.propType = 'textSelector';
             this.textTotal = data.totalChars;
             this.selectorValue = 100;
             this.lastValue = [1,1,1];

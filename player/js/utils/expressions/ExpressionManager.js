@@ -360,7 +360,7 @@ var ExpressionManager = (function(){
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
 
-        var fn = eval('[function(){' + val+';if($bm_rt.__shapeObject){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
+        var fn = eval('[function(){' + val+';if($bm_rt.propType==="shape"){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
 
@@ -547,14 +547,14 @@ var ExpressionManager = (function(){
             if(_needsRandom){
                 seedRandom(randSeed);
             }
-            if(this.frameExpressionId === elem.globalData.frameId && this.type !== 'textSelector'){
+            if(this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector'){
                 return;
             }
             if(this.lock){
                 this.v = duplicatePropertyValue(this.pv,this.mult);
                 return true;
             }
-            if(this.type === 'textSelector'){
+            if(this.propType === 'textSelector'){
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
                 selectorValue = this.selectorValue;

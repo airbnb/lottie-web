@@ -156,7 +156,7 @@ var ShapePropertyFactory = (function(){
     }
 
     function ShapeProperty(elem, data, type){
-        this.__shapeObject = 1;
+        this.propType = 'shape';
         this.comp = elem.comp;
         this.k = false;
         this.mdf = false;
@@ -172,7 +172,7 @@ var ShapePropertyFactory = (function(){
     ShapeProperty.prototype.getValue = getShapeValue;
 
     function KeyframedShapeProperty(elem,data,type){
-        this.__shapeObject = 1;
+        this.propType = 'shape';
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
