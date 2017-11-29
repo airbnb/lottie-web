@@ -1,22 +1,19 @@
 function TransformElement(){}
 
 TransformElement.prototype.initTransform = function() {
-	//TODO remove this condition to maitain hidden classes map
-    if (this.data.ks) {
-        this.finalTransform = {
-            mProp: TransformPropertyFactory.getTransformProperty(this, this.data.ks, this.dynamicProperties),
-            matMdf: false,
-            opMdf: false,
-            mat: new Matrix()
-        };
-        if (this.data.ao) {
-            this.finalTransform.mProp.autoOriented = true;
-        }
+    this.finalTransform = {
+        mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this.dynamicProperties) : {o:0},
+        matMdf: false,
+        opMdf: false,
+        mat: new Matrix()
+    };
+    if (this.data.ao) {
+        this.finalTransform.mProp.autoOriented = true;
+    }
 
-        //TODO: check TYPE 11: Guided elements
-        if (this.data.ty !== 11) {
-            //this.createElements();
-        }
+    //TODO: check TYPE 11: Guided elements
+    if (this.data.ty !== 11) {
+        //this.createElements();
     }
 }
 

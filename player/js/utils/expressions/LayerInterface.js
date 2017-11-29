@@ -57,7 +57,8 @@ var LayerExpressionInterface = (function (){
 
 
     return function(elem){
-        var transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
+
+        var transformInterface;
 
         function _registerMaskInterface(maskManager){
             _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);
@@ -100,11 +101,12 @@ var LayerExpressionInterface = (function (){
                 return elem.hierarchy[0].layerInterface;
             }
         });
-        Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
-        Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
-        Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
-        Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", getDescriptor(transformInterface, 'anchorPoint'));
+            transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
+            Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
+            Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
+            Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
+            Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
+            Object.defineProperty(_thisLayerFunction, "anchorPoint", getDescriptor(transformInterface, 'anchorPoint'));
 
         Object.defineProperty(_thisLayerFunction, "transform", {
             get: function () {
