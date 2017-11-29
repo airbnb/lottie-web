@@ -106,7 +106,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
         }
     }
     //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
-    if (this.data.ty === 0) {
+    if (this.data.ty === 0 && !this.data.hd) {
         var cp = createNS( 'clipPath');
         var pt = createNS('path');
         pt.setAttribute('d','M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
@@ -163,6 +163,9 @@ SVGBaseElement.prototype.destroyBaseElement = function() {
 };
 
 SVGBaseElement.prototype.getBaseElement = function() {
+    if (this.data.hd) {
+        return null;
+    }
     return this.baseElement;
 };
 SVGBaseElement.prototype.addMasks = function() {

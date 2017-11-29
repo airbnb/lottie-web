@@ -303,7 +303,7 @@ var Matrix = (function(){
         if(this.isIdentity()) {
             return x + ',' + y;
         }
-        return (bm_rnd(x * this.props[0] + y * this.props[4] + this.props[12]))+','+(bm_rnd(x * this.props[1] + y * this.props[5] + this.props[13]));
+        return (x * this.props[0] + y * this.props[4] + this.props[12])+','+(x * this.props[1] + y * this.props[5] + this.props[13]);
     }
 
     function toCSS() {
