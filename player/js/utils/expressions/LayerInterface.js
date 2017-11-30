@@ -104,7 +104,9 @@ var LayerExpressionInterface = (function (){
         Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
         Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
         Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", getDescriptor(transformInterface, 'anchorPoint'));
+        var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
+        Object.defineProperty(_thisLayerFunction, "anchorPoint", anchorPointDescriptor);
+        Object.defineProperty(_thisLayerFunction, "anchor_point", anchorPointDescriptor);
 
         Object.defineProperty(_thisLayerFunction, "transform", {
             get: function () {
