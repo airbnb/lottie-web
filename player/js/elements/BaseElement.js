@@ -42,7 +42,7 @@ BaseElement.prototype.prepareFrame = function(num){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         if(this.isVisible || (this._isParent && this.dynamicProperties[i].type === 'transform')){
-            this.dynamicProperties[i].getValue();
+            this.dynamicProperties[i].getValue(this.firstFrame);
             if(this.dynamicProperties[i].mdf){
                 this.elemMdf = true;
                 this.globalData.mdf = true;
