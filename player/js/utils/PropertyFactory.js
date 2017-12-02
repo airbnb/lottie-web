@@ -176,6 +176,10 @@ var PropertyFactory = (function(){
                     }
                     i += 1;
                 }
+                if(this.firstFrame) {
+                    this.firstFrame = false;
+                    this.mdf = true;
+                }
             } else {
                 this.pv = renderResult.value;
                 this.v = this.mult ? this.pv*this.mult : this.pv;
@@ -240,6 +244,7 @@ var PropertyFactory = (function(){
         this.data = data;
         this.mult = mult;
         this.elem = elem;
+        this.firstFrame = false;
         this.comp = elem.comp;
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
@@ -267,6 +272,7 @@ var PropertyFactory = (function(){
         this.offsetTime = elem.data.st;
         this.k = true;
         this.kf = true;
+        this.firstFrame = true;
         this.mult = mult;
         this.elem = elem;
         this.comp = elem.comp;

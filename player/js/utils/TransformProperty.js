@@ -29,12 +29,12 @@ var TransformPropertyFactory = (function() {
             mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
         }
     }
-    function processKeys(forceFlag){
+    function processKeys(){
         if (this.elem.globalData.frameId === this.frameId) {
             return;
         }
 
-        this.mdf = !!forceFlag;
+        this.mdf = false;
         var i, len = this.dynamicProperties.length;
 
         for(i = 0; i < len; i += 1) {
