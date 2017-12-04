@@ -265,18 +265,20 @@
     }
 
     function getShapeValueAtTime(frameNum) {
-        if (!this._shapeValueAtTime) {
-            this._lastIndexAtTime = 0;
-            this._lastTimeAtTime = initialDefaultFrame;
-            this._shapeValueAtTime = shape_pool.clone(this.pv);
+        //TODO test this
+        if (!this._cachingAtTime) {
+            this._cachingAtTime = {
+                shapeValue: shape_pool.clone(this.pv),
+                lastIndex: 0,
+                lastTime: initialDefaultFrame
+            }
         }
-        if(frameNum !== this._lastTimeAtTime) {
-            this._lastTimeAtTime = frameNum;
+        if(frameNum !== this._cachingAtTime.lastTime) {
+            this._cachingAtTime.lastTime = frameNum;
             frameNum *= this.elem.globalData.frameRate;
-            var interpolationResult = this.interpolateShape(frameNum, this._lastIndexAtTime, this._shapeValueAtTime, false);
-            this._lastIndexAtTime = interpolationResult.iterationIndex;
+            this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, false, this._cachingAtTime);
         }
-        return this._shapeValueAtTime;
+        return this._cachingAtTime.shapeValue;
     }
 
     var ShapePropertyConstructorFunction = ShapePropertyFactory.getConstructorFunction();
