@@ -131,16 +131,15 @@
     }
 
     function getValueAtTime(frameNum) {
+        //TODO this shouldn't be necessary anymore
         if(!this._cachingAtTime) {
             this._cachingAtTime = {lastValue:initialDefaultFrame,lastIndex:0};
         }
         if(frameNum !== this._cachingAtTime.lastFrame) {
             frameNum *= this.elem.globalData.frameRate;
             frameNum -= this.offsetTime;
-            var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var interpolationResult = this.interpolateValue(frameNum, i, this.pv, this._cachingAtTime);
-            this._cachingAtTime.lastIndex = interpolationResult.iterationIndex;
-            this._cachingAtTime.value = interpolationResult.value;
+            this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
+            this._cachingAtTime.value = this.interpolateValue(frameNum, this.pv, this._cachingAtTime);
             this._cachingAtTime.lastFrame = frameNum;
         }
         return this._cachingAtTime.value;

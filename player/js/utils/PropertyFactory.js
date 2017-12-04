@@ -2,12 +2,13 @@ var PropertyFactory = (function(){
 
     var initFrame = initialDefaultFrame;
 
-    function interpolateValue(frameNum, iterationIndex, previousValue, caching){
+    function interpolateValue(frameNum, previousValue, caching){
         var offsetTime = this.offsetTime;
         var newValue;
         if(this.propType === 'multidimensional') {
             newValue = createTypedArray('float32', previousValue.length);
         }
+        var iterationIndex = caching.lastIndex;
         var i = iterationIndex;
         var len = this.keyframes.length- 1,flag = true;
         var keyData, nextKeyData;
@@ -147,10 +148,8 @@ var PropertyFactory = (function(){
                 }
             }
         }
-        return {
-            value: newValue,
-            iterationIndex: iterationIndex
-        }
+        caching.lastIndex = iterationIndex;
+        return newValue;
     }
 
     function getValueAtCurrentTime(){
@@ -162,13 +161,12 @@ var PropertyFactory = (function(){
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
-            var i = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var renderResult = this.interpolateValue(frameNum, i, this.pv, this._caching);
-            this._caching.lastIndex = renderResult.iterationIndex;
+            this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
+            var renderResult = this.interpolateValue(frameNum, this.pv, this._caching);
             if(this.propType === 'multidimensional'){
-                i = 0;
+                var i = 0;
                 while(i<this.v.length){
-                    this.pv[i] = renderResult.value[i];
+                    this.pv[i] = renderResult[i];
                     this.v[i] = this.mult ? this.pv[i] * this.mult : this.pv[i];
                     if(this.lastPValue[i] !== this.pv[i]) {
                         this.mdf = true;
@@ -177,7 +175,7 @@ var PropertyFactory = (function(){
                     i += 1;
                 }
             } else {
-                this.pv = renderResult.value;
+                this.pv = renderResult;
                 this.v = this.mult ? this.pv*this.mult : this.pv;
                 if(this.lastPValue != this.pv){
                     this.mdf = true;
