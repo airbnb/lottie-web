@@ -152,6 +152,28 @@ var PropertyFactory = (function(){
         return newValue;
     }
 
+    function calculateMultidimensionalValueAtCurrentTime(renderResult) {
+        var i = 0;
+        while(i<this.v.length){
+            this.pv[i] = renderResult[i];
+            this.v[i] = this.mult ? this.pv[i] * this.mult : this.pv[i];
+            if(this.lastPValue[i] !== this.pv[i]) {
+                this.mdf = true;
+                this.lastPValue[i] = this.pv[i];
+            }
+            i += 1;
+        }
+    }
+
+    function calculateUnidimenstionalValueAtCurrentTime(renderResult) {
+        this.pv = renderResult;
+        this.v = this.mult ? this.pv*this.mult : this.pv;
+        if(this.lastPValue != this.pv){
+            this.mdf = true;
+            this.lastPValue = this.pv;
+        }
+    }
+
     function getValueAtCurrentTime(){
         if(this.elem.globalData.frameId === this.frameId){
             return;
@@ -163,25 +185,7 @@ var PropertyFactory = (function(){
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
             var renderResult = this.interpolateValue(frameNum, this.pv, this._caching);
-            if(this.propType === 'multidimensional'){
-                var i = 0;
-                while(i<this.v.length){
-                    this.pv[i] = renderResult[i];
-                    this.v[i] = this.mult ? this.pv[i] * this.mult : this.pv[i];
-                    if(this.lastPValue[i] !== this.pv[i]) {
-                        this.mdf = true;
-                        this.lastPValue[i] = this.pv[i];
-                    }
-                    i += 1;
-                }
-            } else {
-                this.pv = renderResult;
-                this.v = this.mult ? this.pv*this.mult : this.pv;
-                if(this.lastPValue != this.pv){
-                    this.mdf = true;
-                    this.lastPValue = this.pv;
-                }
-            }
+            this.calculateValueAtCurrentTime(renderResult);
             
         }
         this._caching.lastFrame = frameNum;
@@ -242,6 +246,7 @@ var PropertyFactory = (function(){
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
         this.getValue = getValueAtCurrentTime;
+        this.calculateValueAtCurrentTime = calculateUnidimenstionalValueAtCurrentTime;
         this.interpolateValue = interpolateValue;
     }
 
@@ -261,7 +266,6 @@ var PropertyFactory = (function(){
                 }
             }
         }
-        this.propType = 'multidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
@@ -270,6 +274,7 @@ var PropertyFactory = (function(){
         this.elem = elem;
         this.comp = elem.comp;
         this.getValue = getValueAtCurrentTime;
+        this.calculateValueAtCurrentTime = calculateMultidimensionalValueAtCurrentTime;
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
         var arrLen = data.k[0].s.length;

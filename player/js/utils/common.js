@@ -1,4 +1,5 @@
-var subframeEnabled = true;
+//TODO with subframe enabled, code deopt data shows up
+var subframeEnabled = false;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
