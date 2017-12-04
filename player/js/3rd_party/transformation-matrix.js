@@ -167,13 +167,13 @@ var Matrix = (function(){
     function transform(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
 
         if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0){
-            if(m2 !== 0 || n2 !== 0 || o2 !== 0){
-
-                this.props[12] = this.props[12] * a2 + this.props[13] * e2 + this.props[14] * i2 + this.props[15] * m2 ;
-                this.props[13] = this.props[12] * b2 + this.props[13] * f2 + this.props[14] * j2 + this.props[15] * n2 ;
-                this.props[14] = this.props[12] * c2 + this.props[13] * g2 + this.props[14] * k2 + this.props[15] * o2 ;
-                this.props[15] = this.props[12] * d2 + this.props[13] * h2 + this.props[14] * l2 + this.props[15] * p2 ;
-            }
+            //NOTE: commenting this condition because TurboFan deoptimizes code when present
+            //if(m2 !== 0 || n2 !== 0 || o2 !== 0){
+                this.props[12] = this.props[12] * a2 + this.props[15] * m2;
+                this.props[13] = this.props[13] * f2 + this.props[15] * n2;
+                this.props[14] = this.props[14] * k2 + this.props[15] * o2;
+                this.props[15] = this.props[15] * p2;
+            //}
             this._identityCalculated = false;
             return this;
         }
