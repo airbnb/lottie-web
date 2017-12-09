@@ -332,8 +332,8 @@ IShapeElement.prototype.renderShape = function(items, data, container) {
             if(this.firstFrame || data[i].transform.mProps.mdf && container){
                 container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
             }
-        }else if(ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr'){
-            this.renderPath(items[i],data[i]);
+        }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){
+            this.renderPath(data[i]);
         }else if(ty == 'fl'){
             this.renderFill(items[i],data[i]);
         }else if(ty == 'gf'){
@@ -370,20 +370,14 @@ IShapeElement.prototype.buildShapeString = function(pathNodes, length, closed, m
     return shapeString;
 };
 
-IShapeElement.prototype.renderPath = function(pathData,itemData){
+IShapeElement.prototype.renderPath = function(itemData){
     var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
     var lvl = itemData.lvl;
-    if(!pathData._render){
-        return;
-    }
     var paths, mat, props, iterations, k;
     for(l=0;l<lLen;l+=1){
-        if(itemData.styles[l].data._render){
+        //TODO this condition makes TurboFan bail out of optimization. Look for a way to change it.
+        //if(itemData.styles[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;
-            //M0 0 is needed for IE and Edge bug. If it's missing, and shape has a mask with a gradient fill, it won't show up. :/
-            pathStringTransformed = 'M0 0';
-            paths = itemData.sh.paths;
-            jLen = paths._length;
             if(itemData.styles[l].lvl < lvl){
                 mat = this.mHelper.reset();
                 iterations = lvl - itemData.styles[l].lvl;
@@ -398,7 +392,11 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
             } else {
                 mat = this.identityMatrix;
             }
+            paths = itemData.sh.paths;
+            jLen = paths._length;
             if(redraw){
+                //M0 0 is needed for IE and Edge bug. If it's missing, and shape has a mask with a gradient fill, it won't show up. :/
+                pathStringTransformed = 'M0 0';
                 for(j=0;j<jLen;j+=1){
                     pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes._length){
@@ -411,9 +409,9 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
             }
             itemData.styles[l].d += pathStringTransformed;
             itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
-        } else {
+        /*} else {
             itemData.styles[l].mdf = true;
-        }
+        }*/
     }
 };
 
