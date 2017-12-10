@@ -33,7 +33,7 @@ BaseElement.prototype.initExpressions = function(){
     }
 }
 
-BaseElement.prototype.setBlendMode = function(){
+BaseElement.prototype.getBlendMode = function(){
     var blendModeValue = '';
     switch(this.data.bm){
         case 1:
@@ -82,6 +82,11 @@ BaseElement.prototype.setBlendMode = function(){
             blendModeValue = 'luminosity';
             break;
     }
+    return blendModeValue;
+}
+
+BaseElement.prototype.setBlendMode = function(){
+    var blendModeValue = this.getBlendMode();
     var elem = this.baseElement || this.layerElement;
 
     elem.style['mix-blend-mode'] = blendModeValue;

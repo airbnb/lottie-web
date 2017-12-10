@@ -25,7 +25,7 @@ IShapeElement.prototype.initElement = function(data,globalData,comp) {
     this.initTransform(data, globalData, comp);
     this.initHierarchy();
     this.initRenderable();
-    this.initSvgElement();
+    this.initRendererElement();
     this.createContainerElements();
     this.addMasks();
     this.createContent();

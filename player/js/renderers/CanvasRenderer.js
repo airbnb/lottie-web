@@ -54,7 +54,7 @@ CanvasRenderer.prototype.createComp = function (data) {
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
-    return new CVSolidElement(data, this, this.globalData);
+    return new CVSolidElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.ctxTransform = function(props){
@@ -113,6 +113,7 @@ CanvasRenderer.prototype.save = function(actionFlag){
     }
     this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
     this.contextData.cArrPos += 1;
+    console.log('save', this.contextData.cArrPos);
 };
 
 CanvasRenderer.prototype.restore = function(actionFlag){
@@ -133,6 +134,7 @@ CanvasRenderer.prototype.restore = function(actionFlag){
     popped = this.contextData.savedOp[this.contextData.cArrPos];
     this.contextData.cO = popped;
     this.canvasContext.globalAlpha = popped;
+    console.log('restore', this.contextData.cArrPos);
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){

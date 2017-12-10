@@ -109,6 +109,7 @@
     <script src="js/elements/canvasElements/CVShapeElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVSolidElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVTextElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVEffects.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HBaseElement.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HSolidElement.js" data-light-skip="true"></script>
     <script src="js/elements/htmlElements/HCompElement.js" data-light-skip="true"></script>
@@ -153,16 +154,15 @@
     //var elem = createNS('aa')
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
+        renderer: 'canvas',
+        loop: 5,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false
         },
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.setSpeed(0.1)
     /*anim2 = lottie.loadAnimation({
         container: document.getElementById('lottie2'),
         renderer: 'svg',

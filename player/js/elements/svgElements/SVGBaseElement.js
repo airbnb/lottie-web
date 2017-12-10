@@ -11,7 +11,7 @@ function SVGBaseElement(data,globalData,comp){
 
 //createElement(BaseElement, SVGBaseElement);
 
-SVGBaseElement.prototype.initSvgElement = function() {
+SVGBaseElement.prototype.initRendererElement = function() {
     this.layerElement = createNS('g');
 }
 
