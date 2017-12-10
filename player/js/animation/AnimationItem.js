@@ -137,7 +137,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
 AnimationItem.prototype.includeLayers = function(data) {
     if(data.op > this.animationData.op){
         this.animationData.op = data.op;
-        this.totalFrames = Math.floor(data.op - this.animationData.ip);
+        this.totalFrames = Math.floor(data.op - this.animationData.ip) - 1;
         this.animationData.tf = this.totalFrames;
     }
     var layers = this.animationData.layers;
@@ -223,7 +223,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip) - 1;
     this.animationData.tf = this.totalFrames;
     this.renderer.configAnimation(animData);
     if(!animData.assets){
@@ -427,9 +427,9 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(-1);
             }
         }
-        this.totalFrames = arr[0] - arr[1];
+        this.totalFrames = arr[0] - arr[1] - 1;
         this.firstFrame = arr[1];
-        this.setCurrentRawFrameValue(this.totalFrames - 0.01);
+        this.setCurrentRawFrameValue(this.totalFrames);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
             if(this.playSpeed < 0){
@@ -438,7 +438,7 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(1);
             }
         }
-        this.totalFrames = arr[1] - arr[0];
+        this.totalFrames = arr[1] - arr[0] - 1;
         this.firstFrame = arr[0];
         this.setCurrentRawFrameValue(0);
     }
@@ -450,12 +450,12 @@ AnimationItem.prototype.setSegment = function (init,end) {
         if (this.currentRawFrame + this.firstFrame < init) {
             pendingFrame = init;
         } else if (this.currentRawFrame + this.firstFrame > end) {
-            pendingFrame = end - init - 0.01;
+            pendingFrame = end - init;
         }
     }
 
     this.firstFrame = init;
-    this.totalFrames = end - init;
+    this.totalFrames = end - init - 1;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
@@ -516,13 +516,13 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     if (this.currentRawFrame >= this.totalFrames) {
         this.checkSegments();
         if(this.loop === false){
-            this.currentRawFrame = this.totalFrames - 0.01;
+            this.currentRawFrame = this.totalFrames;
             _completeFlag = true;
         }else{
             this.trigger('loopComplete');
             this.playCount += 1;
             if((this.loop !== true && this.playCount == this.loop) || this.pendingSegment){
-                this.currentRawFrame = this.totalFrames - 0.01;
+                this.currentRawFrame = this.totalFrames;
                 _completeFlag = true;
             } else {
                 this.currentRawFrame = this.currentRawFrame % this.totalFrames;
