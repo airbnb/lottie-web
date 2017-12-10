@@ -12,7 +12,6 @@ var AnimationItem = function () {
     this.playDirection = 1;
     this.pendingElements = 0;
     this.playCount = 0;
-    this.prerenderFramesFlag = true;
     this.animationData = {};
     this.layers = [];
     this.assets = [];
@@ -21,7 +20,6 @@ var AnimationItem = function () {
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
-    this.scaleMode = 'fit';
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
@@ -67,7 +65,6 @@ AnimationItem.prototype.setParams = function(params) {
     }
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
-    this.prerenderFramesFlag = 'prerender' in params ? params.prerender : true;
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     if(params.animationData){
         self.configAnimation(params.animationData);
