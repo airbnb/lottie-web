@@ -14,7 +14,10 @@ CVSolidElement.prototype.renderElement = function(parentMatrix) {
     this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
     ctx.fillStyle = this.data.sc;
     ctx.fillRect(0, 0, this.data.sw, this.data.sh);
-    this.globalData.renderer.restore(this.data.hasMask);
+    this.globalData.renderer.restore();
+    if(this.maskManager.hasMasks) {
+        this.globalData.renderer.restore(true);
+    }
     if (this.firstFrame) {
         this.firstFrame = false;
     }

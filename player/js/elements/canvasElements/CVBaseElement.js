@@ -16,11 +16,9 @@ CVBaseElement.prototype.createContent = function(){};
 
 CVBaseElement.prototype.setBlendMode = function(){
     var globalData = this.data.ty === 0 ? this.parentGlobalData : this.globalData;
-    console.log(globalData.canvasContext.globalCompositeOperation)
     if(globalData.blendMode !== this.data.bm) {
         globalData.blendMode = this.data.bm;
         var blendModeValue = this.getBlendMode();
-        console.log(blendModeValue, globalData.canvasContext.globalCompositeOperation)
         globalData.canvasContext.globalCompositeOperation = blendModeValue;
     }
 };
