@@ -310,11 +310,7 @@ AnimationItem.prototype.setSubframe = function(flag){
 }
 
 AnimationItem.prototype.gotoFrame = function () {
-    if(this.subframeEnabled){
-        this.currentFrame = this.currentRawFrame;
-    }else{
-        this.currentFrame = Math.floor(this.currentRawFrame);
-    }
+    this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
 
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
@@ -516,23 +512,18 @@ AnimationItem.prototype.destroy = function (name) {
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
     //console.log(this.totalFrames);
+    var _completeFlag = false;
     if (this.currentRawFrame >= this.totalFrames) {
         this.checkSegments();
         if(this.loop === false){
             this.currentRawFrame = this.totalFrames - 0.01;
-            this.gotoFrame();
-            this.pause();
-            this.trigger('complete');
-            return;
+            _completeFlag = true;
         }else{
             this.trigger('loopComplete');
             this.playCount += 1;
             if((this.loop !== true && this.playCount == this.loop) || this.pendingSegment){
                 this.currentRawFrame = this.totalFrames - 0.01;
-                this.gotoFrame();
-                this.pause();
-                this.trigger('complete');
-                return;
+                _completeFlag = true;
             } else {
                 this.currentRawFrame = this.currentRawFrame % this.totalFrames;
             }
@@ -545,19 +536,18 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
         }
         if(this.loop === false  || this.pendingSegment){
             this.currentRawFrame = 0;
-            this.gotoFrame();
-            this.pause();
-            this.trigger('complete');
-            return;
+            _completeFlag = true;
         }else{
             this.trigger('loopComplete');
             this.currentRawFrame = (this.totalFrames + this.currentRawFrame) % this.totalFrames;
-            this.gotoFrame();
-            return;
         }
     }
 
     this.gotoFrame();
+    if(_completeFlag) {
+        this.pause();
+        this.trigger('complete');
+    }
 };
 
 AnimationItem.prototype.setSpeed = function (val) {
