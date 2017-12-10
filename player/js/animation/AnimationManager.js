@@ -181,9 +181,9 @@ var animationManager = (function(){
         }
     }
 
-    function start(){
+    /*function start(){
         window.requestAnimationFrame(first);
-    }
+    }*/
 
     function activate(){
         if(idled){
@@ -194,7 +194,7 @@ var animationManager = (function(){
 
     //start();
 
-    setTimeout(start,0);
+    //setTimeout(start,0);
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
@@ -207,7 +207,7 @@ var animationManager = (function(){
     moduleOb.togglePause = togglePause;
     moduleOb.searchAnimations = searchAnimations;
     moduleOb.resize = resize;
-    moduleOb.start = start;
+    //moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
     moduleOb.destroy = destroy;
     return moduleOb;

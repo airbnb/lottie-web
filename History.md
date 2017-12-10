@@ -1,3 +1,15 @@
+## V 5.0.4
+- FIX: if initial value for multidimensional properties was 0 and not in start point, it wasn't getting rendered
+- EXPRESSIONS: support for "anchor_point"
+- PERFORMANCE: separated opacity from transform properties
+- FIX: effects properties offset
+- FIX: 3d orientation for negative values
+
+## V 5.0.3
+- FIX: IE Arrays support
+- FIX: destroy method wasn't releasing all memory if a single animation was loaded.
+- FIX: IE masks fix when used as Alpha Masks with gradients.
+
 ## V 5.0.2
 - IE 10 fix
 - loopIn and loopOut fix

@@ -43,6 +43,7 @@ var TransformPropertyFactory = (function() {
                 this.mdf = true;
             }
         }
+
         if (this.mdf) {
             this.v.reset();
             if (this.a) {
@@ -137,6 +138,12 @@ var TransformPropertyFactory = (function() {
             this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this.dynamicProperties);
             this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
             this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
+            if(data.or.k[0].ti) {
+                var i, len = data.or.k.length;
+                for(i=0;i<len;i+=1) {
+                    data.or.k[i].to = data.or.k[i].ti = null;
+                }
+            }
             this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
             //sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;

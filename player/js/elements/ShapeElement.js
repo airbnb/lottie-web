@@ -396,7 +396,9 @@ IShapeElement.prototype.renderPath = function(itemData){
             jLen = paths._length;
             if(redraw){
                 //M0 0 is needed for IE and Edge bug. If it's missing, and shape has a mask with a gradient fill, it won't show up. :/
-                pathStringTransformed = 'M0 0';
+                //Removing it because it's causing issues with Chrome, and also it's probably better not to have it so the shape won't be larger than needed.
+                //Keeping previous comment to try to find a solution.
+                pathStringTransformed = '';
                 for(j=0;j<jLen;j+=1){
                     pathNodes = paths.shapes[j];
                     if(pathNodes && pathNodes._length){

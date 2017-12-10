@@ -186,7 +186,6 @@ var PropertyFactory = (function(){
             this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
             var renderResult = this.interpolateValue(frameNum, this.pv, this._caching);
             this.calculateValueAtCurrentTime(renderResult);
-            
         }
         this._caching.lastFrame = frameNum;
         this.frameId = this.elem.globalData.frameId;
@@ -242,6 +241,7 @@ var PropertyFactory = (function(){
         this.data = data;
         this.mult = mult;
         this.elem = elem;
+        this.firstFrame = false;
         this.comp = elem.comp;
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
@@ -270,6 +270,7 @@ var PropertyFactory = (function(){
         this.offsetTime = elem.data.st;
         this.k = true;
         this.kf = true;
+        this.firstFrame = true;
         this.mult = mult;
         this.elem = elem;
         this.comp = elem.comp;

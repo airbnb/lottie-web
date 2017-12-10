@@ -60,9 +60,9 @@
         animationManager.resize();
     }
 
-    function start() {
+    /*function start() {
         animationManager.start();
-    }
+    }*/
 
     function goToAndStop(val, isFrame, animation) {
         animationManager.goToAndStop(val, isFrame, animation);
@@ -139,7 +139,7 @@
     lottiejs.loadAnimation = loadAnimation;
     lottiejs.setSubframeRendering = setSubframeRendering;
     lottiejs.resize = resize;
-    lottiejs.start = start;
+    //lottiejs.start = start;
     lottiejs.goToAndStop = goToAndStop;
     lottiejs.destroy = destroy;
     lottiejs.setQuality = setQuality;

@@ -101,12 +101,15 @@ var LayerExpressionInterface = (function (){
                 return elem.hierarchy[0].layerInterface;
             }
         });
-            transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
-            Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
-            Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
-            Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
-            Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
-            Object.defineProperty(_thisLayerFunction, "anchorPoint", getDescriptor(transformInterface, 'anchorPoint'));
+
+        transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
+        Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
+        Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
+        Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
+        Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
+        var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
+        Object.defineProperty(_thisLayerFunction, "anchorPoint", anchorPointDescriptor);
+        Object.defineProperty(_thisLayerFunction, "anchor_point", anchorPointDescriptor);
 
         Object.defineProperty(_thisLayerFunction, "transform", {
             get: function () {
