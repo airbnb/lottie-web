@@ -7110,7 +7110,9 @@ IShapeElement.prototype.renderPath = function(pathData,itemData){
         if(itemData.elements[l].data._render){
             redraw = itemData.sh.mdf || this.firstFrame;
             //M0 0 is needed for IE and Edge bug. If it's missing, and shape has a mask with a gradient fill, it won't show up. :/
-            pathStringTransformed = 'M0 0';
+            //Removing it because it's causing issues with Chrome, and also it's probably better not to have it so the shape won't be larger than needed.
+            //Keeping previous comment to try to find a solution.
+            pathStringTransformed = '';
             var paths = itemData.sh.paths;
             jLen = paths._length;
 
@@ -8388,9 +8390,9 @@ var animationManager = (function(){
         }
     }
 
-    function start(){
+    /*function start(){
         window.requestAnimationFrame(first);
-    }
+    }*/
 
     function activate(){
         if(idled){
@@ -8401,7 +8403,7 @@ var animationManager = (function(){
 
     //start();
 
-    setTimeout(start,0);
+    //setTimeout(start,0);
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
@@ -8414,7 +8416,7 @@ var animationManager = (function(){
     moduleOb.togglePause = togglePause;
     moduleOb.searchAnimations = searchAnimations;
     moduleOb.resize = resize;
-    moduleOb.start = start;
+    //moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
     moduleOb.destroy = destroy;
     return moduleOb;
@@ -8434,7 +8436,6 @@ var AnimationItem = function () {
     this.playDirection = 1;
     this.pendingElements = 0;
     this.playCount = 0;
-    this.prerenderFramesFlag = true;
     this.animationData = {};
     this.layers = [];
     this.assets = [];
@@ -8443,7 +8444,6 @@ var AnimationItem = function () {
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
-    this.scaleMode = 'fit';
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
@@ -8489,7 +8489,6 @@ AnimationItem.prototype.setParams = function(params) {
     }
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
-    this.prerenderFramesFlag = 'prerender' in params ? params.prerender : true;
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     if(params.animationData){
         self.configAnimation(params.animationData);
@@ -8562,7 +8561,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
 AnimationItem.prototype.includeLayers = function(data) {
     if(data.op > this.animationData.op){
         this.animationData.op = data.op;
-        this.totalFrames = Math.floor(data.op - this.animationData.ip);
+        this.totalFrames = Math.floor(data.op - this.animationData.ip) - 1;
         this.animationData.tf = this.totalFrames;
     }
     var layers = this.animationData.layers;
@@ -8648,7 +8647,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip) - 1;
     this.animationData.tf = this.totalFrames;
     this.renderer.configAnimation(animData);
     if(!animData.assets){
@@ -8735,11 +8734,7 @@ AnimationItem.prototype.setSubframe = function(flag){
 }
 
 AnimationItem.prototype.gotoFrame = function () {
-    if(this.subframeEnabled){
-        this.currentFrame = this.currentRawFrame;
-    }else{
-        this.currentFrame = Math.floor(this.currentRawFrame);
-    }
+    this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
 
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
@@ -8856,9 +8851,9 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(-1);
             }
         }
-        this.totalFrames = arr[0] - arr[1];
+        this.totalFrames = arr[0] - arr[1] - 1;
         this.firstFrame = arr[1];
-        this.setCurrentRawFrameValue(this.totalFrames - 0.01);
+        this.setCurrentRawFrameValue(this.totalFrames);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
             if(this.playSpeed < 0){
@@ -8867,7 +8862,7 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(1);
             }
         }
-        this.totalFrames = arr[1] - arr[0];
+        this.totalFrames = arr[1] - arr[0] - 1;
         this.firstFrame = arr[0];
         this.setCurrentRawFrameValue(0);
     }
@@ -8879,12 +8874,12 @@ AnimationItem.prototype.setSegment = function (init,end) {
         if (this.currentRawFrame + this.firstFrame < init) {
             pendingFrame = init;
         } else if (this.currentRawFrame + this.firstFrame > end) {
-            pendingFrame = end - init - 0.01;
+            pendingFrame = end - init;
         }
     }
 
     this.firstFrame = init;
-    this.totalFrames = end - init;
+    this.totalFrames = end - init - 1;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
@@ -8941,23 +8936,18 @@ AnimationItem.prototype.destroy = function (name) {
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
     //console.log(this.totalFrames);
+    var _completeFlag = false;
     if (this.currentRawFrame >= this.totalFrames) {
         this.checkSegments();
         if(this.loop === false){
-            this.currentRawFrame = this.totalFrames - 0.01;
-            this.gotoFrame();
-            this.pause();
-            this.trigger('complete');
-            return;
+            this.currentRawFrame = this.totalFrames;
+            _completeFlag = true;
         }else{
             this.trigger('loopComplete');
             this.playCount += 1;
             if((this.loop !== true && this.playCount == this.loop) || this.pendingSegment){
-                this.currentRawFrame = this.totalFrames - 0.01;
-                this.gotoFrame();
-                this.pause();
-                this.trigger('complete');
-                return;
+                this.currentRawFrame = this.totalFrames;
+                _completeFlag = true;
             } else {
                 this.currentRawFrame = this.currentRawFrame % this.totalFrames;
             }
@@ -8970,19 +8960,18 @@ AnimationItem.prototype.setCurrentRawFrameValue = function(value){
         }
         if(this.loop === false  || this.pendingSegment){
             this.currentRawFrame = 0;
-            this.gotoFrame();
-            this.pause();
-            this.trigger('complete');
-            return;
+            _completeFlag = true;
         }else{
             this.trigger('loopComplete');
             this.currentRawFrame = (this.totalFrames + this.currentRawFrame) % this.totalFrames;
-            this.gotoFrame();
-            return;
         }
     }
 
     this.gotoFrame();
+    if(_completeFlag) {
+        this.pause();
+        this.trigger('complete');
+    }
 };
 
 AnimationItem.prototype.setSpeed = function (val) {
@@ -14146,9 +14135,9 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
         animationManager.resize();
     }
 
-    function start() {
+    /*function start() {
         animationManager.start();
-    }
+    }*/
 
     function goToAndStop(val, isFrame, animation) {
         animationManager.goToAndStop(val, isFrame, animation);
@@ -14225,14 +14214,14 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     lottiejs.loadAnimation = loadAnimation;
     lottiejs.setSubframeRendering = setSubframeRendering;
     lottiejs.resize = resize;
-    lottiejs.start = start;
+    //lottiejs.start = start;
     lottiejs.goToAndStop = goToAndStop;
     lottiejs.destroy = destroy;
     lottiejs.setQuality = setQuality;
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.0.4';
+    lottiejs.version = '5.0.5';
 
     function checkReady() {
         if (document.readyState === "complete") {
