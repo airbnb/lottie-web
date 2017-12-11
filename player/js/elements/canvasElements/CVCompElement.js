@@ -1,5 +1,4 @@
 function CVCompElement(data, comp,globalData){
-    this._parent.constructor.call(this,data, comp,globalData);
     var compGlobalData = {};
     for(var s in globalData){
         if(globalData.hasOwnProperty(s)){
@@ -7,53 +6,40 @@ function CVCompElement(data, comp,globalData){
         }
     }
     compGlobalData.renderer = this;
-    compGlobalData.compHeight = this.data.h;
-    compGlobalData.compWidth = this.data.w;
+    compGlobalData.compHeight = data.h;
+    compGlobalData.compWidth = data.w;
     this.renderConfig = {
         clearCanvas: true
     };
-    this.contextData = {
-        saved : Array.apply(null,{length:15}),
-        savedOp: Array.apply(null,{length:15}),
-        cArrPos : 0,
-        cTr : new Matrix(),
-        cO : 1
-    };
+    this.contextData = new CVContextData();
     this.completeLayers = false;
-    var i, len = 15;
-    for(i=0;i<len;i+=1){
-        this.contextData.saved[i] = Array.apply(null,{length:16});
-    }
     this.transformMat = new Matrix();
-    this.parentGlobalData = this.globalData;
     var cv = document.createElement('canvas');
     //document.body.appendChild(cv);
     compGlobalData.canvasContext = cv.getContext('2d');
     this.canvasContext = compGlobalData.canvasContext;
-    cv.width = this.data.w;
-    cv.height = this.data.h;
+    cv.width = data.w;
+    cv.height = data.h;
     this.canvas = cv;
     this.globalData = compGlobalData;
     this.layers = data.layers;
     this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
-    if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
-    }
-    if(this.data.xt || !globalData.progressiveLoad){
-        this.buildAllItems();
-    }
+    this.initElement(data,globalData,comp);
+    this.parentGlobalData = this.globalData;
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }
-createElement(CVBaseElement, CVCompElement);
+
+extendPrototype2([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement], CVCompElement);
+
+CVCompElement.prototype.initElement = ICompElement.prototype.initElement;
 
 CVCompElement.prototype.ctxTransform = CanvasRenderer.prototype.ctxTransform;
 CVCompElement.prototype.ctxOpacity = CanvasRenderer.prototype.ctxOpacity;
 CVCompElement.prototype.save = CanvasRenderer.prototype.save;
 CVCompElement.prototype.restore = CanvasRenderer.prototype.restore;
 CVCompElement.prototype.reset =  function(){
-    this.contextData.cArrPos = 0;
-    this.contextData.cTr.reset();
-    this.contextData.cO = 1;
+    this.contextData.reset();
 };
 CVCompElement.prototype.resize = function(transformCanvas){
     var maxScale = Math.max(transformCanvas.sx,transformCanvas.sy);
@@ -74,29 +60,34 @@ CVCompElement.prototype.resize = function(transformCanvas){
 };
 
 CVCompElement.prototype.prepareFrame = function(num){
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isInRange);
     this.globalData.frameId = this.parentGlobalData.frameId;
-    this.globalData.mdf = false;
-    this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false && !this.data.xt){
+    this.globalData.mdf = this.firstFrame;
+    if(!this.isInRange && !this.data.xt){
         return;
     }
-    var timeRemapped = num;
-    if(this.tm){
-        timeRemapped = this.tm.v;
+
+    //TODO check .sr value works
+    if (!this.tm._placeholder) {
+        var timeRemapped = this.tm.v;
         if(timeRemapped === this.data.op){
             timeRemapped = this.data.op - 1;
         }
+        this.renderedFrame = timeRemapped;
+    } else {
+        this.renderedFrame = num/this.data.sr;
     }
-    this.renderedFrame = timeRemapped/this.data.sr;
+
     var i,len = this.elements.length;
 
     if(!this.completeLayers){
         this.checkLayers(num);
     }
 
-    for( i = 0; i < len; i+=1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(timeRemapped/this.data.sr - this.layers[i].st);
+    for (i = 0; i < len; i += 1 ) {
+        if(this.completeLayers || this.elements[i]) {
+            this.elements[i].prepareFrame(this.renderedFrame/this.data.sr - this.layers[i].st);
             if(this.elements[i].data.ty === 0 && this.elements[i].globalData.mdf){
                 this.globalData.mdf = true;
             }
@@ -108,10 +99,7 @@ CVCompElement.prototype.prepareFrame = function(num){
     }
 };
 
-CVCompElement.prototype.renderFrame = function(parentMatrix){
-    if(this._parent.renderFrame.call(this,parentMatrix)===false){
-        return;
-    }
+CVCompElement.prototype.renderInnerContent = function() {
     if(this.globalData.mdf){
         var i,len = this.layers.length;
         for( i = len - 1; i >= 0; i -= 1 ){
@@ -119,12 +107,6 @@ CVCompElement.prototype.renderFrame = function(parentMatrix){
                 this.elements[i].renderFrame();
             }
         }
-    }
-    if(this.data.hasMask){
-        this.globalData.renderer.restore(true);
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
     }
     this.parentGlobalData.renderer.save();
     this.parentGlobalData.renderer.ctxTransform(this.finalTransform.mat.props);
@@ -136,6 +118,8 @@ CVCompElement.prototype.renderFrame = function(parentMatrix){
         this.reset();
     }
 };
+
+CVCompElement.prototype.renderFrame = CVImageElement.prototype.renderFrame;
 
 CVCompElement.prototype.setElements = function(elems){
     this.elements = elems;
@@ -158,7 +142,7 @@ CVCompElement.prototype.checkLayers = CanvasRenderer.prototype.checkLayers;
 CVCompElement.prototype.buildItem = CanvasRenderer.prototype.buildItem;
 CVCompElement.prototype.checkPendingElements = CanvasRenderer.prototype.checkPendingElements;
 CVCompElement.prototype.addPendingElement = CanvasRenderer.prototype.addPendingElement;
-CVCompElement.prototype.buildAllItems = CanvasRenderer.prototype.buildAllItems;
+CVCompElement.prototype.createContent = CanvasRenderer.prototype.buildAllItems;
 CVCompElement.prototype.createItem = CanvasRenderer.prototype.createItem;
 CVCompElement.prototype.createImage = CanvasRenderer.prototype.createImage;
 CVCompElement.prototype.createComp = CanvasRenderer.prototype.createComp;

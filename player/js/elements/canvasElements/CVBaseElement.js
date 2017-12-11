@@ -23,17 +23,6 @@ CVBaseElement.prototype.setBlendMode = function(){
     }
 };
 
-
-CVBaseElement.prototype.renderFrame = function(parentTransform){
-
-    //TODO this should be removed. First check why the renderer.save method is called.
-    if(this.data.hasMask){
-        this.globalData.renderer.save(true);
-        this.maskManager.renderFrame(this.data.ty === 0?null:finalMat);
-    }
-
-};
-
 CVBaseElement.prototype.addMasks = function(){
     this.maskManager = new CVMaskElement(this.data, this, this.globalData);
 };
@@ -49,6 +38,25 @@ CVBaseElement.prototype.showElement = function(){
         this.hidden = false;
         this.firstFrame = true;
         this.maskManager.firstFrame = true;
+    }
+};
+
+CVBaseElement.prototype.renderElement = function() {
+    if (this.hidden) {
+        return;
+    }
+    console.log(this.finalTransform.mat.props)
+    this.setBlendMode();
+    this.globalData.renderer.save();
+    this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
+    this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
+    this.renderInnerContent();
+    this.globalData.renderer.restore();
+    if(this.maskManager.hasMasks) {
+        this.globalData.renderer.restore(true);
+    }
+    if (this.firstFrame) {
+        this.firstFrame = false;
     }
 };
 

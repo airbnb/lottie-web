@@ -18,7 +18,7 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initTransform(data, globalData, comp);
     this.initRenderable();
     this.initHierarchy();
-    this.initSvgElement();
+    this.initRendererElement();
     this.createContainerElements();
     this.addMasks();
     if(this.data.xt || !globalData.progressiveLoad){

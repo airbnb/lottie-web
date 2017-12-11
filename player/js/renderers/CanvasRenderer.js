@@ -15,17 +15,8 @@ function CanvasRenderer(animationItem, config){
     this.globalData = {
         frameNum: -1
     };
-    this.contextData = {
-        saved : Array.apply(null,{length:15}),
-        savedOp: Array.apply(null,{length:15}),
-        cArrPos : 0,
-        cTr : new Matrix(),
-        cO : 1
-    };
     var i, len = 15;
-    for(i=0;i<len;i+=1){
-        this.contextData.saved[i] = Array.apply(null,{length:16});
-    }
+    this.contextData = new CVContextData();
     this.elements = [];
     this.pendingElements = [];
     this.transformMat = new Matrix();
@@ -34,28 +25,30 @@ function CanvasRenderer(animationItem, config){
 extendPrototype(BaseRenderer,CanvasRenderer);
 
 CanvasRenderer.prototype.createBase = function (data) {
-    return new CVBaseElement(data, this, this.globalData);
+    return new CVBaseElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createShape = function (data) {
-    return new CVShapeElement(data, this, this.globalData);
+    return new CVShapeElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createText = function (data) {
-    return new CVTextElement(data, this, this.globalData);
+    return new CVTextElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createImage = function (data) {
-    return new CVImageElement(data, this, this.globalData);
+    return new CVImageElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
-    return new CVCompElement(data, this, this.globalData);
+    return new CVCompElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createSolid = function (data) {
     return new CVSolidElement(data, this.globalData, this);
 };
+
+CanvasRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
 CanvasRenderer.prototype.ctxTransform = function(props){
     if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0){
@@ -66,7 +59,8 @@ CanvasRenderer.prototype.ctxTransform = function(props){
         return;
     }
     this.transformMat.cloneFromProps(props);
-    this.transformMat.transform(this.contextData.cTr.props[0],this.contextData.cTr.props[1],this.contextData.cTr.props[2],this.contextData.cTr.props[3],this.contextData.cTr.props[4],this.contextData.cTr.props[5],this.contextData.cTr.props[6],this.contextData.cTr.props[7],this.contextData.cTr.props[8],this.contextData.cTr.props[9],this.contextData.cTr.props[10],this.contextData.cTr.props[11],this.contextData.cTr.props[12],this.contextData.cTr.props[13],this.contextData.cTr.props[14],this.contextData.cTr.props[15])
+    var cProps = this.contextData.cTr.props;
+    this.transformMat.transform(cProps[0],cProps[1],cProps[2],cProps[3],cProps[4],cProps[5],cProps[6],cProps[7],cProps[8],cProps[9],cProps[10],cProps[11],cProps[12],cProps[13],cProps[14],cProps[15]);
     //this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
     this.contextData.cTr.cloneFromProps(this.transformMat.props);
     var trProps = this.contextData.cTr.props;
@@ -90,9 +84,7 @@ CanvasRenderer.prototype.reset = function(){
         this.canvasContext.restore();
         return;
     }
-    this.contextData.cArrPos = 0;
-    this.contextData.cTr.reset();
-    this.contextData.cO = 1;
+    this.contextData.reset();
 };
 
 CanvasRenderer.prototype.save = function(actionFlag){
@@ -104,11 +96,11 @@ CanvasRenderer.prototype.save = function(actionFlag){
         this.canvasContext.save();
     }
     var props = this.contextData.cTr.props;
-    if(this.contextData.saved[this.contextData.cArrPos] === null || this.contextData.saved[this.contextData.cArrPos] === undefined){
-        this.contextData.saved[this.contextData.cArrPos] = new Array(16);
+    if(this.contextData._length <= this.contextData.cArrPos) {
+        this.contextData.duplicate();
     }
-    var i,arr = this.contextData.saved[this.contextData.cArrPos];
-    for(i=0;i<16;i+=1){
+    var i, arr = this.contextData.saved[this.contextData.cArrPos];
+    for (i = 0; i < 16; i += 1) {
         arr[i] = props[i];
     }
     this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;

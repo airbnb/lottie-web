@@ -3,7 +3,7 @@
 <head>
     <style>
         body, html{
-            background-color:#000;
+            background-color:#fff;
             margin: 0px;
             height: 100%;
             overflow-x: hidden;
@@ -102,9 +102,10 @@
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
+    <script src="js/elements/canvasElements/CVContextData.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVBaseElement.js" data-light-skip="true"></script>
-    <script src="js/elements/canvasElements/CVCompElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVImageElement.js" data-light-skip="true"></script>
+    <script src="js/elements/canvasElements/CVCompElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVMaskElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVShapeElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVSolidElement.js" data-light-skip="true"></script>
@@ -155,8 +156,8 @@
     var animData = {
         container: elem,
         renderer: 'canvas',
-        loop: 5,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false
         },

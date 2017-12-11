@@ -286,7 +286,7 @@ IShapeElement.prototype.prepareFrame = function(num) {
     this.prepareProperties(num, this.isInRange);
 };
 
-IShapeElement.prototype.renderFrame = function(parentMatrix){
+IShapeElement.prototype.renderFrame = function() {
     if (this.hidden) {
         return;
     }
