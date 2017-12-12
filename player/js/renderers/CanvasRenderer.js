@@ -13,7 +13,8 @@ function CanvasRenderer(animationItem, config){
     }
     this.renderedFrame = -1;
     this.globalData = {
-        frameNum: -1
+        frameNum: -1,
+        renderConfig: this.renderConfig
     };
     var i, len = 15;
     this.contextData = new CVContextData();

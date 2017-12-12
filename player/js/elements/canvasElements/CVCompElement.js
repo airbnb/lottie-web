@@ -1,4 +1,4 @@
-function CVCompElement(data, comp,globalData){
+function CVCompElement(data, globalData, comp) {
     var compGlobalData = {};
     for(var s in globalData){
         if(globalData.hasOwnProperty(s)){
@@ -8,9 +8,12 @@ function CVCompElement(data, comp,globalData){
     compGlobalData.renderer = this;
     compGlobalData.compHeight = data.h;
     compGlobalData.compWidth = data.w;
+
     this.renderConfig = {
-        clearCanvas: true
+        clearCanvas: true,
+        hideOnTransparent: true
     };
+    compGlobalData.renderConfig = this.renderConfig;
     this.contextData = new CVContextData();
     this.completeLayers = false;
     this.transformMat = new Matrix();
@@ -118,8 +121,6 @@ CVCompElement.prototype.renderInnerContent = function() {
         this.reset();
     }
 };
-
-CVCompElement.prototype.renderFrame = CVImageElement.prototype.renderFrame;
 
 CVCompElement.prototype.setElements = function(elems){
     this.elements = elems;

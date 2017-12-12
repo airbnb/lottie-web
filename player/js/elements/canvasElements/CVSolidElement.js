@@ -12,5 +12,3 @@ CVSolidElement.prototype.renderInnerContent = function() {
     ctx.fillRect(0, 0, this.data.sw, this.data.sh);
     //
 };
-
-CVSolidElement.prototype.renderFrame = CVImageElement.prototype.renderFrame;

@@ -1,4 +1,4 @@
-function CVImageElement(data, comp,globalData){
+function CVImageElement(data, globalData, comp){
     this.failed = false;
     this.img = new Image();
     this.assetData = globalData.getAssetData(data.refId);
@@ -61,5 +61,3 @@ CVImageElement.prototype.destroy = function(){
     this.img = null;
     this.destroyBaseElement();
 };
-
-CVImageElement.prototype.renderFrame = IImageElement.prototype.renderFrame;

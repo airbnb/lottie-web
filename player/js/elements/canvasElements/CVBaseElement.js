@@ -41,15 +41,16 @@ CVBaseElement.prototype.showElement = function(){
     }
 };
 
-CVBaseElement.prototype.renderElement = function() {
+CVBaseElement.prototype.renderFrame = function() {
     if (this.hidden) {
         return;
     }
-    console.log(this.finalTransform.mat.props)
+    this.renderTransform();
+    this.renderRenderable();
     this.setBlendMode();
     this.globalData.renderer.save();
     this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
-    this.globalData.renderer.ctxOpacity(this.finalTransform.opacity);
+    this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
     this.renderInnerContent();
     this.globalData.renderer.restore();
     if(this.maskManager.hasMasks) {

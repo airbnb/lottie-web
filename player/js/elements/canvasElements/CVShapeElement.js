@@ -29,7 +29,6 @@ CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:fa
 CVShapeElement.prototype.dashResetter = [];
 
 CVShapeElement.prototype.createContent = function(){
-    console.log(this.shapesData)
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
 };
 
@@ -229,10 +228,6 @@ CVShapeElement.prototype.searchProcessedElement = IShapeElement.prototype.search
 CVShapeElement.prototype.addProcessedElement = IShapeElement.prototype.addProcessedElement;
 CVShapeElement.prototype.prepareFrame = IShapeElement.prototype.prepareFrame;
 
-CVShapeElement.prototype.renderFrame = function() {
-    this.renderElement();
-};
-
 CVShapeElement.prototype.renderInnerContent = function() {
 
     this.transformHelper.mat.reset();
@@ -296,8 +291,8 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
     }
     len = this.stylesList.length;
     var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type;
-    renderer.save();
-    renderer.ctxTransform(this.finalTransform.mat.props);
+    //renderer.save();
+    //renderer.ctxTransform(this.finalTransform.mat.props);
     for(i=0;i<len;i+=1){
         type = this.stylesList[i].type;
         if((type === 'st' && this.stylesList[i].wi === 0) || !this.stylesList[i].data._render){
@@ -352,7 +347,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
         }
         renderer.restore();
     }
-    renderer.restore();
+    //renderer.restore();
     if(this.firstFrame){
         this.firstFrame = false;
     }
