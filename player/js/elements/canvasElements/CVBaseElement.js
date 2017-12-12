@@ -1,4 +1,4 @@
-function CVBaseElement(data, comp,globalData){
+function CVBaseElement(data, comp, globalData){
 }
 
 CVBaseElement.prototype.createElements = function(){

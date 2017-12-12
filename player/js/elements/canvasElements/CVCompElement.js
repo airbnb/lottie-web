@@ -18,7 +18,7 @@ function CVCompElement(data, globalData, comp) {
     this.completeLayers = false;
     this.transformMat = new Matrix();
     var cv = document.createElement('canvas');
-    //document.body.appendChild(cv);
+    document.body.appendChild(cv);
     compGlobalData.canvasContext = cv.getContext('2d');
     this.canvasContext = compGlobalData.canvasContext;
     cv.width = data.w;
@@ -28,8 +28,8 @@ function CVCompElement(data, globalData, comp) {
     this.layers = data.layers;
     this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
-    this.initElement(data,globalData,comp);
-    this.parentGlobalData = this.globalData;
+    this.initElement(data,this.globalData,comp);
+    this.parentGlobalData = globalData;
     this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }
 
@@ -113,13 +113,13 @@ CVCompElement.prototype.renderInnerContent = function() {
     }
     this.parentGlobalData.renderer.save();
     this.parentGlobalData.renderer.ctxTransform(this.finalTransform.mat.props);
-    this.parentGlobalData.renderer.ctxOpacity(this.finalTransform.opacity);
+    this.parentGlobalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
     this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0,this.data.w,this.data.h);
     this.parentGlobalData.renderer.restore();
 
-    if(this.globalData.mdf){
+    /*if(this.globalData.mdf){
         this.reset();
-    }
+    }*/
 };
 
 CVCompElement.prototype.setElements = function(elems){

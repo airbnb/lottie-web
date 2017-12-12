@@ -231,7 +231,7 @@ CVShapeElement.prototype.prepareFrame = IShapeElement.prototype.prepareFrame;
 CVShapeElement.prototype.renderInnerContent = function() {
 
     this.transformHelper.mat.reset();
-    this.transformHelper.opacity = this.finalTransform.opacity;
+    this.transformHelper.opacity = this.finalTransform.mProp.o.v;
     this.transformHelper.matMdf = false;
     this.transformHelper.opMdf = this.finalTransform.opMdf;
     this.renderModifiers();

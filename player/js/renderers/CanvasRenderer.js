@@ -106,8 +106,6 @@ CanvasRenderer.prototype.save = function(actionFlag){
     }
     this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
     this.contextData.cArrPos += 1;
-    // console.log('save: ', this.contextData.cArrPos)
-    // console.log(new Error().stack)
 };
 
 CanvasRenderer.prototype.restore = function(actionFlag){
@@ -129,8 +127,6 @@ CanvasRenderer.prototype.restore = function(actionFlag){
     popped = this.contextData.savedOp[this.contextData.cArrPos];
     this.contextData.cO = popped;
     this.canvasContext.globalAlpha = popped;
-    // console.log('restore: ', this.contextData.cArrPos)
-    // console.log(new Error().stack)
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){
@@ -281,8 +277,8 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.canvasContext.closePath();
     this.canvasContext.clip();
 
-    //console.log('--------');
-    //console.log('NEW: ',num);
+    // console.log('--------');
+    // console.log('NEW: ',num);
     var i, len = this.layers.length;
     if(!this.completeLayers){
         this.checkLayers(num);
