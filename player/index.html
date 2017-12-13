@@ -164,6 +164,13 @@
         path: 'exports/catrim/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.addEventListener('DOMLoaded', function() {
+        // anim.setSpeed(0.1);
+         //anim.play();
+    })
+    window.addEventListener('resize', function(){
+        anim.resize();
+    })
     /*anim2 = lottie.loadAnimation({
         container: document.getElementById('lottie2'),
         renderer: 'svg',

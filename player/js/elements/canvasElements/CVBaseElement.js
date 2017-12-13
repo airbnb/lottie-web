@@ -11,6 +11,7 @@ CVBaseElement.prototype.initRendererElement = function(){
 CVBaseElement.prototype.createContainerElements = function(){
     this.canvasContext = this.globalData.canvasContext;
     this.effectsManager = new CVEffects(this);
+    this.transformingRenderer = this.transformingRenderer || this.globalData.renderer;
 };
 CVBaseElement.prototype.createContent = function(){};
 
@@ -48,11 +49,11 @@ CVBaseElement.prototype.renderFrame = function() {
     this.renderTransform();
     this.renderRenderable();
     this.setBlendMode();
-    this.globalData.renderer.save();
-    this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
-    this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
+    this.transformingRenderer.save();
+    this.transformingRenderer.ctxTransform(this.finalTransform.mat.props);
+    this.transformingRenderer.ctxOpacity(this.finalTransform.mProp.o.v);
     this.renderInnerContent();
-    this.globalData.renderer.restore();
+    this.transformingRenderer.restore();
     if(this.maskManager.hasMasks) {
         this.globalData.renderer.restore(true);
     }
