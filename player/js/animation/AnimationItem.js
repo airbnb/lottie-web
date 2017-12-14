@@ -429,7 +429,7 @@ AnimationItem.prototype.adjustSegment = function(arr){
         }
         this.totalFrames = arr[0] - arr[1] - 1;
         this.firstFrame = arr[1];
-        this.setCurrentRawFrameValue(this.totalFrames);
+        this.setCurrentRawFrameValue(this.totalFrames - 0.001);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
             if(this.playSpeed < 0){
@@ -440,7 +440,7 @@ AnimationItem.prototype.adjustSegment = function(arr){
         }
         this.totalFrames = arr[1] - arr[0] - 1;
         this.firstFrame = arr[0];
-        this.setCurrentRawFrameValue(0);
+        this.setCurrentRawFrameValue(0.001);
     }
     this.trigger('segmentStart');
 };
