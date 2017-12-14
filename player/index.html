@@ -156,12 +156,12 @@
     var animData = {
         container: elem,
         renderer: 'canvas',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/catrim/data.json'
+        path: 'exports/banner/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {

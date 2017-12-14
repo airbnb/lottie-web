@@ -1,8 +1,6 @@
 function ITextElement(){
 }
 
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ITextElement);
-
 ITextElement.prototype.initElement = function(data,globalData,comp){
     this.lettersChangedFlag = true;
     this.initFrame();
@@ -12,7 +10,7 @@ ITextElement.prototype.initElement = function(data,globalData,comp){
     this.initTransform(data, globalData, comp);
     this.initHierarchy();
     this.initRenderable();
-    this.initSvgElement();
+    this.initRendererElement();
     this.createContainerElements();
     this.addMasks();
     this.createContent();
