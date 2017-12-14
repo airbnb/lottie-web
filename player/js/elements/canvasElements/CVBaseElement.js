@@ -11,12 +11,11 @@ CVBaseElement.prototype.initRendererElement = function(){
 CVBaseElement.prototype.createContainerElements = function(){
     this.canvasContext = this.globalData.canvasContext;
     this.effectsManager = new CVEffects(this);
-    this.transformingRenderer = this.transformingRenderer || this.globalData.renderer;
 };
 CVBaseElement.prototype.createContent = function(){};
 
 CVBaseElement.prototype.setBlendMode = function(){
-    var globalData = this.data.ty === 0 ? this.parentGlobalData : this.globalData;
+    var globalData = this.globalData;
     if(globalData.blendMode !== this.data.bm) {
         globalData.blendMode = this.data.bm;
         var blendModeValue = this.getBlendMode();
@@ -49,11 +48,11 @@ CVBaseElement.prototype.renderFrame = function() {
     this.renderTransform();
     this.renderRenderable();
     this.setBlendMode();
-    this.transformingRenderer.save();
-    this.transformingRenderer.ctxTransform(this.finalTransform.mat.props);
-    this.transformingRenderer.ctxOpacity(this.finalTransform.mProp.o.v);
+    this.globalData.renderer.save();
+    this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
+    this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
     this.renderInnerContent();
-    this.transformingRenderer.restore();
+    this.globalData.renderer.restore();
     if(this.maskManager.hasMasks) {
         this.globalData.renderer.restore(true);
     }

@@ -140,13 +140,22 @@ SVGBaseElement.prototype.createContainerElements = function(){
 
 SVGBaseElement.prototype.setBlendMode = BaseElement.prototype.setBlendMode;
 
-SVGBaseElement.prototype.renderElement = function() {
+SVGBaseElement.prototype.renderFrame = function() {
     //If it is exported as hidden (data.hd === true) no need to render
     //If it is not visible no need to render
-
     if (this.data.hd || this.hidden) {
-        return false;
+        return;
     }
+    this.renderTransform();
+    this.renderRenderable();
+    this.renderElement();
+    this.renderInnerContent();
+    if (this.firstFrame) {
+        this.firstFrame = false;
+    }
+};
+
+SVGBaseElement.prototype.renderElement = function() {
 
     if (this.finalTransform.matMdf) {
         this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
@@ -179,14 +188,14 @@ SVGBaseElement.prototype.setMatte = function(id) {
     this.matteElement.setAttribute("mask", "url(" + locationHref + "#" + id + ")");
 };
 
-SVGBaseElement.prototype.hideElement = function(){
+SVGBaseElement.prototype.hide = function(){
     if (!this.hidden && (!this.isInRange || this.isTransparent)) {
         this.layerElement.style.display = 'none';
         this.hidden = true;
     }
 };
 
-SVGBaseElement.prototype.showElement = function(){
+SVGBaseElement.prototype.show = function(){
     if (this.isInRange && !this.isTransparent){
         if (!this.data.hd) {
             this.layerElement.style.display = 'block';

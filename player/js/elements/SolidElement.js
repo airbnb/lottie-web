@@ -19,7 +19,5 @@ ISolidElement.prototype.createContent = function(){
 
 ISolidElement.prototype.initElement = IImageElement.prototype.initElement;
 ISolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
-ISolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
+ISolidElement.prototype.renderInnerContent = IImageElement.prototype.renderInnerContent;
 ISolidElement.prototype.destroy = IImageElement.prototype.destroy;
-ISolidElement.prototype.hide = IImageElement.prototype.hide;
-ISolidElement.prototype.show = IImageElement.prototype.show;

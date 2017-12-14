@@ -286,14 +286,7 @@ IShapeElement.prototype.prepareFrame = function(num) {
     this.prepareProperties(num, this.isInRange);
 };
 
-IShapeElement.prototype.renderFrame = function() {
-    if (this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.renderElement();
-
+IShapeElement.prototype.renderInnerContent = function() {
     this.renderModifiers();
     var i, len = this.stylesList.length;
     for(i=0;i<len;i+=1){
@@ -310,13 +303,7 @@ IShapeElement.prototype.renderFrame = function() {
             }
         }
     }
-    if (this.firstFrame) {
-        this.firstFrame = false;
-    }
 };
-
-IShapeElement.prototype.hide = IShapeElement.prototype.hideElement;
-IShapeElement.prototype.show = IShapeElement.prototype.showElement;
 
 
 IShapeElement.prototype.renderShape = function(items, data, container) {

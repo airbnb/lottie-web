@@ -10,7 +10,7 @@ function ICompElement(data,globalData,comp){
     
 }
 
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ICompElement);
+extendPrototype2([BaseElement,TransformElement,SVGRenderer,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ICompElement);
 
 ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initFrame();
@@ -22,14 +22,12 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.createContainerElements();
     this.addMasks();
     if(this.data.xt || !globalData.progressiveLoad){
-        this.createContent();
+        this.buildAllItems();
     }
     this.hide();
 };
 
-ICompElement.prototype.show = ICompElement.prototype.showElement;
-
-ICompElement.prototype.hide = function(){
+/*ICompElement.prototype.hide = function(){
     if(!this.hidden){
         this.hideElement();
         var i,len = this.elements.length;
@@ -39,7 +37,7 @@ ICompElement.prototype.hide = function(){
             }
         }
     }
-};
+};*/
 
 ICompElement.prototype.prepareFrame = function(num){
     this.prepareRenderableFrame(num);
@@ -68,22 +66,12 @@ ICompElement.prototype.prepareFrame = function(num){
     }
 };
 
-ICompElement.prototype.renderFrame = function() {
-    if(this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.renderElement();
-    
+ICompElement.prototype.renderInnerContent = function() {
     var i,len = this.layers.length;
     for( i = 0; i < len; i += 1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
-    }
-    if (this.firstFrame) {
-        this.firstFrame = false;
     }
 };
 
@@ -108,19 +96,3 @@ ICompElement.prototype.destroy = function(){
     this.destroyElements();
     this.destroyBaseElement();
 };
-
-ICompElement.prototype.checkLayers = SVGRenderer.prototype.checkLayers;
-ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
-ICompElement.prototype.createContent = SVGRenderer.prototype.buildAllItems;
-ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
-ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
-ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;
-ICompElement.prototype.createComp = SVGRenderer.prototype.createComp;
-ICompElement.prototype.createSolid = SVGRenderer.prototype.createSolid;
-ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
-ICompElement.prototype.createNull = SVGRenderer.prototype.createNull;
-ICompElement.prototype.createText = SVGRenderer.prototype.createText;
-ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
-ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
-ICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
-ICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;

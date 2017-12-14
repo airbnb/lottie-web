@@ -24,26 +24,12 @@ IImageElement.prototype.createContent = function(){
 
 };
 
-IImageElement.prototype.hide = IImageElement.prototype.hideElement;
-IImageElement.prototype.show = IImageElement.prototype.showElement;
-
-
 IImageElement.prototype.prepareFrame = function(num) {
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
 };
 
-IImageElement.prototype.renderFrame = function() {
-    if(this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.renderElement();
-    if(this.firstFrame) {
-        this.firstFrame = false;
-    }
-};
+IImageElement.prototype.renderInnerContent = function() {};
 
 IImageElement.prototype.destroy = function(){
     this.innerElem =  null;

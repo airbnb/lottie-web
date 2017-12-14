@@ -145,7 +145,7 @@ SVGTextElement.prototype.buildNewText = function(){
 
 SVGTextElement.prototype.sourceRectAtTime = function(time){
     this.prepareFrame(this.comp.renderedFrame - this.data.st);
-    this.renderLetters();
+    this.renderInnerContent();
     if(this._sizeChanged){
         this._sizeChanged = false;
         var textBox = this.layerElement.getBBox();
@@ -159,7 +159,7 @@ SVGTextElement.prototype.sourceRectAtTime = function(time){
     return this.bbox;
 }
 
-SVGTextElement.prototype.renderLetters = function(){
+SVGTextElement.prototype.renderInnerContent = function(){
 
     if(!this.data.singleShape){
         this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
@@ -197,21 +197,3 @@ SVGTextElement.prototype.renderLetters = function(){
         }
     }
 }
-
-SVGTextElement.prototype.renderFrame = function(){
-    if (this.hidden) {
-        return;
-    }
-
-    this.renderRenderable();
-    this.renderTransform();
-    this.renderElement();
-    this.renderLetters();
-
-    if(this.firstFrame) {
-        this.firstFrame = false;
-    }
-}
-
-SVGTextElement.prototype.hide = SVGTextElement.prototype.hideElement;
-SVGTextElement.prototype.show = SVGTextElement.prototype.showElement;

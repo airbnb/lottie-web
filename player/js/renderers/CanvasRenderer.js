@@ -234,12 +234,12 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
-    var i, len = this.elements.length;
+    /*var i, len = this.elements.length;
     for(i=0;i<len;i+=1){
         if(this.elements[i] && this.elements[i].data.ty === 0){
             this.elements[i].resize(this.globalData.transformCanvas);
         }
-    }
+    }*/
     this.ctxTransform(this.transformCanvas.props);
 };
 
@@ -313,9 +313,9 @@ CanvasRenderer.prototype.buildItem = function(pos){
     var element = this.createItem(this.layers[pos], this,this.globalData);
     elements[pos] = element;
     element.initExpressions();
-    if(this.layers[pos].ty === 0){
+    /*if(this.layers[pos].ty === 0){
         element.resize(this.globalData.transformCanvas);
-    }
+    }*/
 };
 
 CanvasRenderer.prototype.checkPendingElements  = function(){

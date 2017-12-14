@@ -1,5 +1,5 @@
 function CVCompElement(data, globalData, comp) {
-    this.transformingRenderer = globalData.renderer;
+    /*this.transformingRenderer = globalData.renderer;
     var compGlobalData = {};
     for(var s in globalData){
         if(globalData.hasOwnProperty(s)){
@@ -15,30 +15,33 @@ function CVCompElement(data, globalData, comp) {
         hideOnTransparent: true
     };
     compGlobalData.renderConfig = this.renderConfig;
-    this.contextData = new CVContextData();
+    this.contextData = new CVContextData();*/
     this.completeLayers = false;
-    this.transformMat = new Matrix();
-    var cv = document.createElement('canvas');
+    //this.transformMat = new Matrix();
+    //var cv = document.createElement('canvas');
     //document.body.appendChild(cv);
-    compGlobalData.canvasContext = cv.getContext('2d');
-    this.canvasContext = compGlobalData.canvasContext;
-    cv.width = data.w;
+    //compGlobalData.canvasContext = cv.getContext('2d');
+    //compGlobalData = globalData;
+    //this.canvasContext = compGlobalData.canvasContext;
+    /*cv.width = data.w;
     cv.height = data.h;
-    this.canvas = cv;
-    this.globalData = compGlobalData;
+    this.canvas = cv;*/
+    //this.globalData = globalData;
     this.layers = data.layers;
     this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
-    this.initElement(data,this.globalData,comp);
-    this.parentGlobalData = globalData;
+    this.initElement(data, globalData, comp);
+    //this.parentGlobalData = globalData;
     this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }
 
 extendPrototype2([CanvasRenderer, BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement], CVCompElement);
-CVCompElement.prototype.prepareRootCompFrame = ICompElement.prototype.prepareFrame;
+CVCompElement.prototype.prepareFrame = ICompElement.prototype.prepareFrame;
 CVCompElement.prototype.initElement = ICompElement.prototype.initElement;
+CVCompElement.prototype.setElements = ICompElement.prototype.setElements;
+CVCompElement.prototype.getElements = ICompElement.prototype.getElements;
 
-CVCompElement.prototype.resize = function(transformCanvas){
+/*CVCompElement.prototype.resize = function(transformCanvas){
     this.reset();
     var maxScale = Math.max(transformCanvas.sx,transformCanvas.sy);
     this.canvas.width = this.data.w*maxScale;
@@ -57,30 +60,28 @@ CVCompElement.prototype.resize = function(transformCanvas){
         }
     }
     this.firstFrame = true;
-};
+};*/
 
-CVCompElement.prototype.prepareFrame = function(num){
+/*CVCompElement.prototype.prepareFrame = function(num){
     this.globalData.frameId = this.parentGlobalData.frameId;
     this.globalData.mdf = this.firstFrame;
     this.prepareRootCompFrame(num);
-};
+};*/
 
 CVCompElement.prototype.renderInnerContent = function() {
-    if(this.globalData.mdf){
-        if(!this.data.xt) {
-            this.canvasContext.clearRect(0, 0, this.data.w, this.data.h);
-        }
-        var i,len = this.layers.length;
-        for( i = len - 1; i >= 0; i -= 1 ){
-            if(this.completeLayers || this.elements[i]){
-                this.elements[i].renderFrame();
-            }
+    /*if(!this.data.xt) {
+        this.canvasContext.clearRect(0, 0, this.data.w, this.data.h);
+    }*/
+    var i,len = this.layers.length;
+    for( i = len - 1; i >= 0; i -= 1 ){
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].renderFrame();
         }
     }
     // this.parentGlobalData.renderer.save();
     // this.parentGlobalData.renderer.ctxTransform(this.finalTransform.mat.props);
     // this.parentGlobalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
-    this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0,this.data.w,this.data.h);
+    //this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0,this.data.w,this.data.h);
     // this.parentGlobalData.renderer.restore();
 
     /*if(this.globalData.mdf){
@@ -88,13 +89,6 @@ CVCompElement.prototype.renderInnerContent = function() {
     }*/
 };
 
-CVCompElement.prototype.setElements = function(elems){
-    this.elements = elems;
-};
-
-CVCompElement.prototype.getElements = function(){
-    return this.elements;
-};
 
 CVCompElement.prototype.destroy = function(){
     var i,len = this.layers.length;
