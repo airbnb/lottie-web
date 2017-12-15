@@ -1,12 +1,21 @@
 function HShapeElement(data,globalData,comp){
+    //List of drawable elements
     this.shapes = [];
+    // Full shape data
     this.shapesData = data.shapes;
+    //List of styles that will be applied to shapes
     this.stylesList = [];
-    this.itemsData = [];
-    this.prevViewData = [];
+    //List of modifiers that will be applied to shapes
     this.shapeModifiers = [];
+    //List of items in shape tree
+    this.itemsData = [];
+    //List of items in previous shape tree
     this.processedElements = [];
-    this._parent.constructor.call(this,data,globalData,comp);
+    this.shapesContainer = createNS('g');
+    this.initElement(data,globalData,comp);
+    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
+    // List of elements that have been created
+    this.prevViewData = [];
     this.currentBBox = {
         x:999999,
         y: -999999,
@@ -14,58 +23,33 @@ function HShapeElement(data,globalData,comp){
         w: 0
     };
 }
-createElement(HBaseElement, HShapeElement);
-var parent = HShapeElement.prototype._parent;
-extendPrototype(IShapeElement, HShapeElement);
-HShapeElement.prototype._parent = parent;
-HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderFrame;
+extendPrototype2([BaseElement,TransformElement,HSolidElement,IShapeElement,HBaseElement,HierarchyElement,FrameElement,RenderableElement], HShapeElement);
+HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderInnerContent;
 
-HShapeElement.prototype.createElements = function(){
-    var parent = document.createElement('div');
-    styleDiv(parent);
-    var cont = createNS('svg');
-    styleDiv(cont);
-    var size = this.comp.data ? this.comp.data : this.globalData.compSize;
-    cont.setAttribute('width',size.w);
-    cont.setAttribute('height',size.h);
-    if(this.data.hasMask){
-        var g = createNS('g');
-        parent.appendChild(cont);
-        cont.appendChild(g);
-        this.maskedElement = g;
-        this.layerElement = g;
-        this.shapesContainer = g;
-    }else{
-        parent.appendChild(cont);
-        this.layerElement = cont;
-        this.shapesContainer = createNS('g');
+HShapeElement.prototype.createContent = function(){
+    var cont;
+    if (this.data.hasMask) {
         this.layerElement.appendChild(this.shapesContainer);
-    }
-    if(!this.data.hd){
-        this.baseElement = parent;
-    }
-    this.innerElem = parent;
-    if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
+        cont = this.baseElement;
+    } else {
+        cont = createNS('svg');
+        var size = this.comp.data ? this.comp.data : this.globalData.compSize;
+        cont.setAttribute('width',size.w);
+        cont.setAttribute('height',size.h);
+        cont.appendChild(this.shapesContainer);
+        this.layerElement.appendChild(cont);
+        console.log(this.layerElement)
     }
 
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties,0, [], true);
-    this.buildExpressionInterface();
-    this.layerElement = parent;
-    this.transformedElement = parent;
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,this.dynamicProperties,0, [], true);
     this.shapeCont = cont;
-    if(this.data.bm !== 0){
-        this.setBlendMode();
-    }
-    this.checkParenting();
 };
 
-HShapeElement.prototype.renderFrame = function(parentMatrix){
-    var firstFrame = this.firstFrame;
+HShapeElement.prototype.renderInnerContent = function() {
     this._renderShapeFrame();
 
     //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses globalData.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(this.isVisible && firstFrame){
+    if(this.isVisible && this.firstFrame){
         var boundingBox = this.shapeCont.getBBox();
         var changed = false;
         if(this.currentBBox.w !== boundingBox.width){

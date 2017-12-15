@@ -1,7 +1,7 @@
 function ISolidElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ISolidElement);
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement, IImageElement], ISolidElement);
 
 ISolidElement.prototype.createContent = function(){
 
@@ -13,11 +13,4 @@ ISolidElement.prototype.createContent = function(){
     rect.setAttribute('height',this.data.sh);
     rect.setAttribute('fill',this.data.sc);
     this.layerElement.appendChild(rect);
-    this.innerElem = rect;
-    
 };
-
-ISolidElement.prototype.initElement = IImageElement.prototype.initElement;
-ISolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
-ISolidElement.prototype.renderInnerContent = IImageElement.prototype.renderInnerContent;
-ISolidElement.prototype.destroy = IImageElement.prototype.destroy;

@@ -67,42 +67,44 @@ HybridRenderer.prototype.createShape = function (data) {
     if(!this.supports3d){
         return new IShapeElement(data, this.layerElement,this.globalData,this);
     }
-    return new HShapeElement(data, this.layerElement,this.globalData,this);
+    return new HShapeElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createText = function (data) {
     if(!this.supports3d){
         return new SVGTextElement(data, this.layerElement,this.globalData,this);
     }
-    return new HTextElement(data, this.layerElement,this.globalData,this);
+    return new HTextElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createCamera = function (data) {
-    this.camera = new HCameraElement(data, this.layerElement,this.globalData,this);
+    this.camera = new HCameraElement(data, this.globalData, this);
     return this.camera;
 };
 
 HybridRenderer.prototype.createImage = function (data) {
     if(!this.supports3d){
-        return new IImageElement(data, this.layerElement,this.globalData,this);
+        return new IImageElement(data, this.globalData, this);
     }
-    return new HImageElement(data, this.layerElement,this.globalData,this);
+    return new HImageElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createComp = function (data) {
     if(!this.supports3d){
-        return new ICompElement(data, this.layerElement,this.globalData,this);
+        return new ICompElement(data, this.globalData, this);
     }
-    return new HCompElement(data, this.layerElement,this.globalData,this);
+    return new HCompElement(data, this.globalData, this);
 
 };
 
 HybridRenderer.prototype.createSolid = function (data) {
     if(!this.supports3d){
-        return new ISolidElement(data, this.layerElement,this.globalData,this);
+        return new ISolidElement(data, this.globalData, this);
     }
-    return new HSolidElement(data, this.layerElement,this.globalData,this);
+    return new HSolidElement(data, this.globalData, this);
 };
+
+HybridRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
 HybridRenderer.prototype.getThreeDContainerByPos = function(pos){
     var i = 0, len = this.threeDElements.length;
