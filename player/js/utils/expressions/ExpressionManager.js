@@ -360,7 +360,7 @@ var ExpressionManager = (function(){
         //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
         //eval(fnStr);
 
-        var fn = eval('[function(){' + val+';if($bm_rt.propType==="shape"){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
+        var fn = eval('[function ___binded(){' + val+';if($bm_rt.propType==="shape"){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
         var bindedFn = fn.bind(this);
         var numKeys = property.kf ? data.k.length : 0;
 

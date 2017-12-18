@@ -30,7 +30,7 @@ HShapeElement.prototype.createContent = function(){
     var cont;
     if (this.data.hasMask) {
         this.layerElement.appendChild(this.shapesContainer);
-        cont = this.baseElement;
+        cont = this.svgElement;
     } else {
         cont = createNS('svg');
         var size = this.comp.data ? this.comp.data : this.globalData.compSize;
@@ -49,7 +49,7 @@ HShapeElement.prototype.renderInnerContent = function() {
     this._renderShapeFrame();
 
     //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses globalData.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(this.isVisible && this.firstFrame){
+    if(!this.hidden && this.firstFrame){
         var boundingBox = this.shapeCont.getBBox();
         var changed = false;
         if(this.currentBBox.w !== boundingBox.width){

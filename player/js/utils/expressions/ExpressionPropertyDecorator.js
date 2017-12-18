@@ -8,7 +8,7 @@
         if(!this.k || !this.keyframes){
             return this.pv;
         }
-        type = type.toLowerCase();
+        type = type ? type.toLowerCase() : '';
         var currentFrame = this.comp.renderedFrame;
         var keyframes = this.keyframes;
         var lastKeyFrame = keyframes[keyframes.length - 1].t;
@@ -71,7 +71,7 @@
         if(!this.k){
             return this.pv;
         }
-        type = type.toLowerCase();
+        type = type ? type.toLowerCase() : '';
         var currentFrame = this.comp.renderedFrame;
         var keyframes = this.keyframes;
         var firstKeyFrame = keyframes[0].t;

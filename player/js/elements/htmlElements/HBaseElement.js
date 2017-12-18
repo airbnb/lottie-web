@@ -7,12 +7,13 @@ HBaseElement.prototype.checkBlendMode = function(){
 HBaseElement.prototype.getBaseElement = SVGBaseElement.prototype.getBaseElement;
 
 HBaseElement.prototype.initRendererElement = function(){
+    this.baseElement = document.createElement('div');
     if(this.data.hasMask) {
-        this.baseElement = createNS('svg');
+        this.svgElement = createNS('svg');
         this.layerElement = createNS('g');
-        this.baseElement.appendChild(this.layerElement);
+        this.svgElement.appendChild(this.layerElement);
+        this.baseElement.appendChild(this.svgElement);
     } else {
-        this.baseElement = document.createElement('div');
         this.layerElement = this.baseElement;
     }
     styleDiv(this.baseElement);
@@ -33,6 +34,7 @@ HBaseElement.prototype.createContainerElements = function(){
 
 HBaseElement.prototype.renderElement = function() {
     if(this.finalTransform.matMdf){
+        console.log(this.transformedElement)
         this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
     }
     if(this.finalTransform.opMdf){
