@@ -480,6 +480,7 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
+    //this.segments.push([this.animationData.ip,this.animationData.op)]);
     this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
     if(forceFlag){
         this.adjustSegment(this.segments.shift());
