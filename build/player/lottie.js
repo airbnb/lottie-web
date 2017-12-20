@@ -8220,6 +8220,7 @@ var animationManager = (function(){
     var len = 0;
     var idled = true;
     var playingAnimationsNum = 0;
+    var _stopped = true;
 
     function removeElement(ev){
         var i = 0;
@@ -8310,9 +8311,7 @@ var animationManager = (function(){
             registeredAnimations[i].animation.moveFrame(value,animation);
         }
     }
-
     function resume(nowTime) {
-
         var elapsedTime = nowTime - initTime;
         var i;
         for(i=0;i<len;i+=1){
@@ -8321,6 +8320,8 @@ var animationManager = (function(){
         initTime = nowTime;
         if(!idled) {
             window.requestAnimationFrame(resume);
+        } else {
+            _stopped = true;
         }
     }
 
@@ -8403,7 +8404,10 @@ var animationManager = (function(){
     function activate(){
         if(idled){
             idled = false;
-            window.requestAnimationFrame(first);
+            if(_stopped) {
+                window.requestAnimationFrame(first);
+                _stopped = false;
+            }
         }
     }
 
@@ -8567,7 +8571,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
 AnimationItem.prototype.includeLayers = function(data) {
     if(data.op > this.animationData.op){
         this.animationData.op = data.op;
-        this.totalFrames = Math.floor(data.op - this.animationData.ip) - 1;
+        this.totalFrames = Math.floor(data.op - this.animationData.ip);
         this.animationData.tf = this.totalFrames;
     }
     var layers = this.animationData.layers;
@@ -8653,7 +8657,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     //animData.w = Math.round(animData.w/blitter);
     //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip) - 1;
+    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
     this.renderer.configAnimation(animData);
     if(!animData.assets){
@@ -8857,9 +8861,9 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(-1);
             }
         }
-        this.totalFrames = arr[0] - arr[1] - 1;
+        this.totalFrames = arr[0] - arr[1];
         this.firstFrame = arr[1];
-        this.setCurrentRawFrameValue(this.totalFrames);
+        this.setCurrentRawFrameValue(this.totalFrames - 0.001);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
             if(this.playSpeed < 0){
@@ -8868,9 +8872,9 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(1);
             }
         }
-        this.totalFrames = arr[1] - arr[0] - 1;
+        this.totalFrames = arr[1] - arr[0];
         this.firstFrame = arr[0];
-        this.setCurrentRawFrameValue(0);
+        this.setCurrentRawFrameValue(0.001);
     }
     this.trigger('segmentStart');
 };
@@ -8885,7 +8889,7 @@ AnimationItem.prototype.setSegment = function (init,end) {
     }
 
     this.firstFrame = init;
-    this.totalFrames = end - init - 1;
+    this.totalFrames = end - init;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
@@ -8910,7 +8914,8 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
-    this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
+    this.segments.push([this.animationData.ip,this.animationData.op]);
+    //this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
     if(forceFlag){
         this.adjustSegment(this.segments.shift());
     }
@@ -10607,7 +10612,7 @@ CVShapeElement.prototype.destroy = function(){
     this.globalData = null;
     this.canvasContext = null;
     this.stylesList.length = 0;
-    this.itemData.length = 0;
+    this.itemsData.length = 0;
     this._parent.destroy.call(this._parent);
 };
 
@@ -13337,7 +13342,7 @@ var ShapeExpressionInterface = (function(){
                 if(shape.r.ix === value){
                     return interfaceFunction.roundness;
                 }
-                if(shape.s.ix === value || value === 'Size'){
+                if(shape.s.ix === value || value === 'Size' || value === 'ADBE Vector Rect Size'){
                     return interfaceFunction.size;
                 }
 
@@ -14227,7 +14232,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.0.5';
+    lottiejs.version = '5.0.6';
 
     function checkReady() {
         if (document.readyState === "complete") {

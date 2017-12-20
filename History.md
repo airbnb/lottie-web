@@ -1,3 +1,17 @@
+## V 5.0.6
+- FIX: totalFrames and resetFrames
+- FIX: canvas destroy method
+- FIX: expressions rect size support
+- FIX: multiple requestAnimationFrame fix
+- FIX: variable not being declared
+- FEATURE: support for custom viewBox
+
+## V 5.0.5
+- FIX: totalFrames now ends at previous frame to respect AE's last frame
+- FIX: duplicate requestAnimationFrame call
+- CHANGE: removed M0,0 added to every path. Should fix chrome issues.
+- REFACTOR: small changes on AnimationItem
+
 ## V 5.0.4
 - FIX: if initial value for multidimensional properties was 0 and not in start point, it wasn't getting rendered
 - EXPRESSIONS: support for "anchor_point"

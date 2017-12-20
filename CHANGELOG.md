@@ -1,3 +1,11 @@
+## V 5.0.6
+- FIX: totalFrames and resetFrames
+- FIX: canvas destroy method
+- FIX: expressions rect size support
+- FIX: multiple requestAnimationFrame fix
+- FIX: variable not being declared
+- FEATURE: support for custom viewBox
+
 ## V 5.0.5
 - FIX: totalFrames now ends at previous frame to respect AE's last frame
 - FIX: duplicate requestAnimationFrame call
