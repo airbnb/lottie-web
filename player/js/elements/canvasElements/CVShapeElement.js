@@ -440,7 +440,7 @@ CVShapeElement.prototype.destroy = function(){
     this.globalData = null;
     this.canvasContext = null;
     this.stylesList.length = 0;
-    this.itemData.length = 0;
+    this.itemsData.length = 0;
     this._parent.destroy.call(this._parent);
 };
 
