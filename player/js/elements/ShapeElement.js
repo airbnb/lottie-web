@@ -488,7 +488,7 @@ IShapeElement.prototype.buildShapeString = function(pathNodes, length, closed, m
 };
 
 IShapeElement.prototype.renderPath = function(pathData,itemData){
-    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.elements.length;
+    var len, i, j, jLen,pathStringTransformed,redraw,pathNodes,l, mat, lLen = itemData.elements.length;
     var lvl = itemData.lvl;
     if(!pathData._render){
         return;
