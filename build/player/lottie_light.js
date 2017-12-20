@@ -5580,6 +5580,7 @@ function SVGRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false,
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
         viewBoxOnly: (config && config.viewBoxOnly) || false,
+        viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || ''
     };
     this.globalData.renderConfig = this.renderConfig;
@@ -5620,7 +5621,12 @@ SVGRenderer.prototype.createSolid = function (data) {
 SVGRenderer.prototype.configAnimation = function(animData){
     this.layerElement = createNS('svg');
     this.layerElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    if(this.renderConfig.viewBoxSize) {
+        this.layerElement.setAttribute('viewBox',this.renderConfig.viewBoxSize);
+    } else {
+        this.layerElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    }
+
     if(!this.renderConfig.viewBoxOnly) {
         this.layerElement.setAttribute('width',animData.w);
         this.layerElement.setAttribute('height',animData.h);
