@@ -595,7 +595,7 @@ var ShapeExpressionInterface = (function(){
                 if(shape.r.ix === value){
                     return interfaceFunction.roundness;
                 }
-                if(shape.s.ix === value || value === 'Size'){
+                if(shape.s.ix === value || value === 'Size' || value === 'ADBE Vector Rect Size'){
                     return interfaceFunction.size;
                 }
 
