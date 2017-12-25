@@ -1,4 +1,5 @@
 var ExpressionManager = (function(){
+    "use strict";
     var ob = {};
     var Math = BMMath;
     var window = null;

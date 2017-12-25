@@ -160,16 +160,16 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false
         },
-        path: 'exports/adrock/data.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
         anim.setSubframe(false);
-        setTimeout(function(){anim.play()}, 0);
+        //setTimeout(function(){anim.play()}, 0);
     })
     window.addEventListener('resize', function(){
         anim.resize();
