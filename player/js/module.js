@@ -10,6 +10,7 @@
         root.bodymovin = root.lottie;
     }
 }((window || {}), function(window) {
+    "use strict";
     /*<%= contents %>*/
     var lottiejs = {};
 

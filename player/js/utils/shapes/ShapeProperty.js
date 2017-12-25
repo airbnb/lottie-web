@@ -169,63 +169,40 @@ var ShapePropertyFactory = (function(){
     }
     KeyframedShapeProperty.prototype.getValue = interpolateShapeCurrentTime;
     KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
-3
+
     var EllShapeProperty = (function(){
 
         var cPoint = roundCorner;
 
         function convertEllToPath(){
             var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
+            var _cw = this.d !== 3;
+            var _v = this.v;
             if(this.d !== 3){
-                this.v.v[0][0] = p0;
-                this.v.v[0][1] = p1-s1;
-                this.v.v[1][0] = p0 + s0;
-                this.v.v[1][1] = p1;
-                this.v.v[2][0] = p0;
-                this.v.v[2][1] = p1+s1;
-                this.v.v[3][0] = p0 - s0;
-                this.v.v[3][1] = p1;
-                this.v.i[0][0] = p0 - s0*cPoint;
-                this.v.i[0][1] = p1 - s1;
-                this.v.i[1][0] = p0 + s0;
-                this.v.i[1][1] = p1 - s1*cPoint;
-                this.v.i[2][0] = p0 + s0*cPoint;
-                this.v.i[2][1] = p1 + s1;
-                this.v.i[3][0] = p0 - s0;
-                this.v.i[3][1] = p1 + s1*cPoint;
-                this.v.o[0][0] = p0 + s0*cPoint;
-                this.v.o[0][1] = p1 - s1;
-                this.v.o[1][0] = p0 + s0;
-                this.v.o[1][1] = p1 + s1*cPoint;
-                this.v.o[2][0] = p0 - s0*cPoint;
-                this.v.o[2][1] = p1 + s1;
-                this.v.o[3][0] = p0 - s0;
-                this.v.o[3][1] = p1 - s1*cPoint;
-            }else{
-                this.v.v[0][0] = p0;
-                this.v.v[0][1] = p1-s1;
-                this.v.v[1][0] = p0 - s0;
-                this.v.v[1][1] = p1;
-                this.v.v[2][0] = p0;
-                this.v.v[2][1] = p1+s1;
-                this.v.v[3][0] = p0 + s0;
-                this.v.v[3][1] = p1;
-                this.v.i[0][0] = p0 + s0*cPoint;
-                this.v.i[0][1] = p1 - s1;
-                this.v.i[1][0] = p0 - s0;
-                this.v.i[1][1] = p1 - s1*cPoint;
-                this.v.i[2][0] = p0 - s0*cPoint;
-                this.v.i[2][1] = p1 + s1;
-                this.v.i[3][0] = p0 + s0;
-                this.v.i[3][1] = p1 + s1*cPoint;
-                this.v.o[0][0] = p0 - s0*cPoint;
-                this.v.o[0][1] = p1 - s1;
-                this.v.o[1][0] = p0 - s0;
-                this.v.o[1][1] = p1 + s1*cPoint;
-                this.v.o[2][0] = p0 + s0*cPoint;
-                this.v.o[2][1] = p1 + s1;
-                this.v.o[3][0] = p0 + s0;
-                this.v.o[3][1] = p1 - s1*cPoint;
+                _v.v[0][0] = p0;
+                _v.v[0][1] = p1 - s1;
+                _v.v[1][0] = _cw ? p0 + s0 : p0 - s0;
+                _v.v[1][1] = p1;
+                _v.v[2][0] = p0;
+                _v.v[2][1] = p1 + s1;
+                _v.v[3][0] = _cw ? p0 - s0 : p0 + s0;
+                _v.v[3][1] = p1;
+                _v.i[0][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
+                _v.i[0][1] = p1 - s1;
+                _v.i[1][0] = _cw ? p0 + s0 : p0 - s0;
+                _v.i[1][1] = p1 - s1 * cPoint;
+                _v.i[2][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
+                _v.i[2][1] = p1 + s1;
+                _v.i[3][0] = _cw ? p0 - s0 : p0 + s0;
+                _v.i[3][1] = p1 + s1 * cPoint;
+                _v.o[0][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
+                _v.o[0][1] = p1 - s1;
+                _v.o[1][0] = _cw ? p0 + s0 : p0 - s0;
+                _v.o[1][1] = p1 + s1 * cPoint;
+                _v.o[2][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
+                _v.o[2][1] = p1 + s1;
+                _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
+                _v.o[3][1] = p1 - s1 * cPoint;
             }
         }
 
