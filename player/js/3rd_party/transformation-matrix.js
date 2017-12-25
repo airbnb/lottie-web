@@ -235,6 +235,17 @@ var Matrix = (function(){
         return this._identity;
     }
 
+    function equals(matr){
+        var i = 0;
+        while (i < 16) {
+            if(matr.props[i] !== this.props[i]) {
+                return false;
+            }
+            i+=1;
+        }
+        return true;
+    }
+
     function clone(matr){
         var i;
         for(i=0;i<16;i+=1){
@@ -356,6 +367,7 @@ var Matrix = (function(){
         this.to2dCSS = to2dCSS;
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
+        this.equals = equals;
         this.inversePoints = inversePoints;
         this.inversePoint = inversePoint;
         this._t = this.transform;

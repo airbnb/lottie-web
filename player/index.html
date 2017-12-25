@@ -76,6 +76,7 @@
     <script src="js/elements/helpers/FrameElement.js"></script>
     <script src="js/elements/helpers/TransformElement.js"></script>
     <script src="js/elements/helpers/RenderableElement.js"></script>
+    <script src="js/elements/helpers/RenderableDOMElement.js"></script>
     <script src="js/elements/helpers/shapes/ProcessedElement.js"></script>
     <script src="js/elements/helpers/shapes/SVGStyleData.js"></script>
     <script src="js/elements/helpers/shapes/SVGShapeData.js"></script>
@@ -90,6 +91,10 @@
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
     <script src="js/elements/ShapeElement.js"></script>
     <script src="js/elements/TextElement.js"></script>
+    <script src="js/elements/CompElement.js"></script>
+    <script src="js/elements/ImageElement.js"></script>
+    <script src="js/elements/SolidElement.js"></script>
+    <script src="js/elements/svgElements/SVGCompElement.js"></script>
     <script src="js/elements/svgElements/SVGTextElement.js"></script>
     <script src="js/elements/svgElements/effects/SVGTintEffect.js"></script>
     <script src="js/elements/svgElements/effects/SVGFillFilter.js"></script>
@@ -99,9 +104,6 @@
     <script src="js/elements/svgElements/effects/SVGDropShadowEffect.js"></script>
     <script src="js/elements/svgElements/effects/SVGMatte3Effect.js"></script>
     <script src="js/elements/svgElements/SVGEffects.js"></script>
-    <script src="js/elements/CompElement.js"></script>
-    <script src="js/elements/ImageElement.js"></script>
-    <script src="js/elements/SolidElement.js"></script>
     <script src="js/elements/canvasElements/CVContextData.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVBaseElement.js" data-light-skip="true"></script>
     <script src="js/elements/canvasElements/CVImageElement.js" data-light-skip="true"></script>
@@ -140,7 +142,7 @@
     <!-- end Expressions -->
     <!-- endbuild -->
     <script src="js/module.js" data-skip="true"></script>
-    <!-- <script src="bodymovin.js"></script> -->
+    <!-- <script src="lottie.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
 
 </head>
@@ -156,9 +158,9 @@
     //var elem = createNS('aa')
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
+        renderer: 'html',
+        loop: false,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false
         },
@@ -166,8 +168,8 @@
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
-        // anim.setSpeed(0.1);
-         //anim.play();
+        anim.setSubframe(false);
+        setTimeout(function(){anim.play()}, 0);
     })
     window.addEventListener('resize', function(){
         anim.resize();

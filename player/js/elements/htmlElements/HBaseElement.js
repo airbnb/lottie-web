@@ -11,6 +11,7 @@ HBaseElement.prototype.initRendererElement = function(){
     if(this.data.hasMask) {
         this.svgElement = createNS('svg');
         this.layerElement = createNS('g');
+        this.maskedElement = this.layerElement;
         this.svgElement.appendChild(this.layerElement);
         this.baseElement.appendChild(this.svgElement);
     } else {
@@ -34,7 +35,6 @@ HBaseElement.prototype.createContainerElements = function(){
 
 HBaseElement.prototype.renderElement = function() {
     if(this.finalTransform.matMdf){
-        console.log(this.transformedElement)
         this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
     }
     if(this.finalTransform.opMdf){
@@ -74,9 +74,6 @@ HBaseElement.prototype.getDomElement = function(){
 };
 HBaseElement.prototype.addMasks = function(){
     this.maskManager = new MaskElement(this.data, this, this.globalData);
-};
-
-HBaseElement.prototype.hide = function(){
 };
 
 HBaseElement.prototype.setMatte = function(){

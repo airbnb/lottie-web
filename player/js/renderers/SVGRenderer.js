@@ -16,6 +16,7 @@ function SVGRenderer(animationItem, config){
         className: (config && config.className) || ''
     };
     this.globalData = {
+        mdf: false,
         frameNum: -1,
         defs: defs,
         frameId: 0,
@@ -53,7 +54,7 @@ SVGRenderer.prototype.createImage = function (data) {
 };
 
 SVGRenderer.prototype.createComp = function (data) {
-    return new ICompElement(data,this.globalData,this);
+    return new SVGCompElement(data,this.globalData,this);
 
 };
 

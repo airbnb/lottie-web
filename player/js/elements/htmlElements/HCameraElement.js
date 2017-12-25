@@ -1,5 +1,6 @@
 function HCameraElement(data,globalData,comp){
-    this._parent.constructor.call(this,data,globalData,comp);
+    this.initFrame();
+    this.initBaseData(data,globalData,comp);
     var getProp = PropertyFactory.getProp;
     this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
     if(data.ks.p.s){
@@ -25,8 +26,10 @@ function HCameraElement(data,globalData,comp){
     this.ry = getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
     this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
     this.mat = new Matrix();
+    this._prevMat = new Matrix();
+    this.firstFrame = true;
 }
-createElement(HBaseElement, HCameraElement);
+extendPrototype2([BaseElement, FrameElement], HCameraElement);
 
 HCameraElement.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;
@@ -85,15 +88,27 @@ HCameraElement.prototype.renderFrame = function(){
                 this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
             }
         }
-        len = this.comp.threeDElements.length;
-        var comp;
-        for(i=0;i<len;i+=1){
-            comp = this.comp.threeDElements[i];
-            comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+        if(!this._prevMat.equals(this.mat)) {
+            len = this.comp.threeDElements.length;
+            var comp;
+            for(i=0;i<len;i+=1){
+                comp = this.comp.threeDElements[i];
+                comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+            }
+            this.mat.clone(this._prevMat);
         }
+    } else {
+
+        //console.log('NO ENTRO')
     }
     this.firstFrame = false;
 };
 
+HCameraElement.prototype.prepareFrame = function(num) {
+    this.prepareProperties(num, true);
+};
+
 HCameraElement.prototype.destroy = function(){
 };
+HCameraElement.prototype.initExpressions = function(){};
+HCameraElement.prototype.getBaseElement = function(){return null};

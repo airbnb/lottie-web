@@ -264,6 +264,12 @@ var PropertyFactory = (function(){
                     data.k[i].to = null;
                     data.k[i].ti = null;
                 }
+                if(s[0] === e[0] && s[1] === e[1] && to[0] === 0 && to[1] === 0 && ti[0] === 0 && ti[1] === 0) {
+                    if(s.length === 2 || (s[2] === e[2] && to[2] === 0 && ti[2] === 0)) {
+                        data.k[i].to = null;
+                        data.k[i].ti = null;
+                    }
+                }
             }
         }
         this.keyframes = data.k;

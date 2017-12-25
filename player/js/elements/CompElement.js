@@ -1,16 +1,6 @@
-function ICompElement(data,globalData,comp){
-    this.layers = data.layers;
-    this.supports3d = true;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    //this.layerElement = createNS('g');
-    this.initElement(data,globalData,comp);
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
-    
-}
+function ICompElement(){}
 
-extendPrototype2([BaseElement,TransformElement,SVGRenderer,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], ICompElement);
+extendPrototype2([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
 
 ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initFrame();

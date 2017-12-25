@@ -17,20 +17,7 @@ function IShapeElement(data,globalData,comp){
     this.prevViewData = [];
 }
 
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IShapeElement);
-
-IShapeElement.prototype.initElement = function(data,globalData,comp) {
-    this.initFrame();
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initHierarchy();
-    this.initRenderable();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    this.createContent();
-    this.hide();
-}
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IShapeElement);
 
 IShapeElement.prototype.initSecondaryElement = function() {
 }

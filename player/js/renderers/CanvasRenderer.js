@@ -16,6 +16,7 @@ function CanvasRenderer(animationItem, config){
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1,
+        mdf: false,
         renderConfig: this.renderConfig
     };
     var i, len = 15;

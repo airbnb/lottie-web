@@ -16,6 +16,9 @@ var fs = require('fs');
 var htmlreplace = require('gulp-html-replace');
 var eventstream = require("event-stream");
 var jslint = require('gulp-jslint');
+var through = require('through2');
+var replace = require('gulp-replace');
+var batch_replace = require('gulp-batch-replace');
 
 var bm_version = '5.0.5';
 
@@ -25,6 +28,12 @@ var files = [
         path: ''
     }
 ]
+
+function customMinify(value) {
+    console.log(value);
+    return value;
+}
+
 var moduleWrap = fs.readFileSync("player/js/module.js", "utf8");
 moduleWrap = moduleWrap.replace('/*<%= contents %>*/','<%= contents %>');
 moduleWrap = moduleWrap.replace('[[BM_VERSION]]',bm_version);
@@ -120,6 +129,10 @@ gulp.task('buildSources', function() {
     return buildVersion(['data-skip']);
 });
 
+gulp.task('buildSources', function() {
+    return buildVersion(['data-skip']);
+});
+
 gulp.task('buildLightSources', function() {
     return buildVersion(['data-skip','data-light-skip']);
 });
@@ -128,6 +141,7 @@ gulp.task('buildLight',['buildLightSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('lottie_light.js'))
         .pipe(wrap(moduleWrap))
+        .pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -136,6 +150,7 @@ gulp.task('buildLightMin',['buildLightSources'], function() {
         .pipe(concat('lottie_light.min.js'))
         .pipe(wrap(moduleWrap))
         .pipe(uglify(uglifyOptions))
+        .pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -144,6 +159,7 @@ gulp.task('buildFullMin',['buildSources'], function() {
         .pipe(concat('lottie.min.js'))
         .pipe(wrap(moduleWrap))
         .pipe(uglify(uglifyOptions))
+        .pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -151,8 +167,63 @@ gulp.task('buildFull',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('lottie.js'))
         .pipe(wrap(moduleWrap))
+        .pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
 gulp.task('buildAll',['buildLightMin','buildLight','buildFullMin','buildFull'], function() {
+});
+
+var replacingMap = [
+    ['AnimationItem', '_a'],
+    ['HBaseElement', '_b'],
+    ['CVBaseElement', '_c'],
+    ['SVGBaseElement', '_d'],
+    ['BaseElement', '_e'],
+    ['IShapeElement', '_f'],
+    ['ICompElement', '_g'],
+    ['IImageElement', '_h'],
+    ['NullElement', '_i'],
+    ['ISolidElement', '_j'],
+    ['ITextElement', '_k'],
+    ['CVBaseElement', '_l'],
+    ['CVCompElement', '_m'],
+    ['CVContextData', '_n'],
+    ['CVEffects', '_o'],
+    ['CVImageElement', '_p'],
+    ['CVMaskElement', '_q'],
+    ['CVShapeElement', '_r'],
+    ['CVSolidElement', '_s'],
+    ['CVTextElement', '_t'],
+    ['HBaseElement', '_u'],
+    ['HCameraElement', '_v'],
+    ['HCompElement', '_w'],
+    ['HEffects', '_x'],
+    ['HImageElement', '_y'],
+    ['HShapeElement', '_z'],
+    ['HSolidElement', '_aa'],
+    ['HTextElement', '_ab'],
+    ['FrameElement', '_ac'],
+    ['HierarchyElement', '_ad'],
+    ['RenderableElement', '_ae'],
+    ['TransformElement', '_af'],
+    ['TransformPropertyFactory', '_ag'],
+    ['ShapePropertyFactory', '_ah'],
+    ['PropertyFactory', '_ai'],
+    ['RepeaterModifier', '_aj'],
+    ['localShapeCollection', '_ak'],
+    ['newShapeCollection', '_al'],
+    ['ShapeCollection', '_am'],
+]
+
+gulp.task('buildTest',['buildSources'], function() {
+    return gulp.src(srcs)
+        .pipe(concat('lottie.js'))
+        .pipe(wrap(moduleWrap))
+        .pipe(batch_replace(replacingMap))
+        /*.pipe(through.obj(function (chunk, enc, cb) {
+            console.log(chunk.contents.toString('utf8')) // this should log now
+            cb(null, chunk)
+          }))*/
+        .pipe(gulp.dest('player/'));
 });

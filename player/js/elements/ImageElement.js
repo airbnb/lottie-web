@@ -3,9 +3,7 @@ function IImageElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
 
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableElement], IImageElement);
-
-IImageElement.prototype.initElement = IShapeElement.prototype.initElement;
+extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
 IImageElement.prototype.createContent = function(){
 
@@ -20,18 +18,4 @@ IImageElement.prototype.createContent = function(){
     //TODO check if this is needed. Doesn't look like it is
     //this.maskedElement = this.innerElem;
     this.layerElement.appendChild(this.innerElem);
-
-
-};
-
-IImageElement.prototype.prepareFrame = function(num) {
-    this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange);
-};
-
-IImageElement.prototype.renderInnerContent = function() {};
-
-IImageElement.prototype.destroy = function(){
-    this.innerElem =  null;
-    this.destroyBaseElement();
 };

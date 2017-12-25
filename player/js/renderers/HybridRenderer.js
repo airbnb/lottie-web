@@ -2,11 +2,14 @@ function HybridRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
-    this.globalData = {
-        frameNum: -1
-    };
     this.renderConfig = {
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
+    };
+    this.globalData = {
+        mdf: false,
+        frameNum: -1,
+        renderConfig: this.renderConfig
     };
     this.pendingElements = [];
     this.elements = [];
@@ -60,19 +63,19 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
 
 
 HybridRenderer.prototype.createBase = function (data) {
-    return new SVGBaseElement(data, this.layerElement,this.globalData,this);
+    return new SVGBaseElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createShape = function (data) {
     if(!this.supports3d){
-        return new IShapeElement(data, this.layerElement,this.globalData,this);
+        return new IShapeElement(data, this.globalData, this);
     }
     return new HShapeElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createText = function (data) {
     if(!this.supports3d){
-        return new SVGTextElement(data, this.layerElement,this.globalData,this);
+        return new SVGTextElement(data, this.globalData, this);
     }
     return new HTextElement(data, this.globalData, this);
 };
