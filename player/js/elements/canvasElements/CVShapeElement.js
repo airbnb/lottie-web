@@ -115,7 +115,7 @@ CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) 
     elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
-    jLen = this.stylesList.length;
+    var j, jLen = this.stylesList.length;
     var hasStrokes = false, hasFills = false;
     for(j=0;j<jLen;j+=1){
         if(!this.stylesList[j].closed){
@@ -448,7 +448,7 @@ CVShapeElement.prototype.destroy = function(){
     this.globalData = null;
     this.canvasContext = null;
     this.stylesList.length = 0;
-    this.itemData.length = 0;
+    this.itemsData.length = 0;
     this._parent.destroy.call(this._parent);
 };
 

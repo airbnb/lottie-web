@@ -4,7 +4,7 @@ function SVGRenderer(animationItem, config){
     this.renderedFrame = -1;
     this.svgElement = createNS('svg');
     var maskElement = createNS('g');
-    this.svgElement.appendChild(maskElement)
+    this.svgElement.appendChild(maskElement);
     this.layerElement = maskElement;
     var defs = createNS( 'defs');
     this.svgElement.appendChild(defs);
@@ -13,6 +13,7 @@ function SVGRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false,
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
         viewBoxOnly: (config && config.viewBoxOnly) || false,
+        viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || ''
     };
     this.globalData = {
@@ -64,7 +65,11 @@ SVGRenderer.prototype.createSolid = function (data) {
 
 SVGRenderer.prototype.configAnimation = function(animData){
     this.svgElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    this.svgElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    if(this.renderConfig.viewBoxSize) {
+        this.svgElement.setAttribute('viewBox',this.renderConfig.viewBoxSize);
+    } else {
+        this.svgElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+    }
 
     if(!this.renderConfig.viewBoxOnly) {
         this.svgElement.setAttribute('width',animData.w);
