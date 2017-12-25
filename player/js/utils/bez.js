@@ -109,37 +109,36 @@ function bezFunction(){
                 keyData.bezierData = storedData[bezierName];
                 return;
             }
-        var curveSegments = defaultCurveSegments;
-        var k, i, len;
+            var curveSegments = defaultCurveSegments;
+            var k, i, len;
             var ptCoord,perc,addedLength = 0;
             var ptDistance;
             var point,lastPoint = null;
-            if(pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+            if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
                 curveSegments = 2;
             }
             var bezierData = new BezierData(curveSegments);
             len = pt3.length;
-            for(k=0;k<curveSegments;k+=1){
-            point = new Array(len);
-                perc = k/(curveSegments-1);
+            for (k = 0; k < curveSegments; k += 1) {
+                point = Array.apply(null,{length:len});
+                perc = k / (curveSegments - 1);
                 ptDistance = 0;
-                for(i=0;i<len;i+=1){
-                ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
-                point[i] = ptCoord;
+                for (i = 0; i < len; i += 1){
+                    ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
+                    point[i] = ptCoord;
                     if(lastPoint !== null){
-                    ptDistance += bm_pow(point[i] - lastPoint[i],2);
+                        ptDistance += bm_pow(point[i] - lastPoint[i],2);
                     }
                 }
-            ptDistance = bm_sqrt(ptDistance);
+                ptDistance = bm_sqrt(ptDistance);
                 addedLength += ptDistance;
-                bezierData.points[k] = new PointData(ptDistance,point);
+                bezierData.points[k] = new PointData(ptDistance, point);
                 lastPoint = point;
             }
             bezierData.segmentLength = addedLength;
             keyData.bezierData = bezierData;
             storedData[bezierName] = bezierData;
-
-        }
+        };
     }());
 
     function getDistancePerc(perc,bezierData){
@@ -162,7 +161,7 @@ function bezFunction(){
                     initPos += dir;
                 }
                 if(initPos < 0 || initPos >= len - 1){
-                    //FIX for TypedArrays that don't store floating point values with their precise value
+                    //FIX for TypedArrays that don't store floating point values with enough accuracy
                     if(initPos === len - 1) {
                         return percents[initPos];
                     }
@@ -237,7 +236,6 @@ function bezFunction(){
 
     return {
         //getEasingCurve : getEasingCurve,
-        getBezierLength : getBezierLength,
         getSegmentsLength : getSegmentsLength,
         getNewSegment : getNewSegment,
         getPointInSegment : getPointInSegment,

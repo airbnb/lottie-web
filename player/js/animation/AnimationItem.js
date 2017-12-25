@@ -272,12 +272,12 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
 
     return function(){
         checkFontsLoaded.bind(this)();
-    }
+    };
 }());
 
 AnimationItem.prototype.addPendingElement = function () {
     this.pendingElements += 1;
-}
+};
 
 AnimationItem.prototype.elementLoaded = function () {
     this.pendingElements--;
@@ -307,7 +307,7 @@ AnimationItem.prototype.resize = function () {
 
 AnimationItem.prototype.setSubframe = function(flag){
     this.subframeEnabled = flag ? true : false;
-}
+};
 
 AnimationItem.prototype.gotoFrame = function () {
     this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
@@ -459,7 +459,7 @@ AnimationItem.prototype.setSegment = function (init,end) {
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
-}
+};
 
 AnimationItem.prototype.playSegments = function (arr,forceFlag) {
     if(typeof arr[0] === 'object'){
@@ -489,7 +489,7 @@ AnimationItem.prototype.checkSegments = function(){
     if(this.segments.length){
         this.pendingSegment = true;
     }
-}
+};
 
 AnimationItem.prototype.remove = function (name) {
     if(name && this.name != name){

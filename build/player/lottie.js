@@ -541,6 +541,17 @@ var Matrix = (function(){
         return this._identity;
     }
 
+    function equals(matr){
+        var i = 0;
+        while (i < 16) {
+            if(matr.props[i] !== this.props[i]) {
+                return false;
+            }
+            i+=1;
+        }
+        return true;
+    }
+
     function clone(matr){
         var i;
         for(i=0;i<16;i+=1){
@@ -662,6 +673,7 @@ var Matrix = (function(){
         this.to2dCSS = to2dCSS;
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
+        this.equals = equals;
         this.inversePoints = inversePoints;
         this.inversePoint = inversePoint;
         this._t = this.transform;
@@ -1232,37 +1244,36 @@ function bezFunction(){
                 keyData.bezierData = storedData[bezierName];
                 return;
             }
-        var curveSegments = defaultCurveSegments;
-        var k, i, len;
+            var curveSegments = defaultCurveSegments;
+            var k, i, len;
             var ptCoord,perc,addedLength = 0;
             var ptDistance;
             var point,lastPoint = null;
-            if(pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+            if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
                 curveSegments = 2;
             }
             var bezierData = new BezierData(curveSegments);
             len = pt3.length;
-            for(k=0;k<curveSegments;k+=1){
-            point = new Array(len);
-                perc = k/(curveSegments-1);
+            for (k = 0; k < curveSegments; k += 1) {
+                point = Array.apply(null,{length:len});
+                perc = k / (curveSegments - 1);
                 ptDistance = 0;
-                for(i=0;i<len;i+=1){
-                ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
-                point[i] = ptCoord;
+                for (i = 0; i < len; i += 1){
+                    ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
+                    point[i] = ptCoord;
                     if(lastPoint !== null){
-                    ptDistance += bm_pow(point[i] - lastPoint[i],2);
+                        ptDistance += bm_pow(point[i] - lastPoint[i],2);
                     }
                 }
-            ptDistance = bm_sqrt(ptDistance);
+                ptDistance = bm_sqrt(ptDistance);
                 addedLength += ptDistance;
-                bezierData.points[k] = new PointData(ptDistance,point);
+                bezierData.points[k] = new PointData(ptDistance, point);
                 lastPoint = point;
             }
             bezierData.segmentLength = addedLength;
             keyData.bezierData = bezierData;
             storedData[bezierName] = bezierData;
-
-        }
+        };
     }());
 
     function getDistancePerc(perc,bezierData){
@@ -1285,7 +1296,7 @@ function bezFunction(){
                     initPos += dir;
                 }
                 if(initPos < 0 || initPos >= len - 1){
-                    //FIX for TypedArrays that don't store floating point values with their precise value
+                    //FIX for TypedArrays that don't store floating point values with enough accuracy
                     if(initPos === len - 1) {
                         return percents[initPos];
                     }
@@ -1360,7 +1371,6 @@ function bezFunction(){
 
     return {
         //getEasingCurve : getEasingCurve,
-        getBezierLength : getBezierLength,
         getSegmentsLength : getSegmentsLength,
         getNewSegment : getNewSegment,
         getPointInSegment : getPointInSegment,
@@ -2370,6 +2380,12 @@ var _ai = (function(){
                 if((s.length === 2 && !(s[0] === e[0] && s[1] === e[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],s[0] + to[0],s[1] + to[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],e[0] + ti[0],e[1] + ti[1])) || (s.length === 3 && !(s[0] === e[0] && s[1] === e[1] && s[2] === e[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],s[0] + to[0],s[1] + to[1],s[2] + to[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],e[0] + ti[0],e[1] + ti[1],e[2] + ti[2]))){
                     data.k[i].to = null;
                     data.k[i].ti = null;
+                }
+                if(s[0] === e[0] && s[1] === e[1] && to[0] === 0 && to[1] === 0 && ti[0] === 0 && ti[1] === 0) {
+                    if(s.length === 2 || (s[2] === e[2] && to[2] === 0 && ti[2] === 0)) {
+                        data.k[i].to = null;
+                        data.k[i].ti = null;
+                    }
                 }
             }
         }
@@ -5524,6 +5540,7 @@ function SVGRenderer(animationItem, config){
         className: (config && config.className) || ''
     };
     this.globalData = {
+        mdf: false,
         frameNum: -1,
         defs: defs,
         frameId: 0,
@@ -5561,7 +5578,7 @@ SVGRenderer.prototype.createImage = function (data) {
 };
 
 SVGRenderer.prototype.createComp = function (data) {
-    return new _g(data,this.globalData,this);
+    return new SVGCompElement(data,this.globalData,this);
 
 };
 
@@ -6210,6 +6227,68 @@ _ae.prototype.getLayerSize = function(){
         return {w:this.data.width,h:this.data.height};
     }
 };
+function RenderableDOMElement() {
+
+}
+extendPrototype2([_ae], RenderableDOMElement);
+
+RenderableDOMElement.prototype.initElement = function(data,globalData,comp) {
+    this.initFrame();
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initHierarchy();
+    this.initRenderable();
+    this.initRendererElement();
+    this.createContainerElements();
+    this.addMasks();
+    this.createContent();
+    this.hide();
+}
+
+RenderableDOMElement.prototype.hide = function(){
+    if (!this.hidden && (!this.isInRange || this.isTransparent)) {
+        this.layerElement.style.display = 'none';
+        this.hidden = true;
+    }
+};
+
+RenderableDOMElement.prototype.show = function(){
+    if (this.isInRange && !this.isTransparent){
+        if (!this.data.hd) {
+            this.layerElement.style.display = 'block';
+        }
+        this.hidden = false;
+        this.firstFrame = true;
+        this.maskManager.firstFrame = true;
+    }
+};
+
+RenderableDOMElement.prototype.renderFrame = function() {
+    //If it is exported as hidden (data.hd === true) no need to render
+    //If it is not visible no need to render
+    if (this.data.hd || this.hidden) {
+        return;
+    }
+    this.renderTransform();
+    this.renderRenderable();
+    this.renderElement();
+    this.renderInnerContent();
+    if (this.firstFrame) {
+        this.firstFrame = false;
+    }
+};
+
+RenderableDOMElement.prototype.renderInnerContent = function() {};
+
+RenderableDOMElement.prototype.destroy = function(){
+    this.innerElem =  null;
+    this.destroy_e();
+};
+
+RenderableDOMElement.prototype.prepareFrame = function(num) {
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isInRange);
+};
 function ProcessedElement(element, position) {
 	this.elem = element;
 	this.pos = position;
@@ -6365,7 +6444,7 @@ _e.prototype.initExpressions = function(){
     if(this.data.ty === 0 || this.data.xt){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
-        this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.itemsData,this.layerInterface);
+        this.layerInterface.shapeInterface = ShapeExpressionInterface(this.shapesData,this.itemsData,this.layerInterface);
         this.layerInterface.content = this.layerInterface.shapeInterface;
     } else if(this.data.ty === 5){
         this.layerInterface.textInterface = TextExpressionInterface(this);
@@ -6481,18 +6560,8 @@ _i.prototype.hide = function() {
 
 extendPrototype2([_e,_af,_ad,_ac], _i);
 
-function _d(data,globalData,comp){
-    /*this.globalData = globalData;
-    this.comp = comp;
-    this.data = data;
-    this.matteElement = null;
-    this.transformedElement = null;
-    this.isTransparent = false;
-    this._sizeChanged = false;
-    this.init();*/
+function _d(){
 };
-
-//createElement(_e, _d);
 
 _d.prototype.initRendererElement = function() {
     this.layerElement = createNS('g');
@@ -6620,26 +6689,7 @@ _d.prototype.createContainerElements = function(){
 
 };
 
-
-_d.prototype.setBlendMode = _e.prototype.setBlendMode;
-
-_d.prototype.renderFrame = function() {
-    //If it is exported as hidden (data.hd === true) no need to render
-    //If it is not visible no need to render
-    if (this.data.hd || this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.renderElement();
-    this.renderInnerContent();
-    if (this.firstFrame) {
-        this.firstFrame = false;
-    }
-};
-
 _d.prototype.renderElement = function() {
-
     if (this.finalTransform.matMdf) {
         this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
     }
@@ -6671,24 +6721,6 @@ _d.prototype.setMatte = function(id) {
     this.matteElement.setAttribute("mask", "url(" + locationHref + "#" + id + ")");
 };
 
-_d.prototype.hide = function(){
-    if (!this.hidden && (!this.isInRange || this.isTransparent)) {
-        this.layerElement.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
-_d.prototype.show = function(){
-    if (this.isInRange && !this.isTransparent){
-        if (!this.data.hd) {
-            this.layerElement.style.display = 'block';
-        }
-        this.hidden = false;
-        this.firstFrame = true;
-        this.maskManager.firstFrame = true;
-    }
-};
-
 function _f(data,globalData,comp){
     //List of drawable elements
     this.shapes = [];
@@ -6708,20 +6740,7 @@ function _f(data,globalData,comp){
     this.prevViewData = [];
 }
 
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae], _f);
-
-_f.prototype.initElement = function(data,globalData,comp) {
-    this.initFrame();
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initHierarchy();
-    this.initRenderable();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    this.createContent();
-    this.hide();
-}
+extendPrototype2([_e,_af,_d,_ad,_ac,RenderableDOMElement], _f);
 
 _f.prototype.initSecondaryElement = function() {
 }
@@ -7282,13 +7301,152 @@ _k.prototype.emptyProp = new LetterProps();
 _k.prototype.destroy = function(){
     this._parent.destroy.call(this._parent);
 };
+function _g(){}
+
+extendPrototype2([_e, _af, _ad, _ac, RenderableDOMElement], _g);
+
+_g.prototype.initElement = function(data,globalData,comp) {
+    this.initFrame();
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initRenderable();
+    this.initHierarchy();
+    this.initRendererElement();
+    this.createContainerElements();
+    this.addMasks();
+    if(this.data.xt || !globalData.progressiveLoad){
+        this.buildAllItems();
+    }
+    this.hide();
+};
+
+/*_g.prototype.hide = function(){
+    if(!this.hidden){
+        this.hideElement();
+        var i,len = this.elements.length;
+        for( i = 0; i < len; i+=1 ){
+            if(this.elements[i]){
+                this.elements[i].hide();
+            }
+        }
+    }
+};*/
+
+_g.prototype.prepareFrame = function(num){
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isInRange);
+    if(!this.isInRange && !this.data.xt){
+        return;
+    }
+
+    if (!this.tm._placeholder) {
+        var timeRemapped = this.tm.v;
+        if(timeRemapped === this.data.op){
+            timeRemapped = this.data.op - 1;
+        }
+        this.renderedFrame = timeRemapped;
+    } else {
+        this.renderedFrame = num/this.data.sr;
+    }
+    var i,len = this.elements.length;
+    if(!this.completeLayers){
+        this.checkLayers(this.renderedFrame);
+    }
+    for( i = 0; i < len; i+=1 ){
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
+        }
+    }
+};
+
+_g.prototype.renderInnerContent = function() {
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i += 1 ){
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].renderFrame();
+        }
+    }
+};
+
+_g.prototype.setElements = function(elems){
+    this.elements = elems;
+};
+
+_g.prototype.getElements = function(){
+    return this.elements;
+};
+
+_g.prototype.destroyElements = function(){
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i+=1 ){
+        if(this.elements[i]){
+            this.elements[i].destroy();
+        }
+    }
+};
+
+_g.prototype.destroy = function(){
+    this.destroyElements();
+    this.destroy_e();
+};
+
+function _h(data,globalData,comp){
+    this.assetData = globalData.getAssetData(data.refId);
+    this.initElement(data,globalData,comp);
+}
+
+extendPrototype2([_e,_af,_d,_ad,_ac,RenderableDOMElement], _h);
+
+_h.prototype.createContent = function(){
+
+    var assetPath = this.globalData.getAssetsPath(this.assetData);
+
+    this.innerElem = createNS('image');
+    this.innerElem.setAttribute('width',this.assetData.w+"px");
+    this.innerElem.setAttribute('height',this.assetData.h+"px");
+    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
+    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+    
+    //TODO check if this is needed. Doesn't look like it is
+    //this.maskedElement = this.innerElem;
+    this.layerElement.appendChild(this.innerElem);
+};
+
+function _j(data,globalData,comp){
+    this.initElement(data,globalData,comp);
+}
+extendPrototype2([_h], _j);
+
+_j.prototype.createContent = function(){
+
+    var rect = createNS('rect');
+    ////rect.style.width = this.data.sw;
+    ////rect.style.height = this.data.sh;
+    ////rect.style.fill = this.data.sc;
+    rect.setAttribute('width',this.data.sw);
+    rect.setAttribute('height',this.data.sh);
+    rect.setAttribute('fill',this.data.sc);
+    this.layerElement.appendChild(rect);
+};
+function SVGCompElement(data,globalData,comp){
+    this.layers = data.layers;
+    this.supports3d = true;
+    this.completeLayers = false;
+    this.pendingElements = [];
+    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
+    //this.layerElement = createNS('g');
+    this.initElement(data,globalData,comp);
+    this.tm = data.tm ? _ai.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
+}
+
+extendPrototype2([SVGRenderer, _g, _d], SVGCompElement);
 function SVGTextElement(data,globalData,comp){
     this.textSpans = [];
     this.renderType = 'svg';
     this.initElement(data,globalData,comp);
 }
 
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae,_k], SVGTextElement);
+extendPrototype2([_e,_af,_d,_ad,_ac,RenderableDOMElement,_k], SVGTextElement);
 
 SVGTextElement.prototype.createContent = function(){
 
@@ -7955,159 +8113,6 @@ SVGEffects.prototype.renderFrame = function(firstFrame){
         this.filters[i].renderFrame(firstFrame);
     }
 };
-function _g(data,globalData,comp){
-    this.layers = data.layers;
-    this.supports3d = true;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    //this.layerElement = createNS('g');
-    this.initElement(data,globalData,comp);
-    this.tm = data.tm ? _ai.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
-    
-}
-
-extendPrototype2([_e,_af,SVGRenderer,_d,_ad,_ac,_ae], _g);
-
-_g.prototype.initElement = function(data,globalData,comp) {
-    this.initFrame();
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initRenderable();
-    this.initHierarchy();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    if(this.data.xt || !globalData.progressiveLoad){
-        this.buildAllItems();
-    }
-    this.hide();
-};
-
-/*_g.prototype.hide = function(){
-    if(!this.hidden){
-        this.hideElement();
-        var i,len = this.elements.length;
-        for( i = 0; i < len; i+=1 ){
-            if(this.elements[i]){
-                this.elements[i].hide();
-            }
-        }
-    }
-};*/
-
-_g.prototype.prepareFrame = function(num){
-    this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange);
-    if(!this.isInRange && !this.data.xt){
-        return;
-    }
-
-    if (!this.tm._placeholder) {
-        var timeRemapped = this.tm.v;
-        if(timeRemapped === this.data.op){
-            timeRemapped = this.data.op - 1;
-        }
-        this.renderedFrame = timeRemapped;
-    } else {
-        this.renderedFrame = num/this.data.sr;
-    }
-    var i,len = this.elements.length;
-    if(!this.completeLayers){
-        this.checkLayers(this.renderedFrame);
-    }
-    for( i = 0; i < len; i+=1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
-        }
-    }
-};
-
-_g.prototype.renderInnerContent = function() {
-    var i,len = this.layers.length;
-    for( i = 0; i < len; i += 1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].renderFrame();
-        }
-    }
-};
-
-_g.prototype.setElements = function(elems){
-    this.elements = elems;
-};
-
-_g.prototype.getElements = function(){
-    return this.elements;
-};
-
-_g.prototype.destroyElements = function(){
-    var i,len = this.layers.length;
-    for( i = 0; i < len; i+=1 ){
-        if(this.elements[i]){
-            this.elements[i].destroy();
-        }
-    }
-};
-
-_g.prototype.destroy = function(){
-    this.destroyElements();
-    this.destroy_e();
-};
-
-function _h(data,globalData,comp){
-    this.assetData = globalData.getAssetData(data.refId);
-    this.initElement(data,globalData,comp);
-}
-
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae], _h);
-
-_h.prototype.initElement = _f.prototype.initElement;
-
-_h.prototype.createContent = function(){
-
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
-
-    this.innerElem = createNS('image');
-    this.innerElem.setAttribute('width',this.assetData.w+"px");
-    this.innerElem.setAttribute('height',this.assetData.h+"px");
-    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
-    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
-    
-    //TODO check if this is needed. Doesn't look like it is
-    //this.maskedElement = this.innerElem;
-    this.layerElement.appendChild(this.innerElem);
-
-
-};
-
-_h.prototype.prepareFrame = function(num) {
-    this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange);
-};
-
-_h.prototype.renderInnerContent = function() {};
-
-_h.prototype.destroy = function(){
-    this.innerElem =  null;
-    this.destroy_e();
-};
-
-function _j(data,globalData,comp){
-    this.initElement(data,globalData,comp);
-}
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae, _h], _j);
-
-_j.prototype.createContent = function(){
-
-    var rect = createNS('rect');
-    ////rect.style.width = this.data.sw;
-    ////rect.style.height = this.data.sh;
-    ////rect.style.fill = this.data.sc;
-    rect.setAttribute('width',this.data.sw);
-    rect.setAttribute('height',this.data.sh);
-    rect.setAttribute('fill',this.data.sc);
-    this.layerElement.appendChild(rect);
-};
 var animationManager = (function(){
     var moduleOb = {};
     var registeredAnimations = [];
@@ -8601,12 +8606,12 @@ _a.prototype.waitForFontsLoaded = (function(){
 
     return function(){
         checkFontsLoaded.bind(this)();
-    }
+    };
 }());
 
 _a.prototype.addPendingElement = function () {
     this.pendingElements += 1;
-}
+};
 
 _a.prototype.elementLoaded = function () {
     this.pendingElements--;
@@ -8636,7 +8641,7 @@ _a.prototype.resize = function () {
 
 _a.prototype.setSubframe = function(flag){
     this.subframeEnabled = flag ? true : false;
-}
+};
 
 _a.prototype.gotoFrame = function () {
     this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
@@ -8788,7 +8793,7 @@ _a.prototype.setSegment = function (init,end) {
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
-}
+};
 
 _a.prototype.playSegments = function (arr,forceFlag) {
     if(typeof arr[0] === 'object'){
@@ -8818,7 +8823,7 @@ _a.prototype.checkSegments = function(){
     if(this.segments.length){
         this.pendingSegment = true;
     }
-}
+};
 
 _a.prototype.remove = function (name) {
     if(name && this.name != name){
@@ -8996,6 +9001,7 @@ function CanvasRenderer(animationItem, config){
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1,
+        mdf: false,
         renderConfig: this.renderConfig
     };
     var i, len = 15;
@@ -9331,11 +9337,14 @@ function HybridRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
-    this.globalData = {
-        frameNum: -1
-    };
     this.renderConfig = {
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
+    };
+    this.globalData = {
+        mdf: false,
+        frameNum: -1,
+        renderConfig: this.renderConfig
     };
     this.pendingElements = [];
     this.elements = [];
@@ -9389,19 +9398,19 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
 
 
 HybridRenderer.prototype.createBase = function (data) {
-    return new _d(data, this.layerElement,this.globalData,this);
+    return new _d(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createShape = function (data) {
     if(!this.supports3d){
-        return new _f(data, this.layerElement,this.globalData,this);
+        return new _f(data, this.globalData, this);
     }
     return new _z(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createText = function (data) {
     if(!this.supports3d){
-        return new SVGTextElement(data, this.layerElement,this.globalData,this);
+        return new SVGTextElement(data, this.globalData, this);
     }
     return new _ab(data, this.globalData, this);
 };
@@ -9784,96 +9793,24 @@ _p.prototype.destroy = function(){
     this.destroy_e();
 };
 function _m(data, globalData, comp) {
-    /*this.transformingRenderer = globalData.renderer;
-    var compGlobalData = {};
-    for(var s in globalData){
-        if(globalData.hasOwnProperty(s)){
-            compGlobalData[s] = globalData[s];
-        }
-    }
-    compGlobalData.renderer = this;
-    compGlobalData.compHeight = data.h;
-    compGlobalData.compWidth = data.w;
-
-    this.renderConfig = {
-        clearCanvas: true,
-        hideOnTransparent: true
-    };
-    compGlobalData.renderConfig = this.renderConfig;
-    this.contextData = new _n();*/
     this.completeLayers = false;
-    //this.transformMat = new Matrix();
-    //var cv = document.createElement('canvas');
-    //document.body.appendChild(cv);
-    //compGlobalData.canvasContext = cv.getContext('2d');
-    //compGlobalData = globalData;
-    //this.canvasContext = compGlobalData.canvasContext;
-    /*cv.width = data.w;
-    cv.height = data.h;
-    this.canvas = cv;*/
-    //this.globalData = globalData;
     this.layers = data.layers;
     this.pendingElements = [];
     this.elements = Array.apply(null,{length:this.layers.length});
     this.initElement(data, globalData, comp);
-    //this.parentGlobalData = globalData;
     this.tm = data.tm ? _ai.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }
 
-extendPrototype2([CanvasRenderer, _e,_af,_c,_ad,_ac,_ae], _m);
-_m.prototype.prepareFrame = _g.prototype.prepareFrame;
-_m.prototype.initElement = _g.prototype.initElement;
-_m.prototype.setElements = _g.prototype.setElements;
-_m.prototype.getElements = _g.prototype.getElements;
-
-/*_m.prototype.resize = function(transformCanvas){
-    this.reset();
-    var maxScale = Math.max(transformCanvas.sx,transformCanvas.sy);
-    this.canvas.width = this.data.w*maxScale;
-    this.canvas.height = this.data.h*maxScale;
-    this.transformCanvas = {
-        sc:maxScale,
-        w:this.data.w*maxScale,
-        h:this.data.h*maxScale,
-        props:[maxScale,0,0,0,0,maxScale,0,0,0,0,1,0,0,0,0,1]
-    }
-    this.ctxTransform(this.transformCanvas.props);
-    var i,len = this.elements.length;
-    for (i = 0; i < len; i += 1) {
-        if (this.elements[i] && this.elements[i].data.ty === 0) {
-            this.elements[i].resize(transformCanvas);
-        }
-    }
-    this.firstFrame = true;
-};*/
-
-/*_m.prototype.prepareFrame = function(num){
-    this.globalData.frameId = this.parentGlobalData.frameId;
-    this.globalData.mdf = this.firstFrame;
-    this.prepareRootCompFrame(num);
-};*/
+extendPrototype2([CanvasRenderer, _g, _c], _m);
 
 _m.prototype.renderInnerContent = function() {
-    /*if(!this.data.xt) {
-        this.canvasContext.clearRect(0, 0, this.data.w, this.data.h);
-    }*/
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
     }
-    // this.parentGlobalData.renderer.save();
-    // this.parentGlobalData.renderer.ctxTransform(this.finalTransform.mat.props);
-    // this.parentGlobalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
-    //this.parentGlobalData.renderer.canvasContext.drawImage(this.canvas,0,0,this.data.w,this.data.h);
-    // this.parentGlobalData.renderer.restore();
-
-    /*if(this.globalData.mdf){
-        this.reset();
-    }*/
 };
-
 
 _m.prototype.destroy = function(){
     var i,len = this.layers.length;
@@ -10639,6 +10576,7 @@ _b.prototype.initRendererElement = function(){
     if(this.data.hasMask) {
         this.svgElement = createNS('svg');
         this.layerElement = createNS('g');
+        this.maskedElement = this.layerElement;
         this.svgElement.appendChild(this.layerElement);
         this.baseElement.appendChild(this.svgElement);
     } else {
@@ -10662,7 +10600,6 @@ _b.prototype.createContainerElements = function(){
 
 _b.prototype.renderElement = function() {
     if(this.finalTransform.matMdf){
-        console.log(this.transformedElement)
         this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
     }
     if(this.finalTransform.opMdf){
@@ -10704,9 +10641,6 @@ _b.prototype.addMasks = function(){
     this.maskManager = new MaskElement(this.data, this, this.globalData);
 };
 
-_b.prototype.hide = function(){
-};
-
 _b.prototype.setMatte = function(){
 
 }
@@ -10715,7 +10649,7 @@ _b.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParent
 function _aa(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
-extendPrototype2([_e,_af,_b,_ad,_ac,_ae], _aa);
+extendPrototype2([_e,_af,_b,_ad,_ac,RenderableDOMElement], _aa);
 
 _aa.prototype.createContent = function(){
     var rect;
@@ -10724,8 +10658,8 @@ _aa.prototype.createContent = function(){
         rect.setAttribute('width',this.data.sw);
         rect.setAttribute('height',this.data.sh);
         rect.setAttribute('fill',this.data.sc);
-        this.baseElement.setAttribute('width',this.data.sw);
-        this.baseElement.setAttribute('height',this.data.sh);
+        this.svgElement.setAttribute('width',this.data.sw);
+        this.svgElement.setAttribute('height',this.data.sh);
     } else {
         rect = document.createElement('div');
         rect.style.width = this.data.sw + 'px';
@@ -10735,13 +10669,6 @@ _aa.prototype.createContent = function(){
     this.layerElement.appendChild(rect);
 };
 
-_aa.prototype.hide = _d.prototype.hide;
-_aa.prototype.show = _d.prototype.show;
-_aa.prototype.renderFrame = _h.prototype.renderFrame;
-_aa.prototype.destroy = _h.prototype.destroy;
-_aa.prototype.renderInnerContent = _h.prototype.renderInnerContent;
-_aa.prototype.initElement = _f.prototype.initElement;
-_aa.prototype.prepareFrame = _f.prototype.prepareFrame;
 function _w(data,globalData,comp){
     this.layers = data.layers;
     this.supports3d = !data.hasMask;
@@ -10749,33 +10676,24 @@ function _w(data,globalData,comp){
     this.pendingElements = [];
     this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
     this.tm = data.tm ? _ai.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
-    console.log(this.initElement)
+    
     this.initElement(data,globalData,comp);
-
 }
-extendPrototype2([_e,_af,HybridRenderer,_d,_ad,_ac,_ae, _g], _w);
+
+extendPrototype2([HybridRenderer, _g, _b], _w);
 
 _w.prototype.createContainerElements = function(){
     //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
-        var compSvg = createNS('svg');
-        styleDiv(compSvg);
-        compSvg.setAttribute('width',this.data.w);
-        compSvg.setAttribute('height',this.data.h);
-        var g = createNS('g');
-        compSvg.appendChild(g);
-        divElement.appendChild(compSvg);
-        this.maskedElement = g;
-        this.baseElement = divElement;
-        this.layerElement = g;
-        this.transformedElement = divElement;
+        this.transformedElement = this.layerElement;
+        this.svgElement.setAttribute('width',this.data.w);
+        this.svgElement.setAttribute('height',this.data.h);
     }else{
-        var compSvg = createNS('svg');
-        this.layerElement.appendChild(compSvg);
-        this.layerElement = compSvg;
+        this.transformedElement = this.layerElement;
 
     }
     //this.appendNodeToParent(this.layerElement);
+    this.effectsManager = new _o(this);
     this.checkParenting();
 };
 function _z(data,globalData,comp){
@@ -10818,7 +10736,6 @@ _z.prototype.createContent = function(){
         cont.setAttribute('height',size.h);
         cont.appendChild(this.shapesContainer);
         this.layerElement.appendChild(cont);
-        console.log(this.layerElement)
     }
 
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,this.dynamicProperties,0, [], true);
@@ -10829,7 +10746,7 @@ _z.prototype.renderInnerContent = function() {
     this._renderShapeFrame();
 
     //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses globalData.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(!this.hidden && this.firstFrame){
+    if(!this.hidden && this.firstFrame) {
         var boundingBox = this.shapeCont.getBBox();
         var changed = false;
         if(this.currentBBox.w !== boundingBox.width){
@@ -10865,38 +10782,26 @@ function _ab(data,globalData,comp){
     }
     this.renderType = 'svg';
     this.isMasked = false;
-    this._parent.constructor.call(this,data,globalData,comp);
+    this.initElement(data,globalData,comp);
 
 }
-createElement(_b, _ab);
+extendPrototype2([_e,_af,_b,_ad,_ac,RenderableDOMElement,_k], _ab);
 
-extendPrototype(_k, _ab);
-
-_ab.prototype.createElements = function(){
+_ab.prototype.createContent = function(){
     this.isMasked = this.checkMasks();
-    var parent = document.createElement('div');
-    styleDiv(parent);
-    this.layerElement = parent;
-    this.transformedElement = parent;
     if(this.isMasked){
         this.renderType = 'svg';
-        var cont = createNS('svg');
-        styleDiv(cont);
-        this.cont = cont;
         this.compW = this.comp.data.w;
         this.compH = this.comp.data.h;
-        cont.setAttribute('width',this.compW);
-        cont.setAttribute('height',this.compH);
+        this.svgElement.setAttribute('width',this.compW);
+        this.svgElement.setAttribute('height',this.compH);
         var g = createNS('g');
-        cont.appendChild(g);
-        parent.appendChild(cont);
-        this.maskedElement = g;
+        this.maskedElement.appendChild(g);
         this.innerElem = g;
     } else {
         this.renderType = 'html';
-        this.innerElem = parent;
+        this.innerElem = this.layerElement;
     }
-    this.baseElement = parent;
 
     this.checkParenting();
 
@@ -11034,20 +10939,7 @@ _ab.prototype.buildNewText = function(){
     }
 }
 
-_ab.prototype.hide = SVGTextElement.prototype.hide;
-
-_ab.prototype.renderFrame = function(parentMatrix){
-
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-    if(this.hidden){
-        this.hidden = false;
-        this.innerElem.style.display = 'block';
-        this.layerElement.style.display = 'block';
-    }
+_ab.prototype.renderInnerContent = function() {
 
     if(this.data.singleShape){
         if(!this.firstFrame && !this.lettersChangedFlag){
@@ -11055,8 +10947,8 @@ _ab.prototype.renderFrame = function(parentMatrix){
         } else {
             // Todo Benchmark if using this is better than getBBox
              if(this.isMasked && this.finalTransform.matMdf){
-                 this.cont.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
-                this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
+                 this.svgElement.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
+                this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
              }
         }
     }
@@ -11107,11 +10999,11 @@ _ab.prototype.renderFrame = function(parentMatrix){
 
             if(this.currentBBox.w !== boundingBox.width){
                 this.currentBBox.w = boundingBox.width;
-                this.cont.setAttribute('width',boundingBox.width);
+                this.svgElement.setAttribute('width',boundingBox.width);
             }
             if(this.currentBBox.h !== boundingBox.height){
                 this.currentBBox.h = boundingBox.height;
-                this.cont.setAttribute('height',boundingBox.height);
+                this.svgElement.setAttribute('height',boundingBox.height);
             }
 
             var margin = 1;
@@ -11121,13 +11013,10 @@ _ab.prototype.renderFrame = function(parentMatrix){
                 this.currentBBox.x = boundingBox.x - margin;
                 this.currentBBox.y = boundingBox.y - margin;
 
-                this.cont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-                this.cont.style.transform = this.cont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+                this.svgElement.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+                this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
             }
         }
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
     }
 }
 function _y(data,globalData,comp){
@@ -11160,7 +11049,8 @@ _y.prototype.createContent = function(){
     this.checkParenting();
 };
 function _v(data,globalData,comp){
-    this._parent.constructor.call(this,data,globalData,comp);
+    this.initFrame();
+    this.initBaseData(data,globalData,comp);
     var getProp = _ai.getProp;
     this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
     if(data.ks.p.s){
@@ -11186,8 +11076,10 @@ function _v(data,globalData,comp){
     this.ry = getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
     this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
     this.mat = new Matrix();
+    this._prevMat = new Matrix();
+    this.firstFrame = true;
 }
-createElement(_b, _v);
+extendPrototype2([_e, _ac], _v);
 
 _v.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;
@@ -11246,18 +11138,30 @@ _v.prototype.renderFrame = function(){
                 this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
             }
         }
-        len = this.comp.threeDElements.length;
-        var comp;
-        for(i=0;i<len;i+=1){
-            comp = this.comp.threeDElements[i];
-            comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+        if(!this._prevMat.equals(this.mat)) {
+            len = this.comp.threeDElements.length;
+            var comp;
+            for(i=0;i<len;i+=1){
+                comp = this.comp.threeDElements[i];
+                comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+            }
+            this.mat.clone(this._prevMat);
         }
+    } else {
+
+        //console.log('NO ENTRO')
     }
     this.firstFrame = false;
 };
 
+_v.prototype.prepareFrame = function(num) {
+    this.prepareProperties(num, true);
+};
+
 _v.prototype.destroy = function(){
 };
+_v.prototype.initExpressions = function(){};
+_v.prototype.get_e = function(){return null};
 function _x() {
 }
 _x.prototype.renderFrame = function(){}
@@ -12367,83 +12271,33 @@ var ExpressionManager = (function(){
     
 }());
 var ShapeExpressionInterface = (function(){
-    var ob = {
-        createShapeInterface:createShapeInterface,
-        createGroupInterface:createGroupInterface,
-        createTrimInterface:createTrimInterface,
-        createStrokeInterface:createStrokeInterface,
-        createTransformInterface:createTransformInterface,
-        createEllipseInterface:createEllipseInterface,
-        createStarInterface:createStarInterface,
-        createRectInterface:createRectInterface,
-        createRoundedInterface:createRoundedInterface,
-        createRepatearInterface:createRepatearInterface,
-        createPathInterface:createPathInterface,
-        createFillInterface:createFillInterface
-    };
-    function createShapeInterface(shapes,view,propertyGroup){
-        return shapeInterfaceFactory(shapes,view,propertyGroup);
-    }
-    function createGroupInterface(shapes,view,propertyGroup){
-        return groupInterfaceFactory(shapes,view,propertyGroup);
-    }
-    function createFillInterface(shape,view,propertyGroup){
-        return fillInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createStrokeInterface(shape,view,propertyGroup){
-        return strokeInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createTrimInterface(shape,view,propertyGroup){
-        return trimInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createTransformInterface(shape,view,propertyGroup){
-        return transformInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createEllipseInterface(shape,view,propertyGroup){
-        return ellipseInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createStarInterface(shape,view,propertyGroup){
-        return starInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createRectInterface(shape,view,propertyGroup){
-        return rectInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createRoundedInterface(shape,view,propertyGroup){
-        return roundedInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createRepatearInterface(shape,view,propertyGroup){
-        return repeaterInterfaceFactory(shape,view,propertyGroup);
-    }
-    function createPathInterface(shape,view,propertyGroup){
-        return pathInterfaceFactory(shape,view,propertyGroup);
-    }
 
     function iterateElements(shapes,view, propertyGroup){
         var arr = [];
         var i, len = shapes ? shapes.length : 0;
         for(i=0;i<len;i+=1){
             if(shapes[i].ty == 'gr'){
-                arr.push(ShapeExpressionInterface.createGroupInterface(shapes[i],view[i],propertyGroup));
+                arr.push(groupInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'fl'){
-                arr.push(ShapeExpressionInterface.createFillInterface(shapes[i],view[i],propertyGroup));
+                arr.push(fillInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'st'){
-                arr.push(ShapeExpressionInterface.createStrokeInterface(shapes[i],view[i],propertyGroup));
+                arr.push(strokeInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'tm'){
-                arr.push(ShapeExpressionInterface.createTrimInterface(shapes[i],view[i],propertyGroup));
+                arr.push(trimInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'tr'){
-                //arr.push(ShapeExpressionInterface.createTransformInterface(shapes[i],view[i],propertyGroup));
+                //arr.push(transformInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'el'){
-                arr.push(ShapeExpressionInterface.createEllipseInterface(shapes[i],view[i],propertyGroup));
+                arr.push(ellipseInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'sr'){
-                arr.push(ShapeExpressionInterface.createStarInterface(shapes[i],view[i],propertyGroup));
+                arr.push(starInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'sh'){
-                arr.push(ShapeExpressionInterface.createPathInterface(shapes[i],view[i],propertyGroup));
+                arr.push(pathInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rc'){
-                arr.push(ShapeExpressionInterface.createRectInterface(shapes[i],view[i],propertyGroup));
+                arr.push(rectInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rd'){
-                arr.push(ShapeExpressionInterface.createRoundedInterface(shapes[i],view[i],propertyGroup));
+                arr.push(roundedInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rp'){
-                arr.push(ShapeExpressionInterface.createRepatearInterface(shapes[i],view[i],propertyGroup));
+                arr.push(repeaterInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else{
                 //console.log(shapes[i].ty);
             }
@@ -12451,673 +12305,607 @@ var ShapeExpressionInterface = (function(){
         return arr;
     }
 
-    var shapeInterfaceFactory = (function(){
-        return function(shapes,view,propertyGroup){
-            var interfaces;
-            function _interfaceFunction(value){
-                if(typeof value === 'number'){
-                    return interfaces[value-1];
-                } else {
-                    var i = 0, len = interfaces.length;
-                    while(i<len){
-                        if(interfaces[i]._name === value){
-                            return interfaces[i];
-                        }
-                        i+=1;
-                    }
+    function contentsInterfaceFactory(shape,view, propertyGroup){
+       var interfaces;
+       var interfaceFunction = function _interfaceFunction(value){
+           var i = 0, len = interfaces.length;
+            while(i<len){
+                if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value){
+                   return interfaces[i];
                 }
+                i+=1;
             }
-            _interfaceFunction.propertyGroup = propertyGroup;
-            interfaces = iterateElements(shapes, view, _interfaceFunction);
-            return _interfaceFunction;
+            if(typeof value === 'number'){
+               return interfaces[value-1];
+            }
+       };
+       interfaceFunction.propertyGroup = function(val){
+           if(val === 1){
+               return interfaceFunction;
+           } else{
+               return propertyGroup(val-1);
+           }
+       };
+       interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
+       interfaceFunction.numProperties = interfaces.length;
+       interfaceFunction.propertyIndex = shape.cix;
+
+       return interfaceFunction;
+   }
+
+    function groupInterfaceFactory(shape,view, propertyGroup){
+        var interfaceFunction = function _interfaceFunction(value){
+            switch(value){
+                case 'ADBE Vectors Group':
+                case 'Contents':
+                case 2:
+                    return interfaceFunction.content;
+                case 'ADBE Vector Transform Group':
+                case 3:
+                default:
+                    return interfaceFunction.transform;
+            }
         }
-    }());
-
-    var contentsInterfaceFactory = (function(){
-       return function(shape,view, propertyGroup){
-           var interfaces;
-           var interfaceFunction = function _interfaceFunction(value){
-               var i = 0, len = interfaces.length;
-                while(i<len){
-                    if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value){
-                       return interfaces[i];
-                    }
-                    i+=1;
-                }
-                if(typeof value === 'number'){
-                   return interfaces[value-1];
-                }
-           };
-           interfaceFunction.propertyGroup = function(val){
-               if(val === 1){
-                   return interfaceFunction;
-               } else{
-                   return propertyGroup(val-1);
-               }
-           };
-           interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
-           interfaceFunction.numProperties = interfaces.length;
-           interfaceFunction.propertyIndex = shape.cix;
-
-           return interfaceFunction;
-       }
-    }());
-
-    var groupInterfaceFactory = (function(){
-        return function(shape,view, propertyGroup){
-            var interfaceFunction = function _interfaceFunction(value){
-                switch(value){
-                    case 'ADBE Vectors Group':
-                    case 'Contents':
-                    case 2:
-                        return interfaceFunction.content;
-                    case 'ADBE Vector Transform Group':
-                    case 3:
-                    default:
-                        return interfaceFunction.transform;
-                }
+        interfaceFunction.propertyGroup = function(val){
+            if(val === 1){
+                return interfaceFunction;
+            } else{
+                return propertyGroup(val-1);
             }
-            interfaceFunction.propertyGroup = function(val){
-                if(val === 1){
-                    return interfaceFunction;
-                } else{
-                    return propertyGroup(val-1);
-                }
-            };
-            var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
-            var transformInterface = ShapeExpressionInterface.createTransformInterface(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
-            interfaceFunction.content = content;
-            interfaceFunction.transform = transformInterface;
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            //interfaceFunction.content = interfaceFunction;
-            interfaceFunction.numProperties = shape.np;
-            interfaceFunction.propertyIndex = shape.ix;
-            interfaceFunction.nm = shape.nm;
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+        };
+        var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
+        var transformInterface = transformInterfaceFactory(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
+        interfaceFunction.content = content;
+        interfaceFunction.transform = transformInterface;
+        Object.defineProperty(interfaceFunction, '_name', {
+            get: function(){
+                return shape.nm;
+            }
+        });
+        //interfaceFunction.content = interfaceFunction;
+        interfaceFunction.numProperties = shape.np;
+        interfaceFunction.propertyIndex = shape.ix;
+        interfaceFunction.nm = shape.nm;
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
+
+    function fillInterfaceFactory(shape,view,propertyGroup){
+        function interfaceFunction(val){
+            if(val === 'Color' || val === 'color'){
+                return interfaceFunction.color;
+            } else if(val === 'Opacity' || val === 'opacity'){
+                return interfaceFunction.opacity;
+            }
         }
-    }());
-
-    var fillInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-
-            function interfaceFunction(val){
-                if(val === 'Color' || val === 'color'){
-                    return interfaceFunction.color;
-                } else if(val === 'Opacity' || val === 'opacity'){
-                    return interfaceFunction.opacity;
-                }
-            }
-            Object.defineProperty(interfaceFunction, 'color', {
-                get: function(){
+        Object.defineProperties(interfaceFunction, {
+            'color': {
+                get: function() {
                     return ExpressionValue(view.c, 1 / view.c.mult, 'color');
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'opacity', {
-                get: function(){
+            },
+            'opacity': {
+                get: function() {
                     return ExpressionValue(view.o, 100);
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
-            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
+            },
+            '_name': { value: shape.nm },
+            'mn': { value: shape.mn }
+        })
 
-            view.c.setGroupProperty(propertyGroup);
-            view.o.setGroupProperty(propertyGroup);
-            return interfaceFunction;
-        }
-    }());
+        view.c.setGroupProperty(propertyGroup);
+        view.o.setGroupProperty(propertyGroup);
+        return interfaceFunction;
+    }
 
-    var strokeInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val === 1){
-                    return ob;
-                } else{
-                    return propertyGroup(val-1);
-                }
-            };
-            function _dashPropertyGroup(val){
-                if(val === 1){
-                    return dashOb;
-                } else{
-                    return _propertyGroup(val-1);
-                }
-            };
-            function addPropertyToDashOb(i) {
-                Object.defineProperty(dashOb, shape.d[i].nm, {
-                    get: function(){
-                        return ExpressionValue(view.d.dataProps[i].p)
-                    }
-                });
+    function strokeInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val === 1){
+                return ob;
+            } else{
+                return propertyGroup(val-1);
             }
-            var i, len = shape.d ? shape.d.length : 0;
-            var dashOb = {}
-            for (i = 0; i < len; i += 1) {
-                addPropertyToDashOb(i);
-                view.d.dataProps[i].p.setGroupProperty(_dashPropertyGroup);
+        };
+        function _dashPropertyGroup(val){
+            if(val === 1){
+                return dashOb;
+            } else{
+                return _propertyGroup(val-1);
             }
-
-            function interfaceFunction(val){
-                if(val === 'Color' || val === 'color'){
-                    return interfaceFunction.color;
-                } else if(val === 'Opacity' || val === 'opacity'){
-                    return interfaceFunction.opacity;
-                } else if(val === 'Stroke Width' || val === 'stroke width'){
-                    return interfaceFunction.strokeWidth;
-                }
-            }
-            Object.defineProperty(interfaceFunction, 'color', {
+        };
+        function addPropertyToDashOb(i) {
+            Object.defineProperty(dashOb, shape.d[i].nm, {
                 get: function(){
+                    return ExpressionValue(view.d.dataProps[i].p)
+                }
+            });
+        }
+        var i, len = shape.d ? shape.d.length : 0;
+        var dashOb = {}
+        for (i = 0; i < len; i += 1) {
+            addPropertyToDashOb(i);
+            view.d.dataProps[i].p.setGroupProperty(_dashPropertyGroup);
+        }
+
+        function interfaceFunction(val){
+            if(val === 'Color' || val === 'color'){
+                return interfaceFunction.color;
+            } else if(val === 'Opacity' || val === 'opacity'){
+                return interfaceFunction.opacity;
+            } else if(val === 'Stroke Width' || val === 'stroke width'){
+                return interfaceFunction.strokeWidth;
+            }
+        }
+        Object.defineProperties(interfaceFunction, {
+            'color': {
+                get: function() {
                     return ExpressionValue(view.c, 1 / view.c.mult, 'color');
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'opacity', {
-                get: function(){
+            },
+            'opacity': {
+                get: function() {
                     return ExpressionValue(view.o, 100);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'strokeWidth', {
-                get: function(){
+            },
+            'strokeWidth': {
+                get: function() {
                     return ExpressionValue(view.w);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'dash', {
-                get: function(){
+            },
+            'dash': {
+                get: function() {
                     return dashOb;
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
-            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
+            },
+            '_name': { value: shape.nm },
+            'mn': { value: shape.mn }
+        });
 
-            view.c.setGroupProperty(_propertyGroup);
-            view.o.setGroupProperty(_propertyGroup);
-            view.w.setGroupProperty(_propertyGroup);
-            return interfaceFunction;
+        view.c.setGroupProperty(_propertyGroup);
+        view.o.setGroupProperty(_propertyGroup);
+        view.w.setGroupProperty(_propertyGroup);
+        return interfaceFunction;
+    }
+
+    function trimInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        interfaceFunction.propertyIndex = shape.ix;
 
-    var trimInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        view.s.setGroupProperty(_propertyGroup);
+        view.e.setGroupProperty(_propertyGroup);
+        view.o.setGroupProperty(_propertyGroup);
+
+        function interfaceFunction(val){
+            if(val === shape.e.ix || val === 'End' || val === 'end'){
+                return interfaceFunction.end;
             }
-            interfaceFunction.propertyIndex = shape.ix;
-
-            view.s.setGroupProperty(_propertyGroup);
-            view.e.setGroupProperty(_propertyGroup);
-            view.o.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(val){
-                if(val === shape.e.ix || val === 'End' || val === 'end'){
-                    return interfaceFunction.end;
-                }
-                if(val === shape.s.ix){
-                    return interfaceFunction.start;
-                }
-                if(val === shape.o.ix){
-                    return interfaceFunction.offset;
-                }
+            if(val === shape.s.ix){
+                return interfaceFunction.start;
             }
-            interfaceFunction.propertyIndex = shape.ix;
-            Object.defineProperty(interfaceFunction, 'start', {
-                get: function(){
+            if(val === shape.o.ix){
+                return interfaceFunction.offset;
+            }
+        }
+        interfaceFunction.propertyIndex = shape.ix;
+
+        Object.defineProperties(interfaceFunction, {
+            'start': {
+                get: function() {
                     return ExpressionValue(view.s, 1 / view.s.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'end', {
-                get: function(){
+            },
+            'end': {
+                get: function() {
                     return ExpressionValue(view.e, 1 / view.e.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'offset', {
-                get: function(){
+            },
+            'offset': {
+                get: function() {
                     return ExpressionValue(view.o);
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
+
+    function transformInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        view.transform.mProps.o.setGroupProperty(_propertyGroup);
+        view.transform.mProps.p.setGroupProperty(_propertyGroup);
+        view.transform.mProps.a.setGroupProperty(_propertyGroup);
+        view.transform.mProps.s.setGroupProperty(_propertyGroup);
+        view.transform.mProps.r.setGroupProperty(_propertyGroup);
+        if(view.transform.mProps.sk){
+            view.transform.mProps.sk.setGroupProperty(_propertyGroup);
+            view.transform.mProps.sa.setGroupProperty(_propertyGroup);
+        }
+        view.transform.op.setGroupProperty(_propertyGroup);
 
-    var transformInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        function interfaceFunction(value){
+            if(shape.a.ix === value || value === 'Anchor Point'){
+                return interfaceFunction.anchorPoint;
             }
-            view.transform.mProps.o.setGroupProperty(_propertyGroup);
-            view.transform.mProps.p.setGroupProperty(_propertyGroup);
-            view.transform.mProps.a.setGroupProperty(_propertyGroup);
-            view.transform.mProps.s.setGroupProperty(_propertyGroup);
-            view.transform.mProps.r.setGroupProperty(_propertyGroup);
-            if(view.transform.mProps.sk){
-                view.transform.mProps.sk.setGroupProperty(_propertyGroup);
-                view.transform.mProps.sa.setGroupProperty(_propertyGroup);
+            if(shape.o.ix === value || value === 'Opacity'){
+                return interfaceFunction.opacity;
             }
-            view.transform.op.setGroupProperty(_propertyGroup);
+            if(shape.p.ix === value || value === 'Position'){
+                return interfaceFunction.position;
+            }
+            if(shape.r.ix === value || value === 'Rotation' || value === 'ADBE Vector Rotation'){
+                return interfaceFunction.rotation;
+            }
+            if(shape.s.ix === value || value === 'Scale'){
+                return interfaceFunction.scale;
+            }
+            if(shape.sk && shape.sk.ix === value || value === 'Skew'){
+                return interfaceFunction.skew;
+            }
+            if(shape.sa && shape.sa.ix === value || value === 'Skew Axis'){
+                return interfaceFunction.skewAxis;
+            }
 
-            function interfaceFunction(value){
-                if(shape.a.ix === value){
-                    return interfaceFunction.anchorPoint;
-                }
-                if(shape.o.ix === value){
-                    return interfaceFunction.opacity;
-                }
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.r.ix === value){
-                    return interfaceFunction.rotation;
-                }
-                if(shape.s.ix === value){
-                    return interfaceFunction.scale;
-                }
-                if(shape.sk && shape.sk.ix === value){
-                    return interfaceFunction.skew;
-                }
-                if(shape.sa && shape.sa.ix === value){
-                    return interfaceFunction.skewAxis;
-                }
-                if(value === 'Opacity') {
-                    return interfaceFunction.opacity;
-                }
-                if(value === 'Position') {
-                    return interfaceFunction.position;
-                }
-                if(value === 'Anchor Point') {
-                    return interfaceFunction.anchorPoint;
-                }
-                if(value === 'Scale') {
-                    return interfaceFunction.scale;
-                }
-                if(value === 'Rotation' || value === 'ADBE Vector Rotation') {
-                    return interfaceFunction.rotation;
-                }
-                if(value === 'Skew') {
-                    return interfaceFunction.skew;
-                }
-                if(value === 'Skew Axis') {
-                    return interfaceFunction.skewAxis;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'opacity', {
+        }
+        Object.defineProperties(interfaceFunction, {
+            'opacity': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.o, 1/view.transform.mProps.o.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'position', {
+            },
+            'position': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.p);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'anchorPoint', {
+            },
+            'anchorPoint': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.a);
                 }
-            });
-            var scaleArray = [];
-            Object.defineProperty(interfaceFunction, 'scale', {
+            },
+            'scale': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.s, 1 / view.transform.mProps.s.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'rotation', {
+            },
+            'rotation': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.r, 1 / view.transform.mProps.r.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'skew', {
+            },
+            'skew': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.sk);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'skewAxis', {
+            },
+            'skewAxis': {
                 get: function(){
                     return ExpressionValue(view.transform.mProps.sa);
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.ty = 'tr';
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
-        }
-    }());
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.ty = 'tr';
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
 
-    var ellipseInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+    function ellipseInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
             }
-            interfaceFunction.propertyIndex = shape.ix;
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            prop.s.setGroupProperty(_propertyGroup);
-            prop.p.setGroupProperty(_propertyGroup);
-            function interfaceFunction(value){
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.s.ix === value){
-                    return interfaceFunction.size;
-                }
+        }
+        interfaceFunction.propertyIndex = shape.ix;
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        prop.s.setGroupProperty(_propertyGroup);
+        prop.p.setGroupProperty(_propertyGroup);
+        function interfaceFunction(value){
+            if(shape.p.ix === value){
+                return interfaceFunction.position;
             }
-            Object.defineProperty(interfaceFunction, 'size', {
+            if(shape.s.ix === value){
+                return interfaceFunction.size;
+            }
+        }
+        Object.defineProperties(interfaceFunction, {
+            'size': {
                 get: function(){
                     return ExpressionValue(prop.s);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'position', {
+            },
+            'position': {
                 get: function(){
                     return ExpressionValue(prop.p);
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
+
+    function starInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.or.setGroupProperty(_propertyGroup);
+        prop.os.setGroupProperty(_propertyGroup);
+        prop.pt.setGroupProperty(_propertyGroup);
+        prop.p.setGroupProperty(_propertyGroup);
+        prop.r.setGroupProperty(_propertyGroup);
+        if(shape.ir){
+            prop.ir.setGroupProperty(_propertyGroup);
+            prop.is.setGroupProperty(_propertyGroup);
+        }
 
-    var starInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        function interfaceFunction(value){
+            if(shape.p.ix === value){
+                return interfaceFunction.position;
             }
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.or.setGroupProperty(_propertyGroup);
-            prop.os.setGroupProperty(_propertyGroup);
-            prop.pt.setGroupProperty(_propertyGroup);
-            prop.p.setGroupProperty(_propertyGroup);
-            prop.r.setGroupProperty(_propertyGroup);
-            if(shape.ir){
-                prop.ir.setGroupProperty(_propertyGroup);
-                prop.is.setGroupProperty(_propertyGroup);
+            if(shape.r.ix === value){
+                return interfaceFunction.rotation;
+            }
+            if(shape.pt.ix === value){
+                return interfaceFunction.points;
+            }
+            if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
+                return interfaceFunction.outerRadius;
+            }
+            if(shape.os.ix === value){
+                return interfaceFunction.outerRoundness;
+            }
+            if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
+                return interfaceFunction.innerRadius;
+            }
+            if(shape.is && shape.is.ix === value){
+                return interfaceFunction.innerRoundness;
             }
 
-            function interfaceFunction(value){
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.r.ix === value){
-                    return interfaceFunction.rotation;
-                }
-                if(shape.pt.ix === value){
-                    return interfaceFunction.points;
-                }
-                if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
-                    return interfaceFunction.outerRadius;
-                }
-                if(shape.os.ix === value){
-                    return interfaceFunction.outerRoundness;
-                }
-                if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
-                    return interfaceFunction.innerRadius;
-                }
-                if(shape.is && shape.is.ix === value){
-                    return interfaceFunction.innerRoundness;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'position', {
-                get: function(){
+        }
+        Object.defineProperties(interfaceFunction, {
+            'position': {
+                get: function() {
                     return ExpressionValue(prop.p);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'rotation', {
-                get: function(){
+            },
+            'rotation': {
+                get: function() {
                     return ExpressionValue(prop.r, 1 / prop.r.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'points', {
-                get: function(){
+            },
+            'points': {
+                get: function() {
                     return ExpressionValue(prop.pt);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'outerRadius', {
-                get: function(){
+            },
+            'outerRadius': {
+                get: function() {
                     return ExpressionValue(prop.or);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'outerRoundness', {
+            },
+            'outerRoundness': {
                 get: function(){
                     return ExpressionValue(prop.os);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'innerRadius', {
+            },
+            'innerRadius': {
                 get: function(){
                     if(!prop.ir){
                         return 0;
                     }
                     return ExpressionValue(prop.ir);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'innerRoundness', {
+            },
+            'innerRoundness': {
                 get: function(){
                     if(!prop.is){
                         return 0;
                     }
                     return ExpressionValue(prop.is, 1 / prop.is.mult);
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
+
+    function rectInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.p.setGroupProperty(_propertyGroup);
+        prop.s.setGroupProperty(_propertyGroup);
+        prop.r.setGroupProperty(_propertyGroup);
 
-    var rectInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        function interfaceFunction(value){
+            if(shape.p.ix === value){
+                return interfaceFunction.position;
             }
-            var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.p.setGroupProperty(_propertyGroup);
-            prop.s.setGroupProperty(_propertyGroup);
-            prop.r.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(value){
-                if(shape.p.ix === value){
-                    return interfaceFunction.position;
-                }
-                if(shape.r.ix === value){
-                    return interfaceFunction.roundness;
-                }
-                if(shape.s.ix === value || value === 'Size'){
-                    return interfaceFunction.size;
-                }
-
+            if(shape.r.ix === value){
+                return interfaceFunction.roundness;
             }
-            Object.defineProperty(interfaceFunction, 'position', {
+            if(shape.s.ix === value || value === 'Size'){
+                return interfaceFunction.size;
+            }
+
+        }
+        Object.defineProperties(interfaceFunction, {
+            'position': {
                 get: function(){
                     return ExpressionValue(prop.p);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'roundness', {
+            },
+            'roundness': {
                 get: function(){
                     return ExpressionValue(prop.r);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'size', {
+            },
+            'size': {
                 get: function(){
                     return ExpressionValue(prop.s);
                 }
-            });
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
 
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+    function roundedInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        var prop = view;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.rd.setGroupProperty(_propertyGroup);
 
-    var roundedInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        function interfaceFunction(value){
+            if(shape.r.ix === value || 'Round Corners 1' === value){
+                return interfaceFunction.radius;
             }
-            var prop = view;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.rd.setGroupProperty(_propertyGroup);
 
-            function interfaceFunction(value){
-                if(shape.r.ix === value || 'Round Corners 1' === value){
-                    return interfaceFunction.radius;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'radius', {
-                get: function(){
+        }
+        Object.defineProperties(interfaceFunction, {
+            'radius': {
+                get: function() {
                     return ExpressionValue(prop.rd);
                 }
-            });
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
 
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+    function repeaterInterfaceFactory(shape,view,propertyGroup){
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        var prop = view;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.c.setGroupProperty(_propertyGroup);
+        prop.o.setGroupProperty(_propertyGroup);
 
-    var repeaterInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        function interfaceFunction(value){
+            if(shape.c.ix === value || 'Copies' === value){
+                return interfaceFunction.copies;
+            } else if(shape.o.ix === value || 'Offset' === value){
+                return interfaceFunction.offset;
             }
-            var prop = view;
-            interfaceFunction.propertyIndex = shape.ix;
-            prop.c.setGroupProperty(_propertyGroup);
-            prop.o.setGroupProperty(_propertyGroup);
 
-            function interfaceFunction(value){
-                if(shape.c.ix === value || 'Copies' === value){
-                    return interfaceFunction.copies;
-                } else if(shape.o.ix === value || 'Offset' === value){
-                    return interfaceFunction.offset;
-                }
-
-            }
-            Object.defineProperty(interfaceFunction, 'copies', {
+        }
+        Object.defineProperties(interfaceFunction, {
+            'copies': {
                 get: function(){
                     return ExpressionValue(prop.c);
                 }
-            });
-
-            Object.defineProperty(interfaceFunction, 'offset', {
+            },
+            'offset': {
                 get: function(){
                     return ExpressionValue(prop.o);
                 }
-            });
+            },
+            '_name': { value: shape.nm }
+        });
+        interfaceFunction.mn = shape.mn;
+        return interfaceFunction;
+    }
 
-            Object.defineProperty(interfaceFunction, '_name', {
-                get: function(){
-                    return shape.nm;
-                }
-            });
-            interfaceFunction.mn = shape.mn;
-            return interfaceFunction;
+    function pathInterfaceFactory(shape,view,propertyGroup){
+        var prop = view.sh;
+        function _propertyGroup(val){
+            if(val == 1){
+                return interfaceFunction;
+            } else {
+                return propertyGroup(--val);
+            }
         }
-    }());
+        prop.setGroupProperty(_propertyGroup);
 
-    var pathInterfaceFactory = (function(){
-        return function(shape,view,propertyGroup){
-            var prop = view.sh;
-            function _propertyGroup(val){
-                if(val == 1){
-                    return interfaceFunction;
-                } else {
-                    return propertyGroup(--val);
-                }
+        function interfaceFunction(val){
+            if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
+                return interfaceFunction.path;
             }
-            prop.setGroupProperty(_propertyGroup);
-
-            function interfaceFunction(val){
-                if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
-                    return interfaceFunction.path;
-                }
-            }
-
-            Object.defineProperty(interfaceFunction, 'path', {
+        }
+        Object.defineProperties(interfaceFunction, {
+            'path': {
                 get: function(){
                     if(prop.k){
                         prop.getValue();
                     }
                     return prop;
-                    //return shape_pool.clone(prop.v);
                 }
-            });
-            Object.defineProperty(interfaceFunction, 'shape', {
+            },
+            'shape': {
                 get: function(){
                     if(prop.k){
                         prop.getValue();
                     }
                     return prop;
-                    //return shape_pool.clone(prop.v);
                 }
-            });
-            Object.defineProperty(interfaceFunction, '_name', { value: shape.nm });
-            Object.defineProperty(interfaceFunction, 'ix', { value: shape.ix });
-            Object.defineProperty(interfaceFunction, 'mn', { value: shape.mn });
-            return interfaceFunction;
+            },
+            '_name': { value: shape.nm },
+            'ix': { value: shape.ix },
+            'mn': { value: shape.mn }
+        });
+        return interfaceFunction;
+    }
+
+    return function(shapes,view,propertyGroup) {
+        var interfaces;
+        function _interfaceFunction(value){
+            if(typeof value === 'number'){
+                return interfaces[value-1];
+            } else {
+                var i = 0, len = interfaces.length;
+                while(i<len){
+                    if(interfaces[i]._name === value){
+                        return interfaces[i];
+                    }
+                    i+=1;
+                }
+            }
         }
-    }());
-
-
-    return ob;
+        _interfaceFunction.propertyGroup = propertyGroup;
+        interfaces = iterateElements(shapes, view, _interfaceFunction);
+        return _interfaceFunction;
+    }
 }())
 
 var TextExpressionInterface = (function(){

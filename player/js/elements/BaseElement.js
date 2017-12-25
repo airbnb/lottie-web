@@ -25,7 +25,7 @@ BaseElement.prototype.initExpressions = function(){
     if(this.data.ty === 0 || this.data.xt){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
-        this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.itemsData,this.layerInterface);
+        this.layerInterface.shapeInterface = ShapeExpressionInterface(this.shapesData,this.itemsData,this.layerInterface);
         this.layerInterface.content = this.layerInterface.shapeInterface;
     } else if(this.data.ty === 5){
         this.layerInterface.textInterface = TextExpressionInterface(this);

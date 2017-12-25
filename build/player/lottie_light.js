@@ -541,6 +541,17 @@ var Matrix = (function(){
         return this._identity;
     }
 
+    function equals(matr){
+        var i = 0;
+        while (i < 16) {
+            if(matr.props[i] !== this.props[i]) {
+                return false;
+            }
+            i+=1;
+        }
+        return true;
+    }
+
     function clone(matr){
         var i;
         for(i=0;i<16;i+=1){
@@ -662,6 +673,7 @@ var Matrix = (function(){
         this.to2dCSS = to2dCSS;
         this.clone = clone;
         this.cloneFromProps = cloneFromProps;
+        this.equals = equals;
         this.inversePoints = inversePoints;
         this.inversePoint = inversePoint;
         this._t = this.transform;
@@ -1232,37 +1244,36 @@ function bezFunction(){
                 keyData.bezierData = storedData[bezierName];
                 return;
             }
-        var curveSegments = defaultCurveSegments;
-        var k, i, len;
+            var curveSegments = defaultCurveSegments;
+            var k, i, len;
             var ptCoord,perc,addedLength = 0;
             var ptDistance;
             var point,lastPoint = null;
-            if(pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+            if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
                 curveSegments = 2;
             }
             var bezierData = new BezierData(curveSegments);
             len = pt3.length;
-            for(k=0;k<curveSegments;k+=1){
-            point = new Array(len);
-                perc = k/(curveSegments-1);
+            for (k = 0; k < curveSegments; k += 1) {
+                point = Array.apply(null,{length:len});
+                perc = k / (curveSegments - 1);
                 ptDistance = 0;
-                for(i=0;i<len;i+=1){
-                ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
-                point[i] = ptCoord;
+                for (i = 0; i < len; i += 1){
+                    ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
+                    point[i] = ptCoord;
                     if(lastPoint !== null){
-                    ptDistance += bm_pow(point[i] - lastPoint[i],2);
+                        ptDistance += bm_pow(point[i] - lastPoint[i],2);
                     }
                 }
-            ptDistance = bm_sqrt(ptDistance);
+                ptDistance = bm_sqrt(ptDistance);
                 addedLength += ptDistance;
-                bezierData.points[k] = new PointData(ptDistance,point);
+                bezierData.points[k] = new PointData(ptDistance, point);
                 lastPoint = point;
             }
             bezierData.segmentLength = addedLength;
             keyData.bezierData = bezierData;
             storedData[bezierName] = bezierData;
-
-        }
+        };
     }());
 
     function getDistancePerc(perc,bezierData){
@@ -1285,7 +1296,7 @@ function bezFunction(){
                     initPos += dir;
                 }
                 if(initPos < 0 || initPos >= len - 1){
-                    //FIX for TypedArrays that don't store floating point values with their precise value
+                    //FIX for TypedArrays that don't store floating point values with enough accuracy
                     if(initPos === len - 1) {
                         return percents[initPos];
                     }
@@ -1360,7 +1371,6 @@ function bezFunction(){
 
     return {
         //getEasingCurve : getEasingCurve,
-        getBezierLength : getBezierLength,
         getSegmentsLength : getSegmentsLength,
         getNewSegment : getNewSegment,
         getPointInSegment : getPointInSegment,
@@ -2370,6 +2380,12 @@ var _ai = (function(){
                 if((s.length === 2 && !(s[0] === e[0] && s[1] === e[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],s[0] + to[0],s[1] + to[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],e[0] + ti[0],e[1] + ti[1])) || (s.length === 3 && !(s[0] === e[0] && s[1] === e[1] && s[2] === e[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],s[0] + to[0],s[1] + to[1],s[2] + to[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],e[0] + ti[0],e[1] + ti[1],e[2] + ti[2]))){
                     data.k[i].to = null;
                     data.k[i].ti = null;
+                }
+                if(s[0] === e[0] && s[1] === e[1] && to[0] === 0 && to[1] === 0 && ti[0] === 0 && ti[1] === 0) {
+                    if(s.length === 2 || (s[2] === e[2] && to[2] === 0 && ti[2] === 0)) {
+                        data.k[i].to = null;
+                        data.k[i].ti = null;
+                    }
                 }
             }
         }
@@ -5524,6 +5540,7 @@ function SVGRenderer(animationItem, config){
         className: (config && config.className) || ''
     };
     this.globalData = {
+        mdf: false,
         frameNum: -1,
         defs: defs,
         frameId: 0,
@@ -5561,7 +5578,7 @@ SVGRenderer.prototype.createImage = function (data) {
 };
 
 SVGRenderer.prototype.createComp = function (data) {
-    return new _g(data,this.globalData,this);
+    return new SVGCompElement(data,this.globalData,this);
 
 };
 
@@ -6210,6 +6227,68 @@ _ae.prototype.getLayerSize = function(){
         return {w:this.data.width,h:this.data.height};
     }
 };
+function RenderableDOMElement() {
+
+}
+extendPrototype2([_ae], RenderableDOMElement);
+
+RenderableDOMElement.prototype.initElement = function(data,globalData,comp) {
+    this.initFrame();
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initHierarchy();
+    this.initRenderable();
+    this.initRendererElement();
+    this.createContainerElements();
+    this.addMasks();
+    this.createContent();
+    this.hide();
+}
+
+RenderableDOMElement.prototype.hide = function(){
+    if (!this.hidden && (!this.isInRange || this.isTransparent)) {
+        this.layerElement.style.display = 'none';
+        this.hidden = true;
+    }
+};
+
+RenderableDOMElement.prototype.show = function(){
+    if (this.isInRange && !this.isTransparent){
+        if (!this.data.hd) {
+            this.layerElement.style.display = 'block';
+        }
+        this.hidden = false;
+        this.firstFrame = true;
+        this.maskManager.firstFrame = true;
+    }
+};
+
+RenderableDOMElement.prototype.renderFrame = function() {
+    //If it is exported as hidden (data.hd === true) no need to render
+    //If it is not visible no need to render
+    if (this.data.hd || this.hidden) {
+        return;
+    }
+    this.renderTransform();
+    this.renderRenderable();
+    this.renderElement();
+    this.renderInnerContent();
+    if (this.firstFrame) {
+        this.firstFrame = false;
+    }
+};
+
+RenderableDOMElement.prototype.renderInnerContent = function() {};
+
+RenderableDOMElement.prototype.destroy = function(){
+    this.innerElem =  null;
+    this.destroy_e();
+};
+
+RenderableDOMElement.prototype.prepareFrame = function(num) {
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isInRange);
+};
 function ProcessedElement(element, position) {
 	this.elem = element;
 	this.pos = position;
@@ -6365,7 +6444,7 @@ _e.prototype.initExpressions = function(){
     if(this.data.ty === 0 || this.data.xt){
         this.compInterface = CompExpressionInterface(this);
     } else if(this.data.ty === 4){
-        this.layerInterface.shapeInterface = ShapeExpressionInterface.createShapeInterface(this.shapesData,this.itemsData,this.layerInterface);
+        this.layerInterface.shapeInterface = ShapeExpressionInterface(this.shapesData,this.itemsData,this.layerInterface);
         this.layerInterface.content = this.layerInterface.shapeInterface;
     } else if(this.data.ty === 5){
         this.layerInterface.textInterface = TextExpressionInterface(this);
@@ -6481,18 +6560,8 @@ _i.prototype.hide = function() {
 
 extendPrototype2([_e,_af,_ad,_ac], _i);
 
-function _d(data,globalData,comp){
-    /*this.globalData = globalData;
-    this.comp = comp;
-    this.data = data;
-    this.matteElement = null;
-    this.transformedElement = null;
-    this.isTransparent = false;
-    this._sizeChanged = false;
-    this.init();*/
+function _d(){
 };
-
-//createElement(_e, _d);
 
 _d.prototype.initRendererElement = function() {
     this.layerElement = createNS('g');
@@ -6620,26 +6689,7 @@ _d.prototype.createContainerElements = function(){
 
 };
 
-
-_d.prototype.setBlendMode = _e.prototype.setBlendMode;
-
-_d.prototype.renderFrame = function() {
-    //If it is exported as hidden (data.hd === true) no need to render
-    //If it is not visible no need to render
-    if (this.data.hd || this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.renderElement();
-    this.renderInnerContent();
-    if (this.firstFrame) {
-        this.firstFrame = false;
-    }
-};
-
 _d.prototype.renderElement = function() {
-
     if (this.finalTransform.matMdf) {
         this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
     }
@@ -6671,24 +6721,6 @@ _d.prototype.setMatte = function(id) {
     this.matteElement.setAttribute("mask", "url(" + locationHref + "#" + id + ")");
 };
 
-_d.prototype.hide = function(){
-    if (!this.hidden && (!this.isInRange || this.isTransparent)) {
-        this.layerElement.style.display = 'none';
-        this.hidden = true;
-    }
-};
-
-_d.prototype.show = function(){
-    if (this.isInRange && !this.isTransparent){
-        if (!this.data.hd) {
-            this.layerElement.style.display = 'block';
-        }
-        this.hidden = false;
-        this.firstFrame = true;
-        this.maskManager.firstFrame = true;
-    }
-};
-
 function _f(data,globalData,comp){
     //List of drawable elements
     this.shapes = [];
@@ -6708,20 +6740,7 @@ function _f(data,globalData,comp){
     this.prevViewData = [];
 }
 
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae], _f);
-
-_f.prototype.initElement = function(data,globalData,comp) {
-    this.initFrame();
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initHierarchy();
-    this.initRenderable();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    this.createContent();
-    this.hide();
-}
+extendPrototype2([_e,_af,_d,_ad,_ac,RenderableDOMElement], _f);
 
 _f.prototype.initSecondaryElement = function() {
 }
@@ -7282,13 +7301,152 @@ _k.prototype.emptyProp = new LetterProps();
 _k.prototype.destroy = function(){
     this._parent.destroy.call(this._parent);
 };
+function _g(){}
+
+extendPrototype2([_e, _af, _ad, _ac, RenderableDOMElement], _g);
+
+_g.prototype.initElement = function(data,globalData,comp) {
+    this.initFrame();
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initRenderable();
+    this.initHierarchy();
+    this.initRendererElement();
+    this.createContainerElements();
+    this.addMasks();
+    if(this.data.xt || !globalData.progressiveLoad){
+        this.buildAllItems();
+    }
+    this.hide();
+};
+
+/*_g.prototype.hide = function(){
+    if(!this.hidden){
+        this.hideElement();
+        var i,len = this.elements.length;
+        for( i = 0; i < len; i+=1 ){
+            if(this.elements[i]){
+                this.elements[i].hide();
+            }
+        }
+    }
+};*/
+
+_g.prototype.prepareFrame = function(num){
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isInRange);
+    if(!this.isInRange && !this.data.xt){
+        return;
+    }
+
+    if (!this.tm._placeholder) {
+        var timeRemapped = this.tm.v;
+        if(timeRemapped === this.data.op){
+            timeRemapped = this.data.op - 1;
+        }
+        this.renderedFrame = timeRemapped;
+    } else {
+        this.renderedFrame = num/this.data.sr;
+    }
+    var i,len = this.elements.length;
+    if(!this.completeLayers){
+        this.checkLayers(this.renderedFrame);
+    }
+    for( i = 0; i < len; i+=1 ){
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
+        }
+    }
+};
+
+_g.prototype.renderInnerContent = function() {
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i += 1 ){
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].renderFrame();
+        }
+    }
+};
+
+_g.prototype.setElements = function(elems){
+    this.elements = elems;
+};
+
+_g.prototype.getElements = function(){
+    return this.elements;
+};
+
+_g.prototype.destroyElements = function(){
+    var i,len = this.layers.length;
+    for( i = 0; i < len; i+=1 ){
+        if(this.elements[i]){
+            this.elements[i].destroy();
+        }
+    }
+};
+
+_g.prototype.destroy = function(){
+    this.destroyElements();
+    this.destroy_e();
+};
+
+function _h(data,globalData,comp){
+    this.assetData = globalData.getAssetData(data.refId);
+    this.initElement(data,globalData,comp);
+}
+
+extendPrototype2([_e,_af,_d,_ad,_ac,RenderableDOMElement], _h);
+
+_h.prototype.createContent = function(){
+
+    var assetPath = this.globalData.getAssetsPath(this.assetData);
+
+    this.innerElem = createNS('image');
+    this.innerElem.setAttribute('width',this.assetData.w+"px");
+    this.innerElem.setAttribute('height',this.assetData.h+"px");
+    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
+    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+    
+    //TODO check if this is needed. Doesn't look like it is
+    //this.maskedElement = this.innerElem;
+    this.layerElement.appendChild(this.innerElem);
+};
+
+function _j(data,globalData,comp){
+    this.initElement(data,globalData,comp);
+}
+extendPrototype2([_h], _j);
+
+_j.prototype.createContent = function(){
+
+    var rect = createNS('rect');
+    ////rect.style.width = this.data.sw;
+    ////rect.style.height = this.data.sh;
+    ////rect.style.fill = this.data.sc;
+    rect.setAttribute('width',this.data.sw);
+    rect.setAttribute('height',this.data.sh);
+    rect.setAttribute('fill',this.data.sc);
+    this.layerElement.appendChild(rect);
+};
+function SVGCompElement(data,globalData,comp){
+    this.layers = data.layers;
+    this.supports3d = true;
+    this.completeLayers = false;
+    this.pendingElements = [];
+    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
+    //this.layerElement = createNS('g');
+    this.initElement(data,globalData,comp);
+    this.tm = data.tm ? _ai.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
+}
+
+extendPrototype2([SVGRenderer, _g, _d], SVGCompElement);
 function SVGTextElement(data,globalData,comp){
     this.textSpans = [];
     this.renderType = 'svg';
     this.initElement(data,globalData,comp);
 }
 
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae,_k], SVGTextElement);
+extendPrototype2([_e,_af,_d,_ad,_ac,RenderableDOMElement,_k], SVGTextElement);
 
 SVGTextElement.prototype.createContent = function(){
 
@@ -7955,159 +8113,6 @@ SVGEffects.prototype.renderFrame = function(firstFrame){
         this.filters[i].renderFrame(firstFrame);
     }
 };
-function _g(data,globalData,comp){
-    this.layers = data.layers;
-    this.supports3d = true;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    //this.layerElement = createNS('g');
-    this.initElement(data,globalData,comp);
-    this.tm = data.tm ? _ai.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
-    
-}
-
-extendPrototype2([_e,_af,SVGRenderer,_d,_ad,_ac,_ae], _g);
-
-_g.prototype.initElement = function(data,globalData,comp) {
-    this.initFrame();
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initRenderable();
-    this.initHierarchy();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    if(this.data.xt || !globalData.progressiveLoad){
-        this.buildAllItems();
-    }
-    this.hide();
-};
-
-/*_g.prototype.hide = function(){
-    if(!this.hidden){
-        this.hideElement();
-        var i,len = this.elements.length;
-        for( i = 0; i < len; i+=1 ){
-            if(this.elements[i]){
-                this.elements[i].hide();
-            }
-        }
-    }
-};*/
-
-_g.prototype.prepareFrame = function(num){
-    this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange);
-    if(!this.isInRange && !this.data.xt){
-        return;
-    }
-
-    if (!this.tm._placeholder) {
-        var timeRemapped = this.tm.v;
-        if(timeRemapped === this.data.op){
-            timeRemapped = this.data.op - 1;
-        }
-        this.renderedFrame = timeRemapped;
-    } else {
-        this.renderedFrame = num/this.data.sr;
-    }
-    var i,len = this.elements.length;
-    if(!this.completeLayers){
-        this.checkLayers(this.renderedFrame);
-    }
-    for( i = 0; i < len; i+=1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
-        }
-    }
-};
-
-_g.prototype.renderInnerContent = function() {
-    var i,len = this.layers.length;
-    for( i = 0; i < len; i += 1 ){
-        if(this.completeLayers || this.elements[i]){
-            this.elements[i].renderFrame();
-        }
-    }
-};
-
-_g.prototype.setElements = function(elems){
-    this.elements = elems;
-};
-
-_g.prototype.getElements = function(){
-    return this.elements;
-};
-
-_g.prototype.destroyElements = function(){
-    var i,len = this.layers.length;
-    for( i = 0; i < len; i+=1 ){
-        if(this.elements[i]){
-            this.elements[i].destroy();
-        }
-    }
-};
-
-_g.prototype.destroy = function(){
-    this.destroyElements();
-    this.destroy_e();
-};
-
-function _h(data,globalData,comp){
-    this.assetData = globalData.getAssetData(data.refId);
-    this.initElement(data,globalData,comp);
-}
-
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae], _h);
-
-_h.prototype.initElement = _f.prototype.initElement;
-
-_h.prototype.createContent = function(){
-
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
-
-    this.innerElem = createNS('image');
-    this.innerElem.setAttribute('width',this.assetData.w+"px");
-    this.innerElem.setAttribute('height',this.assetData.h+"px");
-    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
-    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
-    
-    //TODO check if this is needed. Doesn't look like it is
-    //this.maskedElement = this.innerElem;
-    this.layerElement.appendChild(this.innerElem);
-
-
-};
-
-_h.prototype.prepareFrame = function(num) {
-    this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange);
-};
-
-_h.prototype.renderInnerContent = function() {};
-
-_h.prototype.destroy = function(){
-    this.innerElem =  null;
-    this.destroy_e();
-};
-
-function _j(data,globalData,comp){
-    this.initElement(data,globalData,comp);
-}
-extendPrototype2([_e,_af,_d,_ad,_ac,_ae, _h], _j);
-
-_j.prototype.createContent = function(){
-
-    var rect = createNS('rect');
-    ////rect.style.width = this.data.sw;
-    ////rect.style.height = this.data.sh;
-    ////rect.style.fill = this.data.sc;
-    rect.setAttribute('width',this.data.sw);
-    rect.setAttribute('height',this.data.sh);
-    rect.setAttribute('fill',this.data.sc);
-    this.layerElement.appendChild(rect);
-};
 var animationManager = (function(){
     var moduleOb = {};
     var registeredAnimations = [];
@@ -8601,12 +8606,12 @@ _a.prototype.waitForFontsLoaded = (function(){
 
     return function(){
         checkFontsLoaded.bind(this)();
-    }
+    };
 }());
 
 _a.prototype.addPendingElement = function () {
     this.pendingElements += 1;
-}
+};
 
 _a.prototype.elementLoaded = function () {
     this.pendingElements--;
@@ -8636,7 +8641,7 @@ _a.prototype.resize = function () {
 
 _a.prototype.setSubframe = function(flag){
     this.subframeEnabled = flag ? true : false;
-}
+};
 
 _a.prototype.gotoFrame = function () {
     this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
@@ -8788,7 +8793,7 @@ _a.prototype.setSegment = function (init,end) {
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
-}
+};
 
 _a.prototype.playSegments = function (arr,forceFlag) {
     if(typeof arr[0] === 'object'){
@@ -8818,7 +8823,7 @@ _a.prototype.checkSegments = function(){
     if(this.segments.length){
         this.pendingSegment = true;
     }
-}
+};
 
 _a.prototype.remove = function (name) {
     if(name && this.name != name){
