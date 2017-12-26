@@ -281,13 +281,14 @@ IShapeElement.prototype.renderInnerContent = function() {
     }
     this.renderShape(this.shapesData,this.itemsData, null);
 
-    var pathString;
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i].mdf || this.firstFrame) {
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
             if(this.stylesList[i].msElem){
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
+                //Adding M0 0 fixes same mask bug on all browsers
+                this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
             }
+            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
         }
     }
 };
