@@ -400,7 +400,6 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
         this.stylesList[i].mdf = false;
     }
     this.renderShape(this.shapesData,this.itemsData, null);
-
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i].ld === '0') {
             this.stylesList[i].ld = '1';
@@ -408,10 +407,12 @@ IShapeElement.prototype.renderFrame = function(parentMatrix){
             //this.stylesList[i].parent.appendChild(this.stylesList[i].pElem);
         }
         if (this.stylesList[i].mdf || this.firstFrame) {
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
             if(this.stylesList[i].msElem){
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
+                //Adding M0 0 fixes same mask bug on all browsers
+                this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
             }
+            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
         }
     }
     if (this.firstFrame) {
