@@ -350,7 +350,7 @@
             return pt;
         },
         vectorOnPath: function(perc, time, vectorType){
-            //perc doesn't use triple equality because can be a Number object, not a primitive.
+            //perc doesn't use triple equality because it can be a Number object as well as a primitive.
             perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
             var pt1 = this.pointOnPath(perc, time);
             var pt2 = this.pointOnPath(perc + 0.001, time);
