@@ -7,7 +7,7 @@ function CVCompElement(data, globalData, comp) {
     this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }
 
-extendPrototype2([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
+extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
 
 CVCompElement.prototype.renderInnerContent = function() {
     var i,len = this.layers.length;

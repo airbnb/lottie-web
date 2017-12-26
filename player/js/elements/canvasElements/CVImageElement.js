@@ -5,7 +5,7 @@ function CVImageElement(data, globalData, comp){
     this.initElement(data,globalData,comp);
     this.globalData.addPendingElement();
 }
-extendPrototype2([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVImageElement);
+extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVImageElement);
 
 CVImageElement.prototype.initElement = IShapeElement.prototype.initElement;
 CVImageElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;

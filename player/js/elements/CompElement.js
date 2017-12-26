@@ -1,6 +1,6 @@
 function ICompElement(){}
 
-extendPrototype2([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
+extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
 
 ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initFrame();

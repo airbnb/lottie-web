@@ -9,7 +9,7 @@ function HCompElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
 
-extendPrototype2([HybridRenderer, ICompElement, HBaseElement], HCompElement);
+extendPrototype([HybridRenderer, ICompElement, HBaseElement], HCompElement);
 
 HCompElement.prototype.createContainerElements = function(){
     //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';

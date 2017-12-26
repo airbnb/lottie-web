@@ -17,7 +17,7 @@ function IShapeElement(data,globalData,comp){
     this.prevViewData = [];
 }
 
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IShapeElement);
+extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IShapeElement);
 
 IShapeElement.prototype.initSecondaryElement = function() {
 }

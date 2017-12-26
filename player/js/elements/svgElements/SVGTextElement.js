@@ -4,7 +4,7 @@ function SVGTextElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
 
-extendPrototype2([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], SVGTextElement);
+extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], SVGTextElement);
 
 SVGTextElement.prototype.createContent = function(){
 

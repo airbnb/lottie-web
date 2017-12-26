@@ -1,7 +1,7 @@
 function RenderableDOMElement() {
 
 }
-extendPrototype2([RenderableElement], RenderableDOMElement);
+extendPrototype([RenderableElement], RenderableDOMElement);
 
 RenderableDOMElement.prototype.initElement = function(data,globalData,comp) {
     this.initFrame();

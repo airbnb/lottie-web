@@ -1,6 +1,6 @@
 function TrimModifier(){
 };
-extendPrototype2([ShapeModifier], TrimModifier);
+extendPrototype([ShapeModifier], TrimModifier);
 TrimModifier.prototype.processKeys = function(forceRender) {
     if (this.elem.globalData.frameId === this.frameId && !forceRender) {
         return;

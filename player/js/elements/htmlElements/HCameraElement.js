@@ -29,7 +29,7 @@ function HCameraElement(data,globalData,comp){
     this._prevMat = new Matrix();
     this.firstFrame = true;
 }
-extendPrototype2([BaseElement, FrameElement], HCameraElement);
+extendPrototype([BaseElement, FrameElement], HCameraElement);
 
 HCameraElement.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;

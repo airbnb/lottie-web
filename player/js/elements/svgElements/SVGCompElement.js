@@ -9,4 +9,4 @@ function SVGCompElement(data,globalData,comp){
     this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }
 
-extendPrototype2([SVGRenderer, ICompElement, SVGBaseElement], SVGCompElement);
+extendPrototype([SVGRenderer, ICompElement, SVGBaseElement], SVGCompElement);

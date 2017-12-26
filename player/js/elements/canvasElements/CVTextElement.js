@@ -17,7 +17,7 @@ function CVTextElement(data, globalData, comp){
     }
     this.initElement(data,globalData,comp);
 }
-extendPrototype2([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], CVTextElement);
+extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], CVTextElement);
 
 CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2d');
 

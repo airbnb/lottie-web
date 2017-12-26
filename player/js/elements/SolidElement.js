@@ -1,7 +1,7 @@
 function ISolidElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
-extendPrototype2([IImageElement], ISolidElement);
+extendPrototype([IImageElement], ISolidElement);
 
 ISolidElement.prototype.createContent = function(){
 

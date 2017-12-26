@@ -1,5 +1,5 @@
 function RoundCornersModifier(){};
-extendPrototype(ShapeModifier,RoundCornersModifier);
+extendPrototype([ShapeModifier],RoundCornersModifier);
 RoundCornersModifier.prototype.processKeys = function(forceRender){
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;

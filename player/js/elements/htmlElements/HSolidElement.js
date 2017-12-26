@@ -1,7 +1,7 @@
 function HSolidElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
-extendPrototype2([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], HSolidElement);
+extendPrototype([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], HSolidElement);
 
 HSolidElement.prototype.createContent = function(){
     var rect;

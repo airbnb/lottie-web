@@ -26,4 +26,4 @@ NullElement.prototype.sourceRectAtTime = function() {
 NullElement.prototype.hide = function() {
 };
 
-extendPrototype2([BaseElement,TransformElement,HierarchyElement,FrameElement], NullElement);
+extendPrototype([BaseElement,TransformElement,HierarchyElement,FrameElement], NullElement);

@@ -23,7 +23,7 @@ function HShapeElement(data,globalData,comp){
         w: 0
     };
 }
-extendPrototype2([BaseElement,TransformElement,HSolidElement,IShapeElement,HBaseElement,HierarchyElement,FrameElement,RenderableElement], HShapeElement);
+extendPrototype([BaseElement,TransformElement,HSolidElement,IShapeElement,HBaseElement,HierarchyElement,FrameElement,RenderableElement], HShapeElement);
 HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderInnerContent;
 
 HShapeElement.prototype.createContent = function(){

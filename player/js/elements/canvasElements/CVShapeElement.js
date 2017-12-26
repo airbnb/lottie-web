@@ -9,7 +9,7 @@ function CVShapeElement(data, globalData, comp) {
     this.initElement(data, globalData, comp);
 }
 
-extendPrototype2([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement], CVShapeElement);
+extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement], CVShapeElement);
 
 CVShapeElement.prototype.initElement = function(data,globalData,comp) {
     this.initFrame();

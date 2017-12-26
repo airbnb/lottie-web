@@ -12,7 +12,7 @@ function HTextElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 
 }
-extendPrototype2([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], HTextElement);
+extendPrototype([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], HTextElement);
 
 HTextElement.prototype.createContent = function(){
     this.isMasked = this.checkMasks();

@@ -20,7 +20,7 @@ function HybridRenderer(animationItem, config){
 
 }
 
-extendPrototype(BaseRenderer,HybridRenderer);
+extendPrototype([BaseRenderer],HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 

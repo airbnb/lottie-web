@@ -284,108 +284,93 @@
     var ShapePropertyConstructorFunction = ShapePropertyFactory.getConstructorFunction();
     var KeyframedShapePropertyConstructorFunction = ShapePropertyFactory.getKeyframedConstructorFunction();
 
-    ShapePropertyConstructorFunction.prototype.vertices = function(prop, time){
-        var shapePath = this.v;
-        if(time !== undefined) {
-            shapePath = this.getValueAtTime(time, 0);
-        }
-        var i, len = shapePath._length;
-        var vertices = shapePath[prop];
-        var points = shapePath.v;
-        var arr = Array.apply(null,{length:len})
-        for(i = 0; i < len; i += 1) {
-            if(prop === 'i' || prop === 'o') {
-                arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]
-            } else {
-                arr[i] = [vertices[i][0], vertices[i][1]]
+    function ShapeExpressions(){}
+    ShapeExpressions.prototype = {
+        vertices: function(prop, time){
+            var shapePath = this.v;
+            if(time !== undefined) {
+                shapePath = this.getValueAtTime(time, 0);
             }
-            
-        }
-        return arr;
-    }
-
-    ShapePropertyConstructorFunction.prototype.points = function(time){
-        return this.vertices('v', time);
-    }
-
-    ShapePropertyConstructorFunction.prototype.inTangents = function(time){
-        return this.vertices('i', time);
-    }
-
-    ShapePropertyConstructorFunction.prototype.outTangents = function(time){
-        return this.vertices('o', time);
-    }
-
-    ShapePropertyConstructorFunction.prototype.isClosed = function(){
-        return this.v.c;
-    }
-
-    ShapePropertyConstructorFunction.prototype.pointOnPath = function(perc, time){
-        var shapePath = this.v;
-        if(time !== undefined) {
-            shapePath = this.getValueAtTime(time, 0);
-        }
-        if(!this._segmentsLength) {
-            this._segmentsLength = bez.getSegmentsLength(shapePath);
-        }
-
-        var segmentsLength = this._segmentsLength;
-        var lengths = segmentsLength.lengths;
-        var lengthPos = segmentsLength.totalLength * perc;
-        var i = 0, len = lengths.length;
-        var j = 0, jLen;
-        var accumulatedLength = 0;
-        while(i < len) {
-            if(accumulatedLength + lengths[i].addedLength > lengthPos) {
-                var initIndex = i;
-                var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
-                var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;
-                var pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i])
-                break;
-            } else {
-                accumulatedLength += lengths[i].addedLength;
+            var i, len = shapePath._length;
+            var vertices = shapePath[prop];
+            var points = shapePath.v;
+            var arr = Array.apply(null,{length:len})
+            for(i = 0; i < len; i += 1) {
+                if(prop === 'i' || prop === 'o') {
+                    arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]
+                } else {
+                    arr[i] = [vertices[i][0], vertices[i][1]]
+                }
+                
             }
-            i += 1;
-        }
-        if(!pt){
-            pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]]
-        }
-        return pt;
+            return arr;
+        },
+        points: function(time){
+            return this.vertices('v', time);
+        },
+        inTangents: function(time){
+            return this.vertices('i', time);
+        },
+        outTangents: function(time){
+            return this.vertices('o', time);
+        },
+        isClosed: function(){
+            return this.v.c;
+        },
+        pointOnPath: function(perc, time){
+            var shapePath = this.v;
+            if(time !== undefined) {
+                shapePath = this.getValueAtTime(time, 0);
+            }
+            if(!this._segmentsLength) {
+                this._segmentsLength = bez.getSegmentsLength(shapePath);
+            }
+
+            var segmentsLength = this._segmentsLength;
+            var lengths = segmentsLength.lengths;
+            var lengthPos = segmentsLength.totalLength * perc;
+            var i = 0, len = lengths.length;
+            var j = 0, jLen;
+            var accumulatedLength = 0;
+            while(i < len) {
+                if(accumulatedLength + lengths[i].addedLength > lengthPos) {
+                    var initIndex = i;
+                    var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
+                    var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;
+                    var pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i])
+                    break;
+                } else {
+                    accumulatedLength += lengths[i].addedLength;
+                }
+                i += 1;
+            }
+            if(!pt){
+                pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]]
+            }
+            return pt;
+        },
+        vectorOnPath: function(perc, time, vectorType){
+            //perc doesn't use triple equality because can be a Number object, not a primitive.
+            perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
+            var pt1 = this.pointOnPath(perc, time);
+            var pt2 = this.pointOnPath(perc + 0.001, time);
+            var xLength = pt2[0] - pt1[0];
+            var yLength = pt2[1] - pt1[1];
+            var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
+            var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
+            return unitVector;
+        },
+        tangentOnPath: function(perc, time){
+            return this.vectorOnPath(perc, time, 'tangent');
+        },
+        normalOnPath: function(perc, time){
+            return this.vectorOnPath(perc, time, 'normal');
+        },
+        setGroupProperty: setGroupProperty,
+        getValueAtTime: getStaticValueAtTime
     }
-
-    ShapePropertyConstructorFunction.prototype.vectorOnPath = function(perc, time, vectorType){
-        //perc doesn't use triple equality because can be a Number object, not a primitive.
-        perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
-        var pt1 = this.pointOnPath(perc, time);
-        var pt2 = this.pointOnPath(perc + 0.001, time);
-        var xLength = pt2[0] - pt1[0];
-        var yLength = pt2[1] - pt1[1];
-        var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
-        var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
-        return unitVector;
-    }
-
-    ShapePropertyConstructorFunction.prototype.tangentOnPath = function(perc, time){
-        return this.vectorOnPath(perc, time, 'tangent');
-    }
-
-    ShapePropertyConstructorFunction.prototype.normalOnPath = function(perc, time){
-        return this.vectorOnPath(perc, time, 'normal');
-    }
-
-    ShapePropertyConstructorFunction.prototype.setGroupProperty = setGroupProperty;
-    ShapePropertyConstructorFunction.prototype.getValueAtTime = getStaticValueAtTime;
-
-    KeyframedShapePropertyConstructorFunction.prototype.vertices = ShapePropertyConstructorFunction.prototype.vertices;
-    KeyframedShapePropertyConstructorFunction.prototype.points = ShapePropertyConstructorFunction.prototype.points;
-    KeyframedShapePropertyConstructorFunction.prototype.inTangents = ShapePropertyConstructorFunction.prototype.inTangents;
-    KeyframedShapePropertyConstructorFunction.prototype.outTangents = ShapePropertyConstructorFunction.prototype.outTangents;
-    KeyframedShapePropertyConstructorFunction.prototype.isClosed = ShapePropertyConstructorFunction.prototype.isClosed;
-    KeyframedShapePropertyConstructorFunction.prototype.pointOnPath = ShapePropertyConstructorFunction.prototype.pointOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.vectorOnPath = ShapePropertyConstructorFunction.prototype.vectorOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.tangentOnPath = ShapePropertyConstructorFunction.prototype.tangentOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.normalOnPath = ShapePropertyConstructorFunction.prototype.normalOnPath;
-    KeyframedShapePropertyConstructorFunction.prototype.setGroupProperty = ShapePropertyConstructorFunction.prototype.setGroupProperty;
+    extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
+    extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);
     KeyframedShapePropertyConstructorFunction.prototype.getValueAtTime = getShapeValueAtTime;
     KeyframedShapePropertyConstructorFunction.prototype.initiateExpression = ExpressionManager.initiateExpression;
 

@@ -31,7 +31,7 @@ function SVGRenderer(animationItem, config){
 
 }
 
-extendPrototype(BaseRenderer,SVGRenderer);
+extendPrototype([BaseRenderer],SVGRenderer);
 
 SVGRenderer.prototype.createBase = function (data) {
     return new SVGBaseElement(data,this.globalData,this);

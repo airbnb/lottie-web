@@ -26,7 +26,7 @@ function CanvasRenderer(animationItem, config){
     this.transformMat = new Matrix();
     this.completeLayers = false;
 }
-extendPrototype(BaseRenderer,CanvasRenderer);
+extendPrototype([BaseRenderer],CanvasRenderer);
 
 CanvasRenderer.prototype.createBase = function (data) {
     return new CVBaseElement(data, this.globalData, this);

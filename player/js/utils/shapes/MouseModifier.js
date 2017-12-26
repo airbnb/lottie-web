@@ -1,5 +1,5 @@
 function MouseModifier(){};
-extendPrototype(ShapeModifier,MouseModifier);
+extendPrototype([ShapeModifier],MouseModifier);
 MouseModifier.prototype.processKeys = function(forceRender){
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;
