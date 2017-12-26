@@ -12,8 +12,8 @@
 
         #lottie{
             background-color:#000;
-            width:480px;
-            height:480px;
+            width:100%;
+            height:100%;
             /*width:360px;
             height:640px;*/
             display:block;
@@ -160,15 +160,15 @@
         container: elem,
         renderer: 'svg',
         loop: true,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
-            progressiveLoad:false
+            progressiveLoad:true
         },
-        path: 'exports/render/data.json'
+        path: 'exports/gannon/ripple.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
-        anim.setSubframe(false);
+        //anim.setSubframe(false);
         //setTimeout(function(){anim.play()}, 0);
     })
     window.addEventListener('resize', function(){

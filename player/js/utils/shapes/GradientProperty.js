@@ -2,15 +2,47 @@ function GradientProperty(elem,data,arr){
     this.prop = PropertyFactory.getProp(elem,data.k,1,null,[]);
     this.data = data;
     this.k = this.prop.k;
-    this.c = createTypedArray('uint8c', data.p*4)
+    this.c = createTypedArray('uint8c', data.p*4);
     var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
     this.o = createTypedArray('float32', cLength);
     this.cmdf = false;
     this.omdf = false;
+    this._collapsable = this.checkCollapsable();
+    this._hasOpacity = cLength;
     if(this.prop.k){
         arr.push(this);
     }
     this.getValue(true);
+}
+
+GradientProperty.prototype.comparePoints = function(values, points) {
+    var i = 0, len = this.o.length/2, diff;
+    while(i < len) {
+        diff = Math.abs(values[i*4] - values[points*4 + i*2]);
+        if(diff > 0.01){
+            return false;
+        }
+        i += 1;
+    }
+    return true;
+}
+
+GradientProperty.prototype.checkCollapsable = function() {
+    if (this.o.length/2 !== this.c.length/4) {
+        return false;
+    }
+    if (this.data.k.k[0].s) {
+        var i = 0, len = this.data.k.k.length;
+        while (i < len) {
+            if (!this.comparePoints(this.data.k.k[i].s, this.data.p)) {
+                return false;
+            }
+            i += 1;
+        }
+    } else if(!this.comparePoints(this.data.k.k, this.data.p)) {
+        return false;
+    }
+    return true;
 }
 
 GradientProperty.prototype.getValue = function(forceRender){

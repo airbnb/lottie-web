@@ -397,7 +397,7 @@ IShapeElement.prototype.renderFill = function(styleData,itemData){
 
 IShapeElement.prototype.renderGradient = function(styleData, itemData) {
     var gfill = itemData.gf;
-    var opFill = itemData.of;
+    var hasOpacity = itemData.g._hasOpacity;
     var pt1 = itemData.s.v, pt2 = itemData.e.v;
 
     if (itemData.o.mdf || this.firstFrame) {
@@ -409,9 +409,9 @@ IShapeElement.prototype.renderGradient = function(styleData, itemData) {
         var attr2 = attr1 === 'x1' ? 'y1' : 'cy';
         gfill.setAttribute(attr1, pt1[0]);
         gfill.setAttribute(attr2, pt1[1]);
-        if (opFill) {
-            opFill.setAttribute(attr1, pt1[0]);
-            opFill.setAttribute(attr2, pt1[1]);
+        if (hasOpacity && !itemData.g._collapsable) {
+            itemData.of.setAttribute(attr1, pt1[0]);
+            itemData.of.setAttribute(attr2, pt1[1]);
         }
     }
     var stops, i, len, stop;
@@ -425,13 +425,19 @@ IShapeElement.prototype.renderGradient = function(styleData, itemData) {
             stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
         }
     }
-    if (opFill && (itemData.g.omdf || this.firstFrame)) {
-        stops = itemData.ost;
+    if (hasOpacity && (itemData.g.omdf || this.firstFrame)) {
         var oValues = itemData.g.o;
+        if(itemData.g._collapsable) {
+            stops = itemData.cst;
+        } else {
+            stops = itemData.ost;
+        }
         len = stops.length;
         for (i = 0; i < len; i += 1) {
             stop = stops[i];
-            stop.setAttribute('offset', oValues[i * 2] + '%');
+            if(!itemData.g._collapsable) {
+                stop.setAttribute('offset', oValues[i * 2] + '%');
+            }
             stop.setAttribute('stop-opacity', oValues[i * 2 + 1]);
         }
     }
@@ -439,9 +445,9 @@ IShapeElement.prototype.renderGradient = function(styleData, itemData) {
         if (itemData.e.mdf  || this.firstFrame) {
             gfill.setAttribute('x2', pt2[0]);
             gfill.setAttribute('y2', pt2[1]);
-            if (opFill) {
-                opFill.setAttribute('x2', pt2[0]);
-                opFill.setAttribute('y2', pt2[1]);
+            if (hasOpacity && !itemData.g._collapsable) {
+                itemData.of.setAttribute('x2', pt2[0]);
+                itemData.of.setAttribute('y2', pt2[1]);
             }
         }
     } else {
@@ -449,8 +455,8 @@ IShapeElement.prototype.renderGradient = function(styleData, itemData) {
         if (itemData.s.mdf || itemData.e.mdf || this.firstFrame) {
             rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
             gfill.setAttribute('r', rad);
-            if(opFill){
-                opFill.setAttribute('r', rad);
+            if(hasOpacity && !itemData.g._collapsable){
+                itemData.of.setAttribute('r', rad);
             }
         }
         if (itemData.e.mdf || itemData.h.mdf || itemData.a.mdf || this.firstFrame) {
@@ -465,9 +471,9 @@ IShapeElement.prototype.renderGradient = function(styleData, itemData) {
             var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
             gfill.setAttribute('fx', x);
             gfill.setAttribute('fy', y);
-            if (opFill) {
-                opFill.setAttribute('fx', x);
-                opFill.setAttribute('fy', y);
+            if (hasOpacity && !itemData.g._collapsable) {
+                itemData.of.setAttribute('fx', x);
+                itemData.of.setAttribute('fy', y);
             }
         }
         //gfill.setAttribute('fy','200');
