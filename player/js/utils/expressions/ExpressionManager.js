@@ -5,18 +5,18 @@ var ExpressionManager = (function(){
     var window = null;
     var document = null;
 
-    function duplicatePropertyValue(value, mult){
+    function duplicatePropertyValue(value, mult) {
         mult = mult || 1;
 
-        if(typeof value === 'number'  || value instanceof Number){
-            return value*mult;
-        }else if(value.i){
-            return JSON.parse(JSON.stringify(value));
-        }else{
-            var arr = createTypedArray('int16', value.length);
+        if (typeof value === 'number'  || value instanceof Number) {
+            return value * mult;
+        } else if(value.i) {
+            return shape_pool.clone(value);
+        } else {
+            var arr = createTypedArray('float32', value.length);
             var i, len = value.length;
-            for(i=0;i<len;i+=1){
-                arr[i]=value[i]*mult;
+            for (i = 0; i < len; i += 1) {
+                arr[i] = value[i] * mult;
             }
             return arr;
         }
@@ -212,27 +212,27 @@ var ExpressionManager = (function(){
 
     var helperLengthArray = [0,0,0,0,0,0];
 
-    function length(arr1,arr2){
-        if(typeof arr1 === 'number' || arr1 instanceof Number){
+    function length(arr1, arr2) {
+        if (typeof arr1 === 'number' || arr1 instanceof Number) {
             arr2 = arr2 || 0;
             return Math.abs(arr1 - arr2);
         }
-        if(!arr2){
+        if(!arr2) {
             arr2 = helperLengthArray;
         }
-        var i,len = Math.min(arr1.length,arr2.length);
+        var i, len = Math.min(arr1.length, arr2.length);
         var addedLength = 0;
-        for(i=0;i<len;i+=1){
-            addedLength += Math.pow(arr2[i]-arr1[i],2);
+        for (i = 0; i < len; i += 1) {
+            addedLength += Math.pow(arr2[i] - arr1[i], 2);
         }
         return Math.sqrt(addedLength);
     }
 
-    function normalize(vec){
+    function normalize(vec) {
         return div(vec, length(vec));
     }
 
-    function rgbToHsl(val){
+    function rgbToHsl(val) {
         var r = val[0]; var g = val[1]; var b = val[2];
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
         var h, s, l = (max + min) / 2;
@@ -357,12 +357,9 @@ var ExpressionManager = (function(){
         var height = elem.data.sh ? elem.data.sh : 0;
         var loopIn, loop_in, loopOut, loop_out;
         var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
-        var fn = new Function();
-        //var fnStr = 'var fn = function(){'+val+';this.v = $bm_rt;}';
-        //eval(fnStr);
 
-        var fn = eval('[function ___binded(){' + val+';if($bm_rt.propType==="shape"){this.v=shape_pool.clone($bm_rt.v);}else{this.v=$bm_rt;}}' + ']')[0];
-        var bindedFn = fn.bind(this);
+        var scoped_bm_rt;
+        var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
         var numKeys = property.kf ? data.k.length : 0;
 
         var wiggle = function wiggle(freq,amp){
@@ -514,21 +511,21 @@ var ExpressionManager = (function(){
             return ob;
         };
 
-        function framesToTime(frames,fps){
-            if(!fps){
+        function framesToTime(frames, fps) { 
+            if (!fps) {
                 fps = elem.comp.globalData.frameRate;
             }
-            return frames/fps;
+            return frames / fps;
         };
 
-        function timeToFrames(t,fps){
-            if(!t && t !== 0){
+        function timeToFrames(t, fps) {
+            if (!t && t !== 0) {
                 t = time;
             }
-            if(!fps){
+            if (!fps) {
                 fps = elem.comp.globalData.frameRate;
             }
-            return t*fps;
+            return t * fps;
         };
 
         function seedRandom(seed){
@@ -539,16 +536,16 @@ var ExpressionManager = (function(){
             return elem.sourceRectAtTime();
         }
 
-        var time,velocity, value,textIndex,textTotal,selectorValue;
+        var time, velocity, value, textIndex, textTotal, selectorValue;
         var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
-        function executeExpression(){
-            if(_needsRandom){
+        function executeExpression() {
+            if (_needsRandom) {
                 seedRandom(randSeed);
             }
-            if(this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector'){
+            if (this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector') {
                 return;
             }
             if(this.lock){
@@ -560,44 +557,50 @@ var ExpressionManager = (function(){
                 textTotal = this.textTotal;
                 selectorValue = this.selectorValue;
             }
-            if(!thisLayer){
+            if (!thisLayer) {
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
                 fromComp = thisLayer.fromComp.bind(thisLayer);
-                mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer):null;
+                mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer) : null;
                 fromCompToSurface = fromComp;
             }
-            if(!transform){
+            if (!transform) {
                 transform = elem.layerInterface("ADBE Transform Group");
                 anchorPoint = transform.anchorPoint;
             }
             
-            if(elemType === 4 && !content){
+            if (elemType === 4 && !content) {
                 content = thisLayer("ADBE Root Vectors Group");
             }
-            if(!effect){
+            if (!effect) {
                 effect = thisLayer(4);
             }
             hasParent = !!(elem.hierarchy && elem.hierarchy.length);
-            if(hasParent && !parent){
+            if (hasParent && !parent) {
                 parent = elem.hierarchy[0].layerInterface;
             }
             this.lock = true;
-            if(this.getPreValue){
+            if (this.getPreValue) {
                 this.getPreValue();
             }
             value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
-            if(needsVelocity){
+            if (needsVelocity) {
                 velocity = velocityAtTime(time);
             }
-            bindedFn();
+            expression_function();
+            if (scoped_bm_rt.propType === "shape") {
+                this.v = shape_pool.clone(scoped_bm_rt.v);
+            } else {
+                this.v = scoped_bm_rt;
+            }
+
             this.frameExpressionId = elem.globalData.frameId;
             var i,len;
             if(this.mult){
-                if(typeof this.v === 'number' || this.v instanceof Number || this.v instanceof String || typeof this.v === 'string'){
+                if(this.propType === 'unidimensional'){
                     this.v *= this.mult;
                 }else if(this.v.length === 1){
                     this.v = this.v[0] * this.mult;
@@ -611,24 +614,24 @@ var ExpressionManager = (function(){
                     }
                 }
             }
-            if(this.v.length === 1){
+            if (this.v.length === 1) {
                 this.v = this.v[0];
             }
-            if(typeof this.v === 'number' || this.v instanceof Number || this.v instanceof String || typeof this.v === 'string'){
+            if (this.propType === 'unidimensional') {
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
                     this.mdf = true;
                 }
-            }else if( this.v._length){
-                if(!shapesEqual(this.v,this.localShapeCollection.shapes[0])){
+            } else if (this.propType === 'shape') {
+                if (!shapesEqual(this.v, this.localShapeCollection.shapes[0])) {
                     this.mdf = true;
                     this.localShapeCollection.releaseShapes();
                     this.localShapeCollection.addShape(shape_pool.clone(this.v));
                 }
-            }else{
+            } else {
                 len = this.v.length;
-                for(i = 0; i < len; i += 1){
-                    if(this.v[i] !== this.lastValue[i]){
+                for (i = 0; i < len; i += 1) {
+                    if (this.v[i] !== this.lastValue[i]) {
                         this.lastValue[i] = this.v[i];
                         this.mdf = true;
                     }

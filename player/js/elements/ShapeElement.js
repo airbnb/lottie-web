@@ -349,45 +349,37 @@ IShapeElement.prototype.renderPath = function(itemData){
     var lvl = itemData.lvl;
     var paths, mat, props, iterations, k;
     for(l=0;l<lLen;l+=1){
-        //TODO this condition makes TurboFan bail out of optimization. Look for a way to change it.
-        //if(itemData.styles[l].data._render){
-            redraw = itemData.sh.mdf || this.firstFrame;
-            if(itemData.styles[l].lvl < lvl){
-                mat = this.mHelper.reset();
-                iterations = lvl - itemData.styles[l].lvl;
-                k = itemData.transformers.length-1;
-                while(iterations > 0) {
-                    redraw = itemData.transformers[k].mProps.mdf || redraw;
-                    props = itemData.transformers[k].mProps.v.props;
-                    mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-                    iterations --;
-                    k --;
-                }
-            } else {
-                mat = this.identityMatrix;
+        redraw = itemData.sh.mdf || this.firstFrame;
+        if(itemData.styles[l].lvl < lvl){
+            mat = this.mHelper.reset();
+            iterations = lvl - itemData.styles[l].lvl;
+            k = itemData.transformers.length-1;
+            while(iterations > 0) {
+                redraw = itemData.transformers[k].mProps.mdf || redraw;
+                props = itemData.transformers[k].mProps.v.props;
+                mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+                iterations --;
+                k --;
             }
-            paths = itemData.sh.paths;
-            jLen = paths._length;
-            if(redraw){
-                //M0 0 is needed for IE and Edge bug. If it's missing, and shape has a mask with a gradient fill, it won't show up. :/
-                //Removing it because it's causing issues with Chrome, and also it's probably better not to have it so the shape won't be larger than needed.
-                //Keeping previous comment to try to find a solution.
-                pathStringTransformed = '';
-                for(j=0;j<jLen;j+=1){
-                    pathNodes = paths.shapes[j];
-                    if(pathNodes && pathNodes._length){
-                        pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                    }
+        } else {
+            mat = this.identityMatrix;
+        }
+        paths = itemData.sh.paths;
+        jLen = paths._length;
+        if(redraw){
+            pathStringTransformed = '';
+            for(j=0;j<jLen;j+=1){
+                pathNodes = paths.shapes[j];
+                if(pathNodes && pathNodes._length){
+                    pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
                 }
-                itemData.caches[l] = pathStringTransformed;
-            } else {
-                pathStringTransformed = itemData.caches[l];
             }
-            itemData.styles[l].d += pathStringTransformed;
-            itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
-        /*} else {
-            itemData.styles[l].mdf = true;
-        }*/
+            itemData.caches[l] = pathStringTransformed;
+        } else {
+            pathStringTransformed = itemData.caches[l];
+        }
+        itemData.styles[l].d += pathStringTransformed;
+        itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
     }
 };
 
