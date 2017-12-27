@@ -107,12 +107,9 @@ function MaskElement(data,element,globalData, dynamicProperties) {
             elem: path,
             lastPath: '',
             op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
-            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null)
+            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null),
+            invRect: rect
         };
-        if(rect){
-            //TODO: move the invRect property to the object definition in order to prevent a new hidden class creation.
-            this.viewData[i].invRect = rect;
-        }
         if(!this.viewData[i].prop.k){
             this.drawPath(properties[i],this.viewData[i].prop.v,this.viewData[i]);
         }

@@ -131,10 +131,6 @@
     }
 
     function getValueAtTime(frameNum) {
-        //TODO this shouldn't be necessary anymore
-        if(!this._cachingAtTime) {
-            this._cachingAtTime = {lastValue:initialDefaultFrame,lastIndex:0};
-        }
         if(frameNum !== this._cachingAtTime.lastFrame) {
             frameNum *= this.elem.globalData.frameRate;
             frameNum -= this.offsetTime;
@@ -255,7 +251,15 @@
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         var isAdded = prop.k;
         prop.propertyIndex = data.ix;
-        prop._cachingAtTime={lastFrame:initialDefaultFrame,lastIndex:0,value:type === 0 ? 0 : createTypedArray('float32', 3)}
+        var value = 0;
+        if(type !== 0) {
+            value = createTypedArray('float32', data.a === 1 ?  data.k[0].s.length : data.k.length);
+        }
+        prop._cachingAtTime = {
+            lastFrame: initialDefaultFrame,
+            lastIndex: 0,
+            value: value
+        }
         searchExpressions(elem,data,prop);
         if(!isAdded && prop.x){
             arr.push(prop);
@@ -265,7 +269,7 @@
     }
 
     function getShapeValueAtTime(frameNum) {
-        //TODO test this
+        //For now this caching object is created only when needed instead of creating it when the shape is initialized.
         if (!this._cachingAtTime) {
             this._cachingAtTime = {
                 shapeValue: shape_pool.clone(this.pv),
