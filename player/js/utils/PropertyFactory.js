@@ -206,7 +206,7 @@ var PropertyFactory = (function(){
         this.getValue = getNoValue;
     }
 
-    function MultiDimensionalProperty(elem,data, mult){
+    function MultiDimensionalProperty(elem, data, mult) {
         this.propType = 'multidimensional';
         this.mult = mult;
         this.data = data;
@@ -215,27 +215,27 @@ var PropertyFactory = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = createTypedArray('float32', data.k.length);
-        this.pv = createTypedArray('float32', data.k.length);
-        this.lastValue = createTypedArray('float32', data.k.length);
-        var arr = createTypedArray('float32', data.k.length);
-        this.vel = createTypedArray('float32', data.k.length);
         var i, len = data.k.length;
-        for(i = 0;i<len;i+=1){
+        this.v = createTypedArray('float32', len);
+        this.pv = createTypedArray('float32', len);
+        this.lastValue = createTypedArray('float32', len);
+        var arr = createTypedArray('float32', len);
+        this.vel = createTypedArray('float32', len);
+        for (i = 0; i < len; i += 1) {
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
             this.pv[i] = data.k[i];
         }
         this.getValue = getNoValue;
     }
 
-    function KeyframedValueProperty(elem, data, mult){
+    function KeyframedValueProperty(elem, data, mult) {
         this.propType = 'unidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.lastValue = initFrame;
         this.lastPValue = initFrame;
         this.frameId = -1;
-        this._caching={lastFrame:initFrame,lastIndex:0,value:0};
+        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0};
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -243,7 +243,7 @@ var PropertyFactory = (function(){
         this.elem = elem;
         this.firstFrame = false;
         this.comp = elem.comp;
-        this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
+        this.v = mult ? data.k[0].s[0] * mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
         this.getValue = getValueAtCurrentTime;
         this.calculateValueAtCurrentTime = calculateUnidimenstionalValueAtCurrentTime;
@@ -254,8 +254,8 @@ var PropertyFactory = (function(){
         this.propType = 'multidimensional';
         var i, len = data.k.length;
         var s, e,to,ti;
-        for(i=0;i<len-1;i+=1){
-            if(data.k[i].to && data.k[i].s && data.k[i].e){
+        for (i = 0; i < len - 1; i += 1) {
+            if (data.k[i].to && data.k[i].s && data.k[i].e) {
                 s = data.k[i].s;
                 e = data.k[i].e;
                 to = data.k[i].to;

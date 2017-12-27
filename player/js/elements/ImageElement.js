@@ -15,7 +15,5 @@ IImageElement.prototype.createContent = function(){
     this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
     this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
     
-    //TODO check if this is needed. Doesn't look like it is
-    //this.maskedElement = this.innerElem;
     this.layerElement.appendChild(this.innerElem);
 };

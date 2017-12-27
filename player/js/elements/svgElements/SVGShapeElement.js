@@ -215,7 +215,7 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     for(i=0;i<len;i+=1){
         this.stylesList[i].reset();
     }
-    this.renderShape(this.shapesData,this.itemsData, null);
+    this.renderShape(this.shapesData, this.itemsData, this.layerElement);
 
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i].mdf || this.firstFrame) {
@@ -231,16 +231,15 @@ SVGShapeElement.prototype.renderInnerContent = function() {
 
 
 SVGShapeElement.prototype.renderShape = function(items, data, container) {
-    //TODO: find out why a container could be missing
     var i, len = items.length - 1;
     var ty;
     for(i=0;i<=len;i+=1){
         ty = items[i].ty;
         if(ty == 'tr'){
-            if(this.firstFrame || data[i].transform.op.mdf && container){
+            if(this.firstFrame || data[i].transform.op.mdf){
                 container.setAttribute('opacity',data[i].transform.op.v);
             }
-            if(this.firstFrame || data[i].transform.mProps.mdf && container){
+            if(this.firstFrame || data[i].transform.mProps.mdf){
                 container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
             }
         }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){

@@ -286,6 +286,10 @@ var replacingMap = [
     ['compSize', '_de'],
     ['keyframes', '_df'],
     ['getValueAtTime', '_dg'],
+    ['\'float32\'', '\'_f3\''],
+    ['"float32"', '\'_f3\''],
+    ['renderedFrame', '_dh'],
+    ['offsetTime', '_di'],
 ]
 
 gulp.task('buildTest',['buildSources'], function() {
