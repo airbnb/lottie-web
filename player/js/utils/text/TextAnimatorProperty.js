@@ -140,13 +140,6 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var letterValue;
 
     jLen = animators.length;
-    //Todo Confirm this is not necessary here. Text Animator Selectors should not be called without a text index. And it is later correctly called.
-    /*if (lettersChangedFlag) {
-        for (j = 0; j < jLen; j += 1) {
-            animatorSelector = animators[j].s;
-            //animatorSelector.getValue(true);
-        }
-    }*/
     var lastLetter;
 
     var mult, ind = -1, offf, xPathPos, yPathPos;

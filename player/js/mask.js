@@ -1,5 +1,4 @@
 function MaskElement(data,element,globalData, dynamicProperties) {
-    //TODO: check if dynamic properties array can be used from element
     this.data = data;
     this.element = element;
     this.globalData = globalData;

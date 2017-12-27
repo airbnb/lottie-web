@@ -11,8 +11,6 @@ function CanvasRenderer(animationItem, config){
     if (this.animationItem.wrapper) {
         this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
     }
-    //TODO remove this when fixed
-    // this.renderConfig.dpr = 1;
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1,
