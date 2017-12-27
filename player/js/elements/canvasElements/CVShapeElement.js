@@ -9,20 +9,9 @@ function CVShapeElement(data, globalData, comp) {
     this.initElement(data, globalData, comp);
 }
 
-extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement], CVShapeElement);
+extendPrototype([BaseElement,TransformElement,CVBaseElement,IShapeElement,HierarchyElement,FrameElement,RenderableElement], CVShapeElement);
 
-CVShapeElement.prototype.initElement = function(data,globalData,comp) {
-    this.initFrame();
-    this.initBaseData(data, globalData, comp);
-    this.initTransform(data, globalData, comp);
-    this.initHierarchy();
-    this.initRenderable();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    this.createContent();
-    this.hide();
-}
+CVShapeElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
 
 CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
 
@@ -219,14 +208,6 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
         ownModifiers[i].closed = true;
     }
 };
-
-CVShapeElement.prototype.addShapeToModifiers = IShapeElement.prototype.addShapeToModifiers;
-CVShapeElement.prototype.renderModifiers = IShapeElement.prototype.renderModifiers;
-CVShapeElement.prototype.lcEnum = IShapeElement.prototype.lcEnum;
-CVShapeElement.prototype.ljEnum = IShapeElement.prototype.ljEnum;
-CVShapeElement.prototype.searchProcessedElement = IShapeElement.prototype.searchProcessedElement;
-CVShapeElement.prototype.addProcessedElement = IShapeElement.prototype.addProcessedElement;
-CVShapeElement.prototype.prepareFrame = IShapeElement.prototype.prepareFrame;
 
 CVShapeElement.prototype.renderInnerContent = function() {
 

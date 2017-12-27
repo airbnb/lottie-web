@@ -3,7 +3,7 @@ function CVSolidElement(data, globalData, comp) {
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVSolidElement);
 
-CVSolidElement.prototype.initElement = IShapeElement.prototype.initElement;
+CVSolidElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 CVSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 CVSolidElement.prototype.renderInnerContent = function() {

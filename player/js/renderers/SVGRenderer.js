@@ -42,7 +42,7 @@ SVGRenderer.prototype.createNull = function (data) {
 };
 
 SVGRenderer.prototype.createShape = function (data) {
-    return new IShapeElement(data,this.globalData,this);
+    return new SVGShapeElement(data,this.globalData,this);
 };
 
 SVGRenderer.prototype.createText = function (data) {

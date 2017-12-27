@@ -7,7 +7,7 @@ function CVImageElement(data, globalData, comp){
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVImageElement);
 
-CVImageElement.prototype.initElement = IShapeElement.prototype.initElement;
+CVImageElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 CVImageElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 CVImageElement.prototype.imageLoaded = function() {

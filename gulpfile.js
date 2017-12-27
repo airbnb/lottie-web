@@ -207,6 +207,7 @@ var replacingMap = [
     ['FrameElement', '_ac'],
     ['HierarchyElement', '_ad'],
     ['RenderableElement', '_ae'],
+    ['createTransformElement', '_cp'],
     ['TransformElement', '_af'],
     ['TransformPropertyFactory', '_ag'],
     ['ShapePropertyFactory', '_ah'],
@@ -260,6 +261,14 @@ var replacingMap = [
     ['setGroupProperty', '_ce'],
     ['svgElement', '_cf'],
     ['currentBBox', '_cg'],
+    ['firstFrame', '_ch'],
+    ['RenderableDOMElement', '_ci'],
+    ['SVGGradientStrokeStyleData', '_cj'],
+    ['SVGGradientFillStyleData', '_ck'],
+    ['filterManager', '_cl'],
+    ['effectElements', '_cm'],
+    ['applyToPointArray', '_cn'],
+    ['dynamicProperties', '_co'],
 ]
 
 gulp.task('buildTest',['buildSources'], function() {

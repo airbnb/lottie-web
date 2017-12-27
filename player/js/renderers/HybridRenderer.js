@@ -68,7 +68,7 @@ HybridRenderer.prototype.createBase = function (data) {
 
 HybridRenderer.prototype.createShape = function (data) {
     if(!this.supports3d){
-        return new IShapeElement(data, this.globalData, this);
+        return new SVGShapeElement(data, this.globalData, this);
     }
     return new HShapeElement(data, this.globalData, this);
 };
