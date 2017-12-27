@@ -73,7 +73,7 @@ HBaseElement.prototype.getDomElement = function(){
     return this.layerElement;
 };
 HBaseElement.prototype.addMasks = function(){
-    this.maskManager = new MaskElement(this.data, this, this.globalData);
+    this.maskManager = new MaskElement(this.data, this, this.globalData, this.dynamicProperties);
 };
 
 HBaseElement.prototype.setMatte = function(){

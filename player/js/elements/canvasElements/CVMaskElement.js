@@ -1,8 +1,7 @@
 
-function CVMaskElement(data,element){
+function CVMaskElement(data,element, dynamicProperties){
     this.data = data;
     this.element = element;
-    this.dynamicProperties = [];
     this.masksProperties = this.data.masksProperties || [];
     this.viewData = createSizedArray(this.masksProperties.length);
     var i, len = this.masksProperties.length, hasMasks = false;
@@ -10,20 +9,10 @@ function CVMaskElement(data,element){
         if(this.masksProperties[i].mode !== 'n'){
             hasMasks = true;
         }
-        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
+        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,dynamicProperties,null);
     }
     this.hasMasks = hasMasks;
 }
-
-CVMaskElement.prototype.prepareFrame = function(num){
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
-        if(this.dynamicProperties[i].mdf){
-            this.element.globalData.mdf = true;
-        }
-    }
-};
 
 CVMaskElement.prototype.renderFrame = function (transform) {
     if(!this.hasMasks){

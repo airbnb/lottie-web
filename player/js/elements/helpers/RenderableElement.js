@@ -13,7 +13,6 @@ RenderableElement.prototype.initRenderable = function() {
 
 RenderableElement.prototype.prepareRenderableFrame = function(num) {
 	this.checkLayerLimits(num);
-	this.prepareMasks(num);
     if(this.finalTransform.mProp.o.v <= 0) {
         if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
             this.isTransparent = true;
@@ -49,12 +48,6 @@ RenderableElement.prototype.checkLayerLimits = function(num) {
             this.hide();
         }
     }
-}
-
-RenderableElement.prototype.prepareMasks = function() {
-	if(this.isInRange) {
-        this.maskManager.prepareFrame();
-	}
 }
 
 RenderableElement.prototype.renderRenderable = function() {

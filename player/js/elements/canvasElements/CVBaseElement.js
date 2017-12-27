@@ -24,7 +24,7 @@ CVBaseElement.prototype.setBlendMode = function(){
 };
 
 CVBaseElement.prototype.addMasks = function(){
-    this.maskManager = new CVMaskElement(this.data, this, this.globalData);
+    this.maskManager = new CVMaskElement(this.data, this, this.dynamicProperties);
 };
 
 CVBaseElement.prototype.hideElement = function(){

@@ -1,6 +1,5 @@
-function MaskElement(data,element,globalData) {
+function MaskElement(data,element,globalData, dynamicProperties) {
     //TODO: check if dynamic properties array can be used from element
-    this.dynamicProperties = [];
     this.data = data;
     this.element = element;
     this.globalData = globalData;
@@ -42,8 +41,8 @@ function MaskElement(data,element,globalData) {
         if(properties[i].mode == 'n') {
             // TODO move this to a factory or to a constructor
             this.viewData[i] = {
-                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
-                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null),
+                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
+                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null),
                 elem: path
             };
             defs.appendChild(path);
@@ -57,7 +56,7 @@ function MaskElement(data,element,globalData) {
         if (properties[i].x.k !== 0) {
             maskType = 'mask';
             maskRef = 'mask';
-            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
+            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,dynamicProperties);
             var filterID = 'fi_'+randomString(10);
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
@@ -108,8 +107,8 @@ function MaskElement(data,element,globalData) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.dynamicProperties),
-            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
+            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
+            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null)
         };
         if(rect){
             //TODO: move the invRect property to the object definition in order to prevent a new hidden class creation.
@@ -137,14 +136,6 @@ function MaskElement(data,element,globalData) {
 
 MaskElement.prototype.getMaskProperty = function(pos){
     return this.viewData[pos].prop;
-};
-
-MaskElement.prototype.prepareFrame = function(){
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-
-    }
 };
 
 MaskElement.prototype.renderFrame = function (finalMat) {
