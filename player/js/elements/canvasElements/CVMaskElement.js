@@ -4,7 +4,7 @@ function CVMaskElement(data,element){
     this.element = element;
     this.dynamicProperties = [];
     this.masksProperties = this.data.masksProperties || [];
-    this.viewData = Array.apply(null,{length:this.masksProperties.length});
+    this.viewData = createSizedArray(this.masksProperties.length);
     var i, len = this.masksProperties.length, hasMasks = false;
     for (i = 0; i < len; i++) {
         if(this.masksProperties[i].mode !== 'n'){

@@ -47,7 +47,7 @@ BMMath.random = Math.random;
 BMMath.abs = function(val){
     var tOfVal = typeof val;
     if(tOfVal === 'object' && val.length){
-        var absArr = Array.apply(null,{length:val.length});
+        var absArr = _cv(val.length);
         var i, len = val.length;
         for(i=0;i<len;i+=1){
             absArr[i] = Math.abs(val[i]);
@@ -103,55 +103,13 @@ function BMCompleteLoopEvent(n,c,t,d){
 
 function BMSegmentStartEvent(n,f,t){
     this.type = n;
-    this.firstFrame = f;
+    this._ch = f;
     this.totalFrames = t;
 }
 
 function BMDestroyEvent(n,t){
     this.type = n;
     this.target = t;
-}
-
-function _addEventListener(eventName, callback){
-
-    if (!this._cbs[eventName]){
-        this._cbs[eventName] = [];
-    }
-    this._cbs[eventName].push(callback);
-
-	return function() {
-		this.removeEventListener(eventName, callback);
-	}.bind(this);
-}
-
-function _removeEventListener(eventName,callback){
-
-    if (!callback){
-        this._cbs[eventName] = null;
-    }else if(this._cbs[eventName]){
-        var i = 0, len = this._cbs[eventName].length;
-        while(i<len){
-            if(this._cbs[eventName][i] === callback){
-                this._cbs[eventName].splice(i,1);
-                i -=1;
-                len -= 1;
-            }
-            i += 1;
-        }
-        if(!this._cbs[eventName].length){
-            this._cbs[eventName] = null;
-        }
-    }
-
-}
-
-function _triggerEvent(eventName, args){
-    if (this._cbs[eventName]) {
-        var len = this._cbs[eventName].length;
-        for (var i = 0; i < len; i++){
-            this._cbs[eventName][i](args);
-        }
-    }
 }
 
 function randomString(length, chars){
@@ -269,7 +227,46 @@ var rgbToHex = (function(){
         return '#' + colorMap[r] + colorMap[g] + colorMap[b];
     };
 }());
-var createTypedArray = (function(){
+function BaseEvent(){}
+BaseEvent.prototype = {
+	_cy: function (eventName, args) {
+	    if (this._cbs[eventName]) {
+	        var len = this._cbs[eventName].length;
+	        for (var i = 0; i < len; i++){
+	            this._cbs[eventName][i](args);
+	        }
+	    }
+	},
+	addEventListener: function (eventName, callback) {
+	    if (!this._cbs[eventName]){
+	        this._cbs[eventName] = [];
+	    }
+	    this._cbs[eventName].push(callback);
+
+		return function() {
+			this.removeEventListener(eventName, callback);
+		}.bind(this);
+	},
+	removeEventListener: function (eventName,callback){
+	    if (!callback){
+	        this._cbs[eventName] = null;
+	    }else if(this._cbs[eventName]){
+	        var i = 0, len = this._cbs[eventName].length;
+	        while(i<len){
+	            if(this._cbs[eventName][i] === callback){
+	                this._cbs[eventName].splice(i,1);
+	                i -=1;
+	                len -= 1;
+	            }
+	            i += 1;
+	        }
+	        if(!this._cbs[eventName].length){
+	            this._cbs[eventName] = null;
+	        }
+	    }
+	}
+}
+var _cs = (function(){
 	function createRegularArray(type, len){
 		var i = 0, arr = [], value;
 		switch(type) {
@@ -286,7 +283,7 @@ var createTypedArray = (function(){
 		}
 		return arr;
 	}
-	function createTypedArray(type, len){
+	function _cs(type, len){
 		if(type === 'float32') {
 			return new Float32Array(len);
 		} else if(type === 'int16') {
@@ -296,16 +293,20 @@ var createTypedArray = (function(){
 		}
 	}
 	if(typeof Uint8ClampedArray === 'function' && typeof Float32Array === 'function') {
-		return createTypedArray
+		return _cs
 	} else {
 		return createRegularArray
 	}
 }())
-function createNS(type) {
+
+function _cv(len) {
+	return Array.apply(null,{length:len})
+}
+function _ct(type) {
 	//return {appendChild:function(){},setAttribute:function(){},style:{}}
 	return document.createElementNS(svgNS, type);
 }
-function createTag(type) {
+function _cu(type) {
 	//return {appendChild:function(){},setAttribute:function(){},style:{}}
 	return document.createElement(type);
 }
@@ -612,7 +613,7 @@ var Matrix = (function(){
         return retPts;
     }
 
-    function applyToPointArray(x,y,z,dimensions){
+    function _cn(x,y,z,dimensions){
         if(dimensions && dimensions === 2) {
             var arr = point_pool.newElement();
             arr[0] = x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12]; 
@@ -672,7 +673,7 @@ var Matrix = (function(){
         this.applyToX = applyToX;
         this.applyToY = applyToY;
         this.applyToZ = applyToZ;
-        this.applyToPointArray = applyToPointArray;
+        this._cn = _cn;
         this.applyToPointStringified = applyToPointStringified;
         this.toCSS = toCSS;
         this.to2dCSS = to2dCSS;
@@ -686,7 +687,7 @@ var Matrix = (function(){
         this._identity = true;
         this._identityCalculated = false;
 
-        this.props = createTypedArray('float32', 16);
+        this.props = _cs('float32', 16);
         this.reset();
     }
 }());
@@ -1239,7 +1240,7 @@ function bezFunction(){
             var bezierData = new BezierData(curveSegments);
             len = pt3.length;
             for (k = 0; k < curveSegments; k += 1) {
-                point = Array.apply(null,{length:len});
+                point = _cv(len);
                 perc = k / (curveSegments - 1);
                 ptDistance = 0;
                 for (i = 0; i < len; i += 1){
@@ -1304,7 +1305,7 @@ function bezFunction(){
 
     }
 
-    var bezier_segment_points = createTypedArray('float32', 8);
+    var bezier_segment_points = _cs('float32', 8);
 
     function getNewSegment(pt1,pt2,pt3,pt4,startPerc,endPerc, bezierData){
 
@@ -1367,9 +1368,9 @@ function bezFunction(){
 var bez = bezFunction();
 function dataFunctionManager(){
 
-    //var tCanvasHelper = createTag('canvas').getContext('2d');
+    //var tCanvasHelper = _cu('canvas').getContext('2d');
 
-    function completeLayers(layers, comps, fontManager){
+    function _db(layers, comps, _cr){
         var layerData;
         var animArray, lastFrame;
         var i, len = layers.length;
@@ -1406,11 +1407,11 @@ function dataFunctionManager(){
             }
             if(layerData.ty===0){
                 layerData.layers = findCompLayers(layerData.refId, comps);
-                completeLayers(layerData.layers,comps, fontManager);
+                _db(layerData.layers,comps, _cr);
             }else if(layerData.ty === 4){
                 completeShapes(layerData.shapes);
             }else if(layerData.ty == 5){
-                completeText(layerData, fontManager);
+                completeText(layerData, _cr);
             }
         }
     }
@@ -1755,7 +1756,7 @@ function dataFunctionManager(){
         }
     }
 
-    function blitText(data, fontManager){
+    function blitText(data, _cr){
 
     }
 
@@ -1794,7 +1795,7 @@ function dataFunctionManager(){
         }
     }
 
-    function blitLayers(layers,comps, fontManager){
+    function blitLayers(layers,comps, _cr){
         var layerData;
         var animArray, lastFrame;
         var i, len = layers.length;
@@ -1834,11 +1835,11 @@ function dataFunctionManager(){
             if(layerData.ty===0){
                 layerData.w = Math.round(layerData.w/blitter);
                 layerData.h = Math.round(layerData.h/blitter);
-                blitLayers(layerData.layers,comps, fontManager);
+                blitLayers(layerData.layers,comps, _cr);
             }else if(layerData.ty === 4){
                 blitShapes(layerData.shapes);
             }else if(layerData.ty == 5){
-                blitText(layerData, fontManager);
+                blitText(layerData, _cr);
             }else if(layerData.ty == 1){
                 layerData.sh /= blitter;
                 layerData.sw /= blitter;
@@ -1847,11 +1848,11 @@ function dataFunctionManager(){
         }
     }
 
-    function blitAnimation(animationData,comps, fontManager){
-        blitLayers(animationData.layers,comps, fontManager);
+    function blitAnimation(animationData,comps, _cr){
+        blitLayers(animationData.layers,comps, _cr);
     }*/
 
-    function completeData(animationData, fontManager){
+    function completeData(animationData, _cr){
         if(animationData.__complete){
             return;
         }
@@ -1859,12 +1860,12 @@ function dataFunctionManager(){
         checkText(animationData);
         checkChars(animationData);
         checkShapes(animationData);
-        completeLayers(animationData.layers, animationData.assets, fontManager);
+        _db(animationData.layers, animationData.assets, _cr);
         animationData.__complete = true;
-        //blitAnimation(animationData, animationData.assets, fontManager);
+        //blitAnimation(animationData, animationData.assets, _cr);
     }
 
-    function completeText(data, fontManager){
+    function completeText(data, _cr){
         if(data.t.a.length === 0 && !('m' in data.t.p)){
             data.singleShape = true;
         }
@@ -1887,9 +1888,9 @@ var FontManager = (function(){
     }
 
     function setUpNode(font, family){
-        var parentNode = createTag('span');
+        var parentNode = _cu('span');
         parentNode.style.fontFamily    = family;
-        var node = createTag('span');
+        var node = _cu('span');
         // Characters that vary significantly among different fonts
         node.innerHTML = 'giItT1WQy@!-/#';
         // Visible - so we can measure it - but not on the screen
@@ -1966,7 +1967,7 @@ var FontManager = (function(){
     };
 
     function createHelper(def, fontData){
-        var tHelper = createNS('text');
+        var tHelper = _ct('text');
         tHelper.style.fontSize = '100px';
         tHelper.style.fontFamily = fontData.fFamily;
         tHelper.textContent = '1';
@@ -1977,7 +1978,7 @@ var FontManager = (function(){
             tHelper.style.fontFamily = fontData.fFamily;
         }
         def.appendChild(tHelper);
-        var tCanvasHelper = createTag('canvas').getContext('2d');
+        var tCanvasHelper = _cu('canvas').getContext('2d');
         tCanvasHelper.font = '100px '+ fontData.fFamily;
         return tCanvasHelper;
     }
@@ -2002,20 +2003,20 @@ var FontManager = (function(){
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
             }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
-                var s = createTag('style');
+                var s = _cu('style');
                 s.type = "text/css";
                 s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                 defs.appendChild(s);
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-                var l = createTag('link');
+                var l = _cu('link');
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
                 defs.appendChild(l);
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-                var sc = createTag('script');
+                var sc = _cu('script');
                 sc.setAttribute('src',fontArr[i].fPath);
                 defs.appendChild(sc);
             }
@@ -2107,16 +2108,16 @@ var _ai = (function(){
         var offsetTime = this.offsetTime;
         var newValue;
         if(this.propType === 'multidimensional') {
-            newValue = createTypedArray('float32', previousValue.length);
+            newValue = _cs('float32', previousValue.length);
         }
         var iterationIndex = caching.lastIndex;
         var i = iterationIndex;
-        var len = this.keyframes.length- 1,flag = true;
+        var len = this._df.length- 1,flag = true;
         var keyData, nextKeyData;
 
         while(flag){
-            keyData = this.keyframes[i];
-            nextKeyData = this.keyframes[i+1];
+            keyData = this._df[i];
+            nextKeyData = this._df[i+1];
             if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
                 if(keyData.h){
                     keyData = nextKeyData;
@@ -2281,8 +2282,8 @@ var _ai = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        var initTime = this.keyframes[0].t - this.offsetTime;
-        var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
+        var initTime = this._df[0].t - this.offsetTime;
+        var endTime = this._df[this._df.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
             var renderResult = this.interpolateValue(frameNum, this.pv, this._caching);
@@ -2316,11 +2317,11 @@ var _ai = (function(){
         this.k = false;
         this.kf = false;
         this.frameId = -1;
-        this.v = createTypedArray('float32', data.k.length);
-        this.pv = createTypedArray('float32', data.k.length);
-        this.lastValue = createTypedArray('float32', data.k.length);
-        var arr = createTypedArray('float32', data.k.length);
-        this.vel = createTypedArray('float32', data.k.length);
+        this.v = _cs('float32', data.k.length);
+        this.pv = _cs('float32', data.k.length);
+        this.lastValue = _cs('float32', data.k.length);
+        var arr = _cs('float32', data.k.length);
+        this.vel = _cs('float32', data.k.length);
         var i, len = data.k.length;
         for(i = 0;i<len;i+=1){
             this.v[i] = mult ? data.k[i] * mult : data.k[i];
@@ -2331,7 +2332,7 @@ var _ai = (function(){
 
     function KeyframedValueProperty(elem, data, mult){
         this.propType = 'unidimensional';
-        this.keyframes = data.k;
+        this._df = data.k;
         this.offsetTime = elem.data.st;
         this.lastValue = initFrame;
         this.lastPValue = initFrame;
@@ -2342,7 +2343,7 @@ var _ai = (function(){
         this.data = data;
         this.mult = mult;
         this.elem = elem;
-        this.firstFrame = false;
+        this._ch = false;
         this.comp = elem.comp;
         this.v = mult ? data.k[0].s[0]*mult : data.k[0].s[0];
         this.pv = data.k[0].s[0];
@@ -2373,11 +2374,11 @@ var _ai = (function(){
                 }
             }
         }
-        this.keyframes = data.k;
+        this._df = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
         this.kf = true;
-        this.firstFrame = true;
+        this._ch = true;
         this.mult = mult;
         this.elem = elem;
         this.comp = elem.comp;
@@ -2386,11 +2387,11 @@ var _ai = (function(){
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
         var arrLen = data.k[0].s.length;
-        this.v = createTypedArray('float32', arrLen);
-        this.pv = createTypedArray('float32', arrLen);
-        this.lastValue = createTypedArray('float32', arrLen);
-        this.lastPValue = createTypedArray('float32', arrLen);
-        this._caching={lastFrame:initFrame,lastIndex:0,value:createTypedArray('float32', arrLen)};
+        this.v = _cs('float32', arrLen);
+        this.pv = _cs('float32', arrLen);
+        this.lastValue = _cs('float32', arrLen);
+        this.lastPValue = _cs('float32', arrLen);
+        this._caching={lastFrame:initFrame,lastIndex:0,value:_cs('float32', arrLen)};
     }
 
     function _bo(elem,data,type, mult, arr) {
@@ -2435,10 +2436,10 @@ var _ai = (function(){
 var _ag = (function() {
 
     function applyToMatrix(mat) {
-        var i, len = this.dynamicProperties.length;
+        var i, len = this._co.length;
         for(i = 0; i < len; i += 1) {
-            this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i].mdf) {
+            this._co[i].getValue();
+            if (this._co[i].mdf) {
                 this.mdf = true;
             }
         }
@@ -2463,17 +2464,17 @@ var _ag = (function() {
             mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
         }
     }
-    function processKeys(firstFrame){
+    function processKeys(_ch){
         if (this.elem._x.frameId === this.frameId) {
             return;
         }
 
-        this.mdf = firstFrame;
-        var i, len = this.dynamicProperties.length;
+        this.mdf = _ch;
+        var i, len = this._co.length;
 
         for(i = 0; i < len; i += 1) {
-            this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i].mdf) {
+            this._co[i].getValue();
+            if (this._co[i].mdf) {
                 this.mdf = true;
             }
         }
@@ -2494,17 +2495,17 @@ var _ag = (function() {
             } else {
                 this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
-            if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
+            if (this.autoOriented && this.p._df && this.p._dg) {
                 var v1,v2;
-                if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
-                    v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem._x.frameRate,0);
-                    v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem._x.frameRate, 0);
-                } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
-                    v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem._x.frameRate), 0);
-                    v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem._x.frameRate, 0);
+                if (this.p._caching.lastFrame+this.p.offsetTime <= this.p._df[0].t) {
+                    v1 = this.p._dg((this.p._df[0].t + 0.01) / this.elem._x.frameRate,0);
+                    v2 = this.p._dg(this.p._df[0].t / this.elem._x.frameRate, 0);
+                } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p._df[this.p._df.length - 1].t) {
+                    v1 = this.p._dg((this.p._df[this.p._df.length - 1].t / this.elem._x.frameRate), 0);
+                    v2 = this.p._dg((this.p._df[this.p._df.length - 1].t - 0.01) / this.elem._x.frameRate, 0);
                 } else {
                     v1 = this.p.pv;
-                    v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / this.elem._x.frameRate, this.p.offsetTime);
+                    v2 = this.p._dg((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / this.elem._x.frameRate, this.p.offsetTime);
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
@@ -2546,59 +2547,59 @@ var _ag = (function() {
 
     function autoOrient(){
         //
-        //var prevP = this.getValueAtTime();
+        //var prevP = this._dg();
     }
 
     function _bk(elem,data,arr){
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
-        this.dynamicProperties = [];
+        this._co = [];
         this.mdf = false;
         this.data = data;
         this.v = new Matrix();
         if(data.p.s){
-            this.px = _ai._bo(elem,data.p.x,0,0,this.dynamicProperties);
-            this.py = _ai._bo(elem,data.p.y,0,0,this.dynamicProperties);
+            this.px = _ai._bo(elem,data.p.x,0,0,this._co);
+            this.py = _ai._bo(elem,data.p.y,0,0,this._co);
             if(data.p.z){
-                this.pz = _ai._bo(elem,data.p.z,0,0,this.dynamicProperties);
+                this.pz = _ai._bo(elem,data.p.z,0,0,this._co);
             }
         }else{
-            this.p = _ai._bo(elem,data.p,1,0,this.dynamicProperties);
+            this.p = _ai._bo(elem,data.p,1,0,this._co);
         }
         if(data.r) {
-            this.r = _ai._bo(elem, data.r, 0, degToRads, this.dynamicProperties);
+            this.r = _ai._bo(elem, data.r, 0, degToRads, this._co);
         } else if(data.rx) {
-            this.rx = _ai._bo(elem, data.rx, 0, degToRads, this.dynamicProperties);
-            this.ry = _ai._bo(elem, data.ry, 0, degToRads, this.dynamicProperties);
-            this.rz = _ai._bo(elem, data.rz, 0, degToRads, this.dynamicProperties);
+            this.rx = _ai._bo(elem, data.rx, 0, degToRads, this._co);
+            this.ry = _ai._bo(elem, data.ry, 0, degToRads, this._co);
+            this.rz = _ai._bo(elem, data.rz, 0, degToRads, this._co);
             if(data.or.k[0].ti) {
                 var i, len = data.or.k.length;
                 for(i=0;i<len;i+=1) {
                     data.or.k[i].to = data.or.k[i].ti = null;
                 }
             }
-            this.or = _ai._bo(elem, data.or, 1, degToRads, this.dynamicProperties);
+            this.or = _ai._bo(elem, data.or, 1, degToRads, this._co);
             //sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;
         }
         if(data.sk){
-            this.sk = _ai._bo(elem, data.sk, 0, degToRads, this.dynamicProperties);
-            this.sa = _ai._bo(elem, data.sa, 0, degToRads, this.dynamicProperties);
+            this.sk = _ai._bo(elem, data.sk, 0, degToRads, this._co);
+            this.sa = _ai._bo(elem, data.sa, 0, degToRads, this._co);
         }
         if(data.a) {
-            this.a = _ai._bo(elem,data.a,1,0,this.dynamicProperties);
+            this.a = _ai._bo(elem,data.a,1,0,this._co);
         }
         if(data.s) {
-            this.s = _ai._bo(elem,data.s,1,0.01,this.dynamicProperties);
+            this.s = _ai._bo(elem,data.s,1,0.01,this._co);
         }
-        // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
+        // Opacity is not part of the transform properties, that's why it won't use this._co. That way transforms won't get updated if opacity changes.
         if(data.o){
             this.o = _ai._bo(elem,data.o,0,0.01,arr);
         } else {
             this.o = {mdf:false,v:1};
         }
-        if(this.dynamicProperties.length){
+        if(this._co.length){
             arr.push(this);
         }else{
             this.getValue(true);
@@ -2623,9 +2624,9 @@ function _av(){
 	this.c = false;
 	this._length = 0;
 	this._maxLength = 8;
-	this.v = Array.apply(null,{length:this._maxLength});
-	this.o = Array.apply(null,{length:this._maxLength});
-	this.i = Array.apply(null,{length:this._maxLength});
+	this.v = _cv(this._maxLength);
+	this.o = _cv(this._maxLength);
+	this.i = _cv(this._maxLength);
 };
 
 _av.prototype.setPathData = function(closed, len) {
@@ -2648,9 +2649,9 @@ _av.prototype.setLength = function(len) {
 }
 
 _av.prototype.doubleArrayLength = function() {
-	this.v = this.v.concat(Array.apply(null,{length:this._maxLength}))
-	this.i = this.i.concat(Array.apply(null,{length:this._maxLength}))
-	this.o = this.o.concat(Array.apply(null,{length:this._maxLength}))
+	this.v = this.v.concat(_cv(this._maxLength))
+	this.i = this.i.concat(_cv(this._maxLength))
+	this.o = this.o.concat(_cv(this._maxLength))
 	this._maxLength *= 2;
 };
 
@@ -2709,23 +2710,23 @@ var _ah = (function(){
     function interpolateShape(frameNum, previousValue, isCurrentRender, caching) {
         var iterationIndex = caching.lastIndex;
         var keyPropS,keyPropE,isHold;
-        if(frameNum < this.keyframes[0].t-this.offsetTime){
-            keyPropS = this.keyframes[0].s[0];
+        if(frameNum < this._df[0].t-this.offsetTime){
+            keyPropS = this._df[0].s[0];
             isHold = true;
             iterationIndex = 0;
-        }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
-            if(this.keyframes[this.keyframes.length - 2].h === 1){
-                keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
+        }else if(frameNum >= this._df[this._df.length - 1].t-this.offsetTime){
+            if(this._df[this._df.length - 2].h === 1){
+                keyPropS = this._df[this._df.length - 1].s[0];
             }else{
-                keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
+                keyPropS = this._df[this._df.length - 2].e[0];
             }
             isHold = true;
         }else{
             var i = iterationIndex;
-            var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
+            var len = this._df.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
             while(flag){
-                keyData = this.keyframes[i];
-                nextKeyData = this.keyframes[i+1];
+                keyData = this._df[i];
+                nextKeyData = this._df[i+1];
                 if((nextKeyData.t - this.offsetTime) > frameNum){
                     break;
                 }
@@ -2807,8 +2808,8 @@ var _ah = (function(){
         }
         this.mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
-        var initTime = this.keyframes[0].t - this.offsetTime;
-        var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
+        var initTime = this._df[0].t - this.offsetTime;
+        var endTime = this._df[this._df.length - 1].t - this.offsetTime;
         var lastFrame = this._caching.lastFrame;
         if(!(lastFrame !== initFrame && ((lastFrame < initTime && frameNum < initTime) || (lastFrame > endTime && frameNum > endTime)))){
             ////
@@ -2856,13 +2857,13 @@ var _ah = (function(){
         this.comp = elem.comp;
         this.elem = elem;
         this.offsetTime = elem.data.st;
-        this.keyframes = type === 3 ? data.pt.k : data.ks.k;
+        this._df = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
         this.kf = true;
-        var i, len = this.keyframes[0].s[0].i.length;
-        var jLen = this.keyframes[0].s[0].i[0].length;
+        var i, len = this._df[0].s[0].i.length;
+        var jLen = this._df[0].s[0].i[0].length;
         this.v = shape_pool.newElement();
-        this.v.setPathData(this.keyframes[0].s[0].c, len);
+        this.v.setPathData(this._df[0].s[0].c, len);
         this.pv = shape_pool.clone(this.v);
         this._ak = shapeCollection_pool._al();
         this.paths = this._ak;
@@ -2911,7 +2912,7 @@ var _ah = (function(){
         }
 
         function processKeys(frameNum){
-            var i, len = this.dynamicProperties.length;
+            var i, len = this._co.length;
             if(this.elem._x.frameId === this.frameId){
                 return;
             }
@@ -2919,8 +2920,8 @@ var _ah = (function(){
             this.frameId = this.elem._x.frameId;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue(frameNum);
-                if(this.dynamicProperties[i].mdf){
+                this._co[i].getValue(frameNum);
+                if(this._co[i].mdf){
                     this.mdf = true;
                 }
             }
@@ -2931,9 +2932,9 @@ var _ah = (function(){
 
         return function EllShapeProperty(elem,data) {
             /*this.v = {
-                v: Array.apply(null,{length:4}),
-                i: Array.apply(null,{length:4}),
-                o: Array.apply(null,{length:4}),
+                v: _cv(4),
+                i: _cv(4),
+                o: _cv(4),
                 c: true
             };*/
             this.v = shape_pool.newElement();
@@ -2942,7 +2943,7 @@ var _ah = (function(){
             this.paths = this._ak;
             this._ak.addShape(this.v);
             this.d = data.d;
-            this.dynamicProperties = [];
+            this._co = [];
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;
@@ -2950,9 +2951,9 @@ var _ah = (function(){
             this.getValue = processKeys;
             this.convertEllToPath = convertEllToPath;
             this.reset = resetShape;
-            this.p = _ai._bo(elem,data.p,1,0,this.dynamicProperties);
-            this.s = _ai._bo(elem,data.s,1,0,this.dynamicProperties);
-            if(this.dynamicProperties.length){
+            this.p = _ai._bo(elem,data.p,1,0,this._co);
+            this.s = _ai._bo(elem,data.s,1,0,this._co);
+            if(this._co.length){
                 this.k = true;
             }else{
                 this.convertEllToPath();
@@ -3036,11 +3037,11 @@ var _ah = (function(){
             }
             this.mdf = false;
             this.frameId = this.elem._x.frameId;
-            var i, len = this.dynamicProperties.length;
+            var i, len = this._co.length;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                this._co[i].getValue();
+                if(this._co[i].mdf){
                     this.mdf = true;
                 }
             }
@@ -3063,26 +3064,26 @@ var _ah = (function(){
             this.data = data;
             this.frameId = -1;
             this.d = data.d;
-            this.dynamicProperties = [];
+            this._co = [];
             this.mdf = false;
             this.getValue = processKeys;
             this.reset = resetShape;
             if(data.sy === 1){
-                this.ir = _ai._bo(elem,data.ir,0,0,this.dynamicProperties);
-                this.is = _ai._bo(elem,data.is,0,0.01,this.dynamicProperties);
+                this.ir = _ai._bo(elem,data.ir,0,0,this._co);
+                this.is = _ai._bo(elem,data.is,0,0.01,this._co);
                 this.convertToPath = convertStarToPath;
             } else {
                 this.convertToPath = convertPolygonToPath;
             }
-            this.pt = _ai._bo(elem,data.pt,0,0,this.dynamicProperties);
-            this.p = _ai._bo(elem,data.p,1,0,this.dynamicProperties);
-            this.r = _ai._bo(elem,data.r,0,degToRads,this.dynamicProperties);
-            this.or = _ai._bo(elem,data.or,0,0,this.dynamicProperties);
-            this.os = _ai._bo(elem,data.os,0,0.01,this.dynamicProperties);
+            this.pt = _ai._bo(elem,data.pt,0,0,this._co);
+            this.p = _ai._bo(elem,data.p,1,0,this._co);
+            this.r = _ai._bo(elem,data.r,0,degToRads,this._co);
+            this.or = _ai._bo(elem,data.or,0,0,this._co);
+            this.os = _ai._bo(elem,data.os,0,0.01,this._co);
             this._ak = shapeCollection_pool._al();
             this._ak.addShape(this.v);
             this.paths = this._ak;
-            if(this.dynamicProperties.length){
+            if(this._co.length){
                 this.k = true;
             }else{
                 this.convertToPath();
@@ -3097,11 +3098,11 @@ var _ah = (function(){
             }
             this.mdf = false;
             this.frameId = this.elem._x.frameId;
-            var i, len = this.dynamicProperties.length;
+            var i, len = this._co.length;
 
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue(frameNum);
-                if(this.dynamicProperties[i].mdf){
+                this._co[i].getValue(frameNum);
+                if(this._co[i].mdf){
                     this.mdf = true;
                 }
             }
@@ -3160,15 +3161,15 @@ var _ah = (function(){
             this.comp = elem.comp;
             this.frameId = -1;
             this.d = data.d;
-            this.dynamicProperties = [];
+            this._co = [];
             this.mdf = false;
             this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
             this.reset = resetShape;
-            this.p = _ai._bo(elem,data.p,1,0,this.dynamicProperties);
-            this.s = _ai._bo(elem,data.s,1,0,this.dynamicProperties);
-            this.r = _ai._bo(elem,data.r,0,0,this.dynamicProperties);
-            if(this.dynamicProperties.length){
+            this.p = _ai._bo(elem,data.p,1,0,this._co);
+            this.s = _ai._bo(elem,data.s,1,0,this._co);
+            this.r = _ai._bo(elem,data.r,0,0,this._co);
+            if(this._co.length){
                 this.k = true;
             }else{
                 this.convertRectToPath();
@@ -3225,8 +3226,8 @@ var _as = (function(){
         }
     }
 
-    function getModifier(nm,elem, data, dynamicProperties){
-        return new modifiers[nm](elem, data, dynamicProperties);
+    function getModifier(nm,elem, data, _co){
+        return new modifiers[nm](elem, data, _co);
     }
 
     return ob;
@@ -3242,8 +3243,8 @@ _at.prototype.addShape = function(data){
         this.addShapeToModifier(shapeData);
     }
 }
-_at.prototype.init = function(elem,data,dynamicProperties){
-    this.dynamicProperties = [];
+_at.prototype.init = function(elem,data,_co){
+    this._co = [];
     this.shapes = [];
     this.elem = elem;
     this.initModifierProperties(elem,data);
@@ -3251,9 +3252,9 @@ _at.prototype.init = function(elem,data,dynamicProperties){
     this.mdf = false;
     this.closed = false;
     this.k = false;
-    if(this.dynamicProperties.length){
+    if(this._co.length){
         this.k = true;
-        dynamicProperties.push(this);
+        _co.push(this);
     }else{
         this.getValue(true);
     }
@@ -3267,11 +3268,11 @@ _an.prototype.processKeys = function(forceRender) {
     }
     this.mdf = forceRender;
     this.frameId = this.elem._x.frameId;
-    var i, len = this.dynamicProperties.length;
+    var i, len = this._co.length;
 
     for (i = 0; i < len; i +=1) {
-        this.dynamicProperties[i].getValue();
-        if (this.dynamicProperties[i].mdf) {
+        this._co[i].getValue();
+        if (this._co[i].mdf) {
             this.mdf = true;
         }
     }
@@ -3296,9 +3297,9 @@ _an.prototype.processKeys = function(forceRender) {
     }
 }
 _an.prototype.initModifierProperties = function(elem, data) {
-    this.s = _ai._bo(elem, data.s, 0, 0.01, this.dynamicProperties);
-    this.e = _ai._bo(elem, data.e, 0, 0.01, this.dynamicProperties);
-    this.o = _ai._bo(elem, data.o, 0, 0, this.dynamicProperties);
+    this.s = _ai._bo(elem, data.s, 0, 0.01, this._co);
+    this.e = _ai._bo(elem, data.e, 0, 0.01, this._co);
+    this.o = _ai._bo(elem, data.o, 0, 0, this._co);
     this.sValue = 0;
     this.eValue = 0;
     this.oValue = 0;
@@ -3368,7 +3369,7 @@ _an.prototype.releasePathsData = function(pathsData) {
     return pathsData;
 }
 
-_an.prototype.processShapes = function(firstFrame) {
+_an.prototype.processShapes = function(_ch) {
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -3387,7 +3388,7 @@ _an.prototype.processShapes = function(firstFrame) {
         for (i = 0; i < len; i += 1) {
             shapeData = this.shapes[i];
             // if shape hasn't changed and trim properties haven't changed, cached previous path can be used
-            if (!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2) {
+            if (!shapeData.shape.mdf && !this.mdf && !_ch && this.m !== 2) {
                 shapeData.shape.paths = shapeData._ak;
             } else {
                 shapePaths = shapeData.shape.paths;
@@ -3473,7 +3474,7 @@ _an.prototype.processShapes = function(firstFrame) {
             this.shapes[i].shape.mdf = true;
         }
     }
-    if (!this.dynamicProperties.length) {
+    if (!this._co.length) {
         this.mdf = false;
     }
 }
@@ -3598,18 +3599,18 @@ _au.prototype.processKeys = function(forceRender){
     }
     this.mdf = forceRender ? true : false;
     this.frameId = this.elem._x.frameId;
-    var i, len = this.dynamicProperties.length;
+    var i, len = this._co.length;
 
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
+        this._co[i].getValue();
+        if(this._co[i].mdf){
             this.mdf = true;
         }
     }
 }
 _au.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
-    this.rd = _ai._bo(elem,data.r,0,null,this.dynamicProperties);
+    this.rd = _ai._bo(elem,data.r,0,null,this._co);
 };
 
 _au.prototype.processPath = function(path, round){
@@ -3666,7 +3667,7 @@ _au.prototype.processPath = function(path, round){
     return cloned_path;
 }
 
-_au.prototype.processShapes = function(firstFrame){
+_au.prototype.processShapes = function(_ch){
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -3678,7 +3679,7 @@ _au.prototype.processShapes = function(firstFrame){
             shapeData = this.shapes[i];
             newPaths = shapeData.shape.paths;
             _ak = shapeData._ak;
-            if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
+            if(!(!shapeData.shape.mdf && !this.mdf && !_ch)){
                 _ak.releaseShapes();
                 shapeData.shape.mdf = true;
                 shapePaths = shapeData.shape.paths.shapes;
@@ -3691,7 +3692,7 @@ _au.prototype.processShapes = function(firstFrame){
         }
 
     }
-    if(!this.dynamicProperties.length){
+    if(!this._co.length){
         this.mdf = false;
     }
 }
@@ -3704,11 +3705,11 @@ _aj.prototype.processKeys = function(forceRender){
         return;
     }
     this.mdf = forceRender ? true : false;
-    var i, len = this.dynamicProperties.length;
+    var i, len = this._co.length;
 
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
+        this._co[i].getValue();
+        if(this._co[i].mdf){
             this.mdf = true;
         }
     }
@@ -3716,11 +3717,11 @@ _aj.prototype.processKeys = function(forceRender){
 
 _aj.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
-    this.c = _ai._bo(elem,data.c,0,null,this.dynamicProperties);
-    this.o = _ai._bo(elem,data.o,0,null,this.dynamicProperties);
-    this.tr = _ag._bj(elem,data.tr,this.dynamicProperties);
+    this.c = _ai._bo(elem,data.c,0,null,this._co);
+    this.o = _ai._bo(elem,data.o,0,null,this._co);
+    this.tr = _ag._bj(elem,data.tr,this._co);
     this.data = data;
-    if(!this.dynamicProperties.length){
+    if(!this._co.length){
         this.getValue(true);
     }
     this.pMatrix = new Matrix();
@@ -3743,7 +3744,7 @@ _aj.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix, transform, p
     sMatrix.translate(transform.a.v[0], transform.a.v[1], transform.a.v[2]);
 }
 
-_aj.prototype.init = function(elem, arr, pos, elemsData, dynamicProperties) {
+_aj.prototype.init = function(elem, arr, pos, elemsData, _co) {
     this.elem = elem;
     this.arr = arr;
     this.pos = pos;
@@ -3751,7 +3752,7 @@ _aj.prototype.init = function(elem, arr, pos, elemsData, dynamicProperties) {
     this._currentCopies = 0;
     this._bq = [];
     this._groups = [];
-    this.dynamicProperties = [];
+    this._co = [];
     this.frameId = -1;
     this.initModifierProperties(elem,arr[pos]);
     var cont = 0;
@@ -3761,9 +3762,9 @@ _aj.prototype.init = function(elem, arr, pos, elemsData, dynamicProperties) {
         this._bq.unshift(arr[pos]);
         cont += 1;
     }
-    if(this.dynamicProperties.length){
+    if(this._co.length){
         this.k = true;
-        dynamicProperties.push(this);
+        _co.push(this);
     }else{
         this.getValue(true);
     }
@@ -3796,13 +3797,13 @@ _aj.prototype.changeGroupRender = function(_br, renderFlag) {
     }
 }
 
-_aj.prototype.processShapes = function(firstFrame){
+_aj.prototype.processShapes = function(_ch){
 
     if(this.elem._x.frameId === this.frameId){
         return;
     }
     this.frameId = this.elem._x.frameId;
-    if(!this.dynamicProperties.length && !firstFrame){
+    if(!this._co.length && !_ch){
         this.mdf = false;
     }
     if(this.mdf){
@@ -3830,7 +3831,7 @@ _aj.prototype.processShapes = function(firstFrame){
         }
         
         this._currentCopies = copies;
-        this.elem.firstFrame = true;
+        this.elem._ch = true;
         ////
 
         var offset = this.o.v;
@@ -3907,12 +3908,12 @@ _as.registerModifier('rp',_aj);
 function _am(){
 	this._length = 0;
 	this._maxLength = 4;
-	this.shapes = Array.apply(null,{length:this._maxLength});
+	this.shapes = _cv(this._maxLength);
 };
 
 _am.prototype.addShape = function(shapeData){
 	if(this._length === this._maxLength){
-		this.shapes = this.shapes.concat(Array.apply(null,{length:this._maxLength}));
+		this.shapes = this.shapes.concat(_cv(this._maxLength));
 		this._maxLength *= 2;
 	}
 	this.shapes[this._length] = shapeData;
@@ -3926,24 +3927,24 @@ _am.prototype.releaseShapes = function(){
 	}
 	this._length = 0;
 };
-function DashProperty(elem, data, renderer, dynamicProperties) {
+function DashProperty(elem, data, renderer, _co) {
     this.elem = elem;
     this.frameId = -1;
-    this.dataProps = Array.apply(null,{length:data.length});
+    this.dataProps = _cv(data.length);
     this.renderer = renderer;
     this.mdf = false;
     this.k = false;
     this.dashStr = '';
-    this.dashArray = createTypedArray('float32',  data.length - 1);
-    this.dashoffset = createTypedArray('float32',  1);
+    this.dashArray = _cs('float32',  data.length - 1);
+    this.dashoffset = _cs('float32',  1);
     var i, len = data.length, prop;
     for(i=0;i<len;i+=1){
-        prop = _ai._bo(elem,data[i].v,0, 0, dynamicProperties);
+        prop = _ai._bo(elem,data[i].v,0, 0, _co);
         this.k = prop.k ? true : this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
     }
     if(this.k){
-        dynamicProperties.push(this);
+        _co.push(this);
     }else{
         this.getValue(true);
     }
@@ -3984,9 +3985,9 @@ function GradientProperty(elem,data,arr){
     this.prop = _ai._bo(elem,data.k,1,null,[]);
     this.data = data;
     this.k = this.prop.k;
-    this.c = createTypedArray('uint8c', data.p*4);
+    this.c = _cs('uint8c', data.p*4);
     var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
-    this.o = createTypedArray('float32', cLength);
+    this.o = _cs('float32', cLength);
     this.cmdf = false;
     this.omdf = false;
     this._collapsable = this.checkCollapsable();
@@ -4083,7 +4084,7 @@ var ImagePreloader = (function(){
     }
 
     function loadImage(path){
-        var img = createTag('img');
+        var img = _cu('img');
         img.addEventListener('load', imageLoaded.bind(this), false);
         img.addEventListener('error', imageLoaded.bind(this), false);
         img.src = path;
@@ -4140,7 +4141,7 @@ var filtersFactory = (function(){
 	ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
 	function createFilter(filId){
-        	var fil = createNS('filter');
+        	var fil = _ct('filter');
         	fil.setAttribute('id',filId);
                 fil.setAttribute('filterUnits','objectBoundingBox');
                 fil.setAttribute('x','0%');
@@ -4151,7 +4152,7 @@ var filtersFactory = (function(){
 	}
 
 	function createAlphaToLuminanceFilter(){
-                var feColorMatrix = createNS('feColorMatrix');
+                var feColorMatrix = _ct('feColorMatrix');
                 feColorMatrix.setAttribute('type','matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
                 feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 1 1');
@@ -4162,14 +4163,14 @@ var filtersFactory = (function(){
 }())
 function _bl(textData, renderType, elem){
     this.mdf = false;
-    this._firstFrame = true;
+    this._ch = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
-	this._dynamicProperties = [];
+	this.__co = [];
 	this._textData = textData;
 	this._renderType = renderType;
 	this._elem = elem;
-	this._animatorsData = Array.apply(null,{length:this._textData.a.length});
+	this._animatorsData = _cv(this._textData.a.length);
 	this._pathData = {}
 	this._moreOptions = {
 		alignment: {}
@@ -4179,17 +4180,17 @@ function _bl(textData, renderType, elem){
 
 }
 
-_bl.prototype.searchProperties = function(dynamicProperties){
+_bl.prototype.searchProperties = function(_co){
     var i, len = this._textData.a.length, animatorProps;
     var _bo = _ai._bo;
     for(i=0;i<len;i+=1){
         animatorProps = this._textData.a[i];
-        this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this._dynamicProperties);
+        this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this.__co);
     }
     if(this._textData.p && 'm' in this._textData.p){
         this._pathData = {
-            f: _bo(this._elem,this._textData.p.f,0,0,this._dynamicProperties),
-            l: _bo(this._elem,this._textData.p.l,0,0,this._dynamicProperties),
+            f: _bo(this._elem,this._textData.p.f,0,0,this.__co),
+            l: _bo(this._elem,this._textData.p.l,0,0,this.__co),
             r: this._textData.p.r,
             m: this._elem.maskManager.getMaskProperty(this._textData.p.m)
         };
@@ -4197,18 +4198,18 @@ _bl.prototype.searchProperties = function(dynamicProperties){
     } else {
         this._hasMaskedPath = false;
     }
-    this._moreOptions.alignment = _bo(this._elem,this._textData.m.a,1,0,this._dynamicProperties);
-    if(this._dynamicProperties.length) {
-    	dynamicProperties.push(this);
+    this._moreOptions.alignment = _bo(this._elem,this._textData.m.a,1,0,this.__co);
+    if(this.__co.length) {
+    	_co.push(this);
     }
 }
 
 _bl.prototype.getMeasures = function(documentData, lettersChangedFlag){
     this.lettersChangedFlag = lettersChangedFlag;
-    if(!this.mdf && !this._firstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
+    if(!this.mdf && !this._ch && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
         return;
     }
-    this._firstFrame = false;
+    this._ch = false;
     var alignment = this._moreOptions.alignment.v;
     var animators = this._animatorsData;
     var textData = this._textData;
@@ -4674,40 +4675,40 @@ _bl.prototype.getValue = function(){
         return;
     }
     this._frameId = this._elem._x.frameId;
-	var i, len = this._dynamicProperties.length;
+	var i, len = this.__co.length;
     this.mdf = false;
 	for(i = 0; i < len; i += 1) {
-		this._dynamicProperties[i].getValue();
-        this.mdf = this._dynamicProperties[i].mdf || this.mdf;
+		this.__co[i].getValue();
+        this.mdf = this.__co[i].mdf || this.mdf;
 	}
 }
 
 _bl.prototype.mHelper = new Matrix();
 _bl.prototype.defaultPropsArray = [];
-function TextAnimatorDataProperty(elem, animatorProps, dynamicProperties) {
+function TextAnimatorDataProperty(elem, animatorProps, _co) {
 	var defaultData = {propType:false};
 	var _bo = _ai._bo;
 	var _bn = animatorProps.a;
 	this.a = {
-		r: _bn.r ? _bo(elem, _bn.r, 0, degToRads, dynamicProperties) : defaultData,
-		rx: _bn.rx ? _bo(elem, _bn.rx, 0, degToRads, dynamicProperties) : defaultData,
-		ry: _bn.ry ? _bo(elem, _bn.ry, 0, degToRads, dynamicProperties) : defaultData,
-		sk: _bn.sk ? _bo(elem, _bn.sk, 0, degToRads, dynamicProperties) : defaultData,
-		sa: _bn.sa ? _bo(elem, _bn.sa, 0, degToRads, dynamicProperties) : defaultData,
-		s: _bn.s ? _bo(elem, _bn.s, 1, 0.01, dynamicProperties) : defaultData,
-		a: _bn.a ? _bo(elem, _bn.a, 1, 0, dynamicProperties) : defaultData,
-		o: _bn.o ? _bo(elem, _bn.o, 0, 0.01, dynamicProperties) : defaultData,
-		p: _bn.p ? _bo(elem,_bn.p, 1, 0, dynamicProperties) : defaultData,
-		sw: _bn.sw ? _bo(elem, _bn.sw, 0, 0, dynamicProperties) : defaultData,
-		sc: _bn.sc ? _bo(elem, _bn.sc, 1, 0, dynamicProperties) : defaultData,
-		fc: _bn.fc ? _bo(elem, _bn.fc, 1, 0, dynamicProperties) : defaultData,
-		fh: _bn.fh ? _bo(elem, _bn.fh, 0, 0, dynamicProperties) : defaultData,
-		fs: _bn.fs ? _bo(elem, _bn.fs, 0, 0.01, dynamicProperties) : defaultData,
-		fb: _bn.fb ? _bo(elem, _bn.fb, 0, 0.01, dynamicProperties) : defaultData,
-		t: _bn.t ? _bo(elem, _bn.t, 0, 0, dynamicProperties) : defaultData
+		r: _bn.r ? _bo(elem, _bn.r, 0, degToRads, _co) : defaultData,
+		rx: _bn.rx ? _bo(elem, _bn.rx, 0, degToRads, _co) : defaultData,
+		ry: _bn.ry ? _bo(elem, _bn.ry, 0, degToRads, _co) : defaultData,
+		sk: _bn.sk ? _bo(elem, _bn.sk, 0, degToRads, _co) : defaultData,
+		sa: _bn.sa ? _bo(elem, _bn.sa, 0, degToRads, _co) : defaultData,
+		s: _bn.s ? _bo(elem, _bn.s, 1, 0.01, _co) : defaultData,
+		a: _bn.a ? _bo(elem, _bn.a, 1, 0, _co) : defaultData,
+		o: _bn.o ? _bo(elem, _bn.o, 0, 0.01, _co) : defaultData,
+		p: _bn.p ? _bo(elem,_bn.p, 1, 0, _co) : defaultData,
+		sw: _bn.sw ? _bo(elem, _bn.sw, 0, 0, _co) : defaultData,
+		sc: _bn.sc ? _bo(elem, _bn.sc, 1, 0, _co) : defaultData,
+		fc: _bn.fc ? _bo(elem, _bn.fc, 1, 0, _co) : defaultData,
+		fh: _bn.fh ? _bo(elem, _bn.fh, 0, 0, _co) : defaultData,
+		fs: _bn.fs ? _bo(elem, _bn.fs, 0, 0.01, _co) : defaultData,
+		fb: _bn.fb ? _bo(elem, _bn.fb, 0, 0.01, _co) : defaultData,
+		t: _bn.t ? _bo(elem, _bn.t, 0, 0, _co) : defaultData
 	}
 
-	this.s = TextSelectorProp.getTextSelectorProp(elem,animatorProps.s, dynamicProperties);
+	this.s = TextSelectorProp.getTextSelectorProp(elem,animatorProps.s, _co);
     this.s.t = animatorProps.s.t;
 }
 function LetterProps(o, sw, sc, fc, m, p){
@@ -4768,12 +4769,12 @@ LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
 	}
 	return updated;
 }
-function _ar(elem, data, dynamicProperties){
+function _ar(elem, data, _co){
 	this._frameId = initialDefaultFrame;
 	this.pv = '';
 	this.v = '';
 	this.kf = false;
-	this.firstFrame = true;
+	this._ch = true;
 	this.mdf = true;
 	this.data = data;
 	this.elem = elem;
@@ -4807,7 +4808,7 @@ function _ar(elem, data, dynamicProperties){
 
 	}
 	if(this.searchProperty()) {
-		dynamicProperties.push(this);
+		_co.push(this);
 	} else {
 		this.getValue(true);
 	}
@@ -4850,7 +4851,7 @@ _ar.prototype.searchProperty = function() {
 _ar.prototype.getValue = function() {
 	this.mdf = false;
 	var frameId = this.elem._x.frameId;
-	if((frameId === this._frameId || !this.kf) && !this.firstFrame) {
+	if((frameId === this._frameId || !this.kf) && !this._ch) {
 		return;
 	}
 	var textKeys = this.data.d.k, textDocumentData;
@@ -4867,7 +4868,7 @@ _ar.prototype.getValue = function() {
             this.completeTextData(textDocumentData);
         }
         this.setCurrentData(textDocumentData);
-        this.mdf = this.firstFrame ? false : true;
+        this.mdf = this._ch ? false : true;
         this.pv = this.v = this.currentData.t;
         this.keysIndex = i;
     }
@@ -4876,7 +4877,7 @@ _ar.prototype.getValue = function() {
 
 _ar.prototype.completeTextData = function(documentData) {
     documentData.__complete = true;
-    var fontManager = this.elem._x.fontManager;
+    var _cr = this.elem._x._cr;
     var data = this.data;
     var letters = [];
     var i, len;
@@ -4886,7 +4887,7 @@ _ar.prototype.completeTextData = function(documentData) {
     var lineWidth = 0;
     var maxLineWidth = 0;
     var j, jLen;
-    var fontData = fontManager.getFontByName(documentData.f);
+    var fontData = _cr.getFontByName(documentData.f);
     var charData, cLength = 0;
     var styles = fontData.fStyle.split(' ');
 
@@ -4932,12 +4933,12 @@ _ar.prototype.completeTextData = function(documentData) {
                 lineWidth = 0;
                 newLineFlag = true;
             }
-            if(fontManager.chars){
-                charData = fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
+            if(_cr.chars){
+                charData = _cr.getCharData(documentData.t.charAt(i), fontData.fStyle, fontData.fFamily);
                 cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
             }else{
                 //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
-                cLength = fontManager.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
+                cLength = _cr.measureText(documentData.t.charAt(i), documentData.f, documentData.s);
             }
             if(lineWidth + cLength > boxWidth && documentData.t.charAt(i) !== ' '){
                 if(lastSpaceIndex === -1){
@@ -4975,13 +4976,13 @@ _ar.prototype.completeTextData = function(documentData) {
         }else{
             val = documentData.t.charAt(i);
         }
-        if(fontManager.chars){
-            charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
+        if(_cr.chars){
+            charData = _cr.getCharData(currentChar, fontData.fStyle, _cr.getFontByName(documentData.f).fFamily);
             cLength = newLineFlag ? 0 : charData.w*documentData.s/100;
         }else{
-            //var charWidth = fontManager.measureText(val, documentData.f, documentData.s);
-            //tCanvasHelper.font = documentData.s + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-            cLength = fontManager.measureText(val, documentData.f, documentData.s);
+            //var charWidth = _cr.measureText(val, documentData.f, documentData.s);
+            //tCanvasHelper.font = documentData.s + 'px '+ _cr.getFontByName(documentData.f).fFamily;
+            cLength = _cr.measureText(val, documentData.f, documentData.s);
         }
 
         //
@@ -5099,7 +5100,7 @@ _ar.prototype.updateDocumentData = function(newData, index) {
     dData.__complete = false;
     dData.t = newData.t;
     this.keysIndex = -1;
-    this.firstFrame = true;
+    this._ch = true;
     this.getValue();
 }
 
@@ -5109,11 +5110,11 @@ var TextSelectorProp = (function(){
     var floor = Math.floor;
     function updateRange(newCharsFlag){
         this.mdf = newCharsFlag || false;
-        if(this.dynamicProperties.length){
-            var i, len = this.dynamicProperties.length;
+        if(this._co.length){
+            var i, len = this._co.length;
             for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
+                this._co[i].getValue();
+                if(this._co[i].mdf){
                     this.mdf = true;
                 }
             }
@@ -5211,24 +5212,24 @@ var TextSelectorProp = (function(){
         this.mdf = false;
         this.k = false;
         this.data = data;
-        this.dynamicProperties = [];
+        this._co = [];
         this.getValue = updateRange;
         this.getMult = getMult;
         this.elem = elem;
         this.comp = elem.comp;
         this.finalS = 0;
         this.finalE = 0;
-        this.s = _ai._bo(elem,data.s || {k:0},0,0,this.dynamicProperties);
+        this.s = _ai._bo(elem,data.s || {k:0},0,0,this._co);
         if('e' in data){
-            this.e = _ai._bo(elem,data.e,0,0,this.dynamicProperties);
+            this.e = _ai._bo(elem,data.e,0,0,this._co);
         }else{
             this.e = {v:100};
         }
-        this.o = _ai._bo(elem,data.o || {k:0},0,0,this.dynamicProperties);
-        this.xe = _ai._bo(elem,data.xe || {k:0},0,0,this.dynamicProperties);
-        this.ne = _ai._bo(elem,data.ne || {k:0},0,0,this.dynamicProperties);
-        this.a = _ai._bo(elem,data.a,0,0.01,this.dynamicProperties);
-        if(this.dynamicProperties.length){
+        this.o = _ai._bo(elem,data.o || {k:0},0,0,this._co);
+        this.xe = _ai._bo(elem,data.xe || {k:0},0,0,this._co);
+        this.ne = _ai._bo(elem,data.ne || {k:0},0,0,this._co);
+        this.a = _ai._bo(elem,data.a,0,0.01,this._co);
+        if(this._co.length){
             arr.push(this);
         }else{
             this.getValue();
@@ -5250,7 +5251,7 @@ var pool_factory = (function() {
 
 		var _length = 0;
 		var _maxLength = initialLength;
-		var pool = Array.apply(null, {length: _maxLength});
+		var pool = _cv(_maxLength);
 
 		var ob = {
 			newElement: newElement,
@@ -5293,7 +5294,7 @@ var pool_factory = (function() {
 var pooling = (function(){
 
 	function double(arr){
-		return arr.concat(Array.apply(null,{length:arr.length}))
+		return arr.concat(_cv(arr.length));
 	}
 
 	return {
@@ -5303,7 +5304,7 @@ var pooling = (function(){
 var point_pool = (function(){
 
 	function create() {
-		return createTypedArray('float32', 2);
+		return _cs('float32', 2);
 	}
 	return pool_factory(8, create);
 }());
@@ -5353,7 +5354,7 @@ var shapeCollection_pool = (function(){
 
 	var _length = 0;
 	var _maxLength = 4;
-	var pool = Array.apply(null,{length:_maxLength});
+	var pool = _cv(_maxLength);
 
 	function _al(){
 		var shapeCollection;
@@ -5407,8 +5408,8 @@ var bezier_length_pool = (function(){
 	function create() {
 		return {
             addedLength: 0,
-            percents: createTypedArray('float32', defaultCurveSegments),
-            lengths: createTypedArray('float32', defaultCurveSegments),
+            percents: _cs('float32', defaultCurveSegments),
+            lengths: _cs('float32', defaultCurveSegments),
         };
 	}
 	return pool_factory(8, create);
@@ -5416,7 +5417,7 @@ var bezier_length_pool = (function(){
 function _l(){}
 _l.prototype.checkLayers = function(num){
     var i, len = this.layers.length, data;
-    this.completeLayers = true;
+    this._db = true;
     for (i = len - 1; i >= 0; i--) {
         if (!this._br[i]) {
             data = this.layers[i];
@@ -5425,7 +5426,7 @@ _l.prototype.checkLayers = function(num){
                 this.buildItem(i);
             }
         }
-        this.completeLayers = this._br[i] ? this.completeLayers:false;
+        this._db = this._br[i] ? this._db:false;
     }
     this.checkPendingElements();
 };
@@ -5465,7 +5466,7 @@ _l.prototype.buildAllItems = function(){
 };
 
 _l.prototype.includeLayers = function(newLayers){
-    this.completeLayers = false;
+    this._db = false;
     var i, len = newLayers.length;
     var j, jLen = this.layers.length;
     for(i=0;i<len;i+=1){
@@ -5489,7 +5490,7 @@ _l.prototype.initItems = function(){
         this.buildAllItems();
     }
 };
-_l.prototype.buildElementParenting = function(element, parentName, hierarchy) {
+_l.prototype.buildElementParenting = function(element, parentName, _dd) {
     var _br = this._br;
     var layers = this.layers;
     var i=0, len = layers.length;
@@ -5499,13 +5500,13 @@ _l.prototype.buildElementParenting = function(element, parentName, hierarchy) {
                 this.buildItem(i);
                 this.addPendingElement(element);
             } else if(layers[i].parent !== undefined) {
-                hierarchy.push(_br[i]);
+                _dd.push(_br[i]);
                 _br[i]._isParent = true;
-                this.buildElementParenting(element, layers[i].parent, hierarchy);
+                this.buildElementParenting(element, layers[i].parent, _dd);
             } else {
-                hierarchy.push(_br[i]);
+                _dd.push(_br[i]);
                 _br[i]._isParent = true;
-                element.setHierarchy(hierarchy);
+                element.setHierarchy(_dd);
             }
         }
         i += 1;
@@ -5513,17 +5514,17 @@ _l.prototype.buildElementParenting = function(element, parentName, hierarchy) {
 };
 
 _l.prototype.addPendingElement = function(element){
-    this.pendingElements.push(element);
+    this._dc.push(element);
 };
-function _ao(animationItem, config){
-    this.animationItem = animationItem;
+function _ao(_cq, config){
+    this._cq = _cq;
     this.layers = null;
     this.renderedFrame = -1;
-    this._cf = createNS('svg');
-    var maskElement = createNS('g');
+    this._cf = _ct('svg');
+    var maskElement = _ct('g');
     this._cf.appendChild(maskElement);
     this._bx = maskElement;
-    var defs = createNS( 'defs');
+    var defs = _ct( 'defs');
     this._cf.appendChild(defs);
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
@@ -5538,12 +5539,12 @@ function _ao(animationItem, config){
         frameNum: -1,
         defs: defs,
         frameId: 0,
-        compSize: {w:0,h:0},
+        _de: {w:0,h:0},
         renderConfig: this.renderConfig,
-        fontManager: new FontManager()
+        _cr: new FontManager()
     };
     this._br = [];
-    this.pendingElements = [];
+    this._dc = [];
     this.destroyed = false;
 
 }
@@ -5559,11 +5560,11 @@ _ao.prototype.createNull = function (data) {
 };
 
 _ao.prototype.createShape = function (data) {
-    return new _f(data,this._x,this);
+    return new SVGShapeElement(data,this._x,this);
 };
 
 _ao.prototype.createText = function (data) {
-    return new SVGTextElement(data,this._x,this);
+    return new _cw(data,this._x,this);
 
 };
 
@@ -5600,21 +5601,21 @@ _ao.prototype.configAnimation = function(animData){
     this._cf.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     //this._bx.style.transform = 'translate3d(0,0,0)';
     //this._bx.style.transformOrigin = this._bx.style.mozTransformOrigin = this._bx.style.webkitTransformOrigin = this._bx.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this._cf);
+    this._cq.wrapper.appendChild(this._cf);
     //Mask animation
     var defs = this._x.defs;
 
-    this._x.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this._x.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
+    this._x.getAssetData = this._cq.getAssetData.bind(this._cq);
+    this._x.getAssetsPath = this._cq.getAssetsPath.bind(this._cq);
     this._x.progressiveLoad = this.renderConfig.progressiveLoad;
     this._x.nm = animData.nm;
-    this._x.compSize.w = animData.w;
-    this._x.compSize.h = animData.h;
+    this._x._de.w = animData.w;
+    this._x._de.h = animData.h;
     this._x.frameRate = animData.fr;
     this.data = animData;
 
-    var maskElement = createNS( 'clipPath');
-    var rect = createNS('rect');
+    var maskElement = _ct( 'clipPath');
+    var rect = _ct('rect');
     rect.setAttribute('width',animData.w);
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
@@ -5626,14 +5627,14 @@ _ao.prototype.configAnimation = function(animData){
 
     defs.appendChild(maskElement);
     this.layers = animData.layers;
-    this._x.fontManager.addChars(animData.chars);
-    this._x.fontManager.addFonts(animData.fonts,defs);
-    this._br = Array.apply(null,{length:animData.layers.length});
+    this._x._cr.addChars(animData.chars);
+    this._x._cr.addFonts(animData.fonts,defs);
+    this._br = _cv(animData.layers.length);
 };
 
 
 _ao.prototype.destroy = function () {
-    this.animationItem.wrapper.innerHTML = '';
+    this._cq.wrapper.innerHTML = '';
     this._bx = null;
     this._x.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
@@ -5644,7 +5645,7 @@ _ao.prototype.destroy = function () {
     }
     this._br.length = 0;
     this.destroyed = true;
-    this.animationItem = null;
+    this._cq = null;
 };
 
 _ao.prototype.updateContainerSize = function () {
@@ -5677,8 +5678,8 @@ _ao.prototype.buildItem  = function(pos){
 };
 
 _ao.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
-        var element = this.pendingElements.pop();
+    while(this._dc.length){
+        var element = this._dc.pop();
         element.checkParenting();
         if(element.data.tt){
             var i = 0, len = this._br.length;
@@ -5709,16 +5710,16 @@ _ao.prototype._ba = function(num){
     this._x.frameId += 1;
     this._x.projectInterface.currentFrame = num;
     var i, len = this.layers.length;
-    if(!this.completeLayers){
+    if(!this._db){
         this.checkLayers(num);
     }
     for (i = len - 1; i >= 0; i--) {
-        if(this.completeLayers || this._br[i]){
+        if(this._db || this._br[i]){
             this._br[i]._az(num - this.layers[i].st);
         }
     }
     for (i = 0; i < len; i += 1) {
-        if(this.completeLayers || this._br[i]){
+        if(this._db || this._br[i]){
             this._br[i]._ba();
         }
     }
@@ -5754,654 +5755,13 @@ _ao.prototype.show = function(){
 
 _ao.prototype.searchExtraCompositions = function(assets){
     var i, len = assets.length;
-    var floatingContainer = createNS('g');
+    var floatingContainer = _ct('g');
     for(i=0;i<len;i+=1){
         if(assets[i].xt){
             var comp = this.createComp(assets[i],floatingContainer,this._x.comp,null);
             comp.initExpressions();
             //comp.compInterface = CompExpressionInterface(comp);
             //Expressions.addLayersInterface(comp._br, this._x.projectInterface);
-            this._x.projectInterface.registerComposition(comp);
-        }
-    }
-};
-
-function _aq(animationItem, config){
-    this.animationItem = animationItem;
-    this.renderConfig = {
-        clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
-        context: (config && config.context) || null,
-        progressiveLoad: (config && config.progressiveLoad) || false,
-        preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
-        className: (config && config.className) || ''
-    };
-    this.renderConfig.dpr = (config && config.dpr) || 1;
-    if (this.animationItem.wrapper) {
-        this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
-    }
-    //TODO remove this when fixed
-    // this.renderConfig.dpr = 1;
-    this.renderedFrame = -1;
-    this._x = {
-        frameNum: -1,
-        mdf: false,
-        renderConfig: this.renderConfig
-    };
-    var i, len = 15;
-    this.contextData = new _n();
-    this._br = [];
-    this.pendingElements = [];
-    this.transformMat = new Matrix();
-    this.completeLayers = false;
-}
-extendPrototype([_l],_aq);
-
-_aq.prototype.createBase = function (data) {
-    return new _c(data, this._x, this);
-};
-
-_aq.prototype.createShape = function (data) {
-    return new _r(data, this._x, this);
-};
-
-_aq.prototype.createText = function (data) {
-    return new _t(data, this._x, this);
-};
-
-_aq.prototype.createImage = function (data) {
-    return new _p(data, this._x, this);
-};
-
-_aq.prototype.createComp = function (data) {
-    return new _m(data, this._x, this);
-};
-
-_aq.prototype.createSolid = function (data) {
-    return new _s(data, this._x, this);
-};
-
-_aq.prototype.createNull = _ao.prototype.createNull;
-
-_aq.prototype.ctxTransform = function(props){
-    if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0){
-        return;
-    }
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.transform(props[0],props[1],props[4],props[5],props[12],props[13]);
-        return;
-    }
-    this.transformMat.cloneFromProps(props);
-    var cProps = this.contextData.cTr.props;
-    this.transformMat.transform(cProps[0],cProps[1],cProps[2],cProps[3],cProps[4],cProps[5],cProps[6],cProps[7],cProps[8],cProps[9],cProps[10],cProps[11],cProps[12],cProps[13],cProps[14],cProps[15]);
-    //this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-    this.contextData.cTr.cloneFromProps(this.transformMat.props);
-    var trProps = this.contextData.cTr.props;
-    this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
-};
-
-_aq.prototype.ctxOpacity = function(op){
-    /*if(op === 1){
-        return;
-    }*/
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-        return;
-    }
-    this.contextData.cO *= op < 0 ? 0 : op;
-    this.canvasContext.globalAlpha = this.contextData.cO;
-};
-
-_aq.prototype.reset = function(){
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.restore();
-        return;
-    }
-    this.contextData.reset();
-};
-
-_aq.prototype.save = function(actionFlag){
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.save();
-        return;
-    }
-    if(actionFlag){
-        this.canvasContext.save();
-    }
-    var props = this.contextData.cTr.props;
-    if(this.contextData._length <= this.contextData.cArrPos) {
-        this.contextData.duplicate();
-    }
-    var i, arr = this.contextData.saved[this.contextData.cArrPos];
-    for (i = 0; i < 16; i += 1) {
-        arr[i] = props[i];
-    }
-    this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
-    this.contextData.cArrPos += 1;
-};
-
-_aq.prototype.restore = function(actionFlag){
-    if(!this.renderConfig.clearCanvas){
-        this.canvasContext.restore();
-        return;
-    }
-    if(actionFlag){
-        this.canvasContext.restore();
-        this._x.blendMode = 'source-over';
-    }
-    this.contextData.cArrPos -= 1;
-    var popped = this.contextData.saved[this.contextData.cArrPos];
-    var i,arr = this.contextData.cTr.props;
-    for(i=0;i<16;i+=1){
-        arr[i] = popped[i];
-    }
-    this.canvasContext.setTransform(popped[0],popped[1],popped[4],popped[5],popped[12],popped[13]);
-    popped = this.contextData.savedOp[this.contextData.cArrPos];
-    this.contextData.cO = popped;
-    this.canvasContext.globalAlpha = popped;
-};
-
-_aq.prototype.configAnimation = function(animData){
-    if(this.animationItem.wrapper){
-        this.animationItem.container = createTag('canvas');
-        this.animationItem.container.style.width = '100%';
-        this.animationItem.container.style.height = '100%';
-        //this.animationItem.container.style.transform = 'translate3d(0,0,0)';
-        //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
-        this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
-        this.animationItem.wrapper.appendChild(this.animationItem.container);
-        this.canvasContext = this.animationItem.container.getContext('2d');
-        if(this.renderConfig.className) {
-            this.animationItem.container.setAttribute('class', this.renderConfig.className);
-        }
-    }else{
-        this.canvasContext = this.renderConfig.context;
-    }
-    this.data = animData;
-    this._x.canvasContext = this.canvasContext;
-    this._x.renderer = this;
-    this._x.isDashed = false;
-    this._x.totalFrames = Math.floor(animData.tf);
-    this._x.compWidth = animData.w;
-    this._x.compHeight = animData.h;
-    this._x.frameRate = animData.fr;
-    this._x.frameId = 0;
-    this._x.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this._x.progressiveLoad = this.renderConfig.progressiveLoad;
-    this.layers = animData.layers;
-    this.transformCanvas = {};
-    this.transformCanvas.w = animData.w;
-    this.transformCanvas.h = animData.h;
-    this._x.fontManager = new FontManager();
-    this._x.fontManager.addChars(animData.chars);
-    this._x.fontManager.addFonts(animData.fonts,document.body);
-    this._x.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this._x.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this._x.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this._x.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
-    this._x.transformCanvas = this.transformCanvas;
-    this._br = Array.apply(null,{length:animData.layers.length});
-
-    this.updateContainerSize();
-};
-
-_aq.prototype.updateContainerSize = function () {
-    this.reset();
-    var elementWidth,elementHeight;
-    if(this.animationItem.wrapper && this.animationItem.container){
-        elementWidth = this.animationItem.wrapper.offsetWidth;
-        elementHeight = this.animationItem.wrapper.offsetHeight;
-        this.animationItem.container.setAttribute('width',elementWidth * this.renderConfig.dpr );
-        this.animationItem.container.setAttribute('height',elementHeight * this.renderConfig.dpr);
-    }else{
-        elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
-        elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
-    }
-    var elementRel,animationRel;
-    if(this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1){
-        var par = this.renderConfig.preserveAspectRatio.split(' ');
-        var fillType = par[1] || 'meet';
-        var pos = par[0] || 'xMidYMid';
-        var xPos = pos.substr(0,4);
-        var yPos = pos.substr(4);
-        elementRel = elementWidth/elementHeight;
-        animationRel = this.transformCanvas.w/this.transformCanvas.h;
-        if(animationRel>elementRel && fillType === 'meet' || animationRel<elementRel && fillType === 'slice'){
-            this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-            this.transformCanvas.sy = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-        }else{
-            this.transformCanvas.sx = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
-            this.transformCanvas.sy = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
-        }
-
-        if(xPos === 'xMid' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))){
-            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
-        } else if(xPos === 'xMax' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))){
-            this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))*this.renderConfig.dpr;
-        } else {
-            this.transformCanvas.tx = 0;
-        }
-        if(yPos === 'YMid' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))){
-            this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2)*this.renderConfig.dpr;
-        } else if(yPos === 'YMax' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))){
-            this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w)))*this.renderConfig.dpr;
-        } else {
-            this.transformCanvas.ty = 0;
-        }
-
-    }else if(this.renderConfig.preserveAspectRatio == 'none'){
-        this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-        this.transformCanvas.sy = elementHeight/(this.transformCanvas.h/this.renderConfig.dpr);
-        this.transformCanvas.tx = 0;
-        this.transformCanvas.ty = 0;
-    }else{
-        this.transformCanvas.sx = this.renderConfig.dpr;
-        this.transformCanvas.sy = this.renderConfig.dpr;
-        this.transformCanvas.tx = 0;
-        this.transformCanvas.ty = 0;
-    }
-    this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
-    /*var i, len = this._br.length;
-    for(i=0;i<len;i+=1){
-        if(this._br[i] && this._br[i].data.ty === 0){
-            this._br[i].resize(this._x.transformCanvas);
-        }
-    }*/
-    this.ctxTransform(this.transformCanvas.props);
-};
-
-_aq.prototype.destroy = function () {
-    if(this.renderConfig.clearCanvas) {
-        this.animationItem.wrapper.innerHTML = '';
-    }
-    var i, len = this.layers ? this.layers.length : 0;
-    for (i = len - 1; i >= 0; i-=1) {
-        if(this._br[i]) {
-            this._br[i].destroy();
-        }
-    }
-    this._br.length = 0;
-    this._x.canvasContext = null;
-    this.animationItem.container = null;
-    this.destroyed = true;
-};
-
-_aq.prototype._ba = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === null){
-        return;
-    }
-    this.renderedFrame = num;
-    this._x.frameNum = num - this.animationItem.firstFrame;
-    this._x.frameId += 1;
-    this._x.projectInterface.currentFrame = num;
-    if(this.renderConfig.clearCanvas === true){
-        //this.reset();
-        //this.canvasContext.save();
-        //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-        this.canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w*this.transformCanvas.sx, this.transformCanvas.h*this.transformCanvas.sy);
-    }else{
-        this.save();
-    }
-    this.canvasContext.beginPath();
-    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
-    this.canvasContext.closePath();
-    this.canvasContext.clip();
-
-     // console.log('--------');
-     // console.log('NEW: ',num);
-    var i, len = this.layers.length;
-    if(!this.completeLayers){
-        this.checkLayers(num);
-    }
-
-    for (i = 0; i < len; i++) {
-        if(this.completeLayers || this._br[i]){
-            this._br[i]._az(num - this.layers[i].st);
-        }
-    }
-    for (i = len - 1; i >= 0; i-=1) {
-        if(this.completeLayers || this._br[i]){
-            this._br[i]._ba();
-        }
-    }
-    if(this.renderConfig.clearCanvas !== true){
-        this.restore();
-    } else {
-        //this.canvasContext.restore();
-    }
-    // console.log(this.contextData.cTr.props)
-};
-
-_aq.prototype.buildItem = function(pos){
-    var _br = this._br;
-    if(_br[pos] || this.layers[pos].ty == 99){
-        return;
-    }
-    var element = this.createItem(this.layers[pos], this,this._x);
-    _br[pos] = element;
-    element.initExpressions();
-    /*if(this.layers[pos].ty === 0){
-        element.resize(this._x.transformCanvas);
-    }*/
-};
-
-_aq.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
-        var element = this.pendingElements.pop();
-        element.checkParenting();
-    }
-};
-
-_aq.prototype.hide = function(){
-    this.animationItem.container.style.display = 'none';
-};
-
-_aq.prototype.show = function(){
-    this.animationItem.container.style.display = 'block';
-};
-
-_aq.prototype.searchExtraCompositions = function(assets){
-    var i, len = assets.length;
-    var floatingContainer = createNS('g');
-    for(i=0;i<len;i+=1){
-        if(assets[i].xt){
-            var comp = this.createComp(assets[i],this._x.comp,this._x);
-            comp.initExpressions();
-            //comp.compInterface = CompExpressionInterface(comp);
-            //Expressions.addLayersInterface(comp._br, this._x.projectInterface);
-            this._x.projectInterface.registerComposition(comp);
-        }
-    }
-};
-
-function _ap(animationItem, config){
-    this.animationItem = animationItem;
-    this.layers = null;
-    this.renderedFrame = -1;
-    this.renderConfig = {
-        className: (config && config.className) || '',
-        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
-    };
-    this._x = {
-        mdf: false,
-        frameNum: -1,
-        renderConfig: this.renderConfig
-    };
-    this.pendingElements = [];
-    this._br = [];
-    this.threeDElements = [];
-    this.destroyed = false;
-    this.camera = null;
-    this.supports3d = true;
-
-}
-
-extendPrototype([_l],_ap);
-
-_ap.prototype.buildItem = _ao.prototype.buildItem;
-
-_ap.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
-        var element = this.pendingElements.pop();
-        element.checkParenting();
-    }
-};
-
-_ap.prototype.appendElementInPos = function(element, pos){
-    var newDOMElement = element.get_e();
-    if(!newDOMElement){
-        return;
-    }
-    var layer = this.layers[pos];
-    if(!layer.ddd || !this.supports3d){
-        var i = 0;
-        var nextDOMElement, nextLayer;
-        while(i<pos){
-            if(this._br[i] && this._br[i]!== true && this._br[i].get_e){
-                nextLayer = this._br[i];
-                nextDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.get_e();
-            }
-            i += 1;
-        }
-        if(nextDOMElement){
-            if(!layer.ddd || !this.supports3d){
-                this._bx.insertBefore(newDOMElement, nextDOMElement);
-            }
-        } else {
-            if(!layer.ddd || !this.supports3d){
-                this._bx.appendChild(newDOMElement);
-            }
-        }
-    } else {
-        this.addTo3dContainer(newDOMElement,pos);
-    }
-};
-
-
-_ap.prototype.createBase = function (data) {
-    return new _d(data, this._x, this);
-};
-
-_ap.prototype.createShape = function (data) {
-    if(!this.supports3d){
-        return new _f(data, this._x, this);
-    }
-    return new _z(data, this._x, this);
-};
-
-_ap.prototype.createText = function (data) {
-    if(!this.supports3d){
-        return new SVGTextElement(data, this._x, this);
-    }
-    return new _ab(data, this._x, this);
-};
-
-_ap.prototype.createCamera = function (data) {
-    this.camera = new _v(data, this._x, this);
-    return this.camera;
-};
-
-_ap.prototype.createImage = function (data) {
-    if(!this.supports3d){
-        return new _h(data, this._x, this);
-    }
-    return new _y(data, this._x, this);
-};
-
-_ap.prototype.createComp = function (data) {
-    if(!this.supports3d){
-        return new _g(data, this._x, this);
-    }
-    return new _w(data, this._x, this);
-
-};
-
-_ap.prototype.createSolid = function (data) {
-    if(!this.supports3d){
-        return new _j(data, this._x, this);
-    }
-    return new _aa(data, this._x, this);
-};
-
-_ap.prototype.createNull = _ao.prototype.createNull;
-
-_ap.prototype.getThreeDContainerByPos = function(pos){
-    var i = 0, len = this.threeDElements.length;
-    while(i<len) {
-        if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
-            return this.threeDElements[i].perspectiveElem;
-        }
-        i += 1;
-    }
-}
-
-_ap.prototype.createThreeDContainer = function(pos){
-    var perspectiveElem = createTag('div');
-    styleDiv(perspectiveElem);
-    perspectiveElem.style.width = this._x.compSize.w+'px';
-    perspectiveElem.style.height = this._x.compSize.h+'px';
-    perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "50% 50%";
-    var container = createTag('div');
-    styleDiv(container);
-    container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
-    perspectiveElem.appendChild(container);
-    this.resizerElem.appendChild(perspectiveElem);
-    var threeDContainerData = {
-        container:container,
-        perspectiveElem:perspectiveElem,
-        startPos: pos,
-        endPos: pos
-    };
-    this.threeDElements.push(threeDContainerData);
-    return threeDContainerData;
-};
-
-_ap.prototype.build3dContainers = function(){
-    var i, len = this.layers.length;
-    var lastThreeDContainerData;
-    for(i=0;i<len;i+=1){
-        if(this.layers[i].ddd){
-            if(!lastThreeDContainerData){
-                lastThreeDContainerData = this.createThreeDContainer(i);
-            }
-            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
-        } else {
-            lastThreeDContainerData = null;
-        }
-    }
-};
-
-_ap.prototype.addTo3dContainer = function(elem,pos){
-    var i = 0, len = this.threeDElements.length;
-    while(i<len){
-        if(pos <= this.threeDElements[i].endPos){
-            var j = this.threeDElements[i].startPos;
-            var nextElement;
-            while(j<pos){
-                if(this._br[j] && this._br[j].get_e){
-                    nextElement = this._br[j].get_e();
-                }
-                j += 1;
-            }
-            if(nextElement){
-                this.threeDElements[i].container.insertBefore(elem, nextElement);
-            } else {
-                this.threeDElements[i].container.appendChild(elem);
-            }
-            break;
-        }
-        i += 1;
-    }
-};
-
-_ap.prototype.configAnimation = function(animData){
-    var resizerElem = createTag('div');
-    var wrapper = this.animationItem.wrapper;
-    resizerElem.style.width = animData.w+'px';
-    resizerElem.style.height = animData.h+'px';
-    this.resizerElem = resizerElem;
-    styleDiv(resizerElem);
-    resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
-    if(this.renderConfig.className) {
-      wrapper.setAttribute('class', this.renderConfig.className);
-    }
-    wrapper.appendChild(resizerElem);
-
-    resizerElem.style.overflow = 'hidden';
-    var svg = createNS('svg');
-    svg.setAttribute('width','1');
-    svg.setAttribute('height','1');
-    styleDiv(svg);
-    this.resizerElem.appendChild(svg);
-    var defs = createNS('defs');
-    svg.appendChild(defs);
-    this._x.defs = defs;
-    this.data = animData;
-    //Mask animation
-    this._x.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this._x.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this._x.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this._x.frameId = 0;
-    this._x.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this._x.frameRate = animData.fr;
-    this.layers = animData.layers;
-    this._x.fontManager = new FontManager();
-    this._x.fontManager.addChars(animData.chars);
-    this._x.fontManager.addFonts(animData.fonts,svg);
-    this._bx = this.resizerElem;
-    this.build3dContainers();
-    this.updateContainerSize();
-};
-
-_ap.prototype.destroy = function () {
-    this.animationItem.wrapper.innerHTML = '';
-    this.animationItem.container = null;
-    this._x.defs = null;
-    var i, len = this.layers ? this.layers.length : 0;
-    for (i = 0; i < len; i++) {
-        this._br[i].destroy();
-    }
-    this._br.length = 0;
-    this.destroyed = true;
-    this.animationItem = null;
-};
-
-_ap.prototype.updateContainerSize = function () {
-    var elementWidth = this.animationItem.wrapper.offsetWidth;
-    var elementHeight = this.animationItem.wrapper.offsetHeight;
-    var elementRel = elementWidth/elementHeight;
-    var animationRel = this._x.compSize.w/this._x.compSize.h;
-    var sx,sy,tx,ty;
-    if(animationRel>elementRel){
-        sx = elementWidth/(this._x.compSize.w);
-        sy = elementWidth/(this._x.compSize.w);
-        tx = 0;
-        ty = ((elementHeight-this._x.compSize.h*(elementWidth/this._x.compSize.w))/2);
-    }else{
-        sx = elementHeight/(this._x.compSize.h);
-        sy = elementHeight/(this._x.compSize.h);
-        tx = (elementWidth-this._x.compSize.w*(elementHeight/this._x.compSize.h))/2;
-        ty = 0;
-    }
-    this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
-};
-
-_ap.prototype._ba = _ao.prototype._ba;
-
-_ap.prototype.hide = function(){
-    this.resizerElem.style.display = 'none';
-};
-
-_ap.prototype.show = function(){
-    this.resizerElem.style.display = 'block';
-};
-
-_ap.prototype.initItems = function(){
-    this.buildAllItems();
-    if(this.camera){
-        this.camera.setup();
-    } else {
-        var cWidth = this._x.compSize.w;
-        var cHeight = this._x.compSize.h;
-        var i, len = this.threeDElements.length;
-        for(i=0;i<len;i+=1){
-            this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
-        }
-    }
-};
-
-_ap.prototype.searchExtraCompositions = function(assets){
-    var i, len = assets.length;
-    var floatingContainer = createTag('div');
-    for(i=0;i<len;i+=1){
-        if(assets[i].xt){
-            var comp = this.createComp(assets[i],floatingContainer,this._x.comp,null);
-            comp.initExpressions();
             this._x.projectInterface.registerComposition(comp);
         }
     }
@@ -6409,17 +5769,17 @@ _ap.prototype.searchExtraCompositions = function(assets){
 
 function _ay(data,element,_x) {
     //TODO: check if dynamic properties array can be used from element
-    this.dynamicProperties = [];
+    this._co = [];
     this.data = data;
     this.element = element;
     this._x = _x;
     this.storedData = [];
     this.masksProperties = this.data.masksProperties || [];
     this.maskElement = null;
-    this.firstFrame = true;
+    this._ch = true;
     var defs = this._x.defs;
     var i, len = this.masksProperties ? this.masksProperties.length : 0;
-    this.viewData = Array.apply(null,{length:len});
+    this.viewData = _cv(len);
     this.solidPath = '';
 
 
@@ -6438,7 +5798,7 @@ function _ay(data,element,_x) {
         }
 
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
-            rect = createNS( 'rect');
+            rect = _ct( 'rect');
             rect.setAttribute('fill', '#ffffff');
             rect.setAttribute('width', this.element.comp.data.w);
             rect.setAttribute('height', this.element.comp.data.h);
@@ -6447,12 +5807,12 @@ function _ay(data,element,_x) {
             rect = null;
         }
 
-        path = createNS( 'path');
+        path = _ct( 'path');
         if(properties[i].mode == 'n') {
             // TODO move this to a factory or to a constructor
             this.viewData[i] = {
-                op: _ai._bo(this.element,properties[i].o,0,0.01,this.dynamicProperties),
-                prop: _ah._bp(this.element,properties[i],3,this.dynamicProperties,null),
+                op: _ai._bo(this.element,properties[i].o,0,0.01,this._co),
+                prop: _ah._bp(this.element,properties[i],3,this._co,null),
                 elem: path
             };
             defs.appendChild(path);
@@ -6466,11 +5826,11 @@ function _ay(data,element,_x) {
         if (properties[i].x.k !== 0) {
             maskType = 'mask';
             maskRef = 'mask';
-            x = _ai._bo(this.element,properties[i].x,0,null,this.dynamicProperties);
+            x = _ai._bo(this.element,properties[i].x,0,null,this._co);
             var filterID = 'fi_'+randomString(10);
-            expansor = createNS('filter');
+            expansor = _ct('filter');
             expansor.setAttribute('id',filterID);
-            feMorph = createNS('feMorphology');
+            feMorph = _ct('feMorphology');
             feMorph.setAttribute('operator','dilate');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
@@ -6494,11 +5854,11 @@ function _ay(data,element,_x) {
         };
         if(properties[i].mode == 'i'){
             jLen = currentMasks.length;
-            var g = createNS('g');
+            var g = _ct('g');
             for(j=0;j<jLen;j+=1){
                 g.appendChild(currentMasks[j]);
             }
-            var mask = createNS('mask');
+            var mask = _ct('mask');
             mask.setAttribute('mask-type','alpha');
             mask.setAttribute('id',layerId+'_'+count);
             mask.appendChild(path);
@@ -6517,8 +5877,8 @@ function _ay(data,element,_x) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            op: _ai._bo(this.element,properties[i].o,0,0.01,this.dynamicProperties),
-            prop:_ah._bp(this.element,properties[i],3,this.dynamicProperties,null)
+            op: _ai._bo(this.element,properties[i].o,0,0.01,this._co),
+            prop:_ah._bp(this.element,properties[i],3,this._co,null)
         };
         if(rect){
             //TODO: move the invRect property to the object definition in order to prevent a new hidden class creation.
@@ -6529,7 +5889,7 @@ function _ay(data,element,_x) {
         }
     }
 
-    this.maskElement = createNS( maskType);
+    this.maskElement = _ct( maskType);
 
     len = currentMasks.length;
     for(i=0;i<len;i+=1){
@@ -6549,9 +5909,9 @@ _ay.prototype.getMaskProperty = function(pos){
 };
 
 _ay.prototype._az = function(){
-    var i, len = this.dynamicProperties.length;
+    var i, len = this._co.length;
     for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
+        this._co[i].getValue();
 
     }
 };
@@ -6559,18 +5919,18 @@ _ay.prototype._az = function(){
 _ay.prototype._ba = function (finalMat) {
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.viewData[i].prop.mdf || this.firstFrame){
+        if(this.viewData[i].prop.mdf || this._ch){
             this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
-        if(this.viewData[i].op.mdf || this.firstFrame){
+        if(this.viewData[i].op.mdf || this._ch){
             this.viewData[i].elem.setAttribute('fill-opacity',this.viewData[i].op.v);
         }
         if(this.masksProperties[i].mode !== 'n'){
-            if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
+            if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this._ch)){
                 this.viewData[i].invRect.setAttribute('x', -finalMat.props[12]);
                 this.viewData[i].invRect.setAttribute('y', -finalMat.props[13]);
             }
-            if(this.storedData[i].x && (this.storedData[i].x.mdf || this.firstFrame)){
+            if(this.storedData[i].x && (this.storedData[i].x.mdf || this._ch)){
                 var feMorph = this.storedData[i].expan;
                 if(this.storedData[i].x.v < 0){
                     if(this.storedData[i].lastOperator !== 'erode'){
@@ -6589,7 +5949,7 @@ _ay.prototype._ba = function (finalMat) {
             }
         }
     }
-    this.firstFrame = false;
+    this._ch = false;
 };
 
 _ay.prototype.getMaskelement = function () {
@@ -6598,10 +5958,10 @@ _ay.prototype.getMaskelement = function () {
 
 _ay.prototype.createLayerSolidPath = function(){
     var path = 'M0,0 ';
-    path += ' h' + this._x.compSize.w ;
-    path += ' v' + this._x.compSize.h ;
-    path += ' h-' + this._x.compSize.w ;
-    path += ' v-' + this._x.compSize.h + ' ';
+    path += ' h' + this._x._de.w ;
+    path += ' v' + this._x._de.h ;
+    path += ' h-' + this._x._de.w ;
+    path += ' v-' + this._x._de.h + ' ';
     return path;
 };
 
@@ -6642,21 +6002,21 @@ _ay.prototype.destroy = function(){
 function _ad(){}
 
 _ad.prototype.initHierarchy = function() {
-    this.hierarchy = [];
+    this._dd = [];
     this._isParent = false;
     this.checkParenting();
 }
 
 _ad.prototype.resetHierarchy = function() {
-    this.hierarchy.length = 0;
+    this._dd.length = 0;
 };
 
 _ad.prototype.getHierarchy = function() {
-    return this.hierarchy;
+    return this._dd;
 };
 
-_ad.prototype.setHierarchy = function(hierarchy){
-    this.hierarchy = hierarchy;
+_ad.prototype.setHierarchy = function(_dd){
+    this._dd = _dd;
 };
 
 _ad.prototype.checkParenting = function(){
@@ -6685,9 +6045,9 @@ function _ac(){}
 
 _ac.prototype.initFrame = function(){
 	//set to true when inpoint is rendered
-	this.firstFrame = false;
+	this._ch = false;
 	//list of animated properties
-	this.dynamicProperties = [];
+	this._co = [];
 }
 
 
@@ -6700,12 +6060,12 @@ _ac.prototype.initFrame = function(){
  * 
  */
 _ac.prototype.prepareProperties = function(num, isVisible) {
-    var i, len = this.dynamicProperties.length;
+    var i, len = this._co.length;
     for (i = 0;i < len; i += 1) {
         //TODO change .type to .propType
-        if (isVisible || (this._isParent && this.dynamicProperties[i].propType === 'transform')) {
-            this.dynamicProperties[i].getValue(this.firstFrame);
-            if (this.dynamicProperties[i].mdf) {
+        if (isVisible || (this._isParent && this._co[i].propType === 'transform')) {
+            this._co[i].getValue(this._ch);
+            if (this._co[i].mdf) {
                 this._x.mdf = true;
             }
         }
@@ -6715,7 +6075,7 @@ function _af(){}
 
 _af.prototype.initTransform = function() {
     this.finalTransform = {
-        mProp: this.data.ks ? _ag._bj(this, this.data.ks, this.dynamicProperties) : {o:0},
+        mProp: this.data.ks ? _ag._bj(this, this.data.ks, this._co) : {o:0},
         matMdf: false,
         opMdf: false,
         mat: new Matrix()
@@ -6732,17 +6092,17 @@ _af.prototype.initTransform = function() {
 
 _af.prototype.renderTransform = function() {
 
-	this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf || this.firstFrame;
-    this.finalTransform.matMdf = this.finalTransform.mProp.mdf || this.firstFrame;
+	this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf || this._ch;
+    this.finalTransform.matMdf = this.finalTransform.mProp.mdf || this._ch;
 
-    if (this.hierarchy) {
+    if (this._dd) {
         var mat;
         var finalMat = this.finalTransform.mat;
-        var i = 0, len = this.hierarchy.length;
-        //Checking if any of the transformation matrices in the hierarchy chain has changed.
+        var i = 0, len = this._dd.length;
+        //Checking if any of the transformation matrices in the _dd chain has changed.
         if (!this.finalTransform.matMdf) {
             while (i < len) {
-                if (this.hierarchy[i].finalTransform.mProp.mdf) {
+                if (this._dd[i].finalTransform.mProp.mdf) {
                     this.finalTransform.matMdf = true;
                     break;
                 }
@@ -6754,7 +6114,7 @@ _af.prototype.renderTransform = function() {
             mat = this.finalTransform.mProp.v.props;
             finalMat.cloneFromProps(mat);
             for (i = 0; i < len; i += 1) {
-                mat = this.hierarchy[i].finalTransform.mProp.v.props;
+                mat = this._dd[i].finalTransform.mProp.v.props;
                 finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
             }
         }
@@ -6778,8 +6138,8 @@ _af.prototype.globalToLocal = function(pt) {
     }
     var i, len = transforms.length,ptNew;
     for (i = 0; i < len; i += 1) {
-        ptNew = transforms[i].mat.applyToPointArray(0, 0, 0);
-        //ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
+        ptNew = transforms[i].mat._cn(0, 0, 0);
+        //ptNew = transforms[i].mat._cn(pt[0],pt[1],pt[2]);
         pt = [pt[0] - ptNew[0], pt[1] - ptNew[1], 0];
     }
     return pt;
@@ -6847,7 +6207,7 @@ _ae.prototype.prepareMasks = function() {
 
 _ae.prototype.renderRenderable = function() {
     this.maskManager._ba(this.finalTransform.mat);
-    this.effectsManager._ba(this.firstFrame);
+    this.effectsManager._ba(this._ch);
 }
 
 _ae.prototype.sourceRectAtTime = function(){
@@ -6866,12 +6226,12 @@ _ae.prototype.getLayerSize = function(){
         return {w:this.data.width,h:this.data.height};
     }
 };
-function RenderableDOMElement() {
+function _ci() {
 
 }
-extendPrototype([_ae], RenderableDOMElement);
+extendPrototype([_ae], _ci);
 
-RenderableDOMElement.prototype.initElement = function(data,_x,comp) {
+_ci.prototype._cz = function(data,_x,comp) {
     this.initFrame();
     this.initBaseData(data, _x, comp);
     this.initTransform(data, _x, comp);
@@ -6884,25 +6244,25 @@ RenderableDOMElement.prototype.initElement = function(data,_x,comp) {
     this.hide();
 }
 
-RenderableDOMElement.prototype.hide = function(){
+_ci.prototype.hide = function(){
     if (!this.hidden && (!this.isInRange || this.isTransparent)) {
         this._bx.style.display = 'none';
         this.hidden = true;
     }
 };
 
-RenderableDOMElement.prototype.show = function(){
+_ci.prototype.show = function(){
     if (this.isInRange && !this.isTransparent){
         if (!this.data.hd) {
             this._bx.style.display = 'block';
         }
         this.hidden = false;
-        this.firstFrame = true;
-        this.maskManager.firstFrame = true;
+        this._ch = true;
+        this.maskManager._ch = true;
     }
 };
 
-RenderableDOMElement.prototype._ba = function() {
+_ci.prototype._ba = function() {
     //If it is exported as hidden (data.hd === true) no need to render
     //If it is not visible no need to render
     if (this.data.hd || this.hidden) {
@@ -6912,19 +6272,19 @@ RenderableDOMElement.prototype._ba = function() {
     this.renderRenderable();
     this.renderElement();
     this.renderInnerContent();
-    if (this.firstFrame) {
-        this.firstFrame = false;
+    if (this._ch) {
+        this._ch = false;
     }
 };
 
-RenderableDOMElement.prototype.renderInnerContent = function() {};
+_ci.prototype.renderInnerContent = function() {};
 
-RenderableDOMElement.prototype.destroy = function(){
+_ci.prototype.destroy = function(){
     this._cc =  null;
     this.destroy_e();
 };
 
-RenderableDOMElement.prototype._az = function(num) {
+_ci.prototype._az = function(num) {
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
 };
@@ -6939,7 +6299,7 @@ function SVGStyleData(data, level) {
 	this.lvl = level;
 	this.mdf = false;
 	this.closed = false;
-	this.pElem = createNS('path');
+	this.pElem = _ct('path');
 	this.msElem = null;
 }
 
@@ -6962,29 +6322,29 @@ function SVGTransformData(mProps, op) {
 	}
 	this._br = []
 }
-function SVGStrokeStyleData(elem, data, dynamicProperties, styleOb){
-	this.o = _ai._bo(elem,data.o,0,0.01,dynamicProperties);
-	this.w = _ai._bo(elem,data.w,0,null,dynamicProperties);
-	this.d = new DashProperty(elem,data.d||{},'svg',dynamicProperties);
-	this.c = _ai._bo(elem,data.c,1,255,dynamicProperties);
+function SVGStrokeStyleData(elem, data, _co, styleOb){
+	this.o = _ai._bo(elem,data.o,0,0.01,_co);
+	this.w = _ai._bo(elem,data.w,0,null,_co);
+	this.d = new DashProperty(elem,data.d||{},'svg',_co);
+	this.c = _ai._bo(elem,data.c,1,255,_co);
 	this.style = styleOb;
 }
-function SVGFillStyleData(elem, data, dynamicProperties, styleOb){
-	this.o = _ai._bo(elem,data.o,0,0.01,dynamicProperties);
-	this.c = _ai._bo(elem,data.c,1,255,dynamicProperties);
+function SVGFillStyleData(elem, data, _co, styleOb){
+	this.o = _ai._bo(elem,data.o,0,0.01,_co);
+	this.c = _ai._bo(elem,data.c,1,255,_co);
 	this.style = styleOb;
 }
-function SVGGradientFillStyleData(elem, data, dynamicProperties, styleOb){
-    this.initGradientData(elem, data, dynamicProperties, styleOb);
+function _ck(elem, data, _co, styleOb){
+    this.initGradientData(elem, data, _co, styleOb);
 }
 
-SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, dynamicProperties, styleOb){
-    this.o = _ai._bo(elem,data.o,0,0.01,dynamicProperties);
-    this.s = _ai._bo(elem,data.s,1,null,dynamicProperties);
-    this.e = _ai._bo(elem,data.e,1,null,dynamicProperties);
-    this.h = _ai._bo(elem,data.h||{k:0},0,0.01,dynamicProperties);
-    this.a = _ai._bo(elem,data.a||{k:0},0,degToRads,dynamicProperties);
-    this.g = new GradientProperty(elem,data.g,dynamicProperties);
+_ck.prototype.initGradientData = function(elem, data, _co, styleOb){
+    this.o = _ai._bo(elem,data.o,0,0.01,_co);
+    this.s = _ai._bo(elem,data.s,1,null,_co);
+    this.e = _ai._bo(elem,data.e,1,null,_co);
+    this.h = _ai._bo(elem,data.h||{k:0},0,0.01,_co);
+    this.a = _ai._bo(elem,data.a||{k:0},0,degToRads,_co);
+    this.g = new GradientProperty(elem,data.g,_co);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -6992,10 +6352,10 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, dynam
 
 }
 
-SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
+_ck.prototype.setGradientData = function(pathElement,data){
 
     var gradientId = 'gr_'+randomString(10);
-    var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
+    var gfill = _ct(data.t === 1 ? 'linearGradient' : 'radialGradient');
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
     gfill.setAttribute('gradientUnits','userSpaceOnUse');
@@ -7003,7 +6363,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
     var stop, j, jLen;
     jLen = data.g.p*4;
     for(j=0;j<jLen;j+=4){
-        stop = createNS('stop');
+        stop = _ct('stop');
         gfill.appendChild(stop);
         stops.push(stop);
     }
@@ -7013,23 +6373,23 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
     this.cst = stops;
 }
 
-SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
+_ck.prototype.setGradientOpacity = function(data, styleOb){
     if(this.g._hasOpacity && !this.g._collapsable){
         var stop, j, jLen;
-        var mask = createNS("mask");
-        var maskElement = createNS( 'path');
+        var mask = _ct("mask");
+        var maskElement = _ct( 'path');
         mask.appendChild(maskElement);
         var opacityId = 'op_'+randomString(10);
         var maskId = 'mk_'+randomString(10);
         mask.setAttribute('id',maskId);
-        var opFill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
+        var opFill = _ct(data.t === 1 ? 'linearGradient' : 'radialGradient');
         opFill.setAttribute('id',opacityId);
         opFill.setAttribute('spreadMethod','pad');
         opFill.setAttribute('gradientUnits','userSpaceOnUse');
         jLen = data.g.k.k[0].s ? data.g.k.k[0].s.length : data.g.k.k.length;
         var stops = this.stops;
         for(j=data.g.p*4;j<jLen;j+=2){
-            stop = createNS('stop');
+            stop = _ct('stop');
             stop.setAttribute('stop-color','rgb(255,255,255)');
             opFill.appendChild(stop);
             stops.push(stop);
@@ -7042,19 +6402,19 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         styleOb.msElem = maskElement;
     }
 };
-function SVGGradientStrokeStyleData(elem, data, dynamicProperties, styleOb){
-	this.w = _ai._bo(elem,data.w,0,null,dynamicProperties);
-	this.d = new DashProperty(elem,data.d||{},'svg',dynamicProperties);
-    this.initGradientData(elem, data, dynamicProperties, styleOb);
+function _cj(elem, data, _co, styleOb){
+	this.w = _ai._bo(elem,data.w,0,null,_co);
+	this.d = new DashProperty(elem,data.d||{},'svg',_co);
+    this.initGradientData(elem, data, _co, styleOb);
 }
 
-SVGGradientStrokeStyleData.prototype.initGradientData = SVGGradientFillStyleData.prototype.initGradientData;
-SVGGradientStrokeStyleData.prototype.setGradientData = SVGGradientFillStyleData.prototype.setGradientData;
-SVGGradientStrokeStyleData.prototype.setGradientOpacity = SVGGradientFillStyleData.prototype.setGradientOpacity;
+_cj.prototype.initGradientData = _ck.prototype.initGradientData;
+_cj.prototype.setGradientData = _ck.prototype.setGradientData;
+_cj.prototype.setGradientOpacity = _ck.prototype.setGradientOpacity;
 function ShapeGroupData() {
 	this.it = [];
     this.prevViewData = [];
-    this.gr = createNS('g');
+    this.gr = _ct('g');
 }
 function _e(){
 };
@@ -7091,56 +6451,26 @@ _e.prototype.initExpressions = function(){
     }
 }
 
+_e.prototype.blendModeEnums = {
+    1:'multiply',
+    2:'screen',
+    3:'overlay',
+    4:'darken',
+    5:'lighten',
+    6:'color-dodge',
+    7:'color-burn',
+    8:'hard-light',
+    9:'soft-light',
+    10:'difference',
+    11:'exclusion',
+    12:'hue',
+    13:'saturation',
+    14:'color',
+    15:'luminosity'
+}
+
 _e.prototype.getBlendMode = function(){
-    var blendModeValue = '';
-    switch(this.data.bm){
-        case 1:
-            blendModeValue = 'multiply';
-            break;
-        case 2:
-            blendModeValue = 'screen';
-            break;
-        case 3:
-            blendModeValue = 'overlay';
-            break;
-        case 4:
-            blendModeValue = 'darken';
-            break;
-        case 5:
-            blendModeValue = 'lighten';
-            break;
-        case 6:
-            blendModeValue = 'color-dodge';
-            break;
-        case 7:
-            blendModeValue = 'color-burn';
-            break;
-        case 8:
-            blendModeValue = 'hard-light';
-            break;
-        case 9:
-            blendModeValue = 'soft-light';
-            break;
-        case 10:
-            blendModeValue = 'difference';
-            break;
-        case 11:
-            blendModeValue = 'exclusion';
-            break;
-        case 12:
-            blendModeValue = 'hue';
-            break;
-        case 13:
-            blendModeValue = 'saturation';
-            break;
-        case 14:
-            blendModeValue = 'color';
-            break;
-        case 15:
-            blendModeValue = 'luminosity';
-            break;
-    }
-    return blendModeValue;
+    return this.blendModeEnums[this.data.bm] || '';
 }
 
 _e.prototype.setBlendMode = function(){
@@ -7161,7 +6491,7 @@ _e.prototype.initBaseData = function(data, _x, comp){
         this.data.sr = 1;
     }
     // effects manager
-    this.effects = new EffectsManager(this.data,this,this.dynamicProperties);
+    this.effects = new EffectsManager(this.data,this,this._co);
     
 };
 
@@ -7203,11 +6533,11 @@ function _d(){
 };
 
 _d.prototype.initRendererElement = function() {
-    this._bx = createNS('g');
+    this._bx = _ct('g');
 }
 
 _d.prototype.createContainerElements = function(){
-    this.matteElement = createNS('g');
+    this.matteElement = _ct('g');
     this._bz = this._bx;
     this._ca = this._bx;
     this._sizeChanged = false;
@@ -7215,7 +6545,7 @@ _d.prototype.createContainerElements = function(){
     //If this layer acts as a mask for the following layer
     if (this.data.td) {
         if (this.data.td == 3 || this.data.td == 1) {
-            var masker = createNS('mask');
+            var masker = _ct('mask');
             masker.setAttribute('id', this.layerId);
             masker.setAttribute('mask-type', this.data.td == 3 ? 'luminance' : 'alpha');
             masker.appendChild(this._bx);
@@ -7228,38 +6558,38 @@ _d.prototype.createContainerElements = function(){
                 var fil = filtersFactory.createFilter(filId);
                 this._x.defs.appendChild(fil);
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = createNS('g');
+                var gg = _ct('g');
                 gg.appendChild(this._bx);
                 _bw = gg;
                 masker.appendChild(gg);
                 gg.setAttribute('filter','url(' + locationHref + '#' + filId + ')');
             }
         } else if(this.data.td == 2) {
-            var maskGroup = createNS('mask');
+            var maskGroup = _ct('mask');
             maskGroup.setAttribute('id', this.layerId);
             maskGroup.setAttribute('mask-type','alpha');
-            var maskGrouper = createNS('g');
+            var maskGrouper = _ct('g');
             maskGroup.appendChild(maskGrouper);
             var filId = randomString(10);
             var fil = filtersFactory.createFilter(filId);
             ////
 
-            var feColorMatrix = createNS('feColorMatrix');
+            var feColorMatrix = _ct('feColorMatrix');
             feColorMatrix.setAttribute('type', 'matrix');
             feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
             feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
             fil.appendChild(feColorMatrix);
 
             ////
-            /*var feCTr = createNS('feComponentTransfer');
+            /*var feCTr = _ct('feComponentTransfer');
             feCTr.setAttribute('in','SourceGraphic');
             fil.appendChild(feCTr);
-            var feFunc = createNS('feFuncA');
+            var feFunc = _ct('feFuncA');
             feFunc.setAttribute('type','table');
             feFunc.setAttribute('tableValues','1.0 0.0');
             feCTr.appendChild(feFunc);*/
             this._x.defs.appendChild(fil);
-            var alphaRect = createNS('rect');
+            var alphaRect = _ct('rect');
             alphaRect.setAttribute('width',  this.comp.data.w);
             alphaRect.setAttribute('height', this.comp.data.h);
             alphaRect.setAttribute('x','0');
@@ -7273,7 +6603,7 @@ _d.prototype.createContainerElements = function(){
             if (!featureSupport.maskType) {
                 maskGroup.setAttribute('mask-type', 'luminance');
                 fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
-                var gg = createNS('g');
+                var gg = _ct('g');
                 maskGrouper.appendChild(alphaRect);
                 gg.appendChild(this._bx);
                 _bw = gg;
@@ -7298,8 +6628,8 @@ _d.prototype.createContainerElements = function(){
     }
     //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
     if (this.data.ty === 0 && !this.data.hd) {
-        var cp = createNS( 'clipPath');
-        var pt = createNS('path');
+        var cp = _ct( 'clipPath');
+        var pt = _ct('path');
         pt.setAttribute('d','M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
         var clipId = 'cp_'+randomString(8);
         cp.setAttribute('id',clipId);
@@ -7307,7 +6637,7 @@ _d.prototype.createContainerElements = function(){
         this._x.defs.appendChild(cp);
 
         if (this.checkMasks()) {
-            var cpGroup = createNS('g');
+            var cpGroup = _ct('g');
             cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId + ')');
             cpGroup.appendChild(this._bx);
             this._bz = cpGroup;
@@ -7360,524 +6690,94 @@ _d.prototype.setMatte = function(id) {
     this.matteElement.setAttribute("mask", "url(" + locationHref + "#" + id + ")");
 };
 
-function _f(data,_x,comp){
-    //List of drawable _br
-    this.shapes = [];
-    // Full shape data
-    this.shapesData = data.shapes;
-    //List of styles that will be applied to shapes
-    this.stylesList = [];
-    //List of modifiers that will be applied to shapes
-    this.shapeModifiers = [];
-    //List of items in shape tree
-    this.itemsData = [];
-    //List of items in previous shape tree
-    this.processedElements = [];
-    this.initElement(data,_x,comp);
-    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
-    // List of _br that have been created
-    this.prevViewData = [];
+function _f(){
 }
 
-extendPrototype([_e,_af,_d,_ad,_ac,RenderableDOMElement], _f);
-
-_f.prototype.initSecondaryElement = function() {
-}
-
-_f.prototype.identityMatrix = new Matrix();
-
-_f.prototype.lcEnum = {
-    '1': 'butt',
-    '2': 'round',
-    '3': 'square'
-}
-
-_f.prototype.ljEnum = {
-    '1': 'miter',
-    '2': 'round',
-    '3': 'butt'
-}
-
-_f.prototype.searchProcessedElement = function(elem){
-    var i = 0, len = this.processedElements.length;
-    while(i < len){
-        if(this.processedElements[i].elem === elem){
-            return this.processedElements[i].pos;
+_f.prototype = {
+    addShapeToModifiers: function(data) {
+        var i, len = this.shapeModifiers.length;
+        for(i=0;i<len;i+=1){
+            this.shapeModifiers[i].addShape(data);
         }
-        i += 1;
-    }
-    return 0;
-};
-
-_f.prototype.addProcessedElement = function(elem, pos){
-    var i = this.processedElements.length;
-    while(i){
-        i -= 1;
-        if(this.processedElements[i].elem === elem){
-            this.processedElements[i].pos = pos;
-            break;
+    },
+    renderModifiers: function() {
+        if(!this.shapeModifiers.length){
+            return;
         }
-    }
-    if(i === 0){
-        this.processedElements.push(new ProcessedElement(elem, pos));
-    }
-};
-
-_f.prototype.buildExpressionInterface = function(){};
-
-_f.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this._bx,this.dynamicProperties, 0, [], true);
-};
-
-_f.prototype.createStyleElement = function(data, level, dynamicProperties){
-    //TODO: prevent drawing of hidden styles
-    var elementData;
-    var styleOb = new SVGStyleData(data, level);
-
-    var pathElement = styleOb.pElem;
-    if(data.ty === 'st') {
-        elementData = new SVGStrokeStyleData(this, data, dynamicProperties, styleOb);
-    } else if(data.ty === 'fl') {
-        elementData = new SVGFillStyleData(this, data, dynamicProperties, styleOb);
-    } else if(data.ty === 'gf' || data.ty === 'gs') {
-        var gradientConstructor = data.ty === 'gf' ? SVGGradientFillStyleData : SVGGradientStrokeStyleData;
-        elementData = new gradientConstructor(this, data, dynamicProperties, styleOb);
-        this._x.defs.appendChild(elementData.gf);
-        if (elementData.maskId) {
-            this._x.defs.appendChild(elementData.ms);
-            this._x.defs.appendChild(elementData.of);
-            pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
+        var i, len = this.shapes.length;
+        for(i=0;i<len;i+=1){
+            this.shapes[i].reset();
         }
-    }
-    
-    if(data.ty === 'st' || data.ty === 'gs') {
-        pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
-        pathElement.setAttribute('stroke-linejoin',this.ljEnum[data.lj] || 'round');
-        pathElement.setAttribute('fill-opacity','0');
-        if(data.lj === 1) {
-            pathElement.setAttribute('stroke-miterlimit',data.ml);
+
+        len = this.shapeModifiers.length;
+        for(i=len-1;i>=0;i-=1){
+            this.shapeModifiers[i].processShapes(this._ch);
         }
-    }
-
-    if(data.r === 2) {
-        pathElement.setAttribute('fill-rule', 'evenodd');
-    }
-
-    if(data.ln){
-        pathElement.setAttribute('id',data.ln);
-    }
-    if(data.cl){
-        pathElement.setAttribute('class',data.cl);
-    }
-    this.stylesList.push(styleOb);
-    return elementData;
-}
-
-_f.prototype.createGroupElement = function(data) {
-    var elementData = new ShapeGroupData();
-    if(data.ln){
-        elementData.gr.setAttribute('id',data.ln);
-    }
-    return elementData;
-}
-
-_f.prototype.create_af = function(data, dynamicProperties) {
-    return new SVGTransformData(_ag._bj(this,data,dynamicProperties), _ai._bo(this,data.o,0,0.01,dynamicProperties))
-}
-
-_f.prototype.createShapeElement = function(data, ownTransformers, level, dynamicProperties) {
-    var ty = 4;
-    if(data.ty === 'rc'){
-        ty = 5;
-    }else if(data.ty === 'el'){
-        ty = 6;
-    }else if(data.ty === 'sr'){
-        ty = 7;
-    }
-    var shapeProperty = _ah._bp(this,data,ty,dynamicProperties);
-    var elementData = new SVGShapeData(ownTransformers, level, shapeProperty)
-    this.shapes.push(elementData.sh);
-    this.addShapeToModifiers(elementData);
-    return elementData;
-}
-
-_f.prototype.setElementStyles = function(elementData){
-    var arr = elementData.styles;
-    var j, jLen = this.stylesList.length;
-    for (j = 0; j < jLen; j += 1) {
-        if (!this.stylesList[j].closed) {
-            arr.push(this.stylesList[j]);
+    },
+    lcEnum: {
+        '1': 'butt',
+        '2': 'round',
+        '3': 'square'
+    },
+    ljEnum: {
+        '1': 'miter',
+        '2': 'round',
+        '3': 'butt'
+    },
+    searchProcessedElement: function(elem){
+        var i = 0, len = this.processedElements.length;
+        while(i < len){
+            if(this.processedElements[i].elem === elem){
+                return this.processedElements[i].pos;
+            }
+            i += 1;
         }
-    }
-}
-
-_f.prototype.reloadShapes = function(){
-    this.firstFrame = true;
-    var i, len = this.itemsData.length;
-    for( i = 0; i < len; i += 1) {
-        this.prevViewData[i] = this.itemsData[i];
-    }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this._bx,this.dynamicProperties, 0, [], true);
-    var i, len = this.dynamicProperties.length;
-    for(i = 0; i < len; i += 1) {
-        this.dynamicProperties[i].getValue();
-    }
-    this.renderModifiers();
-}
-
-_f.prototype.searchShapes = function(arr,itemsData,prevViewData,container,dynamicProperties, level, transformers, render){
-    var ownTransformers = [].concat(transformers);
-    var i, len = arr.length - 1;
-    var j, jLen;
-    var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier, processedPos;
-    for(i=len;i>=0;i-=1){
-        processedPos = this.searchProcessedElement(arr[i]);
-        if(!processedPos){
-            arr[i]._render = render;
-        } else {
-            itemsData[i] = prevViewData[processedPos - 1];
+        return 0;
+    },
+    addProcessedElement: function(elem, pos){
+        var i = this.processedElements.length;
+        while(i){
+            i -= 1;
+            if(this.processedElements[i].elem === elem){
+                this.processedElements[i].pos = pos;
+                break;
+            }
         }
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
-            if(!processedPos){
-                itemsData[i] = this.createStyleElement(arr[i], level, dynamicProperties);
-            } else {
-                itemsData[i].style.closed = false;
-            }
-            if(arr[i]._render){
-                container.appendChild(itemsData[i].style.pElem);
-            }
-            ownStyles.push(itemsData[i].style);
-        }else if(arr[i].ty == 'gr'){
-            if(!processedPos){
-                itemsData[i] = this.createGroupElement(arr[i]);
-            } else {
-                jLen = itemsData[i].it.length;
-                for(j=0;j<jLen;j+=1){
-                    itemsData[i].prevViewData[j] = itemsData[i].it[j];
-                }
-            }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr,dynamicProperties, level + 1, ownTransformers, render);
-            if(arr[i]._render){
-                container.appendChild(itemsData[i].gr);
-            }
-        }else if(arr[i].ty == 'tr'){
-            if(!processedPos){
-                itemsData[i] = this.create_af(arr[i], dynamicProperties);
-            }
-            currentTransform = itemsData[i].transform;
-            ownTransformers.push(currentTransform);
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
-            }
-            this.setElementStyles(itemsData[i]);
-
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
-            if(!processedPos){
-                modifier = _as.getModifier(arr[i].ty);
-                modifier.init(this,arr[i],dynamicProperties);
-                itemsData[i] = modifier;
-                this.shapeModifiers.push(modifier);
-            } else {
-                modifier = itemsData[i];
-                modifier.closed = false;
-            }
-            ownModifiers.push(modifier);
-        }else if(arr[i].ty == 'rp'){
-            if(!processedPos){
-                modifier = _as.getModifier(arr[i].ty);
-                itemsData[i] = modifier;
-                modifier.init(this,arr,i,itemsData,dynamicProperties);
-                this.shapeModifiers.push(modifier);
-                render = false;
-            }else{
-                modifier = itemsData[i];
-                modifier.closed = true;
-            }
-            ownModifiers.push(modifier);
+        if(i === 0){
+            this.processedElements.push(new ProcessedElement(elem, pos));
         }
-        this.addProcessedElement(arr[i], i + 1);
-    }
-    len = ownStyles.length;
-    for(i=0;i<len;i+=1){
-        ownStyles[i].closed = true;
-    }
-    len = ownModifiers.length;
-    for(i=0;i<len;i+=1){
-        ownModifiers[i].closed = true;
-    }
-};
-
-_f.prototype.addShapeToModifiers = function(data) {
-    var i, len = this.shapeModifiers.length;
-    for(i=0;i<len;i+=1){
-        this.shapeModifiers[i].addShape(data);
-    }
-};
-
-_f.prototype.renderModifiers = function() {
-    if(!this.shapeModifiers.length){
-        return;
-    }
-    var i, len = this.shapes.length;
-    for(i=0;i<len;i+=1){
-        this.shapes[i].reset();
-    }
-
-    len = this.shapeModifiers.length;
-    for(i=len-1;i>=0;i-=1){
-        this.shapeModifiers[i].processShapes(this.firstFrame);
-    }
-};
-
-_f.prototype._az = function(num) {
-    this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange);
-};
-
-_f.prototype.renderInnerContent = function() {
-    this.renderModifiers();
-    var i, len = this.stylesList.length;
-    for(i=0;i<len;i+=1){
-        this.stylesList[i].reset();
-    }
-    this.renderShape(this.shapesData,this.itemsData, null);
-
-    for (i = 0; i < len; i += 1) {
-        if (this.stylesList[i].mdf || this.firstFrame) {
-            if(this.stylesList[i].msElem){
-                this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
-                //Adding M0 0 fixes same mask bug on all browsers
-                this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
+    },
+    _az: function(num) {
+        this.prepareRenderableFrame(num);
+        this.prepareProperties(num, this.isInRange);
+    },
+    buildShapeString: function(pathNodes, length, closed, mat) {
+        var i, shapeString = '';
+        for(i = 1; i < length; i += 1) {
+            if (i === 1) {
+                shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
             }
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
+            shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
         }
-    }
-};
-
-
-_f.prototype.renderShape = function(items, data, container) {
-    //TODO: find out why a container could be missing
-    var i, len = items.length - 1;
-    var ty;
-    for(i=0;i<=len;i+=1){
-        ty = items[i].ty;
-        if(ty == 'tr'){
-            if(this.firstFrame || data[i].transform.op.mdf && container){
-                container.setAttribute('opacity',data[i].transform.op.v);
-            }
-            if(this.firstFrame || data[i].transform.mProps.mdf && container){
-                container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
-            }
-        }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){
-            this.renderPath(data[i]);
-        }else if(ty == 'fl'){
-            this.renderFill(items[i],data[i]);
-        }else if(ty == 'gf'){
-            this.renderGradient(items[i],data[i]);
-        }else if(ty == 'gs'){
-            this.renderGradient(items[i],data[i]);
-            this.renderStroke(items[i],data[i]);
-        }else if(ty == 'st'){
-            this.renderStroke(items[i],data[i]);
-        }else if(ty == 'gr'){
-            this.renderShape(items[i].it,data[i].it, data[i].gr);
-        }else if(ty == 'tm'){
-            //
-        }
-    }
-
-};
-
-_f.prototype.buildShapeString = function(pathNodes, length, closed, mat) {
-    var i, shapeString = '';
-    for(i = 1; i < length; i += 1) {
-        if (i === 1) {
+        if (length === 1) {
             shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
         }
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
-    }
-    if (length === 1) {
-        shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-    }
-    if (closed && length) {
-        shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-        shapeString += 'z';
-    }
-    return shapeString;
-};
-
-_f.prototype.renderPath = function(itemData){
-    var j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
-    var lvl = itemData.lvl;
-    var paths, mat, props, iterations, k;
-    for(l=0;l<lLen;l+=1){
-        redraw = itemData.sh.mdf || this.firstFrame;
-        if(itemData.styles[l].lvl < lvl){
-            mat = this.mHelper.reset();
-            iterations = lvl - itemData.styles[l].lvl;
-            k = itemData.transformers.length-1;
-            while(iterations > 0) {
-                redraw = itemData.transformers[k].mProps.mdf || redraw;
-                props = itemData.transformers[k].mProps.v.props;
-                mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-                iterations --;
-                k --;
-            }
-        } else {
-            mat = this.identityMatrix;
+        if (closed && length) {
+            shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+            shapeString += 'z';
         }
-        paths = itemData.sh.paths;
-        jLen = paths._length;
-        if(redraw){
-            pathStringTransformed = '';
-            for(j=0;j<jLen;j+=1){
-                pathNodes = paths.shapes[j];
-                if(pathNodes && pathNodes._length){
-                    pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                }
-            }
-            itemData.caches[l] = pathStringTransformed;
-        } else {
-            pathStringTransformed = itemData.caches[l];
-        }
-        itemData.styles[l].d += pathStringTransformed;
-        itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
+        return shapeString;
     }
-};
-
-_f.prototype.renderFill = function(styleData,itemData){
-    var styleElem = itemData.style;
-
-    if(itemData.c.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
-    }
-    if(itemData.o.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
-    }
-};
-
-_f.prototype.renderGradient = function(styleData, itemData) {
-    var gfill = itemData.gf;
-    var hasOpacity = itemData.g._hasOpacity;
-    var pt1 = itemData.s.v, pt2 = itemData.e.v;
-
-    if (itemData.o.mdf || this.firstFrame) {
-        var attr = styleData.ty === 'gf' ? 'fill-opacity' : 'stroke-opacity';
-        itemData.style.pElem.setAttribute(attr, itemData.o.v);
-    }
-    if (itemData.s.mdf || this.firstFrame) {
-        var attr1 = styleData.t === 1 ? 'x1' : 'cx';
-        var attr2 = attr1 === 'x1' ? 'y1' : 'cy';
-        gfill.setAttribute(attr1, pt1[0]);
-        gfill.setAttribute(attr2, pt1[1]);
-        if (hasOpacity && !itemData.g._collapsable) {
-            itemData.of.setAttribute(attr1, pt1[0]);
-            itemData.of.setAttribute(attr2, pt1[1]);
-        }
-    }
-    var stops, i, len, stop;
-    if (itemData.g.cmdf || this.firstFrame) {
-        stops = itemData.cst;
-        var cValues = itemData.g.c;
-        len = stops.length;
-        for (i = 0; i < len; i += 1){
-            stop = stops[i];
-            stop.setAttribute('offset', cValues[i * 4] + '%');
-            stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
-        }
-    }
-    if (hasOpacity && (itemData.g.omdf || this.firstFrame)) {
-        var oValues = itemData.g.o;
-        if(itemData.g._collapsable) {
-            stops = itemData.cst;
-        } else {
-            stops = itemData.ost;
-        }
-        len = stops.length;
-        for (i = 0; i < len; i += 1) {
-            stop = stops[i];
-            if(!itemData.g._collapsable) {
-                stop.setAttribute('offset', oValues[i * 2] + '%');
-            }
-            stop.setAttribute('stop-opacity', oValues[i * 2 + 1]);
-        }
-    }
-    if (styleData.t === 1) {
-        if (itemData.e.mdf  || this.firstFrame) {
-            gfill.setAttribute('x2', pt2[0]);
-            gfill.setAttribute('y2', pt2[1]);
-            if (hasOpacity && !itemData.g._collapsable) {
-                itemData.of.setAttribute('x2', pt2[0]);
-                itemData.of.setAttribute('y2', pt2[1]);
-            }
-        }
-    } else {
-        var rad;
-        if (itemData.s.mdf || itemData.e.mdf || this.firstFrame) {
-            rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
-            gfill.setAttribute('r', rad);
-            if(hasOpacity && !itemData.g._collapsable){
-                itemData.of.setAttribute('r', rad);
-            }
-        }
-        if (itemData.e.mdf || itemData.h.mdf || itemData.a.mdf || this.firstFrame) {
-            if (!rad) {
-                rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
-            }
-            var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
-
-            var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
-            var dist = rad * percent;
-            var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
-            var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
-            gfill.setAttribute('fx', x);
-            gfill.setAttribute('fy', y);
-            if (hasOpacity && !itemData.g._collapsable) {
-                itemData.of.setAttribute('fx', x);
-                itemData.of.setAttribute('fy', y);
-            }
-        }
-        //gfill.setAttribute('fy','200');
-    }
-};
-
-_f.prototype.renderStroke = function(styleData, itemData) {
-    var styleElem = itemData.style;
-    var d = itemData.d;
-    if (d && (d.mdf || this.firstFrame)) {
-        styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
-        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
-    }
-    if(itemData.c && (itemData.c.mdf || this.firstFrame)){
-        styleElem.pElem.setAttribute('stroke','rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
-    }
-    if(itemData.o.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);
-    }
-    if(itemData.w.mdf || this.firstFrame){
-        styleElem.pElem.setAttribute('stroke-width', itemData.w.v);
-        if(styleElem.msElem){
-            styleElem.msElem.setAttribute('stroke-width', itemData.w.v);
-        }
-    }
-};
-
-_f.prototype.destroy = function(){
-    this.destroy_e();
-    this.shapeData = null;
-    this.itemsData = null;
-};
-
+}
 function _k(){
 }
 
-_k.prototype.initElement = function(data,_x,comp){
+_k.prototype._cz = function(data,_x,comp){
     this.lettersChangedFlag = true;
     this.initFrame();
     this.initBaseData(data, _x, comp);
     this.textAnimator = new _bl(data.t, this.renderType, this);
-    this.textProperty = new _ar(this, data.t, this.dynamicProperties);
+    this.textProperty = new _ar(this, data.t, this._co);
     this.initTransform(data, _x, comp);
     this.initHierarchy();
     this.initRenderable();
@@ -7885,15 +6785,15 @@ _k.prototype.initElement = function(data,_x,comp){
     this.createContainerElements();
     this.addMasks();
     this.createContent();
-    this.textAnimator.searchProperties(this.dynamicProperties);
+    this.textAnimator.searchProperties(this._co);
 };
 
 _k.prototype._az = function(num) {
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
-    if(this.textProperty.mdf || this.textProperty.firstFrame) {
+    if(this.textProperty.mdf || this.textProperty._ch) {
         this.buildNewText();
-        this.textProperty.firstFrame = false;
+        this.textProperty._ch = false;
     }
 }
 
@@ -7941,9 +6841,9 @@ _k.prototype.destroy = function(){
 };
 function _g(){}
 
-extendPrototype([_e, _af, _ad, _ac, RenderableDOMElement], _g);
+extendPrototype([_e, _af, _ad, _ac, _ci], _g);
 
-_g.prototype.initElement = function(data,_x,comp) {
+_g.prototype._cz = function(data,_x,comp) {
     this.initFrame();
     this.initBaseData(data, _x, comp);
     this.initTransform(data, _x, comp);
@@ -7987,11 +6887,11 @@ _g.prototype._az = function(num){
         this.renderedFrame = num/this.data.sr;
     }
     var i,len = this._br.length;
-    if(!this.completeLayers){
+    if(!this._db){
         this.checkLayers(this.renderedFrame);
     }
     for( i = 0; i < len; i+=1 ){
-        if(this.completeLayers || this._br[i]){
+        if(this._db || this._br[i]){
             this._br[i]._az(this.renderedFrame - this.layers[i].st);
         }
     }
@@ -8000,7 +6900,7 @@ _g.prototype._az = function(num){
 _g.prototype.renderInnerContent = function() {
     var i,len = this.layers.length;
     for( i = 0; i < len; i += 1 ){
-        if(this.completeLayers || this._br[i]){
+        if(this._db || this._br[i]){
             this._br[i]._ba();
         }
     }
@@ -8030,16 +6930,16 @@ _g.prototype.destroy = function(){
 
 function _h(data,_x,comp){
     this.assetData = _x.getAssetData(data.refId);
-    this.initElement(data,_x,comp);
+    this._cz(data,_x,comp);
 }
 
-extendPrototype([_e,_af,_d,_ad,_ac,RenderableDOMElement], _h);
+extendPrototype([_e,_af,_d,_ad,_ac,_ci], _h);
 
 _h.prototype.createContent = function(){
 
     var assetPath = this._x.getAssetsPath(this.assetData);
 
-    this._cc = createNS('image');
+    this._cc = _ct('image');
     this._cc.setAttribute('width',this.assetData.w+"px");
     this._cc.setAttribute('height',this.assetData.h+"px");
     this._cc.setAttribute('preserveAspectRatio','xMidYMid slice');
@@ -8051,13 +6951,13 @@ _h.prototype.createContent = function(){
 };
 
 function _j(data,_x,comp){
-    this.initElement(data,_x,comp);
+    this._cz(data,_x,comp);
 }
 extendPrototype([_h], _j);
 
 _j.prototype.createContent = function(){
 
-    var rect = createNS('rect');
+    var rect = _ct('rect');
     ////rect.style.width = this.data.sw;
     ////rect.style.height = this.data.sh;
     ////rect.style.fill = this.data.sc;
@@ -8069,24 +6969,24 @@ _j.prototype.createContent = function(){
 function SVGCompElement(data,_x,comp){
     this.layers = data.layers;
     this.supports3d = true;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this._br = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    //this._bx = createNS('g');
-    this.initElement(data,_x,comp);
-    this.tm = data.tm ? _ai._bo(this,data.tm,0,_x.frameRate,this.dynamicProperties) : {_placeholder:true};
+    this._db = false;
+    this._dc = [];
+    this._br = this.layers ? _cv(this.layers.length) : [];
+    //this._bx = _ct('g');
+    this._cz(data,_x,comp);
+    this.tm = data.tm ? _ai._bo(this,data.tm,0,_x.frameRate,this._co) : {_placeholder:true};
 }
 
 extendPrototype([_ao, _g, _d], SVGCompElement);
-function SVGTextElement(data,_x,comp){
+function _cw(data,_x,comp){
     this.textSpans = [];
     this.renderType = 'svg';
-    this.initElement(data,_x,comp);
+    this._cz(data,_x,comp);
 }
 
-extendPrototype([_e,_af,_d,_ad,_ac,RenderableDOMElement,_k], SVGTextElement);
+extendPrototype([_e,_af,_d,_ad,_ac,_ci,_k], _cw);
 
-SVGTextElement.prototype.createContent = function(){
+_cw.prototype.createContent = function(){
 
     if(this.data.ln){
         this._bx.setAttribute('id',this.data.ln);
@@ -8094,16 +6994,16 @@ SVGTextElement.prototype.createContent = function(){
     if(this.data.cl){
         this._bx.setAttribute('class',this.data.cl);
     }
-    if (this.data.singleShape && !this._x.fontManager.chars) {
-        this.textContainer = createNS('text');
+    if (this.data.singleShape && !this._x._cr.chars) {
+        this.textContainer = _ct('text');
     }
 };
 
-SVGTextElement.prototype.buildNewText = function(){
+_cw.prototype.buildNewText = function(){
     var i, len;
 
     var documentData = this.textProperty.currentData;
-    this._bt = Array.apply(null,{length:documentData ? documentData.l.length : 0});
+    this._bt = _cv(documentData ? documentData.l.length : 0);
     if(documentData.fc) {
         this._bx.setAttribute('fill', this.buildColor(documentData.fc));
     }else{
@@ -8114,7 +7014,7 @@ SVGTextElement.prototype.buildNewText = function(){
         this._bx.setAttribute('stroke-width', documentData.sw);
     }
     this._bx.setAttribute('font-size', documentData.s);
-    var fontData = this._x.fontManager.getFontByName(documentData.f);
+    var fontData = this._x._cr.getFontByName(documentData.f);
     if(fontData.fClass){
         this._bx.setAttribute('class',fontData.fClass);
     } else {
@@ -8125,7 +7025,7 @@ SVGTextElement.prototype.buildNewText = function(){
     }
 
     var letters = documentData.l || [];
-    var usesGlyphs = this._x.fontManager.chars;
+    var usesGlyphs = this._x._cr.chars;
     len = letters.length;
     if(!len){
         return;
@@ -8155,7 +7055,7 @@ SVGTextElement.prototype.buildNewText = function(){
         len = textContent.length;
         var yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
-            tSpan = this.textSpans[i] || createNS('tspan');
+            tSpan = this.textSpans[i] || _ct('tspan');
             tSpan.textContent = textContent[i];
             tSpan.setAttribute('x', 0);
             tSpan.setAttribute('y', yPos);
@@ -8171,7 +7071,7 @@ SVGTextElement.prototype.buildNewText = function(){
         var shapeData, charData;
         for (i = 0; i < len; i += 1) {
             if(!usesGlyphs || !singleShape || i === 0){
-                tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs?'path':'text');
+                tSpan = cachedSpansLength > i ? this.textSpans[i] : _ct(usesGlyphs?'path':'text');
                 if (cachedSpansLength <= i) {
                     tSpan.setAttribute('stroke-linecap', 'butt');
                     tSpan.setAttribute('stroke-linejoin','round');
@@ -8197,7 +7097,7 @@ SVGTextElement.prototype.buildNewText = function(){
                     //xPos += letters[i].val === ' ' ? 0 : trackingOffset;
                     xPos += trackingOffset;
                 }
-                charData = this._x.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this._x.fontManager.getFontByName(documentData.f).fFamily);
+                charData = this._x._cr.getCharData(documentData.t.charAt(i), fontData.fStyle, this._x._cr.getFontByName(documentData.f).fFamily);
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
                 if(!singleShape){
@@ -8223,7 +7123,7 @@ SVGTextElement.prototype.buildNewText = function(){
     this._sizeChanged = true;
 }
 
-SVGTextElement.prototype.sourceRectAtTime = function(time){
+_cw.prototype.sourceRectAtTime = function(time){
     this._az(this.comp.renderedFrame - this.data.st);
     this.renderInnerContent();
     if(this._sizeChanged){
@@ -8239,7 +7139,7 @@ SVGTextElement.prototype.sourceRectAtTime = function(time){
     return this.bbox;
 }
 
-SVGTextElement.prototype.renderInnerContent = function(){
+_cw.prototype.renderInnerContent = function(){
 
     if(!this.data.singleShape){
         this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
@@ -8277,45 +7177,472 @@ SVGTextElement.prototype.renderInnerContent = function(){
         }
     }
 }
-function _bb(filter, filterManager){
-    this.filterManager = filterManager;
-    var feColorMatrix = createNS('feColorMatrix');
+function SVGShapeElement(data,_x,comp){
+    //List of drawable _br
+    this.shapes = [];
+    // Full shape data
+    this.shapesData = data.shapes;
+    //List of styles that will be applied to shapes
+    this.stylesList = [];
+    //List of modifiers that will be applied to shapes
+    this.shapeModifiers = [];
+    //List of items in shape tree
+    this.itemsData = [];
+    //List of items in previous shape tree
+    this.processedElements = [];
+    this._cz(data,_x,comp);
+    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
+    // List of _br that have been created
+    this.prevViewData = [];
+}
+
+extendPrototype([_e,_af,_d,_f,_ad,_ac,_ci], SVGShapeElement);
+
+SVGShapeElement.prototype.initSecondaryElement = function() {
+}
+
+SVGShapeElement.prototype.identityMatrix = new Matrix();
+
+SVGShapeElement.prototype.buildExpressionInterface = function(){};
+
+SVGShapeElement.prototype.createContent = function(){
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this._bx,this._co, 0, [], true);
+};
+
+SVGShapeElement.prototype.createStyleElement = function(data, level, _co){
+    //TODO: prevent drawing of hidden styles
+    var elementData;
+    var styleOb = new SVGStyleData(data, level);
+
+    var pathElement = styleOb.pElem;
+    if(data.ty === 'st') {
+        elementData = new SVGStrokeStyleData(this, data, _co, styleOb);
+    } else if(data.ty === 'fl') {
+        elementData = new SVGFillStyleData(this, data, _co, styleOb);
+    } else if(data.ty === 'gf' || data.ty === 'gs') {
+        var gradientConstructor = data.ty === 'gf' ? _ck : _cj;
+        elementData = new gradientConstructor(this, data, _co, styleOb);
+        this._x.defs.appendChild(elementData.gf);
+        if (elementData.maskId) {
+            this._x.defs.appendChild(elementData.ms);
+            this._x.defs.appendChild(elementData.of);
+            pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
+        }
+    }
+    
+    if(data.ty === 'st' || data.ty === 'gs') {
+        pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
+        pathElement.setAttribute('stroke-linejoin',this.ljEnum[data.lj] || 'round');
+        pathElement.setAttribute('fill-opacity','0');
+        if(data.lj === 1) {
+            pathElement.setAttribute('stroke-miterlimit',data.ml);
+        }
+    }
+
+    if(data.r === 2) {
+        pathElement.setAttribute('fill-rule', 'evenodd');
+    }
+
+    if(data.ln){
+        pathElement.setAttribute('id',data.ln);
+    }
+    if(data.cl){
+        pathElement.setAttribute('class',data.cl);
+    }
+    this.stylesList.push(styleOb);
+    return elementData;
+}
+
+SVGShapeElement.prototype.createGroupElement = function(data) {
+    var elementData = new ShapeGroupData();
+    if(data.ln){
+        elementData.gr.setAttribute('id',data.ln);
+    }
+    return elementData;
+}
+
+SVGShapeElement.prototype._cp = function(data, _co) {
+    return new SVGTransformData(_ag._bj(this,data,_co), _ai._bo(this,data.o,0,0.01,_co))
+}
+
+SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level, _co) {
+    var ty = 4;
+    if(data.ty === 'rc'){
+        ty = 5;
+    }else if(data.ty === 'el'){
+        ty = 6;
+    }else if(data.ty === 'sr'){
+        ty = 7;
+    }
+    var shapeProperty = _ah._bp(this,data,ty,_co);
+    var elementData = new SVGShapeData(ownTransformers, level, shapeProperty)
+    this.shapes.push(elementData.sh);
+    this.addShapeToModifiers(elementData);
+    return elementData;
+}
+
+SVGShapeElement.prototype.setElementStyles = function(elementData){
+    var arr = elementData.styles;
+    var j, jLen = this.stylesList.length;
+    for (j = 0; j < jLen; j += 1) {
+        if (!this.stylesList[j].closed) {
+            arr.push(this.stylesList[j]);
+        }
+    }
+}
+
+SVGShapeElement.prototype.reloadShapes = function(){
+    this._ch = true;
+    var i, len = this.itemsData.length;
+    for( i = 0; i < len; i += 1) {
+        this.prevViewData[i] = this.itemsData[i];
+    }
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this._bx,this._co, 0, [], true);
+    var i, len = this._co.length;
+    for(i = 0; i < len; i += 1) {
+        this._co[i].getValue();
+    }
+    this.renderModifiers();
+}
+
+SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container,_co, level, transformers, render){
+    var ownTransformers = [].concat(transformers);
+    var i, len = arr.length - 1;
+    var j, jLen;
+    var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier, processedPos;
+    for(i=len;i>=0;i-=1){
+        processedPos = this.searchProcessedElement(arr[i]);
+        if(!processedPos){
+            arr[i]._render = render;
+        } else {
+            itemsData[i] = prevViewData[processedPos - 1];
+        }
+        if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
+            if(!processedPos){
+                itemsData[i] = this.createStyleElement(arr[i], level, _co);
+            } else {
+                itemsData[i].style.closed = false;
+            }
+            if(arr[i]._render){
+                container.appendChild(itemsData[i].style.pElem);
+            }
+            ownStyles.push(itemsData[i].style);
+        }else if(arr[i].ty == 'gr'){
+            if(!processedPos){
+                itemsData[i] = this.createGroupElement(arr[i]);
+            } else {
+                jLen = itemsData[i].it.length;
+                for(j=0;j<jLen;j+=1){
+                    itemsData[i].prevViewData[j] = itemsData[i].it[j];
+                }
+            }
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr,_co, level + 1, ownTransformers, render);
+            if(arr[i]._render){
+                container.appendChild(itemsData[i].gr);
+            }
+        }else if(arr[i].ty == 'tr'){
+            if(!processedPos){
+                itemsData[i] = this._cp(arr[i], _co);
+            }
+            currentTransform = itemsData[i].transform;
+            ownTransformers.push(currentTransform);
+        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
+            if(!processedPos){
+                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, _co);
+            }
+            this.setElementStyles(itemsData[i]);
+
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+            if(!processedPos){
+                modifier = _as.getModifier(arr[i].ty);
+                modifier.init(this,arr[i],_co);
+                itemsData[i] = modifier;
+                this.shapeModifiers.push(modifier);
+            } else {
+                modifier = itemsData[i];
+                modifier.closed = false;
+            }
+            ownModifiers.push(modifier);
+        }else if(arr[i].ty == 'rp'){
+            if(!processedPos){
+                modifier = _as.getModifier(arr[i].ty);
+                itemsData[i] = modifier;
+                modifier.init(this,arr,i,itemsData,_co);
+                this.shapeModifiers.push(modifier);
+                render = false;
+            }else{
+                modifier = itemsData[i];
+                modifier.closed = true;
+            }
+            ownModifiers.push(modifier);
+        }
+        this.addProcessedElement(arr[i], i + 1);
+    }
+    len = ownStyles.length;
+    for(i=0;i<len;i+=1){
+        ownStyles[i].closed = true;
+    }
+    len = ownModifiers.length;
+    for(i=0;i<len;i+=1){
+        ownModifiers[i].closed = true;
+    }
+};
+
+SVGShapeElement.prototype.renderInnerContent = function() {
+    this.renderModifiers();
+    var i, len = this.stylesList.length;
+    for(i=0;i<len;i+=1){
+        this.stylesList[i].reset();
+    }
+    this.renderShape(this.shapesData,this.itemsData, null);
+
+    for (i = 0; i < len; i += 1) {
+        if (this.stylesList[i].mdf || this._ch) {
+            if(this.stylesList[i].msElem){
+                this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
+                //Adding M0 0 fixes same mask bug on all browsers
+                this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
+            }
+            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
+        }
+    }
+};
+
+
+SVGShapeElement.prototype.renderShape = function(items, data, container) {
+    //TODO: find out why a container could be missing
+    var i, len = items.length - 1;
+    var ty;
+    for(i=0;i<=len;i+=1){
+        ty = items[i].ty;
+        if(ty == 'tr'){
+            if(this._ch || data[i].transform.op.mdf && container){
+                container.setAttribute('opacity',data[i].transform.op.v);
+            }
+            if(this._ch || data[i].transform.mProps.mdf && container){
+                container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
+            }
+        }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){
+            this.renderPath(data[i]);
+        }else if(ty == 'fl'){
+            this.renderFill(items[i],data[i]);
+        }else if(ty == 'gf'){
+            this.renderGradient(items[i],data[i]);
+        }else if(ty == 'gs'){
+            this.renderGradient(items[i],data[i]);
+            this.renderStroke(items[i],data[i]);
+        }else if(ty == 'st'){
+            this.renderStroke(items[i],data[i]);
+        }else if(ty == 'gr'){
+            this.renderShape(items[i].it,data[i].it, data[i].gr);
+        }else if(ty == 'tm'){
+            //
+        }
+    }
+
+};
+
+SVGShapeElement.prototype.renderPath = function(itemData){
+    var j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
+    var lvl = itemData.lvl;
+    var paths, mat, props, iterations, k;
+    for(l=0;l<lLen;l+=1){
+        redraw = itemData.sh.mdf || this._ch;
+        if(itemData.styles[l].lvl < lvl){
+            mat = this.mHelper.reset();
+            iterations = lvl - itemData.styles[l].lvl;
+            k = itemData.transformers.length-1;
+            while(iterations > 0) {
+                redraw = itemData.transformers[k].mProps.mdf || redraw;
+                props = itemData.transformers[k].mProps.v.props;
+                mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+                iterations --;
+                k --;
+            }
+        } else {
+            mat = this.identityMatrix;
+        }
+        paths = itemData.sh.paths;
+        jLen = paths._length;
+        if(redraw){
+            pathStringTransformed = '';
+            for(j=0;j<jLen;j+=1){
+                pathNodes = paths.shapes[j];
+                if(pathNodes && pathNodes._length){
+                    pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
+                }
+            }
+            itemData.caches[l] = pathStringTransformed;
+        } else {
+            pathStringTransformed = itemData.caches[l];
+        }
+        itemData.styles[l].d += pathStringTransformed;
+        itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
+    }
+};
+
+SVGShapeElement.prototype.renderFill = function(styleData,itemData){
+    var styleElem = itemData.style;
+
+    if(itemData.c.mdf || this._ch){
+        styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
+    }
+    if(itemData.o.mdf || this._ch){
+        styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
+    }
+};
+
+SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
+    var gfill = itemData.gf;
+    var hasOpacity = itemData.g._hasOpacity;
+    var pt1 = itemData.s.v, pt2 = itemData.e.v;
+
+    if (itemData.o.mdf || this._ch) {
+        var attr = styleData.ty === 'gf' ? 'fill-opacity' : 'stroke-opacity';
+        itemData.style.pElem.setAttribute(attr, itemData.o.v);
+    }
+    if (itemData.s.mdf || this._ch) {
+        var attr1 = styleData.t === 1 ? 'x1' : 'cx';
+        var attr2 = attr1 === 'x1' ? 'y1' : 'cy';
+        gfill.setAttribute(attr1, pt1[0]);
+        gfill.setAttribute(attr2, pt1[1]);
+        if (hasOpacity && !itemData.g._collapsable) {
+            itemData.of.setAttribute(attr1, pt1[0]);
+            itemData.of.setAttribute(attr2, pt1[1]);
+        }
+    }
+    var stops, i, len, stop;
+    if (itemData.g.cmdf || this._ch) {
+        stops = itemData.cst;
+        var cValues = itemData.g.c;
+        len = stops.length;
+        for (i = 0; i < len; i += 1){
+            stop = stops[i];
+            stop.setAttribute('offset', cValues[i * 4] + '%');
+            stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
+        }
+    }
+    if (hasOpacity && (itemData.g.omdf || this._ch)) {
+        var oValues = itemData.g.o;
+        if(itemData.g._collapsable) {
+            stops = itemData.cst;
+        } else {
+            stops = itemData.ost;
+        }
+        len = stops.length;
+        for (i = 0; i < len; i += 1) {
+            stop = stops[i];
+            if(!itemData.g._collapsable) {
+                stop.setAttribute('offset', oValues[i * 2] + '%');
+            }
+            stop.setAttribute('stop-opacity', oValues[i * 2 + 1]);
+        }
+    }
+    if (styleData.t === 1) {
+        if (itemData.e.mdf  || this._ch) {
+            gfill.setAttribute('x2', pt2[0]);
+            gfill.setAttribute('y2', pt2[1]);
+            if (hasOpacity && !itemData.g._collapsable) {
+                itemData.of.setAttribute('x2', pt2[0]);
+                itemData.of.setAttribute('y2', pt2[1]);
+            }
+        }
+    } else {
+        var rad;
+        if (itemData.s.mdf || itemData.e.mdf || this._ch) {
+            rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
+            gfill.setAttribute('r', rad);
+            if(hasOpacity && !itemData.g._collapsable){
+                itemData.of.setAttribute('r', rad);
+            }
+        }
+        if (itemData.e.mdf || itemData.h.mdf || itemData.a.mdf || this._ch) {
+            if (!rad) {
+                rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
+            }
+            var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
+
+            var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
+            var dist = rad * percent;
+            var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
+            var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
+            gfill.setAttribute('fx', x);
+            gfill.setAttribute('fy', y);
+            if (hasOpacity && !itemData.g._collapsable) {
+                itemData.of.setAttribute('fx', x);
+                itemData.of.setAttribute('fy', y);
+            }
+        }
+        //gfill.setAttribute('fy','200');
+    }
+};
+
+SVGShapeElement.prototype.renderStroke = function(styleData, itemData) {
+    var styleElem = itemData.style;
+    var d = itemData.d;
+    if (d && (d.mdf || this._ch)) {
+        styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
+        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
+    }
+    if(itemData.c && (itemData.c.mdf || this._ch)){
+        styleElem.pElem.setAttribute('stroke','rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
+    }
+    if(itemData.o.mdf || this._ch){
+        styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);
+    }
+    if(itemData.w.mdf || this._ch){
+        styleElem.pElem.setAttribute('stroke-width', itemData.w.v);
+        if(styleElem.msElem){
+            styleElem.msElem.setAttribute('stroke-width', itemData.w.v);
+        }
+    }
+};
+
+SVGShapeElement.prototype.destroy = function(){
+    this.destroy_e();
+    this.shapeData = null;
+    this.itemsData = null;
+};
+
+function _bb(filter, _cl){
+    this._cl = _cl;
+    var feColorMatrix = _ct('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
     feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
     feColorMatrix.setAttribute('result','f1');
     filter.appendChild(feColorMatrix);
-    feColorMatrix = createNS('feColorMatrix');
+    feColorMatrix = _ct('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
     feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
     feColorMatrix.setAttribute('result','f2');
     filter.appendChild(feColorMatrix);
     this.matrixFilter = feColorMatrix;
-    if(filterManager.effectElements[2].p.v !== 100 || filterManager.effectElements[2].p.k){
-        var feMerge = createNS('feMerge');
+    if(_cl._cm[2].p.v !== 100 || _cl._cm[2].p.k){
+        var feMerge = _ct('feMerge');
         filter.appendChild(feMerge);
         var feMergeNode;
-        feMergeNode = createNS('feMergeNode');
+        feMergeNode = _ct('feMergeNode');
         feMergeNode.setAttribute('in','SourceGraphic');
         feMerge.appendChild(feMergeNode);
-        feMergeNode = createNS('feMergeNode');
+        feMergeNode = _ct('feMergeNode');
         feMergeNode.setAttribute('in','f2');
         feMerge.appendChild(feMergeNode);
     }
 }
 
 _bb.prototype._ba = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
-        var colorBlack = this.filterManager.effectElements[0].p.v;
-        var colorWhite = this.filterManager.effectElements[1].p.v;
-        var opacity = this.filterManager.effectElements[2].p.v/100;
+    if(forceRender || this._cl.mdf){
+        var colorBlack = this._cl._cm[0].p.v;
+        var colorWhite = this._cl._cm[1].p.v;
+        var opacity = this._cl._cm[2].p.v/100;
         this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
 };
-function _bc(filter, filterManager){
-    this.filterManager = filterManager;
-    var feColorMatrix = createNS('feColorMatrix');
+function _bc(filter, _cl){
+    this._cl = _cl;
+    var feColorMatrix = _ct('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
     feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
@@ -8323,15 +7650,15 @@ function _bc(filter, filterManager){
     this.matrixFilter = feColorMatrix;
 }
 _bc.prototype._ba = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
-        var color = this.filterManager.effectElements[2].p.v;
-        var opacity = this.filterManager.effectElements[6].p.v;
+    if(forceRender || this._cl.mdf){
+        var color = this._cl._cm[2].p.v;
+        var opacity = this._cl._cm[6].p.v;
         this.matrixFilter.setAttribute('values','0 0 0 0 '+color[0]+' 0 0 0 0 '+color[1]+' 0 0 0 0 '+color[2]+' 0 0 0 '+opacity+' 0');
     }
 };
-function _bd(elem, filterManager){
+function _bd(elem, _cl){
     this.initialized = false;
-    this.filterManager = filterManager;
+    this._cl = _cl;
     this.elem = elem;
     this.paths = [];
 }
@@ -8340,30 +7667,30 @@ _bd.prototype.initialize = function(){
 
     var elemChildren = this.elem._bx.children || this.elem._bx.childNodes;
     var path,groupPath, i, len;
-    if(this.filterManager.effectElements[1].p.v === 1){
+    if(this._cl._cm[1].p.v === 1){
         len = this.elem.maskManager.masksProperties.length;
         i = 0;
     } else {
-        i = this.filterManager.effectElements[0].p.v - 1;
+        i = this._cl._cm[0].p.v - 1;
         len = i + 1;
     }
-    groupPath = createNS('g'); 
+    groupPath = _ct('g'); 
     groupPath.setAttribute('fill','none');
     groupPath.setAttribute('stroke-linecap','round');
     groupPath.setAttribute('stroke-dashoffset',1);
     for(i;i<len;i+=1){
-        path = createNS('path');
+        path = _ct('path');
         groupPath.appendChild(path);
         this.paths.push({p:path,m:i});
     }
-    if(this.filterManager.effectElements[10].p.v === 3){
-        var mask = createNS('mask');
+    if(this._cl._cm[10].p.v === 3){
+        var mask = _ct('mask');
         var id = 'stms_' + randomString(10);
         mask.setAttribute('id',id);
         mask.setAttribute('mask-type','alpha');
         mask.appendChild(groupPath);
         this.elem._x.defs.appendChild(mask);
-        var g = createNS('g');
+        var g = _ct('g');
         g.setAttribute('mask','url(' + locationHref + '#'+id+')');
         if(elemChildren[0]){
             g.appendChild(elemChildren[0]);
@@ -8371,8 +7698,8 @@ _bd.prototype.initialize = function(){
         this.elem._bx.appendChild(g);
         this.masker = mask;
         groupPath.setAttribute('stroke','#fff');
-    } else if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
-        if(this.filterManager.effectElements[10].p.v === 2){
+    } else if(this._cl._cm[10].p.v === 1 || this._cl._cm[10].p.v === 2){
+        if(this._cl._cm[10].p.v === 2){
             var elemChildren = this.elem._bx.children || this.elem._bx.childNodes;
             while(elemChildren.length){
                 this.elem._bx.removeChild(elemChildren[0]);
@@ -8395,111 +7722,111 @@ _bd.prototype._ba = function(forceRender){
     for(i=0;i<len;i+=1){
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
-        if(forceRender || this.filterManager.mdf || mask.prop.mdf){
+        if(forceRender || this._cl.mdf || mask.prop.mdf){
             path.setAttribute('d',mask.lastPath);
         }
-        if(forceRender || this.filterManager.effectElements[9].p.mdf || this.filterManager.effectElements[4].p.mdf || this.filterManager.effectElements[7].p.mdf || this.filterManager.effectElements[8].p.mdf || mask.prop.mdf){
+        if(forceRender || this._cl._cm[9].p.mdf || this._cl._cm[4].p.mdf || this._cl._cm[7].p.mdf || this._cl._cm[8].p.mdf || mask.prop.mdf){
             var dasharrayValue;
-            if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100){
-                var s = Math.min(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
-                var e = Math.max(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
+            if(this._cl._cm[7].p.v !== 0 || this._cl._cm[8].p.v !== 100){
+                var s = Math.min(this._cl._cm[7].p.v,this._cl._cm[8].p.v)/100;
+                var e = Math.max(this._cl._cm[7].p.v,this._cl._cm[8].p.v)/100;
                 var l = path.getTotalLength();
                 dasharrayValue = '0 0 0 ' + l*s + ' ';
                 var lineLength = l*(e-s);
-                var segment = 1+this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
+                var segment = 1+this._cl._cm[4].p.v*2*this._cl._cm[9].p.v/100;
                 var units = Math.floor(lineLength/segment);
                 var j;
                 for(j=0;j<units;j+=1){
-                    dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100 + ' ';
+                    dasharrayValue += '1 ' + this._cl._cm[4].p.v*2*this._cl._cm[9].p.v/100 + ' ';
                 }
                 dasharrayValue += '0 ' + l*10 + ' 0 0';
             } else {
-                dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
+                dasharrayValue = '1 ' + this._cl._cm[4].p.v*2*this._cl._cm[9].p.v/100;
             }
             path.setAttribute('stroke-dasharray',dasharrayValue);
         }
     }
-    if(forceRender || this.filterManager.effectElements[4].p.mdf){
-        this.pathMasker.setAttribute('stroke-width',this.filterManager.effectElements[4].p.v*2);
+    if(forceRender || this._cl._cm[4].p.mdf){
+        this.pathMasker.setAttribute('stroke-width',this._cl._cm[4].p.v*2);
     }
     
-    if(forceRender || this.filterManager.effectElements[6].p.mdf){
-        this.pathMasker.setAttribute('opacity',this.filterManager.effectElements[6].p.v);
+    if(forceRender || this._cl._cm[6].p.mdf){
+        this.pathMasker.setAttribute('opacity',this._cl._cm[6].p.v);
     }
-    if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
-        if(forceRender || this.filterManager.effectElements[3].p.mdf){
-            var color = this.filterManager.effectElements[3].p.v;
+    if(this._cl._cm[10].p.v === 1 || this._cl._cm[10].p.v === 2){
+        if(forceRender || this._cl._cm[3].p.mdf){
+            var color = this._cl._cm[3].p.v;
             this.pathMasker.setAttribute('stroke','rgb('+bm_floor(color[0]*255)+','+bm_floor(color[1]*255)+','+bm_floor(color[2]*255)+')');
         }
     }
 };
-function _be(filter, filterManager){
-    this.filterManager = filterManager;
-    var feColorMatrix = createNS('feColorMatrix');
+function _be(filter, _cl){
+    this._cl = _cl;
+    var feColorMatrix = _ct('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
     feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
     feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
     feColorMatrix.setAttribute('result','f1');
     filter.appendChild(feColorMatrix);
-    var feComponentTransfer = createNS('feComponentTransfer');
+    var feComponentTransfer = _ct('feComponentTransfer');
     feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
     filter.appendChild(feComponentTransfer);
     this.matrixFilter = feComponentTransfer;
-    var feFuncR = createNS('feFuncR');
+    var feFuncR = _ct('feFuncR');
     feFuncR.setAttribute('type','table');
     feComponentTransfer.appendChild(feFuncR);
     this.feFuncR = feFuncR;
-    var feFuncG = createNS('feFuncG');
+    var feFuncG = _ct('feFuncG');
     feFuncG.setAttribute('type','table');
     feComponentTransfer.appendChild(feFuncG);
     this.feFuncG = feFuncG;
-    var feFuncB = createNS('feFuncB');
+    var feFuncB = _ct('feFuncB');
     feFuncB.setAttribute('type','table');
     feComponentTransfer.appendChild(feFuncB);
     this.feFuncB = feFuncB;
 }
 
 _be.prototype._ba = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
-        var color1 = this.filterManager.effectElements[0].p.v;
-        var color2 = this.filterManager.effectElements[1].p.v;
-        var color3 = this.filterManager.effectElements[2].p.v;
+    if(forceRender || this._cl.mdf){
+        var color1 = this._cl._cm[0].p.v;
+        var color2 = this._cl._cm[1].p.v;
+        var color3 = this._cl._cm[2].p.v;
         var tableR = color3[0] + ' ' + color2[0] + ' ' + color1[0]
         var tableG = color3[1] + ' ' + color2[1] + ' ' + color1[1]
         var tableB = color3[2] + ' ' + color2[2] + ' ' + color1[2]
         this.feFuncR.setAttribute('tableValues', tableR);
         this.feFuncG.setAttribute('tableValues', tableG);
         this.feFuncB.setAttribute('tableValues', tableB);
-        //var opacity = this.filterManager.effectElements[2].p.v/100;
+        //var opacity = this._cl._cm[2].p.v/100;
         //this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
     }
 };
-function _bf(filter, filterManager){
-    this.filterManager = filterManager;
-    var effectElements = this.filterManager.effectElements;
-    var feComponentTransfer = createNS('feComponentTransfer');
+function _bf(filter, _cl){
+    this._cl = _cl;
+    var _cm = this._cl._cm;
+    var feComponentTransfer = _ct('feComponentTransfer');
     var feFuncR, feFuncG, feFuncB;
     
-    if(effectElements[10].p.k || effectElements[10].p.v !== 0 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 1 || effectElements[13].p.k || effectElements[13].p.v !== 0 || effectElements[14].p.k || effectElements[14].p.v !== 1){
+    if(_cm[10].p.k || _cm[10].p.v !== 0 || _cm[11].p.k || _cm[11].p.v !== 1 || _cm[12].p.k || _cm[12].p.v !== 1 || _cm[13].p.k || _cm[13].p.v !== 0 || _cm[14].p.k || _cm[14].p.v !== 1){
         this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
     }
-    if(effectElements[17].p.k || effectElements[17].p.v !== 0 || effectElements[18].p.k || effectElements[18].p.v !== 1 || effectElements[19].p.k || effectElements[19].p.v !== 1 || effectElements[20].p.k || effectElements[20].p.v !== 0 || effectElements[21].p.k || effectElements[21].p.v !== 1){
+    if(_cm[17].p.k || _cm[17].p.v !== 0 || _cm[18].p.k || _cm[18].p.v !== 1 || _cm[19].p.k || _cm[19].p.v !== 1 || _cm[20].p.k || _cm[20].p.v !== 0 || _cm[21].p.k || _cm[21].p.v !== 1){
         this.feFuncG = this.createFeFunc('feFuncG', feComponentTransfer);
     }
-    if(effectElements[24].p.k || effectElements[24].p.v !== 0 || effectElements[25].p.k || effectElements[25].p.v !== 1 || effectElements[26].p.k || effectElements[26].p.v !== 1 || effectElements[27].p.k || effectElements[27].p.v !== 0 || effectElements[28].p.k || effectElements[28].p.v !== 1){
+    if(_cm[24].p.k || _cm[24].p.v !== 0 || _cm[25].p.k || _cm[25].p.v !== 1 || _cm[26].p.k || _cm[26].p.v !== 1 || _cm[27].p.k || _cm[27].p.v !== 0 || _cm[28].p.k || _cm[28].p.v !== 1){
         this.feFuncB = this.createFeFunc('feFuncB', feComponentTransfer);
     }
-    if(effectElements[31].p.k || effectElements[31].p.v !== 0 || effectElements[32].p.k || effectElements[32].p.v !== 1 || effectElements[33].p.k || effectElements[33].p.v !== 1 || effectElements[34].p.k || effectElements[34].p.v !== 0 || effectElements[35].p.k || effectElements[35].p.v !== 1){
+    if(_cm[31].p.k || _cm[31].p.v !== 0 || _cm[32].p.k || _cm[32].p.v !== 1 || _cm[33].p.k || _cm[33].p.v !== 1 || _cm[34].p.k || _cm[34].p.v !== 0 || _cm[35].p.k || _cm[35].p.v !== 1){
         this.feFuncA = this.createFeFunc('feFuncA', feComponentTransfer);
     }
     
     if(this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA){
         feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
         filter.appendChild(feComponentTransfer);
-        feComponentTransfer = createNS('feComponentTransfer');
+        feComponentTransfer = _ct('feComponentTransfer');
     }
 
-    if(effectElements[3].p.k || effectElements[3].p.v !== 0 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 1 || effectElements[6].p.k || effectElements[6].p.v !== 0 || effectElements[7].p.k || effectElements[7].p.v !== 1){
+    if(_cm[3].p.k || _cm[3].p.v !== 0 || _cm[4].p.k || _cm[4].p.v !== 1 || _cm[5].p.k || _cm[5].p.v !== 1 || _cm[6].p.k || _cm[6].p.v !== 0 || _cm[7].p.k || _cm[7].p.v !== 1){
 
         feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
         filter.appendChild(feComponentTransfer);
@@ -8510,7 +7837,7 @@ function _bf(filter, filterManager){
 }
 
 _bf.prototype.createFeFunc = function(type, feComponentTransfer) {
-    var feFunc = createNS(type);
+    var feFunc = _ct(type);
     feFunc.setAttribute('type','table');
     feComponentTransfer.appendChild(feFunc);
     return feFunc;
@@ -8543,40 +7870,40 @@ _bf.prototype.getTableValue = function(inputBlack, inputWhite, gamma, outputBlac
 };
 
 _bf.prototype._ba = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
+    if(forceRender || this._cl.mdf){
         var val, cnt, perc, bezier;
-        var effectElements = this.filterManager.effectElements;
-        if(this.feFuncRComposed && (forceRender || effectElements[3].p.mdf || effectElements[4].p.mdf || effectElements[5].p.mdf || effectElements[6].p.mdf || effectElements[7].p.mdf)){
-            val = this.getTableValue(effectElements[3].p.v,effectElements[4].p.v,effectElements[5].p.v,effectElements[6].p.v,effectElements[7].p.v);
+        var _cm = this._cl._cm;
+        if(this.feFuncRComposed && (forceRender || _cm[3].p.mdf || _cm[4].p.mdf || _cm[5].p.mdf || _cm[6].p.mdf || _cm[7].p.mdf)){
+            val = this.getTableValue(_cm[3].p.v,_cm[4].p.v,_cm[5].p.v,_cm[6].p.v,_cm[7].p.v);
             this.feFuncRComposed.setAttribute('tableValues',val);
             this.feFuncGComposed.setAttribute('tableValues',val);
             this.feFuncBComposed.setAttribute('tableValues',val);
         }
 
 
-        if(this.feFuncR && (forceRender || effectElements[10].p.mdf || effectElements[11].p.mdf || effectElements[12].p.mdf || effectElements[13].p.mdf || effectElements[14].p.mdf)){
-            val = this.getTableValue(effectElements[10].p.v,effectElements[11].p.v,effectElements[12].p.v,effectElements[13].p.v,effectElements[14].p.v);
+        if(this.feFuncR && (forceRender || _cm[10].p.mdf || _cm[11].p.mdf || _cm[12].p.mdf || _cm[13].p.mdf || _cm[14].p.mdf)){
+            val = this.getTableValue(_cm[10].p.v,_cm[11].p.v,_cm[12].p.v,_cm[13].p.v,_cm[14].p.v);
             this.feFuncR.setAttribute('tableValues',val);
         }
 
-        if(this.feFuncG && (forceRender || effectElements[17].p.mdf || effectElements[18].p.mdf || effectElements[19].p.mdf || effectElements[20].p.mdf || effectElements[21].p.mdf)){
-            val = this.getTableValue(effectElements[17].p.v,effectElements[18].p.v,effectElements[19].p.v,effectElements[20].p.v,effectElements[21].p.v);
+        if(this.feFuncG && (forceRender || _cm[17].p.mdf || _cm[18].p.mdf || _cm[19].p.mdf || _cm[20].p.mdf || _cm[21].p.mdf)){
+            val = this.getTableValue(_cm[17].p.v,_cm[18].p.v,_cm[19].p.v,_cm[20].p.v,_cm[21].p.v);
             this.feFuncG.setAttribute('tableValues',val);
         }
 
-        if(this.feFuncB && (forceRender || effectElements[24].p.mdf || effectElements[25].p.mdf || effectElements[26].p.mdf || effectElements[27].p.mdf || effectElements[28].p.mdf)){
-            val = this.getTableValue(effectElements[24].p.v,effectElements[25].p.v,effectElements[26].p.v,effectElements[27].p.v,effectElements[28].p.v);
+        if(this.feFuncB && (forceRender || _cm[24].p.mdf || _cm[25].p.mdf || _cm[26].p.mdf || _cm[27].p.mdf || _cm[28].p.mdf)){
+            val = this.getTableValue(_cm[24].p.v,_cm[25].p.v,_cm[26].p.v,_cm[27].p.v,_cm[28].p.v);
             this.feFuncB.setAttribute('tableValues',val);
         }
 
-        if(this.feFuncA && (forceRender || effectElements[31].p.mdf || effectElements[32].p.mdf || effectElements[33].p.mdf || effectElements[34].p.mdf || effectElements[35].p.mdf)){
-            val = this.getTableValue(effectElements[31].p.v,effectElements[32].p.v,effectElements[33].p.v,effectElements[34].p.v,effectElements[35].p.v);
+        if(this.feFuncA && (forceRender || _cm[31].p.mdf || _cm[32].p.mdf || _cm[33].p.mdf || _cm[34].p.mdf || _cm[35].p.mdf)){
+            val = this.getTableValue(_cm[31].p.v,_cm[32].p.v,_cm[33].p.v,_cm[34].p.v,_cm[35].p.v);
             this.feFuncA.setAttribute('tableValues',val);
         }
         
     }
 };
-function _bg(filter, filterManager){
+function _bg(filter, _cl){
     /*<feGaussianBlur in="SourceAlpha" stdDeviation="3"/> <!-- stdDeviation is how much to blur -->
   <feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
   <feMerge> 
@@ -8588,30 +7915,30 @@ function _bg(filter, filterManager){
     filter.setAttribute('y','-100%');
     filter.setAttribute('width','400%');
     filter.setAttribute('height','400%');
-    this.filterManager = filterManager;
+    this._cl = _cl;
 
-    var feGaussianBlur = createNS('feGaussianBlur');
+    var feGaussianBlur = _ct('feGaussianBlur');
     feGaussianBlur.setAttribute('in','SourceAlpha');
     feGaussianBlur.setAttribute('result','drop_shadow_1');
     feGaussianBlur.setAttribute('stdDeviation','0');
     this.feGaussianBlur = feGaussianBlur;
     filter.appendChild(feGaussianBlur);
 
-    var feOffset = createNS('feOffset');
+    var feOffset = _ct('feOffset');
     feOffset.setAttribute('dx','25');
     feOffset.setAttribute('dy','0');
     feOffset.setAttribute('in','drop_shadow_1');
     feOffset.setAttribute('result','drop_shadow_2');
     this.feOffset = feOffset;
     filter.appendChild(feOffset);
-    var feFlood = createNS('feFlood');
+    var feFlood = _ct('feFlood');
     feFlood.setAttribute('flood-color','#00ff00');
     feFlood.setAttribute('flood-opacity','1');
     feFlood.setAttribute('result','drop_shadow_3');
     this.feFlood = feFlood;
     filter.appendChild(feFlood);
 
-    var feComposite = createNS('feComposite');
+    var feComposite = _ct('feComposite');
     feComposite.setAttribute('in','drop_shadow_3');
     feComposite.setAttribute('in2','drop_shadow_2');
     feComposite.setAttribute('operator','in');
@@ -8619,12 +7946,12 @@ function _bg(filter, filterManager){
     filter.appendChild(feComposite);
 
 
-    var feMerge = createNS('feMerge');
+    var feMerge = _ct('feMerge');
     filter.appendChild(feMerge);
     var feMergeNode;
-    feMergeNode = createNS('feMergeNode');
+    feMergeNode = _ct('feMergeNode');
     feMerge.appendChild(feMergeNode);
-    feMergeNode = createNS('feMergeNode');
+    feMergeNode = _ct('feMergeNode');
     feMergeNode.setAttribute('in','SourceGraphic');
     this.feMergeNode = feMergeNode;
     this.feMerge = feMerge;
@@ -8633,30 +7960,30 @@ function _bg(filter, filterManager){
 }
 
 _bg.prototype._ba = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
-        if(forceRender || this.filterManager.effectElements[4].p.mdf){
-            this.feGaussianBlur.setAttribute('stdDeviation', this.filterManager.effectElements[4].p.v / 4);
+    if(forceRender || this._cl.mdf){
+        if(forceRender || this._cl._cm[4].p.mdf){
+            this.feGaussianBlur.setAttribute('stdDeviation', this._cl._cm[4].p.v / 4);
         }
-        if(forceRender || this.filterManager.effectElements[0].p.mdf){
-            var col = this.filterManager.effectElements[0].p.v;
+        if(forceRender || this._cl._cm[0].p.mdf){
+            var col = this._cl._cm[0].p.v;
             this.feFlood.setAttribute('flood-color',rgbToHex(Math.round(col[0]*255),Math.round(col[1]*255),Math.round(col[2]*255)));
         }
-        if(forceRender || this.filterManager.effectElements[1].p.mdf){
-            this.feFlood.setAttribute('flood-opacity',this.filterManager.effectElements[1].p.v/255);
+        if(forceRender || this._cl._cm[1].p.mdf){
+            this.feFlood.setAttribute('flood-opacity',this._cl._cm[1].p.v/255);
         }
-        if(forceRender || this.filterManager.effectElements[2].p.mdf || this.filterManager.effectElements[3].p.mdf){
-            var distance = this.filterManager.effectElements[3].p.v
-            var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads
+        if(forceRender || this._cl._cm[2].p.mdf || this._cl._cm[3].p.mdf){
+            var distance = this._cl._cm[3].p.v
+            var angle = (this._cl._cm[2].p.v - 90) * degToRads
             var x = distance * Math.cos(angle)
             var y = distance * Math.sin(angle)
             this.feOffset.setAttribute('dx', x);
             this.feOffset.setAttribute('dy', y);
         }
-        /*if(forceRender || this.filterManager.effectElements[5].p.mdf){
-            if(this.filterManager.effectElements[5].p.v === 1 && this.originalNodeAdded) {
+        /*if(forceRender || this._cl._cm[5].p.mdf){
+            if(this._cl._cm[5].p.v === 1 && this.originalNodeAdded) {
                 this.feMerge.removeChild(this.feMergeNode);
                 this.originalNodeAdded = false;
-            } else if(this.filterManager.effectElements[5].p.v === 0 && !this.originalNodeAdded) {
+            } else if(this._cl._cm[5].p.v === 0 && !this.originalNodeAdded) {
                 this.feMerge.appendChild(this.feMergeNode);
                 this.originalNodeAdded = true;
             }
@@ -8666,12 +7993,12 @@ _bg.prototype._ba = function(forceRender){
 var _svgMatteSymbols = [];
 var _svgMatteMaskCounter = 0;
 
-function _bh(filterElem, filterManager, elem){
+function _bh(filterElem, _cl, elem){
     this.initialized = false;
-    this.filterManager = filterManager;
+    this._cl = _cl;
     this.filterElem = filterElem;
     this.elem = elem;
-    elem.matteElement = createNS('g');
+    elem.matteElement = _ct('g');
     elem.matteElement.appendChild(elem._bx);
     elem.matteElement.appendChild(elem._bz);
     elem._by = elem.matteElement;
@@ -8705,7 +8032,7 @@ _bh.prototype.replaceInParent = function(mask, symbolId) {
     if (i <= len - 2) {
         nextChild = children[i + 1];
     }
-    var useElem = createNS('use');
+    var useElem = _ct('use');
     useElem.setAttribute('href', '#' + symbolId);
     if(nextChild) {
         parentNode.insertBefore(useElem, nextChild);
@@ -8717,18 +8044,18 @@ _bh.prototype.replaceInParent = function(mask, symbolId) {
 _bh.prototype.setElementAsMask = function(elem, mask) {
     if(!this.findSymbol(mask)) {
         var symbolId = 'matte_' + randomString(5) + '_' + _svgMatteMaskCounter++;
-        var masker = createNS('mask');
+        var masker = _ct('mask');
         masker.setAttribute('id', mask.layerId);
         masker.setAttribute('mask-type', 'alpha');
         _svgMatteSymbols.push(mask);
         var defs = elem._x.defs;
         defs.appendChild(masker);
-        var symbol = createNS('symbol');
+        var symbol = _ct('symbol');
         symbol.setAttribute('id', symbolId);
         this.replaceInParent(mask, symbolId);
         symbol.appendChild(mask._bx);
         defs.appendChild(symbol);
-        useElem = createNS('use');
+        useElem = _ct('use');
         useElem.setAttribute('href', '#' + symbolId);
         masker.appendChild(useElem);
         mask.data.hd = false;
@@ -8738,7 +8065,7 @@ _bh.prototype.setElementAsMask = function(elem, mask) {
 }
 
 _bh.prototype.initialize = function() {
-    var ind = this.filterManager.effectElements[0].p.v;
+    var ind = this._cl._cm[0].p.v;
     var i = 0, len = this.elem.comp._br.length;
     while (i < len) {
     	if (this.elem.comp._br[i].data.ind === ind) {
@@ -8760,35 +8087,35 @@ function _bi(elem){
     var fil = filtersFactory.createFilter(filId);
     var count = 0;
     this.filters = [];
-    var filterManager;
+    var _cl;
     for(i=0;i<len;i+=1){
         if(elem.data.ef[i].ty === 20){
             count += 1;
-            filterManager = new _bb(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
+            _cl = new _bb(fil, elem.effects._cm[i]);
+            this.filters.push(_cl);
         }else if(elem.data.ef[i].ty === 21){
             count += 1;
-            filterManager = new _bc(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
+            _cl = new _bc(fil, elem.effects._cm[i]);
+            this.filters.push(_cl);
         }else if(elem.data.ef[i].ty === 22){
-            filterManager = new _bd(elem, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
+            _cl = new _bd(elem, elem.effects._cm[i]);
+            this.filters.push(_cl);
         }else if(elem.data.ef[i].ty === 23){
             count += 1;
-            filterManager = new _be(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
+            _cl = new _be(fil, elem.effects._cm[i]);
+            this.filters.push(_cl);
         }else if(elem.data.ef[i].ty === 24){
             count += 1;
-            filterManager = new _bf(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
+            _cl = new _bf(fil, elem.effects._cm[i]);
+            this.filters.push(_cl);
         }else if(elem.data.ef[i].ty === 25){
             count += 1;
-            filterManager = new _bg(fil, elem.effects.effectElements[i]);
-            this.filters.push(filterManager);
+            _cl = new _bg(fil, elem.effects._cm[i]);
+            this.filters.push(_cl);
         }else if(elem.data.ef[i].ty === 28){
             //count += 1;
-            filterManager = new _bh(fil, elem.effects.effectElements[i], elem);
-            this.filters.push(filterManager);
+            _cl = new _bh(fil, elem.effects._cm[i], elem);
+            this.filters.push(_cl);
         }
     }
     if(count){
@@ -8797,1543 +8124,12 @@ function _bi(elem){
     }
 }
 
-_bi.prototype._ba = function(firstFrame){
+_bi.prototype._ba = function(_ch){
     var i, len = this.filters.length;
     for(i=0;i<len;i+=1){
-        this.filters[i]._ba(firstFrame);
+        this.filters[i]._ba(_ch);
     }
 };
-function _n() {
-	this.saved = [];
-    this.cArrPos = 0;
-    this.cTr = new Matrix();
-    this.cO = 1;
-    var i, len = 15;
-    this.savedOp = createTypedArray('float32', len);
-    for(i=0;i<len;i+=1){
-        this.saved[i] = createTypedArray('float32', 16);
-    }
-    this._length = len;
-}
-
-_n.prototype.duplicate = function() {
-	var newLength = this._length * 2;
-	var currentSavedOp = this.savedOp;
-    this.savedOp = createTypedArray('float32', newLength);
-    this.savedOp.set(currentSavedOp);
-    var i = 0;
-    for(i = this._length; i < newLength; i += 1) {
-        this.saved[i] = createTypedArray('float32', 16);
-    }
-    this._length = newLength;
-}
-
-_n.prototype.reset = function() {
-	this.cArrPos = 0;
-	this.cTr.reset();
-    this.cO = 1;
-}
-function _c(data, comp, _x){
-}
-
-_c.prototype.createElements = function(){
-    this.checkParenting();
-};
-
-_c.prototype.initRendererElement = function(){
-
-};
-_c.prototype.createContainerElements = function(){
-    this.canvasContext = this._x.canvasContext;
-    this.effectsManager = new _o(this);
-};
-_c.prototype.createContent = function(){};
-
-_c.prototype.setBlendMode = function(){
-    var _x = this._x;
-    if(_x.blendMode !== this.data.bm) {
-        _x.blendMode = this.data.bm;
-        var blendModeValue = this.getBlendMode();
-        _x.canvasContext.globalCompositeOperation = blendModeValue;
-    }
-};
-
-_c.prototype.addMasks = function(){
-    this.maskManager = new _q(this.data, this, this._x);
-};
-
-_c.prototype.hideElement = function(){
-    if (!this.hidden && (!this.isInRange || this.isTransparent)) {
-        this.hidden = true;
-    }
-};
-
-_c.prototype.showElement = function(){
-    if (this.isInRange && !this.isTransparent){
-        this.hidden = false;
-        this.firstFrame = true;
-        this.maskManager.firstFrame = true;
-    }
-};
-
-_c.prototype._ba = function() {
-    if (this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.setBlendMode();
-    this._x.renderer.save();
-    this._x.renderer.ctxTransform(this.finalTransform.mat.props);
-    this._x.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
-    this.renderInnerContent();
-    this._x.renderer.restore();
-    if(this.maskManager.hasMasks) {
-        this._x.renderer.restore(true);
-    }
-    if (this.firstFrame) {
-        this.firstFrame = false;
-    }
-};
-
-_c.prototype.hide = _c.prototype.hideElement;
-_c.prototype.show = _c.prototype.showElement;
-
-_c.prototype.destroy = function(){
-    this.canvasContext = null;
-    this.data = null;
-    this._x = null;
-    this.maskManager.destroy();
-};
-
-_c.prototype.mHelper = new Matrix();
-
-function _p(data, _x, comp){
-    this.failed = false;
-    this.img = new Image();
-    this.assetData = _x.getAssetData(data.refId);
-    this.initElement(data,_x,comp);
-    this._x.addPendingElement();
-}
-extendPrototype([_e, _af, _c, _ad, _ac, _ae], _p);
-
-_p.prototype.initElement = _f.prototype.initElement;
-_p.prototype._az = _h.prototype._az;
-
-_p.prototype.imageLoaded = function() {
-    this._x.elementLoaded();
-    if(this.assetData.w !== this.img.width || this.assetData.h !== this.img.height){
-        var canvas = createTag('canvas');
-        canvas.width = this.assetData.w;
-        canvas.height = this.assetData.h;
-        var ctx = canvas.getContext('2d');
-
-        var imgW = this.img.width;
-        var imgH = this.img.height;
-        var imgRel = imgW / imgH;
-        var canvasRel = this.assetData.w/this.assetData.h;
-        var widthCrop, heightCrop;
-        if(imgRel>canvasRel){
-            heightCrop = imgH;
-            widthCrop = heightCrop*canvasRel;
-        } else {
-            widthCrop = imgW;
-            heightCrop = widthCrop/canvasRel;
-        }
-        ctx.drawImage(this.img,(imgW-widthCrop)/2,(imgH-heightCrop)/2,widthCrop,heightCrop,0,0,this.assetData.w,this.assetData.h);
-        this.img = canvas;
-    }
-}
-
-_p.prototype.imageFailed = function() {
-    this.failed = true;
-    this._x.elementLoaded();
-}
-
-_p.prototype.createContent = function(){
-    var img = this.img;
-    img.addEventListener('load', this.imageLoaded.bind(this), false);
-    img.addEventListener('error', this.imageFailed.bind(this), false);
-    var assetPath = this._x.getAssetsPath(this.assetData);
-    img.src = assetPath;
-
-};
-
-_p.prototype.renderInnerContent = function(parentMatrix){
-    if (this.failed) {
-        return;
-    }
-    this.canvasContext.drawImage(this.img, 0, 0);
-};
-
-_p.prototype.destroy = function(){
-    this.img = null;
-    this.destroy_e();
-};
-function _m(data, _x, comp) {
-    this.completeLayers = false;
-    this.layers = data.layers;
-    this.pendingElements = [];
-    this._br = Array.apply(null,{length:this.layers.length});
-    this.initElement(data, _x, comp);
-    this.tm = data.tm ? _ai._bo(this,data.tm,0,_x.frameRate,this.dynamicProperties) : {_placeholder:true};
-}
-
-extendPrototype([_aq, _g, _c], _m);
-
-_m.prototype.renderInnerContent = function() {
-    var i,len = this.layers.length;
-    for( i = len - 1; i >= 0; i -= 1 ){
-        if(this.completeLayers || this._br[i]){
-            this._br[i]._ba();
-        }
-    }
-};
-
-_m.prototype.destroy = function(){
-    var i,len = this.layers.length;
-    for( i = len - 1; i >= 0; i -= 1 ){
-        this._br[i].destroy();
-    }
-    this.layers = null;
-    this._br = null;
-};
-
-function _q(data,element){
-    this.data = data;
-    this.element = element;
-    this.dynamicProperties = [];
-    this.masksProperties = this.data.masksProperties || [];
-    this.viewData = Array.apply(null,{length:this.masksProperties.length});
-    var i, len = this.masksProperties.length, hasMasks = false;
-    for (i = 0; i < len; i++) {
-        if(this.masksProperties[i].mode !== 'n'){
-            hasMasks = true;
-        }
-        this.viewData[i] = _ah._bp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
-    }
-    this.hasMasks = hasMasks;
-}
-
-_q.prototype._az = function(num){
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
-        if(this.dynamicProperties[i].mdf){
-            this.element._x.mdf = true;
-        }
-    }
-};
-
-_q.prototype._ba = function (transform) {
-    if(!this.hasMasks){
-        return;
-    }
-    var ctx = this.element.canvasContext;
-    var i, len = this.masksProperties.length;
-    var pt,pt2,pt3,data;
-    ctx.beginPath();
-    for (i = 0; i < len; i++) {
-        if(this.masksProperties[i].mode !== 'n'){
-            if (this.masksProperties[i].inv) {
-                ctx.moveTo(0, 0);
-                ctx.lineTo(this.element._x.compWidth, 0);
-                ctx.lineTo(this.element._x.compWidth, this.element._x.compHeight);
-                ctx.lineTo(0, this.element._x.compHeight);
-                ctx.lineTo(0, 0);
-            }
-            data = this.viewData[i].v;
-            pt = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0):data.v[0];
-            ctx.moveTo(pt[0], pt[1]);
-            var j, jLen = data._length;
-            for (j = 1; j < jLen; j++) {
-                pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-                pt2 = transform ? transform.applyToPointArray(data.i[j][0],data.i[j][1],0) : data.i[j];
-                pt3 = transform ? transform.applyToPointArray(data.v[j][0],data.v[j][1],0) : data.v[j];
-                ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
-            }
-            pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-            pt2 = transform ? transform.applyToPointArray(data.i[0][0],data.i[0][1],0) : data.i[0];
-            pt3 = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0) : data.v[0];
-            ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
-        }
-    }
-    this.element._x.renderer.save(true);
-    ctx.clip();
-};
-
-_q.prototype.getMaskProperty = _ay.prototype.getMaskProperty;
-
-_q.prototype.destroy = function(){
-    this.element = null;
-};
-function _r(data, _x, comp) {
-    this.shapes = [];
-    this.shapesData = data.shapes;
-    this.stylesList = [];
-    this.itemsData = [];
-    this.prevViewData = [];
-    this.shapeModifiers = [];
-    this.processedElements = [];
-    this.initElement(data, _x, comp);
-}
-
-extendPrototype([_e,_af,_c,_ad,_ac,_ae], _r);
-
-_r.prototype.initElement = function(data,_x,comp) {
-    this.initFrame();
-    this.initBaseData(data, _x, comp);
-    this.initTransform(data, _x, comp);
-    this.initHierarchy();
-    this.initRenderable();
-    this.initRendererElement();
-    this.createContainerElements();
-    this.addMasks();
-    this.createContent();
-    this.hide();
-}
-
-_r.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
-
-_r.prototype.dashResetter = [];
-
-_r.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
-};
-
-_r.prototype.createStyleElement = function(data, dynamicProperties){
-    var styleElem = {
-        data: data,
-        type: data.ty,
-        _br: []
-    };
-    var elementData = {};
-    if(data.ty == 'fl' || data.ty == 'st'){
-        elementData.c = _ai._bo(this,data.c,1,255,dynamicProperties);
-        if(!elementData.c.k){
-            styleElem.co = 'rgb('+bm_floor(elementData.c.v[0])+','+bm_floor(elementData.c.v[1])+','+bm_floor(elementData.c.v[2])+')';
-        }
-    }
-    elementData.o = _ai._bo(this,data.o,0,0.01,dynamicProperties);
-    if(data.ty == 'st') {
-        styleElem.lc = this.lcEnum[data.lc] || 'round';
-        styleElem.lj = this.ljEnum[data.lj] || 'round';
-        if(data.lj == 1) {
-            styleElem.ml = data.ml;
-        }
-        elementData.w = _ai._bo(this,data.w,0,null,dynamicProperties);
-        if(!elementData.w.k){
-            styleElem.wi = elementData.w.v;
-        }
-        if(data.d){
-            var d = new DashProperty(this,data.d,'canvas',dynamicProperties);
-            elementData.d = d;
-            if(!elementData.d.k){
-                styleElem.da = elementData.d.dashArray;
-                styleElem.do = elementData.d.dashoffset[0];
-            }
-        }
-
-    } else {
-
-        styleElem.r = data.r === 2 ? 'evenodd' : 'nonzero';
-    }
-    this.stylesList.push(styleElem);
-    elementData.style = styleElem;
-    return elementData;
-}
-
-_r.prototype.createGroupElement = function(data) {
-    var elementData = {
-        it: [],
-        prevViewData: []
-    };
-    return elementData;
-}
-
-_r.prototype.create_af = function(data, dynamicProperties) {
-    var elementData = {
-        transform : {
-            mat: new Matrix(),
-            opacity: 1,
-            matMdf:false,
-            opMdf:false,
-            op: _ai._bo(this,data.o,0,0.01,dynamicProperties),
-            //mProps: _ai._bo(this,data,2,null,dynamicProperties)
-            mProps: _ag._bj(this,data,dynamicProperties)
-        },
-        _br: []
-    };
-    return elementData;
-}
-
-_r.prototype.createShapeElement = function(data, dynamicProperties) {
-    var elementData = {
-        nodes:[],
-        trNodes:[],
-        tr:[0,0,0,0,0,0]
-    };
-    var ty = 4;
-    if(data.ty == 'rc'){
-        ty = 5;
-    }else if(data.ty == 'el'){
-        ty = 6;
-    }else if(data.ty == 'sr'){
-        ty = 7;
-    }
-    elementData.sh = _ah._bp(this,data,ty,dynamicProperties);
-    this.shapes.push(elementData.sh);
-    this.addShapeToModifiers(elementData);
-    var j, jLen = this.stylesList.length;
-    var hasStrokes = false, hasFills = false;
-    for(j=0;j<jLen;j+=1){
-        if(!this.stylesList[j].closed){
-            this.stylesList[j]._br.push(elementData);
-            if(this.stylesList[j].type === 'st'){
-                hasStrokes = true;
-            }else{
-                hasFills = true;
-            }
-        }
-    }
-    elementData.st = hasStrokes;
-    elementData.fl = hasFills;
-    return elementData;
-}
-
-_r.prototype.reloadShapes = function(){
-    this.firstFrame = true;
-    var i, len = this.itemsData.length;
-    for(i=0;i<len;i+=1){
-        this.prevViewData[i] = this.itemsData[i];
-    }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-    }
-    this.renderModifiers();
-}
-
-_r.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, render){
-    var i, len = arr.length - 1;
-    var j, jLen;
-    var ownArrays = [], ownModifiers = [], processedPos;
-    for(i=len;i>=0;i-=1){
-        processedPos = this.searchProcessedElement(arr[i]);
-        if(!processedPos){
-            arr[i]._render = render;
-        } else {
-            itemsData[i] = prevViewData[processedPos - 1];
-        }
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
-            if(!processedPos){
-                itemsData[i] = this.createStyleElement(arr[i], dynamicProperties);
-            } else {
-                itemsData[i].style.closed = false;
-            }
-            
-            ownArrays.push(itemsData[i].style);
-        }else if(arr[i].ty == 'gr'){
-            if(!processedPos){
-                itemsData[i] = this.createGroupElement(arr[i]);
-            } else {
-                jLen = itemsData[i].it.length;
-                for(j=0;j<jLen;j+=1){
-                    itemsData[i].prevViewData[j] = itemsData[i].it[j];
-                }
-            }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, render);
-        }else if(arr[i].ty == 'tr'){
-            if(!processedPos){
-                itemsData[i] = this.create_af(arr[i], dynamicProperties);
-            }
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], dynamicProperties);
-            }
-            
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
-            if(!processedPos){
-                var modifier = _as.getModifier(arr[i].ty);
-                modifier.init(this,arr[i],dynamicProperties);
-                itemsData[i] = modifier;
-                this.shapeModifiers.push(modifier);
-            } else {
-                modifier = itemsData[i];
-                modifier.closed = false;
-            }
-            ownModifiers.push(modifier);
-        } else if(arr[i].ty == 'rp'){
-            if(!processedPos){
-                modifier = _as.getModifier(arr[i].ty);
-                itemsData[i] = modifier;
-                modifier.init(this,arr,i,itemsData,dynamicProperties);
-                this.shapeModifiers.push(modifier);
-                render = false;
-            }else{
-                modifier = itemsData[i];
-                modifier.closed = true;
-            }
-            ownModifiers.push(modifier);
-        }
-        this.addProcessedElement(arr[i], i + 1);
-    }
-    len = ownArrays.length;
-    for(i=0;i<len;i+=1){
-        ownArrays[i].closed = true;
-    }
-    len = ownModifiers.length;
-    for(i=0;i<len;i+=1){
-        ownModifiers[i].closed = true;
-    }
-};
-
-_r.prototype.addShapeToModifiers = _f.prototype.addShapeToModifiers;
-_r.prototype.renderModifiers = _f.prototype.renderModifiers;
-_r.prototype.lcEnum = _f.prototype.lcEnum;
-_r.prototype.ljEnum = _f.prototype.ljEnum;
-_r.prototype.searchProcessedElement = _f.prototype.searchProcessedElement;
-_r.prototype.addProcessedElement = _f.prototype.addProcessedElement;
-_r.prototype._az = _f.prototype._az;
-
-_r.prototype.renderInnerContent = function() {
-
-    this.transformHelper.mat.reset();
-    this.transformHelper.opacity = this.finalTransform.mProp.o.v;
-    this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = this.finalTransform.opMdf;
-    this.renderModifiers();
-    this.renderShape(this.transformHelper,null,null,true);
-}
-
-_r.prototype.renderShape = function(parentTransform,items,data,isMain){
-    var i, len;
-    if(!items){
-        items = this.shapesData;
-        len = this.stylesList.length;
-        for(i=0;i<len;i+=1){
-            this.stylesList[i].d = '';
-            this.stylesList[i].mdf = false;
-        }
-    }
-    if(!data){
-        data = this.itemsData;
-    }
-    ///
-    ///
-    len = items.length - 1;
-    var groupTransform,groupMatrix;
-    groupTransform = parentTransform;
-    for(i=len;i>=0;i-=1){
-        if(items[i].ty == 'tr'){
-            groupTransform = data[i].transform;
-            var mtArr = data[i].transform.mProps.v.props;
-            groupTransform.matMdf = groupTransform.mProps.mdf;
-            groupTransform.opMdf = groupTransform.op.mdf;
-            groupMatrix = groupTransform.mat;
-            groupMatrix.cloneFromProps(mtArr);
-            if(parentTransform){
-                var props = parentTransform.mat.props;
-                groupTransform.opacity = parentTransform.opacity;
-                groupTransform.opacity *= data[i].transform.op.v;
-                groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
-                groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-            }else{
-                groupTransform.opacity = groupTransform.op.o;
-            }
-        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
-            this.renderPath(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'fl'){
-            this.renderFill(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'gr'){
-            this.renderShape(groupTransform,items[i].it,data[i].it);
-        }else if(items[i].ty == 'tm'){
-            //
-        }
-    }
-    if(!isMain){
-        return;
-    }
-    len = this.stylesList.length;
-    var j, jLen, k, kLen,elems,nodes, renderer = this._x.renderer, ctx = this._x.canvasContext, type;
-    //renderer.save();
-    //renderer.ctxTransform(this.finalTransform.mat.props);
-    for(i=0;i<len;i+=1){
-        type = this.stylesList[i].type;
-        if((type === 'st' && this.stylesList[i].wi === 0) || !this.stylesList[i].data._render){
-            continue;
-        }
-        renderer.save();
-        elems = this.stylesList[i]._br;
-        if(type === 'st'){
-            ctx.strokeStyle = this.stylesList[i].co;
-            ctx.lineWidth = this.stylesList[i].wi;
-            ctx.lineCap = this.stylesList[i].lc;
-            ctx.lineJoin = this.stylesList[i].lj;
-            ctx.miterLimit = this.stylesList[i].ml || 0;
-        }else{
-            ctx.fillStyle = this.stylesList[i].co;
-        }
-        renderer.ctxOpacity(this.stylesList[i].coOp);
-        if(type !== 'st'){
-            ctx.beginPath();
-        }
-        jLen = elems.length;
-        for(j=0;j<jLen;j+=1){
-            if(type === 'st'){
-                ctx.beginPath();
-                if(this.stylesList[i].da){
-                    ctx.setLineDash(this.stylesList[i].da);
-                    ctx.lineDashOffset = this.stylesList[i].do;
-                    this._x.isDashed = true;
-                }else if(this._x.isDashed){
-                    ctx.setLineDash(this.dashResetter);
-                    this._x.isDashed = false;
-                }
-            }
-            nodes = elems[j].trNodes;
-            kLen = nodes.length;
-
-            for(k=0;k<kLen;k+=1){
-                if(nodes[k].t == 'm'){
-                    ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
-                }else if(nodes[k].t == 'c'){
-                    ctx.bezierCurveTo(nodes[k].p1[0],nodes[k].p1[1],nodes[k].p2[0],nodes[k].p2[1],nodes[k].p3[0],nodes[k].p3[1]);
-                }else{
-                    ctx.closePath();
-                }
-            }
-            if(type === 'st'){
-                ctx.stroke();
-            }
-        }
-        if(type !== 'st'){
-            ctx.fill(this.stylesList[i].r);
-        }
-        renderer.restore();
-    }
-    //renderer.restore();
-    if(this.firstFrame){
-        this.firstFrame = false;
-    }
-};
-_r.prototype.renderPath = function(pathData,itemData,groupTransform){
-    var len, i, j,jLen;
-    var redraw = groupTransform.matMdf || itemData.sh.mdf || this.firstFrame;
-    if(redraw) {
-        var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
-        jLen = pathData._render === false ? 0 : paths._length;
-        var pathStringTransformed = itemData.trNodes;
-        pathStringTransformed.length = 0;
-        for(j=0;j<jLen;j+=1){
-            var pathNodes = paths.shapes[j];
-            if(pathNodes && pathNodes.v){
-                len = pathNodes._length;
-                for (i = 1; i < len; i += 1) {
-                    if (i == 1) {
-                        pathStringTransformed.push({
-                            t: 'm',
-                            p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                        });
-                    }
-                    pathStringTransformed.push({
-                        t: 'c',
-                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransformMat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
-                        p3: groupTransformMat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
-                    });
-                }
-                if (len == 1) {
-                    pathStringTransformed.push({
-                        t: 'm',
-                        p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                    });
-                }
-                if (pathNodes.c && len) {
-                    pathStringTransformed.push({
-                        t: 'c',
-                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransformMat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
-                        p3: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
-                    });
-                    pathStringTransformed.push({
-                        t: 'z'
-                    });
-                }
-                itemData.lStr = pathStringTransformed;
-            }
-
-        }
-
-        if (itemData.st) {
-            for (i = 0; i < 16; i += 1) {
-                itemData.tr[i] = groupTransform.mat.props[i];
-            }
-        }
-        itemData.trNodes = pathStringTransformed;
-
-    }
-};
-
-
-
-_r.prototype.renderFill = function(styleData,itemData, groupTransform){
-    var styleElem = itemData.style;
-
-    if(itemData.c.mdf || this.firstFrame){
-        styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
-    }
-    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.coOp = itemData.o.v*groupTransform.opacity;
-    }
-};
-
-_r.prototype.renderStroke = function(styleData,itemData, groupTransform){
-    var styleElem = itemData.style;
-    //TODO fix dashes
-    var d = itemData.d;
-    if(d && (d.mdf  || this.firstFrame)){
-        styleElem.da = d.dashArray;
-        styleElem.do = d.dashoffset[0];
-    }
-    if(itemData.c.mdf || this.firstFrame){
-        styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
-    }
-    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
-        styleElem.coOp = itemData.o.v*groupTransform.opacity;
-    }
-    if(itemData.w.mdf || this.firstFrame){
-        styleElem.wi = itemData.w.v;
-    }
-};
-
-
-_r.prototype.destroy = function(){
-    this.shapesData = null;
-    this._x = null;
-    this.canvasContext = null;
-    this.stylesList.length = 0;
-    this.itemsData.length = 0;
-};
-
-
-function _s(data, _x, comp) {
-    this.initElement(data,_x,comp);
-}
-extendPrototype([_e, _af, _c, _ad, _ac, _ae], _s);
-
-_s.prototype.initElement = _f.prototype.initElement;
-_s.prototype._az = _h.prototype._az;
-
-_s.prototype.renderInnerContent = function() {
-    var ctx = this.canvasContext;
-    ctx.fillStyle = this.data.sc;
-    ctx.fillRect(0, 0, this.data.sw, this.data.sh);
-    //
-};
-function _t(data, _x, comp){
-    this.textSpans = [];
-    this.yOffset = 0;
-    this.fillColorAnim = false;
-    this.strokeColorAnim = false;
-    this.strokeWidthAnim = false;
-    this.stroke = false;
-    this.fill = false;
-    this.justifyOffset = 0;
-    this.currentRender = null;
-    this.renderType = 'canvas';
-    this.values = {
-        fill: 'rgba(0,0,0,0)',
-        stroke: 'rgba(0,0,0,0)',
-        sWidth: 0,
-        fValue: ''
-    }
-    this.initElement(data,_x,comp);
-}
-extendPrototype([_e,_af,_c,_ad,_ac,_ae,_k], _t);
-
-_t.prototype.tHelper = createTag('canvas').getContext('2d');
-
-_t.prototype.buildNewText = function(){
-    var documentData = this.textProperty.currentData;
-    this._bt = Array.apply(null,{length:documentData.l ? documentData.l.length : 0});
-
-    var hasFill = false;
-    if(documentData.fc) {
-        hasFill = true;
-        this.values.fill = this.buildColor(documentData.fc);
-    }else{
-        this.values.fill = 'rgba(0,0,0,0)';
-    }
-    this.fill = hasFill;
-    var hasStroke = false;
-    if(documentData.sc){
-        hasStroke = true;
-        this.values.stroke = this.buildColor(documentData.sc);
-        this.values.sWidth = documentData.sw;
-    }
-    var fontData = this._x.fontManager.getFontByName(documentData.f);
-    var i, len;
-    var letters = documentData.l;
-    var matrixHelper = this.mHelper;
-    this.stroke = hasStroke;
-    this.values.fValue = documentData.s + 'px '+ this._x.fontManager.getFontByName(documentData.f).fFamily;
-    len = documentData.t.length;
-    //this.tHelper.font = this.values.fValue;
-    var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
-    var trackingOffset = documentData.tr/1000*documentData.s;
-    var xPos = 0, yPos = 0, firstLine = true;
-    var cnt = 0;
-    for (i = 0; i < len; i += 1) {
-        charData = this._x.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this._x.fontManager.getFontByName(documentData.f).fFamily);
-        shapeData = charData && charData.data || {};
-        matrixHelper.reset();
-        if(singleShape && letters[i].n) {
-            xPos = -trackingOffset;
-            yPos += documentData.yOffset;
-            yPos += firstLine ? 1 : 0;
-            firstLine = false;
-        }
-
-        shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
-        jLen = shapes.length;
-        matrixHelper.scale(documentData.s/100,documentData.s/100);
-        if(singleShape){
-            this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
-        }
-        commands = Array.apply(null,{length:jLen})
-        for(j=0;j<jLen;j+=1){
-            kLen = shapes[j].ks.k.i.length;
-            pathNodes = shapes[j].ks.k;
-            pathArr = [];
-            for(k=1;k<kLen;k+=1){
-                if(k==1){
-                    pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
-                }
-                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1],0),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1],0));
-            }
-            pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
-            commands[j] = pathArr;
-        }
-        if(singleShape){
-            xPos += letters[i].l;
-            xPos += trackingOffset;
-        }
-        if(this.textSpans[cnt]){
-            this.textSpans[cnt].elem = commands;
-        } else {
-            this.textSpans[cnt] = {elem: commands};
-        }
-        cnt +=1;
-    }
-}
-
-_t.prototype.renderInnerContent = function(){
-    var ctx = this.canvasContext;
-    var finalMat = this.finalTransform.mat.props;
-    ctx.font = this.values.fValue;
-    ctx.lineCap = 'butt';
-    ctx.lineJoin = 'miter';
-    ctx.miterLimit = 4;
-
-    if(!this.data.singleShape){
-        this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
-    }
-
-    var  i,len, j, jLen, k, kLen;
-    var _bt = this.textAnimator._bt;
-
-    var letters = this.textProperty.currentData.l;
-
-    len = letters.length;
-    var _bu;
-    var lastFill = null, lastStroke = null, lastStrokeW = null, commands, pathArr;
-    for(i=0;i<len;i+=1){
-        if(letters[i].n){
-            continue;
-        }
-        _bu = _bt[i];
-        if(_bu){
-            this._x.renderer.save();
-            this._x.renderer.ctxTransform(_bu.p);
-            this._x.renderer.ctxOpacity(_bu.o);
-        }
-        if(this.fill){
-            if(_bu && _bu.fc){
-                if(lastFill !== _bu.fc){
-                    lastFill = _bu.fc;
-                    ctx.fillStyle = _bu.fc;
-                }
-            }else if(lastFill !== this.values.fill){
-                lastFill = this.values.fill;
-                ctx.fillStyle = this.values.fill;
-            }
-            commands = this.textSpans[i].elem;
-            jLen = commands.length;
-            this._x.canvasContext.beginPath();
-            for(j=0;j<jLen;j+=1) {
-                pathArr = commands[j];
-                kLen = pathArr.length;
-                this._x.canvasContext.moveTo(pathArr[0], pathArr[1]);
-                for (k = 2; k < kLen; k += 6) {
-                    this._x.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
-                }
-            }
-            this._x.canvasContext.closePath();
-            this._x.canvasContext.fill();
-            ///ctx.fillText(this.textSpans[i].val,0,0);
-        }
-        if(this.stroke){
-            if(_bu && _bu.sw){
-                if(lastStrokeW !== _bu.sw){
-                    lastStrokeW = _bu.sw;
-                    ctx.lineWidth = _bu.sw;
-                }
-            }else if(lastStrokeW !== this.values.sWidth){
-                lastStrokeW = this.values.sWidth;
-                ctx.lineWidth = this.values.sWidth;
-            }
-            if(_bu && _bu.sc){
-                if(lastStroke !== _bu.sc){
-                    lastStroke = _bu.sc;
-                    ctx.strokeStyle = _bu.sc;
-                }
-            }else if(lastStroke !== this.values.stroke){
-                lastStroke = this.values.stroke;
-                ctx.strokeStyle = this.values.stroke;
-            }
-            commands = this.textSpans[i].elem;
-            jLen = commands.length;
-            this._x.canvasContext.beginPath();
-            for(j=0;j<jLen;j+=1) {
-                pathArr = commands[j];
-                kLen = pathArr.length;
-                this._x.canvasContext.moveTo(pathArr[0], pathArr[1]);
-                for (k = 2; k < kLen; k += 6) {
-                    this._x.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
-                }
-            }
-            this._x.canvasContext.closePath();
-            this._x.canvasContext.stroke();
-            ///ctx.strokeText(letters[i].val,0,0);
-        }
-        if(_bu) {
-            this._x.renderer.restore();
-        }
-    }
-    /*if(this.data.hasMask){
-     this._x.renderer.restore(true);
-     }*/
-};
-function _o() {
-
-}
-_o.prototype._ba = function(){}
-function _b(data,_x,comp){
-};
-
-_b.prototype.checkBlendMode = function(){
-};
-
-_b.prototype.get_e = _d.prototype.get_e;
-
-_b.prototype.initRendererElement = function(){
-    this._by = createTag('div');
-    if(this.data.hasMask) {
-        this._cf = createNS('svg');
-        this._bx = createNS('g');
-        this._ca = this._bx;
-        this._cf.appendChild(this._bx);
-        this._by.appendChild(this._cf);
-    } else {
-        this._bx = this._by;
-    }
-    styleDiv(this._by);
-}
-
-_b.prototype.createContainerElements = function(){
-    this.effectsManager = new _o(this);
-    this._bz = this._by;
-    this._ca = this._bx;
-    if (this.data.ln) {
-        this._bx.setAttribute('id',this.data.ln);
-    }
-    if (this.data.bm !== 0) {
-        this.setBlendMode();
-    }
-    this.checkParenting();
-};
-
-_b.prototype.renderElement = function() {
-    if(this.finalTransform.matMdf){
-        this._bz.style.transform = this._bz.style.webkitTransform = this.finalTransform.mat.toCSS();
-    }
-    if(this.finalTransform.opMdf){
-        this._bz.style.opacity = this.finalTransform.mProp.o.v;
-    }
-};
-
-_b.prototype._ba = function() {
-    //If it is exported as hidden (data.hd === true) no need to render
-    //If it is not visible no need to render
-    if (this.data.hd || this.hidden) {
-        return;
-    }
-    this.renderTransform();
-    this.renderRenderable();
-    this.renderElement();
-    this.renderInnerContent();
-    if (this.firstFrame) {
-        this.firstFrame = false;
-    }
-};
-
-_b.prototype.destroy = function(){
-    this._bx = null;
-    this._bz = null;
-    if(this.matteElement) {
-        this.matteElement = null;
-    }
-    if(this.maskManager) {
-        this.maskManager.destroy();
-        this.maskManager = null;
-    }
-};
-
-_b.prototype.getDomElement = function(){
-    return this._bx;
-};
-_b.prototype.addMasks = function(){
-    this.maskManager = new _ay(this.data, this, this._x);
-};
-
-_b.prototype.setMatte = function(){
-
-}
-
-_b.prototype.buildElementParenting = _ap.prototype.buildElementParenting;
-function _aa(data,_x,comp){
-    this.initElement(data,_x,comp);
-}
-extendPrototype([_e,_af,_b,_ad,_ac,RenderableDOMElement], _aa);
-
-_aa.prototype.createContent = function(){
-    var rect;
-    if(this.data.hasMask){
-        rect = createNS('rect');
-        rect.setAttribute('width',this.data.sw);
-        rect.setAttribute('height',this.data.sh);
-        rect.setAttribute('fill',this.data.sc);
-        this._cf.setAttribute('width',this.data.sw);
-        this._cf.setAttribute('height',this.data.sh);
-    } else {
-        rect = createTag('div');
-        rect.style.width = this.data.sw + 'px';
-        rect.style.height = this.data.sh + 'px';
-        rect.style.backgroundColor = this.data.sc;
-    }
-    this._bx.appendChild(rect);
-};
-
-function _w(data,_x,comp){
-    this.layers = data.layers;
-    this.supports3d = !data.hasMask;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this._br = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    this.tm = data.tm ? _ai._bo(this,data.tm,0,_x.frameRate,this.dynamicProperties) : {_placeholder:true};
-    
-    this.initElement(data,_x,comp);
-}
-
-extendPrototype([_ap, _g, _b], _w);
-
-_w.prototype.createContainerElements = function(){
-    //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
-    if(this.data.hasMask){
-        this._bz = this._bx;
-        this._cf.setAttribute('width',this.data.w);
-        this._cf.setAttribute('height',this.data.h);
-    }else{
-        this._bz = this._bx;
-
-    }
-    //this.appendNodeToParent(this._bx);
-    this.effectsManager = new _o(this);
-    this.checkParenting();
-};
-function _z(data,_x,comp){
-    //List of drawable _br
-    this.shapes = [];
-    // Full shape data
-    this.shapesData = data.shapes;
-    //List of styles that will be applied to shapes
-    this.stylesList = [];
-    //List of modifiers that will be applied to shapes
-    this.shapeModifiers = [];
-    //List of items in shape tree
-    this.itemsData = [];
-    //List of items in previous shape tree
-    this.processedElements = [];
-    this.shapesContainer = createNS('g');
-    this.initElement(data,_x,comp);
-    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
-    // List of _br that have been created
-    this.prevViewData = [];
-    this._cg = {
-        x:999999,
-        y: -999999,
-        h: 0,
-        w: 0
-    };
-}
-extendPrototype([_e,_af,_aa,_f,_b,_ad,_ac,_ae], _z);
-_z.prototype._renderShapeFrame = _z.prototype.renderInnerContent;
-
-_z.prototype.createContent = function(){
-    var cont;
-    if (this.data.hasMask) {
-        this._bx.appendChild(this.shapesContainer);
-        cont = this._cf;
-    } else {
-        cont = createNS('svg');
-        var size = this.comp.data ? this.comp.data : this._x.compSize;
-        cont.setAttribute('width',size.w);
-        cont.setAttribute('height',size.h);
-        cont.appendChild(this.shapesContainer);
-        this._bx.appendChild(cont);
-    }
-
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,this.dynamicProperties,0, [], true);
-    this.shapeCont = cont;
-};
-
-_z.prototype.renderInnerContent = function() {
-    this._renderShapeFrame();
-
-    //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses _x.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(!this.hidden && this.firstFrame) {
-        var boundingBox = this.shapeCont.getBBox();
-        var changed = false;
-        if(this._cg.w !== boundingBox.width){
-            this._cg.w = boundingBox.width;
-            this.shapeCont.setAttribute('width',boundingBox.width);
-            changed = true;
-        }
-        if(this._cg.h !== boundingBox.height){
-            this._cg.h = boundingBox.height;
-            this.shapeCont.setAttribute('height',boundingBox.height);
-            changed = true;
-        }
-        if(changed  || this._cg.x !== boundingBox.x  || this._cg.y !== boundingBox.y){
-            this._cg.w = boundingBox.width;
-            this._cg.h = boundingBox.height;
-            this._cg.x = boundingBox.x;
-            this._cg.y = boundingBox.y;
-
-            this.shapeCont.setAttribute('viewBox',this._cg.x+' '+this._cg.y+' '+this._cg.w+' '+this._cg.h);
-            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this._cg.x + 'px,' + this._cg.y + 'px)';
-        }
-    }
-
-};
-function _ab(data,_x,comp){
-    this.textSpans = [];
-    this.textPaths = [];
-    this._cg = {
-        x:999999,
-        y: -999999,
-        h: 0,
-        w: 0
-    }
-    this.renderType = 'svg';
-    this.isMasked = false;
-    this.initElement(data,_x,comp);
-
-}
-extendPrototype([_e,_af,_b,_ad,_ac,RenderableDOMElement,_k], _ab);
-
-_ab.prototype.createContent = function(){
-    this.isMasked = this.checkMasks();
-    if(this.isMasked){
-        this.renderType = 'svg';
-        this.compW = this.comp.data.w;
-        this.compH = this.comp.data.h;
-        this._cf.setAttribute('width',this.compW);
-        this._cf.setAttribute('height',this.compH);
-        var g = createNS('g');
-        this._ca.appendChild(g);
-        this._cc = g;
-    } else {
-        this.renderType = 'html';
-        this._cc = this._bx;
-    }
-
-    this.checkParenting();
-
-};
-
-_ab.prototype.buildNewText = function(){
-    var documentData = this.textProperty.currentData;
-    this._bt = Array.apply(null,{length:this.textProperty.currentData.l ? this.textProperty.currentData.l.length : 0});
-    var _cb = this._cc.style;
-    _cb.color = _cb.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
-    if(documentData.sc){
-        _cb.stroke = this.buildColor(documentData.sc);
-        _cb.strokeWidth = documentData.sw+'px';
-    }
-    var fontData = this._x.fontManager.getFontByName(documentData.f);
-    if(!this._x.fontManager.chars){
-        _cb.fontSize = documentData.s+'px';
-        _cb.lineHeight = documentData.s+'px';
-        if(fontData.fClass){
-            this._cc.className = fontData.fClass;
-        } else {
-            _cb.fontFamily = fontData.fFamily;
-            var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
-            _cb.fontStyle = fStyle;
-            _cb.fontWeight = fWeight;
-        }
-    }
-    var i, len;
-
-    var letters = documentData.l;
-    len = letters.length;
-    var tSpan,tParent,tCont;
-    var matrixHelper = this.mHelper;
-    var shapes, shapeStr = '';
-    var cnt = 0;
-    for (i = 0;i < len ;i += 1) {
-        if(this._x.fontManager.chars){
-            if(!this.textPaths[cnt]){
-                tSpan = createNS('path');
-                tSpan.setAttribute('stroke-linecap', 'butt');
-                tSpan.setAttribute('stroke-linejoin','round');
-                tSpan.setAttribute('stroke-miterlimit','4');
-            } else {
-                tSpan = this.textPaths[cnt];
-            }
-            if(!this.isMasked){
-                if(this.textSpans[cnt]){
-                    tParent = this.textSpans[cnt];
-                    tCont = tParent.children[0];
-                } else {
-
-                    tParent = createTag('div');
-                    tCont = createNS('svg');
-                    tCont.appendChild(tSpan);
-                    styleDiv(tParent);
-                }
-            }
-        }else{
-            if(!this.isMasked){
-                if(this.textSpans[cnt]){
-                    tParent = this.textSpans[cnt];
-                    tSpan = this.textPaths[cnt];
-                } else {
-                    tParent = createTag('span');
-                    styleDiv(tParent);
-                    tSpan = createTag('span');
-                    styleDiv(tSpan);
-                    tParent.appendChild(tSpan);
-                }
-            } else {
-                tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : createNS('text');
-            }
-        }
-        //tSpan.setAttribute('visibility', 'hidden');
-        if(this._x.fontManager.chars){
-            var charData = this._x.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this._x.fontManager.getFontByName(documentData.f).fFamily);
-            var shapeData;
-            if(charData){
-                shapeData = charData.data;
-            } else {
-                shapeData = null;
-            }
-            matrixHelper.reset();
-            if(shapeData && shapeData.shapes){
-                shapes = shapeData.shapes[0].it;
-                matrixHelper.scale(documentData.s/100,documentData.s/100);
-                shapeStr = this.createPathShape(matrixHelper,shapes);
-                tSpan.setAttribute('d',shapeStr);
-            }
-            if(!this.isMasked){
-                this._cc.appendChild(tParent);
-                if(shapeData && shapeData.shapes){
-
-                    var boundingBox = tCont.getBBox();
-                    tCont.setAttribute('width',boundingBox.width + 2);
-                    tCont.setAttribute('height',boundingBox.height + 2);
-                    tCont.setAttribute('viewBox',(boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
-                    tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
-
-                    letters[i].yOffset = boundingBox.y-1;
-                    tParent.appendChild(tCont);
-
-                } else{
-                    tCont.setAttribute('width',1);
-                    tCont.setAttribute('height',1);
-                }
-            }else{
-                this._cc.appendChild(tSpan);
-            }
-        }else{
-            tSpan.textContent = letters[i].val;
-            tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
-            if(!this.isMasked){
-                this._cc.appendChild(tParent);
-                //
-                tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,'+ -documentData.s/1.2+'px,0)';
-            } else {
-                this._cc.appendChild(tSpan);
-            }
-        }
-        //
-        if(!this.isMasked){
-            this.textSpans[cnt] = tParent;
-        }else{
-            this.textSpans[cnt] = tSpan;
-        }
-        this.textSpans[cnt].style.display = 'block';
-        this.textPaths[cnt] = tSpan;
-        cnt += 1;
-    }
-    while(cnt < this.textSpans.length){
-        this.textSpans[cnt].style.display = 'none';
-        cnt += 1;
-    }
-}
-
-_ab.prototype.renderInnerContent = function() {
-
-    if(this.data.singleShape){
-        if(!this.firstFrame && !this.lettersChangedFlag){
-            return;
-        } else {
-            // Todo Benchmark if using this is better than getBBox
-             if(this.isMasked && this.finalTransform.matMdf){
-                 this._cf.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
-                this._cf.style.transform = this._cf.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
-             }
-        }
-    }
-
-    this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
-    if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag){
-        return;
-    }
-    var  i,len, count = 0;
-    var _bt = this.textAnimator._bt;
-
-    var letters = this.textProperty.currentData.l;
-
-    len = letters.length;
-    var _bu, textSpan, textPath;
-    for(i=0;i<len;i+=1){
-        if(letters[i].n){
-            count += 1;
-            continue;
-        }
-        textSpan = this.textSpans[i];
-        textPath = this.textPaths[i];
-        _bu = _bt[count];
-        count += 1;
-        if(!this.isMasked){
-            textSpan.style.transform = textSpan.style.webkitTransform = _bu.m;
-        }else{
-            textSpan.setAttribute('transform',_bu.m);
-        }
-        ////textSpan.setAttribute('opacity',_bu.o);
-        textSpan.style.opacity = _bu.o;
-        if(_bu.sw){
-            textPath.setAttribute('stroke-width',_bu.sw);
-        }
-        if(_bu.sc){
-            textPath.setAttribute('stroke',_bu.sc);
-        }
-        if(_bu.fc){
-            textPath.setAttribute('fill',_bu.fc);
-            textPath.style.color = _bu.fc;
-        }
-    }
-
-    //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses _x.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(this.isVisible && (this.firstFrame)){
-        if(this._cc.getBBox){
-            var boundingBox = this._cc.getBBox();
-
-            if(this._cg.w !== boundingBox.width){
-                this._cg.w = boundingBox.width;
-                this._cf.setAttribute('width',boundingBox.width);
-            }
-            if(this._cg.h !== boundingBox.height){
-                this._cg.h = boundingBox.height;
-                this._cf.setAttribute('height',boundingBox.height);
-            }
-
-            var margin = 1;
-            if(this._cg.w !== (boundingBox.width + margin*2) || this._cg.h !== (boundingBox.height + margin*2)  || this._cg.x !== (boundingBox.x - margin)  || this._cg.y !== (boundingBox.y - margin)){
-                this._cg.w = boundingBox.width + margin*2;
-                this._cg.h = boundingBox.height + margin*2;
-                this._cg.x = boundingBox.x - margin;
-                this._cg.y = boundingBox.y - margin;
-
-                this._cf.setAttribute('viewBox',this._cg.x+' '+this._cg.y+' '+this._cg.w+' '+this._cg.h);
-                this._cf.style.transform = this._cf.style.webkitTransform = 'translate(' + this._cg.x + 'px,' + this._cg.y + 'px)';
-            }
-        }
-    }
-}
-function _y(data,_x,comp){
-    this.assetData = _x.getAssetData(data.refId);
-    this.initElement(data,_x,comp);
-}
-
-extendPrototype([_e,_af,_b,_aa,_ad,_ac,_ae], _y);
-
-
-_y.prototype.createContent = function(){
-    var assetPath = this._x.getAssetsPath(this.assetData);
-    var img = new Image();
-
-    if(this.data.hasMask){
-        this.imageElem = createNS('image');
-        this.imageElem.setAttribute('width',this.assetData.w+"px");
-        this.imageElem.setAttribute('height',this.assetData.h+"px");
-        this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
-        this._bx.appendChild(this.imageElem);
-        this._by.setAttribute('width',this.assetData.w);
-        this._by.setAttribute('height',this.assetData.h);
-    } else {
-        this._bx.appendChild(img);
-    }
-    img.src = assetPath;
-    if(this.data.ln){
-        this._cc.setAttribute('id',this.data.ln);
-    }
-    this.checkParenting();
-};
-function _v(data,_x,comp){
-    this.initFrame();
-    this.initBaseData(data,_x,comp);
-    var _bo = _ai._bo;
-    this.pe = _bo(this,data.pe,0,0,this.dynamicProperties);
-    if(data.ks.p.s){
-        this.px = _bo(this,data.ks.p.x,1,0,this.dynamicProperties);
-        this.py = _bo(this,data.ks.p.y,1,0,this.dynamicProperties);
-        this.pz = _bo(this,data.ks.p.z,1,0,this.dynamicProperties);
-    }else{
-        this.p = _bo(this,data.ks.p,1,0,this.dynamicProperties);
-    }
-    if(data.ks.a){
-        this.a = _bo(this,data.ks.a,1,0,this.dynamicProperties);
-    }
-    if(data.ks.or.k.length && data.ks.or.k[0].to){
-        var i,len = data.ks.or.k.length;
-        for(i=0;i<len;i+=1){
-            data.ks.or.k[i].to = null;
-            data.ks.or.k[i].ti = null;
-        }
-    }
-    this.or = _bo(this,data.ks.or,1,degToRads,this.dynamicProperties);
-    this.or.sh = true;
-    this.rx = _bo(this,data.ks.rx,0,degToRads,this.dynamicProperties);
-    this.ry = _bo(this,data.ks.ry,0,degToRads,this.dynamicProperties);
-    this.rz = _bo(this,data.ks.rz,0,degToRads,this.dynamicProperties);
-    this.mat = new Matrix();
-    this._prevMat = new Matrix();
-    this.firstFrame = true;
-}
-extendPrototype([_e, _ac], _v);
-
-_v.prototype.setup = function() {
-    var i, len = this.comp.threeDElements.length, comp;
-    for(i=0;i<len;i+=1){
-        //[perspectiveElem,container]
-        comp = this.comp.threeDElements[i];
-        comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
-        comp.container.style.transformOrigin = comp.container.style.mozTransformOrigin = comp.container.style.webkitTransformOrigin = "0px 0px 0px";
-        comp.perspectiveElem.style.transform = comp.perspectiveElem.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
-    }
-};
-
-_v.prototype.createElements = function(){
-};
-
-_v.prototype.hide = function(){
-};
-
-_v.prototype._ba = function(){
-    var mdf = this.firstFrame;
-    var i, len;
-    if(this.hierarchy){
-        len = this.hierarchy.length;
-        for(i=0;i<len;i+=1){
-            mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
-        }
-    }
-    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || this.or.mdf || (this.a && this.a.mdf)) {
-        this.mat.reset();
-
-        if(this.p){
-            this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
-        }else{
-            this.mat.translate(-this.px.v,-this.py.v,this.pz.v);
-        }
-        if(this.a){
-            var diffVector = [this.p.v[0]-this.a.v[0],this.p.v[1]-this.a.v[1],this.p.v[2]-this.a.v[2]];
-            var mag = Math.sqrt(Math.pow(diffVector[0],2)+Math.pow(diffVector[1],2)+Math.pow(diffVector[2],2));
-            //var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
-            var lookDir = [diffVector[0]/mag,diffVector[1]/mag,diffVector[2]/mag];
-            var lookLengthOnXZ = Math.sqrt( lookDir[2]*lookDir[2] + lookDir[0]*lookDir[0] );
-            var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));
-            var m_rotationY = (Math.atan2( lookDir[0], -lookDir[2]));
-            this.mat.rotateY(m_rotationY).rotateX(-m_rotationX);
-
-        }
-        this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
-        this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
-        this.mat.translate(this._x.compSize.w/2,this._x.compSize.h/2,0);
-        this.mat.translate(0,0,this.pe.v);
-        if(this.hierarchy){
-            var mat;
-            len = this.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.iv.props;
-                this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
-            }
-        }
-        if(!this._prevMat.equals(this.mat)) {
-            len = this.comp.threeDElements.length;
-            var comp;
-            for(i=0;i<len;i+=1){
-                comp = this.comp.threeDElements[i];
-                comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
-            }
-            this.mat.clone(this._prevMat);
-        }
-    } else {
-
-        //console.log('NO ENTRO')
-    }
-    this.firstFrame = false;
-};
-
-_v.prototype._az = function(num) {
-    this.prepareProperties(num, true);
-};
-
-_v.prototype.destroy = function(){
-};
-_v.prototype.initExpressions = function(){};
-_v.prototype.get_e = function(){return null};
-function _bv() {
-}
-_bv.prototype._ba = function(){}
 var animationManager = (function(){
     var moduleOb = {};
     var registeredAnimations = [];
@@ -10502,7 +8298,7 @@ var animationManager = (function(){
             }
             var body = document.getElementsByTagName('body')[0];
             body.innerHTML = '';
-            var div = createTag('div');
+            var div = _cu('div');
             div.style.width = '100%';
             div.style.height = '100%';
             div.setAttribute('data-bm-type',renderer);
@@ -10565,7 +8361,7 @@ var _a = function () {
     this.frameMult = 0;
     this.playSpeed = 1;
     this.playDirection = 1;
-    this.pendingElements = 0;
+    this._dc = 0;
     this.playCount = 0;
     this.animationData = {};
     this.layers = [];
@@ -10584,6 +8380,8 @@ var _a = function () {
     this._idle = true;
     this.projectInterface = ProjectInterface();
 };
+
+extendPrototype([BaseEvent], _a);
 
 _a.prototype.setParams = function(params) {
     var self = this;
@@ -10710,8 +8508,8 @@ _a.prototype.includeLayers = function(data) {
         }
     }
     if(data.chars || data.fonts){
-        this.renderer._x.fontManager.addChars(data.chars);
-        this.renderer._x.fontManager.addFonts(data.fonts, this.renderer._x.defs);
+        this.renderer._x._cr.addChars(data.chars);
+        this.renderer._x._cr.addFonts(data.fonts, this.renderer._x.defs);
     }
     if(data.assets){
         len = data.assets.length;
@@ -10722,7 +8520,7 @@ _a.prototype.includeLayers = function(data) {
     //this.totalFrames = 50;
     //this.animationData.tf = 50;
     this.animationData.__complete = false;
-    dataManager.completeData(this.animationData,this.renderer._x.fontManager);
+    dataManager.completeData(this.animationData,this.renderer._x._cr);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin){
         expressionsPlugin.initExpressions(this);
@@ -10793,7 +8591,7 @@ _a.prototype.configAnimation = function (animData) {
     this.layers = this.animationData.layers;
     this.assets = this.animationData.assets;
     this.frameRate = this.animationData.fr;
-    this.firstFrame = Math.round(this.animationData.ip);
+    this._ch = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     this.trigger('config_ready');
     this.imagePreloader = new ImagePreloader();
@@ -10806,18 +8604,18 @@ _a.prototype.configAnimation = function (animData) {
     });
     this.loadSegments();
     this.updaFrameModifier();
-    if(this.renderer._x.fontManager){
+    if(this.renderer._x._cr){
         this.waitForFontsLoaded();
     }else{
-        dataManager.completeData(this.animationData,this.renderer._x.fontManager);
+        dataManager.completeData(this.animationData,this.renderer._x._cr);
         this.checkLoaded();
     }
 };
 
 _a.prototype.waitForFontsLoaded = (function(){
     function checkFontsLoaded(){
-        if(this.renderer._x.fontManager.loaded){
-            dataManager.completeData(this.animationData,this.renderer._x.fontManager);
+        if(this.renderer._x._cr.loaded){
+            dataManager.completeData(this.animationData,this.renderer._x._cr);
             //this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
@@ -10831,16 +8629,16 @@ _a.prototype.waitForFontsLoaded = (function(){
 }());
 
 _a.prototype.addPendingElement = function () {
-    this.pendingElements += 1;
+    this._dc += 1;
 };
 
 _a.prototype.elementLoaded = function () {
-    this.pendingElements--;
+    this._dc--;
     this.checkLoaded();
 };
 
 _a.prototype.checkLoaded = function () {
-    if (this.pendingElements === 0) {
+    if (this._dc === 0) {
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
@@ -10878,8 +8676,8 @@ _a.prototype._ba = function () {
     if(this.isLoaded === false){
         return;
     }
-    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
-    this.renderer._ba(this.currentFrame + this.firstFrame);
+    //console.log('this.currentFrame:',this.currentFrame + this._ch);
+    this.renderer._ba(this.currentFrame + this._ch);
 };
 
 _a.prototype.play = function (name) {
@@ -10983,7 +8781,7 @@ _a.prototype.adjustSegment = function(arr){
             }
         }
         this.totalFrames = arr[0] - arr[1];
-        this.firstFrame = arr[1];
+        this._ch = arr[1];
         this.setCurrentRawFrameValue(this.totalFrames - 0.001);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
@@ -10994,7 +8792,7 @@ _a.prototype.adjustSegment = function(arr){
             }
         }
         this.totalFrames = arr[1] - arr[0];
-        this.firstFrame = arr[0];
+        this._ch = arr[0];
         this.setCurrentRawFrameValue(0.001);
     }
     this.trigger('segmentStart');
@@ -11002,14 +8800,14 @@ _a.prototype.adjustSegment = function(arr){
 _a.prototype.setSegment = function (init,end) {
     var pendingFrame = -1;
     if(this.isPaused) {
-        if (this.currentRawFrame + this.firstFrame < init) {
+        if (this.currentRawFrame + this._ch < init) {
             pendingFrame = init;
-        } else if (this.currentRawFrame + this.firstFrame > end) {
+        } else if (this.currentRawFrame + this._ch > end) {
             pendingFrame = end - init;
         }
     }
 
-    this.firstFrame = init;
+    this._ch = init;
     this.totalFrames = end - init;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
@@ -11166,22 +8964,22 @@ _a.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
             case 'enterFrame':
-                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
+                this._cy(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
                 break;
             case 'loopComplete':
-                this.triggerEvent(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
+                this._cy(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
                 break;
             case 'complete':
-                this.triggerEvent(name,new BMCompleteEvent(name,this.frameMult));
+                this._cy(name,new BMCompleteEvent(name,this.frameMult));
                 break;
             case 'segmentStart':
-                this.triggerEvent(name,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
+                this._cy(name,new BMSegmentStartEvent(name,this._ch,this.totalFrames));
                 break;
             case 'destroy':
-                this.triggerEvent(name,new BMDestroyEvent(name,this));
+                this._cy(name,new BMDestroyEvent(name,this));
                 break;
             default:
-                this.triggerEvent(name);
+                this._cy(name);
         }
     }
     if(name === 'enterFrame' && this.onEnterFrame){
@@ -11194,2344 +8992,10 @@ _a.prototype.trigger = function(name){
         this.onComplete.call(this,new BMCompleteEvent(name,this.frameMult));
     }
     if(name === 'segmentStart' && this.onSegmentStart){
-        this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
+        this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this._ch,this.totalFrames));
     }
     if(name === 'destroy' && this.onDestroy){
         this.onDestroy.call(this,new BMDestroyEvent(name,this));
-    }
-};
-
-_a.prototype.addEventListener = _addEventListener;
-_a.prototype.removeEventListener = _removeEventListener;
-_a.prototype.triggerEvent = _triggerEvent;
-
-var Expressions = (function(){
-    var ob = {};
-    ob.initExpressions = initExpressions;
-
-
-    function initExpressions(animation){
-        animation.renderer.compInterface = CompExpressionInterface(animation.renderer);
-        animation.renderer._x.projectInterface.registerComposition(animation.renderer);
-    }
-   return ob;
-}());
-
-expressionsPlugin = Expressions;
-
-var ExpressionManager = (function(){
-    "use strict";
-    var ob = {};
-    var Math = BMMath;
-    var window = null;
-    var document = null;
-
-    function duplicatePropertyValue(value, mult) {
-        mult = mult || 1;
-
-        if (typeof value === 'number'  || value instanceof Number) {
-            return value * mult;
-        } else if(value.i) {
-            return shape_pool.clone(value);
-        } else {
-            var arr = createTypedArray('float32', value.length);
-            var i, len = value.length;
-            for (i = 0; i < len; i += 1) {
-                arr[i] = value[i] * mult;
-            }
-            return arr;
-        }
-    }
-
-    function isTypeOfArray(arr) {
-        return arr.constructor === Array || arr.constructor === Float32Array;
-    }
-
-    function shapesEqual(shape1, shape2) {
-        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
-            return false;
-        }
-        var i, len = shape1._length;
-        for(i = 0; i < len; i += 1) {
-            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1]
-                || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1]
-                || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function $bm_neg(a){
-        var tOfA = typeof a;
-        if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
-            return -a;
-        }
-        if(isTypeOfArray(a)){
-            var i, lenA = a.length;
-            var retArr = [];
-            for(i=0;i<lenA;i+=1){
-                retArr[i] = -a[i];
-            }
-            return retArr;
-        }
-    }
-
-    function sum(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        if(tOfA === 'string' || tOfB === 'string'){
-            return a + b;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string'  || b instanceof Number)) {
-            return a + b;
-        }
-        if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
-            a[0] = a[0] + b;
-            return a;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
-            b[0] = a + b[0];
-            return b;
-        }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
-            
-            var i = 0, lenA = a.length, lenB = b.length;
-            var retArr = [];
-            while(i<lenA || i < lenB){
-                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
-                    retArr[i] = a[i] + b[i];
-                }else{
-                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
-                }
-                i += 1;
-            }
-            return retArr;
-        }
-        return 0;
-    }
-    var add = sum;
-
-    function sub(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
-            if(tOfA === 'string') {
-                a = parseInt(a);
-            }
-            if(tOfB === 'string') {
-                b = parseInt(b);
-            }
-            return a - b;
-        }
-        if( isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
-            a[0] = a[0] - b;
-            return a;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  isTypeOfArray(b)){
-            b[0] = a - b[0];
-            return b;
-        }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
-            var i = 0, lenA = a.length, lenB = b.length;
-            var retArr = [];
-            while(i<lenA || i < lenB){
-                if((typeof a[i] === 'number' || a[i] instanceof Number) && typeof (typeof b[i] === 'number' || b[i] instanceof Number)){
-                    retArr[i] = a[i] - b[i];
-                }else{
-                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
-                }
-                i += 1;
-            }
-            return retArr;
-        }
-        return 0;
-    }
-
-    function mul(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        var arr;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
-            return a * b;
-        }
-
-        var i, len;
-        if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
-            len = a.length;
-            arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
-                arr[i] = a[i] * b;
-            }
-            return arr;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
-            len = b.length;
-            arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
-                arr[i] = a * b[i];
-            }
-            return arr;
-        }
-        return 0;
-    }
-
-    function div(a,b) {
-        var tOfA = typeof a;
-        var tOfB = typeof b;
-        var arr;
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )) {
-            return a / b;
-        }
-        var i, len;
-        if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number  )){
-            len = a.length;
-            arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
-                arr[i] = a[i] / b;
-            }
-            return arr;
-        }
-        if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
-            len = b.length;
-            arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
-                arr[i] = a / b[i];
-            }
-            return arr;
-        }
-        return 0;
-    }
-    function mod(a,b) {
-        if(typeof a === 'string') {
-            a = parseInt(a);
-        }
-        if(typeof b === 'string') {
-            b = parseInt(b);
-        }
-        return a % b;
-    }
-
-    function clamp(num, min, max) {
-        if(min > max){
-            var mm = max;
-            max = min;
-            min = mm;
-        }
-        return Math.min(Math.max(num, min), max);
-    }
-
-    function radiansToDegrees(val) {
-        return val/degToRads;
-    }
-    var radians_to_degrees = radiansToDegrees;
-
-    function degreesToRadians(val) {
-        return val*degToRads;
-    }
-    var degrees_to_radians = radiansToDegrees;
-
-    var helperLengthArray = [0,0,0,0,0,0];
-
-    function length(arr1, arr2) {
-        if (typeof arr1 === 'number' || arr1 instanceof Number) {
-            arr2 = arr2 || 0;
-            return Math.abs(arr1 - arr2);
-        }
-        if(!arr2) {
-            arr2 = helperLengthArray;
-        }
-        var i, len = Math.min(arr1.length, arr2.length);
-        var addedLength = 0;
-        for (i = 0; i < len; i += 1) {
-            addedLength += Math.pow(arr2[i] - arr1[i], 2);
-        }
-        return Math.sqrt(addedLength);
-    }
-
-    function normalize(vec) {
-        return div(vec, length(vec));
-    }
-
-    function rgbToHsl(val) {
-        var r = val[0]; var g = val[1]; var b = val[2];
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var h, s, l = (max + min) / 2;
-
-        if(max == min){
-            h = s = 0; // achromatic
-        }else{
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch(max){
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6;
-        }
-
-        return [h, s, l,val[3]];
-    }
-    function hslToRgb(val){
-        var h = val[0];
-        var s = val[1];
-        var l = val[2];
-
-        var r, g, b;
-
-        if(s == 0){
-            r = g = b = l; // achromatic
-        }else{
-            function hue2rgb(p, q, t){
-                if(t < 0) t += 1;
-                if(t > 1) t -= 1;
-                if(t < 1/6) return p + (q - p) * 6 * t;
-                if(t < 1/2) return q;
-                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                return p;
-            }
-
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
-        }
-
-        return [r, g , b, val[3]];
-    }
-
-    function linear(t, tMin, tMax, value1, value2){
-        if(value1 === undefined || value2 === undefined){
-            return linear(t,0,1,tMin,tMax);
-        }
-        if(t <= tMin) {
-            return value1;
-        }else if(t >= tMax){
-            return value2;
-        }
-        var perc = tMax === tMin ? 0 : (t-tMin)/(tMax-tMin);
-        if(!value1.length){
-            return value1 + (value2-value1)*perc;
-        }
-        var i, len = value1.length;
-        var arr = createTypedArray('float32', len);
-        for(i=0;i<len;i+=1){
-            arr[i] = value1[i] + (value2[i]-value1[i])*perc;
-        }
-        return arr;
-    }
-    function random(min,max){
-        if(max === undefined){
-            if(min === undefined){
-                min = 0;
-                max = 1;
-            } else {
-                max = min;
-                min = undefined;
-            }
-        }
-        if(max.length){
-            var i, len = max.length;
-            if(!min){
-                min = createTypedArray('float32', len);
-            }
-            var arr = createTypedArray('float32', len);
-            var rnd = BMMath.random();
-            for(i=0;i<len;i+=1){
-                arr[i] = min[i] + rnd*(max[i]-min[i])
-            }
-            return arr;
-        }
-        if(min === undefined){
-            min = 0;
-        }
-        var rndm = BMMath.random();
-        return min + rndm*(max-min);
-    }
-
-    function createPath(points, inTangents, outTangents, closed) {
-        inTangents = inTangents && inTangents.length ? inTangents : points;
-        outTangents = outTangents && outTangents.length ? outTangents : points;
-        var path = shape_pool.newElement();
-        var len = points.length;
-        path.setPathData(closed, len);
-        for(i = 0; i < len; i += 1) {
-            path._aw(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true)
-        }
-        return path
-    }
-
-    function initiateExpression(elem,data,property){
-        var val = data.x;
-        var needsVelocity = /velocity(?![\w\d])/.test(val);
-        var _needsRandom = val.indexOf('random') !== -1;
-        var elemType = elem.data.ty;
-        var transform,content,effect;
-        var thisComp = elem.comp;
-        var thisProperty = property;
-        elem.comp.frameDuration = 1/elem.comp._x.frameRate;
-        var inPoint = elem.data.ip/elem.comp._x.frameRate;
-        var outPoint = elem.data.op/elem.comp._x.frameRate;
-        var width = elem.data.sw ? elem.data.sw : 0;
-        var height = elem.data.sh ? elem.data.sh : 0;
-        var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
-
-        var scoped_bm_rt;
-        var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
-        var numKeys = property.kf ? data.k.length : 0;
-
-        var wiggle = function wiggle(freq,amp){
-            var i,j, len = this.pv.length ? this.pv.length : 1;
-            var addedAmps = createTypedArray('float32', len);
-            freq = 5;
-            var iterations = Math.floor(time*freq);
-            i = 0;
-            j = 0;
-            while(i<iterations){
-                //var rnd = BMMath.random();
-                for(j=0;j<len;j+=1){
-                    addedAmps[j] += -amp + amp*2*BMMath.random();
-                    //addedAmps[j] += -amp + amp*2*rnd;
-                }
-                i += 1;
-            }
-            //var rnd2 = BMMath.random();
-            var periods = time*freq;
-            var perc = periods - Math.floor(periods);
-            var arr = createTypedArray('float32', len);
-            if(len>1){
-                for(j=0;j<len;j+=1){
-                    arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
-                }
-                return arr;
-            } else {
-                return this.pv + addedAmps[0] + (-amp + amp*2*BMMath.random())*perc;
-            }
-        }.bind(this);
-
-        if(thisProperty.loopIn) {
-            loopIn = thisProperty.loopIn.bind(thisProperty);
-            loop_in = loopIn;
-        }
-
-        if(thisProperty.loopOut) {
-            loopOut = thisProperty.loopOut.bind(thisProperty);
-            loop_out = loopOut;
-        }
-
-        var loopInDuration = function loopInDuration(type,duration){
-            return loopIn(type,duration,true);
-        }.bind(this);
-
-        var loopOutDuration = function loopOutDuration(type,duration){
-            return loopOut(type,duration,true);
-        }.bind(this);
-
-        if(this.getValueAtTime) {
-            valueAtTime = this.getValueAtTime.bind(this);
-        }
-
-        if(this.getVelocityAtTime) {
-            velocityAtTime = this.getVelocityAtTime.bind(this);
-        }
-
-        var comp = elem.comp._x.projectInterface.bind(elem.comp._x.projectInterface);
-
-        function lookAt(elem1,elem2){
-            var fVec = [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
-            var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
-            var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
-            return [yaw,pitch,0];
-        };
-
-        function easeOut(t, tMin, tMax, val1, val2){
-            if(val1 === undefined){
-                val1 = tMin;
-                val2 = tMax;
-            } else {
-                t = (t - tMin) / (tMax - tMin);
-            }
-            return -(val2-val1) * t*(t-2) + val1;
-        };
-
-        function easeIn(t, tMin, tMax, val1, val2){
-            if(val1 === undefined){
-                val1 = tMin;
-                val2 = tMax;
-            } else {
-                t = (t - tMin) / (tMax - tMin);
-            }
-            return (val2-val1)*t*t + val1;
-        };
-
-        function nearestKey(time){
-            var i, len = data.k.length,index,keyTime;
-            if(!data.k.length || typeof(data.k[0]) === 'number'){
-                index = 0;
-                keyTime = 0;
-            } else {
-                index = -1;
-                time *= elem.comp._x.frameRate;
-                if (time < data.k[0].t) {
-                    index = 1;
-                    keyTime = data.k[0].t;
-                } else {
-                    for(i=0;i<len-1;i+=1){
-                        if(time === data.k[i].t){
-                            index = i + 1;
-                            keyTime = data.k[i].t;
-                            break;
-                        }else if(time>data.k[i].t && time<data.k[i+1].t){
-                            if(time-data.k[i].t > data.k[i+1].t - time){
-                                index = i + 2;
-                                keyTime = data.k[i+1].t;
-                            } else {
-                                index = i + 1;
-                                keyTime = data.k[i].t;
-                            }
-                            break;
-                        }
-                    }
-                    if(index === -1){
-                        index = i + 1;
-                        keyTime = data.k[i].t;
-                    }
-                }
-                
-            }
-            var ob = {};
-            ob.index = index;
-            ob.time = keyTime/elem.comp._x.frameRate;
-            return ob;
-        };
-
-        function key(ind){
-            var ob, i, len;
-            if(!data.k.length || typeof(data.k[0]) === 'number'){
-                throw new Error('The property has no keyframe at index ' + ind);
-            }
-            ind -= 1;
-            ob = {
-                time: data.k[ind].t/elem.comp._x.frameRate
-            };
-            var arr;
-            if(ind === data.k.length - 1 && !data.k[ind].h){
-                arr = data.k[ind-1].e;
-            }else{
-                arr = data.k[ind].s;
-            }
-            len = arr.length;
-            for(i=0;i<len;i+=1){
-                ob[i] = arr[i];
-            }
-            return ob;
-        };
-
-        function framesToTime(frames, fps) { 
-            if (!fps) {
-                fps = elem.comp._x.frameRate;
-            }
-            return frames / fps;
-        };
-
-        function timeToFrames(t, fps) {
-            if (!t && t !== 0) {
-                t = time;
-            }
-            if (!fps) {
-                fps = elem.comp._x.frameRate;
-            }
-            return t * fps;
-        };
-
-        function seedRandom(seed){
-            BMMath.seedrandom(randSeed + seed);
-        };
-
-        function sourceRectAtTime() {
-            return elem.sourceRectAtTime();
-        }
-
-        var time, velocity, value, textIndex, textTotal, selectorValue;
-        var index = elem.data.ind;
-        var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
-        var parent;
-        var randSeed = Math.floor(Math.random()*1000000);
-        function executeExpression() {
-            if (_needsRandom) {
-                seedRandom(randSeed);
-            }
-            if (this.frameExpressionId === elem._x.frameId && this.propType !== 'textSelector') {
-                return;
-            }
-            if(this.lock){
-                this.v = duplicatePropertyValue(this.pv,this.mult);
-                return true;
-            }
-            if(this.propType === 'textSelector'){
-                textIndex = this.textIndex;
-                textTotal = this.textTotal;
-                selectorValue = this.selectorValue;
-            }
-            if (!thisLayer) {
-                thisLayer = elem.layerInterface;
-                thisComp = elem.comp.compInterface;
-                toWorld = thisLayer.toWorld.bind(thisLayer);
-                fromWorld = thisLayer.fromWorld.bind(thisLayer);
-                fromComp = thisLayer.fromComp.bind(thisLayer);
-                mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer) : null;
-                fromCompToSurface = fromComp;
-            }
-            if (!transform) {
-                transform = elem.layerInterface("ADBE Transform Group");
-                anchorPoint = transform.anchorPoint;
-            }
-            
-            if (elemType === 4 && !content) {
-                content = thisLayer("ADBE Root Vectors Group");
-            }
-            if (!effect) {
-                effect = thisLayer(4);
-            }
-            hasParent = !!(elem.hierarchy && elem.hierarchy.length);
-            if (hasParent && !parent) {
-                parent = elem.hierarchy[0].layerInterface;
-            }
-            this.lock = true;
-            if (this.getPreValue) {
-                this.getPreValue();
-            }
-            value = this.pv;
-            time = this.comp.renderedFrame/this.comp._x.frameRate;
-            if (needsVelocity) {
-                velocity = velocityAtTime(time);
-            }
-            expression_function();
-            if (scoped_bm_rt.propType === "shape") {
-                this.v = shape_pool.clone(scoped_bm_rt.v);
-            } else {
-                this.v = scoped_bm_rt;
-            }
-
-            this.frameExpressionId = elem._x.frameId;
-            var i,len;
-            if(this.mult){
-                if(this.propType === 'unidimensional'){
-                    this.v *= this.mult;
-                }else if(this.v.length === 1){
-                    this.v = this.v[0] * this.mult;
-                }else{
-                    len = this.v.length;
-                    if(value === this.v){
-                        this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
-                    }
-                    for(i = 0; i < len; i += 1){
-                        this.v[i] *= this.mult;
-                    }
-                }
-            }
-            if (this.v.length === 1) {
-                this.v = this.v[0];
-            }
-            if (this.propType === 'unidimensional') {
-                if(this.lastValue !== this.v){
-                    this.lastValue = this.v;
-                    this.mdf = true;
-                }
-            } else if (this.propType === 'shape') {
-                if (!shapesEqual(this.v, this._ak.shapes[0])) {
-                    this.mdf = true;
-                    this._ak.releaseShapes();
-                    this._ak.addShape(shape_pool.clone(this.v));
-                }
-            } else {
-                len = this.v.length;
-                for (i = 0; i < len; i += 1) {
-                    if (this.v[i] !== this.lastValue[i]) {
-                        this.lastValue[i] = this.v[i];
-                        this.mdf = true;
-                    }
-                }
-            }
-            this.lock = false;
-        }
-        return executeExpression;
-    };
-
-    ob.initiateExpression = initiateExpression;
-    return ob;
-}());
-(function addPropertyDecorator() {
-
-    function getStaticValueAtTime() {
-        return this.pv;
-    }
-
-    function loopOut(type,duration,durationFlag){
-        if(!this.k || !this.keyframes){
-            return this.pv;
-        }
-        type = type ? type.toLowerCase() : '';
-        var currentFrame = this.comp.renderedFrame;
-        var keyframes = this.keyframes;
-        var lastKeyFrame = keyframes[keyframes.length - 1].t;
-        if(currentFrame<=lastKeyFrame){
-            return this.pv;
-        }else{
-            var cycleDuration, firstKeyFrame;
-            if(!durationFlag){
-                if(!duration || duration > keyframes.length - 1){
-                    duration = keyframes.length - 1;
-                }
-                firstKeyFrame = keyframes[keyframes.length - 1 - duration].t;
-                cycleDuration = lastKeyFrame - firstKeyFrame;
-            } else {
-                if(!duration){
-                    cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
-                } else {
-                    cycleDuration = Math.abs(lastKeyFrame - elem.comp._x.frameRate*duration);
-                }
-                firstKeyFrame = lastKeyFrame - cycleDuration;
-            }
-            var i, len, ret;
-            if(type === 'pingpong') {
-                var iterations = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
-                if(iterations % 2 !== 0){
-                    return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame)) / this.comp._x.frameRate, 0);
-                }
-            } else if(type === 'offset'){
-                var initV = this.getValueAtTime(firstKeyFrame / this.comp._x.frameRate, 0);
-                var endV = this.getValueAtTime(lastKeyFrame / this.comp._x.frameRate, 0);
-                var current = this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp._x.frameRate, 0);
-                var repeats = Math.floor((currentFrame - firstKeyFrame)/cycleDuration);
-                if(this.pv.length){
-                    ret = new Array(initV.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = (endV[i]-initV[i])*repeats + current[i];
-                    }
-                    return ret;
-                }
-                return (endV-initV)*repeats + current;
-            } else if(type === 'continue'){
-                var lastValue = this.getValueAtTime(lastKeyFrame / this.comp._x.frameRate, 0);
-                var nextLastValue = this.getValueAtTime((lastKeyFrame - 0.001) / this.comp._x.frameRate, 0);
-                if(this.pv.length){
-                    ret = new Array(lastValue.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = lastValue[i] + (lastValue[i]-nextLastValue[i])*((currentFrame - lastKeyFrame)/ this.comp._x.frameRate)/0.0005;
-                    }
-                    return ret;
-                }
-                return lastValue + (lastValue-nextLastValue)*(((currentFrame - lastKeyFrame))/0.001);
-            }
-            return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame)) / this.comp._x.frameRate, 0);
-        }
-    }
-
-    function loopIn(type,duration, durationFlag) {
-        if(!this.k){
-            return this.pv;
-        }
-        type = type ? type.toLowerCase() : '';
-        var currentFrame = this.comp.renderedFrame;
-        var keyframes = this.keyframes;
-        var firstKeyFrame = keyframes[0].t;
-        if(currentFrame>=firstKeyFrame){
-            return this.pv;
-        }else{
-            var cycleDuration, lastKeyFrame;
-            if(!durationFlag){
-                if(!duration || duration > keyframes.length - 1){
-                    duration = keyframes.length - 1;
-                }
-                lastKeyFrame = keyframes[duration].t;
-                cycleDuration = lastKeyFrame - firstKeyFrame;
-            } else {
-                if(!duration){
-                    cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
-                } else {
-                    cycleDuration = Math.abs(elem.comp._x.frameRate*duration);
-                }
-                lastKeyFrame = firstKeyFrame + cycleDuration;
-            }
-            var i, len, ret;
-            if(type === 'pingpong') {
-                var iterations = Math.floor((firstKeyFrame - currentFrame)/cycleDuration);
-                if(iterations % 2 === 0){
-                    return this.getValueAtTime((((firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame)) / this.comp._x.frameRate, 0);
-                }
-            } else if(type === 'offset'){
-                var initV = this.getValueAtTime(firstKeyFrame / this.comp._x.frameRate, 0);
-                var endV = this.getValueAtTime(lastKeyFrame / this.comp._x.frameRate, 0);
-                var current = this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame)%cycleDuration +  firstKeyFrame) / this.comp._x.frameRate, 0);
-                var repeats = Math.floor((firstKeyFrame - currentFrame)/cycleDuration)+1;
-                if(this.pv.length){
-                    ret = new Array(initV.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = current[i]-(endV[i]-initV[i])*repeats;
-                    }
-                    return ret;
-                }
-                return current-(endV-initV)*repeats;
-            } else if(type === 'continue'){
-                var firstValue = this.getValueAtTime(firstKeyFrame / this.comp._x.frameRate, 0);
-                var nextFirstValue = this.getValueAtTime((firstKeyFrame + 0.001) / this.comp._x.frameRate, 0);
-                if(this.pv.length){
-                    ret = new Array(firstValue.length);
-                    len = ret.length;
-                    for(i=0;i<len;i+=1){
-                        ret[i] = firstValue[i] + (firstValue[i]-nextFirstValue[i])*(firstKeyFrame - currentFrame)/0.001;
-                    }
-                    return ret;
-                }
-                return firstValue + (firstValue-nextFirstValue)*(firstKeyFrame - currentFrame)/0.001;
-            }
-            return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame)) / this.comp._x.frameRate, 0);
-        }
-    }
-
-    function getValueAtTime(frameNum) {
-        //TODO this shouldn't be necessary anymore
-        if(!this._cachingAtTime) {
-            this._cachingAtTime = {lastValue:initialDefaultFrame,lastIndex:0};
-        }
-        if(frameNum !== this._cachingAtTime.lastFrame) {
-            frameNum *= this.elem._x.frameRate;
-            frameNum -= this.offsetTime;
-            this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
-            this._cachingAtTime.value = this.interpolateValue(frameNum, this.pv, this._cachingAtTime);
-            this._cachingAtTime.lastFrame = frameNum;
-        }
-        return this._cachingAtTime.value;
-
-    }
-
-    function getVelocityAtTime(frameNum) {
-        if(this.vel !== undefined){
-            return this.vel;
-        }
-        var delta = -0.01;
-        //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var velocity;
-        if(v1.length){
-            velocity = createTypedArray('float32', v1.length);
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                //removing frameRate
-                //if needed, don't add it here
-                //velocity[i] = this.elem._x.frameRate*((v2[i] - v1[i])/delta);
-                velocity[i] = (v2[i] - v1[i])/delta;
-            }
-        } else {
-            velocity = (v2 - v1)/delta;
-        }
-        return velocity;
-    };
-
-    function _ce(propertyGroup){
-        this.propertyGroup = propertyGroup;
-    }
-
-    function searchExpressions(elem,data,prop){
-        if(data.x){
-            prop.k = true;
-            prop.x = true;
-            if(prop.getValue) {
-                prop.getPreValue = prop.getValue;
-            }
-
-            prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.getValue = prop.initiateExpression(elem,data,prop);
-        }
-    }
-
-    function getTransformValueAtTime(time) {
-        //console.log('time:', time)
-    }
-
-    function getTransformStaticValueAtTime(time) {
-
-    }
-
-    var TextExpressionSelectorProp = (function(){
-
-        function getValueProxy(index,total){
-            this.textIndex = index+1;
-            this.textTotal = total;
-            this.getValue();
-            return this.v;
-        }
-
-        return function TextExpressionSelectorProp(elem,data){
-            this.pv = 1;
-            this.comp = elem.comp;
-            this.elem = elem;
-            this.mult = .01;
-            this.propType = 'textSelector';
-            this.textTotal = data.totalChars;
-            this.selectorValue = 100;
-            this.lastValue = [1,1,1];
-            searchExpressions.bind(this)(elem,data,this);
-            this.getMult = getValueProxy;
-            this.getVelocityAtTime = getVelocityAtTime;
-            if(this.kf){
-                this.getValueAtTime = getValueAtTime.bind(this);
-            } else {
-                this.getValueAtTime = getStaticValueAtTime.bind(this);
-            }
-            this._ce = _ce;
-        }
-    }());
-
-    var _bj = _ag._bj;
-    _ag._bj = function(elem, data, arr) {
-        var prop = _bj(elem, data, arr);
-        if(prop.dynamicProperties.length) {
-            prop.getValueAtTime = getTransformValueAtTime.bind(prop);
-        } else {
-            prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
-        }
-        prop._ce = _ce;
-        return prop;
-    }
-
-    var propertyGetProp = _ai._bo;
-    _ai._bo = function(elem,data,type, mult, arr){
-        var prop = propertyGetProp(elem,data,type, mult, arr);
-        //prop.getVelocityAtTime = getVelocityAtTime;
-        //prop.loopOut = loopOut;
-        //prop.loopIn = loopIn;
-        if(prop.kf){
-            prop.getValueAtTime = getValueAtTime.bind(prop);
-        } else {
-            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
-        }
-        prop._ce = _ce;
-        prop.loopOut = loopOut;
-        prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime;
-        prop.numKeys = data.a === 1 ? data.k.length : 0;
-        var isAdded = prop.k;
-        prop.propertyIndex = data.ix;
-        prop._cachingAtTime={lastFrame:initialDefaultFrame,lastIndex:0,value:type === 0 ? 0 : createTypedArray('float32', 3)}
-        searchExpressions(elem,data,prop);
-        if(!isAdded && prop.x){
-            arr.push(prop);
-        }
-
-        return prop;
-    }
-
-    function getShapeValueAtTime(frameNum) {
-        //TODO test this
-        if (!this._cachingAtTime) {
-            this._cachingAtTime = {
-                shapeValue: shape_pool.clone(this.pv),
-                lastIndex: 0,
-                lastTime: initialDefaultFrame
-            }
-        }
-        if(frameNum !== this._cachingAtTime.lastTime) {
-            this._cachingAtTime.lastTime = frameNum;
-            frameNum *= this.elem._x.frameRate;
-            this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, false, this._cachingAtTime);
-        }
-        return this._cachingAtTime.shapeValue;
-    }
-
-    var ShapePropertyConstructorFunction = _ah.getConstructorFunction();
-    var KeyframedShapePropertyConstructorFunction = _ah.getKeyframedConstructorFunction();
-
-    function ShapeExpressions(){}
-    ShapeExpressions.prototype = {
-        vertices: function(prop, time){
-            var shapePath = this.v;
-            if(time !== undefined) {
-                shapePath = this.getValueAtTime(time, 0);
-            }
-            var i, len = shapePath._length;
-            var vertices = shapePath[prop];
-            var points = shapePath.v;
-            var arr = Array.apply(null,{length:len})
-            for(i = 0; i < len; i += 1) {
-                if(prop === 'i' || prop === 'o') {
-                    arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]
-                } else {
-                    arr[i] = [vertices[i][0], vertices[i][1]]
-                }
-                
-            }
-            return arr;
-        },
-        points: function(time){
-            return this.vertices('v', time);
-        },
-        inTangents: function(time){
-            return this.vertices('i', time);
-        },
-        outTangents: function(time){
-            return this.vertices('o', time);
-        },
-        isClosed: function(){
-            return this.v.c;
-        },
-        pointOnPath: function(perc, time){
-            var shapePath = this.v;
-            if(time !== undefined) {
-                shapePath = this.getValueAtTime(time, 0);
-            }
-            if(!this._segmentsLength) {
-                this._segmentsLength = bez.getSegmentsLength(shapePath);
-            }
-
-            var segmentsLength = this._segmentsLength;
-            var lengths = segmentsLength.lengths;
-            var lengthPos = segmentsLength.totalLength * perc;
-            var i = 0, len = lengths.length;
-            var j = 0, jLen;
-            var accumulatedLength = 0;
-            while(i < len) {
-                if(accumulatedLength + lengths[i].addedLength > lengthPos) {
-                    var initIndex = i;
-                    var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
-                    var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;
-                    var pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i])
-                    break;
-                } else {
-                    accumulatedLength += lengths[i].addedLength;
-                }
-                i += 1;
-            }
-            if(!pt){
-                pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]]
-            }
-            return pt;
-        },
-        vectorOnPath: function(perc, time, vectorType){
-            //perc doesn't use triple equality because it can be a Number object as well as a primitive.
-            perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
-            var pt1 = this.pointOnPath(perc, time);
-            var pt2 = this.pointOnPath(perc + 0.001, time);
-            var xLength = pt2[0] - pt1[0];
-            var yLength = pt2[1] - pt1[1];
-            var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
-            var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
-            return unitVector;
-        },
-        tangentOnPath: function(perc, time){
-            return this.vectorOnPath(perc, time, 'tangent');
-        },
-        normalOnPath: function(perc, time){
-            return this.vectorOnPath(perc, time, 'normal');
-        },
-        _ce: _ce,
-        getValueAtTime: getStaticValueAtTime
-    }
-    extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
-    extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);
-    KeyframedShapePropertyConstructorFunction.prototype.getValueAtTime = getShapeValueAtTime;
-    KeyframedShapePropertyConstructorFunction.prototype.initiateExpression = ExpressionManager.initiateExpression;
-
-    var propertyGetShapeProp = _ah._bp;
-    _ah._bp = function(elem,data,type, arr, trims){
-        var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        var isAdded = prop.k;
-        prop.propertyIndex = data.ix;
-        prop.lock = false;
-        if(type === 3){
-            searchExpressions(elem,data.pt,prop);
-        } else if(type === 4){
-            searchExpressions(elem,data.ks,prop);
-        }
-        if(!isAdded && prop.x){
-            arr.push(prop);
-        }
-        return prop;
-    }
-
-    var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
-        if(data.t === 1){
-            return new TextExpressionSelectorProp(elem, data,arr);
-        } else {
-            return propertyGetTextProp(elem,data,arr);
-        }
-    }
-}());
-(function addDecorator() {
-
-    function searchExpressions(){
-        if(this.data.d.x){
-            this.comp = this.elem.comp;
-            if(this.getValue) {
-                this.getPreValue = this.getValue;
-            }
-            this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem,this.data.d,this);
-            this.getValue = this.getExpressionValue;
-            return true;
-        }
-        return false;
-    }
-
-    _ar.prototype.searchProperty = function(){
-        this.kf = this.searchExpressions() || this.data.d.k.length > 1;
-        return this.kf;
-    }
-
-    _ar.prototype.getExpressionValue = function(num){
-        this.calculateExpression();
-        if(this.mdf) {
-            this.currentData.t = this.v.toString();
-            this.completeTextData(this.currentData);
-        }
-    }
-
-    _ar.prototype.searchExpressions = searchExpressions;
-    
-}());
-var ShapeExpressionInterface = (function(){
-
-    function iterateElements(shapes,view, propertyGroup){
-        var arr = [];
-        var i, len = shapes ? shapes.length : 0;
-        for(i=0;i<len;i+=1){
-            if(shapes[i].ty == 'gr'){
-                arr.push(groupInterfaceFactory(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'fl'){
-                arr.push(fillInterfaceFactory(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'st'){
-                arr.push(strokeInterfaceFactory(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'tm'){
-                arr.push(trimInterfaceFactory(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'tr'){
-                //arr.push(transformInterfaceFactory(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'el'){
-                arr.push(ellipseInterfaceFactory(shapes[i],view[i],propertyGroup));
-            }else if(shapes[i].ty == 'sr'){
-                arr.push(starInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'sh'){
-                arr.push(pathInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'rc'){
-                arr.push(rectInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'rd'){
-                arr.push(roundedInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else if(shapes[i].ty == 'rp'){
-                arr.push(repeaterInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else{
-                //console.log(shapes[i].ty);
-            }
-        }
-        return arr;
-    }
-
-    function contentsInterfaceFactory(shape,view, propertyGroup){
-       var interfaces;
-       var interfaceFunction = function _interfaceFunction(value){
-           var i = 0, len = interfaces.length;
-            while(i<len){
-                if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value){
-                   return interfaces[i];
-                }
-                i+=1;
-            }
-            if(typeof value === 'number'){
-               return interfaces[value-1];
-            }
-       };
-       interfaceFunction.propertyGroup = function(val){
-           if(val === 1){
-               return interfaceFunction;
-           } else{
-               return propertyGroup(val-1);
-           }
-       };
-       interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
-       interfaceFunction.numProperties = interfaces.length;
-       interfaceFunction.propertyIndex = shape.cix;
-
-       return interfaceFunction;
-   }
-
-    function groupInterfaceFactory(shape,view, propertyGroup){
-        var interfaceFunction = function _interfaceFunction(value){
-            switch(value){
-                case 'ADBE Vectors Group':
-                case 'Contents':
-                case 2:
-                    return interfaceFunction.content;
-                case 'ADBE Vector Transform Group':
-                case 3:
-                default:
-                    return interfaceFunction.transform;
-            }
-        }
-        interfaceFunction.propertyGroup = function(val){
-            if(val === 1){
-                return interfaceFunction;
-            } else{
-                return propertyGroup(val-1);
-            }
-        };
-        var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
-        var transformInterface = transformInterfaceFactory(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
-        interfaceFunction.content = content;
-        interfaceFunction.transform = transformInterface;
-        Object.defineProperty(interfaceFunction, '_name', {
-            get: function(){
-                return shape.nm;
-            }
-        });
-        //interfaceFunction.content = interfaceFunction;
-        interfaceFunction.numProperties = shape.np;
-        interfaceFunction.propertyIndex = shape.ix;
-        interfaceFunction.nm = shape.nm;
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function fillInterfaceFactory(shape,view,propertyGroup){
-        function interfaceFunction(val){
-            if(val === 'Color' || val === 'color'){
-                return interfaceFunction.color;
-            } else if(val === 'Opacity' || val === 'opacity'){
-                return interfaceFunction.opacity;
-            }
-        }
-        Object.defineProperties(interfaceFunction, {
-            'color': {
-                get: function() {
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
-            },
-            'opacity': {
-                get: function() {
-                    return ExpressionValue(view.o, 100);
-                }
-            },
-            '_name': { value: shape.nm },
-            'mn': { value: shape.mn }
-        })
-
-        view.c._ce(propertyGroup);
-        view.o._ce(propertyGroup);
-        return interfaceFunction;
-    }
-
-    function strokeInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val === 1){
-                return ob;
-            } else{
-                return propertyGroup(val-1);
-            }
-        };
-        function _dashPropertyGroup(val){
-            if(val === 1){
-                return dashOb;
-            } else{
-                return _propertyGroup(val-1);
-            }
-        };
-        function addPropertyToDashOb(i) {
-            Object.defineProperty(dashOb, shape.d[i].nm, {
-                get: function(){
-                    return ExpressionValue(view.d.dataProps[i].p)
-                }
-            });
-        }
-        var i, len = shape.d ? shape.d.length : 0;
-        var dashOb = {}
-        for (i = 0; i < len; i += 1) {
-            addPropertyToDashOb(i);
-            view.d.dataProps[i].p._ce(_dashPropertyGroup);
-        }
-
-        function interfaceFunction(val){
-            if(val === 'Color' || val === 'color'){
-                return interfaceFunction.color;
-            } else if(val === 'Opacity' || val === 'opacity'){
-                return interfaceFunction.opacity;
-            } else if(val === 'Stroke Width' || val === 'stroke width'){
-                return interfaceFunction.strokeWidth;
-            }
-        }
-        Object.defineProperties(interfaceFunction, {
-            'color': {
-                get: function() {
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
-            },
-            'opacity': {
-                get: function() {
-                    return ExpressionValue(view.o, 100);
-                }
-            },
-            'strokeWidth': {
-                get: function() {
-                    return ExpressionValue(view.w);
-                }
-            },
-            'dash': {
-                get: function() {
-                    return dashOb;
-                }
-            },
-            '_name': { value: shape.nm },
-            'mn': { value: shape.mn }
-        });
-
-        view.c._ce(_propertyGroup);
-        view.o._ce(_propertyGroup);
-        view.w._ce(_propertyGroup);
-        return interfaceFunction;
-    }
-
-    function trimInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-
-        view.s._ce(_propertyGroup);
-        view.e._ce(_propertyGroup);
-        view.o._ce(_propertyGroup);
-
-        function interfaceFunction(val){
-            if(val === shape.e.ix || val === 'End' || val === 'end'){
-                return interfaceFunction.end;
-            }
-            if(val === shape.s.ix){
-                return interfaceFunction.start;
-            }
-            if(val === shape.o.ix){
-                return interfaceFunction.offset;
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-
-        Object.defineProperties(interfaceFunction, {
-            'start': {
-                get: function() {
-                    return ExpressionValue(view.s, 1 / view.s.mult);
-                }
-            },
-            'end': {
-                get: function() {
-                    return ExpressionValue(view.e, 1 / view.e.mult);
-                }
-            },
-            'offset': {
-                get: function() {
-                    return ExpressionValue(view.o);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function transformInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        view.transform.mProps.o._ce(_propertyGroup);
-        view.transform.mProps.p._ce(_propertyGroup);
-        view.transform.mProps.a._ce(_propertyGroup);
-        view.transform.mProps.s._ce(_propertyGroup);
-        view.transform.mProps.r._ce(_propertyGroup);
-        if(view.transform.mProps.sk){
-            view.transform.mProps.sk._ce(_propertyGroup);
-            view.transform.mProps.sa._ce(_propertyGroup);
-        }
-        view.transform.op._ce(_propertyGroup);
-
-        function interfaceFunction(value){
-            if(shape.a.ix === value || value === 'Anchor Point'){
-                return interfaceFunction.anchorPoint;
-            }
-            if(shape.o.ix === value || value === 'Opacity'){
-                return interfaceFunction.opacity;
-            }
-            if(shape.p.ix === value || value === 'Position'){
-                return interfaceFunction.position;
-            }
-            if(shape.r.ix === value || value === 'Rotation' || value === 'ADBE Vector Rotation'){
-                return interfaceFunction.rotation;
-            }
-            if(shape.s.ix === value || value === 'Scale'){
-                return interfaceFunction.scale;
-            }
-            if(shape.sk && shape.sk.ix === value || value === 'Skew'){
-                return interfaceFunction.skew;
-            }
-            if(shape.sa && shape.sa.ix === value || value === 'Skew Axis'){
-                return interfaceFunction.skewAxis;
-            }
-
-        }
-        Object.defineProperties(interfaceFunction, {
-            'opacity': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.o, 1/view.transform.mProps.o.mult);
-                }
-            },
-            'position': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.p);
-                }
-            },
-            'anchorPoint': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.a);
-                }
-            },
-            'scale': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.s, 1 / view.transform.mProps.s.mult);
-                }
-            },
-            'rotation': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.r, 1 / view.transform.mProps.r.mult);
-                }
-            },
-            'skew': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sk);
-                }
-            },
-            'skewAxis': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sa);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.ty = 'tr';
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function ellipseInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        prop.s._ce(_propertyGroup);
-        prop.p._ce(_propertyGroup);
-        function interfaceFunction(value){
-            if(shape.p.ix === value){
-                return interfaceFunction.position;
-            }
-            if(shape.s.ix === value){
-                return interfaceFunction.size;
-            }
-        }
-        Object.defineProperties(interfaceFunction, {
-            'size': {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
-            },
-            'position': {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function starInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.or._ce(_propertyGroup);
-        prop.os._ce(_propertyGroup);
-        prop.pt._ce(_propertyGroup);
-        prop.p._ce(_propertyGroup);
-        prop.r._ce(_propertyGroup);
-        if(shape.ir){
-            prop.ir._ce(_propertyGroup);
-            prop.is._ce(_propertyGroup);
-        }
-
-        function interfaceFunction(value){
-            if(shape.p.ix === value){
-                return interfaceFunction.position;
-            }
-            if(shape.r.ix === value){
-                return interfaceFunction.rotation;
-            }
-            if(shape.pt.ix === value){
-                return interfaceFunction.points;
-            }
-            if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value){
-                return interfaceFunction.outerRadius;
-            }
-            if(shape.os.ix === value){
-                return interfaceFunction.outerRoundness;
-            }
-            if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)){
-                return interfaceFunction.innerRadius;
-            }
-            if(shape.is && shape.is.ix === value){
-                return interfaceFunction.innerRoundness;
-            }
-
-        }
-        Object.defineProperties(interfaceFunction, {
-            'position': {
-                get: function() {
-                    return ExpressionValue(prop.p);
-                }
-            },
-            'rotation': {
-                get: function() {
-                    return ExpressionValue(prop.r, 1 / prop.r.mult);
-                }
-            },
-            'points': {
-                get: function() {
-                    return ExpressionValue(prop.pt);
-                }
-            },
-            'outerRadius': {
-                get: function() {
-                    return ExpressionValue(prop.or);
-                }
-            },
-            'outerRoundness': {
-                get: function(){
-                    return ExpressionValue(prop.os);
-                }
-            },
-            'innerRadius': {
-                get: function(){
-                    if(!prop.ir){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.ir);
-                }
-            },
-            'innerRoundness': {
-                get: function(){
-                    if(!prop.is){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.is, 1 / prop.is.mult);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function rectInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.p._ce(_propertyGroup);
-        prop.s._ce(_propertyGroup);
-        prop.r._ce(_propertyGroup);
-
-        function interfaceFunction(value){
-            if(shape.p.ix === value){
-                return interfaceFunction.position;
-            }
-            if(shape.r.ix === value){
-                return interfaceFunction.roundness;
-            }
-            if(shape.s.ix === value || value === 'Size' || value === 'ADBE Vector Rect Size'){
-                return interfaceFunction.size;
-            }
-
-        }
-        Object.defineProperties(interfaceFunction, {
-            'position': {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
-            },
-            'roundness': {
-                get: function(){
-                    return ExpressionValue(prop.r);
-                }
-            },
-            'size': {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function roundedInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.rd._ce(_propertyGroup);
-
-        function interfaceFunction(value){
-            if(shape.r.ix === value || 'Round Corners 1' === value){
-                return interfaceFunction.radius;
-            }
-
-        }
-        Object.defineProperties(interfaceFunction, {
-            'radius': {
-                get: function() {
-                    return ExpressionValue(prop.rd);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function repeaterInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.c._ce(_propertyGroup);
-        prop.o._ce(_propertyGroup);
-
-        function interfaceFunction(value){
-            if(shape.c.ix === value || 'Copies' === value){
-                return interfaceFunction.copies;
-            } else if(shape.o.ix === value || 'Offset' === value){
-                return interfaceFunction.offset;
-            }
-
-        }
-        Object.defineProperties(interfaceFunction, {
-            'copies': {
-                get: function(){
-                    return ExpressionValue(prop.c);
-                }
-            },
-            'offset': {
-                get: function(){
-                    return ExpressionValue(prop.o);
-                }
-            },
-            '_name': { value: shape.nm }
-        });
-        interfaceFunction.mn = shape.mn;
-        return interfaceFunction;
-    }
-
-    function pathInterfaceFactory(shape,view,propertyGroup){
-        var prop = view.sh;
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        prop._ce(_propertyGroup);
-
-        function interfaceFunction(val){
-            if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
-                return interfaceFunction.path;
-            }
-        }
-        Object.defineProperties(interfaceFunction, {
-            'path': {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                }
-            },
-            'shape': {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                }
-            },
-            '_name': { value: shape.nm },
-            'ix': { value: shape.ix },
-            'mn': { value: shape.mn }
-        });
-        return interfaceFunction;
-    }
-
-    return function(shapes,view,propertyGroup) {
-        var interfaces;
-        function _interfaceFunction(value){
-            if(typeof value === 'number'){
-                return interfaces[value-1];
-            } else {
-                var i = 0, len = interfaces.length;
-                while(i<len){
-                    if(interfaces[i]._name === value){
-                        return interfaces[i];
-                    }
-                    i+=1;
-                }
-            }
-        }
-        _interfaceFunction.propertyGroup = propertyGroup;
-        interfaces = iterateElements(shapes, view, _interfaceFunction);
-        return _interfaceFunction;
-    }
-}())
-
-var TextExpressionInterface = (function(){
-	return function(elem){
-        var _prevValue, _sourceText;
-        function _cd(){
-        }
-        Object.defineProperty(_cd, "sourceText", {
-            get: function(){
-                var stringValue = elem.textProperty.currentData.t;
-                if(elem.textProperty.currentData.t !== _prevValue) {
-                    elem.textProperty.currentData.t = _prevValue;
-                    _sourceText = new String(stringValue);
-                    //If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive
-                    _sourceText.value = stringValue ? stringValue : new String(stringValue);
-                }
-                return _sourceText;
-            }
-        });
-        return _cd;
-    }
-}())
-var LayerExpressionInterface = (function (){
-    function toWorld(arr, time){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
-        } else {
-            transformMat = this._elem.finalTransform.mProp;
-        }
-        transformMat.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
-            var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-            }
-            return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-        }
-        return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
-    }
-    function fromWorld(arr, time){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
-        } else {
-            transformMat = this._elem.finalTransform.mProp;
-        }
-        transformMat.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
-            var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-            }
-            return toWorldMat.inversePoint(arr);
-        }
-        return toWorldMat.inversePoint(arr);
-    }
-    function fromComp(arr){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
-            var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
-            }
-            return toWorldMat.inversePoint(arr);
-        }
-        return toWorldMat.inversePoint(arr);
-    }
-
-
-    return function(elem){
-
-        var transformInterface;
-
-        function _registerMaskInterface(maskManager){
-            _cd.mask = new MaskManagerInterface(maskManager, elem);
-        }
-        function _registerEffectsInterface(effects){
-            _cd.effect = effects;
-        }
-
-        function _cd(name){
-            switch(name){
-                case "ADBE Root Vectors Group":
-                case "Contents":
-                case 2:
-                    return _cd.shapeInterface;
-                case 1:
-                case 6:
-                case "Transform":
-                case "transform":
-                case "ADBE Transform Group":
-                    return transformInterface;
-                case 4:
-                case "ADBE Effect Parade":
-                    return _cd.effect;
-            }
-        }
-        _cd.toWorld = toWorld;
-        _cd.fromWorld = fromWorld;
-        _cd.toComp = toWorld;
-        _cd.fromComp = fromComp;
-        _cd.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
-        _cd._elem = elem;
-        transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
-        var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
-        Object.defineProperties(_cd,{
-            hasParent: {
-                get: function(){
-                    return elem.hierarchy.length;
-                }
-            },
-            parent: {
-                get: function(){
-                    return elem.hierarchy[0].layerInterface;
-                }
-            },
-            rotation: getDescriptor(transformInterface, 'rotation'),
-            scale: getDescriptor(transformInterface, 'scale'),
-            position: getDescriptor(transformInterface, 'position'),
-            opacity: getDescriptor(transformInterface, 'opacity'),
-            anchorPoint: anchorPointDescriptor,
-            anchor_point: anchorPointDescriptor,
-            transform: {
-                get: function () {
-                    return transformInterface;
-                }
-            },
-            active: {
-                get: function(){
-                    return elem.isInRange;
-                }
-            }
-        });
-
-        _cd.startTime = elem.data.st;
-        _cd.index = elem.data.ind;
-        _cd.source = elem.data.refId;
-        _cd.height = elem.data.ty === 0 ? elem.data.h : 100;
-        _cd.width = elem.data.ty === 0 ? elem.data.w : 100;
-
-        _cd.registerMaskInterface = _registerMaskInterface;
-        _cd.registerEffectsInterface = _registerEffectsInterface;
-        return _cd;
-    }
-}());
-
-var CompExpressionInterface = (function (){
-    return function(comp){
-        function _cd(name){
-            var i=0, len = comp.layers.length;
-            while(i<len){
-                if(comp.layers[i].nm === name || comp.layers[i].ind === name){
-                    return comp._br[i].layerInterface;
-                }
-                i += 1;
-            }
-            return {active:false}
-        }
-        Object.defineProperty(_cd, "_name", { value:comp.data.nm });
-        _cd.layer = _cd;
-        _cd.pixelAspect = 1;
-        _cd.height = comp._x.compSize.h;
-        _cd.width = comp._x.compSize.w;
-        _cd.pixelAspect = 1;
-        _cd.frameDuration = 1/comp._x.frameRate;
-        return _cd;
-    }
-}());
-var TransformExpressionInterface = (function (){
-    return function(transform){
-        function _thisFunction(name){
-            switch(name){
-                case "scale":
-                case "Scale":
-                case "ADBE Scale":
-                case 6:
-                    return _thisFunction.scale;
-                case "rotation":
-                case "Rotation":
-                case "ADBE Rotation":
-                case "ADBE Rotate Z":
-                case 10:
-                    return _thisFunction.rotation;
-                case "position":
-                case "Position":
-                case "ADBE Position":
-                case 2:
-                    return _thisFunction.position;
-                case "anchorPoint":
-                case "AnchorPoint":
-                case "Anchor Point":
-                case "ADBE AnchorPoint":
-                case 1:
-                    return _thisFunction.anchorPoint;
-                case "opacity":
-                case "Opacity":
-                case 11:
-                    return _thisFunction.opacity;
-            }
-        }
-
-        Object.defineProperty(_thisFunction, "rotation", {
-            get: function(){
-                if(transform.r) {
-                    return ExpressionValue(transform.r, 1/degToRads);
-                } else {
-                    return ExpressionValue(transform.rz, 1/degToRads);
-                }
-            }
-        });
-        Object.defineProperty(_thisFunction, "scale", {
-            get: function () {
-                return ExpressionValue(transform.s, 100);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "position", {
-            get: function () {
-                if(transform.p) {
-                    return ExpressionValue(transform.p);
-                } else {
-                    return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
-                };
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "xPosition", {
-            get: function () {
-                return ExpressionValue(transform.px);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "yPosition", {
-            get: function () {
-                return ExpressionValue(transform.py);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "zPosition", {
-            get: function () {
-                return ExpressionValue(transform.pz);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "anchorPoint", {
-            get: function () {
-                return ExpressionValue(transform.a);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "opacity", {
-            get: function () {
-                return ExpressionValue(transform.o, 100);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "skew", {
-            get: function () {
-                return ExpressionValue(transform.sk);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "skewAxis", {
-            get: function () {
-                return ExpressionValue(transform.sa);
-            }
-        });
-
-        Object.defineProperty(_thisFunction, "orientation", {
-            get: function () {
-                return ExpressionValue(transform.or);
-            }
-        });
-
-        return _thisFunction;
-    }
-}());
-var ProjectInterface = (function (){
-
-    function registerComposition(comp){
-        this.compositions.push(comp);
-    }
-
-    return function(){
-        function _thisProjectFunction(name){
-            var i = 0, len = this.compositions.length;
-            while(i<len){
-                if(this.compositions[i].data && this.compositions[i].data.nm === name){
-                    if(this.compositions[i]._az) {
-                        this.compositions[i]._az(this.compositions[i].data.xt ? this.currentFrame : this.compositions[i].renderedFrame);
-                    }
-                    return this.compositions[i].compInterface;
-                }
-                i+=1;
-            }
-        }
-
-        _thisProjectFunction.compositions = [];
-        _thisProjectFunction.currentFrame = 0;
-
-        _thisProjectFunction.registerComposition = registerComposition;
-
-
-
-        return _thisProjectFunction;
-    }
-}());
-var EffectsExpressionInterface = (function (){
-    var ob = {
-        createEffectsInterface: createEffectsInterface
-    };
-
-    function createEffectsInterface(elem, propertyGroup){
-        if(elem.effects){
-
-            var effectElements = [];
-            var effectsData = elem.data.ef;
-            var i, len = elem.effects.effectElements.length;
-            for(i=0;i<len;i+=1){
-                effectElements.push(createGroupInterface(effectsData[i],elem.effects.effectElements[i],propertyGroup,elem));
-            }
-
-            return function(name){
-                var effects = elem.data.ef, i = 0, len = effects.length;
-                while(i<len) {
-                    if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
-                        return effectElements[i];
-                    }
-                    i += 1;
-                }
-            }
-        }
-    }
-
-    function createGroupInterface(data,_br, propertyGroup, elem){
-        var effectElements = [];
-        var i, len = data.ef.length;
-        for(i=0;i<len;i+=1){
-            if(data.ef[i].ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],_br.effectElements[i],_br.effectElements[i].propertyGroup, elem));
-            } else {
-                effectElements.push(createValueInterface(_br.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
-            }
-        }
-
-        function _propertyGroup(val) {
-            if(val === 1){
-               return groupInterface;
-            } else{
-               return propertyGroup(val-1);
-            }
-        }
-
-        var groupInterface = function(name){
-            var effects = data.ef, i = 0, len = effects.length;
-            while(i<len) {
-                if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
-                    if(effects[i].ty === 5){
-                        return effectElements[i];
-                    } else {
-                        return effectElements[i]();
-                    }
-                }
-                i += 1;
-            }
-            return effectElements[0]();
-        }
-
-        groupInterface.propertyGroup = _propertyGroup;
-
-        if(data.mn === 'ADBE Color Control'){
-            Object.defineProperty(groupInterface, 'color', {
-                get: function(){
-                    return effectElements[0]();
-                }
-            });
-        }
-        Object.defineProperty(groupInterface, 'numProperties', {
-            get: function(){
-                return data.np;
-            }
-        });
-        groupInterface.active = data.en !== 0;
-        return groupInterface
-    }
-
-    function createValueInterface(element, type, elem, propertyGroup){
-        function interfaceFunction(){
-            if(type === 10){
-                return elem.comp.compInterface(element.p.v);
-            }
-            return ExpressionValue(element.p);
-        }
-
-        if(element.p._ce) {
-            element.p._ce(propertyGroup);
-        }
-
-        return interfaceFunction;
-    }
-
-    return ob;
-
-}());
-var MaskManagerInterface = (function(){
-
-	function MaskInterface(mask, data){
-		this._mask = mask;
-		this._data = data;
-	}
-	Object.defineProperty(MaskInterface.prototype, 'maskPath', {
-        get: function(){
-                if(this._mask.prop.k){
-                    this._mask.prop.getValue();
-                }
-                return this._mask.prop;
-            }
-        });
-
-	var MaskManager = function(maskManager, elem){
-		var _maskManager = maskManager;
-		var _elem = elem;
-		var _masksInterfaces = Array.apply(null,{length: maskManager.viewData.length});
-		var i, len = maskManager.viewData.length;
-		for(i = 0; i < len; i += 1) {
-			_masksInterfaces[i] = new MaskInterface(maskManager.viewData[i], maskManager.masksProperties[i]);
-		}
-
-		var maskFunction = function(name){
-			i = 0;
-		    while(i<len){
-		        if(maskManager.masksProperties[i].nm === name){
-		            return _masksInterfaces[i];
-		        }
-		        i += 1;
-		    }
-		}
-		return maskFunction
-	}
-	return MaskManager
-}())
-
-
-var ExpressionValue = (function() {
-	return function(elementProp, mult, type) {
-        var expressionValue, arrayValue;
-
-		if (elementProp.k) {
-            elementProp.getValue();
-        }
-        var i, len, arrValue;
-        if (type) {
-        	if(type === 'color') {
-        		len = 4;
-                expressionValue = createTypedArray('float32', len);
-                arrValue = createTypedArray('float32', len);
-		        for (i = 0; i < len; i += 1) {
-		            expressionValue[i] = arrValue[i] = (mult && i < 3) ? elementProp.v[i] * mult : 1;
-		        }
-	        	expressionValue.value = arrValue;
-        	}
-        } else if (typeof elementProp.v === 'number' || elementProp.v instanceof Number){
-            expressionValue = mult ? new Number(elementProp.v * mult) : new Number(elementProp.v);
-            expressionValue.value = mult ? elementProp.v * mult : elementProp.v;
-        } else {
-        	len = elementProp.v.length;
-            expressionValue = createTypedArray('float32', len);
-            arrValue = createTypedArray('float32', len);
-	        for (i = 0; i < len; i += 1) {
-	            expressionValue[i] = arrValue[i] = mult ? elementProp.v[i] * mult : elementProp.v[i];
-	        }
-	        expressionValue.value = arrValue;
-        }
-        
-        expressionValue.numKeys = elementProp.keyframes ? elementProp.keyframes.length : 0;
-        expressionValue.key = function(pos) {
-            if (!expressionValue.numKeys) {
-                return 0;
-            } else {
-                return elementProp.keyframes[pos-1].t;
-            }
-        };
-        expressionValue.valueAtTime = elementProp.getValueAtTime;
-        expressionValue.propertyGroup = elementProp.propertyGroup;
-        return expressionValue;
-	}
-}())
-function SliderEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,0,0,dynamicProperties);
-}
-function AngleEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,0,0,dynamicProperties);
-}
-function ColorEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,1,0,dynamicProperties);
-}
-function PointEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,1,0,dynamicProperties);
-}
-function LayerIndexEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,0,0,dynamicProperties);
-}
-function MaskIndexEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,0,0,dynamicProperties);
-}
-function CheckboxEffect(data,elem, dynamicProperties){
-    this.p = _ai._bo(elem,data.v,0,0,dynamicProperties);
-}
-function NoValueEffect(){
-    this.p = {};
-}
-function EffectsManager(data,element,dynamicProperties){
-    var effects = data.ef || [];
-    this.effectElements = [];
-    var i,len = effects.length;
-    var effectItem;
-    for(i=0;i<len;i++) {
-        effectItem = new GroupEffect(effects[i],element,dynamicProperties);
-        this.effectElements.push(effectItem);
-    }
-}
-
-function GroupEffect(data,element,dynamicProperties){
-    this.dynamicProperties = [];
-    this.init(data,element,this.dynamicProperties);
-    if(this.dynamicProperties.length){
-        dynamicProperties.push(this);
-    }
-}
-
-GroupEffect.prototype.getValue = function(){
-    this.mdf = false;
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        this.mdf = this.dynamicProperties[i].mdf ? true : this.mdf;
-    }
-};
-
-GroupEffect.prototype.init = function(data,element,dynamicProperties){
-    this.data = data;
-    this.mdf = false;
-    this.effectElements = [];
-    var i, len = this.data.ef.length;
-    var eff, effects = this.data.ef;
-    for(i=0;i<len;i+=1){
-        switch(effects[i].ty){
-            case 0:
-                eff = new SliderEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 1:
-                eff = new AngleEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 2:
-                eff = new ColorEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 3:
-                eff = new PointEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 4:
-            case 7:
-                eff = new CheckboxEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 10:
-                eff = new LayerIndexEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 11:
-                eff = new MaskIndexEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 5:
-                eff = new EffectsManager(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-            case 6:
-            default:
-                eff = new NoValueEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
-                break;
-        }
     }
 };
     var lottiejs = {};

@@ -81,7 +81,7 @@ gulp.task('zipPlayer',['buildPlayer','buildUnminifiedPlayer'], function(){
 var srcs = [];
 
 var demoBuiltData = '';
-var uglifyOptions = {output: {ascii_only:true}};
+var uglifyOptions = {output: {ascii_only:true},toplevel:true};
 
 
 gulp.task('getBuildSources', function(cb) {
@@ -269,6 +269,23 @@ var replacingMap = [
     ['effectElements', '_cm'],
     ['applyToPointArray', '_cn'],
     ['dynamicProperties', '_co'],
+    ['animationItem', '_cq'],
+    ['fontManager', '_cr'],
+    ['createTypedArray', '_cs'],
+    ['createNS', '_ct'],
+    ['createTag', '_cu'],
+    ['createSizedArray', '_cv'],
+    ['SVGTextElement', '_cw'],
+    ['transformCanvas', '_cx'],
+    ['triggerEvent', '_cy'],
+    ['initElement', '_cz'],
+    ['canvasContext', '_da'],
+    ['completeLayers', '_db'],
+    ['pendingElements', '_dc'],
+    ['hierarchy', '_dd'],
+    ['compSize', '_de'],
+    ['keyframes', '_df'],
+    ['getValueAtTime', '_dg'],
 ]
 
 gulp.task('buildTest',['buildSources'], function() {

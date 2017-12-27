@@ -3,7 +3,7 @@ var pool_factory = (function() {
 
 		var _length = 0;
 		var _maxLength = initialLength;
-		var pool = Array.apply(null, {length: _maxLength});
+		var pool = createSizedArray(_maxLength);
 
 		var ob = {
 			newElement: newElement,

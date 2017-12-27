@@ -227,9 +227,9 @@ var ShapePropertyFactory = (function(){
 
         return function EllShapeProperty(elem,data) {
             /*this.v = {
-                v: Array.apply(null,{length:4}),
-                i: Array.apply(null,{length:4}),
-                o: Array.apply(null,{length:4}),
+                v: createSizedArray(4),
+                i: createSizedArray(4),
+                o: createSizedArray(4),
                 c: true
             };*/
             this.v = shape_pool.newElement();

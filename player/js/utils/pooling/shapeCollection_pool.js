@@ -6,7 +6,7 @@ var shapeCollection_pool = (function(){
 
 	var _length = 0;
 	var _maxLength = 4;
-	var pool = Array.apply(null,{length:_maxLength});
+	var pool = createSizedArray(_maxLength);
 
 	function newShapeCollection(){
 		var shapeCollection;

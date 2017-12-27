@@ -7,7 +7,7 @@ function TextAnimatorProperty(textData, renderType, elem){
 	this._textData = textData;
 	this._renderType = renderType;
 	this._elem = elem;
-	this._animatorsData = Array.apply(null,{length:this._textData.a.length});
+	this._animatorsData = createSizedArray(this._textData.a.length);
 	this._pathData = {}
 	this._moreOptions = {
 		alignment: {}

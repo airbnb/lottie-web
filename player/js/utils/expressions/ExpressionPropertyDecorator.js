@@ -294,7 +294,7 @@
             var i, len = shapePath._length;
             var vertices = shapePath[prop];
             var points = shapePath.v;
-            var arr = Array.apply(null,{length:len})
+            var arr = createSizedArray(len);
             for(i = 0; i < len; i += 1) {
                 if(prop === 'i' || prop === 'o') {
                     arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]

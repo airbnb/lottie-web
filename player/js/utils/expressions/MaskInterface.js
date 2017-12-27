@@ -16,7 +16,7 @@ var MaskManagerInterface = (function(){
 	var MaskManager = function(maskManager, elem){
 		var _maskManager = maskManager;
 		var _elem = elem;
-		var _masksInterfaces = Array.apply(null,{length: maskManager.viewData.length});
+		var _masksInterfaces = createSizedArray(maskManager.viewData.length);
 		var i, len = maskManager.viewData.length;
 		for(i = 0; i < len; i += 1) {
 			_masksInterfaces[i] = new MaskInterface(maskManager.viewData[i], maskManager.masksProperties[i]);

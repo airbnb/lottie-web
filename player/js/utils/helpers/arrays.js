@@ -30,3 +30,7 @@ var createTypedArray = (function(){
 		return createRegularArray
 	}
 }())
+
+function createSizedArray(len) {
+	return Array.apply(null,{length:len})
+}

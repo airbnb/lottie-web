@@ -33,56 +33,26 @@ BaseElement.prototype.initExpressions = function(){
     }
 }
 
+BaseElement.prototype.blendModeEnums = {
+    1:'multiply',
+    2:'screen',
+    3:'overlay',
+    4:'darken',
+    5:'lighten',
+    6:'color-dodge',
+    7:'color-burn',
+    8:'hard-light',
+    9:'soft-light',
+    10:'difference',
+    11:'exclusion',
+    12:'hue',
+    13:'saturation',
+    14:'color',
+    15:'luminosity'
+}
+
 BaseElement.prototype.getBlendMode = function(){
-    var blendModeValue = '';
-    switch(this.data.bm){
-        case 1:
-            blendModeValue = 'multiply';
-            break;
-        case 2:
-            blendModeValue = 'screen';
-            break;
-        case 3:
-            blendModeValue = 'overlay';
-            break;
-        case 4:
-            blendModeValue = 'darken';
-            break;
-        case 5:
-            blendModeValue = 'lighten';
-            break;
-        case 6:
-            blendModeValue = 'color-dodge';
-            break;
-        case 7:
-            blendModeValue = 'color-burn';
-            break;
-        case 8:
-            blendModeValue = 'hard-light';
-            break;
-        case 9:
-            blendModeValue = 'soft-light';
-            break;
-        case 10:
-            blendModeValue = 'difference';
-            break;
-        case 11:
-            blendModeValue = 'exclusion';
-            break;
-        case 12:
-            blendModeValue = 'hue';
-            break;
-        case 13:
-            blendModeValue = 'saturation';
-            break;
-        case 14:
-            blendModeValue = 'color';
-            break;
-        case 15:
-            blendModeValue = 'luminosity';
-            break;
-    }
-    return blendModeValue;
+    return this.blendModeEnums[this.data.bm] || '';
 }
 
 BaseElement.prototype.setBlendMode = function(){

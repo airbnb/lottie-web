@@ -23,7 +23,7 @@ CVTextElement.prototype.tHelper = createTag('canvas').getContext('2d');
 
 CVTextElement.prototype.buildNewText = function(){
     var documentData = this.textProperty.currentData;
-    this.renderedLetters = Array.apply(null,{length:documentData.l ? documentData.l.length : 0});
+    this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
 
     var hasFill = false;
     if(documentData.fc) {
@@ -68,7 +68,7 @@ CVTextElement.prototype.buildNewText = function(){
         if(singleShape){
             this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
         }
-        commands = Array.apply(null,{length:jLen})
+        commands = createSizedArray(jLen)
         for(j=0;j<jLen;j+=1){
             kLen = shapes[j].ks.k.i.length;
             pathNodes = shapes[j].ks.k;

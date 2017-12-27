@@ -23,7 +23,7 @@ SVGTextElement.prototype.buildNewText = function(){
     var i, len;
 
     var documentData = this.textProperty.currentData;
-    this.renderedLetters = Array.apply(null,{length:documentData ? documentData.l.length : 0});
+    this.renderedLetters = createSizedArray(documentData ? documentData.l.length : 0);
     if(documentData.fc) {
         this.layerElement.setAttribute('fill', this.buildColor(documentData.fc));
     }else{

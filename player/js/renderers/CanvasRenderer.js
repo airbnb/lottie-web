@@ -174,7 +174,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
     this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
     this.globalData.transformCanvas = this.transformCanvas;
-    this.elements = Array.apply(null,{length:animData.layers.length});
+    this.elements = createSizedArray(animData.layers.length);
 
     this.updateContainerSize();
 };

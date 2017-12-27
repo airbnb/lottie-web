@@ -111,7 +111,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     this.layers = animData.layers;
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,defs);
-    this.elements = Array.apply(null,{length:animData.layers.length});
+    this.elements = createSizedArray(animData.layers.length);
 };
 
 

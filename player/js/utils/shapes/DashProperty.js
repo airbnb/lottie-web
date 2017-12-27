@@ -1,7 +1,7 @@
 function DashProperty(elem, data, renderer, dynamicProperties) {
     this.elem = elem;
     this.frameId = -1;
-    this.dataProps = Array.apply(null,{length:data.length});
+    this.dataProps = createSizedArray(data.length);
     this.renderer = renderer;
     this.mdf = false;
     this.k = false;

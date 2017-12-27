@@ -2,7 +2,7 @@ function CVCompElement(data, globalData, comp) {
     this.completeLayers = false;
     this.layers = data.layers;
     this.pendingElements = [];
-    this.elements = Array.apply(null,{length:this.layers.length});
+    this.elements = createSizedArray(this.layers.length);
     this.initElement(data, globalData, comp);
     this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
 }

@@ -120,7 +120,7 @@ function bezFunction(){
             var bezierData = new BezierData(curveSegments);
             len = pt3.length;
             for (k = 0; k < curveSegments; k += 1) {
-                point = Array.apply(null,{length:len});
+                point = createSizedArray(len);
                 perc = k / (curveSegments - 1);
                 ptDistance = 0;
                 for (i = 0; i < len; i += 1){

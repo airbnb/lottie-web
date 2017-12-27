@@ -2,9 +2,9 @@ function ShapePath(){
 	this.c = false;
 	this._length = 0;
 	this._maxLength = 8;
-	this.v = Array.apply(null,{length:this._maxLength});
-	this.o = Array.apply(null,{length:this._maxLength});
-	this.i = Array.apply(null,{length:this._maxLength});
+	this.v = createSizedArray(this._maxLength);
+	this.o = createSizedArray(this._maxLength);
+	this.i = createSizedArray(this._maxLength);
 };
 
 ShapePath.prototype.setPathData = function(closed, len) {
@@ -27,9 +27,9 @@ ShapePath.prototype.setLength = function(len) {
 }
 
 ShapePath.prototype.doubleArrayLength = function() {
-	this.v = this.v.concat(Array.apply(null,{length:this._maxLength}))
-	this.i = this.i.concat(Array.apply(null,{length:this._maxLength}))
-	this.o = this.o.concat(Array.apply(null,{length:this._maxLength}))
+	this.v = this.v.concat(createSizedArray(this._maxLength))
+	this.i = this.i.concat(createSizedArray(this._maxLength))
+	this.o = this.o.concat(createSizedArray(this._maxLength))
 	this._maxLength *= 2;
 };
 
