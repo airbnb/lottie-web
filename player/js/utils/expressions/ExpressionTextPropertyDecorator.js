@@ -1,4 +1,4 @@
-(function addTextPropertyDecorator() {
+(function addDecorator() {
 
     function searchExpressions(){
         if(this.data.d.x){

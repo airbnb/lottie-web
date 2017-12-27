@@ -90,38 +90,34 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.fromComp = fromComp;
         _thisLayerFunction.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
         _thisLayerFunction._elem = elem;
-        Object.defineProperty(_thisLayerFunction, 'hasParent', {
-            get: function(){
-                return elem.hierarchy.length;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, 'parent', {
-            get: function(){
-                return elem.hierarchy[0].layerInterface;
-            }
-        });
-
         transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
-        Object.defineProperty(_thisLayerFunction, "rotation", getDescriptor(transformInterface, 'rotation'));
-        Object.defineProperty(_thisLayerFunction, "scale", getDescriptor(transformInterface, 'scale'));
-        Object.defineProperty(_thisLayerFunction, "position", getDescriptor(transformInterface, 'position'));
-        Object.defineProperty(_thisLayerFunction, "opacity", getDescriptor(transformInterface, 'opacity'));
         var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", anchorPointDescriptor);
-        Object.defineProperty(_thisLayerFunction, "anchor_point", anchorPointDescriptor);
-
-        Object.defineProperty(_thisLayerFunction, "transform", {
-            get: function () {
-                return transformInterface;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
-
-        Object.defineProperty(_thisLayerFunction, "active", {
-            get: function(){
-                return elem.isInRange;
+        Object.defineProperties(_thisLayerFunction,{
+            hasParent: {
+                get: function(){
+                    return elem.hierarchy.length;
+                }
+            },
+            parent: {
+                get: function(){
+                    return elem.hierarchy[0].layerInterface;
+                }
+            },
+            rotation: getDescriptor(transformInterface, 'rotation'),
+            scale: getDescriptor(transformInterface, 'scale'),
+            position: getDescriptor(transformInterface, 'position'),
+            opacity: getDescriptor(transformInterface, 'opacity'),
+            anchorPoint: anchorPointDescriptor,
+            anchor_point: anchorPointDescriptor,
+            transform: {
+                get: function () {
+                    return transformInterface;
+                }
+            },
+            active: {
+                get: function(){
+                    return elem.isInRange;
+                }
             }
         });
 

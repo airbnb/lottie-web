@@ -7,7 +7,7 @@ HBaseElement.prototype.checkBlendMode = function(){
 HBaseElement.prototype.getBaseElement = SVGBaseElement.prototype.getBaseElement;
 
 HBaseElement.prototype.initRendererElement = function(){
-    this.baseElement = document.createElement('div');
+    this.baseElement = createTag('div');
     if(this.data.hasMask) {
         this.svgElement = createNS('svg');
         this.layerElement = createNS('g');

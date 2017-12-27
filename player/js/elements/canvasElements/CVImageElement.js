@@ -13,11 +13,10 @@ CVImageElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 CVImageElement.prototype.imageLoaded = function() {
     this.globalData.elementLoaded();
     if(this.assetData.w !== this.img.width || this.assetData.h !== this.img.height){
-        var canvas = document.createElement('canvas');
+        var canvas = createTag('canvas');
         canvas.width = this.assetData.w;
         canvas.height = this.assetData.h;
         var ctx = canvas.getContext('2d');
-        document.body.appendChild(canvas)
 
         var imgW = this.img.width;
         var imgH = this.img.height;

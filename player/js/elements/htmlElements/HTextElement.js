@@ -80,7 +80,7 @@ HTextElement.prototype.buildNewText = function(){
                     tCont = tParent.children[0];
                 } else {
 
-                    tParent = document.createElement('div');
+                    tParent = createTag('div');
                     tCont = createNS('svg');
                     tCont.appendChild(tSpan);
                     styleDiv(tParent);
@@ -92,9 +92,9 @@ HTextElement.prototype.buildNewText = function(){
                     tParent = this.textSpans[cnt];
                     tSpan = this.textPaths[cnt];
                 } else {
-                    tParent = document.createElement('span');
+                    tParent = createTag('span');
                     styleDiv(tParent);
-                    tSpan = document.createElement('span');
+                    tSpan = createTag('span');
                     styleDiv(tSpan);
                     tParent.appendChild(tSpan);
                 }
@@ -121,7 +121,6 @@ HTextElement.prototype.buildNewText = function(){
             if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
                 if(shapeData && shapeData.shapes){
-                    document.body.appendChild(tCont);
 
                     var boundingBox = tCont.getBBox();
                     tCont.setAttribute('width',boundingBox.width + 2);

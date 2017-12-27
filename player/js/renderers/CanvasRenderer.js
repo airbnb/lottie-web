@@ -134,7 +134,7 @@ CanvasRenderer.prototype.restore = function(actionFlag){
 
 CanvasRenderer.prototype.configAnimation = function(animData){
     if(this.animationItem.wrapper){
-        this.animationItem.container = document.createElement('canvas');
+        this.animationItem.container = createTag('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';
         //this.animationItem.container.style.transform = 'translate3d(0,0,0)';

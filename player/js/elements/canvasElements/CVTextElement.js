@@ -19,14 +19,7 @@ function CVTextElement(data, globalData, comp){
 }
 extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], CVTextElement);
 
-CVTextElement.prototype.tHelper = document.createElement('canvas').getContext('2d');
-
-CVTextElement.prototype.createElements = function(){
-
-    this._parent.createElements.call(this);
-    //console.log('this.data: ',this.data);
-
-};
+CVTextElement.prototype.tHelper = createTag('canvas').getContext('2d');
 
 CVTextElement.prototype.buildNewText = function(){
     var documentData = this.textProperty.currentData;

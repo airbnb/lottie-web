@@ -8,9 +8,9 @@ var FontManager = (function(){
     }
 
     function setUpNode(font, family){
-        var parentNode = document.createElement('span');
+        var parentNode = createTag('span');
         parentNode.style.fontFamily    = family;
-        var node = document.createElement('span');
+        var node = createTag('span');
         // Characters that vary significantly among different fonts
         node.innerHTML = 'giItT1WQy@!-/#';
         // Visible - so we can measure it - but not on the screen
@@ -98,7 +98,7 @@ var FontManager = (function(){
             tHelper.style.fontFamily = fontData.fFamily;
         }
         def.appendChild(tHelper);
-        var tCanvasHelper = document.createElement('canvas').getContext('2d');
+        var tCanvasHelper = createTag('canvas').getContext('2d');
         tCanvasHelper.font = '100px '+ fontData.fFamily;
         return tCanvasHelper;
     }
@@ -123,20 +123,20 @@ var FontManager = (function(){
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
             }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
-                var s = document.createElement('style');
+                var s = createTag('style');
                 s.type = "text/css";
                 s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                 defs.appendChild(s);
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-                var l = document.createElement('link');
+                var l = createTag('link');
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
                 defs.appendChild(l);
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-                var sc = document.createElement('script');
+                var sc = createTag('script');
                 sc.setAttribute('src',fontArr[i].fPath);
                 defs.appendChild(sc);
             }

@@ -13,7 +13,7 @@ HSolidElement.prototype.createContent = function(){
         this.svgElement.setAttribute('width',this.data.sw);
         this.svgElement.setAttribute('height',this.data.sh);
     } else {
-        rect = document.createElement('div');
+        rect = createTag('div');
         rect.style.width = this.data.sw + 'px';
         rect.style.height = this.data.sh + 'px';
         rect.style.backgroundColor = this.data.sc;

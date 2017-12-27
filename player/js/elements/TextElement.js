@@ -66,5 +66,5 @@ ITextElement.prototype.buildShapeString = IShapeElement.prototype.buildShapeStri
 ITextElement.prototype.emptyProp = new LetterProps();
 
 ITextElement.prototype.destroy = function(){
-    this._parent.destroy.call(this._parent);
+    
 };

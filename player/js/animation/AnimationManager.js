@@ -166,7 +166,7 @@ var animationManager = (function(){
             }
             var body = document.getElementsByTagName('body')[0];
             body.innerHTML = '';
-            var div = document.createElement('div');
+            var div = createTag('div');
             div.style.width = '100%';
             div.style.height = '100%';
             div.setAttribute('data-bm-type',renderer);

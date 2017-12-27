@@ -26,7 +26,7 @@ var ImagePreloader = (function(){
     }
 
     function loadImage(path){
-        var img = document.createElement('img');
+        var img = createTag('img');
         img.addEventListener('load', imageLoaded.bind(this), false);
         img.addEventListener('error', imageLoaded.bind(this), false);
         img.src = path;

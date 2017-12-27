@@ -1,6 +1,6 @@
 function dataFunctionManager(){
 
-    //var tCanvasHelper = document.createElement('canvas').getContext('2d');
+    //var tCanvasHelper = createTag('canvas').getContext('2d');
 
     function completeLayers(layers, comps, fontManager){
         var layerData;
