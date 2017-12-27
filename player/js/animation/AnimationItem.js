@@ -30,6 +30,8 @@ var AnimationItem = function () {
     this.projectInterface = ProjectInterface();
 };
 
+extendPrototype([BaseEvent], AnimationItem);
+
 AnimationItem.prototype.setParams = function(params) {
     var self = this;
     if(params.context){
@@ -645,7 +647,3 @@ AnimationItem.prototype.trigger = function(name){
         this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
-
-AnimationItem.prototype.addEventListener = _addEventListener;
-AnimationItem.prototype.removeEventListener = _removeEventListener;
-AnimationItem.prototype.triggerEvent = _triggerEvent;
