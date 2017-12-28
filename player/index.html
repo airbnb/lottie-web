@@ -161,13 +161,13 @@
     //var elem = createNS('aa')
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
-        autoplay: false,
+        renderer: 'canvas',
+        loop: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:true
         },
-        path: 'exports/gannon/ripple.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
