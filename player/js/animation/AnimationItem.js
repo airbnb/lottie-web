@@ -174,7 +174,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     if(expressionsPlugin){
         expressionsPlugin.initExpressions(this);
     }
-    this.renderer.renderFrame(null);
+    this.renderer.renderFrame(-1);
     this.loadNextSegment();
 };
 

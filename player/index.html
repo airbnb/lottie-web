@@ -162,16 +162,16 @@
     var animData = {
         container: elem,
         renderer: 'canvas',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/gannon/starfish.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
-        anim.setSubframe(false);
+        //anim.setSubframe(false);
         //setTimeout(function(){anim.play()}, 0);
     })
     window.addEventListener('resize', function(){

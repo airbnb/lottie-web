@@ -245,6 +245,10 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         }
     }*/
     this.ctxTransform(this.transformCanvas.props);
+    this.canvasContext.beginPath();
+    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.canvasContext.closePath();
+    this.canvasContext.clip();
 };
 
 CanvasRenderer.prototype.destroy = function () {
@@ -264,7 +268,7 @@ CanvasRenderer.prototype.destroy = function () {
 };
 
 CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === null){
+    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === -1){
         return;
     }
     this.renderedFrame = num;
@@ -287,17 +291,10 @@ CanvasRenderer.prototype.renderFrame = function(num){
     }
     if(this.globalData.mdf) {
         if(this.renderConfig.clearCanvas === true){
-            //this.reset();
-            //this.canvasContext.save();
-            //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-            this.canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w, this.transformCanvas.h);
+            this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
         }else{
             this.save();
         }
-        this.canvasContext.beginPath();
-        this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
-        this.canvasContext.closePath();
-        this.canvasContext.clip();
         for (i = len - 1; i >= 0; i-=1) {
             if(this.completeLayers || this.elements[i]){
                 this.elements[i].renderFrame();
@@ -305,8 +302,6 @@ CanvasRenderer.prototype.renderFrame = function(num){
         }
         if(this.renderConfig.clearCanvas !== true){
             this.restore();
-        } else {
-            //this.canvasContext.restore();
         }
     }
 };

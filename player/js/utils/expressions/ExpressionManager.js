@@ -334,7 +334,7 @@ var ExpressionManager = (function(){
         inTangents = inTangents && inTangents.length ? inTangents : points;
         outTangents = outTangents && outTangents.length ? outTangents : points;
         var path = shape_pool.newElement();
-        var len = points.length;
+        var i, len = points.length;
         path.setPathData(closed, len);
         for(i = 0; i < len; i += 1) {
             path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true)
