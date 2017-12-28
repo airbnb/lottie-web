@@ -10,7 +10,7 @@ CVBaseElement.prototype.initRendererElement = function(){
 };
 CVBaseElement.prototype.createContainerElements = function(){
     this.canvasContext = this.globalData.canvasContext;
-    this.effectsManager = new CVEffects(this);
+    this.renderableEffectsManager = new CVEffects(this);
 };
 CVBaseElement.prototype.createContent = function(){};
 

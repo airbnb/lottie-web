@@ -123,7 +123,7 @@ SVGBaseElement.prototype.createContainerElements = function(){
     if (this.data.bm !== 0) {
         this.setBlendMode();
     }
-    this.effectsManager = new SVGEffects(this);
+    this.renderableEffectsManager = new SVGEffects(this);
 
 };
 

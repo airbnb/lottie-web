@@ -53,7 +53,7 @@ RenderableElement.prototype.checkLayerLimits = function(num) {
 
 RenderableElement.prototype.renderRenderable = function() {
     this.maskManager.renderFrame(this.finalTransform.mat);
-    this.effectsManager.renderFrame(this.firstFrame);
+    this.renderableEffectsManager.renderFrame(this.firstFrame);
 }
 
 RenderableElement.prototype.sourceRectAtTime = function(){

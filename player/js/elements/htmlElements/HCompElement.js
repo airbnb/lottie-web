@@ -10,18 +10,14 @@ function HCompElement(data,globalData,comp){
 }
 
 extendPrototype([HybridRenderer, ICompElement, HBaseElement], HCompElement);
+HCompElement.prototype._createBaseContainerElements = HCompElement.prototype.createContainerElements;
 
 HCompElement.prototype.createContainerElements = function(){
+    this._createBaseContainerElements();
     //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask){
-        this.transformedElement = this.layerElement;
         this.svgElement.setAttribute('width',this.data.w);
         this.svgElement.setAttribute('height',this.data.h);
-    }else{
-        this.transformedElement = this.layerElement;
-
     }
-    //this.appendNodeToParent(this.layerElement);
-    this.effectsManager = new CVEffects(this);
-    this.checkParenting();
+    this.transformedElement = this.layerElement;
 };

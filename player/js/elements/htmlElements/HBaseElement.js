@@ -21,7 +21,7 @@ HBaseElement.prototype.initRendererElement = function(){
 }
 
 HBaseElement.prototype.createContainerElements = function(){
-    this.effectsManager = new CVEffects(this);
+    this.renderableEffectsManager = new CVEffects(this);
     this.transformedElement = this.baseElement;
     this.maskedElement = this.layerElement;
     if (this.data.ln) {
