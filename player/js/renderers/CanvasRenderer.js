@@ -161,9 +161,14 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     };
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.layers = animData.layers;
-    this.transformCanvas = {};
-    this.transformCanvas.w = animData.w;
-    this.transformCanvas.h = animData.h;
+    this.transformCanvas = {
+        w: animData.w,
+        h:animData.h,
+        sx:0,
+        sy:0,
+        tx:0,
+        ty:0
+    };
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
     this.globalData.fontManager.addFonts(animData.fonts,document.body);
@@ -267,7 +272,6 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.globalData.frameId += 1;
     this.globalData.mdf = false;
     this.globalData.projectInterface.currentFrame = num;
-    
 
      // console.log('--------');
      // console.log('NEW: ',num);
@@ -286,7 +290,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
             //this.reset();
             //this.canvasContext.save();
             //this.canvasContext.canvas.width = this.canvasContext.canvas.width;
-            this.canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w*this.transformCanvas.sx, this.transformCanvas.h*this.transformCanvas.sy);
+            this.canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w, this.transformCanvas.h);
         }else{
             this.save();
         }
