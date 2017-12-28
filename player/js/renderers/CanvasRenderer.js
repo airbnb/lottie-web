@@ -289,7 +289,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
-    if(this.globalData.mdf) {
+    if(this.globalData.mdf || 1 === 1) {
         if(this.renderConfig.clearCanvas === true){
             this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
         }else{

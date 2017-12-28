@@ -1,40 +1,6 @@
 function TrimModifier(){
 };
 extendPrototype([ShapeModifier], TrimModifier);
-TrimModifier.prototype.processKeys = function(forceRender) {
-    if (this.elem.globalData.frameId === this.frameId && !forceRender) {
-        return;
-    }
-    this.mdf = forceRender;
-    this.frameId = this.elem.globalData.frameId;
-    var i, len = this.dynamicProperties.length;
-
-    for (i = 0; i < len; i +=1) {
-        this.dynamicProperties[i].getValue();
-        if (this.dynamicProperties[i].mdf) {
-            this.mdf = true;
-        }
-    }
-    if (this.mdf || forceRender) {
-        var o = (this.o.v % 360) / 360;
-        if (o < 0) {
-            o += 1;
-        }
-        var s = this.s.v + o;
-        var e = this.e.v + o;
-        if (s === e) {
-
-        }
-        if (s > e) {
-            var _s = s;
-            s = e;
-            e = _s;
-        }
-        this.sValue = s;
-        this.eValue = e;
-        this.oValue = o;
-    }
-}
 TrimModifier.prototype.initModifierProperties = function(elem, data) {
     this.s = PropertyFactory.getProp(elem, data.s, 0, 0.01, this.dynamicProperties);
     this.e = PropertyFactory.getProp(elem, data.e, 0, 0.01, this.dynamicProperties);
@@ -109,6 +75,26 @@ TrimModifier.prototype.releasePathsData = function(pathsData) {
 }
 
 TrimModifier.prototype.processShapes = function(firstFrame) {
+    
+    if (this.mdf) {
+        var o = (this.o.v % 360) / 360;
+        if (o < 0) {
+            o += 1;
+        }
+        var s = this.s.v + o;
+        var e = this.e.v + o;
+        if (s === e) {
+
+        }
+        if (s > e) {
+            var _s = s;
+            s = e;
+            e = _s;
+        }
+        this.sValue = s;
+        this.eValue = e;
+        this.oValue = o;
+    }
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;

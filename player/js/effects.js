@@ -33,45 +33,40 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     var i, len = this.data.ef.length;
     var eff, effects = this.data.ef;
     for(i=0;i<len;i+=1){
+        eff = null;
         switch(effects[i].ty){
             case 0:
                 eff = new SliderEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 1:
                 eff = new AngleEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 2:
                 eff = new ColorEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 3:
                 eff = new PointEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 4:
             case 7:
                 eff = new CheckboxEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 10:
                 eff = new LayerIndexEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 11:
                 eff = new MaskIndexEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 5:
                 eff = new EffectsManager(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
             case 6:
             default:
                 eff = new NoValueEffect(effects[i],element,dynamicProperties);
-                this.effectElements.push(eff);
                 break;
+        }
+        if(eff) {
+            this.effectElements.push(eff);
         }
     }
 };

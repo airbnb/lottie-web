@@ -201,7 +201,7 @@ SVGRenderer.prototype.renderFrame = function(num){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
-    if(this.globalData.mdf) {
+    if(this.globalData.mdf || 1 === 1) {
         for (i = 0; i < len; i += 1) {
             if(this.completeLayers || this.elements[i]){
                 this.elements[i].renderFrame();

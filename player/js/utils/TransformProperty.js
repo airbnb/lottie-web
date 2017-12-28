@@ -29,12 +29,12 @@ var TransformPropertyFactory = (function() {
             mat.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
         }
     }
-    function processKeys(firstFrame){
+    function processKeys(forceRender){
         if (this.elem.globalData.frameId === this.frameId) {
             return;
         }
 
-        this.mdf = firstFrame;
+        this.mdf = false;
         var i, len = this.dynamicProperties.length;
 
         for(i = 0; i < len; i += 1) {
@@ -44,7 +44,7 @@ var TransformPropertyFactory = (function() {
             }
         }
 
-        if (this.mdf) {
+        if (this.mdf || forceRender) {
             this.v.reset();
             if (this.a) {
                 this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);

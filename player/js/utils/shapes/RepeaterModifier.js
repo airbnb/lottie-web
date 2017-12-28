@@ -1,18 +1,5 @@
 function RepeaterModifier(){};
-RepeaterModifier.prototype.processKeys = function(forceRender){
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
-        return;
-    }
-    this.mdf = forceRender ? true : false;
-    var i, len = this.dynamicProperties.length;
-
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.mdf = true;
-        }
-    }
-};
+extendPrototype([ShapeModifier], RepeaterModifier);
 
 RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
@@ -97,11 +84,6 @@ RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
 }
 
 RepeaterModifier.prototype.processShapes = function(firstFrame){
-
-    if(this.elem.globalData.frameId === this.frameId){
-        return;
-    }
-    this.frameId = this.elem.globalData.frameId;
     if(!this.dynamicProperties.length && !firstFrame){
         this.mdf = false;
     }

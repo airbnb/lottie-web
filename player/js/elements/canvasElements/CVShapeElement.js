@@ -216,25 +216,11 @@ CVShapeElement.prototype.renderInnerContent = function() {
     this.transformHelper.matMdf = false;
     this.transformHelper.opMdf = this.finalTransform.opMdf;
     this.renderModifiers();
-    this.renderShape(this.transformHelper,null,null,true);
+    this.renderShape(this.transformHelper,this.shapesData,this.itemsData,true);
 }
 
 CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain){
-    var i, len;
-    if(!items){
-        items = this.shapesData;
-        len = this.stylesList.length;
-        for(i=0;i<len;i+=1){
-            this.stylesList[i].d = '';
-            this.stylesList[i].mdf = false;
-        }
-    }
-    if(!data){
-        data = this.itemsData;
-    }
-    ///
-    ///
-    len = items.length - 1;
+    var i, len = items.length - 1;
     var groupTransform,groupMatrix;
     groupTransform = parentTransform;
     for(i=len;i>=0;i-=1){
@@ -272,8 +258,6 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
     }
     len = this.stylesList.length;
     var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type;
-    //renderer.save();
-    //renderer.ctxTransform(this.finalTransform.mat.props);
     for(i=0;i<len;i+=1){
         type = this.stylesList[i].type;
         if((type === 'st' && this.stylesList[i].wi === 0) || !this.stylesList[i].data._render){
@@ -327,10 +311,6 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             ctx.fill(this.stylesList[i].r);
         }
         renderer.restore();
-    }
-    //renderer.restore();
-    if(this.firstFrame){
-        this.firstFrame = false;
     }
 };
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){

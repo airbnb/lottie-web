@@ -43,3 +43,18 @@ ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
         this.getValue(true);
     }
 }
+ShapeModifier.prototype.processKeys = function(forceRender){
+    if(this.elem.globalData.frameId === this.frameId && !forceRender){
+        return;
+    }
+    this.mdf = forceRender;
+    var i, len = this.dynamicProperties.length;
+
+    for(i=0;i<len;i+=1){
+        this.dynamicProperties[i].getValue();
+        if(this.dynamicProperties[i].mdf){
+            this.mdf = true;
+        }
+    }
+    this.frameId = this.elem.globalData.frameId;
+}

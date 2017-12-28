@@ -1,20 +1,5 @@
 function RoundCornersModifier(){};
 extendPrototype([ShapeModifier],RoundCornersModifier);
-RoundCornersModifier.prototype.processKeys = function(forceRender){
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
-        return;
-    }
-    this.mdf = forceRender ? true : false;
-    this.frameId = this.elem.globalData.frameId;
-    var i, len = this.dynamicProperties.length;
-
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.mdf = true;
-        }
-    }
-}
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.rd = PropertyFactory.getProp(elem,data.r,0,null,this.dynamicProperties);
