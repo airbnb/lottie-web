@@ -161,18 +161,18 @@
     //var elem = createNS('aa')
     var animData = {
         container: elem,
-        renderer: 'html',
+        renderer: 'svg',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:true,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/banner/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
-        anim.setSubframe(false);
-        //setTimeout(function(){anim.play()}, 0);
+        //anim.setSubframe(false);
+        setTimeout(function(){anim.play()}, 2000);
     })
     window.addEventListener('resize', function(){
         anim.resize();
