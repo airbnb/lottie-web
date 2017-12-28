@@ -220,30 +220,27 @@ HTextElement.prototype.renderInnerContent = function() {
         }
     }
 
-    //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses globalData.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(!this.hidden && (this.firstFrame || this._mdf)){
-        if(this.innerElem.getBBox){
-            var boundingBox = this.innerElem.getBBox();
+    if(this.innerElem.getBBox && !this.hidden && (this.firstFrame || this._mdf)){
+        var boundingBox = this.innerElem.getBBox();
 
-            if(this.currentBBox.w !== boundingBox.width){
-                this.currentBBox.w = boundingBox.width;
-                this.svgElement.setAttribute('width',boundingBox.width);
-            }
-            if(this.currentBBox.h !== boundingBox.height){
-                this.currentBBox.h = boundingBox.height;
-                this.svgElement.setAttribute('height',boundingBox.height);
-            }
+        if(this.currentBBox.w !== boundingBox.width){
+            this.currentBBox.w = boundingBox.width;
+            this.svgElement.setAttribute('width',boundingBox.width);
+        }
+        if(this.currentBBox.h !== boundingBox.height){
+            this.currentBBox.h = boundingBox.height;
+            this.svgElement.setAttribute('height',boundingBox.height);
+        }
 
-            var margin = 1;
-            if(this.currentBBox.w !== (boundingBox.width + margin*2) || this.currentBBox.h !== (boundingBox.height + margin*2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)){
-                this.currentBBox.w = boundingBox.width + margin*2;
-                this.currentBBox.h = boundingBox.height + margin*2;
-                this.currentBBox.x = boundingBox.x - margin;
-                this.currentBBox.y = boundingBox.y - margin;
+        var margin = 1;
+        if(this.currentBBox.w !== (boundingBox.width + margin*2) || this.currentBBox.h !== (boundingBox.height + margin*2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)){
+            this.currentBBox.w = boundingBox.width + margin*2;
+            this.currentBBox.h = boundingBox.height + margin*2;
+            this.currentBBox.x = boundingBox.x - margin;
+            this.currentBBox.y = boundingBox.y - margin;
 
-                this.svgElement.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-                this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
-            }
+            this.svgElement.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+            this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
         }
     }
 }
