@@ -122,6 +122,8 @@ HTextElement.prototype.buildNewText = function(){
                 this.innerElem.appendChild(tParent);
                 if(shapeData && shapeData.shapes){
 
+                    //document.body.appendChild is needed to get exact measure of shape
+                    document.body.appendChild(tCont);
                     var boundingBox = tCont.getBBox();
                     tCont.setAttribute('width',boundingBox.width + 2);
                     tCont.setAttribute('height',boundingBox.height + 2);
