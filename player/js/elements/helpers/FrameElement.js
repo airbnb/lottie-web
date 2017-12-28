@@ -18,6 +18,8 @@ FrameElement.prototype.initFrame = function(){
 	this.firstFrame = false;
 	//list of animated properties
 	this.dynamicProperties = [];
+    // If layer has been modified in current tick
+    this._mdf = false;
 }
 
 
@@ -36,6 +38,7 @@ FrameElement.prototype.prepareProperties = function(num, isVisible) {
             this.dynamicProperties[i].getValue(this.firstFrame);
             if (this.dynamicProperties[i].mdf) {
                 this.globalData.mdf = true;
+                this._mdf = true;
             }
         }
     }

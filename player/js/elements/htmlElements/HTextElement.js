@@ -219,7 +219,7 @@ HTextElement.prototype.renderInnerContent = function() {
     }
 
     //TODO: this also needs to be recalculated every time a property changes. Check how canvas renderer uses globalData.mdf. Also would be great to calculate size from shapes and not from DOM.
-    if(this.isVisible && (this.firstFrame)){
+    if(!this.hidden && (this.firstFrame || this._mdf)){
         if(this.innerElem.getBBox){
             var boundingBox = this.innerElem.getBBox();
 

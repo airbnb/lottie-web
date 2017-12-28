@@ -162,7 +162,7 @@
     var animData = {
         container: elem,
         renderer: 'html',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
@@ -171,7 +171,7 @@
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
-        //anim.setSubframe(false);
+        anim.setSubframe(false);
         //setTimeout(function(){anim.play()}, 0);
     })
     window.addEventListener('resize', function(){

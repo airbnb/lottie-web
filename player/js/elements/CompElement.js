@@ -30,6 +30,7 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
 };*/
 
 ICompElement.prototype.prepareFrame = function(num){
+    this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
     if(!this.isInRange && !this.data.xt){
@@ -52,6 +53,9 @@ ICompElement.prototype.prepareFrame = function(num){
     for( i = 0; i < len; i+=1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
+            if(this.elements[i]._mdf) {
+                this._mdf = true;
+            }
         }
     }
 };
