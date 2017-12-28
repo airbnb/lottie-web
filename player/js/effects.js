@@ -22,7 +22,7 @@ GroupEffect.prototype.getValue = function(){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
-        this.mdf = this.dynamicProperties[i].mdf ? true : this.mdf;
+        this.mdf = this.dynamicProperties[i].mdf || this.mdf;
     }
 };
 
