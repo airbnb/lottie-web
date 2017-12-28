@@ -3,7 +3,7 @@ function SVGBaseElement(){
 
 SVGBaseElement.prototype.initRendererElement = function() {
     this.layerElement = createNS('g');
-}
+};
 
 SVGBaseElement.prototype.createContainerElements = function(){
     this.matteElement = createNS('g');

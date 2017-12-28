@@ -44,6 +44,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
             if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
                 nextLayer = this.elements[i];
                 nextDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
+                break;
             }
             i += 1;
         }
