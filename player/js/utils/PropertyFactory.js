@@ -191,7 +191,9 @@ var PropertyFactory = (function(){
         this.frameId = this.elem.globalData.frameId;
     }
 
-    function getNoValue(){}
+    function getNoValue(){
+        this.mdf = false;
+    }
 
     function ValueProperty(elem,data, mult){
         this.propType = 'unidimensional';

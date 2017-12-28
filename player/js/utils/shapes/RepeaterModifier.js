@@ -84,9 +84,6 @@ RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
 }
 
 RepeaterModifier.prototype.processShapes = function(firstFrame){
-    if(!this.dynamicProperties.length && !firstFrame){
-        this.mdf = false;
-    }
     if(this.mdf){
         var copies = Math.ceil(this.c.v);
         if(this._groups.length < copies){
@@ -112,7 +109,6 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
         }
         
         this._currentCopies = copies;
-        this.elem.firstFrame = true;
         ////
 
         var offset = this.o.v;
@@ -152,7 +148,12 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
         i = this.data.m === 1 ? 0 : this._currentCopies - 1;
         var dir = this.data.m === 1 ? 1 : -1;
         cont = this._currentCopies;
+        var items, itemsTransform;
         while(cont){
+            items = this.elemsData[i].it;
+            itemsTransform = items[items.length - 1].transform.mProps.v.props;
+            items[items.length - 1].transform.mProps.mdf = true;
+            items[items.length - 1].transform.mProps.op = true;
             if(iteration !== 0){
                 if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
@@ -160,8 +161,7 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                 this.matrix.transform(rProps[0],rProps[1],rProps[2],rProps[3],rProps[4],rProps[5],rProps[6],rProps[7],rProps[8],rProps[9],rProps[10],rProps[11],rProps[12],rProps[13],rProps[14],rProps[15]);
                 this.matrix.transform(sProps[0],sProps[1],sProps[2],sProps[3],sProps[4],sProps[5],sProps[6],sProps[7],sProps[8],sProps[9],sProps[10],sProps[11],sProps[12],sProps[13],sProps[14],sProps[15]);
                 this.matrix.transform(pProps[0],pProps[1],pProps[2],pProps[3],pProps[4],pProps[5],pProps[6],pProps[7],pProps[8],pProps[9],pProps[10],pProps[11],pProps[12],pProps[13],pProps[14],pProps[15]);
-                var items = this.elemsData[i].it;
-                var itemsTransform = items[items.length - 1].transform.mProps.v.props;
+                
                 var j, jLen = itemsTransform.length;
                 for(j=0;j<jLen;j+=1) {
                     itemsTransform[j] = this.matrix.props[j];
@@ -169,14 +169,25 @@ RepeaterModifier.prototype.processShapes = function(firstFrame){
                 this.matrix.reset();
             } else {
                 this.matrix.reset();
-                var items = this.elemsData[i].it;
-                var itemsTransform = items[items.length - 1].transform.mProps.v.props;
                 var j, jLen = itemsTransform.length;
                 for(j=0;j<jLen;j+=1) {
                     itemsTransform[j] = this.matrix.props[j];
                 }
             }
             iteration += 1;
+            cont -= 1;
+            i += dir;
+        }
+    } else {
+        cont = this._currentCopies;
+        var items, itemsTransform;
+        i = 0;
+        var dir = 1;
+        while(cont){
+            items = this.elemsData[i].it;
+            itemsTransform = items[items.length - 1].transform.mProps.v.props;
+            items[items.length - 1].transform.mProps.mdf = false;
+            items[items.length - 1].transform.mProps.op = false;
             cont -= 1;
             i += dir;
         }
