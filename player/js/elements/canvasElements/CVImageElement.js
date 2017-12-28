@@ -58,5 +58,4 @@ CVImageElement.prototype.renderInnerContent = function(parentMatrix){
 
 CVImageElement.prototype.destroy = function(){
     this.img = null;
-    this.destroyBaseElement();
 };

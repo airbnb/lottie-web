@@ -80,4 +80,5 @@ HBaseElement.prototype.setMatte = function(){
 
 }
 
+HBaseElement.prototype.destroyBaseElement = HBaseElement.prototype.destroy;
 HBaseElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
