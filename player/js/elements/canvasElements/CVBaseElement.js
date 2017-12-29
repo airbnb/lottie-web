@@ -1,9 +1,7 @@
 function CVBaseElement(data, comp, globalData){
 }
 
-CVBaseElement.prototype.createElements = function(){
-    this.checkParenting();
-};
+CVBaseElement.prototype.createElements = function(){};
 
 CVBaseElement.prototype.initRendererElement = function(){
 

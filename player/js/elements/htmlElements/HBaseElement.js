@@ -30,7 +30,6 @@ HBaseElement.prototype.createContainerElements = function(){
     if (this.data.bm !== 0) {
         this.setBlendMode();
     }
-    this.checkParenting();
 };
 
 HBaseElement.prototype.renderElement = function() {
