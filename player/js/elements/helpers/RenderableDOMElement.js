@@ -29,8 +29,8 @@ RenderableDOMElement.prototype.show = function(){
             this.layerElement.style.display = 'block';
         }
         this.hidden = false;
-        this.firstFrame = true;
-        this.maskManager.firstFrame = true;
+        this._isFirstFrame = true;
+        this.maskManager._isFirstFrame = true;
     }
 };
 
@@ -44,8 +44,8 @@ RenderableDOMElement.prototype.renderFrame = function() {
     this.renderRenderable();
     this.renderElement();
     this.renderInnerContent();
-    if (this.firstFrame) {
-        this.firstFrame = false;
+    if (this._isFirstFrame) {
+        this._isFirstFrame = false;
     }
 };
 

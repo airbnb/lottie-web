@@ -47,7 +47,7 @@ HShapeElement.prototype.createContent = function(){
 HShapeElement.prototype.renderInnerContent = function() {
     this._renderShapeFrame();
 
-    if(!this.hidden && (this.firstFrame || this._mdf)) {
+    if(!this.hidden && (this._isFirstFrame || this._mdf)) {
         var boundingBox = this.shapeCont.getBBox();
         var changed = false;
         if(this.currentBBox.w !== boundingBox.width){

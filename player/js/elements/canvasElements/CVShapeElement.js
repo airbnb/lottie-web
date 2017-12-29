@@ -122,7 +122,7 @@ CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) 
 }
 
 CVShapeElement.prototype.reloadShapes = function(){
-    this.firstFrame = true;
+    this._isFirstFrame = true;
     var i, len = this.itemsData.length;
     for(i=0;i<len;i+=1){
         this.prevViewData[i] = this.itemsData[i];
@@ -315,7 +315,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
 };
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
     var len, i, j,jLen;
-    var redraw = groupTransform.matMdf || itemData.sh.mdf || this.firstFrame;
+    var redraw = groupTransform.matMdf || itemData.sh.mdf || this._isFirstFrame;
     if(redraw) {
         var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
         jLen = pathData._render === false ? 0 : paths._length;
@@ -376,10 +376,10 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
 CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransform){
     var styleElem = itemData.style;
 
-    if(itemData.c.mdf || this.firstFrame){
+    if(itemData.c.mdf || this._isFirstFrame){
         styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
+    if(itemData.o.mdf || groupTransform.opMdf || this._isFirstFrame){
         styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
 };
@@ -388,17 +388,17 @@ CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransf
     var styleElem = itemData.style;
     //TODO fix dashes
     var d = itemData.d;
-    if(d && (d.mdf  || this.firstFrame)){
+    if(d && (d.mdf  || this._isFirstFrame)){
         styleElem.da = d.dashArray;
         styleElem.do = d.dashoffset[0];
     }
-    if(itemData.c.mdf || this.firstFrame){
+    if(itemData.c.mdf || this._isFirstFrame){
         styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(itemData.o.mdf || groupTransform.opMdf || this.firstFrame){
+    if(itemData.o.mdf || groupTransform.opMdf || this._isFirstFrame){
         styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
-    if(itemData.w.mdf || this.firstFrame){
+    if(itemData.w.mdf || this._isFirstFrame){
         styleElem.wi = itemData.w.v;
     }
 };

@@ -19,7 +19,7 @@ IShapeElement.prototype = {
 
         len = this.shapeModifiers.length;
         for(i=len-1;i>=0;i-=1){
-            this.shapeModifiers[i].processShapes(this.firstFrame);
+            this.shapeModifiers[i].processShapes(this._isFirstFrame);
         }
     },
     lcEnum: {

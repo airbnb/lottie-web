@@ -1,6 +1,6 @@
 function TextAnimatorProperty(textData, renderType, elem){
     this.mdf = false;
-    this.firstFrame = true;
+    this._isFirstFrame = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
 	this._dynamicProperties = [];
@@ -43,10 +43,10 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
 
 TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag){
     this.lettersChangedFlag = lettersChangedFlag;
-    if(!this.mdf && !this.firstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
+    if(!this.mdf && !this._isFirstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
         return;
     }
-    this.firstFrame = false;
+    this._isFirstFrame = false;
     var alignment = this._moreOptions.alignment.v;
     var animators = this._animatorsData;
     var textData = this._textData;

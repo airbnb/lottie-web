@@ -74,7 +74,7 @@ TrimModifier.prototype.releasePathsData = function(pathsData) {
     return pathsData;
 }
 
-TrimModifier.prototype.processShapes = function(firstFrame) {
+TrimModifier.prototype.processShapes = function(_isFirstFrame) {
     
     if (this.mdf) {
         var o = (this.o.v % 360) / 360;
@@ -113,7 +113,7 @@ TrimModifier.prototype.processShapes = function(firstFrame) {
         for (i = 0; i < len; i += 1) {
             shapeData = this.shapes[i];
             // if shape hasn't changed and trim properties haven't changed, cached previous path can be used
-            if (!shapeData.shape.mdf && !this.mdf && !firstFrame && this.m !== 2) {
+            if (!shapeData.shape.mdf && !this.mdf && !_isFirstFrame && this.m !== 2) {
                 shapeData.shape.paths = shapeData.localShapeCollection;
             } else {
                 shapePaths = shapeData.shape.paths;

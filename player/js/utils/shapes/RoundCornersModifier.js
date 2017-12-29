@@ -59,7 +59,7 @@ RoundCornersModifier.prototype.processPath = function(path, round){
     return cloned_path;
 }
 
-RoundCornersModifier.prototype.processShapes = function(firstFrame){
+RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -71,7 +71,7 @@ RoundCornersModifier.prototype.processShapes = function(firstFrame){
             shapeData = this.shapes[i];
             newPaths = shapeData.shape.paths;
             localShapeCollection = shapeData.localShapeCollection;
-            if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
+            if(!(!shapeData.shape.mdf && !this.mdf && !_isFirstFrame)){
                 localShapeCollection.releaseShapes();
                 shapeData.shape.mdf = true;
                 shapePaths = shapeData.shape.paths.shapes;

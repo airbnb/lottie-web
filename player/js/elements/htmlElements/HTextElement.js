@@ -170,7 +170,7 @@ HTextElement.prototype.buildNewText = function(){
 HTextElement.prototype.renderInnerContent = function() {
 
     if(this.data.singleShape){
-        if(!this.firstFrame && !this.lettersChangedFlag){
+        if(!this._isFirstFrame && !this.lettersChangedFlag){
             return;
         } else {
             // Todo Benchmark if using this is better than getBBox
@@ -220,7 +220,7 @@ HTextElement.prototype.renderInnerContent = function() {
         }
     }
 
-    if(this.innerElem.getBBox && !this.hidden && (this.firstFrame || this._mdf)){
+    if(this.innerElem.getBBox && !this.hidden && (this._isFirstFrame || this._mdf)){
         var boundingBox = this.innerElem.getBBox();
 
         if(this.currentBBox.w !== boundingBox.width){

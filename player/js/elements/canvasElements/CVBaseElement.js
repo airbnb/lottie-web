@@ -36,8 +36,8 @@ CVBaseElement.prototype.hideElement = function(){
 CVBaseElement.prototype.showElement = function(){
     if (this.isInRange && !this.isTransparent){
         this.hidden = false;
-        this.firstFrame = true;
-        this.maskManager.firstFrame = true;
+        this._isFirstFrame = true;
+        this.maskManager._isFirstFrame = true;
     }
 };
 
@@ -56,8 +56,8 @@ CVBaseElement.prototype.renderFrame = function() {
     if(this.maskManager.hasMasks) {
         this.globalData.renderer.restore(true);
     }
-    if (this.firstFrame) {
-        this.firstFrame = false;
+    if (this._isFirstFrame) {
+        this._isFirstFrame = false;
     }
 };
 

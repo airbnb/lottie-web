@@ -272,7 +272,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
         return;
     }
     this.renderedFrame = num;
-    this.globalData.frameNum = num - this.animationItem.firstFrame;
+    this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
     this.globalData.mdf = false;
     this.globalData.projectInterface.currentFrame = num;

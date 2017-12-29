@@ -3,7 +3,7 @@ function TextProperty(elem, data, dynamicProperties){
 	this.pv = '';
 	this.v = '';
 	this.kf = false;
-	this.firstFrame = true;
+	this._isFirstFrame = true;
 	this.mdf = true;
 	this.data = data;
 	this.elem = elem;
@@ -80,7 +80,7 @@ TextProperty.prototype.searchProperty = function() {
 TextProperty.prototype.getValue = function() {
 	this.mdf = false;
 	var frameId = this.elem.globalData.frameId;
-	if((frameId === this._frameId || !this.kf) && !this.firstFrame) {
+	if((frameId === this._frameId || !this.kf) && !this._isFirstFrame) {
 		return;
 	}
 	var textKeys = this.data.d.k, textDocumentData;
@@ -97,7 +97,8 @@ TextProperty.prototype.getValue = function() {
             this.completeTextData(textDocumentData);
         }
         this.setCurrentData(textDocumentData);
-        this.mdf = this.firstFrame ? false : true;
+        //TODO check this
+        this.mdf = !this._isFirstFrame;
         this.pv = this.v = this.currentData.t;
         this.keysIndex = i;
     }
@@ -329,6 +330,6 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
     dData.__complete = false;
     dData.t = newData.t;
     this.keysIndex = -1;
-    this.firstFrame = true;
+    this._isFirstFrame = true;
     this.getValue();
 }

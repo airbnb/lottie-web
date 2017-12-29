@@ -19,8 +19,8 @@ TransformElement.prototype.initTransform = function() {
 
 TransformElement.prototype.renderTransform = function() {
 
-	this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf || this.firstFrame;
-    this.finalTransform.matMdf = this.finalTransform.mProp.mdf || this.firstFrame;
+	this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf || this._isFirstFrame;
+    this.finalTransform.matMdf = this.finalTransform.mProp.mdf || this._isFirstFrame;
 
     if (this.hierarchy) {
         var mat;

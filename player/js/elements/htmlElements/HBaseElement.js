@@ -52,8 +52,8 @@ HBaseElement.prototype.renderFrame = function() {
     this.renderRenderable();
     this.renderElement();
     this.renderInnerContent();
-    if (this.firstFrame) {
-        this.firstFrame = false;
+    if (this._isFirstFrame) {
+        this._isFirstFrame = false;
     }
 };
 

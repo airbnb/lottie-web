@@ -27,7 +27,7 @@ function HCameraElement(data,globalData,comp){
     this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
     this.mat = new Matrix();
     this._prevMat = new Matrix();
-    this.firstFrame = true;
+    this._isFirstFrame = true;
 }
 extendPrototype([BaseElement, FrameElement], HCameraElement);
 
@@ -49,7 +49,7 @@ HCameraElement.prototype.hide = function(){
 };
 
 HCameraElement.prototype.renderFrame = function(){
-    var mdf = this.firstFrame;
+    var mdf = this._isFirstFrame;
     var i, len;
     if(this.hierarchy){
         len = this.hierarchy.length;
@@ -97,11 +97,8 @@ HCameraElement.prototype.renderFrame = function(){
             }
             this.mat.clone(this._prevMat);
         }
-    } else {
-
-        //console.log('NO ENTRO')
     }
-    this.firstFrame = false;
+    this._isFirstFrame = false;
 };
 
 HCameraElement.prototype.prepareFrame = function(num) {
