@@ -21,7 +21,7 @@ var BMMath = {};
     }
 }());
 
-function ProjectInterface(){return {}};
+function ProjectInterface(){return {};}
 
 BMMath.random = Math.random;
 BMMath.abs = function(val){
@@ -36,7 +36,7 @@ BMMath.abs = function(val){
     }
     return Math.abs(val);
 
-}
+};
 var defaultCurveSegments = 150;
 var degToRads = Math.PI/180;
 var roundCorner = 0.5519;
@@ -104,21 +104,18 @@ function randomString(length, chars){
 
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;
-    if (arguments.length === 1) {
-        s = h.s, v = h.v, h = h.h;
-    }
     i = Math.floor(h * 6);
     f = h * 6 - i;
     p = v * (1 - s);
     q = v * (1 - f * s);
     t = v * (1 - (1 - f) * s);
     switch (i % 6) {
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        case 5: r = v, g = p, b = q; break;
+        case 0: r = v; g = t; b = p; break;
+        case 1: r = q; g = v; b = p; break;
+        case 2: r = p; g = v; b = t; break;
+        case 3: r = p; g = q; b = v; break;
+        case 4: r = t; g = p; b = v; break;
+        case 5: r = v; g = p; b = q; break;
     }
     return [ r,
         g,
@@ -126,9 +123,6 @@ function HSVtoRGB(h, s, v) {
 }
 
 function RGBtoHSV(r, g, b) {
-    if (arguments.length === 1) {
-        g = r.g, b = r.b, r = r.r;
-    }
     var max = Math.max(r, g, b), min = Math.min(r, g, b),
         d = max - min,
         h,

@@ -14,7 +14,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, dynam
     this.setGradientData(styleOb.pElem, data);
     this.setGradientOpacity(data, styleOb);
 
-}
+};
 
 SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
 
@@ -35,7 +35,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
     
     this.gf = gfill;
     this.cst = stops;
-}
+};
 
 SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
     if(this.g._hasOpacity && !this.g._collapsable){

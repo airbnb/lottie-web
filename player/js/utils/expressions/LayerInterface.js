@@ -130,5 +130,5 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;
         return _thisLayerFunction;
-    }
+    };
 }());

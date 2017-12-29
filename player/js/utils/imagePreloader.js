@@ -66,5 +66,5 @@ var ImagePreloader = (function(){
         this.totalImages = 0;
         this.loadedAssets = 0;
         this.imagesLoadedCb = null;
-    }
+    };
 }());

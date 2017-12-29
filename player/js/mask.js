@@ -26,7 +26,7 @@ function MaskElement(data,element,globalData, dynamicProperties) {
             maskRef = 'mask';
         }
 
-        if((properties[i].mode == 's' || properties[i].mode == 'i') && count == 0){
+        if((properties[i].mode == 's' || properties[i].mode == 'i') && count === 0){
             rect = createNS( 'rect');
             rect.setAttribute('fill', '#ffffff');
             rect.setAttribute('width', this.element.comp.data.w);
@@ -51,12 +51,13 @@ function MaskElement(data,element,globalData, dynamicProperties) {
 
         path.setAttribute('fill', properties[i].mode === 's' ? '#000000':'#ffffff');
         path.setAttribute('clip-rule','nonzero');
+        var filterID;
 
         if (properties[i].x.k !== 0) {
             maskType = 'mask';
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,dynamicProperties);
-            var filterID = 'fi_'+randomString(10);
+            filterID = 'fi_'+randomString(10);
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
             feMorph = createNS('feMorphology');
@@ -128,7 +129,7 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         defs.appendChild(this.maskElement);
     }
 
-};
+}
 
 MaskElement.prototype.getMaskProperty = function(pos){
     return this.viewData[pos].prop;

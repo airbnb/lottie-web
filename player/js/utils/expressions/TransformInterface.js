@@ -52,7 +52,7 @@ var TransformExpressionInterface = (function (){
                     return ExpressionValue(transform.p);
                 } else {
                     return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
-                };
+                }
             }
         });
 
@@ -105,5 +105,5 @@ var TransformExpressionInterface = (function (){
         });
 
         return _thisFunction;
-    }
+    };
 }());

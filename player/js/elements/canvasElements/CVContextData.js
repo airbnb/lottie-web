@@ -21,10 +21,10 @@ CVContextData.prototype.duplicate = function() {
         this.saved[i] = createTypedArray('float32', 16);
     }
     this._length = newLength;
-}
+};
 
 CVContextData.prototype.reset = function() {
 	this.cArrPos = 0;
 	this.cTr.reset();
     this.cO = 1;
-}
+};

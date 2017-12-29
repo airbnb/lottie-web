@@ -19,7 +19,7 @@ function TextAnimatorDataProperty(elem, animatorProps, dynamicProperties) {
 		fs: textAnimator_animatables.fs ? getProp(elem, textAnimator_animatables.fs, 0, 0.01, dynamicProperties) : defaultData,
 		fb: textAnimator_animatables.fb ? getProp(elem, textAnimator_animatables.fb, 0, 0.01, dynamicProperties) : defaultData,
 		t: textAnimator_animatables.t ? getProp(elem, textAnimator_animatables.t, 0, 0, dynamicProperties) : defaultData
-	}
+	};
 
 	this.s = TextSelectorProp.getTextSelectorProp(elem,animatorProps.s, dynamicProperties);
     this.s.t = animatorProps.s.t;

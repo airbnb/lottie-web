@@ -141,7 +141,7 @@ function dataFunctionManager(){
                         t:0
                     }
                 ]
-            }
+            };
         }
 
         function iterateLayers(layers){
@@ -166,8 +166,8 @@ function dataFunctionManager(){
                     }
                 }
             }
-        }
-    }())
+        };
+    }());
 
     var checkChars = (function() {
         var minimumVersion = [4,7,99];
@@ -190,9 +190,8 @@ function dataFunctionManager(){
                     }
                 }
             }
-        }
-
-    }())
+        };
+    }());
 
     var checkColors = (function(){
         var minimumVersion = [4,1,9];
@@ -252,7 +251,7 @@ function dataFunctionManager(){
                     }
                 }
             }
-        }
+        };
     }());
 
     var checkShapes = (function(){
@@ -330,7 +329,7 @@ function dataFunctionManager(){
                     }
                 }
             }
-        }
+        };
     }());
 
     /*function blitPaths(path){

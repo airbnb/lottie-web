@@ -42,7 +42,7 @@ SVGStrokeEffect.prototype.initialize = function(){
         groupPath.setAttribute('stroke','#fff');
     } else if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
         if(this.filterManager.effectElements[10].p.v === 2){
-            var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
+            elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
             while(elemChildren.length){
                 this.elem.layerElement.removeChild(elemChildren[0]);
             }
@@ -53,7 +53,7 @@ SVGStrokeEffect.prototype.initialize = function(){
     }
     this.initialized = true;
     this.pathMasker = groupPath;
-}
+};
 
 SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     if(!this.initialized){

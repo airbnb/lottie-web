@@ -14,7 +14,7 @@ function CVTextElement(data, globalData, comp){
         stroke: 'rgba(0,0,0,0)',
         sWidth: 0,
         fValue: ''
-    }
+    };
     this.initElement(data,globalData,comp);
 }
 extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], CVTextElement);
@@ -68,7 +68,7 @@ CVTextElement.prototype.buildNewText = function(){
         if(singleShape){
             this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
         }
-        commands = createSizedArray(jLen)
+        commands = createSizedArray(jLen);
         for(j=0;j<jLen;j+=1){
             kLen = shapes[j].ks.k.i.length;
             pathNodes = shapes[j].ks.k;
@@ -93,7 +93,7 @@ CVTextElement.prototype.buildNewText = function(){
         }
         cnt +=1;
     }
-}
+};
 
 CVTextElement.prototype.renderInnerContent = function(){
     var ctx = this.canvasContext;

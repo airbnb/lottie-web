@@ -55,4 +55,4 @@ LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
 		updated = true;
 	}
 	return updated;
-}
+};

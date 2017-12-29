@@ -12,4 +12,4 @@ function SVGStyleData(data, level) {
 SVGStyleData.prototype.reset = function() {
 	this.d = '';
 	this._mdf = false;
-}
+};

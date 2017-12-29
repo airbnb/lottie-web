@@ -1,5 +1,5 @@
 var ExpressionManager = (function(){
-    "use strict";
+    'use strict';
     var ob = {};
     var Math = BMMath;
     var window = null;
@@ -32,9 +32,7 @@ var ExpressionManager = (function(){
         }
         var i, len = shape1._length;
         for(i = 0; i < len; i += 1) {
-            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1]
-                || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1]
-                || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
+            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1] || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1] || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
                 return false;
             }
         }
@@ -81,7 +79,7 @@ var ExpressionManager = (function(){
                 if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
                     retArr[i] = a[i] + b[i];
                 }else{
-                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
+                    retArr[i] = b[i] === undefined ? a[i] : a[i] || b[i];
                 }
                 i += 1;
             }
@@ -118,7 +116,7 @@ var ExpressionManager = (function(){
                 if((typeof a[i] === 'number' || a[i] instanceof Number) && typeof (typeof b[i] === 'number' || b[i] instanceof Number)){
                     retArr[i] = a[i] - b[i];
                 }else{
-                    retArr[i] = b[i] == undefined ? a[i] : a[i] || b[i];
+                    retArr[i] = b[i] === undefined ? a[i] : a[i] || b[i];
                 }
                 i += 1;
             }
@@ -252,6 +250,16 @@ var ExpressionManager = (function(){
 
         return [h, s, l,val[3]];
     }
+
+    function hue2rgb(p, q, t){
+        if(t < 0) t += 1;
+        if(t > 1) t -= 1;
+        if(t < 1/6) return p + (q - p) * 6 * t;
+        if(t < 1/2) return q;
+        if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+    }
+
     function hslToRgb(val){
         var h = val[0];
         var s = val[1];
@@ -259,17 +267,9 @@ var ExpressionManager = (function(){
 
         var r, g, b;
 
-        if(s == 0){
+        if(s === 0){
             r = g = b = l; // achromatic
         }else{
-            function hue2rgb(p, q, t){
-                if(t < 0) t += 1;
-                if(t > 1) t -= 1;
-                if(t < 1/6) return p + (q - p) * 6 * t;
-                if(t < 1/2) return q;
-                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                return p;
-            }
 
             var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
             var p = 2 * l - q;
@@ -319,7 +319,7 @@ var ExpressionManager = (function(){
             var arr = createTypedArray('float32', len);
             var rnd = BMMath.random();
             for(i=0;i<len;i+=1){
-                arr[i] = min[i] + rnd*(max[i]-min[i])
+                arr[i] = min[i] + rnd*(max[i]-min[i]);
             }
             return arr;
         }
@@ -337,9 +337,9 @@ var ExpressionManager = (function(){
         var i, len = points.length;
         path.setPathData(closed, len);
         for(i = 0; i < len; i += 1) {
-            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true)
+            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true);
         }
-        return path
+        return path;
     }
 
     function initiateExpression(elem,data,property){
@@ -348,7 +348,6 @@ var ExpressionManager = (function(){
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
         var transform,content,effect;
-        var thisComp = elem.comp;
         var thisProperty = property;
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
@@ -403,13 +402,13 @@ var ExpressionManager = (function(){
             loop_out = loopOut;
         }
 
-        var loopInDuration = function loopInDuration(type,duration){
+        function loopInDuration(type,duration){
             return loopIn(type,duration,true);
-        }.bind(this);
+        }
 
-        var loopOutDuration = function loopOutDuration(type,duration){
+        function loopOutDuration(type,duration){
             return loopOut(type,duration,true);
-        }.bind(this);
+        }
 
         if(this.getValueAtTime) {
             valueAtTime = this.getValueAtTime.bind(this);
@@ -426,7 +425,7 @@ var ExpressionManager = (function(){
             var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
             var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
             return [yaw,pitch,0];
-        };
+        }
 
         function easeOut(t, tMin, tMax, val1, val2){
             if(val1 === undefined){
@@ -436,7 +435,7 @@ var ExpressionManager = (function(){
                 t = (t - tMin) / (tMax - tMin);
             }
             return -(val2-val1) * t*(t-2) + val1;
-        };
+        }
 
         function easeIn(t, tMin, tMax, val1, val2){
             if(val1 === undefined){
@@ -446,7 +445,7 @@ var ExpressionManager = (function(){
                 t = (t - tMin) / (tMax - tMin);
             }
             return (val2-val1)*t*t + val1;
-        };
+        }
 
         function nearestKey(time){
             var i, len = data.k.length,index,keyTime;
@@ -487,7 +486,7 @@ var ExpressionManager = (function(){
             ob.index = index;
             ob.time = keyTime/elem.comp.globalData.frameRate;
             return ob;
-        };
+        }
 
         function key(ind){
             var ob, i, len;
@@ -509,14 +508,14 @@ var ExpressionManager = (function(){
                 ob[i] = arr[i];
             }
             return ob;
-        };
+        }
 
         function framesToTime(frames, fps) { 
             if (!fps) {
                 fps = elem.comp.globalData.frameRate;
             }
             return frames / fps;
-        };
+        }
 
         function timeToFrames(t, fps) {
             if (!t && t !== 0) {
@@ -526,11 +525,11 @@ var ExpressionManager = (function(){
                 fps = elem.comp.globalData.frameRate;
             }
             return t * fps;
-        };
+        }
 
         function seedRandom(seed){
             BMMath.seedrandom(randSeed + seed);
-        };
+        }
 
         function sourceRectAtTime() {
             return elem.sourceRectAtTime();
@@ -640,7 +639,7 @@ var ExpressionManager = (function(){
             this.lock = false;
         }
         return executeExpression;
-    };
+    }
 
     ob.initiateExpression = initiateExpression;
     return ob;

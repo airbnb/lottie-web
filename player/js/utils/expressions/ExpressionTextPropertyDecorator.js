@@ -16,7 +16,7 @@
     TextProperty.prototype.searchProperty = function(){
         this.kf = this.searchExpressions() || this.data.d.k.length > 1;
         return this.kf;
-    }
+    };
 
     TextProperty.prototype.getExpressionValue = function(num){
         this.calculateExpression();
@@ -24,7 +24,7 @@
             this.currentData.t = this.v.toString();
             this.completeTextData(this.currentData);
         }
-    }
+    };
 
     TextProperty.prototype.searchExpressions = searchExpressions;
     

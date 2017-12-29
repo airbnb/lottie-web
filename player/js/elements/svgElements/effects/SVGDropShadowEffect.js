@@ -1,11 +1,4 @@
 function SVGDropShadowEffect(filter, filterManager){
-    /*<feGaussianBlur in="SourceAlpha" stdDeviation="3"/> <!-- stdDeviation is how much to blur -->
-  <feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
-  <feMerge> 
-    <feMergeNode/> <!-- this contains the offset blurred image -->
-    <feMergeNode in="SourceGraphic"/> <!-- this contains the element that the filter is applied to -->
-  </feMerge>*/
-  /*<feFlood flood-color="#3D4574" flood-opacity="0.5" result="offsetColor"/>*/
     filter.setAttribute('x','-100%');
     filter.setAttribute('y','-100%');
     filter.setAttribute('width','400%');
@@ -67,10 +60,10 @@ SVGDropShadowEffect.prototype.renderFrame = function(forceRender){
             this.feFlood.setAttribute('flood-opacity',this.filterManager.effectElements[1].p.v/255);
         }
         if(forceRender || this.filterManager.effectElements[2].p._mdf || this.filterManager.effectElements[3].p._mdf){
-            var distance = this.filterManager.effectElements[3].p.v
-            var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads
-            var x = distance * Math.cos(angle)
-            var y = distance * Math.sin(angle)
+            var distance = this.filterManager.effectElements[3].p.v;
+            var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads;
+            var x = distance * Math.cos(angle);
+            var y = distance * Math.sin(angle);
             this.feOffset.setAttribute('dx', x);
             this.feOffset.setAttribute('dy', y);
         }

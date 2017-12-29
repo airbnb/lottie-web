@@ -33,12 +33,12 @@ CVImageElement.prototype.imageLoaded = function() {
         ctx.drawImage(this.img,(imgW-widthCrop)/2,(imgH-heightCrop)/2,widthCrop,heightCrop,0,0,this.assetData.w,this.assetData.h);
         this.img = canvas;
     }
-}
+};
 
 CVImageElement.prototype.imageFailed = function() {
     this.failed = true;
     this.globalData.elementLoaded();
-}
+};
 
 CVImageElement.prototype.createContent = function(){
     var img = this.img;

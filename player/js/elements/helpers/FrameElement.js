@@ -43,4 +43,4 @@ FrameElement.prototype = {
             }
         }
     }
-}
+};

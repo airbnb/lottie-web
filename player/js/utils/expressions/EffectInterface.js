@@ -21,7 +21,7 @@ var EffectsExpressionInterface = (function (){
                     }
                     i += 1;
                 }
-            }
+            };
         }
     }
 
@@ -57,7 +57,7 @@ var EffectsExpressionInterface = (function (){
                 i += 1;
             }
             return effectElements[0]();
-        }
+        };
 
         groupInterface.propertyGroup = _propertyGroup;
 
@@ -74,7 +74,7 @@ var EffectsExpressionInterface = (function (){
             }
         });
         groupInterface.active = data.en !== 0;
-        return groupInterface
+        return groupInterface;
     }
 
     function createValueInterface(element, type, elem, propertyGroup){

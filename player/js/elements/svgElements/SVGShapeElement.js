@@ -20,7 +20,7 @@ function SVGShapeElement(data,globalData,comp){
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,IShapeElement,HierarchyElement,FrameElement,RenderableDOMElement], SVGShapeElement);
 
 SVGShapeElement.prototype.initSecondaryElement = function() {
-}
+};
 
 SVGShapeElement.prototype.identityMatrix = new Matrix();
 
@@ -72,7 +72,7 @@ SVGShapeElement.prototype.createStyleElement = function(data, level, dynamicProp
     }
     this.stylesList.push(styleOb);
     return elementData;
-}
+};
 
 SVGShapeElement.prototype.createGroupElement = function(data) {
     var elementData = new ShapeGroupData();
@@ -80,11 +80,11 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
         elementData.gr.setAttribute('id',data.ln);
     }
     return elementData;
-}
+};
 
 SVGShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
-    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties), PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties))
-}
+    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties), PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties));
+};
 
 SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level, dynamicProperties) {
     var ty = 4;
@@ -96,11 +96,11 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
         ty = 7;
     }
     var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
-    var elementData = new SVGShapeData(ownTransformers, level, shapeProperty)
+    var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
     return elementData;
-}
+};
 
 SVGShapeElement.prototype.setElementStyles = function(elementData){
     var arr = elementData.styles;
@@ -110,7 +110,7 @@ SVGShapeElement.prototype.setElementStyles = function(elementData){
             arr.push(this.stylesList[j]);
         }
     }
-}
+};
 
 SVGShapeElement.prototype.reloadShapes = function(){
     this._isFirstFrame = true;
@@ -119,12 +119,12 @@ SVGShapeElement.prototype.reloadShapes = function(){
         this.prevViewData[i] = this.itemsData[i];
     }
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
-    var i, len = this.dynamicProperties.length;
+    len = this.dynamicProperties.length;
     for(i = 0; i < len; i += 1) {
         this.dynamicProperties[i].getValue();
     }
     this.renderModifiers();
-}
+};
 
 SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container,dynamicProperties, level, transformers, render){
     var ownTransformers = [].concat(transformers);

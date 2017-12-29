@@ -30,9 +30,8 @@ var MaskManagerInterface = (function(){
 		        }
 		        i += 1;
 		    }
-		}
-		return maskFunction
-	}
-	return MaskManager
-}())
-
+		};
+		return maskFunction;
+	};
+	return MaskManager;
+}());

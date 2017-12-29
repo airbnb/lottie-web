@@ -76,4 +76,4 @@ IShapeElement.prototype = {
         }
         return shapeString;
     }
-}
+};

@@ -58,7 +58,7 @@ RenderableElement.prototype = {
             left:0,
             width:100,
             height:100
-        }
+        };
     },
     getLayerSize: function(){
         if(this.data.ty === 5){
@@ -67,4 +67,4 @@ RenderableElement.prototype = {
             return {w:this.data.width,h:this.data.height};
         }
     }
-}
+};

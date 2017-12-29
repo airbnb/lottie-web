@@ -26,7 +26,7 @@ ShapeModifier.prototype.addShape = function(data){
         this.shapes.push(shapeData);
         this.addShapeToModifier(shapeData);
     }
-}
+};
 ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     this.dynamicProperties = [];
     this.shapes = [];
@@ -42,7 +42,7 @@ ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     }else{
         this.getValue(true);
     }
-}
+};
 ShapeModifier.prototype.processKeys = function(){
     if(this.elem.globalData.frameId === this.frameId){
         return;
@@ -57,4 +57,4 @@ ShapeModifier.prototype.processKeys = function(){
         }
     }
     this.frameId = this.elem.globalData.frameId;
-}
+};

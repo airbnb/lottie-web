@@ -5,7 +5,7 @@ var ExpressionValue = (function() {
 		if (elementProp.k) {
             elementProp.getValue();
         }
-        var i, len, arrValue;
+        var i, len, arrValue, val;
         if (type) {
         	if(type === 'color') {
         		len = 4;
@@ -17,8 +17,9 @@ var ExpressionValue = (function() {
 	        	expressionValue.value = arrValue;
         	}
         } else if (typeof elementProp.v === 'number' || elementProp.v instanceof Number){
-            expressionValue = mult ? new Number(elementProp.v * mult) : new Number(elementProp.v);
-            expressionValue.value = mult ? elementProp.v * mult : elementProp.v;
+            val = mult ? elementProp.v * mult : elementProp.v;
+            expressionValue = new Number(val);
+            expressionValue.value = val;
         } else {
         	len = elementProp.v.length;
             expressionValue = createTypedArray('float32', len);
@@ -40,5 +41,5 @@ var ExpressionValue = (function() {
         expressionValue.valueAtTime = elementProp.getValueAtTime;
         expressionValue.propertyGroup = elementProp.propertyGroup;
         return expressionValue;
-	}
-}())
+	};
+}());

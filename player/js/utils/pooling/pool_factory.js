@@ -8,7 +8,7 @@ var pool_factory = (function() {
 		var ob = {
 			newElement: newElement,
 			release: release
-		}
+		};
 
 		function newElement(){
 			var element;
@@ -34,11 +34,10 @@ var pool_factory = (function() {
 		}
 
 		function clone() {
-			console.log(arguments)
 			var clonedElement = newElement();
 			return _clone(clonedElement);
 		}
 
 		return ob;
-	}
+	};
 }());

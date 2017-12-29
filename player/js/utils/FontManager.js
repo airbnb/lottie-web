@@ -5,7 +5,7 @@ var FontManager = (function(){
         w: 0,
         size:0,
         shapes:[]
-    }
+    };
 
     function setUpNode(font, family){
         var parentNode = createTag('span');
@@ -84,7 +84,7 @@ var FontManager = (function(){
             setTimeout(function(){this.loaded = true;}.bind(this),0);
 
         }
-    };
+    }
 
     function createHelper(def, fontData){
         var tHelper = createNS('text');

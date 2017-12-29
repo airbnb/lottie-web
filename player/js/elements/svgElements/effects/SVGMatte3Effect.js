@@ -21,7 +21,7 @@ SVGMatte3Effect.prototype.findSymbol = function(mask) {
         i += 1;
     }
     return null;
-}
+};
 
 SVGMatte3Effect.prototype.replaceInParent = function(mask, symbolId) {
     var parentNode = mask.layerElement.parentNode;
@@ -47,7 +47,7 @@ SVGMatte3Effect.prototype.replaceInParent = function(mask, symbolId) {
     } else {
         parentNode.appendChild(useElem);
     }
-}
+};
 
 SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
     if(!this.findSymbol(mask)) {
@@ -70,7 +70,7 @@ SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
         mask.show();
     }
     elem.setMatte(mask.layerId);
-}
+};
 
 SVGMatte3Effect.prototype.initialize = function() {
     var ind = this.filterManager.effectElements[0].p.v;
@@ -82,10 +82,10 @@ SVGMatte3Effect.prototype.initialize = function() {
     	i += 1;
     }
     this.initialized = true;
-}
+};
 
 SVGMatte3Effect.prototype.renderFrame = function() {
 	if(!this.initialized) {
 		this.initialize();
 	}
-}
+};

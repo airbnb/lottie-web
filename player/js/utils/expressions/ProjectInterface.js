@@ -26,5 +26,5 @@ var ProjectInterface = (function (){
 
 
         return _thisProjectFunction;
-    }
+    };
 }());

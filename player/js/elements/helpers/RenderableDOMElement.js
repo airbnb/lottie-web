@@ -54,6 +54,6 @@ function RenderableDOMElement() {}
             this.innerElem =  null;
             this.destroyBaseElement();
         }
-    }
+    };
     extendPrototype([RenderableElement, createProxyFunction(_prototype)], RenderableDOMElement);
-}())
+}());

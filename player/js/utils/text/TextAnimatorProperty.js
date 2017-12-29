@@ -8,7 +8,7 @@ function TextAnimatorProperty(textData, renderType, elem){
 	this._renderType = renderType;
 	this._elem = elem;
 	this._animatorsData = createSizedArray(this._textData.a.length);
-	this._pathData = {}
+	this._pathData = {};
 	this._moreOptions = {
 		alignment: {}
 	};
@@ -39,7 +39,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
     if(this._dynamicProperties.length) {
     	dynamicProperties.push(this);
     }
-}
+};
 
 TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag){
     this.lettersChangedFlag = lettersChangedFlag;
@@ -56,22 +56,22 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var data = this.data;
     var xPos,yPos;
     var i, len;
-    var letters = documentData.l;
+    var letters = documentData.l, pathInfo, currentLength, currentPoint, segmentLength, flag, pointInd, segmentInd, prevPoint, points, segments, partialLength, totalLength, perc, tanAngle, mask;
     if(this._hasMaskedPath) {
-        var mask = this._pathData.m;
+        mask = this._pathData.m;
         if(!this._pathData.n || this._pathData._mdf){
             var paths = mask.v;
             if(this._pathData.r){
                 paths = paths.reverse();
             }
             // TODO: release bezier data cached from previous pathInfo: this._pathData.pi
-            var pathInfo = {
+            pathInfo = {
                 tLength: 0,
                 segments: []
             };
             len = paths._length - 1;
             var pathData;
-            var totalLength = 0;
+            totalLength = 0;
             for (i = 0; i < len; i += 1) {
                 pathData = {
                     s: paths.v[i],
@@ -99,11 +99,14 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             }
             this._pathData.pi = pathInfo;
         }
-        var pathInfo = this._pathData.pi;
+        pathInfo = this._pathData.pi;
 
-        var currentLength = this._pathData.f.v, segmentInd = 0, pointInd = 1, currentPoint, prevPoint, points;
-        var segmentLength = 0, flag = true;
-        var segments = pathInfo.segments;
+        currentLength = this._pathData.f.v;
+        segmentInd = 0;
+        pointInd = 1;
+        segmentLength = 0;
+        flag = true;
+        segments = pathInfo.segments;
         if (currentLength < 0 && mask.v.c) {
             if (pathInfo.tLength < Math.abs(currentLength)) {
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
@@ -125,15 +128,14 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
         points = segments[segmentInd].bezierData.points;
         prevPoint = points[pointInd - 1];
         currentPoint = points[pointInd];
-        var partialLength = currentPoint.partialLength;
-        var perc, tanAngle;
+        partialLength = currentPoint.partialLength;
     }
 
 
     len = letters.length;
     xPos = 0;
     yPos = 0;
-    var yOff = documentData.s*1.2*.714;
+    var yOff = documentData.s * 1.2 * 0.714;
     var firstLine = true;
     var animatorProps, animatorSelector;
     var j, jLen;
@@ -368,7 +370,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 if (documentData.strokeColorAnim && animatorProps.sc.propType) {
                     for(k=0;k<3;k+=1){
                         if(mult.length) {
-                            sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0]
+                            sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0];
                         } else {
                             sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult;
                         }
@@ -498,7 +500,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             this.lettersChangedFlag = letterValue.update(letterO, letterSw, letterSc, letterFc, letterM, letterP) || this.lettersChangedFlag;
         }
     }
-}
+};
 
 TextAnimatorProperty.prototype.getValue = function(){
 	if(this._elem.globalData.frameId === this._frameId){
@@ -511,7 +513,7 @@ TextAnimatorProperty.prototype.getValue = function(){
 		this._dynamicProperties[i].getValue();
         this._mdf = this._dynamicProperties[i]._mdf || this._mdf;
 	}
-}
+};
 
 TextAnimatorProperty.prototype.mHelper = new Matrix();
 TextAnimatorProperty.prototype.defaultPropsArray = [];

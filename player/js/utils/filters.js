@@ -23,4 +23,4 @@ var filtersFactory = (function(){
 	}
 
 	return ob;
-}())
+}());

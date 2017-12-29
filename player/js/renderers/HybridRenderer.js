@@ -118,7 +118,7 @@ HybridRenderer.prototype.getThreeDContainerByPos = function(pos){
         }
         i += 1;
     }
-}
+};
 
 HybridRenderer.prototype.createThreeDContainer = function(pos){
     var perspectiveElem = createTag('div');

@@ -48,8 +48,6 @@ AnimationItem.prototype.setParams = function(params) {
         case 'svg':
             this.renderer = new SVGRenderer(this, params.rendererSettings);
             break;
-        case 'hybrid':
-        case 'html':
         default:
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;

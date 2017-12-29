@@ -25,7 +25,7 @@ ITextElement.prototype.prepareFrame = function(num) {
         this.buildNewText();
         this.textProperty._isFirstFrame = false;
     }
-}
+};
 
 ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
     var j,jLen = shapes.length;
@@ -40,7 +40,7 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
 
 ITextElement.prototype.updateDocumentData = function(newData, index) {
     this.textProperty.updateDocumentData(newData, index);
-}
+};
 
 ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
     if(documentData.ps){
@@ -56,11 +56,11 @@ ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matr
             break;
     }
     matrixHelper.translate(xPos, yPos, 0);
-}
+};
 
 ITextElement.prototype.buildColor = function(colorData) {
     return 'rgb(' + Math.round(colorData[0]*255) + ',' + Math.round(colorData[1]*255) + ',' + Math.round(colorData[2]*255) + ')';
-}
+};
 
 ITextElement.prototype.buildShapeString = IShapeElement.prototype.buildShapeString;
 

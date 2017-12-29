@@ -36,4 +36,4 @@ BaseEvent.prototype = {
 	        }
 	    }
 	}
-}
+};

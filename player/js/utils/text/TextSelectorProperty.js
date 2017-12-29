@@ -57,7 +57,7 @@ var TextSelectorProp = (function(){
                 mult = 0;
             }else{
                 mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                if(mult<.5){
+                if(mult<0.5){
                     mult *= 2;
                 }else{
                     mult = 1 - 2*(mult-0.5);
@@ -132,11 +132,11 @@ var TextSelectorProp = (function(){
 
     function getTextSelectorProp(elem, data,arr) {
         return new TextSelectorProp(elem, data, arr);
-    };
+    }
 
     return {
         getTextSelectorProp: getTextSelectorProp
-    }
+    };
 }());
 
     

@@ -71,4 +71,4 @@ TransformElement.prototype = {
         return pt;
     },
     mHelper: new Matrix()
-}
+};

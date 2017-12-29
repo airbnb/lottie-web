@@ -16,5 +16,5 @@ var TextExpressionInterface = (function(){
             }
         });
         return _thisLayerFunction;
-    }
-}())
+    };
+}());

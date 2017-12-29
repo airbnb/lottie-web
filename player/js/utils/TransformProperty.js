@@ -177,7 +177,7 @@ var TransformPropertyFactory = (function() {
     TransformProperty.prototype.autoOrient = autoOrient;
 
     function getTransformProperty(elem,data,arr){
-        return new TransformProperty(elem,data,arr)
+        return new TransformProperty(elem,data,arr);
     }
 
     return {

@@ -60,7 +60,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
             case 5:
                 eff = new EffectsManager(effects[i],element,dynamicProperties);
                 break;
-            case 6:
+            //case 6:
             default:
                 eff = new NoValueEffect(effects[i],element,dynamicProperties);
                 break;

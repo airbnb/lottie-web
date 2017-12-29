@@ -1,4 +1,4 @@
-function RoundCornersModifier(){};
+function RoundCornersModifier(){}
 extendPrototype([ShapeModifier],RoundCornersModifier);
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
@@ -57,7 +57,7 @@ RoundCornersModifier.prototype.processPath = function(path, round){
         }
     }
     return cloned_path;
-}
+};
 
 RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
     var shapePaths;
@@ -87,7 +87,6 @@ RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
     if(!this.dynamicProperties.length){
         this._mdf = false;
     }
-}
-
+};
 
 ShapeModifiers.registerModifier('rd',RoundCornersModifier);

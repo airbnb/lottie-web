@@ -4,7 +4,7 @@ var ShapePropertyFactory = (function(){
 
     function interpolateShape(frameNum, previousValue, isCurrentRender, caching) {
         var iterationIndex = caching.lastIndex;
-        var keyPropS,keyPropE,isHold;
+        var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue, hasModified = false;
         if(frameNum < this.keyframes[0].t-this.offsetTime){
             keyPropS = this.keyframes[0].s[0];
             isHold = true;
@@ -18,7 +18,7 @@ var ShapePropertyFactory = (function(){
             isHold = true;
         }else{
             var i = iterationIndex;
-            var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData, j, jLen, k, kLen;
+            var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData;
             while(flag){
                 keyData = this.keyframes[i];
                 nextKeyData = this.keyframes[i+1];
@@ -33,8 +33,6 @@ var ShapePropertyFactory = (function(){
             }
             isHold = keyData.h === 1;
             iterationIndex = i;
-
-            var perc;
             if(!isHold){
                 if(frameNum >= nextKeyData.t-this.offsetTime){
                     perc = 1;
@@ -56,14 +54,7 @@ var ShapePropertyFactory = (function(){
         }
         jLen = previousValue._length;
         kLen = keyPropS.i[0].length;
-        var hasModified = false;
-        var vertexValue;
         caching.lastIndex = iterationIndex;
-        var j, k;
-        var jLen = previousValue._length;
-        var kLen = keyPropS.i[0].length;
-        var hasModified = false;
-        var vertexValue;
 
         for(j=0;j<jLen;j+=1){
             for(k=0;k<kLen;k+=1){
@@ -253,7 +244,7 @@ var ShapePropertyFactory = (function(){
             }else{
                 this.convertEllToPath();
             }
-        }
+        };
     }());
 
     var StarShapeProperty = (function() {
@@ -383,7 +374,7 @@ var ShapePropertyFactory = (function(){
             }else{
                 this.convertToPath();
             }
-        }
+        };
     }());
 
     var RectShapeProperty = (function() {
@@ -469,7 +460,7 @@ var ShapePropertyFactory = (function(){
             }else{
                 this.convertRectToPath();
             }
-        }
+        };
     }());
 
     function getShapeProp(elem,data,type, arr){

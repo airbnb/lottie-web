@@ -68,12 +68,13 @@ var ShapeExpressionInterface = (function(){
                 case 'Contents':
                 case 2:
                     return interfaceFunction.content;
-                case 'ADBE Vector Transform Group':
-                case 3:
+                //Not necessary for now. Keeping them here in case a new case appears
+                //case 'ADBE Vector Transform Group':
+                //case 3:
                 default:
                     return interfaceFunction.transform;
             }
-        }
+        };
         interfaceFunction.propertyGroup = function(val){
             if(val === 1){
                 return interfaceFunction;
@@ -119,7 +120,7 @@ var ShapeExpressionInterface = (function(){
             },
             '_name': { value: shape.nm },
             'mn': { value: shape.mn }
-        })
+        });
 
         view.c.setGroupProperty(propertyGroup);
         view.o.setGroupProperty(propertyGroup);
@@ -133,23 +134,23 @@ var ShapeExpressionInterface = (function(){
             } else{
                 return propertyGroup(val-1);
             }
-        };
+        }
         function _dashPropertyGroup(val){
             if(val === 1){
                 return dashOb;
             } else{
                 return _propertyGroup(val-1);
             }
-        };
+        }
         function addPropertyToDashOb(i) {
             Object.defineProperty(dashOb, shape.d[i].nm, {
                 get: function(){
-                    return ExpressionValue(view.d.dataProps[i].p)
+                    return ExpressionValue(view.d.dataProps[i].p);
                 }
             });
         }
         var i, len = shape.d ? shape.d.length : 0;
-        var dashOb = {}
+        var dashOb = {};
         for (i = 0; i < len; i += 1) {
             addPropertyToDashOb(i);
             view.d.dataProps[i].p.setGroupProperty(_dashPropertyGroup);
@@ -633,5 +634,5 @@ var ShapeExpressionInterface = (function(){
         _interfaceFunction.propertyGroup = propertyGroup;
         interfaces = iterateElements(shapes, view, _interfaceFunction);
         return _interfaceFunction;
-    }
-}())
+    };
+}());

@@ -2,7 +2,7 @@ var shapeCollection_pool = (function(){
 	var ob = {
 		newShapeCollection: newShapeCollection,
 		release: release
-	}
+	};
 
 	var _length = 0;
 	var _maxLength = 4;

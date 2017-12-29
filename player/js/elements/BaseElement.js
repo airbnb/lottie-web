@@ -1,5 +1,5 @@
 function BaseElement(){
-};
+}
 BaseElement.prototype.checkMasks = function(){
     if(!this.data.hasMask){
         return false;
@@ -12,7 +12,7 @@ BaseElement.prototype.checkMasks = function(){
         i += 1;
     }
     return false;
-}
+};
 
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
@@ -31,7 +31,7 @@ BaseElement.prototype.initExpressions = function(){
         this.layerInterface.textInterface = TextExpressionInterface(this);
         this.layerInterface.text = this.layerInterface.textInterface;
     }
-}
+};
 
 BaseElement.prototype.blendModeEnums = {
     1:'multiply',
@@ -49,18 +49,18 @@ BaseElement.prototype.blendModeEnums = {
     13:'saturation',
     14:'color',
     15:'luminosity'
-}
+};
 
 BaseElement.prototype.getBlendMode = function(){
     return this.blendModeEnums[this.data.bm] || '';
-}
+};
 
 BaseElement.prototype.setBlendMode = function(){
     var blendModeValue = this.getBlendMode();
     var elem = this.baseElement || this.layerElement;
 
     elem.style['mix-blend-mode'] = blendModeValue;
-}
+};
 
 BaseElement.prototype.initBaseData = function(data, globalData, comp){
     this.globalData = globalData;

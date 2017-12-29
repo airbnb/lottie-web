@@ -164,7 +164,7 @@
             velocity = (v2 - v1)/delta;
         }
         return velocity;
-    };
+    }
 
     function setGroupProperty(propertyGroup){
         this.propertyGroup = propertyGroup;
@@ -204,7 +204,7 @@
             this.pv = 1;
             this.comp = elem.comp;
             this.elem = elem;
-            this.mult = .01;
+            this.mult = 0.01;
             this.propType = 'textSelector';
             this.textTotal = data.totalChars;
             this.selectorValue = 100;
@@ -218,7 +218,7 @@
                 this.getValueAtTime = getStaticValueAtTime.bind(this);
             }
             this.setGroupProperty = setGroupProperty;
-        }
+        };
     }());
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
@@ -231,7 +231,7 @@
         }
         prop.setGroupProperty = setGroupProperty;
         return prop;
-    }
+    };
 
     var propertyGetProp = PropertyFactory.getProp;
     PropertyFactory.getProp = function(elem,data,type, mult, arr){
@@ -259,14 +259,14 @@
             lastFrame: initialDefaultFrame,
             lastIndex: 0,
             value: value
-        }
+        };
         searchExpressions(elem,data,prop);
         if(!isAdded && prop.x){
             arr.push(prop);
         }
 
         return prop;
-    }
+    };
 
     function getShapeValueAtTime(frameNum) {
         //For now this caching object is created only when needed instead of creating it when the shape is initialized.
@@ -275,7 +275,7 @@
                 shapeValue: shape_pool.clone(this.pv),
                 lastIndex: 0,
                 lastTime: initialDefaultFrame
-            }
+            };
         }
         if(frameNum !== this._cachingAtTime.lastTime) {
             this._cachingAtTime.lastTime = frameNum;
@@ -301,9 +301,9 @@
             var arr = createSizedArray(len);
             for(i = 0; i < len; i += 1) {
                 if(prop === 'i' || prop === 'o') {
-                    arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]]
+                    arr[i] = [vertices[i][0] - points[i][0], vertices[i][1] - points[i][1]];
                 } else {
-                    arr[i] = [vertices[i][0], vertices[i][1]]
+                    arr[i] = [vertices[i][0], vertices[i][1]];
                 }
                 
             }
@@ -335,13 +335,13 @@
             var lengthPos = segmentsLength.totalLength * perc;
             var i = 0, len = lengths.length;
             var j = 0, jLen;
-            var accumulatedLength = 0;
+            var accumulatedLength = 0, pt;
             while(i < len) {
                 if(accumulatedLength + lengths[i].addedLength > lengthPos) {
                     var initIndex = i;
                     var endIndex = (shapePath.c && i === len - 1) ? 0 : i + 1;
                     var segmentPerc = (lengthPos - accumulatedLength)/lengths[i].addedLength;
-                    var pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i])
+                    pt = bez.getPointInSegment(shapePath.v[initIndex], shapePath.v[endIndex], shapePath.o[initIndex], shapePath.i[endIndex], segmentPerc, lengths[i]);
                     break;
                 } else {
                     accumulatedLength += lengths[i].addedLength;
@@ -349,7 +349,7 @@
                 i += 1;
             }
             if(!pt){
-                pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]]
+                pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]];
             }
             return pt;
         },
@@ -372,7 +372,7 @@
         },
         setGroupProperty: setGroupProperty,
         getValueAtTime: getStaticValueAtTime
-    }
+    };
     extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
     extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);
     KeyframedShapePropertyConstructorFunction.prototype.getValueAtTime = getShapeValueAtTime;
@@ -393,7 +393,7 @@
             arr.push(prop);
         }
         return prop;
-    }
+    };
 
     var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
     TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
@@ -402,5 +402,5 @@
         } else {
             return propertyGetTextProp(elem,data,arr);
         }
-    }
+    };
 }());

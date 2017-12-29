@@ -6,7 +6,7 @@ function HTextElement(data,globalData,comp){
         y: -999999,
         h: 0,
         w: 0
-    }
+    };
     this.renderType = 'svg';
     this.isMasked = false;
     this.initElement(data,globalData,comp);
@@ -165,7 +165,7 @@ HTextElement.prototype.buildNewText = function(){
         this.textSpans[cnt].style.display = 'none';
         cnt += 1;
     }
-}
+};
 
 HTextElement.prototype.renderInnerContent = function() {
 
@@ -243,4 +243,4 @@ HTextElement.prototype.renderInnerContent = function() {
             this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
         }
     }
-}
+};

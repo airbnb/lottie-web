@@ -51,4 +51,4 @@ DashProperty.prototype.getValue = function(forceRender) {
             }
         }
     }
-}
+};

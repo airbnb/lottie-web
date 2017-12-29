@@ -70,7 +70,7 @@ SVGTextElement.prototype.buildNewText = function(){
         tElement.setAttribute('letter-spacing',trackingOffset);
         var textContent = documentData.t.split(String.fromCharCode(13));
         len = textContent.length;
-        var yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
+        yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
             tSpan = this.textSpans[i] || createNS('tspan');
             tSpan.textContent = textContent[i];
@@ -138,7 +138,7 @@ SVGTextElement.prototype.buildNewText = function(){
     }
     
     this._sizeChanged = true;
-}
+};
 
 SVGTextElement.prototype.sourceRectAtTime = function(time){
     this.prepareFrame(this.comp.renderedFrame - this.data.st);
@@ -151,10 +151,10 @@ SVGTextElement.prototype.sourceRectAtTime = function(time){
             left: textBox.x,
             width: textBox.width,
             height: textBox.height
-        }
+        };
     }
     return this.bbox;
-}
+};
 
 SVGTextElement.prototype.renderInnerContent = function(){
 
@@ -193,4 +193,4 @@ SVGTextElement.prototype.renderInnerContent = function(){
             }
         }
     }
-}
+};

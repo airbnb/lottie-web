@@ -35,7 +35,7 @@ function TextProperty(elem, data, dynamicProperties){
         yOffset: 0,
         __complete: false
 
-	}
+	};
 	if(this.searchProperty()) {
 		dynamicProperties.push(this);
 	} else {
@@ -70,12 +70,12 @@ TextProperty.prototype.setCurrentData = function(data){
         currentData.strokeWidthAnim = data.strokeWidthAnim || currentData.strokeWidthAnim;
         currentData.yOffset = data.yOffset;
         currentData.__complete = false;
-}
+};
 
 TextProperty.prototype.searchProperty = function() {
 	this.kf = this.data.d.k.length > 1;
 	return this.kf;
-}
+};
 
 TextProperty.prototype.getValue = function() {
 	this._mdf = false;
@@ -103,7 +103,7 @@ TextProperty.prototype.getValue = function() {
         this.keysIndex = i;
     }
 	this._frameId = frameId;
-}
+};
 
 TextProperty.prototype.completeTextData = function(documentData) {
     documentData.__complete = true;
@@ -142,6 +142,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             case 'regular':
             case 'normal':
             fWeight = '400';
+            break;
             case 'light':
             case 'thin':
             fWeight = '200';
@@ -225,8 +226,8 @@ TextProperty.prototype.completeTextData = function(documentData) {
         letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
         if(anchorGrouping == 2){
             currentSize += cLength;
-            if(val == '' || val == '\u00A0' || i == len - 1){
-                if(val == '' || val == '\u00A0'){
+            if(val === '' || val === '\u00A0' || i === len - 1){
+                if(val === '' || val === '\u00A0'){
                     currentSize -= cLength;
                 }
                 while(currentPos<=i){
@@ -240,8 +241,8 @@ TextProperty.prototype.completeTextData = function(documentData) {
             }
         }else if(anchorGrouping == 3){
             currentSize += cLength;
-            if(val == '' || i == len - 1){
-                if(val == ''){
+            if(val === '' || i === len - 1){
+                if(val === ''){
                     currentSize -= cLength;
                 }
                 while(currentPos<=i){
@@ -299,7 +300,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         for(i=0;i<len;i+=1){
             letterData = letters[i];
             letterData.anIndexes[j] = ind;
-            if((based == 1 && letterData.val != '') || (based == 2 && letterData.val != '' && letterData.val != '\u00A0') || (based == 3 && (letterData.n || letterData.val == '\u00A0' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
+            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== '\u00A0') || (based == 3 && (letterData.n || letterData.val == '\u00A0' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
                 if(animatorData.s.rn === 1){
                     indexes.push(ind);
                 }
@@ -322,7 +323,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.yOffset = documentData.lh || documentData.s*1.2;
     documentData.ls = documentData.ls || 0;
     documentData.ascent = fontData.ascent*documentData.s/100;
-}
+};
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
 	index = index === undefined ? this.keysIndex : index;
@@ -332,4 +333,4 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
     this.keysIndex = -1;
     this._isFirstFrame = true;
     this.getValue();
-}
+};
