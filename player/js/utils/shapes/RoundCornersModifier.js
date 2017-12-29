@@ -71,9 +71,9 @@ RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
             shapeData = this.shapes[i];
             newPaths = shapeData.shape.paths;
             localShapeCollection = shapeData.localShapeCollection;
-            if(!(!shapeData.shape.mdf && !this.mdf && !_isFirstFrame)){
+            if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)){
                 localShapeCollection.releaseShapes();
-                shapeData.shape.mdf = true;
+                shapeData.shape._mdf = true;
                 shapePaths = shapeData.shape.paths.shapes;
                 jLen = shapeData.shape.paths._length;
                 for(j=0;j<jLen;j+=1){
@@ -85,7 +85,7 @@ RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
 
     }
     if(!this.dynamicProperties.length){
-        this.mdf = false;
+        this._mdf = false;
     }
 }
 

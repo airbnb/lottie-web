@@ -67,10 +67,10 @@ SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, ga
 };
 
 SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
+    if(forceRender || this.filterManager._mdf){
         var val, cnt, perc, bezier;
         var effectElements = this.filterManager.effectElements;
-        if(this.feFuncRComposed && (forceRender || effectElements[3].p.mdf || effectElements[4].p.mdf || effectElements[5].p.mdf || effectElements[6].p.mdf || effectElements[7].p.mdf)){
+        if(this.feFuncRComposed && (forceRender || effectElements[3].p._mdf || effectElements[4].p._mdf || effectElements[5].p._mdf || effectElements[6].p._mdf || effectElements[7].p._mdf)){
             val = this.getTableValue(effectElements[3].p.v,effectElements[4].p.v,effectElements[5].p.v,effectElements[6].p.v,effectElements[7].p.v);
             this.feFuncRComposed.setAttribute('tableValues',val);
             this.feFuncGComposed.setAttribute('tableValues',val);
@@ -78,22 +78,22 @@ SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
         }
 
 
-        if(this.feFuncR && (forceRender || effectElements[10].p.mdf || effectElements[11].p.mdf || effectElements[12].p.mdf || effectElements[13].p.mdf || effectElements[14].p.mdf)){
+        if(this.feFuncR && (forceRender || effectElements[10].p._mdf || effectElements[11].p._mdf || effectElements[12].p._mdf || effectElements[13].p._mdf || effectElements[14].p._mdf)){
             val = this.getTableValue(effectElements[10].p.v,effectElements[11].p.v,effectElements[12].p.v,effectElements[13].p.v,effectElements[14].p.v);
             this.feFuncR.setAttribute('tableValues',val);
         }
 
-        if(this.feFuncG && (forceRender || effectElements[17].p.mdf || effectElements[18].p.mdf || effectElements[19].p.mdf || effectElements[20].p.mdf || effectElements[21].p.mdf)){
+        if(this.feFuncG && (forceRender || effectElements[17].p._mdf || effectElements[18].p._mdf || effectElements[19].p._mdf || effectElements[20].p._mdf || effectElements[21].p._mdf)){
             val = this.getTableValue(effectElements[17].p.v,effectElements[18].p.v,effectElements[19].p.v,effectElements[20].p.v,effectElements[21].p.v);
             this.feFuncG.setAttribute('tableValues',val);
         }
 
-        if(this.feFuncB && (forceRender || effectElements[24].p.mdf || effectElements[25].p.mdf || effectElements[26].p.mdf || effectElements[27].p.mdf || effectElements[28].p.mdf)){
+        if(this.feFuncB && (forceRender || effectElements[24].p._mdf || effectElements[25].p._mdf || effectElements[26].p._mdf || effectElements[27].p._mdf || effectElements[28].p._mdf)){
             val = this.getTableValue(effectElements[24].p.v,effectElements[25].p.v,effectElements[26].p.v,effectElements[27].p.v,effectElements[28].p.v);
             this.feFuncB.setAttribute('tableValues',val);
         }
 
-        if(this.feFuncA && (forceRender || effectElements[31].p.mdf || effectElements[32].p.mdf || effectElements[33].p.mdf || effectElements[34].p.mdf || effectElements[35].p.mdf)){
+        if(this.feFuncA && (forceRender || effectElements[31].p._mdf || effectElements[32].p._mdf || effectElements[33].p._mdf || effectElements[34].p._mdf || effectElements[35].p._mdf)){
             val = this.getTableValue(effectElements[31].p.v,effectElements[32].p.v,effectElements[33].p.v,effectElements[34].p.v,effectElements[35].p.v);
             this.feFuncA.setAttribute('tableValues',val);
         }

@@ -3,8 +3,8 @@ function TransformElement(){}
 TransformElement.prototype.initTransform = function() {
     this.finalTransform = {
         mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this.dynamicProperties) : {o:0},
-        matMdf: false,
-        opMdf: false,
+        _matMdf: false,
+        _opMdf: false,
         mat: new Matrix()
     };
     if (this.data.ao) {
@@ -19,25 +19,25 @@ TransformElement.prototype.initTransform = function() {
 
 TransformElement.prototype.renderTransform = function() {
 
-	this.finalTransform.opMdf = this.finalTransform.mProp.o.mdf || this._isFirstFrame;
-    this.finalTransform.matMdf = this.finalTransform.mProp.mdf || this._isFirstFrame;
+	this.finalTransform._opMdf = this.finalTransform.mProp.o._mdf || this._isFirstFrame;
+    this.finalTransform._matMdf = this.finalTransform.mProp._mdf || this._isFirstFrame;
 
     if (this.hierarchy) {
         var mat;
         var finalMat = this.finalTransform.mat;
         var i = 0, len = this.hierarchy.length;
         //Checking if any of the transformation matrices in the hierarchy chain has changed.
-        if (!this.finalTransform.matMdf) {
+        if (!this.finalTransform._matMdf) {
             while (i < len) {
-                if (this.hierarchy[i].finalTransform.mProp.mdf) {
-                    this.finalTransform.matMdf = true;
+                if (this.hierarchy[i].finalTransform.mProp._mdf) {
+                    this.finalTransform._matMdf = true;
                     break;
                 }
                 i += 1;
             }
         }
         
-        if (this.finalTransform.matMdf) {
+        if (this.finalTransform._matMdf) {
             mat = this.finalTransform.mProp.v.props;
             finalMat.cloneFromProps(mat);
             for (i = 0; i < len; i += 1) {

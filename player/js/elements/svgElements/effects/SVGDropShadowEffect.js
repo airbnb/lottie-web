@@ -55,18 +55,18 @@ function SVGDropShadowEffect(filter, filterManager){
 }
 
 SVGDropShadowEffect.prototype.renderFrame = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
-        if(forceRender || this.filterManager.effectElements[4].p.mdf){
+    if(forceRender || this.filterManager._mdf){
+        if(forceRender || this.filterManager.effectElements[4].p._mdf){
             this.feGaussianBlur.setAttribute('stdDeviation', this.filterManager.effectElements[4].p.v / 4);
         }
-        if(forceRender || this.filterManager.effectElements[0].p.mdf){
+        if(forceRender || this.filterManager.effectElements[0].p._mdf){
             var col = this.filterManager.effectElements[0].p.v;
             this.feFlood.setAttribute('flood-color',rgbToHex(Math.round(col[0]*255),Math.round(col[1]*255),Math.round(col[2]*255)));
         }
-        if(forceRender || this.filterManager.effectElements[1].p.mdf){
+        if(forceRender || this.filterManager.effectElements[1].p._mdf){
             this.feFlood.setAttribute('flood-opacity',this.filterManager.effectElements[1].p.v/255);
         }
-        if(forceRender || this.filterManager.effectElements[2].p.mdf || this.filterManager.effectElements[3].p.mdf){
+        if(forceRender || this.filterManager.effectElements[2].p._mdf || this.filterManager.effectElements[3].p._mdf){
             var distance = this.filterManager.effectElements[3].p.v
             var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads
             var x = distance * Math.cos(angle)
@@ -74,7 +74,7 @@ SVGDropShadowEffect.prototype.renderFrame = function(forceRender){
             this.feOffset.setAttribute('dx', x);
             this.feOffset.setAttribute('dy', y);
         }
-        /*if(forceRender || this.filterManager.effectElements[5].p.mdf){
+        /*if(forceRender || this.filterManager.effectElements[5].p._mdf){
             if(this.filterManager.effectElements[5].p.v === 1 && this.originalNodeAdded) {
                 this.feMerge.removeChild(this.feMergeNode);
                 this.originalNodeAdded = false;

@@ -3,13 +3,13 @@ var TextSelectorProp = (function(){
     var min = Math.min;
     var floor = Math.floor;
     function updateRange(newCharsFlag){
-        this.mdf = newCharsFlag || false;
+        this._mdf = newCharsFlag || false;
         if(this.dynamicProperties.length){
             var i, len = this.dynamicProperties.length;
             for(i=0;i<len;i+=1){
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
-                    this.mdf = true;
+                if(this.dynamicProperties[i]._mdf){
+                    this._mdf = true;
                 }
             }
         }
@@ -103,7 +103,7 @@ var TextSelectorProp = (function(){
     }
 
     function TextSelectorProp(elem,data, arr){
-        this.mdf = false;
+        this._mdf = false;
         this.k = false;
         this.data = data;
         this.dynamicProperties = [];

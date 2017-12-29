@@ -76,7 +76,7 @@ TrimModifier.prototype.releasePathsData = function(pathsData) {
 
 TrimModifier.prototype.processShapes = function(_isFirstFrame) {
     
-    if (this.mdf) {
+    if (this._mdf) {
         var o = (this.o.v % 360) / 360;
         if (o < 0) {
             o += 1;
@@ -105,7 +105,7 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
     if (e === s) {
         for (i = 0; i < len; i += 1) {
             this.shapes[i].localShapeCollection.releaseShapes();
-            this.shapes[i].shape.mdf = true;
+            this.shapes[i].shape._mdf = true;
             this.shapes[i].shape.paths = this.shapes[i].localShapeCollection;
         }
     } else if (!((e === 1 && s === 0) || (e===0 && s === 1))){
@@ -113,13 +113,13 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         for (i = 0; i < len; i += 1) {
             shapeData = this.shapes[i];
             // if shape hasn't changed and trim properties haven't changed, cached previous path can be used
-            if (!shapeData.shape.mdf && !this.mdf && !_isFirstFrame && this.m !== 2) {
+            if (!shapeData.shape._mdf && !this._mdf && !_isFirstFrame && this.m !== 2) {
                 shapeData.shape.paths = shapeData.localShapeCollection;
             } else {
                 shapePaths = shapeData.shape.paths;
                 jLen = shapePaths._length;
                 totalShapeLength = 0;
-                if (!shapeData.shape.mdf && shapeData.pathsData.length) {
+                if (!shapeData.shape._mdf && shapeData.pathsData.length) {
                     totalShapeLength = shapeData.totalShapeLength;
                 } else {
                     pathsData = this.releasePathsData(shapeData.pathsData);
@@ -133,14 +133,14 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
                 }
 
                 totalModifierLength += totalShapeLength;
-                shapeData.shape.mdf = true;
+                shapeData.shape._mdf = true;
             }
         }
         var shapeS = s, shapeE = e, addedLength = 0;
         var j, jLen;
         for (i = len - 1; i >= 0; i -= 1) {
             shapeData = this.shapes[i];
-            if (shapeData.shape.mdf) {
+            if (shapeData.shape._mdf) {
                 localShapeCollection = shapeData.localShapeCollection;
                 localShapeCollection.releaseShapes();
                 //if m === 2 means paths are trimmed individually so edges need to be found for this specific shape relative to whoel group
@@ -194,13 +194,13 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
                 shapeData.shape.paths = localShapeCollection;
             }
         }
-    } else if (this.mdf) {
+    } else if (this._mdf) {
         for (i = 0; i < len; i += 1) {
-            this.shapes[i].shape.mdf = true;
+            this.shapes[i].shape._mdf = true;
         }
     }
     if (!this.dynamicProperties.length) {
-        this.mdf = false;
+        this._mdf = false;
     }
 }
 

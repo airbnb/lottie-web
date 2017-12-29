@@ -4,7 +4,7 @@ function TextProperty(elem, data, dynamicProperties){
 	this.v = '';
 	this.kf = false;
 	this._isFirstFrame = true;
-	this.mdf = true;
+	this._mdf = true;
 	this.data = data;
 	this.elem = elem;
 	this.keysIndex = -1;
@@ -78,7 +78,7 @@ TextProperty.prototype.searchProperty = function() {
 }
 
 TextProperty.prototype.getValue = function() {
-	this.mdf = false;
+	this._mdf = false;
 	var frameId = this.elem.globalData.frameId;
 	if((frameId === this._frameId || !this.kf) && !this._isFirstFrame) {
 		return;
@@ -98,7 +98,7 @@ TextProperty.prototype.getValue = function() {
         }
         this.setCurrentData(textDocumentData);
         //TODO check this
-        this.mdf = !this._isFirstFrame;
+        this._mdf = !this._isFirstFrame;
         this.pv = this.v = this.currentData.t;
         this.keysIndex = i;
     }

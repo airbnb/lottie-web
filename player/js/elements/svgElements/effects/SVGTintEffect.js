@@ -27,7 +27,7 @@ function SVGTintFilter(filter, filterManager){
 }
 
 SVGTintFilter.prototype.renderFrame = function(forceRender){
-    if(forceRender || this.filterManager.mdf){
+    if(forceRender || this.filterManager._mdf){
         var colorBlack = this.filterManager.effectElements[0].p.v;
         var colorWhite = this.filterManager.effectElements[1].p.v;
         var opacity = this.filterManager.effectElements[2].p.v/100;

@@ -7,7 +7,7 @@ function HybridRenderer(animationItem, config){
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
     };
     this.globalData = {
-        mdf: false,
+        _mdf: false,
         frameNum: -1,
         renderConfig: this.renderConfig
     };

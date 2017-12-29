@@ -3,7 +3,7 @@ function DashProperty(elem, data, renderer, dynamicProperties) {
     this.frameId = -1;
     this.dataProps = createSizedArray(data.length);
     this.renderer = renderer;
-    this.mdf = false;
+    this._mdf = false;
     this.k = false;
     this.dashStr = '';
     this.dashArray = createTypedArray('float32',  data.length - 1);
@@ -26,16 +26,16 @@ DashProperty.prototype.getValue = function(forceRender) {
         return;
     }
     var i = 0, len = this.dataProps.length;
-    this.mdf = false;
+    this._mdf = false;
     this.frameId = this.elem.globalData.frameId;
     while(i<len){
-        if(this.dataProps[i].p.mdf){
-            this.mdf = !forceRender;
+        if(this.dataProps[i].p._mdf){
+            this._mdf = !forceRender;
             break;
         }
         i+=1;
     }
-    if(this.mdf || forceRender){
+    if(this._mdf || forceRender){
         if(this.renderer === 'svg') {
             this.dashStr = '';
         }

@@ -128,10 +128,10 @@ SVGBaseElement.prototype.createContainerElements = function(){
 };
 
 SVGBaseElement.prototype.renderElement = function() {
-    if (this.finalTransform.matMdf) {
+    if (this.finalTransform._matMdf) {
         this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
     }
-    if (this.finalTransform.opMdf) {
+    if (this.finalTransform._opMdf) {
         this.transformedElement.setAttribute('opacity', this.finalTransform.mProp.o.v);
     }
 };

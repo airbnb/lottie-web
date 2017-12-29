@@ -101,7 +101,7 @@ var ShapePropertyFactory = (function(){
         if(this.elem.globalData.frameId === this.frameId){
             return;
         }
-        this.mdf = false;
+        this._mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
@@ -111,7 +111,7 @@ var ShapePropertyFactory = (function(){
             this._caching.lastIndex = lastFrame < frameNum ? this._caching.lastIndex : 0;
             var hasModified = this.interpolateShape(frameNum, this.v, true, this._caching);
             ////
-            this.mdf = hasModified;
+            this._mdf = hasModified;
             if(hasModified) {
                 this.paths = this.localShapeCollection;
             }
@@ -127,7 +127,7 @@ var ShapePropertyFactory = (function(){
     function resetShape(){
         this.paths = this.localShapeCollection;
         if(!this.k){
-            this.mdf = false;
+            this._mdf = false;
         }
     }
 
@@ -135,7 +135,7 @@ var ShapePropertyFactory = (function(){
         this.propType = 'shape';
         this.comp = elem.comp;
         this.k = false;
-        this.mdf = false;
+        this._mdf = false;
         var pathData = type === 3 ? data.pt.k : data.ks.k;
         this.v = shape_pool.clone(pathData);
         this.pv = shape_pool.clone(this.v);
@@ -211,16 +211,16 @@ var ShapePropertyFactory = (function(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
             }
-            this.mdf = false;
+            this._mdf = false;
             this.frameId = this.elem.globalData.frameId;
 
             for(i=0;i<len;i+=1){
                 this.dynamicProperties[i].getValue(frameNum);
-                if(this.dynamicProperties[i].mdf){
-                    this.mdf = true;
+                if(this.dynamicProperties[i]._mdf){
+                    this._mdf = true;
                 }
             }
-            if(this.mdf){
+            if(this._mdf){
                 this.convertEllToPath();
             }
         }
@@ -242,7 +242,7 @@ var ShapePropertyFactory = (function(){
             this.elem = elem;
             this.comp = elem.comp;
             this.frameId = -1;
-            this.mdf = false;
+            this._mdf = false;
             this.getValue = processKeys;
             this.convertEllToPath = convertEllToPath;
             this.reset = resetShape;
@@ -330,17 +330,17 @@ var ShapePropertyFactory = (function(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
             }
-            this.mdf = false;
+            this._mdf = false;
             this.frameId = this.elem.globalData.frameId;
             var i, len = this.dynamicProperties.length;
 
             for(i=0;i<len;i+=1){
                 this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i].mdf){
-                    this.mdf = true;
+                if(this.dynamicProperties[i]._mdf){
+                    this._mdf = true;
                 }
             }
-            if(this.mdf){
+            if(this._mdf){
                 this.convertToPath();
             }
         }
@@ -360,7 +360,7 @@ var ShapePropertyFactory = (function(){
             this.frameId = -1;
             this.d = data.d;
             this.dynamicProperties = [];
-            this.mdf = false;
+            this._mdf = false;
             this.getValue = processKeys;
             this.reset = resetShape;
             if(data.sy === 1){
@@ -391,17 +391,17 @@ var ShapePropertyFactory = (function(){
             if(this.elem.globalData.frameId === this.frameId){
                 return;
             }
-            this.mdf = false;
+            this._mdf = false;
             this.frameId = this.elem.globalData.frameId;
             var i, len = this.dynamicProperties.length;
 
             for(i=0;i<len;i+=1){
                 this.dynamicProperties[i].getValue(frameNum);
-                if(this.dynamicProperties[i].mdf){
-                    this.mdf = true;
+                if(this.dynamicProperties[i]._mdf){
+                    this._mdf = true;
                 }
             }
-            if(this.mdf){
+            if(this._mdf){
                 this.convertRectToPath();
             }
 
@@ -457,7 +457,7 @@ var ShapePropertyFactory = (function(){
             this.frameId = -1;
             this.d = data.d;
             this.dynamicProperties = [];
-            this.mdf = false;
+            this._mdf = false;
             this.getValue = processKeys;
             this.convertRectToPath = convertRectToPath;
             this.reset = resetShape;

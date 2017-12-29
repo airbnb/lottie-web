@@ -33,7 +33,7 @@ ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     this.elem = elem;
     this.initModifierProperties(elem,data);
     this.frameId = initialDefaultFrame;
-    this.mdf = false;
+    this._mdf = false;
     this.closed = false;
     this.k = false;
     if(this.dynamicProperties.length){
@@ -47,13 +47,13 @@ ShapeModifier.prototype.processKeys = function(){
     if(this.elem.globalData.frameId === this.frameId){
         return;
     }
-    this.mdf = false;
+    this._mdf = false;
     var i, len = this.dynamicProperties.length;
 
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.mdf = true;
+        if(this.dynamicProperties[i]._mdf){
+            this._mdf = true;
         }
     }
     this.frameId = this.elem.globalData.frameId;

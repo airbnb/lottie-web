@@ -174,7 +174,7 @@ HTextElement.prototype.renderInnerContent = function() {
             return;
         } else {
             // Todo Benchmark if using this is better than getBBox
-             if(this.isMasked && this.finalTransform.matMdf){
+             if(this.isMasked && this.finalTransform._matMdf){
                  this.svgElement.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
                 this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
              }

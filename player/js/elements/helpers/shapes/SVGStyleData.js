@@ -3,7 +3,7 @@ function SVGStyleData(data, level) {
 	this.type = data.ty;
 	this.d = '';
 	this.lvl = level;
-	this.mdf = false;
+	this._mdf = false;
 	this.closed = false;
 	this.pElem = createNS('path');
 	this.msElem = null;
@@ -11,5 +11,5 @@ function SVGStyleData(data, level) {
 
 SVGStyleData.prototype.reset = function() {
 	this.d = '';
-	this.mdf = false;
+	this._mdf = false;
 }

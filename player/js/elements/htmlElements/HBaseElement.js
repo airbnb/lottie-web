@@ -34,10 +34,10 @@ HBaseElement.prototype.createContainerElements = function(){
 };
 
 HBaseElement.prototype.renderElement = function() {
-    if(this.finalTransform.matMdf){
+    if(this.finalTransform._matMdf){
         this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
     }
-    if(this.finalTransform.opMdf){
+    if(this.finalTransform._opMdf){
         this.transformedElement.style.opacity = this.finalTransform.mProp.o.v;
     }
 };

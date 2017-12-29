@@ -20,7 +20,7 @@
 
     TextProperty.prototype.getExpressionValue = function(num){
         this.calculateExpression();
-        if(this.mdf) {
+        if(this._mdf) {
             this.currentData.t = this.v.toString();
             this.completeTextData(this.currentData);
         }

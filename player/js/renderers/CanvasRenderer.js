@@ -14,7 +14,7 @@ function CanvasRenderer(animationItem, config){
     this.renderedFrame = -1;
     this.globalData = {
         frameNum: -1,
-        mdf: false,
+        _mdf: false,
         renderConfig: this.renderConfig
     };
     var i, len = 15;
@@ -274,7 +274,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
-    this.globalData.mdf = false;
+    this.globalData._mdf = false;
     this.globalData.projectInterface.currentFrame = num;
 
      // console.log('--------');
@@ -289,7 +289,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
-    if(this.globalData.mdf || 1 === 1) {
+    if(this.globalData._mdf) {
         if(this.renderConfig.clearCanvas === true){
             this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
         }else{

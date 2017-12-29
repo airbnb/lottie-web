@@ -137,18 +137,18 @@ MaskElement.prototype.getMaskProperty = function(pos){
 MaskElement.prototype.renderFrame = function (finalMat) {
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.viewData[i].prop.mdf || this._isFirstFrame){
+        if(this.viewData[i].prop._mdf || this._isFirstFrame){
             this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
-        if(this.viewData[i].op.mdf || this._isFirstFrame){
+        if(this.viewData[i].op._mdf || this._isFirstFrame){
             this.viewData[i].elem.setAttribute('fill-opacity',this.viewData[i].op.v);
         }
         if(this.masksProperties[i].mode !== 'n'){
-            if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this._isFirstFrame)){
+            if(this.viewData[i].invRect && (this.element.finalTransform.mProp._mdf || this._isFirstFrame)){
                 this.viewData[i].invRect.setAttribute('x', -finalMat.props[12]);
                 this.viewData[i].invRect.setAttribute('y', -finalMat.props[13]);
             }
-            if(this.storedData[i].x && (this.storedData[i].x.mdf || this._isFirstFrame)){
+            if(this.storedData[i].x && (this.storedData[i].x._mdf || this._isFirstFrame)){
                 var feMorph = this.storedData[i].expan;
                 if(this.storedData[i].x.v < 0){
                     if(this.storedData[i].lastOperator !== 'erode'){

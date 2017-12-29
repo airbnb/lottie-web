@@ -17,7 +17,7 @@ function SVGRenderer(animationItem, config){
         className: (config && config.className) || ''
     };
     this.globalData = {
-        mdf: false,
+        _mdf: false,
         frameNum: -1,
         defs: defs,
         frameId: 0,
@@ -191,7 +191,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     this.globalData.frameNum = num;
     this.globalData.frameId += 1;
     this.globalData.projectInterface.currentFrame = num;
-    this.globalData.mdf = false;
+    this.globalData._mdf = false;
     var i, len = this.layers.length;
     if(!this.completeLayers){
         this.checkLayers(num);
@@ -201,7 +201,7 @@ SVGRenderer.prototype.renderFrame = function(num){
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
-    if(this.globalData.mdf || 1 === 1) {
+    if(this.globalData._mdf) {
         for (i = 0; i < len; i += 1) {
             if(this.completeLayers || this.elements[i]){
                 this.elements[i].renderFrame();

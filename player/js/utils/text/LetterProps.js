@@ -5,7 +5,7 @@ function LetterProps(o, sw, sc, fc, m, p){
     this.fc = fc;
     this.m = m;
     this.p = p;
-    this.mdf = {
+    this._mdf = {
     	o: true,
     	sw: !!sw,
     	sc: !!sc,
@@ -16,42 +16,42 @@ function LetterProps(o, sw, sc, fc, m, p){
 }
 
 LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
-	this.mdf.o = false;
-	this.mdf.sw = false;
-	this.mdf.sc = false;
-	this.mdf.fc = false;
-	this.mdf.m = false;
-	this.mdf.p = false;
+	this._mdf.o = false;
+	this._mdf.sw = false;
+	this._mdf.sc = false;
+	this._mdf.fc = false;
+	this._mdf.m = false;
+	this._mdf.p = false;
 	var updated = false;
 
 	if(this.o !== o) {
 		this.o = o;
-		this.mdf.o = true;
+		this._mdf.o = true;
 		updated = true;
 	}
 	if(this.sw !== sw) {
 		this.sw = sw;
-		this.mdf.sw = true;
+		this._mdf.sw = true;
 		updated = true;
 	}
 	if(this.sc !== sc) {
 		this.sc = sc;
-		this.mdf.sc = true;
+		this._mdf.sc = true;
 		updated = true;
 	}
 	if(this.fc !== fc) {
 		this.fc = fc;
-		this.mdf.fc = true;
+		this._mdf.fc = true;
 		updated = true;
 	}
 	if(this.m !== m) {
 		this.m = m;
-		this.mdf.m = true;
+		this._mdf.m = true;
 		updated = true;
 	}
 	if(p.length && (this.p[0] !== p[0] || this.p[1] !== p[1] || this.p[4] !== p[4] || this.p[5] !== p[5] || this.p[12] !== p[12] || this.p[13] !== p[13])) {
 		this.p = p;
-		this.mdf.p = true;
+		this._mdf.p = true;
 		updated = true;
 	}
 	return updated;

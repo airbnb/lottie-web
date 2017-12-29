@@ -49,15 +49,15 @@ HCameraElement.prototype.hide = function(){
 };
 
 HCameraElement.prototype.renderFrame = function(){
-    var mdf = this._isFirstFrame;
+    var _mdf = this._isFirstFrame;
     var i, len;
     if(this.hierarchy){
         len = this.hierarchy.length;
         for(i=0;i<len;i+=1){
-            mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
+            _mdf = this.hierarchy[i].finalTransform.mProp._mdf || _mdf;
         }
     }
-    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || this.or.mdf || (this.a && this.a.mdf)) {
+    if(_mdf || (this.p && this.p._mdf) || (this.px && (this.px._mdf || this.py._mdf || this.pz._mdf)) || this.rx._mdf || this.ry._mdf || this.rz._mdf || this.or._mdf || (this.a && this.a._mdf)) {
         this.mat.reset();
 
         if(this.p){

@@ -218,7 +218,7 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     this.renderShape(this.shapesData, this.itemsData, this.layerElement);
 
     for (i = 0; i < len; i += 1) {
-        if (this.stylesList[i].mdf || this._isFirstFrame) {
+        if (this.stylesList[i]._mdf || this._isFirstFrame) {
             if(this.stylesList[i].msElem){
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
                 //Adding M0 0 fixes same mask bug on all browsers
@@ -236,10 +236,10 @@ SVGShapeElement.prototype.renderShape = function(items, data, container) {
     for(i=0;i<=len;i+=1){
         ty = items[i].ty;
         if(ty == 'tr'){
-            if(this._isFirstFrame || data[i].transform.op.mdf){
+            if(this._isFirstFrame || data[i].transform.op._mdf){
                 container.setAttribute('opacity',data[i].transform.op.v);
             }
-            if(this._isFirstFrame || data[i].transform.mProps.mdf){
+            if(this._isFirstFrame || data[i].transform.mProps._mdf){
                 container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
             }
         }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){
@@ -267,13 +267,13 @@ SVGShapeElement.prototype.renderPath = function(itemData){
     var lvl = itemData.lvl;
     var paths, mat, props, iterations, k;
     for(l=0;l<lLen;l+=1){
-        redraw = itemData.sh.mdf || this._isFirstFrame;
+        redraw = itemData.sh._mdf || this._isFirstFrame;
         if(itemData.styles[l].lvl < lvl){
             mat = this.mHelper.reset();
             iterations = lvl - itemData.styles[l].lvl;
             k = itemData.transformers.length-1;
             while(iterations > 0) {
-                redraw = itemData.transformers[k].mProps.mdf || redraw;
+                redraw = itemData.transformers[k].mProps._mdf || redraw;
                 props = itemData.transformers[k].mProps.v.props;
                 mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
                 iterations --;
@@ -297,17 +297,17 @@ SVGShapeElement.prototype.renderPath = function(itemData){
             pathStringTransformed = itemData.caches[l];
         }
         itemData.styles[l].d += pathStringTransformed;
-        itemData.styles[l].mdf = redraw || itemData.styles[l].mdf;
+        itemData.styles[l]._mdf = redraw || itemData.styles[l]._mdf;
     }
 };
 
 SVGShapeElement.prototype.renderFill = function(styleData,itemData){
     var styleElem = itemData.style;
 
-    if(itemData.c.mdf || this._isFirstFrame){
+    if(itemData.c._mdf || this._isFirstFrame){
         styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
     }
-    if(itemData.o.mdf || this._isFirstFrame){
+    if(itemData.o._mdf || this._isFirstFrame){
         styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
     }
 };
@@ -317,11 +317,11 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
     var hasOpacity = itemData.g._hasOpacity;
     var pt1 = itemData.s.v, pt2 = itemData.e.v;
 
-    if (itemData.o.mdf || this._isFirstFrame) {
+    if (itemData.o._mdf || this._isFirstFrame) {
         var attr = styleData.ty === 'gf' ? 'fill-opacity' : 'stroke-opacity';
         itemData.style.pElem.setAttribute(attr, itemData.o.v);
     }
-    if (itemData.s.mdf || this._isFirstFrame) {
+    if (itemData.s._mdf || this._isFirstFrame) {
         var attr1 = styleData.t === 1 ? 'x1' : 'cx';
         var attr2 = attr1 === 'x1' ? 'y1' : 'cy';
         gfill.setAttribute(attr1, pt1[0]);
@@ -332,7 +332,7 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
         }
     }
     var stops, i, len, stop;
-    if (itemData.g.cmdf || this._isFirstFrame) {
+    if (itemData.g._cmdf || this._isFirstFrame) {
         stops = itemData.cst;
         var cValues = itemData.g.c;
         len = stops.length;
@@ -342,7 +342,7 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
             stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
         }
     }
-    if (hasOpacity && (itemData.g.omdf || this._isFirstFrame)) {
+    if (hasOpacity && (itemData.g._omdf || this._isFirstFrame)) {
         var oValues = itemData.g.o;
         if(itemData.g._collapsable) {
             stops = itemData.cst;
@@ -359,7 +359,7 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
         }
     }
     if (styleData.t === 1) {
-        if (itemData.e.mdf  || this._isFirstFrame) {
+        if (itemData.e._mdf  || this._isFirstFrame) {
             gfill.setAttribute('x2', pt2[0]);
             gfill.setAttribute('y2', pt2[1]);
             if (hasOpacity && !itemData.g._collapsable) {
@@ -369,14 +369,14 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
         }
     } else {
         var rad;
-        if (itemData.s.mdf || itemData.e.mdf || this._isFirstFrame) {
+        if (itemData.s._mdf || itemData.e._mdf || this._isFirstFrame) {
             rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
             gfill.setAttribute('r', rad);
             if(hasOpacity && !itemData.g._collapsable){
                 itemData.of.setAttribute('r', rad);
             }
         }
-        if (itemData.e.mdf || itemData.h.mdf || itemData.a.mdf || this._isFirstFrame) {
+        if (itemData.e._mdf || itemData.h._mdf || itemData.a._mdf || this._isFirstFrame) {
             if (!rad) {
                 rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
             }
@@ -400,17 +400,17 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
 SVGShapeElement.prototype.renderStroke = function(styleData, itemData) {
     var styleElem = itemData.style;
     var d = itemData.d;
-    if (d && (d.mdf || this._isFirstFrame)) {
+    if (d && (d._mdf || this._isFirstFrame)) {
         styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
         styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
     }
-    if(itemData.c && (itemData.c.mdf || this._isFirstFrame)){
+    if(itemData.c && (itemData.c._mdf || this._isFirstFrame)){
         styleElem.pElem.setAttribute('stroke','rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
     }
-    if(itemData.o.mdf || this._isFirstFrame){
+    if(itemData.o._mdf || this._isFirstFrame){
         styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);
     }
-    if(itemData.w.mdf || this._isFirstFrame){
+    if(itemData.w._mdf || this._isFirstFrame){
         styleElem.pElem.setAttribute('stroke-width', itemData.w.v);
         if(styleElem.msElem){
             styleElem.msElem.setAttribute('stroke-width', itemData.w.v);

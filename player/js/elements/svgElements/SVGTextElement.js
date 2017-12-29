@@ -178,19 +178,19 @@ SVGTextElement.prototype.renderInnerContent = function(){
                 }
                 renderedLetter = renderedLetters[i];
                 textSpan = this.textSpans[i];
-                if(renderedLetter.mdf.m) {
+                if(renderedLetter._mdf.m) {
                     textSpan.setAttribute('transform',renderedLetter.m);
                 }
-                if(renderedLetter.mdf.o) {
+                if(renderedLetter._mdf.o) {
                     textSpan.setAttribute('opacity',renderedLetter.o);
                 }
-                if(renderedLetter.mdf.sw){
+                if(renderedLetter._mdf.sw){
                     textSpan.setAttribute('stroke-width',renderedLetter.sw);
                 }
-                if(renderedLetter.mdf.sc){
+                if(renderedLetter._mdf.sc){
                     textSpan.setAttribute('stroke',renderedLetter.sc);
                 }
-                if(renderedLetter.mdf.fc){
+                if(renderedLetter._mdf.fc){
                     textSpan.setAttribute('fill',renderedLetter.fc);
                 }
             }

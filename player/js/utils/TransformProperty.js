@@ -4,8 +4,8 @@ var TransformPropertyFactory = (function() {
         var i, len = this.dynamicProperties.length;
         for(i = 0; i < len; i += 1) {
             this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i].mdf) {
-                this.mdf = true;
+            if (this.dynamicProperties[i]._mdf) {
+                this._mdf = true;
             }
         }
         if (this.a) {
@@ -34,17 +34,17 @@ var TransformPropertyFactory = (function() {
             return;
         }
 
-        this.mdf = false;
+        this._mdf = false;
         var i, len = this.dynamicProperties.length;
 
         for(i = 0; i < len; i += 1) {
             this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i].mdf) {
-                this.mdf = true;
+            if (this.dynamicProperties[i]._mdf) {
+                this._mdf = true;
             }
         }
 
-        if (this.mdf || forceRender) {
+        if (this._mdf || forceRender) {
             this.v.reset();
             if (this.a) {
                 this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
@@ -120,7 +120,7 @@ var TransformPropertyFactory = (function() {
         this.frameId = -1;
         this.propType = 'transform';
         this.dynamicProperties = [];
-        this.mdf = false;
+        this._mdf = false;
         this.data = data;
         this.v = new Matrix();
         if(data.p.s){
@@ -162,7 +162,7 @@ var TransformPropertyFactory = (function() {
         if(data.o){
             this.o = PropertyFactory.getProp(elem,data.o,0,0.01,arr);
         } else {
-            this.o = {mdf:false,v:1};
+            this.o = {_mdf:false,v:1};
         }
         if(this.dynamicProperties.length){
             arr.push(this);

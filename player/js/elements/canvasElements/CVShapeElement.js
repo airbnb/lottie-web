@@ -13,7 +13,7 @@ extendPrototype([BaseElement,TransformElement,CVBaseElement,IShapeElement,Hierar
 
 CVShapeElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
 
-CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),matMdf:false,opMdf:false};
+CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),_matMdf:false,_opMdf:false};
 
 CVShapeElement.prototype.dashResetter = [];
 
@@ -76,8 +76,8 @@ CVShapeElement.prototype.createTransformElement = function(data, dynamicProperti
         transform : {
             mat: new Matrix(),
             opacity: 1,
-            matMdf:false,
-            opMdf:false,
+            _matMdf:false,
+            _opMdf:false,
             op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
             //mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
             mProps: TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties)
@@ -213,8 +213,8 @@ CVShapeElement.prototype.renderInnerContent = function() {
 
     this.transformHelper.mat.reset();
     this.transformHelper.opacity = 1;
-    this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = false;
+    this.transformHelper._matMdf = false;
+    this.transformHelper._opMdf = false;
     this.renderModifiers();
     this.renderShape(this.transformHelper,this.shapesData,this.itemsData,true);
 }
@@ -227,16 +227,16 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
         if(items[i].ty == 'tr'){
             groupTransform = data[i].transform;
             var mtArr = data[i].transform.mProps.v.props;
-            groupTransform.matMdf = groupTransform.mProps.mdf;
-            groupTransform.opMdf = groupTransform.op.mdf;
+            groupTransform._matMdf = groupTransform.mProps._mdf;
+            groupTransform._opMdf = groupTransform.op._mdf;
             groupMatrix = groupTransform.mat;
             groupMatrix.cloneFromProps(mtArr);
             if(parentTransform){
                 var props = parentTransform.mat.props;
                 groupTransform.opacity = parentTransform.opacity;
                 groupTransform.opacity *= data[i].transform.op.v;
-                groupTransform.matMdf = parentTransform.matMdf ? true : groupTransform.matMdf;
-                groupTransform.opMdf = parentTransform.opMdf ? true : groupTransform.opMdf;
+                groupTransform._matMdf = parentTransform._matMdf || groupTransform._matMdf;
+                groupTransform._opMdf = parentTransform._opMdf || groupTransform._opMdf;
                 groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
             }else{
                 groupTransform.opacity = groupTransform.op.o;
@@ -315,7 +315,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
 };
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
     var len, i, j,jLen;
-    var redraw = groupTransform.matMdf || itemData.sh.mdf || this._isFirstFrame;
+    var redraw = groupTransform._matMdf || itemData.sh._mdf || this._isFirstFrame;
     if(redraw) {
         var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
         jLen = pathData._render === false ? 0 : paths._length;
@@ -376,10 +376,10 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
 CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransform){
     var styleElem = itemData.style;
 
-    if(itemData.c.mdf || this._isFirstFrame){
+    if(itemData.c._mdf || this._isFirstFrame){
         styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(itemData.o.mdf || groupTransform.opMdf || this._isFirstFrame){
+    if(itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame){
         styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
 };
@@ -388,17 +388,17 @@ CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransf
     var styleElem = itemData.style;
     //TODO fix dashes
     var d = itemData.d;
-    if(d && (d.mdf  || this._isFirstFrame)){
+    if(d && (d._mdf  || this._isFirstFrame)){
         styleElem.da = d.dashArray;
         styleElem.do = d.dashoffset[0];
     }
-    if(itemData.c.mdf || this._isFirstFrame){
+    if(itemData.c._mdf || this._isFirstFrame){
         styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
     }
-    if(itemData.o.mdf || groupTransform.opMdf || this._isFirstFrame){
+    if(itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame){
         styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
-    if(itemData.w.mdf || this._isFirstFrame){
+    if(itemData.w._mdf || this._isFirstFrame){
         styleElem.wi = itemData.w.v;
     }
 };

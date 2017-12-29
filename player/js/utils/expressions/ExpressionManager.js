@@ -620,11 +620,11 @@ var ExpressionManager = (function(){
             if (this.propType === 'unidimensional') {
                 if(this.lastValue !== this.v){
                     this.lastValue = this.v;
-                    this.mdf = true;
+                    this._mdf = true;
                 }
             } else if (this.propType === 'shape') {
                 if (!shapesEqual(this.v, this.localShapeCollection.shapes[0])) {
-                    this.mdf = true;
+                    this._mdf = true;
                     this.localShapeCollection.releaseShapes();
                     this.localShapeCollection.addShape(shape_pool.clone(this.v));
                 }
@@ -633,7 +633,7 @@ var ExpressionManager = (function(){
                 for (i = 0; i < len; i += 1) {
                     if (this.v[i] !== this.lastValue[i]) {
                         this.lastValue[i] = this.v[i];
-                        this.mdf = true;
+                        this._mdf = true;
                     }
                 }
             }

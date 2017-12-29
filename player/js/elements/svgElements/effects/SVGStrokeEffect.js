@@ -64,10 +64,10 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     for(i=0;i<len;i+=1){
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
-        if(forceRender || this.filterManager.mdf || mask.prop.mdf){
+        if(forceRender || this.filterManager._mdf || mask.prop._mdf){
             path.setAttribute('d',mask.lastPath);
         }
-        if(forceRender || this.filterManager.effectElements[9].p.mdf || this.filterManager.effectElements[4].p.mdf || this.filterManager.effectElements[7].p.mdf || this.filterManager.effectElements[8].p.mdf || mask.prop.mdf){
+        if(forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf){
             var dasharrayValue;
             if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100){
                 var s = Math.min(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
@@ -88,15 +88,15 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
             path.setAttribute('stroke-dasharray',dasharrayValue);
         }
     }
-    if(forceRender || this.filterManager.effectElements[4].p.mdf){
+    if(forceRender || this.filterManager.effectElements[4].p._mdf){
         this.pathMasker.setAttribute('stroke-width',this.filterManager.effectElements[4].p.v*2);
     }
     
-    if(forceRender || this.filterManager.effectElements[6].p.mdf){
+    if(forceRender || this.filterManager.effectElements[6].p._mdf){
         this.pathMasker.setAttribute('opacity',this.filterManager.effectElements[6].p.v);
     }
     if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
-        if(forceRender || this.filterManager.effectElements[3].p.mdf){
+        if(forceRender || this.filterManager.effectElements[3].p._mdf){
             var color = this.filterManager.effectElements[3].p.v;
             this.pathMasker.setAttribute('stroke','rgb('+bm_floor(color[0]*255)+','+bm_floor(color[1]*255)+','+bm_floor(color[2]*255)+')');
         }

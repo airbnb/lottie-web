@@ -84,7 +84,7 @@ RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
 }
 
 RepeaterModifier.prototype.processShapes = function() {
-    if(this.mdf){
+    if(this._mdf){
         var copies = Math.ceil(this.c.v);
         if(this._groups.length < copies){
             while(this._groups.length < copies){
@@ -152,8 +152,8 @@ RepeaterModifier.prototype.processShapes = function() {
         while(cont){
             items = this.elemsData[i].it;
             itemsTransform = items[items.length - 1].transform.mProps.v.props;
-            items[items.length - 1].transform.mProps.mdf = true;
-            items[items.length - 1].transform.mProps.op = true;
+            items[items.length - 1].transform.mProps._mdf = true;
+            items[items.length - 1].transform.op._mdf = true;
             if(iteration !== 0){
                 if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
@@ -186,8 +186,8 @@ RepeaterModifier.prototype.processShapes = function() {
         while(cont){
             items = this.elemsData[i].it;
             itemsTransform = items[items.length - 1].transform.mProps.v.props;
-            items[items.length - 1].transform.mProps.mdf = false;
-            items[items.length - 1].transform.mProps.op = false;
+            items[items.length - 1].transform.mProps._mdf = false;
+            items[items.length - 1].transform.op._mdf = false;
             cont -= 1;
             i += dir;
         }

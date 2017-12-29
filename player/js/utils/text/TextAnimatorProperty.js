@@ -1,5 +1,5 @@
 function TextAnimatorProperty(textData, renderType, elem){
-    this.mdf = false;
+    this._mdf = false;
     this._isFirstFrame = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
@@ -43,7 +43,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
 
 TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag){
     this.lettersChangedFlag = lettersChangedFlag;
-    if(!this.mdf && !this._isFirstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m.mdf)) {
+    if(!this._mdf && !this._isFirstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m._mdf)) {
         return;
     }
     this._isFirstFrame = false;
@@ -59,7 +59,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var letters = documentData.l;
     if(this._hasMaskedPath) {
         var mask = this._pathData.m;
-        if(!this._pathData.n || this._pathData.mdf){
+        if(!this._pathData.n || this._pathData._mdf){
             var paths = mask.v;
             if(this._pathData.r){
                 paths = paths.reverse();
@@ -506,10 +506,10 @@ TextAnimatorProperty.prototype.getValue = function(){
     }
     this._frameId = this._elem.globalData.frameId;
 	var i, len = this._dynamicProperties.length;
-    this.mdf = false;
+    this._mdf = false;
 	for(i = 0; i < len; i += 1) {
 		this._dynamicProperties[i].getValue();
-        this.mdf = this._dynamicProperties[i].mdf || this.mdf;
+        this._mdf = this._dynamicProperties[i]._mdf || this._mdf;
 	}
 }
 

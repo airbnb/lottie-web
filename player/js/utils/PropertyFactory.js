@@ -158,7 +158,7 @@ var PropertyFactory = (function(){
             this.pv[i] = renderResult[i];
             this.v[i] = this.mult ? this.pv[i] * this.mult : this.pv[i];
             if(this.lastPValue[i] !== this.pv[i]) {
-                this.mdf = true;
+                this._mdf = true;
                 this.lastPValue[i] = this.pv[i];
             }
             i += 1;
@@ -169,7 +169,7 @@ var PropertyFactory = (function(){
         this.pv = renderResult;
         this.v = this.mult ? this.pv*this.mult : this.pv;
         if(this.lastPValue != this.pv){
-            this.mdf = true;
+            this._mdf = true;
             this.lastPValue = this.pv;
         }
     }
@@ -178,7 +178,7 @@ var PropertyFactory = (function(){
         if(this.elem.globalData.frameId === this.frameId){
             return;
         }
-        this.mdf = false;
+        this._mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
@@ -192,7 +192,7 @@ var PropertyFactory = (function(){
     }
 
     function getNoValue(){
-        this.mdf = false;
+        this._mdf = false;
     }
 
     function ValueProperty(elem,data, mult){
@@ -200,7 +200,7 @@ var PropertyFactory = (function(){
         this.mult = mult;
         this.v = mult ? data.k * mult : data.k;
         this.pv = data.k;
-        this.mdf = false;
+        this._mdf = false;
         this.comp = elem.comp;
         this.k = false;
         this.kf = false;
@@ -212,7 +212,7 @@ var PropertyFactory = (function(){
         this.propType = 'multidimensional';
         this.mult = mult;
         this.data = data;
-        this.mdf = false;
+        this._mdf = false;
         this.comp = elem.comp;
         this.k = false;
         this.kf = false;

@@ -4,7 +4,7 @@ MouseModifier.prototype.processKeys = function(forceRender){
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;
     }
-    this.mdf = true;
+    this._mdf = true;
 
 };
 
@@ -190,10 +190,10 @@ MouseModifier.prototype.processShapes = function(){
         var shapeData, newPaths = [];
         for(i=0;i<len;i+=1){
             shapeData = this.shapes[i];
-            if(!shapeData.shape.mdf && !this.mdf){
+            if(!shapeData.shape._mdf && !this._mdf){
                 shapeData.shape.paths = shapeData.last;
             } else {
-                shapeData.shape.mdf = true;
+                shapeData.shape._mdf = true;
                 shapePaths = shapeData.shape.paths;
                 jLen = shapePaths.length;
                 for(j=0;j<jLen;j+=1){

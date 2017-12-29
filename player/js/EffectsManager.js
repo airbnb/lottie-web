@@ -18,17 +18,17 @@ function GroupEffect(data,element,dynamicProperties){
 }
 
 GroupEffect.prototype.getValue = function(){
-    this.mdf = false;
+    this._mdf = false;
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
-        this.mdf = this.dynamicProperties[i].mdf || this.mdf;
+        this._mdf = this.dynamicProperties[i]._mdf || this._mdf;
     }
 };
 
 GroupEffect.prototype.init = function(data,element,dynamicProperties){
     this.data = data;
-    this.mdf = false;
+    this._mdf = false;
     this.effectElements = [];
     var i, len = this.data.ef.length;
     var eff, effects = this.data.ef;
