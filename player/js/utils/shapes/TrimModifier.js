@@ -76,7 +76,7 @@ TrimModifier.prototype.releasePathsData = function(pathsData) {
 
 TrimModifier.prototype.processShapes = function(_isFirstFrame) {
     
-    if (this._mdf) {
+    if (this._mdf || _isFirstFrame) {
         var o = (this.o.v % 360) / 360;
         if (o < 0) {
             o += 1;
@@ -198,9 +198,6 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         for (i = 0; i < len; i += 1) {
             this.shapes[i].shape._mdf = true;
         }
-    }
-    if (!this.dynamicProperties.length) {
-        this._mdf = false;
     }
 }
 

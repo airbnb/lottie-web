@@ -301,15 +301,37 @@ var Matrix = (function(){
         return retPts;
     }
 
-    function applyToPointArray(x,y,z,dimensions){
-        if(dimensions && dimensions === 2) {
-            var arr = point_pool.newElement();
-            arr[0] = x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12]; 
-            arr[1] = x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13]; 
-            return arr;    
+    function applyToTriplePoints(pt1, pt2, pt3) {
+        var arr = createTypedArray('float32', 6);
+        if(this.isIdentity()) {
+            arr[0] = pt1[0];
+            arr[1] = pt1[1];
+            arr[2] = pt2[0];
+            arr[3] = pt2[1];
+            arr[4] = pt3[0];
+            arr[5] = pt3[1];
+        } else {
+            var p0 = this.props[0], p1 = this.props[1], p4 = this.props[4], p5 = this.props[5], p12 = this.props[12], p13 = this.props[13]
+            arr[0] = pt1[0] * p0 + pt1[1] * p4 + p12;
+            arr[1] = pt1[0] * p1 + pt1[1] * p5 + p13;
+            arr[2] = pt2[0] * p0 + pt2[1] * p4 + p12;
+            arr[3] = pt2[0] * p1 + pt2[1] * p5 + p13;
+            arr[4] = pt3[0] * p0 + pt3[1] * p4 + p12;
+            arr[5] = pt3[0] * p1 + pt3[1] * p5 + p13;
         }
-        return [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
+        return arr;
     }
+
+    function applyToPointArray(x,y,z){
+        var arr;
+        if(this.isIdentity()) {
+            arr = [x,y,z];
+        } else {
+            arr = [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
+        }
+        return arr;
+    }
+
     function applyToPointStringified(x, y) {
         if(this.isIdentity()) {
             return x + ',' + y;
@@ -362,6 +384,7 @@ var Matrix = (function(){
         this.applyToY = applyToY;
         this.applyToZ = applyToZ;
         this.applyToPointArray = applyToPointArray;
+        this.applyToTriplePoints = applyToTriplePoints;
         this.applyToPointStringified = applyToPointStringified;
         this.toCSS = toCSS;
         this.to2dCSS = to2dCSS;

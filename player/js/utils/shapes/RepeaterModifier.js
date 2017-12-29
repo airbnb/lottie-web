@@ -83,8 +83,8 @@ RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
     }
 }
 
-RepeaterModifier.prototype.processShapes = function() {
-    if(this._mdf){
+RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
+    if(this._mdf || _isFirstFrame){
         var copies = Math.ceil(this.c.v);
         if(this._groups.length < copies){
             while(this._groups.length < copies){

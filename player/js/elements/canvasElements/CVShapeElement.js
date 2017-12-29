@@ -219,62 +219,43 @@ CVShapeElement.prototype.renderInnerContent = function() {
     this.renderShape(this.transformHelper,this.shapesData,this.itemsData,true);
 }
 
-CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain){
-    var i, len = items.length - 1;
-    var groupTransform,groupMatrix;
-    groupTransform = parentTransform;
-    for(i=len;i>=0;i-=1){
-        if(items[i].ty == 'tr'){
-            groupTransform = data[i].transform;
-            var mtArr = data[i].transform.mProps.v.props;
-            groupTransform._matMdf = groupTransform.mProps._mdf;
-            groupTransform._opMdf = groupTransform.op._mdf;
-            groupMatrix = groupTransform.mat;
-            groupMatrix.cloneFromProps(mtArr);
-            if(parentTransform){
-                var props = parentTransform.mat.props;
-                groupTransform.opacity = parentTransform.opacity;
-                groupTransform.opacity *= data[i].transform.op.v;
-                groupTransform._matMdf = parentTransform._matMdf || groupTransform._matMdf;
-                groupTransform._opMdf = parentTransform._opMdf || groupTransform._opMdf;
-                groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-            }else{
-                groupTransform.opacity = groupTransform.op.o;
-            }
-        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
-            this.renderPath(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'fl'){
-            this.renderFill(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'st'){
-            this.renderStroke(items[i],data[i],groupTransform);
-        }else if(items[i].ty == 'gr'){
-            this.renderShape(groupTransform,items[i].it,data[i].it);
-        }else if(items[i].ty == 'tm'){
-            //
-        }
+CVShapeElement.prototype.renderShapeTransform = function(parentTransform, groupTransform) {
+    var props, groupMatrix;
+    if(parentTransform._opMdf || groupTransform.op._mdf || this._isFirstFrame) {
+        groupTransform.opacity = parentTransform.opacity;
+        groupTransform.opacity *= groupTransform.op.v;
+        groupTransform._opMdf = true;
     }
-    if(!isMain){
-        return;
+    if(parentTransform._opMdf || groupTransform.op._mdf || this._isFirstFrame) {
+        groupMatrix = groupTransform.mat;
+        groupMatrix.cloneFromProps(groupTransform.mProps.v.props);
+        groupTransform._matMdf = true;
+        props = parentTransform.mat.props;
+        groupMatrix.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
     }
-    len = this.stylesList.length;
-    var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type;
+}
+
+CVShapeElement.prototype.drawLayer = function() {
+    var i, len = this.stylesList.length;
+    var j, jLen, k, kLen,elems,nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type, currentStyle;
     for(i=0;i<len;i+=1){
-        type = this.stylesList[i].type;
-        if((type === 'st' && this.stylesList[i].wi === 0) || !this.stylesList[i].data._render){
+        currentStyle = this.stylesList[i];
+        type = currentStyle.type;
+        if((type === 'st' && currentStyle.wi === 0) || !currentStyle.data._render || currentStyle.coOp === 0){
             continue;
         }
         renderer.save();
-        elems = this.stylesList[i].elements;
+        elems = currentStyle.elements;
         if(type === 'st'){
-            ctx.strokeStyle = this.stylesList[i].co;
-            ctx.lineWidth = this.stylesList[i].wi;
-            ctx.lineCap = this.stylesList[i].lc;
-            ctx.lineJoin = this.stylesList[i].lj;
-            ctx.miterLimit = this.stylesList[i].ml || 0;
+            ctx.strokeStyle = currentStyle.co;
+            ctx.lineWidth = currentStyle.wi;
+            ctx.lineCap = currentStyle.lc;
+            ctx.lineJoin = currentStyle.lj;
+            ctx.miterLimit = currentStyle.ml || 0;
         }else{
-            ctx.fillStyle = this.stylesList[i].co;
+            ctx.fillStyle = currentStyle.co;
         }
-        renderer.ctxOpacity(this.stylesList[i].coOp);
+        renderer.ctxOpacity(currentStyle.coOp);
         if(type !== 'st'){
             ctx.beginPath();
         }
@@ -282,9 +263,9 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
         for(j=0;j<jLen;j+=1){
             if(type === 'st'){
                 ctx.beginPath();
-                if(this.stylesList[i].da){
-                    ctx.setLineDash(this.stylesList[i].da);
-                    ctx.lineDashOffset = this.stylesList[i].do;
+                if(currentStyle.da){
+                    ctx.setLineDash(currentStyle.da);
+                    ctx.lineDashOffset = currentStyle.do;
                     this.globalData.isDashed = true;
                 }else if(this.globalData.isDashed){
                     ctx.setLineDash(this.dashResetter);
@@ -298,7 +279,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
                 if(nodes[k].t == 'm'){
                     ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
                 }else if(nodes[k].t == 'c'){
-                    ctx.bezierCurveTo(nodes[k].p1[0],nodes[k].p1[1],nodes[k].p2[0],nodes[k].p2[1],nodes[k].p3[0],nodes[k].p3[1]);
+                    ctx.bezierCurveTo(nodes[k].pts[0],nodes[k].pts[1],nodes[k].pts[2],nodes[k].pts[3],nodes[k].pts[4],nodes[k].pts[5]);
                 }else{
                     ctx.closePath();
                 }
@@ -308,10 +289,36 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             }
         }
         if(type !== 'st'){
-            ctx.fill(this.stylesList[i].r);
+            ctx.fill(currentStyle.r);
         }
         renderer.restore();
     }
+}
+
+CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMain){
+    var i, len = items.length - 1;
+    var groupTransform;
+    groupTransform = parentTransform;
+    for(i=len;i>=0;i-=1){
+        if(items[i].ty == 'tr'){
+            groupTransform = data[i].transform;
+            this.renderShapeTransform(parentTransform, groupTransform);
+        }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
+            this.renderPath(items[i],data[i],groupTransform);
+        }else if(items[i].ty == 'fl'){
+            this.renderFill(items[i],data[i],groupTransform);
+        }else if(items[i].ty == 'st'){
+            this.renderStroke(items[i],data[i],groupTransform);
+        }else if(items[i].ty == 'gr'){
+            this.renderShape(groupTransform,items[i].it,data[i].it);
+        }else if(items[i].ty == 'tm'){
+            //
+        }
+    }
+    if(isMain){
+        this.drawLayer();
+    }
+    
 };
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
     var len, i, j,jLen;
@@ -334,9 +341,7 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
                     }
                     pathStringTransformed.push({
                         t: 'c',
-                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransformMat.applyToPointArray(pathNodes.i[i][0], pathNodes.i[i][1], 0),
-                        p3: groupTransformMat.applyToPointArray(pathNodes.v[i][0], pathNodes.v[i][1], 0)
+                        pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[i], pathNodes.v[i])
                     });
                 }
                 if (len == 1) {
@@ -348,9 +353,7 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
                 if (pathNodes.c && len) {
                     pathStringTransformed.push({
                         t: 'c',
-                        p1: groupTransformMat.applyToPointArray(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1], 0),
-                        p2: groupTransformMat.applyToPointArray(pathNodes.i[0][0], pathNodes.i[0][1], 0),
-                        p3: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+                        pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[0], pathNodes.v[0])
                     });
                     pathStringTransformed.push({
                         t: 'z'

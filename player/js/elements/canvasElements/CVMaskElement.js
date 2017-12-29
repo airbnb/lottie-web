@@ -20,7 +20,7 @@ CVMaskElement.prototype.renderFrame = function (transform) {
     }
     var ctx = this.element.canvasContext;
     var i, len = this.masksProperties.length;
-    var pt,pt2,pt3,data;
+    var pt,pts,data;
     ctx.beginPath();
     for (i = 0; i < len; i++) {
         if(this.masksProperties[i].mode !== 'n'){
@@ -32,19 +32,15 @@ CVMaskElement.prototype.renderFrame = function (transform) {
                 ctx.lineTo(0, 0);
             }
             data = this.viewData[i].v;
-            pt = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0):data.v[0];
+            pt = transform.applyToPointArray(data.v[0][0],data.v[0][1],0);
             ctx.moveTo(pt[0], pt[1]);
             var j, jLen = data._length;
             for (j = 1; j < jLen; j++) {
-                pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-                pt2 = transform ? transform.applyToPointArray(data.i[j][0],data.i[j][1],0) : data.i[j];
-                pt3 = transform ? transform.applyToPointArray(data.v[j][0],data.v[j][1],0) : data.v[j];
-                ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
+                pts = transform.applyToTriplePoints(data.o[j - 1], data.i[j], data.v[j]);
+                ctx.bezierCurveTo(pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]);
             }
-            pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-            pt2 = transform ? transform.applyToPointArray(data.i[0][0],data.i[0][1],0) : data.i[0];
-            pt3 = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0) : data.v[0];
-            ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
+            pts = transform.applyToTriplePoints(data.o[j - 1], data.i[0], data.v[0]);
+            ctx.bezierCurveTo(pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]);
         }
     }
     this.element.globalData.renderer.save(true);
