@@ -161,13 +161,13 @@
     //var elem = createNS('aa')
     var animData = {
         container: elem,
-        renderer: 'html',
-        loop: false,
+        renderer: 'canvas',
+        loop: true,
         autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/gumball/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {

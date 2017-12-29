@@ -290,6 +290,7 @@ var replacingMap = [
     ['"float32"', '\'_f3\''],
     ['renderedFrame', '_dh'],
     ['offsetTime', '_di'],
+    ['stylesList', '_dj'],
 ]
 
 gulp.task('buildTest',['buildSources'], function() {
