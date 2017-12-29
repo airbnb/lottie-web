@@ -39,12 +39,12 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
     var layer = this.layers[pos];
     if(!layer.ddd || !this.supports3d){
         var i = 0;
-        var nextDOMElement, nextLayer;
+        var nextDOMElement, nextLayer, tmpDOMElement;
         while(i<pos){
             if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement){
                 nextLayer = this.elements[i];
-                nextDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
-                break;
+                tmpDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
+                nextDOMElement = tmpDOMElement || nextDOMElement;
             }
             i += 1;
         }
