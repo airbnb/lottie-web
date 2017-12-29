@@ -33,10 +33,6 @@ function SVGRenderer(animationItem, config){
 
 extendPrototype([BaseRenderer],SVGRenderer);
 
-SVGRenderer.prototype.createBase = function (data) {
-    return new SVGBaseElement(data,this.globalData,this);
-};
-
 SVGRenderer.prototype.createNull = function (data) {
     return new NullElement(data,this.globalData,this);
 };

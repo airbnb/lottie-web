@@ -26,10 +26,6 @@ function CanvasRenderer(animationItem, config){
 }
 extendPrototype([BaseRenderer],CanvasRenderer);
 
-CanvasRenderer.prototype.createBase = function (data) {
-    return new CVBaseElement(data, this.globalData, this);
-};
-
 CanvasRenderer.prototype.createShape = function (data) {
     return new CVShapeElement(data, this.globalData, this);
 };

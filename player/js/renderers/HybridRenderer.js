@@ -62,11 +62,6 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
     }
 };
 
-
-HybridRenderer.prototype.createBase = function (data) {
-    return new SVGBaseElement(data, this.globalData, this);
-};
-
 HybridRenderer.prototype.createShape = function (data) {
     if(!this.supports3d){
         return new SVGShapeElement(data, this.globalData, this);

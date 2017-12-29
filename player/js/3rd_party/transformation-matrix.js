@@ -60,10 +60,7 @@ var Matrix = (function(){
         }
         var mCos = _cos(angle);
         var mSin = _sin(angle);
-        return this._t(mCos, -mSin,  0, 0
-            , mSin,  mCos, 0, 0
-            , 0,  0,  1, 0
-            , 0, 0, 0, 1);
+        return this._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
     }
 
     function rotateX(angle){
@@ -72,10 +69,7 @@ var Matrix = (function(){
         }
         var mCos = _cos(angle);
         var mSin = _sin(angle);
-        return this._t(1, 0, 0, 0
-            , 0, mCos, -mSin, 0
-            , 0, mSin,  mCos, 0
-            , 0, 0, 0, 1);
+        return this._t(1, 0, 0, 0, 0, mCos, -mSin, 0, 0, mSin,  mCos, 0, 0, 0, 0, 1);
     }
 
     function rotateY(angle){
@@ -84,10 +78,7 @@ var Matrix = (function(){
         }
         var mCos = _cos(angle);
         var mSin = _sin(angle);
-        return this._t(mCos,  0,  mSin, 0
-            , 0, 1, 0, 0
-            , -mSin,  0,  mCos, 0
-            , 0, 0, 0, 1);
+        return this._t(mCos,  0,  mSin, 0, 0, 1, 0, 0, -mSin,  0,  mCos, 0, 0, 0, 0, 1);
     }
 
     function rotateZ(angle){
@@ -96,10 +87,7 @@ var Matrix = (function(){
         }
         var mCos = _cos(angle);
         var mSin = _sin(angle);
-        return this._t(mCos, -mSin,  0, 0
-            , mSin,  mCos, 0, 0
-            , 0,  0,  1, 0
-            , 0, 0, 0, 1);
+        return this._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
     }
 
     function shear(sx,sy){
@@ -113,18 +101,9 @@ var Matrix = (function(){
     function skewFromAxis(ax, angle){
         var mCos = _cos(angle);
         var mSin = _sin(angle);
-        return this._t(mCos, mSin,  0, 0
-            , -mSin,  mCos, 0, 0
-            , 0,  0,  1, 0
-            , 0, 0, 0, 1)
-            ._t(1, 0,  0, 0
-            , _tan(ax),  1, 0, 0
-            , 0,  0,  1, 0
-            , 0, 0, 0, 1)
-            ._t(mCos, -mSin,  0, 0
-            , mSin,  mCos, 0, 0
-            , 0,  0,  1, 0
-            , 0, 0, 0, 1);
+        return this._t(mCos, mSin,  0, 0, -mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1)
+            ._t(1, 0,  0, 0, _tan(ax),  1, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1)
+            ._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
         //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, _tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
@@ -228,10 +207,7 @@ var Matrix = (function(){
 
     function isIdentity() {
         if(!this._identityCalculated){
-            this._identity = !(this.props[0] !== 1 || this.props[1] !== 0 || this.props[2] !== 0 || this.props[3] !== 0
-                || this.props[4] !== 0 || this.props[5] !== 1 || this.props[6] !== 0 || this.props[7] !== 0
-                || this.props[8] !== 0 || this.props[9] !== 0 || this.props[10] !== 1 || this.props[11] !== 0
-                || this.props[12] !== 0 || this.props[13] !== 0 || this.props[14] !== 0 || this.props[15] !== 1);
+            this._identity = !(this.props[0] !== 1 || this.props[1] !== 0 || this.props[2] !== 0 || this.props[3] !== 0 || this.props[4] !== 0 || this.props[5] !== 1 || this.props[6] !== 0 || this.props[7] !== 0 || this.props[8] !== 0 || this.props[9] !== 0 || this.props[10] !== 1 || this.props[11] !== 0 || this.props[12] !== 0 || this.props[13] !== 0 || this.props[14] !== 0 || this.props[15] !== 1);
             this._identityCalculated = true;
         }
         return this._identity;
