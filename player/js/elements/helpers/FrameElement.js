@@ -18,7 +18,7 @@ FrameElement.prototype.initFrame = function(){
 	this.firstFrame = false;
 	//list of animated properties
 	this.dynamicProperties = [];
-    // If layer has been modified in current tick
+    // If layer has been modified in current tick this will be true
     this._mdf = false;
 }
 

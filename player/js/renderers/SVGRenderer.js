@@ -237,17 +237,3 @@ SVGRenderer.prototype.hide = function(){
 SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
-
-SVGRenderer.prototype.searchExtraCompositions = function(assets){
-    var i, len = assets.length;
-    var floatingContainer = createNS('g');
-    for(i=0;i<len;i+=1){
-        if(assets[i].xt){
-            var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
-            comp.initExpressions();
-            //comp.compInterface = CompExpressionInterface(comp);
-            //Expressions.addLayersInterface(comp.elements, this.globalData.projectInterface);
-            this.globalData.projectInterface.registerComposition(comp);
-        }
-    }
-};

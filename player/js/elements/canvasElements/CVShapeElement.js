@@ -212,9 +212,9 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
 CVShapeElement.prototype.renderInnerContent = function() {
 
     this.transformHelper.mat.reset();
-    this.transformHelper.opacity = this.finalTransform.mProp.o.v;
+    this.transformHelper.opacity = 1;
     this.transformHelper.matMdf = false;
-    this.transformHelper.opMdf = this.finalTransform.opMdf;
+    this.transformHelper.opMdf = false;
     this.renderModifiers();
     this.renderShape(this.transformHelper,this.shapesData,this.itemsData,true);
 }

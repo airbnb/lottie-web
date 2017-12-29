@@ -161,18 +161,18 @@
     //var elem = createNS('aa')
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/pigeon/data.json'
+        path: 'exports/bm/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
         //anim.setSubframe(false);
-        setTimeout(function(){anim.play()}, 0);
+        //setTimeout(function(){anim.play()}, 0);
     })
     window.addEventListener('resize', function(){
         anim.resize();

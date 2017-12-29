@@ -333,17 +333,3 @@ CanvasRenderer.prototype.hide = function(){
 CanvasRenderer.prototype.show = function(){
     this.animationItem.container.style.display = 'block';
 };
-
-CanvasRenderer.prototype.searchExtraCompositions = function(assets){
-    var i, len = assets.length;
-    var floatingContainer = createNS('g');
-    for(i=0;i<len;i+=1){
-        if(assets[i].xt){
-            var comp = this.createComp(assets[i],this.globalData.comp,this.globalData);
-            comp.initExpressions();
-            //comp.compInterface = CompExpressionInterface(comp);
-            //Expressions.addLayersInterface(comp.elements, this.globalData.projectInterface);
-            this.globalData.projectInterface.registerComposition(comp);
-        }
-    }
-};

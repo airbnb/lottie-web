@@ -100,3 +100,14 @@ BaseRenderer.prototype.buildElementParenting = function(element, parentName, hie
 BaseRenderer.prototype.addPendingElement = function(element){
     this.pendingElements.push(element);
 };
+
+BaseRenderer.prototype.searchExtraCompositions = function(assets){
+    var i, len = assets.length;
+    for(i=0;i<len;i+=1){
+        if(assets[i].xt){
+            var comp = this.createComp(assets[i]);
+            comp.initExpressions();
+            this.globalData.projectInterface.registerComposition(comp);
+        }
+    }
+};
