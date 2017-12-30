@@ -389,7 +389,6 @@ CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransfor
 
 CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransform){
     var styleElem = itemData.style;
-    //TODO fix dashes
     var d = itemData.d;
     if(d && (d._mdf  || this._isFirstFrame)){
         styleElem.da = d.dashArray;

@@ -329,7 +329,9 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
 	index = index === undefined ? this.keysIndex : index;
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
-    dData.t = newData.t;
+    for(var s in newData) {
+        dData[s] = newData[s];
+    }
     this.keysIndex = -1;
     this._isFirstFrame = true;
     this.getValue();
