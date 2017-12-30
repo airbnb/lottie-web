@@ -55,9 +55,9 @@ SVGTextElement.prototype.buildNewText = function(){
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
     var xPos = 0, yPos = 0, firstLine = true;
     var trackingOffset = documentData.tr/1000*documentData.s;
-    if(singleShape && !usesGlyphs) {
+    if(singleShape && !usesGlyphs && !documentData.sz) {
         var tElement = this.textContainer;
-        var justify = '';
+        var justify = 'start';
         switch(documentData.j) {
             case 1:
                 justify = 'end';
@@ -100,20 +100,20 @@ SVGTextElement.prototype.buildNewText = function(){
             }
             
             matrixHelper.reset();
-            if(usesGlyphs) {
-                matrixHelper.scale(documentData.s / 100, documentData.s / 100);
-                if (singleShape) {
-                    if(letters[i].n) {
-                        xPos = -trackingOffset;
-                        yPos += documentData.yOffset;
-                        yPos += firstLine ? 1 : 0;
-                        firstLine = false;
-                    }
-                    this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
-                    xPos += letters[i].l || 0;
-                    //xPos += letters[i].val === ' ' ? 0 : trackingOffset;
-                    xPos += trackingOffset;
+            matrixHelper.scale(documentData.s / 100, documentData.s / 100);
+            if (singleShape) {
+                if(letters[i].n) {
+                    xPos = -trackingOffset;
+                    yPos += documentData.yOffset;
+                    yPos += firstLine ? 1 : 0;
+                    firstLine = false;
                 }
+                this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
+                xPos += letters[i].l || 0;
+                //xPos += letters[i].val === ' ' ? 0 : trackingOffset;
+                xPos += trackingOffset;
+            }
+            if(usesGlyphs) {
                 charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
@@ -123,6 +123,9 @@ SVGTextElement.prototype.buildNewText = function(){
                     shapeStr += this.createPathShape(matrixHelper,shapes);
                 }
             } else {
+                if(singleShape) {
+                    tSpan.setAttribute("transform", "translate(" + matrixHelper.props[12] + "," + matrixHelper.props[13] + ")");
+                }
                 tSpan.textContent = letters[i].val;
                 tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
             }
