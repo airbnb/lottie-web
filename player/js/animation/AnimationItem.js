@@ -25,7 +25,6 @@ var AnimationItem = function () {
     this.segmentPos = 0;
     this.subframeEnabled = subframeEnabled;
     this.segments = [];
-    this.pendingSegment = false;
     this._idle = true;
     this.projectInterface = ProjectInterface();
 };
@@ -315,7 +314,9 @@ AnimationItem.prototype.gotoFrame = function () {
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
     }
+    //console.log(this.currentFrame)
     this.trigger('enterFrame');
+    // console.log('gotoFrame: ', this.currentFrame )
     this.renderFrame();
 };
 
@@ -346,10 +347,8 @@ AnimationItem.prototype.pause = function (name) {
     }
     if(this.isPaused === false){
         this.isPaused = true;
-        if(!this.pendingSegment){
-            this._idle = true;
-            this.trigger('_idle');
-        }
+        this._idle = true;
+        this.trigger('_idle');
     }
 };
 
@@ -369,9 +368,8 @@ AnimationItem.prototype.stop = function (name) {
         return;
     }
     this.pause();
-    this.currentFrame = this.currentRawFrame = 0;
     this.playCount = 0;
-    this.gotoFrame();
+    this.setCurrentRawFrameValue(0);
 };
 
 AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
@@ -392,32 +390,42 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.advanceTime = function (value) {
-    if(this.pendingSegment){
-        this.pendingSegment = false;
-        this.adjustSegment(this.segments.shift());
-        if(this.isPaused){
-            this.play();
-        }
-        return;
-    }
     if (this.isPaused === true || this.isLoaded === false) {
         return;
     }
-    this.setCurrentRawFrameValue(this.currentRawFrame + value * this.frameModifier);
-};
-
-AnimationItem.prototype.updateAnimation = function (perc) {
-    this.setCurrentRawFrameValue(this.totalFrames * perc);
-};
-
-AnimationItem.prototype.moveFrame = function (value, name) {
-    if(name && this.name != name){
-        return;
+    var nextValue = this.currentRawFrame + value * this.frameModifier;
+    var _isComplete = false;
+    if (nextValue >= this.totalFrames) {
+        if(!this.checkSegments(nextValue % this.totalFrames)) {
+            if (this.loop && !(++this.playCount === this.loop)) {
+                this.setCurrentRawFrameValue(nextValue % this.totalFrames);
+                this.trigger('loopComplete');
+            } else {
+                _isComplete = true;
+                nextValue = this.totalFrames;
+            }
+        }
+    } else if(nextValue < 0) {
+        if(!this.checkSegments(nextValue % this.totalFrames)) {
+            if (this.loop && !(this.playCount-- <= 0 && this.loop !== true)) {
+                this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
+                this.trigger('loopComplete');
+            } else {
+                _isComplete = true;
+                nextValue = 0;
+            }
+        }
+    } else {
+        this.setCurrentRawFrameValue(nextValue);
     }
-    this.setCurrentRawFrameValue(this.currentRawFrame+value);
+    if (_isComplete) {
+        this.setCurrentRawFrameValue(nextValue);
+        this.pause();
+        this.trigger('complete');
+    }
 };
 
-AnimationItem.prototype.adjustSegment = function(arr){
+AnimationItem.prototype.adjustSegment = function(arr, offset){
     this.playCount = 0;
     if(arr[1] < arr[0]){
         if(this.frameModifier > 0){
@@ -429,7 +437,7 @@ AnimationItem.prototype.adjustSegment = function(arr){
         }
         this.totalFrames = arr[0] - arr[1];
         this.firstFrame = arr[1];
-        this.setCurrentRawFrameValue(this.totalFrames - 0.001);
+        this.setCurrentRawFrameValue(this.totalFrames - 0.001 - offset);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
             if(this.playSpeed < 0){
@@ -440,7 +448,7 @@ AnimationItem.prototype.adjustSegment = function(arr){
         }
         this.totalFrames = arr[1] - arr[0];
         this.firstFrame = arr[0];
-        this.setCurrentRawFrameValue(0.001);
+        this.setCurrentRawFrameValue(0.001 + offset);
     }
     this.trigger('segmentStart');
 };
@@ -471,7 +479,7 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
         this.segments.push(arr);
     }
     if(forceFlag){
-        this.adjustSegment(this.segments.shift());
+        this.checkSegments(0);
     }
     if(this.isPaused){
         this.play();
@@ -483,13 +491,16 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.push([this.animationData.ip,this.animationData.op]);
     //this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
     if(forceFlag){
-        this.adjustSegment(this.segments.shift());
+        this.checkSegments(0);
     }
 };
-AnimationItem.prototype.checkSegments = function(){
-    if(this.segments.length){
-        this.pendingSegment = true;
+AnimationItem.prototype.checkSegments = function(offset){
+    if(this.segments.length) {
+        //console.log(this.currentRawFrame % lastFrame)
+        this.adjustSegment(this.segments.shift(), offset);
+        return true;
     }
+    return false;
 };
 
 AnimationItem.prototype.remove = function (name) {
@@ -512,43 +523,7 @@ AnimationItem.prototype.destroy = function (name) {
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
-    //console.log(this.totalFrames);
-    var _completeFlag = false;
-    if (this.currentRawFrame >= this.totalFrames) {
-        this.checkSegments();
-        if(this.loop === false){
-            this.currentRawFrame = this.totalFrames;
-            _completeFlag = true;
-        }else{
-            this.trigger('loopComplete');
-            this.playCount += 1;
-            if((this.loop !== true && this.playCount == this.loop) || this.pendingSegment){
-                this.currentRawFrame = this.totalFrames;
-                _completeFlag = true;
-            } else {
-                this.currentRawFrame = this.currentRawFrame % this.totalFrames;
-            }
-        }
-    } else if (this.currentRawFrame < 0) {
-        this.checkSegments();
-        this.playCount -= 1;
-        if(this.playCount < 0){
-            this.playCount = 0;
-        }
-        if(this.loop === false  || this.pendingSegment){
-            this.currentRawFrame = 0;
-            _completeFlag = true;
-        }else{
-            this.trigger('loopComplete');
-            this.currentRawFrame = (this.totalFrames + this.currentRawFrame) % this.totalFrames;
-        }
-    }
-
     this.gotoFrame();
-    if(_completeFlag) {
-        this.pause();
-        this.trigger('complete');
-    }
 };
 
 AnimationItem.prototype.setSpeed = function (val) {
