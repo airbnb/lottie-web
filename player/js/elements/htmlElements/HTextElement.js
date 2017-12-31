@@ -45,8 +45,8 @@ HTextElement.prototype.buildNewText = function(){
     }
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     if(!this.globalData.fontManager.chars){
-        innerElemStyle.fontSize = documentData.s+'px';
-        innerElemStyle.lineHeight = documentData.s+'px';
+        innerElemStyle.fontSize = documentData.finalSize+'px';
+        innerElemStyle.lineHeight = documentData.finalSize+'px';
         if(fontData.fClass){
             this.innerElem.className = fontData.fClass;
         } else {
@@ -104,7 +104,7 @@ HTextElement.prototype.buildNewText = function(){
         }
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
-            var charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+            var charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData;
             if(charData){
                 shapeData = charData.data;
@@ -114,7 +114,7 @@ HTextElement.prototype.buildNewText = function(){
             matrixHelper.reset();
             if(shapeData && shapeData.shapes){
                 shapes = shapeData.shapes[0].it;
-                matrixHelper.scale(documentData.s/100,documentData.s/100);
+                matrixHelper.scale(documentData.finalSize/100,documentData.finalSize/100);
                 shapeStr = this.createPathShape(matrixHelper,shapes);
                 tSpan.setAttribute('d',shapeStr);
             }
@@ -146,7 +146,7 @@ HTextElement.prototype.buildNewText = function(){
             if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
                 //
-                tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,'+ -documentData.s/1.2+'px,0)';
+                tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,'+ -documentData.finalSize/1.2+'px,0)';
             } else {
                 this.innerElem.appendChild(tSpan);
             }

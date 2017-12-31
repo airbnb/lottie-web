@@ -40,6 +40,20 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
 
 ITextElement.prototype.updateDocumentData = function(newData, index) {
     this.textProperty.updateDocumentData(newData, index);
+    this.buildNewText();
+    this.renderInnerContent();
+};
+
+ITextElement.prototype.canResizeFont = function(_canResize) {
+    this.textProperty.canResizeFont(_canResize);
+    this.buildNewText();
+    this.renderInnerContent();
+};
+
+ITextElement.prototype.setMinimumFontSize = function(_fontSize) {
+    this.textProperty.setMinimumFontSize(_fontSize);
+    this.buildNewText();
+    this.renderInnerContent();
 };
 
 ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {

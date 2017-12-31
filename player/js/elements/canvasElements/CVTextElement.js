@@ -44,15 +44,15 @@ CVTextElement.prototype.buildNewText = function(){
     var letters = documentData.l;
     var matrixHelper = this.mHelper;
     this.stroke = hasStroke;
-    this.values.fValue = documentData.s + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
-    len = documentData.t.length;
+    this.values.fValue = documentData.finalSize + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
+    len = documentData.finalText.length;
     //this.tHelper.font = this.values.fValue;
     var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
-    var trackingOffset = documentData.tr/1000*documentData.s;
+    var trackingOffset = documentData.tr/1000*documentData.finalSize;
     var xPos = 0, yPos = 0, firstLine = true;
     var cnt = 0;
     for (i = 0; i < len; i += 1) {
-        charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
         shapeData = charData && charData.data || {};
         matrixHelper.reset();
         if(singleShape && letters[i].n) {
@@ -64,7 +64,7 @@ CVTextElement.prototype.buildNewText = function(){
 
         shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
         jLen = shapes.length;
-        matrixHelper.scale(documentData.s/100,documentData.s/100);
+        matrixHelper.scale(documentData.finalSize/100,documentData.finalSize/100);
         if(singleShape){
             this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
         }

@@ -33,7 +33,7 @@ SVGTextElement.prototype.buildNewText = function(){
         this.layerElement.setAttribute('stroke', this.buildColor(documentData.sc));
         this.layerElement.setAttribute('stroke-width', documentData.sw);
     }
-    this.layerElement.setAttribute('font-size', documentData.s);
+    this.layerElement.setAttribute('font-size', documentData.finalSize);
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     if(fontData.fClass){
         this.layerElement.setAttribute('class',fontData.fClass);
@@ -54,7 +54,7 @@ SVGTextElement.prototype.buildNewText = function(){
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
     var xPos = 0, yPos = 0, firstLine = true;
-    var trackingOffset = documentData.tr/1000*documentData.s;
+    var trackingOffset = documentData.tr/1000*documentData.finalSize;
     if(singleShape && !usesGlyphs && !documentData.sz) {
         var tElement = this.textContainer;
         var justify = 'start';
@@ -68,7 +68,7 @@ SVGTextElement.prototype.buildNewText = function(){
         }
         tElement.setAttribute('text-anchor',justify);
         tElement.setAttribute('letter-spacing',trackingOffset);
-        var textContent = documentData.t.split(String.fromCharCode(13));
+        var textContent = documentData.finalText.split(String.fromCharCode(13));
         len = textContent.length;
         yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
@@ -79,7 +79,7 @@ SVGTextElement.prototype.buildNewText = function(){
             tSpan.style.display = 'inherit';
             tElement.appendChild(tSpan);
             this.textSpans[i] = tSpan;
-            yPos += documentData.lh;
+            yPos += documentData.finalLineHeight;
         }
         
         this.layerElement.appendChild(tElement);
@@ -100,7 +100,7 @@ SVGTextElement.prototype.buildNewText = function(){
             }
             
             matrixHelper.reset();
-            matrixHelper.scale(documentData.s / 100, documentData.s / 100);
+            matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
             if (singleShape) {
                 if(letters[i].n) {
                     xPos = -trackingOffset;
@@ -114,7 +114,7 @@ SVGTextElement.prototype.buildNewText = function(){
                 xPos += trackingOffset;
             }
             if(usesGlyphs) {
-                charData = this.globalData.fontManager.getCharData(documentData.t.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+                charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
                 if(!singleShape){

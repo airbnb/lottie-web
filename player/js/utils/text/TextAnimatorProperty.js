@@ -135,7 +135,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     len = letters.length;
     xPos = 0;
     yPos = 0;
-    var yOff = documentData.s * 1.2 * 0.714;
+    var yOff = documentData.finalSize * 1.2 * 0.714;
     var firstLine = true;
     var animatorProps, animatorSelector;
     var j, jLen;
@@ -457,7 +457,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 currentLength -= alignment[0]*letters[i].an/200;
                 if(letters[i+1] && ind !== letters[i+1].ind){
                     currentLength += letters[i].an / 2;
-                    currentLength += documentData.tr/1000*documentData.s;
+                    currentLength += documentData.tr/1000*documentData.finalSize;
                 }
             }else{
 
@@ -478,7 +478,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 matrixHelper.translate(0,-documentData.ls);
                 matrixHelper.translate(offf,0,0);
                 matrixHelper.translate(alignment[0]*letters[i].an/200,alignment[1]*yOff/100,0);
-                xPos += letters[i].l + documentData.tr/1000*documentData.s;
+                xPos += letters[i].l + documentData.tr/1000*documentData.finalSize;
             }
             if(renderType === 'html'){
                 letterM = matrixHelper.toCSS();
