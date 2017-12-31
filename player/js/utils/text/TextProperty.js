@@ -37,6 +37,7 @@ function TextProperty(elem, data, dynamicProperties){
         yOffset: 0,
         __complete: false,
         finalSize:0,
+        finalText:'',
         finalLineHeight: 0
 
 	};
@@ -75,6 +76,7 @@ TextProperty.prototype.setCurrentData = function(data){
         currentData.yOffset = data.yOffset;
         currentData.finalSize = data.finalSize;
         currentData.finalLineHeight = data.finalLineHeight;
+        currentData.finalText = data.finalText;
         currentData.__complete = false;
 };
 
@@ -159,6 +161,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.fStyle = fStyle;
     len = documentData.t.length;
     documentData.finalSize = documentData.s;
+    documentData.finalText = documentData.t;
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     if(documentData.sz){

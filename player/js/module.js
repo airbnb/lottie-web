@@ -41,10 +41,6 @@
         animationManager.stop(animation);
     }
 
-    function moveFrame(value) {
-        animationManager.moveFrame(value);
-    }
-
     function searchAnimations() {
         if (standalone === true) {
             animationManager.searchAnimations(animationData, standalone, renderer);
@@ -134,7 +130,6 @@
     lottiejs.setSpeed = setSpeed;
     lottiejs.setDirection = setDirection;
     lottiejs.stop = stop;
-    lottiejs.moveFrame = moveFrame;
     lottiejs.searchAnimations = searchAnimations;
     lottiejs.registerAnimation = registerAnimation;
     lottiejs.loadAnimation = loadAnimation;

@@ -12,8 +12,8 @@
 
         #lottie{
             background-color:#000;
-            width:100%;
-            height:100%;
+            width:960px;
+            height:540px;
             /*width:360px;
             height:640px;*/
             display:block;
@@ -162,21 +162,52 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
-        autoplay: false,
+        loop: 5,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/catrim/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
         //anim.setSubframe(false);
+         anim.setSpeed(4);
         //setTimeout(function(){anim.play()}, 2000);
+    })
+    var eventListener = anim.addEventListener('enterFrame', function(ev){
+        if(ev.currentTime >= 50) {
+            //anim.playSegments([0,25], true);
+            //console.log('TI<ME')
+            //anim.setSpeed(-4);
+            eventListener();
+        }
+    })
+    var eventListener2 = anim.addEventListener('loopComplete', function(ev) {
+        //console.log('COMPLETE')
+        //anim.playSegments([0,20], true);
+        if (ev.currentLoop === 3) {
+            anim.setSpeed(-4);
+            anim.play();
+            eventListener2();
+        }
+        // eventListener2();
+    })
+    var eventListener3 = anim.addEventListener('complete', function() {
+        //console.log('COMPLETE')
+        /*setTimeout(function(){
+            anim.playSegments([0,24], true);
+        },1000)*/
+        //anim.playSegments([24,0]);
+        //anim.playSegments([0,24], true);
+        eventListener3();
     })
     window.addEventListener('resize', function(){
         anim.resize();
     })
+   /* setTimeout(function(){
+        anim.resetSegments();
+    },4000)*/
     /*anim2 = lottie.loadAnimation({
         container: document.getElementById('lottie2'),
         renderer: 'svg',

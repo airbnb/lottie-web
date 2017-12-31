@@ -13,6 +13,8 @@ RenderableElement.prototype = {
     },
     prepareRenderableFrame: function(num) {
         this.checkLayerLimits(num);
+    },
+    checkTransparency: function(){
         if(this.finalTransform.mProp.o.v <= 0) {
             if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
                 this.isTransparent = true;

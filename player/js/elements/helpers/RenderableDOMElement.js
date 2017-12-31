@@ -49,6 +49,7 @@ function RenderableDOMElement() {}
             this._mdf = false;
             this.prepareRenderableFrame(num);
             this.prepareProperties(num, this.isInRange);
+            this.checkTransparency();
         },
         destroy: function(){
             this.innerElem =  null;

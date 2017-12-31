@@ -182,8 +182,8 @@ SVGRenderer.prototype.renderFrame = function(num){
         this.renderedFrame = num;
     }
     //clearPoints();
-    /*console.log('-------');
-    console.log('FRAME ',num);*/
+    // console.log('-------');
+    // console.log('FRAME ',num);
     this.globalData.frameNum = num;
     this.globalData.frameId += 1;
     this.globalData.projectInterface.currentFrame = num;

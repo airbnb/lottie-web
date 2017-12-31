@@ -76,8 +76,8 @@ function BMCompleteEvent(n,d){
 
 function BMCompleteLoopEvent(n,c,t,d){
     this.type = n;
-    this.currentLoop = c;
-    this.totalLoops = t;
+    this.currentLoop = t;
+    this.totalLoops = c;
     this.direction = d < 0 ? -1:1;
 }
 

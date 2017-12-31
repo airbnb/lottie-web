@@ -88,14 +88,6 @@ var animationManager = (function(){
             registeredAnimations[i].animation.play(animation);
         }
     }
-
-    function moveFrame (value, animation) {
-        initTime = Date.now();
-        var i;
-        for(i=0;i<len;i+=1){
-            registeredAnimations[i].animation.moveFrame(value,animation);
-        }
-    }
     function resume(nowTime) {
         var elapsedTime = nowTime - initTime;
         var i;
@@ -205,7 +197,6 @@ var animationManager = (function(){
     moduleOb.setSpeed = setSpeed;
     moduleOb.setDirection = setDirection;
     moduleOb.play = play;
-    moduleOb.moveFrame = moveFrame;
     moduleOb.pause = pause;
     moduleOb.stop = stop;
     moduleOb.togglePause = togglePause;
