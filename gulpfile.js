@@ -141,7 +141,7 @@ gulp.task('buildLight',['buildLightSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('lottie_light.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(batch_replace(replacingMap))
+        //.pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -150,7 +150,7 @@ gulp.task('buildLightMin',['buildLightSources'], function() {
         .pipe(concat('lottie_light.min.js'))
         .pipe(wrap(moduleWrap))
         .pipe(uglify(uglifyOptions))
-        .pipe(batch_replace(replacingMap))
+        //.pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -159,7 +159,7 @@ gulp.task('buildFullMin',['buildSources'], function() {
         .pipe(concat('lottie.min.js'))
         .pipe(wrap(moduleWrap))
         .pipe(uglify(uglifyOptions))
-        .pipe(batch_replace(replacingMap))
+        //.pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
@@ -167,7 +167,7 @@ gulp.task('buildFull',['buildSources'], function() {
     return gulp.src(srcs)
         .pipe(concat('lottie.js'))
         .pipe(wrap(moduleWrap))
-        .pipe(batch_replace(replacingMap))
+        //.pipe(batch_replace(replacingMap))
         .pipe(gulp.dest('build/player/'));
 });
 
