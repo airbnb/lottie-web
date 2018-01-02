@@ -1,3 +1,6 @@
+## V 5.1.1
+- Text Layer keyframed fix
+
 ## V 5.1.0
 - FEATURE: support for all text document property updates usign TextLayer.updateDocumentData (check Wiki for more information)
 - FEATURE: text layers with text boxes have two new methods: TextLayer.canResizeFont and TextLayer.setMinimumFontSize (check Wiki for more information)
