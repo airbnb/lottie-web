@@ -91,11 +91,12 @@ TextProperty.prototype.getValue = function(_forceRender) {
 	if((frameId === this._frameId || !this.kf) && !this._isFirstFrame && !_forceRender) {
 		return;
 	}
-	var textKeys = this.data.d.k, textDocumentData;
+    var textKeys = this.data.d.k, textDocumentData;
+    var frameNum = this.elem.comp.renderedFrame;
     var i = 0, len = textKeys.length;
     while(i <= len - 1) {
         textDocumentData = textKeys[i].s;
-        if(i === len - 1 || textKeys[i+1].t > frameId){
+        if(i === len - 1 || textKeys[i+1].t > frameNum){
             break;
         }
         i += 1;

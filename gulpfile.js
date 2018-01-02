@@ -39,7 +39,7 @@ moduleWrap = moduleWrap.replace('/*<%= contents %>*/','<%= contents %>');
 moduleWrap = moduleWrap.replace('[[BM_VERSION]]',bm_version);
 
 gulp.task('gzipFile', function(){
-  gulp.src('player/exports/render/data.json')
+  gulp.src('build/player/lottie.min.js')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });

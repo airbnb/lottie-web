@@ -151,133 +151,21 @@
 </head>
 <body>
 <div id="lottie"></div>
-<div id="lottie2"></div>
-<div id="lottie3"></div>
 
 <script>
-    'use strict';
-    var anim,anim2, anim3;
+    var anim;
     var elem = document.getElementById('lottie')
-    //var elem = createNS('aa')
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: 5,
+        loop: false,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false,
+            progressiveLoad:true,
         },
-        path: 'exports/catrim/data.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.addEventListener('DOMLoaded', function() {
-        //anim.setSubframe(false);
-         anim.setSpeed(4);
-        //setTimeout(function(){anim.play()}, 2000);
-    })
-    var eventListener = anim.addEventListener('enterFrame', function(ev){
-        if(ev.currentTime >= 50) {
-            //anim.playSegments([0,25], true);
-            //console.log('TI<ME')
-            //anim.setSpeed(-4);
-            eventListener();
-        }
-    })
-    var eventListener2 = anim.addEventListener('loopComplete', function(ev) {
-        //console.log('COMPLETE')
-        //anim.playSegments([0,20], true);
-        if (ev.currentLoop === 3) {
-            anim.setSpeed(-4);
-            anim.play();
-            eventListener2();
-        }
-        // eventListener2();
-    })
-    var eventListener3 = anim.addEventListener('complete', function() {
-        //console.log('COMPLETE')
-        /*setTimeout(function(){
-            anim.playSegments([0,24], true);
-        },1000)*/
-        //anim.playSegments([24,0]);
-        //anim.playSegments([0,24], true);
-        eventListener3();
-    })
-    window.addEventListener('resize', function(){
-        anim.resize();
-    })
-   /* setTimeout(function(){
-        anim.resetSegments();
-    },4000)*/
-    /*anim2 = lottie.loadAnimation({
-        container: document.getElementById('lottie2'),
-        renderer: 'svg',
-        loop: true,
-        autoplay: false,
-        rendererSettings: {
-            progressiveLoad:false
-        },
-        path: 'exports/bm/data.json'
-    });
-    anim3 = lottie.loadAnimation({
-        container: document.getElementById('lottie3'),
-        renderer: 'svg',
-        loop: true,
-        autoplay: false,
-        rendererSettings: {
-            progressiveLoad:false
-        },
-        path: 'exports/catrim/data.json'
-    });
-    //anim = bodymovin.loadAnimation(animData);
-    var count = 0, debug_print;
-    setTimeout(function(){
-        anim.addEventListener('DOMLoaded', function() {
-            anim.play();
-            anim.setSpeed(-20);
-            anim2.play();
-            anim2.setSpeed(-20);
-            anim3.play();
-            anim3.setSpeed(20);
-            //anim.playSegments([50,52], true)
-            function retry() {
-                setTimeout(function(){
-                    //%OptimizeFunctionOnNextCall(AnimationItem.prototype.setCurrentRawFrameValue);
-                }, 2000)
-                setTimeout(function(){
-                    //%DebugPrint(AnimationItem.prototype.setCurrentRawFrameValue);
-                    //var status = printStatus(AnimationItem.prototype.setCurrentRawFrameValue);
-                    if(count < 4) {
-                        anim.setSpeed(-Math.random()*10);
-                        anim2.setSpeed(Math.random()*10);
-                        anim3.setSpeed(-Math.random()*10);
-                        count += 1;
-                        retry();
-                    } else {
-                        anim.stop();
-                        anim2.stop();
-                        anim3.stop();
-                    }
-                }, 4000)
-            }
-
-            retry();
-            
-        })
-        //Check
-        // document.getElementById("bodymovin").style['background-color'] = 'darkblue';
-    }, 0)
-
-    function printStatus(fn) {
-        var status = %GetOptimizationStatus(fn);
-        if (status & 1) console.log("function is function");
-        if (status & 2) console.log("function is never optimized");
-        if (status & 4) console.log("function is always optimized");
-        if (status & 8) console.log("function is maybe deoptimized");
-        if (status & 16) console.log("function is optimized");
-        if (status & 32) console.log("function is optimized by TurboFan");
-        if (status & 64) console.log("function is interpreted");
-        return status;
-    }*/
 
 </script>
 </body>
