@@ -1,3 +1,12 @@
+## V 5.1.0
+- FEATURE: support for all text document property updates usign TextLayer.updateDocumentData (check Wiki for more information)
+- FEATURE: text layers with text boxes have two new methods: TextLayer.canResizeFont and TextLayer.setMinimumFontSize (check Wiki for more information)
+- PERFORMANCE: Significant performance improvement on all renderers
+- PERFORMANCE: repeaters significant performance improvement
+- PERFORMANCE: gradients with opacity significant performance improvement
+- REFACTOR: reduced and organized main element classes
+- TEXT: text align fix for font based text layers
+
 ## V 5.0.6
 - FIX: totalFrames and resetFrames
 - FIX: canvas destroy method
