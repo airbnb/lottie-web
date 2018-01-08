@@ -1,3 +1,6 @@
+## V 5.1.2
+- FIX: Expressions switch statements adding variable declaration when missing
+
 ## V 5.1.1
 - Text Layer keyframed fix
 
