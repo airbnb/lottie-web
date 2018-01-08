@@ -9098,7 +9098,7 @@ AnimationItem.prototype.trigger = function(name){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.1';
+    lottiejs.version = '5.1.2';
 
     function checkReady() {
         if (document.readyState === "complete") {
