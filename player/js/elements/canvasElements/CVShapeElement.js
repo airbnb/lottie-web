@@ -226,7 +226,7 @@ CVShapeElement.prototype.renderShapeTransform = function(parentTransform, groupT
         groupTransform.opacity *= groupTransform.op.v;
         groupTransform._opMdf = true;
     }
-    if(parentTransform._opMdf || groupTransform.op._mdf || this._isFirstFrame) {
+    if(parentTransform._matMdf || groupTransform.mProps._mdf || this._isFirstFrame) {
         groupMatrix = groupTransform.mat;
         groupMatrix.cloneFromProps(groupTransform.mProps.v.props);
         groupTransform._matMdf = true;
