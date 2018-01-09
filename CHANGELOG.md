@@ -1,3 +1,9 @@
+## V 5.1.3
+- FIX: Color interpolation fix
+- FIX: id and classes fix for images and solids
+- FIX: canvas nested groups transform fix
+- FIX: lottie_light.js fix 
+
 ## V 5.1.2
 - FIX: Expressions switch statements adding variable declaration when missing
 

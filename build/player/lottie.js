@@ -6622,13 +6622,11 @@ SVGBaseElement.prototype = {
         } else {
             this.baseElement = this.layerElement;
         }
-        if ((this.data.ln || this.data.cl) && (this.data.ty === 4 || this.data.ty === 0)) {
-            if (this.data.ln) {
-                this.layerElement.setAttribute('id', this.data.ln);
-            }
-            if (this.data.cl) {
-                this.layerElement.setAttribute('class', this.data.cl);
-            }
+        if (this.data.ln) {
+            this.layerElement.setAttribute('id', this.data.ln);
+        }
+        if (this.data.cl) {
+            this.layerElement.setAttribute('class', this.data.cl);
         }
         //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
         if (this.data.ty === 0 && !this.data.hd) {
@@ -7005,12 +7003,6 @@ extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,Fr
 
 SVGTextElement.prototype.createContent = function(){
 
-    if(this.data.ln){
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    if(this.data.cl){
-        this.layerElement.setAttribute('class',this.data.cl);
-    }
     if (this.data.singleShape && !this.globalData.fontManager.chars) {
         this.textContainer = createNS('text');
     }
@@ -8968,6 +8960,7 @@ AnimationItem.prototype.trigger = function(name){
         this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
+function EffectsManager(){}
 function CanvasRenderer(animationItem, config){
     this.animationItem = animationItem;
     this.renderConfig = {
@@ -10054,7 +10047,7 @@ CVShapeElement.prototype.renderShapeTransform = function(parentTransform, groupT
         groupTransform.opacity *= groupTransform.op.v;
         groupTransform._opMdf = true;
     }
-    if(parentTransform._opMdf || groupTransform.op._mdf || this._isFirstFrame) {
+    if(parentTransform._matMdf || groupTransform.mProps._mdf || this._isFirstFrame) {
         groupMatrix = groupTransform.mat;
         groupMatrix.cloneFromProps(groupTransform.mProps.v.props);
         groupTransform._matMdf = true;
@@ -10477,6 +10470,9 @@ HBaseElement.prototype = {
         this.maskedElement = this.layerElement;
         if (this.data.ln) {
             this.layerElement.setAttribute('id',this.data.ln);
+        }
+        if (this.data.cl) {
+            this.layerElement.setAttribute('class', this.data.cl);
         }
         if (this.data.bm !== 0) {
             this.setBlendMode();
@@ -13489,7 +13485,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.2';
+    lottiejs.version = '5.1.3';
 
     function checkReady() {
         if (document.readyState === "complete") {

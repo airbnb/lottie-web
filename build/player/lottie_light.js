@@ -6622,13 +6622,11 @@ SVGBaseElement.prototype = {
         } else {
             this.baseElement = this.layerElement;
         }
-        if ((this.data.ln || this.data.cl) && (this.data.ty === 4 || this.data.ty === 0)) {
-            if (this.data.ln) {
-                this.layerElement.setAttribute('id', this.data.ln);
-            }
-            if (this.data.cl) {
-                this.layerElement.setAttribute('class', this.data.cl);
-            }
+        if (this.data.ln) {
+            this.layerElement.setAttribute('id', this.data.ln);
+        }
+        if (this.data.cl) {
+            this.layerElement.setAttribute('class', this.data.cl);
         }
         //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
         if (this.data.ty === 0 && !this.data.hd) {
@@ -7005,12 +7003,6 @@ extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,Fr
 
 SVGTextElement.prototype.createContent = function(){
 
-    if(this.data.ln){
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    if(this.data.cl){
-        this.layerElement.setAttribute('class',this.data.cl);
-    }
     if (this.data.singleShape && !this.globalData.fontManager.chars) {
         this.textContainer = createNS('text');
     }
@@ -8968,6 +8960,7 @@ AnimationItem.prototype.trigger = function(name){
         this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
+function EffectsManager(){}
     var lottiejs = {};
 
     function setLocationHref (href) {
@@ -9098,7 +9091,7 @@ AnimationItem.prototype.trigger = function(name){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.2';
+    lottiejs.version = '5.1.3';
 
     function checkReady() {
         if (document.readyState === "complete") {
