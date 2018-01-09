@@ -8,12 +8,6 @@ extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,Fr
 
 SVGTextElement.prototype.createContent = function(){
 
-    if(this.data.ln){
-        this.layerElement.setAttribute('id',this.data.ln);
-    }
-    if(this.data.cl){
-        this.layerElement.setAttribute('class',this.data.cl);
-    }
     if (this.data.singleShape && !this.globalData.fontManager.chars) {
         this.textContainer = createNS('text');
     }

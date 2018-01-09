@@ -21,6 +21,9 @@ HBaseElement.prototype = {
         if (this.data.ln) {
             this.layerElement.setAttribute('id',this.data.ln);
         }
+        if (this.data.cl) {
+            this.layerElement.setAttribute('class', this.data.cl);
+        }
         if (this.data.bm !== 0) {
             this.setBlendMode();
         }
