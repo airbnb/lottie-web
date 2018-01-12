@@ -16,7 +16,7 @@ BaseElement.prototype.checkMasks = function(){
 
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
-    if(this.data.hasMask){
+    if(this.data.hasMask && this.maskManager) {
         this.layerInterface.registerMaskInterface(this.maskManager);
     }
     var effectsInterface = EffectsExpressionInterface.createEffectsInterface(this,this.layerInterface);

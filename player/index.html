@@ -158,16 +158,15 @@
     var elem = document.getElementById('lottie')
     var animData = {
         container: elem,
-        renderer: 'canvas',
-        loop: false,
+        renderer: 'svg',
+        loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true,
+            progressiveLoad:false,
         },
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-
 </script>
 </body>
 </html>

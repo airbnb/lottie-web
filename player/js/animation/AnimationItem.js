@@ -435,7 +435,7 @@ AnimationItem.prototype.adjustSegment = function(arr, offset){
                 this.setDirection(-1);
             }
         }
-        this.totalFrames = arr[0] - arr[1];
+        this.timeCompleted = this.totalFrames = arr[0] - arr[1];
         this.firstFrame = arr[1];
         this.setCurrentRawFrameValue(this.totalFrames - 0.001 - offset);
     } else if(arr[1] > arr[0]){
@@ -446,7 +446,7 @@ AnimationItem.prototype.adjustSegment = function(arr, offset){
                 this.setDirection(1);
             }
         }
-        this.totalFrames = arr[1] - arr[0];
+        this.timeCompleted = this.totalFrames = arr[1] - arr[0];
         this.firstFrame = arr[0];
         this.setCurrentRawFrameValue(0.001 + offset);
     }
@@ -463,7 +463,7 @@ AnimationItem.prototype.setSegment = function (init,end) {
     }
 
     this.firstFrame = init;
-    this.totalFrames = end - init;
+    this.timeCompleted = this.totalFrames = end - init;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
