@@ -9,6 +9,7 @@ function GradientProperty(elem,data,arr){
     this._omdf = false;
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
+    this._mdf = false;
     if(this.prop.k){
         arr.push(this);
     }
@@ -47,6 +48,7 @@ GradientProperty.prototype.checkCollapsable = function() {
 
 GradientProperty.prototype.getValue = function(forceRender){
     this.prop.getValue();
+    this._mdf = false;
     this._cmdf = false;
     this._omdf = false;
     if(this.prop._mdf || forceRender){
@@ -71,5 +73,6 @@ GradientProperty.prototype.getValue = function(forceRender){
                 }
             }
         }
+        this._mdf = !forceRender;
     }
 };
