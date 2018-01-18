@@ -1,3 +1,8 @@
+## V 5.1.4
+- FIX: hidden parented layer with mask
+- FIX: gradient property animated
+- FIX: hindi combined characters support with text as font
+
 ## V 5.1.3
 - FIX: Color interpolation fix
 - FIX: id and classes fix for images and solids

@@ -1885,6 +1885,11 @@ var FontManager = (function(){
         size:0,
         shapes:[]
     };
+    var combinedCharacters = [];
+    //Hindi characters
+    combinedCharacters = combinedCharacters.concat([2304, 2305, 2306, 2307, 2362, 2363, 2364, 2364, 2366
+    , 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379
+    , 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
     function setUpNode(font, family){
         var parentNode = createTag('span');
@@ -2083,6 +2088,10 @@ var FontManager = (function(){
         return 'sans-serif';
     }
 
+    function getCombinedCharacterCodes() {
+        return combinedCharacters;
+    }
+
     var Font = function(){
         this.fonts = [];
         this.chars = null;
@@ -2090,6 +2099,9 @@ var FontManager = (function(){
         this.loaded = false;
         this.initTime = Date.now();
     };
+    //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
+    Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
+
     Font.prototype.addChars = addChars;
     Font.prototype.addFonts = addFonts;
     Font.prototype.getCharData = getCharData;
@@ -3955,6 +3967,7 @@ function GradientProperty(elem,data,arr){
     this._omdf = false;
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
+    this._mdf = false;
     if(this.prop.k){
         arr.push(this);
     }
@@ -3993,6 +4006,7 @@ GradientProperty.prototype.checkCollapsable = function() {
 
 GradientProperty.prototype.getValue = function(forceRender){
     this.prop.getValue();
+    this._mdf = false;
     this._cmdf = false;
     this._omdf = false;
     if(this.prop._mdf || forceRender){
@@ -4017,6 +4031,7 @@ GradientProperty.prototype.getValue = function(forceRender){
                 }
             }
         }
+        this._mdf = !forceRender;
     }
 };
 var ImagePreloader = (function(){
@@ -4766,7 +4781,7 @@ function TextProperty(elem, data, dynamicProperties){
         yOffset: 0,
         __complete: false,
         finalSize:0,
-        finalText:'',
+        finalText:[],
         finalLineHeight: 0
 
 	};
@@ -4835,13 +4850,27 @@ TextProperty.prototype.getValue = function(_forceRender) {
             this.completeTextData(textDocumentData);
         }
         this.setCurrentData(textDocumentData);
-        //TODO check this
         this._mdf = !this._isFirstFrame;
         this.pv = this.v = this.currentData.t;
         this.keysIndex = i;
     }
 	this._frameId = frameId;
 };
+
+TextProperty.prototype.buildFinalText = function(text) {
+    var combinedCharacters = FontManager.getCombinedCharacterCodes();
+    var charactersArray = [];
+    var i = 0, len = text.length;
+    while (i < len) {
+        if (combinedCharacters.indexOf(text.charCodeAt(i)) !== -1) {
+            charactersArray[charactersArray.length - 1] += text.charAt(i);
+        } else {
+            charactersArray.push(text.charAt(i));
+        }
+        i += 1;
+    }
+    return charactersArray;
+}
 
 TextProperty.prototype.completeTextData = function(documentData) {
     documentData.__complete = true;
@@ -4891,7 +4920,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.fStyle = fStyle;
     len = documentData.t.length;
     documentData.finalSize = documentData.s;
-    documentData.finalText = documentData.t;
+    documentData.finalText = this.buildFinalText(documentData.t);
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     if(documentData.sz){
@@ -4900,36 +4929,37 @@ TextProperty.prototype.completeTextData = function(documentData) {
         var boxHeight = documentData.sz[1];
         var currentHeight, finalText;
         while(flag) {
-            finalText = documentData.t;
+            finalText = this.buildFinalText(documentData.t);
             currentHeight = 0;
             lineWidth = 0;
-            len = documentData.t.length;
+            len = finalText.length;
             trackingOffset = documentData.tr/1000*documentData.finalSize;
             var lastSpaceIndex = -1;
             for(i=0;i<len;i+=1){
                 newLineFlag = false;
-                if(finalText.charAt(i) === ' '){
+                if(finalText[i] === ' '){
                     lastSpaceIndex = i;
-                }else if(finalText.charCodeAt(i) === 13){
+                }else if(finalText[i].charCodeAt(0) === 13){
                     lineWidth = 0;
                     newLineFlag = true;
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
                 }
                 if(fontManager.chars){
-                    charData = fontManager.getCharData(finalText.charAt(i), fontData.fStyle, fontData.fFamily);
+                    charData = fontManager.getCharData(finalText[i], fontData.fStyle, fontData.fFamily);
                     cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
                 }else{
                     //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
-                    cLength = fontManager.measureText(finalText.charAt(i), documentData.f, documentData.finalSize);
+                    cLength = fontManager.measureText(finalText[i], documentData.f, documentData.finalSize);
                 }
-                if(lineWidth + cLength > boxWidth && finalText.charAt(i) !== ' '){
+                if(lineWidth + cLength > boxWidth && finalText[i] !== ' '){
                     if(lastSpaceIndex === -1){
                         len += 1;
                     } else {
                         i = lastSpaceIndex;
                     }
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
-                    finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
+                    finalText.splice(i, lastSpaceIndex === i ? 1 : 0,"\r");
+                    //finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
                     lastSpaceIndex = -1;
                     lineWidth = 0;
                 }else {
@@ -4955,7 +4985,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var currentChar;
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
-        currentChar = documentData.finalText.charAt(i);
+        currentChar = documentData.finalText[i];
         if(currentChar === ' '){
             val = '\u00A0';
         }else if(currentChar.charCodeAt(0) === 13){
@@ -4967,7 +4997,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             newLineFlag = true;
             currentLine += 1;
         }else{
-            val = documentData.finalText.charAt(i);
+            val = documentData.finalText[i];
         }
         if(fontManager.chars){
             charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
@@ -6437,7 +6467,7 @@ BaseElement.prototype.checkMasks = function(){
 
 BaseElement.prototype.initExpressions = function(){
     this.layerInterface = LayerExpressionInterface(this);
-    if(this.data.hasMask){
+    if(this.data.hasMask && this.maskManager) {
         this.layerInterface.registerMaskInterface(this.maskManager);
     }
     var effectsInterface = EffectsExpressionInterface.createEffectsInterface(this,this.layerInterface);
@@ -7008,6 +7038,22 @@ SVGTextElement.prototype.createContent = function(){
     }
 };
 
+SVGTextElement.prototype.buildTextContents = function(textArray) {
+    var i = 0, len = textArray.length;
+    var textContents = [], currentTextContent = '';
+    while (i < len) {
+        if(textArray[i] === String.fromCharCode(13)) {
+            textContents.push(currentTextContent);
+            currentTextContent = '';
+        } else {
+            currentTextContent += textArray[i];
+        }
+        i += 1;
+    }
+    textContents.push(currentTextContent);
+    return textContents;
+}
+
 SVGTextElement.prototype.buildNewText = function(){
     var i, len;
 
@@ -7057,7 +7103,7 @@ SVGTextElement.prototype.buildNewText = function(){
         }
         tElement.setAttribute('text-anchor',justify);
         tElement.setAttribute('letter-spacing',trackingOffset);
-        var textContent = documentData.finalText.split(String.fromCharCode(13));
+        var textContent = this.buildTextContents(documentData.finalText);
         len = textContent.length;
         yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
@@ -7103,7 +7149,7 @@ SVGTextElement.prototype.buildNewText = function(){
                 xPos += trackingOffset;
             }
             if(usesGlyphs) {
-                charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+                charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
                 if(!singleShape){
@@ -8775,7 +8821,7 @@ AnimationItem.prototype.adjustSegment = function(arr, offset){
                 this.setDirection(-1);
             }
         }
-        this.totalFrames = arr[0] - arr[1];
+        this.timeCompleted = this.totalFrames = arr[0] - arr[1];
         this.firstFrame = arr[1];
         this.setCurrentRawFrameValue(this.totalFrames - 0.001 - offset);
     } else if(arr[1] > arr[0]){
@@ -8786,7 +8832,7 @@ AnimationItem.prototype.adjustSegment = function(arr, offset){
                 this.setDirection(1);
             }
         }
-        this.totalFrames = arr[1] - arr[0];
+        this.timeCompleted = this.totalFrames = arr[1] - arr[0];
         this.firstFrame = arr[0];
         this.setCurrentRawFrameValue(0.001 + offset);
     }
@@ -8803,7 +8849,7 @@ AnimationItem.prototype.setSegment = function (init,end) {
     }
 
     this.firstFrame = init;
-    this.totalFrames = end - init;
+    this.timeCompleted = this.totalFrames = end - init;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
@@ -9091,7 +9137,7 @@ function EffectsManager(){}
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.3';
+    lottiejs.version = '5.1.4';
 
     function checkReady() {
         if (document.readyState === "complete") {
