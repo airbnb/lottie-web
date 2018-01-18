@@ -6,6 +6,11 @@ var FontManager = (function(){
         size:0,
         shapes:[]
     };
+    var combinedCharacters = [];
+    //Hindi characters
+    combinedCharacters = combinedCharacters.concat([2304, 2305, 2306, 2307, 2362, 2363, 2364, 2364, 2366
+    , 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379
+    , 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
     function setUpNode(font, family){
         var parentNode = createTag('span');
@@ -204,6 +209,10 @@ var FontManager = (function(){
         return 'sans-serif';
     }
 
+    function getCombinedCharacterCodes() {
+        return combinedCharacters;
+    }
+
     var Font = function(){
         this.fonts = [];
         this.chars = null;
@@ -211,6 +220,9 @@ var FontManager = (function(){
         this.loaded = false;
         this.initTime = Date.now();
     };
+    //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
+    Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
+
     Font.prototype.addChars = addChars;
     Font.prototype.addFonts = addFonts;
     Font.prototype.getCharData = getCharData;

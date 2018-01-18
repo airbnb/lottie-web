@@ -104,7 +104,7 @@ HTextElement.prototype.buildNewText = function(){
         }
         //tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars){
-            var charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+            var charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData;
             if(charData){
                 shapeData = charData.data;

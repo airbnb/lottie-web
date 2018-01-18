@@ -52,7 +52,7 @@ CVTextElement.prototype.buildNewText = function(){
     var xPos = 0, yPos = 0, firstLine = true;
     var cnt = 0;
     for (i = 0; i < len; i += 1) {
-        charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
         shapeData = charData && charData.data || {};
         matrixHelper.reset();
         if(singleShape && letters[i].n) {

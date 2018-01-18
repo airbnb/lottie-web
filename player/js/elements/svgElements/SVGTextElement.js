@@ -13,6 +13,22 @@ SVGTextElement.prototype.createContent = function(){
     }
 };
 
+SVGTextElement.prototype.buildTextContents = function(textArray) {
+    var i = 0, len = textArray.length;
+    var textContents = [], currentTextContent = '';
+    while (i < len) {
+        if(textArray[i] === String.fromCharCode(13)) {
+            textContents.push(currentTextContent);
+            currentTextContent = '';
+        } else {
+            currentTextContent += textArray[i];
+        }
+        i += 1;
+    }
+    textContents.push(currentTextContent);
+    return textContents;
+}
+
 SVGTextElement.prototype.buildNewText = function(){
     var i, len;
 
@@ -62,7 +78,7 @@ SVGTextElement.prototype.buildNewText = function(){
         }
         tElement.setAttribute('text-anchor',justify);
         tElement.setAttribute('letter-spacing',trackingOffset);
-        var textContent = documentData.finalText.split(String.fromCharCode(13));
+        var textContent = this.buildTextContents(documentData.finalText);
         len = textContent.length;
         yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
         for ( i = 0; i < len; i += 1) {
@@ -108,7 +124,7 @@ SVGTextElement.prototype.buildNewText = function(){
                 xPos += trackingOffset;
             }
             if(usesGlyphs) {
-                charData = this.globalData.fontManager.getCharData(documentData.finalText.charAt(i), fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+                charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
                 if(!singleShape){
