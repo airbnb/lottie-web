@@ -13,7 +13,7 @@ var TextSelectorProp = (function(){
                 }
             }
         }
-        var totalChars = this.elem.textProperty.currentData ? this.elem.textProperty.currentData.l.length : 0;
+        var totalChars = this.data.totalChars || this.elem.textProperty.currentData.l.length || 0;
         if(newCharsFlag && this.data.r === 2) {
             this.e.v = totalChars;
         }
