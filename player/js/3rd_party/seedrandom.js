@@ -131,7 +131,7 @@
         }
 
         // The "g" method returns the next (count) outputs as one number.
-        (me.g = function(count) {
+        me.g = function(count) {
             // Using instance members instead of closure state nearly doubles speed.
             var t, r = 0,
                 i = me.i, j = me.j, s = me.S;
@@ -144,7 +144,7 @@
             // For robust unpredictability, the function call below automatically
             // discards an initial batch of values.  This is called RC4-drop[256].
             // See http://google.com/search?q=rsa+fluhrer+response&btnI
-        }(width));
+        };
     }
 
 //
