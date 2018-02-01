@@ -1,3 +1,8 @@
+## V 5.1.6
+- FIX: HTMLRenderer image fix
+- FIX: HTMLRenderer masked comp fix
+- FIX: Text fWeight precedence over fStyle (thanks @nick-vincent)
+
 ## V 5.1.5
 - FIX: text selector fix
 - FIX: text expression fix
