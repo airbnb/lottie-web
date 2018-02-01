@@ -1,3 +1,8 @@
+## V 5.1.5
+- FIX: text selector fix
+- FIX: text expression fix
+- FEATURE: more expressions supported
+
 ## V 5.1.4
 - FIX: hidden parented layer with mask
 - FIX: gradient property animated

@@ -819,7 +819,7 @@ var Matrix = (function(){
         }
 
         // The "g" method returns the next (count) outputs as one number.
-        (me.g = function(count) {
+        me.g = function(count) {
             // Using instance members instead of closure state nearly doubles speed.
             var t, r = 0,
                 i = me.i, j = me.j, s = me.S;
@@ -832,7 +832,7 @@ var Matrix = (function(){
             // For robust unpredictability, the function call below automatically
             // discards an initial batch of values.  This is called RC4-drop[256].
             // See http://google.com/search?q=rsa+fluhrer+response&btnI
-        }(width));
+        };
     }
 
 //
@@ -5158,7 +5158,7 @@ var TextSelectorProp = (function(){
                 }
             }
         }
-        var totalChars = this.elem.textProperty.currentData ? this.elem.textProperty.currentData.l.length : 0;
+        var totalChars = this.data.totalChars || this.elem.textProperty.currentData.l.length || 0;
         if(newCharsFlag && this.data.r === 2) {
             this.e.v = totalChars;
         }
@@ -6591,6 +6591,7 @@ MaskElement.prototype.renderFrame = function (finalMat) {
     }
     this._isFirstFrame = false;
 };
+
 
 MaskElement.prototype.getMaskelement = function () {
     return this.maskElement;
@@ -13006,6 +13007,12 @@ var TransformExpressionInterface = (function (){
                 case "ADBE Position":
                 case 2:
                     return _thisFunction.position;
+                case 'ADBE Position_0':
+                    return _thisFunction.xPosition;
+                case 'ADBE Position_1':
+                    return _thisFunction.yPosition;
+                case 'ADBE Position_2':
+                    return _thisFunction.zPosition;
                 case "anchorPoint":
                 case "AnchorPoint":
                 case "Anchor Point":
@@ -13532,7 +13539,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.4';
+    lottiejs.version = '5.1.5';
 
     function checkReady() {
         if (document.readyState === "complete") {

@@ -20,7 +20,7 @@ var through = require('through2');
 var replace = require('gulp-replace');
 var batch_replace = require('gulp-batch-replace');
 
-var bm_version = '5.1.4';
+var bm_version = '5.1.5';
 
 var files = [
     {

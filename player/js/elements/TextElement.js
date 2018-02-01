@@ -14,6 +14,7 @@ ITextElement.prototype.initElement = function(data,globalData,comp){
     this.createContainerElements();
     this.addMasks();
     this.createContent();
+    this.hide();
     this.textAnimator.searchProperties(this.dynamicProperties);
 };
 
