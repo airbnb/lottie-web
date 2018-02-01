@@ -18,6 +18,8 @@ HCompElement.prototype.createContainerElements = function(){
     if(this.data.hasMask){
         this.svgElement.setAttribute('width',this.data.w);
         this.svgElement.setAttribute('height',this.data.h);
+        this.transformedElement = this.baseElement;
+    } else {
+        this.transformedElement = this.layerElement;
     }
-    this.transformedElement = this.layerElement;
 };
