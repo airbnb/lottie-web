@@ -172,7 +172,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             break;
         }
     }
-    documentData.fWeight = fWeight;
+    documentData.fWeight = fontData.fWeight || fWeight;
     documentData.fStyle = fStyle;
     len = documentData.t.length;
     documentData.finalSize = documentData.s;
@@ -233,7 +233,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
                 flag = false;
             }
         }
-        
+
     }
     lineWidth = - trackingOffset;
     cLength = 0;
