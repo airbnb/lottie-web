@@ -90,7 +90,7 @@ HybridRenderer.prototype.createImage = function (data) {
 
 HybridRenderer.prototype.createComp = function (data) {
     if(!this.supports3d){
-        return new ICompElement(data, this.globalData, this);
+        return new SVGCompElement(data, this.globalData, this);
     }
     return new HCompElement(data, this.globalData, this);
 
