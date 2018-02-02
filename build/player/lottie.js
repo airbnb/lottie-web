@@ -8783,18 +8783,25 @@ AnimationItem.prototype.advanceTime = function (value) {
     }
     var nextValue = this.currentRawFrame + value * this.frameModifier;
     var _isComplete = false;
-    if (nextValue >= this.totalFrames) {
-        if(!this.checkSegments(nextValue % this.totalFrames)) {
-            if (this.loop && !(++this.playCount === this.loop)) {
+    // Checking if nextValue > totalFrames - 1 for addressing non looping and looping animations.
+    // If animation won't loop, it should stop at totalFrames - 1. If it will loop it should complete the last frame and then loop.
+    if (nextValue >= this.totalFrames - 1 && this.frameModifier > 0) {
+        if (!this.loop || this.playCount === this.loop) {
+            if (!this.checkSegments(nextValue % this.totalFrames)) {
+                _isComplete = true;
+                nextValue = this.totalFrames - 1;
+            }
+        } else if (nextValue >= this.totalFrames) {
+            this.playCount += 1;
+            if (!this.checkSegments(nextValue % this.totalFrames)) {
                 this.setCurrentRawFrameValue(nextValue % this.totalFrames);
                 this.trigger('loopComplete');
-            } else {
-                _isComplete = true;
-                nextValue = this.totalFrames;
             }
+        } else {
+            this.setCurrentRawFrameValue(nextValue);
         }
     } else if(nextValue < 0) {
-        if(!this.checkSegments(nextValue % this.totalFrames)) {
+        if (!this.checkSegments(nextValue % this.totalFrames)) {
             if (this.loop && !(this.playCount-- <= 0 && this.loop !== true)) {
                 this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
                 this.trigger('loopComplete');
@@ -13541,7 +13548,7 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.6';
+    lottiejs.version = '5.1.7';
 
     function checkReady() {
         if (document.readyState === "complete") {

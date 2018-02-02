@@ -1,3 +1,6 @@
+## V 5.1.7
+- FIX: looping and non looping animations end frame fix
+
 ## V 5.1.6
 - FIX: HTMLRenderer image fix
 - FIX: HTMLRenderer masked comp fix
