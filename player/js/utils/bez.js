@@ -5,7 +5,7 @@ function bezFunction(){
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
         var det1 = (x1*y2) + (y1*x3) + (x2*y3) - (x3*y2) - (y3*x1) - (x2*y1);
-        return det1 > -0.0001 && det1 < 0.0001;
+        return det1 > -0.001 && det1 < 0.001;
     }
 
     function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
