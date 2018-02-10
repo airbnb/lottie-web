@@ -149,8 +149,59 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var elemOpacity;
     var sc,sw,fc,k;
     var lineLength = 0;
-    var letterSw,letterSc,letterFc,letterM = '',letterP = this.defaultPropsArray,letterO;
+    var letterSw, letterSc, letterFc, letterM = '', letterP = this.defaultPropsArray, letterO;
+
+    //
+    if(documentData.j === 2 || documentData.j === 1) {
+        var animatorJustifyOffset = 0;
+        var animatorFirstCharOffset = 0;
+        var justifyOffsetMult = documentData.j === 2 ? -0.5 : -1;
+        var lastIndex = 0;
+        var isNewLine = true;
+
+        for (i = 0; i < len; i += 1) {
+            if (letters[i].n) {
+                if(animatorJustifyOffset) {
+                    animatorJustifyOffset += animatorFirstCharOffset;
+                }
+                while (lastIndex < i) {
+                    letters[lastIndex].animatorJustifyOffset = animatorJustifyOffset;
+                    lastIndex += 1;
+                }
+                animatorJustifyOffset = 0;
+                isNewLine = true;
+            } else {
+                for (j = 0; j < jLen; j += 1) {
+                    animatorProps = animators[j].a;
+                    if (animatorProps.t.propType) {
+                        if (isNewLine && documentData.j === 2) {
+                            animatorFirstCharOffset += animatorProps.t.v * justifyOffsetMult;
+                        }
+                        animatorSelector = animators[j].s;
+                        mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
+                        if (mult.length) {
+                            animatorJustifyOffset += animatorProps.t.v*mult[0] * justifyOffsetMult;
+                        } else {
+                            animatorJustifyOffset += animatorProps.t.v*mult * justifyOffsetMult;
+                        }
+                    }
+                }
+                isNewLine = false;
+            }
+        }
+        console.log(animatorJustifyOffset)
+        if(animatorJustifyOffset) {
+            animatorJustifyOffset += animatorFirstCharOffset;
+        }
+        while(lastIndex < i) {
+            letters[lastIndex].animatorJustifyOffset = animatorJustifyOffset;
+            lastIndex += 1;
+        }
+    }
+    //
+
     for( i = 0; i < len; i += 1) {
+
         matrixHelper.reset();
         elemOpacity = 1;
         if(letters[i].n) {
@@ -266,17 +317,20 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 if (animatorProps.t.propType) {
                     animatorSelector = animators[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
-                    if(this._hasMaskedPath) {
-                        if(mult.length) {
-                            currentLength += animatorProps.t*mult[0];
-                        } else {
-                            currentLength += animatorProps.t*mult;
-                        }
-                    }else{
-                        if(mult.length) {
-                            xPos += animatorProps.t.v*mult[0];
-                        } else {
-                            xPos += animatorProps.t.v*mult;
+                    //This condition is to prevent applying tracking to first character in each line. Might be better to use a boolean "isNewLine"
+                    if(xPos !== 0 || documentData.j !== 0) {
+                        if(this._hasMaskedPath) {
+                            if(mult.length) {
+                                currentLength += animatorProps.t.v*mult[0];
+                            } else {
+                                currentLength += animatorProps.t.v*mult;
+                            }
+                        }else{
+                            if(mult.length) {
+                                xPos += animatorProps.t.v*mult[0];
+                            } else {
+                                xPos += animatorProps.t.v*mult;
+                            }
                         }
                     }
                 }
@@ -469,10 +523,10 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 }
                 switch(documentData.j){
                     case 1:
-                        matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
+                        matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
                         break;
                     case 2:
-                        matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
+                        matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
                         break;
                 }
                 matrixHelper.translate(0,-documentData.ls);
