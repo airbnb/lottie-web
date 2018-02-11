@@ -16,7 +16,6 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
     var i, len = path.v.length;
     var vValues = [],oValues = [],iValues = [];
     var dist;
-    //console.log(mouseCoords);
     var theta, x,y;
     //// OPTION A
     for(i=0;i<len;i+=1){

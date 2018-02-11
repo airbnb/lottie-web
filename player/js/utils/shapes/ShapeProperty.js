@@ -2,9 +2,9 @@ var ShapePropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateShape(frameNum, previousValue, isCurrentRender, caching) {
+    function interpolateShape(frameNum, previousValue, caching) {
         var iterationIndex = caching.lastIndex;
-        var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue, hasModified = false;
+        var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue;
         if(frameNum < this.keyframes[0].t-this.offsetTime){
             keyPropS = this.keyframes[0].s[0];
             isHold = true;
@@ -59,40 +59,18 @@ var ShapePropertyFactory = (function(){
         for(j=0;j<jLen;j+=1){
             for(k=0;k<kLen;k+=1){
                 vertexValue = isHold ? keyPropS.i[j][k] :  keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
-                if(previousValue.i[j][k] !== vertexValue){
-                    previousValue.i[j][k] = vertexValue;
-                    if(isCurrentRender) {
-                        this.pv.i[j][k] = vertexValue;
-                    }
-                    hasModified = true;
-                }
+                previousValue.i[j][k] = vertexValue;
                 vertexValue = isHold ? keyPropS.o[j][k] :  keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
-                if(previousValue.o[j][k] !== vertexValue){
-                    previousValue.o[j][k] = vertexValue;
-                    if(isCurrentRender) {
-                        this.pv.o[j][k] = vertexValue;
-                    }
-                    hasModified = true;
-                }
+                previousValue.o[j][k] = vertexValue;
                 vertexValue = isHold ? keyPropS.v[j][k] :  keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
-                if(previousValue.v[j][k] !== vertexValue){
-                    previousValue.v[j][k] = vertexValue;
-                    if(isCurrentRender) {
-                        this.pv.v[j][k] = vertexValue;
-                    }
-                    hasModified = true;
-                }
+                previousValue.v[j][k] = vertexValue;
             }
         }
 
-        return hasModified;
+        return false;
     }
 
     function interpolateShapeCurrentTime(){
-        if(this.elem.globalData.frameId === this.frameId){
-            return;
-        }
-        this._mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
@@ -100,15 +78,11 @@ var ShapePropertyFactory = (function(){
         if(!(lastFrame !== initFrame && ((lastFrame < initTime && frameNum < initTime) || (lastFrame > endTime && frameNum > endTime)))){
             ////
             this._caching.lastIndex = lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var hasModified = this.interpolateShape(frameNum, this.v, true, this._caching);
+            this.interpolateShape(frameNum, this.pv, this._caching);
             ////
-            this._mdf = hasModified;
-            if(hasModified) {
-                this.paths = this.localShapeCollection;
-            }
         }
         this._caching.lastFrame = frameNum;
-        this.frameId = this.elem.globalData.frameId;
+        return this.pv;
     }
 
     function getShapeValue(){
@@ -117,15 +91,50 @@ var ShapePropertyFactory = (function(){
 
     function resetShape(){
         this.paths = this.localShapeCollection;
-        if(!this.k){
-            this._mdf = false;
-        }
     }
+
+    function shapesEqual(shape1, shape2) {
+        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
+            return false;
+        }
+        var i, len = shape1._length;
+        for(i = 0; i < len; i += 1) {
+            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1] || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1] || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function processEffectsSequence() {
+        if(this.lock || this.elem.globalData.frameId === this.frameId) {
+            return;
+        }
+        this.lock = true;
+        this.frameId = this.elem.globalData.frameId;
+        this._mdf = false;
+        var finalValue = this.kf ? this.pv : this.data.k;
+        var i, len = this.effectsSequence.length;
+        for(i = 0; i < len; i += 1) {
+            finalValue = this.effectsSequence[i](finalValue);
+        }
+        if(!shapesEqual(this.v, finalValue)) {
+            this.v = shape_pool.clone(finalValue);
+            this.localShapeCollection.releaseShapes();
+            this.localShapeCollection.addShape(this.v);
+            this._mdf = true;
+            this.paths = this.localShapeCollection;
+        }
+        this.lock = false;
+    };
 
     function ShapeProperty(elem, data, type){
         this.propType = 'shape';
         this.comp = elem.comp;
+        this.elem = elem;
+        this.data = data;
         this.k = false;
+        this.kf = false;
         this._mdf = false;
         var pathData = type === 3 ? data.pt.k : data.ks.k;
         this.v = shape_pool.clone(pathData);
@@ -134,9 +143,10 @@ var ShapePropertyFactory = (function(){
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
+        this.effectsSequence = [getShapeValue.bind(this)];
     }
     ShapeProperty.prototype.interpolateShape = interpolateShape;
-    ShapeProperty.prototype.getValue = getShapeValue;
+    ShapeProperty.prototype.getValue = processEffectsSequence;
 
     function KeyframedShapeProperty(elem,data,type){
         this.propType = 'shape';
@@ -157,8 +167,9 @@ var ShapePropertyFactory = (function(){
         this.lastFrame = initFrame;
         this.reset = resetShape;
         this._caching = {lastFrame: initFrame, lastIndex: 0};
+        this.effectsSequence = [interpolateShapeCurrentTime.bind(this)];
     }
-    KeyframedShapeProperty.prototype.getValue = interpolateShapeCurrentTime;
+    KeyframedShapeProperty.prototype.getValue = processEffectsSequence;
     KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
 
     var EllShapeProperty = (function(){

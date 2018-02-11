@@ -189,7 +189,6 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 isNewLine = false;
             }
         }
-        console.log(animatorJustifyOffset)
         if(animatorJustifyOffset) {
             animatorJustifyOffset += animatorFirstCharOffset;
         }

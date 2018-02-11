@@ -26,8 +26,6 @@ var ShapeExpressionInterface = (function(){
                 arr.push(roundedInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rp'){
                 arr.push(repeaterInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else{
-                //console.log(shapes[i].ty);
             }
         }
         return arr;

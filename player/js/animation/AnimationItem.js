@@ -218,9 +218,6 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(this.renderer && this.renderer.destroyed){
         return;
     }
-    //console.log(JSON.parse(JSON.stringify(animData)));
-    //animData.w = Math.round(animData.w/blitter);
-    //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
@@ -314,9 +311,7 @@ AnimationItem.prototype.gotoFrame = function () {
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
     }
-    //console.log(this.currentFrame)
     this.trigger('enterFrame');
-    // console.log('gotoFrame: ', this.currentFrame )
     this.renderFrame();
 };
 
@@ -324,7 +319,6 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 
@@ -503,7 +497,6 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
 };
 AnimationItem.prototype.checkSegments = function(offset){
     if(this.segments.length) {
-        //console.log(this.currentRawFrame % lastFrame)
         this.adjustSegment(this.segments.shift(), offset);
         return true;
     }

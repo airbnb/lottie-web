@@ -174,17 +174,13 @@
         if(data.x){
             prop.k = true;
             prop.x = true;
-            if(prop.getValue) {
-                prop.getPreValue = prop.getValue;
-            }
-
             prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.getValue = prop.initiateExpression(elem,data,prop);
+            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
         }
     }
 
     function getTransformValueAtTime(time) {
-        //console.log('time:', time)
+        console.warn('Transform at time not supported');
     }
 
     function getTransformStaticValueAtTime(time) {
@@ -261,7 +257,7 @@
             value: value
         };
         searchExpressions(elem,data,prop);
-        if(!isAdded && prop.x){
+        if(!isAdded && prop.k){
             arr.push(prop);
         }
 
@@ -280,7 +276,7 @@
         if(frameNum !== this._cachingAtTime.lastTime) {
             this._cachingAtTime.lastTime = frameNum;
             frameNum *= this.elem.globalData.frameRate;
-            this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, false, this._cachingAtTime);
+            this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, this._cachingAtTime);
         }
         return this._cachingAtTime.shapeValue;
     }
@@ -389,7 +385,7 @@
         } else if(type === 4){
             searchExpressions(elem,data.ks,prop);
         }
-        if(!isAdded && prop.x){
+        if(!isAdded && prop.k){
             arr.push(prop);
         }
         return prop;

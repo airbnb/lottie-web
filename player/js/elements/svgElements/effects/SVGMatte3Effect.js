@@ -63,7 +63,7 @@ SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
         this.replaceInParent(mask, symbolId);
         symbol.appendChild(mask.layerElement);
         defs.appendChild(symbol);
-        useElem = createNS('use');
+        var useElem = createNS('use');
         useElem.setAttribute('href', '#' + symbolId);
         masker.appendChild(useElem);
         mask.data.hd = false;

@@ -12,8 +12,8 @@
 
         #lottie{
             background-color:#000;
-            width:960px;
-            height:540px;
+            width:800px;
+            height:600px;
             /*width:360px;
             height:640px;*/
             display:block;
@@ -160,13 +160,14 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
         },
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.setSubframe(false);
 </script>
 </body>
 </html>

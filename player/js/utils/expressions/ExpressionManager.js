@@ -26,19 +26,6 @@ var ExpressionManager = (function(){
         return arr.constructor === Array || arr.constructor === Float32Array;
     }
 
-    function shapesEqual(shape1, shape2) {
-        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
-            return false;
-        }
-        var i, len = shape1._length;
-        for(i = 0; i < len; i += 1) {
-            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1] || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1] || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
-                return false;
-            }
-        }
-        return true;
-    }
-
     function $bm_neg(a){
         var tOfA = typeof a;
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
@@ -64,10 +51,12 @@ var ExpressionManager = (function(){
             return a + b;
         }
         if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+            a = a.slice(0);
             a[0] = a[0] + b;
             return a;
         }
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
+            b = b.slice(0);
             b[0] = a + b[0];
             return b;
         }
@@ -102,10 +91,12 @@ var ExpressionManager = (function(){
             return a - b;
         }
         if( isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+            a = a.slice(0);
             a[0] = a[0] - b;
             return a;
         }
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  isTypeOfArray(b)){
+            b = b.slice(0);
             b[0] = a - b[0];
             return b;
         }
@@ -331,13 +322,14 @@ var ExpressionManager = (function(){
     }
 
     function createPath(points, inTangents, outTangents, closed) {
-        inTangents = inTangents && inTangents.length ? inTangents : points;
-        outTangents = outTangents && outTangents.length ? outTangents : points;
-        var path = shape_pool.newElement();
         var i, len = points.length;
-        path.setPathData(closed, len);
+        var path = shape_pool.newElement();
+        path.setPathData(!!closed, len);
+        var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
-            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true);
+            inVertexPoint = inTangents ? inTangents[i] : arrPlaceholder;
+            outVertexPoint = outTangents ? outTangents[i] : arrPlaceholder;
+            path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
         }
         return path;
     }
@@ -540,16 +532,13 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
-        function executeExpression() {
+        function executeExpression(_value) {
+            value = _value;
             if (_needsRandom) {
                 seedRandom(randSeed);
             }
             if (this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector') {
-                return;
-            }
-            if(this.lock){
-                this.v = duplicatePropertyValue(this.pv,this.mult);
-                return true;
+                return value;
             }
             if(this.propType === 'textSelector'){
                 textIndex = this.textIndex;
@@ -580,63 +569,18 @@ var ExpressionManager = (function(){
             if (hasParent && !parent) {
                 parent = elem.hierarchy[0].layerInterface;
             }
-            this.lock = true;
-            if (this.getPreValue) {
-                this.getPreValue();
-            }
-            value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             if (needsVelocity) {
                 velocity = velocityAtTime(time);
             }
             expression_function();
-            if (scoped_bm_rt.propType === "shape") {
-                this.v = shape_pool.clone(scoped_bm_rt.v);
-            } else {
-                this.v = scoped_bm_rt;
-            }
-
             this.frameExpressionId = elem.globalData.frameId;
-            var i,len;
-            if(this.mult){
-                if(this.propType === 'unidimensional'){
-                    this.v *= this.mult;
-                }else if(this.v.length === 1){
-                    this.v = this.v[0] * this.mult;
-                }else{
-                    len = this.v.length;
-                    if(value === this.v){
-                        this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
-                    }
-                    for(i = 0; i < len; i += 1){
-                        this.v[i] *= this.mult;
-                    }
-                }
+
+            //TODO: Check if it's possible to return on ShapeInterface the .v value
+            if (scoped_bm_rt.propType === "shape") {
+                scoped_bm_rt = shape_pool.clone(scoped_bm_rt.v);
             }
-            if (this.v.length === 1) {
-                this.v = this.v[0];
-            }
-            if (this.propType === 'unidimensional') {
-                if(this.lastValue !== this.v){
-                    this.lastValue = this.v;
-                    this._mdf = true;
-                }
-            } else if (this.propType === 'shape') {
-                if (!shapesEqual(this.v, this.localShapeCollection.shapes[0])) {
-                    this._mdf = true;
-                    this.localShapeCollection.releaseShapes();
-                    this.localShapeCollection.addShape(shape_pool.clone(this.v));
-                }
-            } else {
-                len = this.v.length;
-                for (i = 0; i < len; i += 1) {
-                    if (this.v[i] !== this.lastValue[i]) {
-                        this.lastValue[i] = this.v[i];
-                        this._mdf = true;
-                    }
-                }
-            }
-            this.lock = false;
+            return scoped_bm_rt;
         }
         return executeExpression;
     }

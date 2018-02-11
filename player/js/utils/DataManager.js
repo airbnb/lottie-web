@@ -382,7 +382,6 @@ function dataFunctionManager(){
                 blitProperty(arr[i].r);
             }else{
 
-                //console.log(arr[i].ty );
             }
         }
     }
@@ -413,14 +412,10 @@ function dataFunctionManager(){
             var i, len = data.k.length;
             for(i=0;i<len;i+=1){
                 if(data.k[i].s){
-                    //console.log('pre S: ', data.k[i].s);
                     data.k[i].s = blitValue(data.k[i].s);
-                    //console.log('post S: ', data.k[i].s);
                 }
                 if(data.k[i].e){
-                    //console.log('pre E: ', data.k[i].e);
                     data.k[i].e = blitValue(data.k[i].e);
-                    //console.log('post E: ', data.k[i].e);
                 }
             }
         }

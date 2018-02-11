@@ -1,6 +1,6 @@
 var TransformPropertyFactory = (function() {
 
-    function applyToMatrix(mat) {
+    function searchDynamicProperties() {
         var i, len = this.dynamicProperties.length;
         for(i = 0; i < len; i += 1) {
             this.dynamicProperties[i].getValue();
@@ -8,6 +8,10 @@ var TransformPropertyFactory = (function() {
                 this._mdf = true;
             }
         }
+    }
+
+    function applyToMatrix(mat) {
+        this.searchDynamicProperties();
         if (this.a) {
             mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
         }
@@ -35,14 +39,7 @@ var TransformPropertyFactory = (function() {
         }
 
         this._mdf = false;
-        var i, len = this.dynamicProperties.length;
-
-        for(i = 0; i < len; i += 1) {
-            this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i]._mdf) {
-                this._mdf = true;
-            }
-        }
+        this.searchDynamicProperties();
 
         if (this._mdf || forceRender) {
             this.v.reset();
@@ -172,6 +169,7 @@ var TransformPropertyFactory = (function() {
     }
 
     TransformProperty.prototype.applyToMatrix = applyToMatrix;
+    TransformProperty.prototype.searchDynamicProperties = searchDynamicProperties;
     TransformProperty.prototype.getValue = processKeys;
     TransformProperty.prototype.setInverted = setInverted;
     TransformProperty.prototype.autoOrient = autoOrient;

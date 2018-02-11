@@ -1125,7 +1125,7 @@ function bezFunction(){
 
     function pointOnLine2D(x1,y1, x2,y2, x3,y3){
         var det1 = (x1*y2) + (y1*x3) + (x2*y3) - (x3*y2) - (y3*x1) - (x2*y1);
-        return det1 > -0.0001 && det1 < 0.0001;
+        return det1 > -0.001 && det1 < 0.001;
     }
 
     function pointOnLine3D(x1,y1,z1, x2,y2,z2, x3,y3,z3){
@@ -2265,67 +2265,103 @@ var PropertyFactory = (function(){
         return newValue;
     }
 
-    function calculateMultidimensionalValueAtCurrentTime(renderResult) {
-        var i = 0;
-        while(i<this.v.length){
-            this.pv[i] = renderResult[i];
-            this.v[i] = this.mult ? this.pv[i] * this.mult : this.pv[i];
-            if(this.lastPValue[i] !== this.pv[i]) {
-                this._mdf = true;
-                this.lastPValue[i] = this.pv[i];
-            }
-            i += 1;
-        }
-    }
-
-    function calculateUnidimenstionalValueAtCurrentTime(renderResult) {
-        this.pv = renderResult;
-        this.v = this.mult ? this.pv*this.mult : this.pv;
-        if(this.lastPValue != this.pv){
-            this._mdf = true;
-            this.lastPValue = this.pv;
-        }
-    }
-
     function getValueAtCurrentTime(){
-        if(this.elem.globalData.frameId === this.frameId){
-            return;
-        }
-        this._mdf = false;
+        /*if(this.elem.globalData.frameId === this.frameId){
+            return this.pv;
+        }*/
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
             var renderResult = this.interpolateValue(frameNum, this.pv, this._caching);
-            this.calculateValueAtCurrentTime(renderResult);
+            this.pv = renderResult;
         }
         this._caching.lastFrame = frameNum;
-        this.frameId = this.elem.globalData.frameId;
+        //this.frameId = this.elem.globalData.frameId;
+        return this.pv;
     }
 
     function getNoValue(){
         this._mdf = false;
     }
 
+    function processEffectsSequence() {
+        var i, len;
+        if(this.elem.globalData.frameId === this.frameId) {
+            return;
+        }
+        if(this.lock) {
+            if(this.propType === 'unidimensional') {
+                this.v = this.pv * this.mult;
+            } else {
+                len = this.pv.length;
+                for(i = 0; i < len; i += 1) {
+                    this.v[i] = this.pv[i] * this.mult;
+                }
+            }
+            return;
+        }
+        this.lock = true;
+        this._mdf = this._isFirstFrame;
+        var multipliedValue;
+        len = this.effectsSequence.length;
+        var finalValue = this.kf ? this.pv : this.data.k;
+        if(this.propType === 'unidimensional') {
+            this.v = finalValue;
+        } else {
+            this.v = finalValue.slice(0);
+        }
+        for(i = 0; i < len; i += 1) {
+            finalValue = this.effectsSequence[i](finalValue);
+            //this.pv = finalValue;
+        }
+        if(this.propType === 'unidimensional') {
+            multipliedValue = finalValue * this.mult;
+            if(this.v !== multipliedValue) {
+                this.v = multipliedValue;
+                this._mdf = true;
+            }
+            //this.v = this.mult ? finalValue * this.mult : finalValue;
+        } else {
+            i = 0;
+            while (i < this.v.length) {
+                multipliedValue = finalValue[i] * this.mult;
+                if (this.v[i] !== multipliedValue) {
+                    this.v[i] = multipliedValue;
+                    this._mdf = true;
+                }
+                i += 1;
+            }
+        }
+        this._isFirstFrame = false;
+        this.lock = false;
+        this.frameId = this.elem.globalData.frameId;
+    }
+
     function ValueProperty(elem,data, mult){
         this.propType = 'unidimensional';
-        this.mult = mult;
+        this.mult = mult || 1;
+        this.data = data;
         this.v = mult ? data.k * mult : data.k;
         this.pv = data.k;
         this._mdf = false;
+        this.elem = elem;
         this.comp = elem.comp;
         this.k = false;
         this.kf = false;
         this.vel = 0;
-        this.getValue = getNoValue;
+        this.effectsSequence = [];
+        this._isFirstFrame = true;
+        this.getValue = processEffectsSequence;
     }
 
     function MultiDimensionalProperty(elem, data, mult) {
         this.propType = 'multidimensional';
-        this.mult = mult;
+        this.mult = mult || 1;
         this.data = data;
         this._mdf = false;
+        this.elem = elem;
         this.comp = elem.comp;
         this.k = false;
         this.kf = false;
@@ -2333,36 +2369,35 @@ var PropertyFactory = (function(){
         var i, len = data.k.length;
         this.v = createTypedArray('float32', len);
         this.pv = createTypedArray('float32', len);
-        this.lastValue = createTypedArray('float32', len);
         var arr = createTypedArray('float32', len);
         this.vel = createTypedArray('float32', len);
         for (i = 0; i < len; i += 1) {
-            this.v[i] = mult ? data.k[i] * mult : data.k[i];
+            this.v[i] = data.k[i] * this.mult;
             this.pv[i] = data.k[i];
         }
-        this.getValue = getNoValue;
+        this._isFirstFrame = true;
+        this.effectsSequence = [];
+        this.getValue = processEffectsSequence;
     }
 
     function KeyframedValueProperty(elem, data, mult) {
         this.propType = 'unidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
-        this.lastValue = initFrame;
-        this.lastPValue = initFrame;
         this.frameId = -1;
         this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0};
         this.k = true;
         this.kf = true;
         this.data = data;
-        this.mult = mult;
+        this.mult = mult || 1;
         this.elem = elem;
-        this._isFirstFrame = false;
         this.comp = elem.comp;
-        this.v = mult ? data.k[0].s[0] * mult : data.k[0].s[0];
-        this.pv = data.k[0].s[0];
-        this.getValue = getValueAtCurrentTime;
-        this.calculateValueAtCurrentTime = calculateUnidimenstionalValueAtCurrentTime;
+        this.v = initFrame;
+        this.pv = initFrame;
+        this._isFirstFrame = true;
+        this.getValue = processEffectsSequence;
         this.interpolateValue = interpolateValue;
+        this.effectsSequence = [getValueAtCurrentTime.bind(this)];
     }
 
     function KeyframedMultidimensionalProperty(elem, data, mult){
@@ -2387,23 +2422,25 @@ var PropertyFactory = (function(){
                 }
             }
         }
+        this.effectsSequence = [getValueAtCurrentTime.bind(this)];
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
         this.kf = true;
         this._isFirstFrame = true;
-        this.mult = mult;
+        this.mult = mult || 1;
         this.elem = elem;
         this.comp = elem.comp;
-        this.getValue = getValueAtCurrentTime;
-        this.calculateValueAtCurrentTime = calculateMultidimensionalValueAtCurrentTime;
+        this.getValue = processEffectsSequence;
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
         var arrLen = data.k[0].s.length;
         this.v = createTypedArray('float32', arrLen);
         this.pv = createTypedArray('float32', arrLen);
-        this.lastValue = createTypedArray('float32', arrLen);
-        this.lastPValue = createTypedArray('float32', arrLen);
+        for (i = 0; i < arrLen; i += 1) {
+            this.v[i] = initFrame;
+            this.pv[i] = initFrame;
+        }
         this._caching={lastFrame:initFrame,lastIndex:0,value:createTypedArray('float32', arrLen)};
     }
 
@@ -2435,7 +2472,7 @@ var PropertyFactory = (function(){
                     break;
             }
         }
-        if(p.k){
+        if(p.effectsSequence.length){
             arr.push(p);
         }
         return p;
@@ -2448,7 +2485,7 @@ var PropertyFactory = (function(){
 }());
 var TransformPropertyFactory = (function() {
 
-    function applyToMatrix(mat) {
+    function searchDynamicProperties() {
         var i, len = this.dynamicProperties.length;
         for(i = 0; i < len; i += 1) {
             this.dynamicProperties[i].getValue();
@@ -2456,6 +2493,10 @@ var TransformPropertyFactory = (function() {
                 this._mdf = true;
             }
         }
+    }
+
+    function applyToMatrix(mat) {
+        this.searchDynamicProperties();
         if (this.a) {
             mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
         }
@@ -2483,14 +2524,7 @@ var TransformPropertyFactory = (function() {
         }
 
         this._mdf = false;
-        var i, len = this.dynamicProperties.length;
-
-        for(i = 0; i < len; i += 1) {
-            this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i]._mdf) {
-                this._mdf = true;
-            }
-        }
+        this.searchDynamicProperties();
 
         if (this._mdf || forceRender) {
             this.v.reset();
@@ -2620,6 +2654,7 @@ var TransformPropertyFactory = (function() {
     }
 
     TransformProperty.prototype.applyToMatrix = applyToMatrix;
+    TransformProperty.prototype.searchDynamicProperties = searchDynamicProperties;
     TransformProperty.prototype.getValue = processKeys;
     TransformProperty.prototype.setInverted = setInverted;
     TransformProperty.prototype.autoOrient = autoOrient;
@@ -2720,9 +2755,9 @@ var ShapePropertyFactory = (function(){
 
     var initFrame = -999999;
 
-    function interpolateShape(frameNum, previousValue, isCurrentRender, caching) {
+    function interpolateShape(frameNum, previousValue, caching) {
         var iterationIndex = caching.lastIndex;
-        var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue, hasModified = false;
+        var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue;
         if(frameNum < this.keyframes[0].t-this.offsetTime){
             keyPropS = this.keyframes[0].s[0];
             isHold = true;
@@ -2777,40 +2812,18 @@ var ShapePropertyFactory = (function(){
         for(j=0;j<jLen;j+=1){
             for(k=0;k<kLen;k+=1){
                 vertexValue = isHold ? keyPropS.i[j][k] :  keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
-                if(previousValue.i[j][k] !== vertexValue){
-                    previousValue.i[j][k] = vertexValue;
-                    if(isCurrentRender) {
-                        this.pv.i[j][k] = vertexValue;
-                    }
-                    hasModified = true;
-                }
+                previousValue.i[j][k] = vertexValue;
                 vertexValue = isHold ? keyPropS.o[j][k] :  keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
-                if(previousValue.o[j][k] !== vertexValue){
-                    previousValue.o[j][k] = vertexValue;
-                    if(isCurrentRender) {
-                        this.pv.o[j][k] = vertexValue;
-                    }
-                    hasModified = true;
-                }
+                previousValue.o[j][k] = vertexValue;
                 vertexValue = isHold ? keyPropS.v[j][k] :  keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
-                if(previousValue.v[j][k] !== vertexValue){
-                    previousValue.v[j][k] = vertexValue;
-                    if(isCurrentRender) {
-                        this.pv.v[j][k] = vertexValue;
-                    }
-                    hasModified = true;
-                }
+                previousValue.v[j][k] = vertexValue;
             }
         }
 
-        return hasModified;
+        return false;
     }
 
     function interpolateShapeCurrentTime(){
-        if(this.elem.globalData.frameId === this.frameId){
-            return;
-        }
-        this._mdf = false;
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
@@ -2818,15 +2831,11 @@ var ShapePropertyFactory = (function(){
         if(!(lastFrame !== initFrame && ((lastFrame < initTime && frameNum < initTime) || (lastFrame > endTime && frameNum > endTime)))){
             ////
             this._caching.lastIndex = lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var hasModified = this.interpolateShape(frameNum, this.v, true, this._caching);
+            this.interpolateShape(frameNum, this.pv, this._caching);
             ////
-            this._mdf = hasModified;
-            if(hasModified) {
-                this.paths = this.localShapeCollection;
-            }
         }
         this._caching.lastFrame = frameNum;
-        this.frameId = this.elem.globalData.frameId;
+        return this.pv;
     }
 
     function getShapeValue(){
@@ -2835,15 +2844,50 @@ var ShapePropertyFactory = (function(){
 
     function resetShape(){
         this.paths = this.localShapeCollection;
-        if(!this.k){
-            this._mdf = false;
-        }
     }
+
+    function shapesEqual(shape1, shape2) {
+        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
+            return false;
+        }
+        var i, len = shape1._length;
+        for(i = 0; i < len; i += 1) {
+            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1] || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1] || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function processEffectsSequence() {
+        if(this.lock || this.elem.globalData.frameId === this.frameId) {
+            return;
+        }
+        this.lock = true;
+        this.frameId = this.elem.globalData.frameId;
+        this._mdf = false;
+        var finalValue = this.kf ? this.pv : this.data.k;
+        var i, len = this.effectsSequence.length;
+        for(i = 0; i < len; i += 1) {
+            finalValue = this.effectsSequence[i](finalValue);
+        }
+        if(!shapesEqual(this.v, finalValue)) {
+            this.v = shape_pool.clone(finalValue);
+            this.localShapeCollection.releaseShapes();
+            this.localShapeCollection.addShape(this.v);
+            this._mdf = true;
+            this.paths = this.localShapeCollection;
+        }
+        this.lock = false;
+    };
 
     function ShapeProperty(elem, data, type){
         this.propType = 'shape';
         this.comp = elem.comp;
+        this.elem = elem;
+        this.data = data;
         this.k = false;
+        this.kf = false;
         this._mdf = false;
         var pathData = type === 3 ? data.pt.k : data.ks.k;
         this.v = shape_pool.clone(pathData);
@@ -2852,9 +2896,10 @@ var ShapePropertyFactory = (function(){
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
+        this.effectsSequence = [getShapeValue.bind(this)];
     }
     ShapeProperty.prototype.interpolateShape = interpolateShape;
-    ShapeProperty.prototype.getValue = getShapeValue;
+    ShapeProperty.prototype.getValue = processEffectsSequence;
 
     function KeyframedShapeProperty(elem,data,type){
         this.propType = 'shape';
@@ -2875,8 +2920,9 @@ var ShapePropertyFactory = (function(){
         this.lastFrame = initFrame;
         this.reset = resetShape;
         this._caching = {lastFrame: initFrame, lastIndex: 0};
+        this.effectsSequence = [interpolateShapeCurrentTime.bind(this)];
     }
-    KeyframedShapeProperty.prototype.getValue = interpolateShapeCurrentTime;
+    KeyframedShapeProperty.prototype.getValue = processEffectsSequence;
     KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
 
     var EllShapeProperty = (function(){
@@ -4290,8 +4336,59 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var elemOpacity;
     var sc,sw,fc,k;
     var lineLength = 0;
-    var letterSw,letterSc,letterFc,letterM = '',letterP = this.defaultPropsArray,letterO;
+    var letterSw, letterSc, letterFc, letterM = '', letterP = this.defaultPropsArray, letterO;
+
+    //
+    if(documentData.j === 2 || documentData.j === 1) {
+        var animatorJustifyOffset = 0;
+        var animatorFirstCharOffset = 0;
+        var justifyOffsetMult = documentData.j === 2 ? -0.5 : -1;
+        var lastIndex = 0;
+        var isNewLine = true;
+
+        for (i = 0; i < len; i += 1) {
+            if (letters[i].n) {
+                if(animatorJustifyOffset) {
+                    animatorJustifyOffset += animatorFirstCharOffset;
+                }
+                while (lastIndex < i) {
+                    letters[lastIndex].animatorJustifyOffset = animatorJustifyOffset;
+                    lastIndex += 1;
+                }
+                animatorJustifyOffset = 0;
+                isNewLine = true;
+            } else {
+                for (j = 0; j < jLen; j += 1) {
+                    animatorProps = animators[j].a;
+                    if (animatorProps.t.propType) {
+                        if (isNewLine && documentData.j === 2) {
+                            animatorFirstCharOffset += animatorProps.t.v * justifyOffsetMult;
+                        }
+                        animatorSelector = animators[j].s;
+                        mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
+                        if (mult.length) {
+                            animatorJustifyOffset += animatorProps.t.v*mult[0] * justifyOffsetMult;
+                        } else {
+                            animatorJustifyOffset += animatorProps.t.v*mult * justifyOffsetMult;
+                        }
+                    }
+                }
+                isNewLine = false;
+            }
+        }
+        console.log(animatorJustifyOffset)
+        if(animatorJustifyOffset) {
+            animatorJustifyOffset += animatorFirstCharOffset;
+        }
+        while(lastIndex < i) {
+            letters[lastIndex].animatorJustifyOffset = animatorJustifyOffset;
+            lastIndex += 1;
+        }
+    }
+    //
+
     for( i = 0; i < len; i += 1) {
+
         matrixHelper.reset();
         elemOpacity = 1;
         if(letters[i].n) {
@@ -4407,17 +4504,20 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 if (animatorProps.t.propType) {
                     animatorSelector = animators[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
-                    if(this._hasMaskedPath) {
-                        if(mult.length) {
-                            currentLength += animatorProps.t*mult[0];
-                        } else {
-                            currentLength += animatorProps.t*mult;
-                        }
-                    }else{
-                        if(mult.length) {
-                            xPos += animatorProps.t.v*mult[0];
-                        } else {
-                            xPos += animatorProps.t.v*mult;
+                    //This condition is to prevent applying tracking to first character in each line. Might be better to use a boolean "isNewLine"
+                    if(xPos !== 0 || documentData.j !== 0) {
+                        if(this._hasMaskedPath) {
+                            if(mult.length) {
+                                currentLength += animatorProps.t.v*mult[0];
+                            } else {
+                                currentLength += animatorProps.t.v*mult;
+                            }
+                        }else{
+                            if(mult.length) {
+                                xPos += animatorProps.t.v*mult[0];
+                            } else {
+                                xPos += animatorProps.t.v*mult;
+                            }
                         }
                     }
                 }
@@ -4610,10 +4710,10 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 }
                 switch(documentData.j){
                     case 1:
-                        matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
+                        matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
                         break;
                     case 2:
-                        matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
+                        matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2,0,0);
                         break;
                 }
                 matrixHelper.translate(0,-documentData.ls);
@@ -5015,7 +5115,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             lineWidth += cLength + trackingOffset + uncollapsedSpaces;
             uncollapsedSpaces = 0;
         }
-        letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine});
+        letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
         if(anchorGrouping == 2){
             currentSize += cLength;
             if(val === '' || val === '\u00A0' || i === len - 1){
@@ -8104,7 +8204,7 @@ SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
         this.replaceInParent(mask, symbolId);
         symbol.appendChild(mask.layerElement);
         defs.appendChild(symbol);
-        useElem = createNS('use');
+        var useElem = createNS('use');
         useElem.setAttribute('href', '#' + symbolId);
         masker.appendChild(useElem);
         mask.data.hd = false;
@@ -11126,19 +11226,6 @@ var ExpressionManager = (function(){
         return arr.constructor === Array || arr.constructor === Float32Array;
     }
 
-    function shapesEqual(shape1, shape2) {
-        if(shape1._length !== shape2._length || shape1.c !== shape2.c){
-            return false;
-        }
-        var i, len = shape1._length;
-        for(i = 0; i < len; i += 1) {
-            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1] || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1] || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
-                return false;
-            }
-        }
-        return true;
-    }
-
     function $bm_neg(a){
         var tOfA = typeof a;
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
@@ -11164,10 +11251,12 @@ var ExpressionManager = (function(){
             return a + b;
         }
         if(isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+            a = a.slice(0);
             a[0] = a[0] + b;
             return a;
         }
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) && isTypeOfArray(b)){
+            b = b.slice(0);
             b[0] = a + b[0];
             return b;
         }
@@ -11202,10 +11291,12 @@ var ExpressionManager = (function(){
             return a - b;
         }
         if( isTypeOfArray(a) && (tOfB === 'number' || tOfB === 'boolean' || tOfB === 'string' || b instanceof Number )){
+            a = a.slice(0);
             a[0] = a[0] - b;
             return a;
         }
         if((tOfA === 'number' || tOfA === 'boolean' || tOfA === 'string' || a instanceof Number ) &&  isTypeOfArray(b)){
+            b = b.slice(0);
             b[0] = a - b[0];
             return b;
         }
@@ -11431,13 +11522,14 @@ var ExpressionManager = (function(){
     }
 
     function createPath(points, inTangents, outTangents, closed) {
-        inTangents = inTangents && inTangents.length ? inTangents : points;
-        outTangents = outTangents && outTangents.length ? outTangents : points;
-        var path = shape_pool.newElement();
         var i, len = points.length;
-        path.setPathData(closed, len);
+        var path = shape_pool.newElement();
+        path.setPathData(!!closed, len);
+        var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
-            path.setTripleAt(points[i][0],points[i][1],outTangents[i][0] + points[i][0],outTangents[i][1] + points[i][1],inTangents[i][0] + points[i][0],inTangents[i][1] + points[i][1],i,true);
+            inVertexPoint = inTangents ? inTangents[i] : arrPlaceholder;
+            outVertexPoint = outTangents ? outTangents[i] : arrPlaceholder;
+            path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
         }
         return path;
     }
@@ -11640,16 +11732,13 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
-        function executeExpression() {
+        function executeExpression(_value) {
+            value = _value;
             if (_needsRandom) {
                 seedRandom(randSeed);
             }
             if (this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector') {
-                return;
-            }
-            if(this.lock){
-                this.v = duplicatePropertyValue(this.pv,this.mult);
-                return true;
+                return value;
             }
             if(this.propType === 'textSelector'){
                 textIndex = this.textIndex;
@@ -11680,63 +11769,18 @@ var ExpressionManager = (function(){
             if (hasParent && !parent) {
                 parent = elem.hierarchy[0].layerInterface;
             }
-            this.lock = true;
-            if (this.getPreValue) {
-                this.getPreValue();
-            }
-            value = this.pv;
             time = this.comp.renderedFrame/this.comp.globalData.frameRate;
             if (needsVelocity) {
                 velocity = velocityAtTime(time);
             }
             expression_function();
-            if (scoped_bm_rt.propType === "shape") {
-                this.v = shape_pool.clone(scoped_bm_rt.v);
-            } else {
-                this.v = scoped_bm_rt;
-            }
-
             this.frameExpressionId = elem.globalData.frameId;
-            var i,len;
-            if(this.mult){
-                if(this.propType === 'unidimensional'){
-                    this.v *= this.mult;
-                }else if(this.v.length === 1){
-                    this.v = this.v[0] * this.mult;
-                }else{
-                    len = this.v.length;
-                    if(value === this.v){
-                        this.v = len === 2 ? [value[0],value[1]] : [value[0],value[1],value[2]];
-                    }
-                    for(i = 0; i < len; i += 1){
-                        this.v[i] *= this.mult;
-                    }
-                }
+
+            //TODO: Check if it's possible to return on ShapeInterface the .v value
+            if (scoped_bm_rt.propType === "shape") {
+                scoped_bm_rt = shape_pool.clone(scoped_bm_rt.v);
             }
-            if (this.v.length === 1) {
-                this.v = this.v[0];
-            }
-            if (this.propType === 'unidimensional') {
-                if(this.lastValue !== this.v){
-                    this.lastValue = this.v;
-                    this._mdf = true;
-                }
-            } else if (this.propType === 'shape') {
-                if (!shapesEqual(this.v, this.localShapeCollection.shapes[0])) {
-                    this._mdf = true;
-                    this.localShapeCollection.releaseShapes();
-                    this.localShapeCollection.addShape(shape_pool.clone(this.v));
-                }
-            } else {
-                len = this.v.length;
-                for (i = 0; i < len; i += 1) {
-                    if (this.v[i] !== this.lastValue[i]) {
-                        this.lastValue[i] = this.v[i];
-                        this._mdf = true;
-                    }
-                }
-            }
-            this.lock = false;
+            return scoped_bm_rt;
         }
         return executeExpression;
     }
@@ -11920,12 +11964,8 @@ var ExpressionManager = (function(){
         if(data.x){
             prop.k = true;
             prop.x = true;
-            if(prop.getValue) {
-                prop.getPreValue = prop.getValue;
-            }
-
             prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.getValue = prop.initiateExpression(elem,data,prop);
+            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
         }
     }
 
@@ -12007,7 +12047,7 @@ var ExpressionManager = (function(){
             value: value
         };
         searchExpressions(elem,data,prop);
-        if(!isAdded && prop.x){
+        if(!isAdded && prop.k){
             arr.push(prop);
         }
 
@@ -12026,7 +12066,7 @@ var ExpressionManager = (function(){
         if(frameNum !== this._cachingAtTime.lastTime) {
             this._cachingAtTime.lastTime = frameNum;
             frameNum *= this.elem.globalData.frameRate;
-            this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, false, this._cachingAtTime);
+            this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, this._cachingAtTime);
         }
         return this._cachingAtTime.shapeValue;
     }
@@ -12135,7 +12175,7 @@ var ExpressionManager = (function(){
         } else if(type === 4){
             searchExpressions(elem,data.ks,prop);
         }
-        if(!isAdded && prop.x){
+        if(!isAdded && prop.k){
             arr.push(prop);
         }
         return prop;
@@ -13279,6 +13319,7 @@ var MaskManagerInterface = (function(){
 
 var ExpressionValue = (function() {
 	return function(elementProp, mult, type) {
+        mult = mult || 1;
         var expressionValue, arrayValue;
 
 		if (elementProp.k) {
@@ -13291,20 +13332,20 @@ var ExpressionValue = (function() {
                 expressionValue = createTypedArray('float32', len);
                 arrValue = createTypedArray('float32', len);
 		        for (i = 0; i < len; i += 1) {
-		            expressionValue[i] = arrValue[i] = (mult && i < 3) ? elementProp.v[i] * mult : 1;
+		            expressionValue[i] = arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
 		        }
 	        	expressionValue.value = arrValue;
         	}
-        } else if (typeof elementProp.v === 'number' || elementProp.v instanceof Number){
-            val = mult ? elementProp.v * mult : elementProp.v;
+        } else if (elementProp.propType === 'unidimensional'){
+            val = elementProp.v * mult;
             expressionValue = new Number(val);
             expressionValue.value = val;
         } else {
-        	len = elementProp.v.length;
+        	len = elementProp.pv.length;
             expressionValue = createTypedArray('float32', len);
             arrValue = createTypedArray('float32', len);
 	        for (i = 0; i < len; i += 1) {
-	            expressionValue[i] = arrValue[i] = mult ? elementProp.v[i] * mult : elementProp.v[i];
+	            expressionValue[i] = arrValue[i] = elementProp.v[i] * mult;
 	        }
 	        expressionValue.value = arrValue;
         }

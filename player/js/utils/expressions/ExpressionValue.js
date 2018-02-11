@@ -1,5 +1,6 @@
 var ExpressionValue = (function() {
 	return function(elementProp, mult, type) {
+        mult = mult || 1;
         var expressionValue, arrayValue;
 
 		if (elementProp.k) {
@@ -12,20 +13,20 @@ var ExpressionValue = (function() {
                 expressionValue = createTypedArray('float32', len);
                 arrValue = createTypedArray('float32', len);
 		        for (i = 0; i < len; i += 1) {
-		            expressionValue[i] = arrValue[i] = (mult && i < 3) ? elementProp.v[i] * mult : 1;
+		            expressionValue[i] = arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
 		        }
 	        	expressionValue.value = arrValue;
         	}
-        } else if (typeof elementProp.v === 'number' || elementProp.v instanceof Number){
-            val = mult ? elementProp.v * mult : elementProp.v;
+        } else if (elementProp.propType === 'unidimensional'){
+            val = elementProp.v * mult;
             expressionValue = new Number(val);
             expressionValue.value = val;
         } else {
-        	len = elementProp.v.length;
+        	len = elementProp.pv.length;
             expressionValue = createTypedArray('float32', len);
             arrValue = createTypedArray('float32', len);
 	        for (i = 0; i < len; i += 1) {
-	            expressionValue[i] = arrValue[i] = mult ? elementProp.v[i] * mult : elementProp.v[i];
+	            expressionValue[i] = arrValue[i] = elementProp.v[i] * mult;
 	        }
 	        expressionValue.value = arrValue;
         }
