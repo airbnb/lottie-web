@@ -27,22 +27,22 @@ SVGShapeElement.prototype.identityMatrix = new Matrix();
 SVGShapeElement.prototype.buildExpressionInterface = function(){};
 
 SVGShapeElement.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
 };
 
-SVGShapeElement.prototype.createStyleElement = function(data, level, dynamicProperties){
+SVGShapeElement.prototype.createStyleElement = function(data, level){
     //TODO: prevent drawing of hidden styles
     var elementData;
     var styleOb = new SVGStyleData(data, level);
 
     var pathElement = styleOb.pElem;
     if(data.ty === 'st') {
-        elementData = new SVGStrokeStyleData(this, data, dynamicProperties, styleOb);
+        elementData = new SVGStrokeStyleData(this, data, styleOb);
     } else if(data.ty === 'fl') {
-        elementData = new SVGFillStyleData(this, data, dynamicProperties, styleOb);
+        elementData = new SVGFillStyleData(this, data, styleOb);
     } else if(data.ty === 'gf' || data.ty === 'gs') {
         var gradientConstructor = data.ty === 'gf' ? SVGGradientFillStyleData : SVGGradientStrokeStyleData;
-        elementData = new gradientConstructor(this, data, dynamicProperties, styleOb);
+        elementData = new gradientConstructor(this, data, styleOb);
         this.globalData.defs.appendChild(elementData.gf);
         if (elementData.maskId) {
             this.globalData.defs.appendChild(elementData.ms);
@@ -82,11 +82,11 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     return elementData;
 };
 
-SVGShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
-    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties), PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties));
+SVGShapeElement.prototype.createTransformElement = function(data) {
+    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data), PropertyFactory.getProp(this,data.o,0,0.01,this));
 };
 
-SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level, dynamicProperties) {
+SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
     var ty = 4;
     if(data.ty === 'rc'){
         ty = 5;
@@ -95,7 +95,7 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     }else if(data.ty === 'sr'){
         ty = 7;
     }
-    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
+    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
     var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
@@ -118,7 +118,7 @@ SVGShapeElement.prototype.reloadShapes = function(){
     for( i = 0; i < len; i += 1) {
         this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
     len = this.dynamicProperties.length;
     for(i = 0; i < len; i += 1) {
         this.dynamicProperties[i].getValue();
@@ -126,7 +126,7 @@ SVGShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 };
 
-SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container,dynamicProperties, level, transformers, render){
+SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container, level, transformers, render){
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
@@ -140,7 +140,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
         }
         if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
             if(!processedPos){
-                itemsData[i] = this.createStyleElement(arr[i], level, dynamicProperties);
+                itemsData[i] = this.createStyleElement(arr[i], level);
             } else {
                 itemsData[i].style.closed = false;
             }
@@ -157,26 +157,26 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
                     itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr,dynamicProperties, level + 1, ownTransformers, render);
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr, level + 1, ownTransformers, render);
             if(arr[i]._render){
                 container.appendChild(itemsData[i].gr);
             }
         }else if(arr[i].ty == 'tr'){
             if(!processedPos){
-                itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createTransformElement(arr[i]);
             }
             currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
+                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level);
             }
             this.setElementStyles(itemsData[i]);
 
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
-                modifier.init(this,arr[i],dynamicProperties);
+                modifier.init(this,arr[i]);
                 itemsData[i] = modifier;
                 this.shapeModifiers.push(modifier);
             } else {
@@ -188,7 +188,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 itemsData[i] = modifier;
-                modifier.init(this,arr,i,itemsData,dynamicProperties);
+                modifier.init(this,arr,i,itemsData);
                 this.shapeModifiers.push(modifier);
                 render = false;
             }else{
@@ -400,7 +400,7 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
 SVGShapeElement.prototype.renderStroke = function(styleData, itemData) {
     var styleElem = itemData.style;
     var d = itemData.d;
-    if (d && (d._mdf || this._isFirstFrame)) {
+    if (d && (d._mdf || this._isFirstFrame) && d.dashStr) {
         styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
         styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
     }

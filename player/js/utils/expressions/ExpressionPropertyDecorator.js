@@ -135,7 +135,7 @@
             frameNum *= this.elem.globalData.frameRate;
             frameNum -= this.offsetTime;
             this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
-            this._cachingAtTime.value = this.interpolateValue(frameNum, this.pv, this._cachingAtTime);
+            this._cachingAtTime.value = this.interpolateValue(frameNum, this._cachingAtTime);
             this._cachingAtTime.lastFrame = frameNum;
         }
         return this._cachingAtTime.value;
@@ -218,8 +218,8 @@
     }());
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
-    TransformPropertyFactory.getTransformProperty = function(elem, data, arr) {
-        var prop = getTransformProperty(elem, data, arr);
+    TransformPropertyFactory.getTransformProperty = function(elem, data, container) {
+        var prop = getTransformProperty(elem, data, container);
         if(prop.dynamicProperties.length) {
             prop.getValueAtTime = getTransformValueAtTime.bind(prop);
         } else {
@@ -230,8 +230,8 @@
     };
 
     var propertyGetProp = PropertyFactory.getProp;
-    PropertyFactory.getProp = function(elem,data,type, mult, arr){
-        var prop = propertyGetProp(elem,data,type, mult, arr);
+    PropertyFactory.getProp = function(elem,data,type, mult, container){
+        var prop = propertyGetProp(elem,data,type, mult, container);
         //prop.getVelocityAtTime = getVelocityAtTime;
         //prop.loopOut = loopOut;
         //prop.loopIn = loopIn;
@@ -245,7 +245,6 @@
         prop.loopIn = loopIn;
         prop.getVelocityAtTime = getVelocityAtTime;
         prop.numKeys = data.a === 1 ? data.k.length : 0;
-        var isAdded = prop.k;
         prop.propertyIndex = data.ix;
         var value = 0;
         if(type !== 0) {
@@ -257,8 +256,8 @@
             value: value
         };
         searchExpressions(elem,data,prop);
-        if(!isAdded && prop.k){
-            arr.push(prop);
+        if(prop.k){
+            container.addDynamicProperty(prop);
         }
 
         return prop;
@@ -377,7 +376,6 @@
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        var isAdded = prop.k;
         prop.propertyIndex = data.ix;
         prop.lock = false;
         if(type === 3){
@@ -385,8 +383,8 @@
         } else if(type === 4){
             searchExpressions(elem,data.ks,prop);
         }
-        if(!isAdded && prop.k){
-            arr.push(prop);
+        if(prop.k){
+            elem.addDynamicProperty(prop);
         }
         return prop;
     };

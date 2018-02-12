@@ -1,4 +1,4 @@
-function MaskElement(data,element,globalData, dynamicProperties) {
+function MaskElement(data,element,globalData) {
     this.data = data;
     this.element = element;
     this.globalData = globalData;
@@ -40,8 +40,8 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         if(properties[i].mode == 'n') {
             // TODO move this to a factory or to a constructor
             this.viewData[i] = {
-                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
-                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null),
+                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.element),
+                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3),
                 elem: path
             };
             defs.appendChild(path);
@@ -56,7 +56,7 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         if (properties[i].x.k !== 0) {
             maskType = 'mask';
             maskRef = 'mask';
-            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,dynamicProperties);
+            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.element);
             filterID = 'fi_'+randomString(10);
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
@@ -107,8 +107,8 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
-            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null),
+            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.element),
+            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3),
             invRect: rect
         };
         if(!this.viewData[i].prop.k){

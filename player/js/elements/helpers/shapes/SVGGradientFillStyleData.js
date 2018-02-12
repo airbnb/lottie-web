@@ -1,14 +1,14 @@
-function SVGGradientFillStyleData(elem, data, dynamicProperties, styleOb){
-    this.initGradientData(elem, data, dynamicProperties, styleOb);
+function SVGGradientFillStyleData(elem, data, styleOb){
+    this.initGradientData(elem, data, styleOb);
 }
 
-SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, dynamicProperties, styleOb){
-    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,dynamicProperties);
-    this.s = PropertyFactory.getProp(elem,data.s,1,null,dynamicProperties);
-    this.e = PropertyFactory.getProp(elem,data.e,1,null,dynamicProperties);
-    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,dynamicProperties);
-    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,dynamicProperties);
-    this.g = new GradientProperty(elem,data.g,dynamicProperties);
+SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, styleOb){
+    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
+    this.s = PropertyFactory.getProp(elem,data.s,1,null,elem);
+    this.e = PropertyFactory.getProp(elem,data.e,1,null,elem);
+    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,elem);
+    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,elem);
+    this.g = new GradientProperty(elem,data.g,elem);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);

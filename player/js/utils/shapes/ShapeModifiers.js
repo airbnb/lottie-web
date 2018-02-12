@@ -10,8 +10,8 @@ var ShapeModifiers = (function(){
         }
     }
 
-    function getModifier(nm,elem, data, dynamicProperties){
-        return new modifiers[nm](elem, data, dynamicProperties);
+    function getModifier(nm,elem, data){
+        return new modifiers[nm](elem, data);
     }
 
     return ob;
@@ -27,10 +27,11 @@ ShapeModifier.prototype.addShape = function(data){
         this.addShapeToModifier(shapeData);
     }
 };
-ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
+ShapeModifier.prototype.init = function(elem,data){
     this.dynamicProperties = [];
     this.shapes = [];
     this.elem = elem;
+    this.container = elem;
     this.initModifierProperties(elem,data);
     this.frameId = initialDefaultFrame;
     this._mdf = false;
@@ -38,7 +39,6 @@ ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     this.k = false;
     if(this.dynamicProperties.length){
         this.k = true;
-        dynamicProperties.push(this);
     }else{
         this.getValue(true);
     }
@@ -58,3 +58,5 @@ ShapeModifier.prototype.processKeys = function(){
     }
     this.frameId = this.elem.globalData.frameId;
 };
+
+ShapeModifier.prototype.addDynamicProperty = addDynamicProperty;

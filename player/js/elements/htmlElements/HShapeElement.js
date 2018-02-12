@@ -40,7 +40,7 @@ HShapeElement.prototype.createContent = function(){
         this.layerElement.appendChild(cont);
     }
 
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,this.dynamicProperties,0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,0, [], true);
     this.shapeCont = cont;
 };
 

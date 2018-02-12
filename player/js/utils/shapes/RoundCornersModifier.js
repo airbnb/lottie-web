@@ -2,7 +2,7 @@ function RoundCornersModifier(){}
 extendPrototype([ShapeModifier],RoundCornersModifier);
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
-    this.rd = PropertyFactory.getProp(elem,data.r,0,null,this.dynamicProperties);
+    this.rd = PropertyFactory.getProp(elem,data.r,0,null,this);
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){

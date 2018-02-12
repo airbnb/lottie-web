@@ -2,9 +2,9 @@ function TrimModifier(){
 }
 extendPrototype([ShapeModifier], TrimModifier);
 TrimModifier.prototype.initModifierProperties = function(elem, data) {
-    this.s = PropertyFactory.getProp(elem, data.s, 0, 0.01, this.dynamicProperties);
-    this.e = PropertyFactory.getProp(elem, data.e, 0, 0.01, this.dynamicProperties);
-    this.o = PropertyFactory.getProp(elem, data.o, 0, 0, this.dynamicProperties);
+    this.s = PropertyFactory.getProp(elem, data.s, 0, 0.01, this);
+    this.e = PropertyFactory.getProp(elem, data.e, 0, 0.01, this);
+    this.o = PropertyFactory.getProp(elem, data.o, 0, 0, this);
     this.sValue = 0;
     this.eValue = 0;
     this.getValue = this.processKeys;

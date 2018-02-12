@@ -1,5 +1,6 @@
-function GradientProperty(elem,data,arr){
-    this.prop = PropertyFactory.getProp(elem,data.k,1,null,[]);
+function GradientProperty(elem,data){
+    this.container = elem;
+    this.prop = PropertyFactory.getProp(elem,data.k,1,null,this);
     this.data = data;
     this.k = this.prop.k;
     this.c = createTypedArray('uint8c', data.p*4);
@@ -10,10 +11,11 @@ function GradientProperty(elem,data,arr){
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
     this._mdf = false;
-    if(this.prop.k){
-        arr.push(this);
-    }
     this.getValue(true);
+}
+
+GradientProperty.prototype.addDynamicProperty = function(prop) {
+    this.container.addDynamicProperty(this);
 }
 
 GradientProperty.prototype.comparePoints = function(values, points) {

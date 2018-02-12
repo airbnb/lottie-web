@@ -2,16 +2,16 @@ function HCameraElement(data,globalData,comp){
     this.initFrame();
     this.initBaseData(data,globalData,comp);
     var getProp = PropertyFactory.getProp;
-    this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
+    this.pe = getProp(this,data.pe,0,0,this);
     if(data.ks.p.s){
-        this.px = getProp(this,data.ks.p.x,1,0,this.dynamicProperties);
-        this.py = getProp(this,data.ks.p.y,1,0,this.dynamicProperties);
-        this.pz = getProp(this,data.ks.p.z,1,0,this.dynamicProperties);
+        this.px = getProp(this,data.ks.p.x,1,0,this);
+        this.py = getProp(this,data.ks.p.y,1,0,this);
+        this.pz = getProp(this,data.ks.p.z,1,0,this);
     }else{
-        this.p = getProp(this,data.ks.p,1,0,this.dynamicProperties);
+        this.p = getProp(this,data.ks.p,1,0,this);
     }
     if(data.ks.a){
-        this.a = getProp(this,data.ks.a,1,0,this.dynamicProperties);
+        this.a = getProp(this,data.ks.a,1,0,this);
     }
     if(data.ks.or.k.length && data.ks.or.k[0].to){
         var i,len = data.ks.or.k.length;
@@ -20,11 +20,11 @@ function HCameraElement(data,globalData,comp){
             data.ks.or.k[i].ti = null;
         }
     }
-    this.or = getProp(this,data.ks.or,1,degToRads,this.dynamicProperties);
+    this.or = getProp(this,data.ks.or,1,degToRads,this);
     this.or.sh = true;
-    this.rx = getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
-    this.ry = getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
-    this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
+    this.rx = getProp(this,data.ks.rx,0,degToRads,this);
+    this.ry = getProp(this,data.ks.ry,0,degToRads,this);
+    this.rz = getProp(this,data.ks.rz,0,degToRads,this);
     this.mat = new Matrix();
     this._prevMat = new Matrix();
     this._isFirstFrame = true;

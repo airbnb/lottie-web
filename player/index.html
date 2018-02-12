@@ -35,6 +35,7 @@
     <script src="js/utils/helpers/arrays.js"></script>
     <script src="js/utils/helpers/svg_elements.js"></script>
     <script src="js/utils/helpers/html_elements.js"></script>
+    <script src="js/utils/helpers/dynamicProperties.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
@@ -158,13 +159,13 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/adrock/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);

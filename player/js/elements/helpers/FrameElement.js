@@ -42,5 +42,10 @@ FrameElement.prototype = {
                 }
             }
         }
+    },
+    addDynamicProperty: function(prop) {
+        if(this.dynamicProperties.indexOf(prop) === -1) {
+            this.dynamicProperties.push(prop);
+        }
     }
 };

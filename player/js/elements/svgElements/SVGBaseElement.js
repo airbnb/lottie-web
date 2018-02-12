@@ -145,7 +145,7 @@ SVGBaseElement.prototype = {
         return this.baseElement;
     },
     addMasks: function() {
-        this.maskManager = new MaskElement(this.data, this, this.globalData, this.dynamicProperties);
+        this.maskManager = new MaskElement(this.data, this, this.globalData);
     },
     setMatte: function(id) {
         if (!this.matteElement) {

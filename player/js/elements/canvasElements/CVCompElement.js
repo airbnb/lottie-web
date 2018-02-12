@@ -4,7 +4,7 @@ function CVCompElement(data, globalData, comp) {
     this.pendingElements = [];
     this.elements = createSizedArray(this.layers.length);
     this.initElement(data, globalData, comp);
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate, this) : {_placeholder:true};
 }
 
 extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);

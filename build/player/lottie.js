@@ -303,6 +303,12 @@ function createTag(type) {
 	//return {appendChild:function(){},setAttribute:function(){},style:{}}
 	return document.createElement(type);
 }
+function addDynamicProperty(prop) {
+	if(this.dynamicProperties.indexOf(prop) === -1) {
+        this.dynamicProperties.push(prop);
+        this.container.addDynamicProperty(this);
+    }
+}
 /*!
  Transformation Matrix v2.0
  (c) Epistemex 2014-2015
@@ -1750,7 +1756,6 @@ function dataFunctionManager(){
                 blitProperty(arr[i].r);
             }else{
 
-                //console.log(arr[i].ty );
             }
         }
     }
@@ -1781,14 +1786,10 @@ function dataFunctionManager(){
             var i, len = data.k.length;
             for(i=0;i<len;i+=1){
                 if(data.k[i].s){
-                    //console.log('pre S: ', data.k[i].s);
                     data.k[i].s = blitValue(data.k[i].s);
-                    //console.log('post S: ', data.k[i].s);
                 }
                 if(data.k[i].e){
-                    //console.log('pre E: ', data.k[i].e);
                     data.k[i].e = blitValue(data.k[i].e);
-                    //console.log('post E: ', data.k[i].e);
                 }
             }
         }
@@ -2115,11 +2116,11 @@ var PropertyFactory = (function(){
 
     var initFrame = initialDefaultFrame;
 
-    function interpolateValue(frameNum, previousValue, caching){
+    function interpolateValue(frameNum, caching){
         var offsetTime = this.offsetTime;
         var newValue;
         if(this.propType === 'multidimensional') {
-            newValue = createTypedArray('float32', previousValue.length);
+            newValue = createTypedArray('float32', this.pv.length);
         }
         var iterationIndex = caching.lastIndex;
         var i = iterationIndex;
@@ -2266,19 +2267,15 @@ var PropertyFactory = (function(){
     }
 
     function getValueAtCurrentTime(){
-        /*if(this.elem.globalData.frameId === this.frameId){
-            return this.pv;
-        }*/
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
-            var renderResult = this.interpolateValue(frameNum, this.pv, this._caching);
+            var renderResult = this.interpolateValue(frameNum, this._caching);
             this.pv = renderResult;
         }
         this._caching.lastFrame = frameNum;
-        //this.frameId = this.elem.globalData.frameId;
         return this.pv;
     }
 
@@ -2286,47 +2283,18 @@ var PropertyFactory = (function(){
         this._mdf = false;
     }
 
-    function processEffectsSequence() {
-        var i, len;
-        if(this.elem.globalData.frameId === this.frameId) {
-            return;
-        }
-        if(this.lock) {
-            if(this.propType === 'unidimensional') {
-                this.v = this.pv * this.mult;
-            } else {
-                len = this.pv.length;
-                for(i = 0; i < len; i += 1) {
-                    this.v[i] = this.pv[i] * this.mult;
-                }
-            }
-            return;
-        }
-        this.lock = true;
-        this._mdf = this._isFirstFrame;
+    function setVValue(val) {
         var multipliedValue;
-        len = this.effectsSequence.length;
-        var finalValue = this.kf ? this.pv : this.data.k;
         if(this.propType === 'unidimensional') {
-            this.v = finalValue;
-        } else {
-            this.v = finalValue.slice(0);
-        }
-        for(i = 0; i < len; i += 1) {
-            finalValue = this.effectsSequence[i](finalValue);
-            //this.pv = finalValue;
-        }
-        if(this.propType === 'unidimensional') {
-            multipliedValue = finalValue * this.mult;
+            multipliedValue = val * this.mult;
             if(this.v !== multipliedValue) {
                 this.v = multipliedValue;
                 this._mdf = true;
             }
-            //this.v = this.mult ? finalValue * this.mult : finalValue;
         } else {
             i = 0;
             while (i < this.v.length) {
-                multipliedValue = finalValue[i] * this.mult;
+                multipliedValue = val[i] * this.mult;
                 if (this.v[i] !== multipliedValue) {
                     this.v[i] = multipliedValue;
                     this._mdf = true;
@@ -2334,9 +2302,33 @@ var PropertyFactory = (function(){
                 i += 1;
             }
         }
+    }
+
+    function processEffectsSequence() {
+        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+            return;
+        }        
+        if(this.lock) {
+            this.setVValue(this.pv);
+            return;
+        }
+        this.lock = true;
+        this._mdf = this._isFirstFrame;
+        var multipliedValue;
+        var i, len = this.effectsSequence.length;
+        var finalValue = this.kf ? this.pv : this.data.k;
+        for(i = 0; i < len; i += 1) {
+            finalValue = this.effectsSequence[i](finalValue);
+        }
+        this.setVValue(finalValue);
         this._isFirstFrame = false;
         this.lock = false;
         this.frameId = this.elem.globalData.frameId;
+    }
+
+    function addEffect(effectFunction) {
+        this.effectsSequence.push(effectFunction);
+        this.container.addDynamicProperty(this);
     }
 
     function ValueProperty(elem,data, mult){
@@ -2354,6 +2346,8 @@ var PropertyFactory = (function(){
         this.effectsSequence = [];
         this._isFirstFrame = true;
         this.getValue = processEffectsSequence;
+        this.setVValue = setVValue;
+        this.addEffect = addEffect;
     }
 
     function MultiDimensionalProperty(elem, data, mult) {
@@ -2378,6 +2372,8 @@ var PropertyFactory = (function(){
         this._isFirstFrame = true;
         this.effectsSequence = [];
         this.getValue = processEffectsSequence;
+        this.setVValue = setVValue;
+        this.addEffect = addEffect;
     }
 
     function KeyframedValueProperty(elem, data, mult) {
@@ -2396,8 +2392,10 @@ var PropertyFactory = (function(){
         this.pv = initFrame;
         this._isFirstFrame = true;
         this.getValue = processEffectsSequence;
+        this.setVValue = setVValue;
         this.interpolateValue = interpolateValue;
         this.effectsSequence = [getValueAtCurrentTime.bind(this)];
+        this.addEffect = addEffect;
     }
 
     function KeyframedMultidimensionalProperty(elem, data, mult){
@@ -2432,6 +2430,7 @@ var PropertyFactory = (function(){
         this.elem = elem;
         this.comp = elem.comp;
         this.getValue = processEffectsSequence;
+        this.setVValue = setVValue;
         this.interpolateValue = interpolateValue;
         this.frameId = -1;
         var arrLen = data.k[0].s.length;
@@ -2442,9 +2441,10 @@ var PropertyFactory = (function(){
             this.pv[i] = initFrame;
         }
         this._caching={lastFrame:initFrame,lastIndex:0,value:createTypedArray('float32', arrLen)};
+        this.addEffect = addEffect;
     }
 
-    function getProp(elem,data,type, mult, arr) {
+    function getProp(elem,data,type, mult, container) {
         var p;
         if(data.a === 0){
             if(type === 0) {
@@ -2473,7 +2473,7 @@ var PropertyFactory = (function(){
             }
         }
         if(p.effectsSequence.length){
-            arr.push(p);
+            container.addDynamicProperty(p);
         }
         return p;
     }
@@ -2597,70 +2597,72 @@ var TransformPropertyFactory = (function() {
         //var prevP = this.getValueAtTime();
     }
 
-    function TransformProperty(elem,data,arr){
+    function TransformProperty(elem,data){
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
+        this.container = elem;
         this.dynamicProperties = [];
         this._mdf = false;
         this.data = data;
         this.v = new Matrix();
         if(data.p.s){
-            this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this.dynamicProperties);
-            this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this.dynamicProperties);
+            this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
+            this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
             if(data.p.z){
-                this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this.dynamicProperties);
+                this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this);
             }
         }else{
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
+            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
         }
         if(data.r) {
-            this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this.dynamicProperties);
+            this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this);
         } else if(data.rx) {
-            this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this.dynamicProperties);
-            this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this.dynamicProperties);
-            this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this.dynamicProperties);
+            this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this);
+            this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this);
+            this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this);
             if(data.or.k[0].ti) {
                 var i, len = data.or.k.length;
                 for(i=0;i<len;i+=1) {
                     data.or.k[i].to = data.or.k[i].ti = null;
                 }
             }
-            this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this.dynamicProperties);
+            this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this);
             //sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;
         }
         if(data.sk){
-            this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this.dynamicProperties);
-            this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this.dynamicProperties);
+            this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this);
+            this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this);
         }
         if(data.a) {
-            this.a = PropertyFactory.getProp(elem,data.a,1,0,this.dynamicProperties);
+            this.a = PropertyFactory.getProp(elem,data.a,1,0,this);
         }
         if(data.s) {
-            this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this.dynamicProperties);
+            this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this);
         }
         // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
         if(data.o){
-            this.o = PropertyFactory.getProp(elem,data.o,0,0.01,arr);
+            this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
         } else {
             this.o = {_mdf:false,v:1};
         }
-        if(this.dynamicProperties.length){
-            arr.push(this);
-        }else{
+        if(!this.dynamicProperties.length){
             this.getValue(true);
         }
     }
 
-    TransformProperty.prototype.applyToMatrix = applyToMatrix;
-    TransformProperty.prototype.searchDynamicProperties = searchDynamicProperties;
-    TransformProperty.prototype.getValue = processKeys;
-    TransformProperty.prototype.setInverted = setInverted;
-    TransformProperty.prototype.autoOrient = autoOrient;
+    TransformProperty.prototype = {
+        applyToMatrix: applyToMatrix,
+        searchDynamicProperties: searchDynamicProperties,
+        getValue: processKeys,
+        setInverted: setInverted,
+        autoOrient: autoOrient,
+        addDynamicProperty: addDynamicProperty
+    }
 
-    function getTransformProperty(elem,data,arr){
-        return new TransformProperty(elem,data,arr);
+    function getTransformProperty(elem,data){
+        return new TransformProperty(elem,data);
     }
 
     return {
@@ -2819,8 +2821,6 @@ var ShapePropertyFactory = (function(){
                 previousValue.v[j][k] = vertexValue;
             }
         }
-
-        return false;
     }
 
     function interpolateShapeCurrentTime(){
@@ -2929,58 +2929,7 @@ var ShapePropertyFactory = (function(){
 
         var cPoint = roundCorner;
 
-        function convertEllToPath(){
-            var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
-            var _cw = this.d !== 3;
-            var _v = this.v;
-            if(this.d !== 3){
-                _v.v[0][0] = p0;
-                _v.v[0][1] = p1 - s1;
-                _v.v[1][0] = _cw ? p0 + s0 : p0 - s0;
-                _v.v[1][1] = p1;
-                _v.v[2][0] = p0;
-                _v.v[2][1] = p1 + s1;
-                _v.v[3][0] = _cw ? p0 - s0 : p0 + s0;
-                _v.v[3][1] = p1;
-                _v.i[0][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
-                _v.i[0][1] = p1 - s1;
-                _v.i[1][0] = _cw ? p0 + s0 : p0 - s0;
-                _v.i[1][1] = p1 - s1 * cPoint;
-                _v.i[2][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
-                _v.i[2][1] = p1 + s1;
-                _v.i[3][0] = _cw ? p0 - s0 : p0 + s0;
-                _v.i[3][1] = p1 + s1 * cPoint;
-                _v.o[0][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
-                _v.o[0][1] = p1 - s1;
-                _v.o[1][0] = _cw ? p0 + s0 : p0 - s0;
-                _v.o[1][1] = p1 + s1 * cPoint;
-                _v.o[2][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
-                _v.o[2][1] = p1 + s1;
-                _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
-                _v.o[3][1] = p1 - s1 * cPoint;
-            }
-        }
-
-        function processKeys(frameNum){
-            var i, len = this.dynamicProperties.length;
-            if(this.elem.globalData.frameId === this.frameId){
-                return;
-            }
-            this._mdf = false;
-            this.frameId = this.elem.globalData.frameId;
-
-            for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue(frameNum);
-                if(this.dynamicProperties[i]._mdf){
-                    this._mdf = true;
-                }
-            }
-            if(this._mdf){
-                this.convertEllToPath();
-            }
-        }
-
-        return function EllShapeProperty(elem,data) {
+        function EllShapeProperty(elem,data) {
             /*this.v = {
                 v: createSizedArray(4),
                 i: createSizedArray(4),
@@ -2995,112 +2944,79 @@ var ShapePropertyFactory = (function(){
             this.d = data.d;
             this.dynamicProperties = [];
             this.elem = elem;
+            this.container = elem;
             this.comp = elem.comp;
             this.frameId = -1;
             this._mdf = false;
-            this.getValue = processKeys;
-            this.convertEllToPath = convertEllToPath;
-            this.reset = resetShape;
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
-            this.s = PropertyFactory.getProp(elem,data.s,1,0,this.dynamicProperties);
+            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
+            this.s = PropertyFactory.getProp(elem,data.s,1,0,this);
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
                 this.convertEllToPath();
             }
         };
+
+        EllShapeProperty.prototype = {
+            reset: resetShape,
+            getValue: function (frameNum){
+                var i, len = this.dynamicProperties.length;
+                if(this.elem.globalData.frameId === this.frameId){
+                    return;
+                }
+                this._mdf = false;
+                this.frameId = this.elem.globalData.frameId;
+
+                for(i=0;i<len;i+=1){
+                    this.dynamicProperties[i].getValue(frameNum);
+                    if(this.dynamicProperties[i]._mdf){
+                        this._mdf = true;
+                    }
+                }
+                if(this._mdf){
+                    this.convertEllToPath();
+                }
+            },
+            addDynamicProperty: addDynamicProperty,
+            convertEllToPath: function() {
+                var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
+                var _cw = this.d !== 3;
+                var _v = this.v;
+                if(this.d !== 3){
+                    _v.v[0][0] = p0;
+                    _v.v[0][1] = p1 - s1;
+                    _v.v[1][0] = _cw ? p0 + s0 : p0 - s0;
+                    _v.v[1][1] = p1;
+                    _v.v[2][0] = p0;
+                    _v.v[2][1] = p1 + s1;
+                    _v.v[3][0] = _cw ? p0 - s0 : p0 + s0;
+                    _v.v[3][1] = p1;
+                    _v.i[0][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
+                    _v.i[0][1] = p1 - s1;
+                    _v.i[1][0] = _cw ? p0 + s0 : p0 - s0;
+                    _v.i[1][1] = p1 - s1 * cPoint;
+                    _v.i[2][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
+                    _v.i[2][1] = p1 + s1;
+                    _v.i[3][0] = _cw ? p0 - s0 : p0 + s0;
+                    _v.i[3][1] = p1 + s1 * cPoint;
+                    _v.o[0][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
+                    _v.o[0][1] = p1 - s1;
+                    _v.o[1][0] = _cw ? p0 + s0 : p0 - s0;
+                    _v.o[1][1] = p1 + s1 * cPoint;
+                    _v.o[2][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
+                    _v.o[2][1] = p1 + s1;
+                    _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
+                    _v.o[3][1] = p1 - s1 * cPoint;
+                }
+            }
+        }
+
+        return EllShapeProperty;
     }());
 
     var StarShapeProperty = (function() {
 
-        function convertPolygonToPath(){
-            var numPts = Math.floor(this.pt.v);
-            var angle = Math.PI*2/numPts;
-            /*this.v.v.length = numPts;
-            this.v.i.length = numPts;
-            this.v.o.length = numPts;*/
-            var rad = this.or.v;
-            var roundness = this.os.v;
-            var perimSegment = 2*Math.PI*rad/(numPts*4);
-            var i, currentAng = -Math.PI/ 2;
-            var dir = this.data.d === 3 ? -1 : 1;
-            currentAng += this.r.v;
-            this.v._length = 0;
-            for(i=0;i<numPts;i+=1){
-                var x = rad * Math.cos(currentAng);
-                var y = rad * Math.sin(currentAng);
-                var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
-                var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
-                x +=  + this.p.v[0];
-                y +=  + this.p.v[1];
-                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
-                /*this.v.v[i] = [x,y];
-                this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
-                this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];*/
-                currentAng += angle*dir;
-            }
-            this.paths.length = 0;
-            this.paths[0] = this.v;
-        }
-
-        function convertStarToPath() {
-            var numPts = Math.floor(this.pt.v)*2;
-            var angle = Math.PI*2/numPts;
-            /*this.v.v.length = numPts;
-            this.v.i.length = numPts;
-            this.v.o.length = numPts;*/
-            var longFlag = true;
-            var longRad = this.or.v;
-            var shortRad = this.ir.v;
-            var longRound = this.os.v;
-            var shortRound = this.is.v;
-            var longPerimSegment = 2*Math.PI*longRad/(numPts*2);
-            var shortPerimSegment = 2*Math.PI*shortRad/(numPts*2);
-            var i, rad,roundness,perimSegment, currentAng = -Math.PI/ 2;
-            currentAng += this.r.v;
-            var dir = this.data.d === 3 ? -1 : 1;
-            this.v._length = 0;
-            for(i=0;i<numPts;i+=1){
-                rad = longFlag ? longRad : shortRad;
-                roundness = longFlag ? longRound : shortRound;
-                perimSegment = longFlag ? longPerimSegment : shortPerimSegment;
-                var x = rad * Math.cos(currentAng);
-                var y = rad * Math.sin(currentAng);
-                var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
-                var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
-                x +=  + this.p.v[0];
-                y +=  + this.p.v[1];
-                this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
-
-                /*this.v.v[i] = [x,y];
-                this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
-                this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
-                this.v._length = numPts;*/
-                longFlag = !longFlag;
-                currentAng += angle*dir;
-            }
-        }
-
-        function processKeys() {
-            if(this.elem.globalData.frameId === this.frameId){
-                return;
-            }
-            this._mdf = false;
-            this.frameId = this.elem.globalData.frameId;
-            var i, len = this.dynamicProperties.length;
-
-            for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i]._mdf){
-                    this._mdf = true;
-                }
-            }
-            if(this._mdf){
-                this.convertToPath();
-            }
-        }
-
-        return function StarShapeProperty(elem,data) {
+        function StarShapeProperty(elem,data) {
             /*this.v = {
                 v: [],
                 i: [],
@@ -3110,26 +3026,25 @@ var ShapePropertyFactory = (function(){
             this.v = shape_pool.newElement();
             this.v.setPathData(true, 0);
             this.elem = elem;
+            this.container = elem;
             this.comp = elem.comp;
             this.data = data;
             this.frameId = -1;
             this.d = data.d;
             this.dynamicProperties = [];
             this._mdf = false;
-            this.getValue = processKeys;
-            this.reset = resetShape;
             if(data.sy === 1){
-                this.ir = PropertyFactory.getProp(elem,data.ir,0,0,this.dynamicProperties);
-                this.is = PropertyFactory.getProp(elem,data.is,0,0.01,this.dynamicProperties);
-                this.convertToPath = convertStarToPath;
+                this.ir = PropertyFactory.getProp(elem,data.ir,0,0,this);
+                this.is = PropertyFactory.getProp(elem,data.is,0,0.01,this);
+                this.convertToPath = this.convertStarToPath;
             } else {
-                this.convertToPath = convertPolygonToPath;
+                this.convertToPath = this.convertPolygonToPath;
             }
-            this.pt = PropertyFactory.getProp(elem,data.pt,0,0,this.dynamicProperties);
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
-            this.r = PropertyFactory.getProp(elem,data.r,0,degToRads,this.dynamicProperties);
-            this.or = PropertyFactory.getProp(elem,data.or,0,0,this.dynamicProperties);
-            this.os = PropertyFactory.getProp(elem,data.os,0,0.01,this.dynamicProperties);
+            this.pt = PropertyFactory.getProp(elem,data.pt,0,0,this);
+            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
+            this.r = PropertyFactory.getProp(elem,data.r,0,degToRads,this);
+            this.or = PropertyFactory.getProp(elem,data.or,0,0,this);
+            this.os = PropertyFactory.getProp(elem,data.os,0,0.01,this);
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
             this.localShapeCollection.addShape(this.v);
             this.paths = this.localShapeCollection;
@@ -3139,95 +3054,185 @@ var ShapePropertyFactory = (function(){
                 this.convertToPath();
             }
         };
+
+        StarShapeProperty.prototype = {
+            addDynamicProperty: addDynamicProperty,
+            reset: resetShape,
+            getValue: function() {
+                if(this.elem.globalData.frameId === this.frameId){
+                    return;
+                }
+                this._mdf = false;
+                this.frameId = this.elem.globalData.frameId;
+                var i, len = this.dynamicProperties.length;
+
+                for(i=0;i<len;i+=1){
+                    this.dynamicProperties[i].getValue();
+                    if(this.dynamicProperties[i]._mdf){
+                        this._mdf = true;
+                    }
+                }
+                if(this._mdf){
+                    this.convertToPath();
+                }
+            },
+            convertStarToPath: function() {
+                var numPts = Math.floor(this.pt.v)*2;
+                var angle = Math.PI*2/numPts;
+                /*this.v.v.length = numPts;
+                this.v.i.length = numPts;
+                this.v.o.length = numPts;*/
+                var longFlag = true;
+                var longRad = this.or.v;
+                var shortRad = this.ir.v;
+                var longRound = this.os.v;
+                var shortRound = this.is.v;
+                var longPerimSegment = 2*Math.PI*longRad/(numPts*2);
+                var shortPerimSegment = 2*Math.PI*shortRad/(numPts*2);
+                var i, rad,roundness,perimSegment, currentAng = -Math.PI/ 2;
+                currentAng += this.r.v;
+                var dir = this.data.d === 3 ? -1 : 1;
+                this.v._length = 0;
+                for(i=0;i<numPts;i+=1){
+                    rad = longFlag ? longRad : shortRad;
+                    roundness = longFlag ? longRound : shortRound;
+                    perimSegment = longFlag ? longPerimSegment : shortPerimSegment;
+                    var x = rad * Math.cos(currentAng);
+                    var y = rad * Math.sin(currentAng);
+                    var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
+                    var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
+                    x +=  + this.p.v[0];
+                    y +=  + this.p.v[1];
+                    this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
+
+                    /*this.v.v[i] = [x,y];
+                    this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
+                    this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
+                    this.v._length = numPts;*/
+                    longFlag = !longFlag;
+                    currentAng += angle*dir;
+                }
+            },
+            convertPolygonToPath: function() {
+                var numPts = Math.floor(this.pt.v);
+                var angle = Math.PI*2/numPts;
+                var rad = this.or.v;
+                var roundness = this.os.v;
+                var perimSegment = 2*Math.PI*rad/(numPts*4);
+                var i, currentAng = -Math.PI/ 2;
+                var dir = this.data.d === 3 ? -1 : 1;
+                currentAng += this.r.v;
+                this.v._length = 0;
+                for(i=0;i<numPts;i+=1){
+                    var x = rad * Math.cos(currentAng);
+                    var y = rad * Math.sin(currentAng);
+                    var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
+                    var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
+                    x +=  + this.p.v[0];
+                    y +=  + this.p.v[1];
+                    this.v.setTripleAt(x,y,x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir,x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir, i, true);
+                    currentAng += angle*dir;
+                }
+                this.paths.length = 0;
+                this.paths[0] = this.v;
+            }
+
+        }
+
+        return StarShapeProperty;
     }());
 
     var RectShapeProperty = (function() {
-        function processKeys(frameNum){
-            if(this.elem.globalData.frameId === this.frameId){
-                return;
-            }
-            this._mdf = false;
-            this.frameId = this.elem.globalData.frameId;
-            var i, len = this.dynamicProperties.length;
 
-            for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue(frameNum);
-                if(this.dynamicProperties[i]._mdf){
-                    this._mdf = true;
-                }
-            }
-            if(this._mdf){
-                this.convertRectToPath();
-            }
-
-        }
-
-        function convertRectToPath(){
-            var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
-            var round = bm_min(v0,v1,this.r.v);
-            var cPoint = round*(1-roundCorner);
-            this.v._length = 0;
-
-            if(this.d === 2 || this.d === 1) {
-                this.v.setTripleAt(p0+v0, p1-v1+round,p0+v0, p1-v1+round,p0+v0,p1-v1+cPoint,0, true);
-                this.v.setTripleAt(p0+v0, p1+v1-round,p0+v0, p1+v1-cPoint,p0+v0, p1+v1-round,1, true);
-                if(round!== 0){
-                    this.v.setTripleAt(p0+v0-round, p1+v1,p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,2, true);
-                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,p0-v0+round,p1+v1,3, true);
-                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,4, true);
-                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,p0-v0,p1-v1+round,5, true);
-                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,6, true);
-                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,p0+v0-round,p1-v1,7, true);
-                } else {
-                    this.v.setTripleAt(p0-v0,p1+v1,p0-v0+cPoint,p1+v1,p0-v0,p1+v1,2);
-                    this.v.setTripleAt(p0-v0,p1-v1,p0-v0,p1-v1+cPoint,p0-v0,p1-v1,3);
-                }
-            }else{
-                this.v.setTripleAt(p0+v0,p1-v1+round,p0+v0,p1-v1+cPoint,p0+v0,p1-v1+round,0, true);
-                if(round!== 0){
-                    this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,1, true);
-                    this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,p0-v0+round,p1-v1,2, true);
-                    this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,3, true);
-                    this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,p0-v0,p1+v1-round,4, true);
-                    this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,5, true);
-                    this.v.setTripleAt(p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,p0+v0-round,p1+v1,6, true);
-                    this.v.setTripleAt(p0+v0,p1+v1-round,p0+v0,p1+v1-round,p0+v0,p1+v1-cPoint,7, true);
-                } else {
-                    this.v.setTripleAt(p0-v0,p1-v1,p0-v0+cPoint,p1-v1,p0-v0,p1-v1,1, true);
-                    this.v.setTripleAt(p0-v0,p1+v1,p0-v0,p1+v1-cPoint,p0-v0,p1+v1,2, true);
-                    this.v.setTripleAt(p0+v0,p1+v1,p0+v0-cPoint,p1+v1,p0+v0,p1+v1,3, true);
-
-                }
-            }
-        }
-
-        return function RectShapeProperty(elem,data) {
+         function RectShapeProperty(elem,data) {
             this.v = shape_pool.newElement();
             this.v.c = true;
             this.localShapeCollection = shapeCollection_pool.newShapeCollection();
             this.localShapeCollection.addShape(this.v);
             this.paths = this.localShapeCollection;
             this.elem = elem;
+            this.container = elem;
             this.comp = elem.comp;
             this.frameId = -1;
             this.d = data.d;
             this.dynamicProperties = [];
             this._mdf = false;
-            this.getValue = processKeys;
-            this.convertRectToPath = convertRectToPath;
-            this.reset = resetShape;
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this.dynamicProperties);
-            this.s = PropertyFactory.getProp(elem,data.s,1,0,this.dynamicProperties);
-            this.r = PropertyFactory.getProp(elem,data.r,0,0,this.dynamicProperties);
+            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
+            this.s = PropertyFactory.getProp(elem,data.s,1,0,this);
+            this.r = PropertyFactory.getProp(elem,data.r,0,0,this);
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
                 this.convertRectToPath();
             }
         };
+
+        RectShapeProperty.prototype = {
+            convertRectToPath: function (){
+                var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
+                var round = bm_min(v0,v1,this.r.v);
+                var cPoint = round*(1-roundCorner);
+                this.v._length = 0;
+
+                if(this.d === 2 || this.d === 1) {
+                    this.v.setTripleAt(p0+v0, p1-v1+round,p0+v0, p1-v1+round,p0+v0,p1-v1+cPoint,0, true);
+                    this.v.setTripleAt(p0+v0, p1+v1-round,p0+v0, p1+v1-cPoint,p0+v0, p1+v1-round,1, true);
+                    if(round!== 0){
+                        this.v.setTripleAt(p0+v0-round, p1+v1,p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,2, true);
+                        this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,p0-v0+round,p1+v1,3, true);
+                        this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,4, true);
+                        this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,p0-v0,p1-v1+round,5, true);
+                        this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,6, true);
+                        this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,p0+v0-round,p1-v1,7, true);
+                    } else {
+                        this.v.setTripleAt(p0-v0,p1+v1,p0-v0+cPoint,p1+v1,p0-v0,p1+v1,2);
+                        this.v.setTripleAt(p0-v0,p1-v1,p0-v0,p1-v1+cPoint,p0-v0,p1-v1,3);
+                    }
+                }else{
+                    this.v.setTripleAt(p0+v0,p1-v1+round,p0+v0,p1-v1+cPoint,p0+v0,p1-v1+round,0, true);
+                    if(round!== 0){
+                        this.v.setTripleAt(p0+v0-round,p1-v1,p0+v0-round,p1-v1,p0+v0-cPoint,p1-v1,1, true);
+                        this.v.setTripleAt(p0-v0+round,p1-v1,p0-v0+cPoint,p1-v1,p0-v0+round,p1-v1,2, true);
+                        this.v.setTripleAt(p0-v0,p1-v1+round,p0-v0,p1-v1+round,p0-v0,p1-v1+cPoint,3, true);
+                        this.v.setTripleAt(p0-v0,p1+v1-round,p0-v0,p1+v1-cPoint,p0-v0,p1+v1-round,4, true);
+                        this.v.setTripleAt(p0-v0+round,p1+v1,p0-v0+round,p1+v1,p0-v0+cPoint,p1+v1,5, true);
+                        this.v.setTripleAt(p0+v0-round,p1+v1,p0+v0-cPoint,p1+v1,p0+v0-round,p1+v1,6, true);
+                        this.v.setTripleAt(p0+v0,p1+v1-round,p0+v0,p1+v1-round,p0+v0,p1+v1-cPoint,7, true);
+                    } else {
+                        this.v.setTripleAt(p0-v0,p1-v1,p0-v0+cPoint,p1-v1,p0-v0,p1-v1,1, true);
+                        this.v.setTripleAt(p0-v0,p1+v1,p0-v0,p1+v1-cPoint,p0-v0,p1+v1,2, true);
+                        this.v.setTripleAt(p0+v0,p1+v1,p0+v0-cPoint,p1+v1,p0+v0,p1+v1,3, true);
+
+                    }
+                }
+            },
+            getValue: function(frameNum){
+                if(this.elem.globalData.frameId === this.frameId){
+                    return;
+                }
+                this._mdf = false;
+                this.frameId = this.elem.globalData.frameId;
+                var i, len = this.dynamicProperties.length;
+
+                for(i=0;i<len;i+=1){
+                    this.dynamicProperties[i].getValue(frameNum);
+                    if(this.dynamicProperties[i]._mdf){
+                        this._mdf = true;
+                    }
+                }
+                if(this._mdf){
+                    this.convertRectToPath();
+                }
+
+            },
+            addDynamicProperty: addDynamicProperty,
+            reset: resetShape
+        }
+
+        return RectShapeProperty;
     }());
 
-    function getShapeProp(elem,data,type, arr){
+    function getShapeProp(elem,data,type){
         var prop;
         if(type === 3 || type === 4){
             var dataProp = type === 3 ? data.pt : data.ks;
@@ -3245,7 +3250,7 @@ var ShapePropertyFactory = (function(){
             prop = new StarShapeProperty(elem, data);
         }
         if(prop.k){
-            arr.push(prop);
+            elem.addDynamicProperty(prop);
         }
         return prop;
     }
@@ -3276,8 +3281,8 @@ var ShapeModifiers = (function(){
         }
     }
 
-    function getModifier(nm,elem, data, dynamicProperties){
-        return new modifiers[nm](elem, data, dynamicProperties);
+    function getModifier(nm,elem, data){
+        return new modifiers[nm](elem, data);
     }
 
     return ob;
@@ -3293,10 +3298,11 @@ ShapeModifier.prototype.addShape = function(data){
         this.addShapeToModifier(shapeData);
     }
 };
-ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
+ShapeModifier.prototype.init = function(elem,data){
     this.dynamicProperties = [];
     this.shapes = [];
     this.elem = elem;
+    this.container = elem;
     this.initModifierProperties(elem,data);
     this.frameId = initialDefaultFrame;
     this._mdf = false;
@@ -3304,7 +3310,6 @@ ShapeModifier.prototype.init = function(elem,data,dynamicProperties){
     this.k = false;
     if(this.dynamicProperties.length){
         this.k = true;
-        dynamicProperties.push(this);
     }else{
         this.getValue(true);
     }
@@ -3324,13 +3329,15 @@ ShapeModifier.prototype.processKeys = function(){
     }
     this.frameId = this.elem.globalData.frameId;
 };
+
+ShapeModifier.prototype.addDynamicProperty = addDynamicProperty;
 function TrimModifier(){
 }
 extendPrototype([ShapeModifier], TrimModifier);
 TrimModifier.prototype.initModifierProperties = function(elem, data) {
-    this.s = PropertyFactory.getProp(elem, data.s, 0, 0.01, this.dynamicProperties);
-    this.e = PropertyFactory.getProp(elem, data.e, 0, 0.01, this.dynamicProperties);
-    this.o = PropertyFactory.getProp(elem, data.o, 0, 0, this.dynamicProperties);
+    this.s = PropertyFactory.getProp(elem, data.s, 0, 0.01, this);
+    this.e = PropertyFactory.getProp(elem, data.e, 0, 0.01, this);
+    this.o = PropertyFactory.getProp(elem, data.o, 0, 0, this);
     this.sValue = 0;
     this.eValue = 0;
     this.getValue = this.processKeys;
@@ -3639,7 +3646,7 @@ function RoundCornersModifier(){}
 extendPrototype([ShapeModifier],RoundCornersModifier);
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
-    this.rd = PropertyFactory.getProp(elem,data.r,0,null,this.dynamicProperties);
+    this.rd = PropertyFactory.getProp(elem,data.r,0,null,this);
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){
@@ -3732,9 +3739,9 @@ extendPrototype([ShapeModifier], RepeaterModifier);
 
 RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
-    this.c = PropertyFactory.getProp(elem,data.c,0,null,this.dynamicProperties);
-    this.o = PropertyFactory.getProp(elem,data.o,0,null,this.dynamicProperties);
-    this.tr = TransformPropertyFactory.getTransformProperty(elem,data.tr,this.dynamicProperties);
+    this.c = PropertyFactory.getProp(elem,data.c,0,null,this);
+    this.o = PropertyFactory.getProp(elem,data.o,0,null,this);
+    this.tr = TransformPropertyFactory.getTransformProperty(elem,data.tr,this);
     this.data = data;
     if(!this.dynamicProperties.length){
         this.getValue(true);
@@ -3759,8 +3766,9 @@ RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix,
     sMatrix.translate(transform.a.v[0], transform.a.v[1], transform.a.v[2]);
 };
 
-RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData, dynamicProperties) {
+RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData) {
     this.elem = elem;
+    this.container = elem;
     this.arr = arr;
     this.pos = pos;
     this.elemsData = elemsData;
@@ -3779,7 +3787,6 @@ RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData, dynamicPro
     }
     if(this.dynamicProperties.length){
         this.k = true;
-        dynamicProperties.push(this);
     }else{
         this.getValue(true);
     }
@@ -3948,44 +3955,46 @@ ShapeCollection.prototype.releaseShapes = function(){
 	}
 	this._length = 0;
 };
-function DashProperty(elem, data, renderer, dynamicProperties) {
+function DashProperty(elem, data, renderer) {
     this.elem = elem;
+    this.container = elem;
     this.frameId = -1;
     this.dataProps = createSizedArray(data.length);
     this.renderer = renderer;
     this._mdf = false;
     this.k = false;
+    this.dynamicProperties = [];
     this.dashStr = '';
     this.dashArray = createTypedArray('float32',  data.length - 1);
     this.dashoffset = createTypedArray('float32',  1);
     var i, len = data.length, prop;
     for(i=0;i<len;i+=1){
-        prop = PropertyFactory.getProp(elem,data[i].v,0, 0, dynamicProperties);
+        prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);
         this.k = prop.k ? true : this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
     }
-    if(this.k){
-        dynamicProperties.push(this);
-    }else{
+    if(!this.k){
         this.getValue(true);
     }
 }
+
+DashProperty.prototype.addDynamicProperty = addDynamicProperty;
 
 DashProperty.prototype.getValue = function(forceRender) {
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;
     }
     var i = 0, len = this.dataProps.length;
-    this._mdf = false;
+    this._mdf = forceRender;
     this.frameId = this.elem.globalData.frameId;
     while(i<len){
+        this.dataProps[i].p.getValue();
         if(this.dataProps[i].p._mdf){
-            this._mdf = !forceRender;
-            break;
+            this._mdf = true;
         }
         i+=1;
     }
-    if(this._mdf || forceRender){
+    if (this._mdf) {
         if(this.renderer === 'svg') {
             this.dashStr = '';
         }
@@ -4002,8 +4011,9 @@ DashProperty.prototype.getValue = function(forceRender) {
         }
     }
 };
-function GradientProperty(elem,data,arr){
-    this.prop = PropertyFactory.getProp(elem,data.k,1,null,[]);
+function GradientProperty(elem,data){
+    this.container = elem;
+    this.prop = PropertyFactory.getProp(elem,data.k,1,null,this);
     this.data = data;
     this.k = this.prop.k;
     this.c = createTypedArray('uint8c', data.p*4);
@@ -4014,10 +4024,11 @@ function GradientProperty(elem,data,arr){
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
     this._mdf = false;
-    if(this.prop.k){
-        arr.push(this);
-    }
     this.getValue(true);
+}
+
+GradientProperty.prototype.addDynamicProperty = function(prop) {
+    this.container.addDynamicProperty(this);
 }
 
 GradientProperty.prototype.comparePoints = function(values, points) {
@@ -4190,10 +4201,11 @@ function TextAnimatorProperty(textData, renderType, elem){
     this._isFirstFrame = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
-	this._dynamicProperties = [];
+	this.dynamicProperties = [];
 	this._textData = textData;
 	this._renderType = renderType;
-	this._elem = elem;
+    this._elem = elem;
+	this.container = elem;
 	this._animatorsData = createSizedArray(this._textData.a.length);
 	this._pathData = {};
 	this._moreOptions = {
@@ -4204,17 +4216,19 @@ function TextAnimatorProperty(textData, renderType, elem){
 
 }
 
-TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
+TextAnimatorProperty.prototype.addDynamicProperty = addDynamicProperty;
+
+TextAnimatorProperty.prototype.searchProperties = function(){
     var i, len = this._textData.a.length, animatorProps;
     var getProp = PropertyFactory.getProp;
     for(i=0;i<len;i+=1){
         animatorProps = this._textData.a[i];
-        this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this._dynamicProperties);
+        this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this);
     }
     if(this._textData.p && 'm' in this._textData.p){
         this._pathData = {
-            f: getProp(this._elem,this._textData.p.f,0,0,this._dynamicProperties),
-            l: getProp(this._elem,this._textData.p.l,0,0,this._dynamicProperties),
+            f: getProp(this._elem,this._textData.p.f,0,0,this),
+            l: getProp(this._elem,this._textData.p.l,0,0,this),
             r: this._textData.p.r,
             m: this._elem.maskManager.getMaskProperty(this._textData.p.m)
         };
@@ -4222,10 +4236,7 @@ TextAnimatorProperty.prototype.searchProperties = function(dynamicProperties){
     } else {
         this._hasMaskedPath = false;
     }
-    this._moreOptions.alignment = getProp(this._elem,this._textData.m.a,1,0,this._dynamicProperties);
-    if(this._dynamicProperties.length) {
-    	dynamicProperties.push(this);
-    }
+    this._moreOptions.alignment = getProp(this._elem,this._textData.m.a,1,0,this);
 };
 
 TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag){
@@ -4376,7 +4387,6 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 isNewLine = false;
             }
         }
-        console.log(animatorJustifyOffset)
         if(animatorJustifyOffset) {
             animatorJustifyOffset += animatorFirstCharOffset;
         }
@@ -4748,40 +4758,40 @@ TextAnimatorProperty.prototype.getValue = function(){
         return;
     }
     this._frameId = this._elem.globalData.frameId;
-	var i, len = this._dynamicProperties.length;
+	var i, len = this.dynamicProperties.length;
     this._mdf = false;
 	for(i = 0; i < len; i += 1) {
-		this._dynamicProperties[i].getValue();
-        this._mdf = this._dynamicProperties[i]._mdf || this._mdf;
+		this.dynamicProperties[i].getValue();
+        this._mdf = this.dynamicProperties[i]._mdf || this._mdf;
 	}
 };
 
 TextAnimatorProperty.prototype.mHelper = new Matrix();
 TextAnimatorProperty.prototype.defaultPropsArray = [];
-function TextAnimatorDataProperty(elem, animatorProps, dynamicProperties) {
+function TextAnimatorDataProperty(elem, animatorProps, container) {
 	var defaultData = {propType:false};
 	var getProp = PropertyFactory.getProp;
 	var textAnimator_animatables = animatorProps.a;
 	this.a = {
-		r: textAnimator_animatables.r ? getProp(elem, textAnimator_animatables.r, 0, degToRads, dynamicProperties) : defaultData,
-		rx: textAnimator_animatables.rx ? getProp(elem, textAnimator_animatables.rx, 0, degToRads, dynamicProperties) : defaultData,
-		ry: textAnimator_animatables.ry ? getProp(elem, textAnimator_animatables.ry, 0, degToRads, dynamicProperties) : defaultData,
-		sk: textAnimator_animatables.sk ? getProp(elem, textAnimator_animatables.sk, 0, degToRads, dynamicProperties) : defaultData,
-		sa: textAnimator_animatables.sa ? getProp(elem, textAnimator_animatables.sa, 0, degToRads, dynamicProperties) : defaultData,
-		s: textAnimator_animatables.s ? getProp(elem, textAnimator_animatables.s, 1, 0.01, dynamicProperties) : defaultData,
-		a: textAnimator_animatables.a ? getProp(elem, textAnimator_animatables.a, 1, 0, dynamicProperties) : defaultData,
-		o: textAnimator_animatables.o ? getProp(elem, textAnimator_animatables.o, 0, 0.01, dynamicProperties) : defaultData,
-		p: textAnimator_animatables.p ? getProp(elem,textAnimator_animatables.p, 1, 0, dynamicProperties) : defaultData,
-		sw: textAnimator_animatables.sw ? getProp(elem, textAnimator_animatables.sw, 0, 0, dynamicProperties) : defaultData,
-		sc: textAnimator_animatables.sc ? getProp(elem, textAnimator_animatables.sc, 1, 0, dynamicProperties) : defaultData,
-		fc: textAnimator_animatables.fc ? getProp(elem, textAnimator_animatables.fc, 1, 0, dynamicProperties) : defaultData,
-		fh: textAnimator_animatables.fh ? getProp(elem, textAnimator_animatables.fh, 0, 0, dynamicProperties) : defaultData,
-		fs: textAnimator_animatables.fs ? getProp(elem, textAnimator_animatables.fs, 0, 0.01, dynamicProperties) : defaultData,
-		fb: textAnimator_animatables.fb ? getProp(elem, textAnimator_animatables.fb, 0, 0.01, dynamicProperties) : defaultData,
-		t: textAnimator_animatables.t ? getProp(elem, textAnimator_animatables.t, 0, 0, dynamicProperties) : defaultData
+		r: textAnimator_animatables.r ? getProp(elem, textAnimator_animatables.r, 0, degToRads, container) : defaultData,
+		rx: textAnimator_animatables.rx ? getProp(elem, textAnimator_animatables.rx, 0, degToRads, container) : defaultData,
+		ry: textAnimator_animatables.ry ? getProp(elem, textAnimator_animatables.ry, 0, degToRads, container) : defaultData,
+		sk: textAnimator_animatables.sk ? getProp(elem, textAnimator_animatables.sk, 0, degToRads, container) : defaultData,
+		sa: textAnimator_animatables.sa ? getProp(elem, textAnimator_animatables.sa, 0, degToRads, container) : defaultData,
+		s: textAnimator_animatables.s ? getProp(elem, textAnimator_animatables.s, 1, 0.01, container) : defaultData,
+		a: textAnimator_animatables.a ? getProp(elem, textAnimator_animatables.a, 1, 0, container) : defaultData,
+		o: textAnimator_animatables.o ? getProp(elem, textAnimator_animatables.o, 0, 0.01, container) : defaultData,
+		p: textAnimator_animatables.p ? getProp(elem,textAnimator_animatables.p, 1, 0, container) : defaultData,
+		sw: textAnimator_animatables.sw ? getProp(elem, textAnimator_animatables.sw, 0, 0, container) : defaultData,
+		sc: textAnimator_animatables.sc ? getProp(elem, textAnimator_animatables.sc, 1, 0, container) : defaultData,
+		fc: textAnimator_animatables.fc ? getProp(elem, textAnimator_animatables.fc, 1, 0, container) : defaultData,
+		fh: textAnimator_animatables.fh ? getProp(elem, textAnimator_animatables.fh, 0, 0, container) : defaultData,
+		fs: textAnimator_animatables.fs ? getProp(elem, textAnimator_animatables.fs, 0, 0.01, container) : defaultData,
+		fb: textAnimator_animatables.fb ? getProp(elem, textAnimator_animatables.fb, 0, 0.01, container) : defaultData,
+		t: textAnimator_animatables.t ? getProp(elem, textAnimator_animatables.t, 0, 0, container) : defaultData
 	};
 
-	this.s = TextSelectorProp.getTextSelectorProp(elem,animatorProps.s, dynamicProperties);
+	this.s = TextSelectorProp.getTextSelectorProp(elem,animatorProps.s, container);
     this.s.t = animatorProps.s.t;
 }
 function LetterProps(o, sw, sc, fc, m, p){
@@ -4842,7 +4852,7 @@ LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
 	}
 	return updated;
 };
-function TextProperty(elem, data, dynamicProperties){
+function TextProperty(elem, data){
 	this._frameId = initialDefaultFrame;
 	this.pv = '';
 	this.v = '';
@@ -4886,7 +4896,7 @@ function TextProperty(elem, data, dynamicProperties){
 
 	};
 	if(this.searchProperty()) {
-		dynamicProperties.push(this);
+        elem.addDynamicProperty(this);
 	} else {
 		this.getValue(true);
 	}
@@ -5247,131 +5257,131 @@ var TextSelectorProp = (function(){
     var max = Math.max;
     var min = Math.min;
     var floor = Math.floor;
-    function updateRange(newCharsFlag){
-        this._mdf = newCharsFlag || false;
-        if(this.dynamicProperties.length){
-            var i, len = this.dynamicProperties.length;
-            for(i=0;i<len;i+=1){
-                this.dynamicProperties[i].getValue();
-                if(this.dynamicProperties[i]._mdf){
-                    this._mdf = true;
-                }
-            }
-        }
-        var totalChars = this.data.totalChars || this.elem.textProperty.currentData.l.length || 0;
-        if(newCharsFlag && this.data.r === 2) {
-            this.e.v = totalChars;
-        }
-        var divisor = this.data.r === 2 ? 1 : 100 / totalChars;
-        var o = this.o.v/divisor;
-        var s = this.s.v/divisor + o;
-        var e = (this.e.v/divisor) + o;
-        if(s>e){
-            var _s = s;
-            s = e;
-            e = _s;
-        }
-        this.finalS = s;
-        this.finalE = e;
-    }
 
-    function getMult(ind){
-        //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
-        var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
-        var mult = 0;
-        var s = this.finalS;
-        var e = this.finalE;
-        var type = this.data.sh;
-        if(type == 2){
-            if(e === s){
-                mult = ind >= e ? 1 : 0;
-            }else{
-                mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-            }
-            mult = easer(mult);
-        }else if(type == 3){
-            if(e === s){
-                mult = ind >= e ? 0 : 1;
-            }else{
-                mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-            }
-
-            mult = easer(mult);
-        }else if(type == 4){
-            if(e === s){
-                mult = 0;
-            }else{
-                mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                if(mult<0.5){
-                    mult *= 2;
-                }else{
-                    mult = 1 - 2*(mult-0.5);
-                }
-            }
-            mult = easer(mult);
-        }else if(type == 5){
-            if(e === s){
-                mult = 0;
-            }else{
-                var tot = e - s;
-                /*ind += 0.5;
-                mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
-                ind = min(max(0,ind+0.5-s),e-s);
-                var x = -tot/2+ind;
-                var a = tot/2;
-                mult = Math.sqrt(1 - (x*x)/(a*a));
-            }
-            mult = easer(mult);
-        }else if(type == 6){
-            if(e === s){
-                mult = 0;
-            }else{
-                ind = min(max(0,ind+0.5-s),e-s);
-                mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
-                /*
-                 ind = Math.min(Math.max(s,ind),e-1);
-                 mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
-                 mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
-            }
-            mult = easer(mult);
-        }else {
-            if(ind >= floor(s)){
-                if(ind-s < 0){
-                    mult = 1 - (s - ind);
-                }else{
-                    mult = max(0,min(e-ind,1));
-                }
-            }
-            mult = easer(mult);
-        }
-        return mult*this.a.v;
-    }
-
-    function TextSelectorProp(elem,data, arr){
+    function TextSelectorProp(elem,data){
         this._mdf = false;
         this.k = false;
         this.data = data;
         this.dynamicProperties = [];
-        this.getValue = updateRange;
-        this.getMult = getMult;
         this.elem = elem;
+        this.container = elem;
         this.comp = elem.comp;
         this.finalS = 0;
         this.finalE = 0;
-        this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this.dynamicProperties);
+        this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this);
         if('e' in data){
-            this.e = PropertyFactory.getProp(elem,data.e,0,0,this.dynamicProperties);
+            this.e = PropertyFactory.getProp(elem,data.e,0,0,this);
         }else{
             this.e = {v:100};
         }
-        this.o = PropertyFactory.getProp(elem,data.o || {k:0},0,0,this.dynamicProperties);
-        this.xe = PropertyFactory.getProp(elem,data.xe || {k:0},0,0,this.dynamicProperties);
-        this.ne = PropertyFactory.getProp(elem,data.ne || {k:0},0,0,this.dynamicProperties);
-        this.a = PropertyFactory.getProp(elem,data.a,0,0.01,this.dynamicProperties);
-        if(this.dynamicProperties.length){
-            arr.push(this);
-        }else{
+        this.o = PropertyFactory.getProp(elem,data.o || {k:0},0,0,this);
+        this.xe = PropertyFactory.getProp(elem,data.xe || {k:0},0,0,this);
+        this.ne = PropertyFactory.getProp(elem,data.ne || {k:0},0,0,this);
+        this.a = PropertyFactory.getProp(elem,data.a,0,0.01,this);
+        if(!this.dynamicProperties.length){
             this.getValue();
+        }
+    }
+
+    TextSelectorProp.prototype = {
+        addDynamicProperty: addDynamicProperty,
+        getMult: function(ind) {
+            //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+            var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
+            var mult = 0;
+            var s = this.finalS;
+            var e = this.finalE;
+            var type = this.data.sh;
+            if(type == 2){
+                if(e === s){
+                    mult = ind >= e ? 1 : 0;
+                }else{
+                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                }
+                mult = easer(mult);
+            }else if(type == 3){
+                if(e === s){
+                    mult = ind >= e ? 0 : 1;
+                }else{
+                    mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                }
+
+                mult = easer(mult);
+            }else if(type == 4){
+                if(e === s){
+                    mult = 0;
+                }else{
+                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                    if(mult<0.5){
+                        mult *= 2;
+                    }else{
+                        mult = 1 - 2*(mult-0.5);
+                    }
+                }
+                mult = easer(mult);
+            }else if(type == 5){
+                if(e === s){
+                    mult = 0;
+                }else{
+                    var tot = e - s;
+                    /*ind += 0.5;
+                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
+                    ind = min(max(0,ind+0.5-s),e-s);
+                    var x = -tot/2+ind;
+                    var a = tot/2;
+                    mult = Math.sqrt(1 - (x*x)/(a*a));
+                }
+                mult = easer(mult);
+            }else if(type == 6){
+                if(e === s){
+                    mult = 0;
+                }else{
+                    ind = min(max(0,ind+0.5-s),e-s);
+                    mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
+                    /*
+                     ind = Math.min(Math.max(s,ind),e-1);
+                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
+                     mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
+                }
+                mult = easer(mult);
+            }else {
+                if(ind >= floor(s)){
+                    if(ind-s < 0){
+                        mult = 1 - (s - ind);
+                    }else{
+                        mult = max(0,min(e-ind,1));
+                    }
+                }
+                mult = easer(mult);
+            }
+            return mult*this.a.v;
+        },
+        getValue: function(newCharsFlag) {
+            this._mdf = newCharsFlag || false;
+            if(this.dynamicProperties.length){
+                var i, len = this.dynamicProperties.length;
+                for(i=0;i<len;i+=1){
+                    this.dynamicProperties[i].getValue();
+                    if(this.dynamicProperties[i]._mdf){
+                        this._mdf = true;
+                    }
+                }
+            }
+            var totalChars = this.data.totalChars || this.elem.textProperty.currentData.l.length || 0;
+            if(newCharsFlag && this.data.r === 2) {
+                this.e.v = totalChars;
+            }
+            var divisor = this.data.r === 2 ? 1 : 100 / totalChars;
+            var o = this.o.v/divisor;
+            var s = this.s.v/divisor + o;
+            var e = (this.e.v/divisor) + o;
+            if(s>e){
+                var _s = s;
+                s = e;
+                e = _s;
+            }
+            this.finalS = s;
+            this.finalE = e;
         }
     }
 
@@ -5847,7 +5857,6 @@ SVGRenderer.prototype.renderFrame = function(num){
     }else{
         this.renderedFrame = num;
     }
-    //clearPoints();
     // console.log('-------');
     // console.log('FRAME ',num);
     this.globalData.frameNum = num;
@@ -5900,7 +5909,7 @@ SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
 
-function MaskElement(data,element,globalData, dynamicProperties) {
+function MaskElement(data,element,globalData) {
     this.data = data;
     this.element = element;
     this.globalData = globalData;
@@ -5942,8 +5951,8 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         if(properties[i].mode == 'n') {
             // TODO move this to a factory or to a constructor
             this.viewData[i] = {
-                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
-                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null),
+                op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.element),
+                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3),
                 elem: path
             };
             defs.appendChild(path);
@@ -5958,7 +5967,7 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         if (properties[i].x.k !== 0) {
             maskType = 'mask';
             maskRef = 'mask';
-            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,dynamicProperties);
+            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.element);
             filterID = 'fi_'+randomString(10);
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
@@ -6009,8 +6018,8 @@ function MaskElement(data,element,globalData, dynamicProperties) {
         this.viewData[i] = {
             elem: path,
             lastPath: '',
-            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,dynamicProperties),
-            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,dynamicProperties,null),
+            op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.element),
+            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3),
             invRect: rect
         };
         if(!this.viewData[i].prop.k){
@@ -6214,6 +6223,11 @@ FrameElement.prototype = {
                 }
             }
         }
+    },
+    addDynamicProperty: function(prop) {
+        if(this.dynamicProperties.indexOf(prop) === -1) {
+            this.dynamicProperties.push(prop);
+        }
     }
 };
 function TransformElement(){}
@@ -6221,7 +6235,7 @@ function TransformElement(){}
 TransformElement.prototype = {
     initTransform: function() {
         this.finalTransform = {
-            mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this.dynamicProperties) : {o:0},
+            mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this) : {o:0},
             _matMdf: false,
             _opMdf: false,
             mat: new Matrix()
@@ -6456,29 +6470,29 @@ function SVGTransformData(mProps, op) {
 	};
 	this.elements = [];
 }
-function SVGStrokeStyleData(elem, data, dynamicProperties, styleOb){
-	this.o = PropertyFactory.getProp(elem,data.o,0,0.01,dynamicProperties);
-	this.w = PropertyFactory.getProp(elem,data.w,0,null,dynamicProperties);
-	this.d = new DashProperty(elem,data.d||{},'svg',dynamicProperties);
-	this.c = PropertyFactory.getProp(elem,data.c,1,255,dynamicProperties);
+function SVGStrokeStyleData(elem, data, styleOb){
+	this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
+	this.w = PropertyFactory.getProp(elem,data.w,0,null,elem);
+	this.d = new DashProperty(elem,data.d||{},'svg',elem);
+	this.c = PropertyFactory.getProp(elem,data.c,1,255,elem);
 	this.style = styleOb;
 }
-function SVGFillStyleData(elem, data, dynamicProperties, styleOb){
-	this.o = PropertyFactory.getProp(elem,data.o,0,0.01,dynamicProperties);
-	this.c = PropertyFactory.getProp(elem,data.c,1,255,dynamicProperties);
+function SVGFillStyleData(elem, data, styleOb){
+	this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
+	this.c = PropertyFactory.getProp(elem,data.c,1,255,elem);
 	this.style = styleOb;
 }
-function SVGGradientFillStyleData(elem, data, dynamicProperties, styleOb){
-    this.initGradientData(elem, data, dynamicProperties, styleOb);
+function SVGGradientFillStyleData(elem, data, styleOb){
+    this.initGradientData(elem, data, styleOb);
 }
 
-SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, dynamicProperties, styleOb){
-    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,dynamicProperties);
-    this.s = PropertyFactory.getProp(elem,data.s,1,null,dynamicProperties);
-    this.e = PropertyFactory.getProp(elem,data.e,1,null,dynamicProperties);
-    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,dynamicProperties);
-    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,dynamicProperties);
-    this.g = new GradientProperty(elem,data.g,dynamicProperties);
+SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, styleOb){
+    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
+    this.s = PropertyFactory.getProp(elem,data.s,1,null,elem);
+    this.e = PropertyFactory.getProp(elem,data.e,1,null,elem);
+    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,elem);
+    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,elem);
+    this.g = new GradientProperty(elem,data.g,elem);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -6536,10 +6550,10 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         styleOb.msElem = maskElement;
     }
 };
-function SVGGradientStrokeStyleData(elem, data, dynamicProperties, styleOb){
-	this.w = PropertyFactory.getProp(elem,data.w,0,null,dynamicProperties);
-	this.d = new DashProperty(elem,data.d||{},'svg',dynamicProperties);
-    this.initGradientData(elem, data, dynamicProperties, styleOb);
+function SVGGradientStrokeStyleData(elem, data, styleOb){
+	this.w = PropertyFactory.getProp(elem,data.w,0,null,elem);
+	this.d = new DashProperty(elem,data.d||{},'svg',elem);
+    this.initGradientData(elem, data, styleOb);
 }
 
 SVGGradientStrokeStyleData.prototype.initGradientData = SVGGradientFillStyleData.prototype.initGradientData;
@@ -6810,7 +6824,7 @@ SVGBaseElement.prototype = {
         return this.baseElement;
     },
     addMasks: function() {
-        this.maskManager = new MaskElement(this.data, this, this.globalData, this.dynamicProperties);
+        this.maskManager = new MaskElement(this.data, this, this.globalData);
     },
     setMatte: function(id) {
         if (!this.matteElement) {
@@ -7121,7 +7135,7 @@ function SVGCompElement(data,globalData,comp){
     this.elements = this.layers ? createSizedArray(this.layers.length) : [];
     //this.layerElement = createNS('g');
     this.initElement(data,globalData,comp);
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this) : {_placeholder:true};
 }
 
 extendPrototype([SVGRenderer, ICompElement, SVGBaseElement], SVGCompElement);
@@ -7363,22 +7377,22 @@ SVGShapeElement.prototype.identityMatrix = new Matrix();
 SVGShapeElement.prototype.buildExpressionInterface = function(){};
 
 SVGShapeElement.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
 };
 
-SVGShapeElement.prototype.createStyleElement = function(data, level, dynamicProperties){
+SVGShapeElement.prototype.createStyleElement = function(data, level){
     //TODO: prevent drawing of hidden styles
     var elementData;
     var styleOb = new SVGStyleData(data, level);
 
     var pathElement = styleOb.pElem;
     if(data.ty === 'st') {
-        elementData = new SVGStrokeStyleData(this, data, dynamicProperties, styleOb);
+        elementData = new SVGStrokeStyleData(this, data, styleOb);
     } else if(data.ty === 'fl') {
-        elementData = new SVGFillStyleData(this, data, dynamicProperties, styleOb);
+        elementData = new SVGFillStyleData(this, data, styleOb);
     } else if(data.ty === 'gf' || data.ty === 'gs') {
         var gradientConstructor = data.ty === 'gf' ? SVGGradientFillStyleData : SVGGradientStrokeStyleData;
-        elementData = new gradientConstructor(this, data, dynamicProperties, styleOb);
+        elementData = new gradientConstructor(this, data, styleOb);
         this.globalData.defs.appendChild(elementData.gf);
         if (elementData.maskId) {
             this.globalData.defs.appendChild(elementData.ms);
@@ -7418,11 +7432,11 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     return elementData;
 };
 
-SVGShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
-    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties), PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties));
+SVGShapeElement.prototype.createTransformElement = function(data) {
+    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data), PropertyFactory.getProp(this,data.o,0,0.01,this));
 };
 
-SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level, dynamicProperties) {
+SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
     var ty = 4;
     if(data.ty === 'rc'){
         ty = 5;
@@ -7431,7 +7445,7 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     }else if(data.ty === 'sr'){
         ty = 7;
     }
-    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
+    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
     var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
@@ -7454,7 +7468,7 @@ SVGShapeElement.prototype.reloadShapes = function(){
     for( i = 0; i < len; i += 1) {
         this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement,this.dynamicProperties, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
     len = this.dynamicProperties.length;
     for(i = 0; i < len; i += 1) {
         this.dynamicProperties[i].getValue();
@@ -7462,7 +7476,7 @@ SVGShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 };
 
-SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container,dynamicProperties, level, transformers, render){
+SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container, level, transformers, render){
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
@@ -7476,7 +7490,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
         }
         if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
             if(!processedPos){
-                itemsData[i] = this.createStyleElement(arr[i], level, dynamicProperties);
+                itemsData[i] = this.createStyleElement(arr[i], level);
             } else {
                 itemsData[i].style.closed = false;
             }
@@ -7493,26 +7507,26 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
                     itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr,dynamicProperties, level + 1, ownTransformers, render);
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr, level + 1, ownTransformers, render);
             if(arr[i]._render){
                 container.appendChild(itemsData[i].gr);
             }
         }else if(arr[i].ty == 'tr'){
             if(!processedPos){
-                itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createTransformElement(arr[i]);
             }
             currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level, dynamicProperties);
+                itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level);
             }
             this.setElementStyles(itemsData[i]);
 
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
-                modifier.init(this,arr[i],dynamicProperties);
+                modifier.init(this,arr[i]);
                 itemsData[i] = modifier;
                 this.shapeModifiers.push(modifier);
             } else {
@@ -7524,7 +7538,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 itemsData[i] = modifier;
-                modifier.init(this,arr,i,itemsData,dynamicProperties);
+                modifier.init(this,arr,i,itemsData);
                 this.shapeModifiers.push(modifier);
                 render = false;
             }else{
@@ -7736,7 +7750,7 @@ SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
 SVGShapeElement.prototype.renderStroke = function(styleData, itemData) {
     var styleElem = itemData.style;
     var d = itemData.d;
-    if (d && (d._mdf || this._isFirstFrame)) {
+    if (d && (d._mdf || this._isFirstFrame) && d.dashStr) {
         styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
         styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
     }
@@ -8706,9 +8720,6 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(this.renderer && this.renderer.destroyed){
         return;
     }
-    //console.log(JSON.parse(JSON.stringify(animData)));
-    //animData.w = Math.round(animData.w/blitter);
-    //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
@@ -8802,9 +8813,7 @@ AnimationItem.prototype.gotoFrame = function () {
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
     }
-    //console.log(this.currentFrame)
     this.trigger('enterFrame');
-    // console.log('gotoFrame: ', this.currentFrame )
     this.renderFrame();
 };
 
@@ -8812,7 +8821,6 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 
@@ -8991,7 +8999,6 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
 };
 AnimationItem.prototype.checkSegments = function(offset){
     if(this.segments.length) {
-        //console.log(this.currentRawFrame % lastFrame)
         this.adjustSegment(this.segments.shift(), offset);
         return true;
     }
@@ -9785,7 +9792,7 @@ CVBaseElement.prototype = {
         }
     },
     addMasks: function(){
-        this.maskManager = new CVMaskElement(this.data, this, this.dynamicProperties);
+        this.maskManager = new CVMaskElement(this.data, this);
     },
     hideElement: function(){
         if (!this.hidden && (!this.isInRange || this.isTransparent)) {
@@ -9896,7 +9903,7 @@ function CVCompElement(data, globalData, comp) {
     this.pendingElements = [];
     this.elements = createSizedArray(this.layers.length);
     this.initElement(data, globalData, comp);
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate, this) : {_placeholder:true};
 }
 
 extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
@@ -9921,7 +9928,7 @@ CVCompElement.prototype.destroy = function(){
     this.elements = null;
 };
 
-function CVMaskElement(data,element, dynamicProperties){
+function CVMaskElement(data,element){
     this.data = data;
     this.element = element;
     this.masksProperties = this.data.masksProperties || [];
@@ -9931,7 +9938,7 @@ function CVMaskElement(data,element, dynamicProperties){
         if(this.masksProperties[i].mode !== 'n'){
             hasMasks = true;
         }
-        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,dynamicProperties,null);
+        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3);
     }
     this.hasMasks = hasMasks;
 }
@@ -9994,10 +10001,10 @@ CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),_matMdf:f
 CVShapeElement.prototype.dashResetter = [];
 
 CVShapeElement.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true);
 };
 
-CVShapeElement.prototype.createStyleElement = function(data, dynamicProperties){
+CVShapeElement.prototype.createStyleElement = function(data){
     var styleElem = {
         data: data,
         type: data.ty,
@@ -10005,24 +10012,24 @@ CVShapeElement.prototype.createStyleElement = function(data, dynamicProperties){
     };
     var elementData = {};
     if(data.ty == 'fl' || data.ty == 'st'){
-        elementData.c = PropertyFactory.getProp(this,data.c,1,255,dynamicProperties);
+        elementData.c = PropertyFactory.getProp(this,data.c,1,255,this);
         if(!elementData.c.k){
             styleElem.co = 'rgb('+bm_floor(elementData.c.v[0])+','+bm_floor(elementData.c.v[1])+','+bm_floor(elementData.c.v[2])+')';
         }
     }
-    elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties);
+    elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,this);
     if(data.ty == 'st') {
         styleElem.lc = this.lcEnum[data.lc] || 'round';
         styleElem.lj = this.ljEnum[data.lj] || 'round';
         if(data.lj == 1) {
             styleElem.ml = data.ml;
         }
-        elementData.w = PropertyFactory.getProp(this,data.w,0,null,dynamicProperties);
+        elementData.w = PropertyFactory.getProp(this,data.w,0,null,this);
         if(!elementData.w.k){
             styleElem.wi = elementData.w.v;
         }
         if(data.d){
-            var d = new DashProperty(this,data.d,'canvas',dynamicProperties);
+            var d = new DashProperty(this,data.d,'canvas');
             elementData.d = d;
             if(!elementData.d.k){
                 styleElem.da = elementData.d.dashArray;
@@ -10047,23 +10054,22 @@ CVShapeElement.prototype.createGroupElement = function(data) {
     return elementData;
 };
 
-CVShapeElement.prototype.createTransformElement = function(data, dynamicProperties) {
+CVShapeElement.prototype.createTransformElement = function(data) {
     var elementData = {
         transform : {
             mat: new Matrix(),
             opacity: 1,
             _matMdf:false,
             _opMdf:false,
-            op: PropertyFactory.getProp(this,data.o,0,0.01,dynamicProperties),
-            //mProps: PropertyFactory.getProp(this,data,2,null,dynamicProperties)
-            mProps: TransformPropertyFactory.getTransformProperty(this,data,dynamicProperties)
+            op: PropertyFactory.getProp(this,data.o,0,0.01,this),
+            mProps: TransformPropertyFactory.getTransformProperty(this,data)
         },
         elements: []
     };
     return elementData;
 };
 
-CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) {
+CVShapeElement.prototype.createShapeElement = function(data) {
     var elementData = {
         nodes:[],
         trNodes:[],
@@ -10077,7 +10083,7 @@ CVShapeElement.prototype.createShapeElement = function(data, dynamicProperties) 
     }else if(data.ty == 'sr'){
         ty = 7;
     }
-    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,dynamicProperties);
+    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,this);
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
     var j, jLen = this.stylesList.length;
@@ -10103,7 +10109,7 @@ CVShapeElement.prototype.reloadShapes = function(){
     for(i=0;i<len;i+=1){
         this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.dynamicProperties, true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true);
     len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
@@ -10111,7 +10117,7 @@ CVShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 };
 
-CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dynamicProperties, render){
+CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, render){
     var i, len = arr.length - 1;
     var j, jLen;
     var ownArrays = [], ownModifiers = [], processedPos, modifier;
@@ -10124,7 +10130,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
         }
         if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
             if(!processedPos){
-                itemsData[i] = this.createStyleElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createStyleElement(arr[i]);
             } else {
                 itemsData[i].style.closed = false;
             }
@@ -10139,20 +10145,20 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
                     itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,dynamicProperties, render);
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData, render);
         }else if(arr[i].ty == 'tr'){
             if(!processedPos){
-                itemsData[i] = this.createTransformElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createTransformElement(arr[i]);
             }
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], dynamicProperties);
+                itemsData[i] = this.createShapeElement(arr[i]);
             }
             
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
-                modifier.init(this,arr[i],dynamicProperties);
+                modifier.init(this,arr[i]);
                 itemsData[i] = modifier;
                 this.shapeModifiers.push(modifier);
             } else {
@@ -10164,7 +10170,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData,dyn
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 itemsData[i] = modifier;
-                modifier.init(this,arr,i,itemsData,dynamicProperties);
+                modifier.init(this,arr,i,itemsData);
                 this.shapeModifiers.push(modifier);
                 render = false;
             }else{
@@ -10667,7 +10673,7 @@ HBaseElement.prototype = {
         }
     },
     addMasks: function(){
-        this.maskManager = new MaskElement(this.data, this, this.globalData, this.dynamicProperties);
+        this.maskManager = new MaskElement(this.data, this, this.globalData);
     },
     setMatte: function(){}
 };
@@ -10703,7 +10709,7 @@ function HCompElement(data,globalData,comp){
     this.completeLayers = false;
     this.pendingElements = [];
     this.elements = this.layers ? createSizedArray(this.layers.length) : [];
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this.dynamicProperties) : {_placeholder:true};
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this) : {_placeholder:true};
     
     this.initElement(data,globalData,comp);
 }
@@ -10764,7 +10770,7 @@ HShapeElement.prototype.createContent = function(){
         this.layerElement.appendChild(cont);
     }
 
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,this.dynamicProperties,0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,0, [], true);
     this.shapeCont = cont;
 };
 
@@ -11074,16 +11080,16 @@ function HCameraElement(data,globalData,comp){
     this.initFrame();
     this.initBaseData(data,globalData,comp);
     var getProp = PropertyFactory.getProp;
-    this.pe = getProp(this,data.pe,0,0,this.dynamicProperties);
+    this.pe = getProp(this,data.pe,0,0,this);
     if(data.ks.p.s){
-        this.px = getProp(this,data.ks.p.x,1,0,this.dynamicProperties);
-        this.py = getProp(this,data.ks.p.y,1,0,this.dynamicProperties);
-        this.pz = getProp(this,data.ks.p.z,1,0,this.dynamicProperties);
+        this.px = getProp(this,data.ks.p.x,1,0,this);
+        this.py = getProp(this,data.ks.p.y,1,0,this);
+        this.pz = getProp(this,data.ks.p.z,1,0,this);
     }else{
-        this.p = getProp(this,data.ks.p,1,0,this.dynamicProperties);
+        this.p = getProp(this,data.ks.p,1,0,this);
     }
     if(data.ks.a){
-        this.a = getProp(this,data.ks.a,1,0,this.dynamicProperties);
+        this.a = getProp(this,data.ks.a,1,0,this);
     }
     if(data.ks.or.k.length && data.ks.or.k[0].to){
         var i,len = data.ks.or.k.length;
@@ -11092,11 +11098,11 @@ function HCameraElement(data,globalData,comp){
             data.ks.or.k[i].ti = null;
         }
     }
-    this.or = getProp(this,data.ks.or,1,degToRads,this.dynamicProperties);
+    this.or = getProp(this,data.ks.or,1,degToRads,this);
     this.or.sh = true;
-    this.rx = getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
-    this.ry = getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
-    this.rz = getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
+    this.rx = getProp(this,data.ks.rx,0,degToRads,this);
+    this.ry = getProp(this,data.ks.ry,0,degToRads,this);
+    this.rz = getProp(this,data.ks.rz,0,degToRads,this);
     this.mat = new Matrix();
     this._prevMat = new Matrix();
     this._isFirstFrame = true;
@@ -11925,7 +11931,7 @@ var ExpressionManager = (function(){
             frameNum *= this.elem.globalData.frameRate;
             frameNum -= this.offsetTime;
             this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
-            this._cachingAtTime.value = this.interpolateValue(frameNum, this.pv, this._cachingAtTime);
+            this._cachingAtTime.value = this.interpolateValue(frameNum, this._cachingAtTime);
             this._cachingAtTime.lastFrame = frameNum;
         }
         return this._cachingAtTime.value;
@@ -11970,7 +11976,7 @@ var ExpressionManager = (function(){
     }
 
     function getTransformValueAtTime(time) {
-        //console.log('time:', time)
+        console.warn('Transform at time not supported');
     }
 
     function getTransformStaticValueAtTime(time) {
@@ -12008,8 +12014,8 @@ var ExpressionManager = (function(){
     }());
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
-    TransformPropertyFactory.getTransformProperty = function(elem, data, arr) {
-        var prop = getTransformProperty(elem, data, arr);
+    TransformPropertyFactory.getTransformProperty = function(elem, data, container) {
+        var prop = getTransformProperty(elem, data, container);
         if(prop.dynamicProperties.length) {
             prop.getValueAtTime = getTransformValueAtTime.bind(prop);
         } else {
@@ -12020,8 +12026,8 @@ var ExpressionManager = (function(){
     };
 
     var propertyGetProp = PropertyFactory.getProp;
-    PropertyFactory.getProp = function(elem,data,type, mult, arr){
-        var prop = propertyGetProp(elem,data,type, mult, arr);
+    PropertyFactory.getProp = function(elem,data,type, mult, container){
+        var prop = propertyGetProp(elem,data,type, mult, container);
         //prop.getVelocityAtTime = getVelocityAtTime;
         //prop.loopOut = loopOut;
         //prop.loopIn = loopIn;
@@ -12035,7 +12041,6 @@ var ExpressionManager = (function(){
         prop.loopIn = loopIn;
         prop.getVelocityAtTime = getVelocityAtTime;
         prop.numKeys = data.a === 1 ? data.k.length : 0;
-        var isAdded = prop.k;
         prop.propertyIndex = data.ix;
         var value = 0;
         if(type !== 0) {
@@ -12047,8 +12052,8 @@ var ExpressionManager = (function(){
             value: value
         };
         searchExpressions(elem,data,prop);
-        if(!isAdded && prop.k){
-            arr.push(prop);
+        if(prop.k){
+            container.addDynamicProperty(prop);
         }
 
         return prop;
@@ -12167,7 +12172,6 @@ var ExpressionManager = (function(){
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
     ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims){
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
-        var isAdded = prop.k;
         prop.propertyIndex = data.ix;
         prop.lock = false;
         if(type === 3){
@@ -12175,8 +12179,8 @@ var ExpressionManager = (function(){
         } else if(type === 4){
             searchExpressions(elem,data.ks,prop);
         }
-        if(!isAdded && prop.k){
-            arr.push(prop);
+        if(prop.k){
+            elem.addDynamicProperty(prop);
         }
         return prop;
     };
@@ -12249,8 +12253,6 @@ var ShapeExpressionInterface = (function(){
                 arr.push(roundedInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rp'){
                 arr.push(repeaterInterfaceFactory(shapes[i],view[i],propertyGroup));
-            } else{
-                //console.log(shapes[i].ty);
             }
         }
         return arr;
@@ -13363,47 +13365,45 @@ var ExpressionValue = (function() {
         return expressionValue;
 	};
 }());
-function SliderEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function SliderEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function AngleEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function AngleEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function ColorEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
+function ColorEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,1,0,container);
 }
-function PointEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
+function PointEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,1,0,container);
 }
-function LayerIndexEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function LayerIndexEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function MaskIndexEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function MaskIndexEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function CheckboxEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function CheckboxEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
 function NoValueEffect(){
     this.p = {};
 }
-function EffectsManager(data,element,dynamicProperties){
+function EffectsManager(data,element){
     var effects = data.ef || [];
     this.effectElements = [];
     var i,len = effects.length;
     var effectItem;
     for(i=0;i<len;i++) {
-        effectItem = new GroupEffect(effects[i],element,dynamicProperties);
+        effectItem = new GroupEffect(effects[i],element);
         this.effectElements.push(effectItem);
     }
 }
 
-function GroupEffect(data,element,dynamicProperties){
+function GroupEffect(data,element){
+    this.container = element;
     this.dynamicProperties = [];
-    this.init(data,element,this.dynamicProperties);
-    if(this.dynamicProperties.length){
-        dynamicProperties.push(this);
-    }
+    this.init(data,element);
 }
 
 GroupEffect.prototype.getValue = function(){
@@ -13411,11 +13411,15 @@ GroupEffect.prototype.getValue = function(){
     var i, len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
-        this._mdf = this.dynamicProperties[i]._mdf || this._mdf;
+        if(this.dynamicProperties[i]._mdf) {
+            this._mdf = true;
+        }
     }
 };
 
-GroupEffect.prototype.init = function(data,element,dynamicProperties){
+GroupEffect.prototype.addDynamicProperty = addDynamicProperty;
+
+GroupEffect.prototype.init = function(data,element){
     this.data = data;
     this._mdf = false;
     this.effectElements = [];
@@ -13425,33 +13429,33 @@ GroupEffect.prototype.init = function(data,element,dynamicProperties){
         eff = null;
         switch(effects[i].ty){
             case 0:
-                eff = new SliderEffect(effects[i],element,dynamicProperties);
+                eff = new SliderEffect(effects[i],element,this);
                 break;
             case 1:
-                eff = new AngleEffect(effects[i],element,dynamicProperties);
+                eff = new AngleEffect(effects[i],element,this);
                 break;
             case 2:
-                eff = new ColorEffect(effects[i],element,dynamicProperties);
+                eff = new ColorEffect(effects[i],element,this);
                 break;
             case 3:
-                eff = new PointEffect(effects[i],element,dynamicProperties);
+                eff = new PointEffect(effects[i],element,this);
                 break;
             case 4:
             case 7:
-                eff = new CheckboxEffect(effects[i],element,dynamicProperties);
+                eff = new CheckboxEffect(effects[i],element,this);
                 break;
             case 10:
-                eff = new LayerIndexEffect(effects[i],element,dynamicProperties);
+                eff = new LayerIndexEffect(effects[i],element,this);
                 break;
             case 11:
-                eff = new MaskIndexEffect(effects[i],element,dynamicProperties);
+                eff = new MaskIndexEffect(effects[i],element,this);
                 break;
             case 5:
-                eff = new EffectsManager(effects[i],element,dynamicProperties);
+                eff = new EffectsManager(effects[i],element,this);
                 break;
             //case 6:
             default:
-                eff = new NoValueEffect(effects[i],element,dynamicProperties);
+                eff = new NoValueEffect(effects[i],element,this);
                 break;
         }
         if(eff) {
