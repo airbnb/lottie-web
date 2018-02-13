@@ -83,7 +83,7 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
 };
 
 SVGShapeElement.prototype.createTransformElement = function(data) {
-    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data), PropertyFactory.getProp(this,data.o,0,0.01,this));
+    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,this), PropertyFactory.getProp(this,data.o,0,0.01,this));
 };
 
 SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {

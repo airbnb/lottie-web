@@ -112,11 +112,11 @@ var TransformPropertyFactory = (function() {
         //var prevP = this.getValueAtTime();
     }
 
-    function TransformProperty(elem,data){
+    function TransformProperty(elem,data,container){
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
-        this.container = elem;
+        this.container = container || elem;
         this.dynamicProperties = [];
         this._mdf = false;
         this.data = data;
@@ -176,8 +176,8 @@ var TransformPropertyFactory = (function() {
         addDynamicProperty: addDynamicProperty
     }
 
-    function getTransformProperty(elem,data){
-        return new TransformProperty(elem,data);
+    function getTransformProperty(elem,data,container){
+        return new TransformProperty(elem,data,container);
     }
 
     return {

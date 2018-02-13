@@ -2292,8 +2292,8 @@ var PropertyFactory = (function(){
                 this._mdf = true;
             }
         } else {
-            i = 0;
-            while (i < this.v.length) {
+            var i = 0, len = this.v.length;
+            while (i < len) {
                 multipliedValue = val[i] * this.mult;
                 if (this.v[i] !== multipliedValue) {
                     this.v[i] = multipliedValue;
@@ -2331,7 +2331,7 @@ var PropertyFactory = (function(){
         this.container.addDynamicProperty(this);
     }
 
-    function ValueProperty(elem,data, mult){
+    function ValueProperty(elem, data, mult, container){
         this.propType = 'unidimensional';
         this.mult = mult || 1;
         this.data = data;
@@ -2339,6 +2339,7 @@ var PropertyFactory = (function(){
         this.pv = data.k;
         this._mdf = false;
         this.elem = elem;
+        this.container = container;
         this.comp = elem.comp;
         this.k = false;
         this.kf = false;
@@ -2350,12 +2351,13 @@ var PropertyFactory = (function(){
         this.addEffect = addEffect;
     }
 
-    function MultiDimensionalProperty(elem, data, mult) {
+    function MultiDimensionalProperty(elem, data, mult, container) {
         this.propType = 'multidimensional';
         this.mult = mult || 1;
         this.data = data;
         this._mdf = false;
         this.elem = elem;
+        this.container = container;
         this.comp = elem.comp;
         this.k = false;
         this.kf = false;
@@ -2376,7 +2378,7 @@ var PropertyFactory = (function(){
         this.addEffect = addEffect;
     }
 
-    function KeyframedValueProperty(elem, data, mult) {
+    function KeyframedValueProperty(elem, data, mult, container) {
         this.propType = 'unidimensional';
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
@@ -2387,6 +2389,7 @@ var PropertyFactory = (function(){
         this.data = data;
         this.mult = mult || 1;
         this.elem = elem;
+        this.container = container;
         this.comp = elem.comp;
         this.v = initFrame;
         this.pv = initFrame;
@@ -2398,7 +2401,7 @@ var PropertyFactory = (function(){
         this.addEffect = addEffect;
     }
 
-    function KeyframedMultidimensionalProperty(elem, data, mult){
+    function KeyframedMultidimensionalProperty(elem, data, mult, container){
         this.propType = 'multidimensional';
         var i, len = data.k.length;
         var s, e,to,ti;
@@ -2428,6 +2431,7 @@ var PropertyFactory = (function(){
         this._isFirstFrame = true;
         this.mult = mult || 1;
         this.elem = elem;
+        this.container = container;
         this.comp = elem.comp;
         this.getValue = processEffectsSequence;
         this.setVValue = setVValue;
@@ -2448,27 +2452,27 @@ var PropertyFactory = (function(){
         var p;
         if(data.a === 0){
             if(type === 0) {
-                p = new ValueProperty(elem,data,mult);
+                p = new ValueProperty(elem,data,mult, container);
             } else {
-                p = new MultiDimensionalProperty(elem,data, mult);
+                p = new MultiDimensionalProperty(elem,data, mult, container);
             }
         } else if(data.a === 1){
             if(type === 0) {
-                p = new KeyframedValueProperty(elem,data,mult);
+                p = new KeyframedValueProperty(elem,data,mult, container);
             } else {
-                p = new KeyframedMultidimensionalProperty(elem,data, mult);
+                p = new KeyframedMultidimensionalProperty(elem,data, mult, container);
             }
         } else if(!data.k.length){
-            p = new ValueProperty(elem,data, mult);
+            p = new ValueProperty(elem,data, mult, container);
         }else if(typeof(data.k[0]) === 'number'){
-            p = new MultiDimensionalProperty(elem,data, mult);
+            p = new MultiDimensionalProperty(elem,data, mult, container);
         }else{
             switch(type){
                 case 0:
-                    p = new KeyframedValueProperty(elem,data,mult);
+                    p = new KeyframedValueProperty(elem,data,mult, container);
                     break;
                 case 1:
-                    p = new KeyframedMultidimensionalProperty(elem,data,mult);
+                    p = new KeyframedMultidimensionalProperty(elem,data,mult, container);
                     break;
             }
         }

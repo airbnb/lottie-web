@@ -79,7 +79,7 @@ CVShapeElement.prototype.createTransformElement = function(data) {
             _matMdf:false,
             _opMdf:false,
             op: PropertyFactory.getProp(this,data.o,0,0.01,this),
-            mProps: TransformPropertyFactory.getTransformProperty(this,data)
+            mProps: TransformPropertyFactory.getTransformProperty(this,data,this)
         },
         elements: []
     };
