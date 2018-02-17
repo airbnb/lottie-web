@@ -129,6 +129,7 @@ var ShapePropertyFactory = (function(){
     function ShapeProperty(elem, data, type){
         this.propType = 'shape';
         this.comp = elem.comp;
+        this.container = elem;
         this.elem = elem;
         this.data = data;
         this.k = false;
@@ -143,13 +144,22 @@ var ShapePropertyFactory = (function(){
         this.reset = resetShape;
         this.effectsSequence = [getShapeValue.bind(this)];
     }
+
+    function addEffect(effectFunction) {
+        this.effectsSequence.push(effectFunction);
+        this.container.addDynamicProperty(this);
+    }
+
     ShapeProperty.prototype.interpolateShape = interpolateShape;
     ShapeProperty.prototype.getValue = processEffectsSequence;
+    ShapeProperty.prototype.getValue = processEffectsSequence;
+    ShapeProperty.prototype.addEffect = addEffect;
 
     function KeyframedShapeProperty(elem,data,type){
         this.propType = 'shape';
         this.comp = elem.comp;
         this.elem = elem;
+        this.container = elem;
         this.offsetTime = elem.data.st;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
@@ -169,6 +179,7 @@ var ShapePropertyFactory = (function(){
     }
     KeyframedShapeProperty.prototype.getValue = processEffectsSequence;
     KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
+    KeyframedShapeProperty.prototype.addEffect = addEffect;
 
     var EllShapeProperty = (function(){
 
