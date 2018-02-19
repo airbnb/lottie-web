@@ -14,6 +14,9 @@ var TransformPropertyFactory = (function() {
         if (this.s) {
             mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
         }
+        if (this.sk) {
+            mat.skewFromAxis(-this.sk.v, this.sa.v);
+        }
         if (this.r) {
             mat.rotate(-this.r.v);
         } else {
