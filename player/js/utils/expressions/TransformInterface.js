@@ -13,6 +13,10 @@ var TransformExpressionInterface = (function (){
                 case "ADBE Rotate Z":
                 case 10:
                     return _thisFunction.rotation;
+                case "ADBE Rotate X":
+                    return _thisFunction.xRotation;
+                case "ADBE Rotate Y":
+                    return _thisFunction.yRotation;
                 case "position":
                 case "Position":
                 case "ADBE Position":
@@ -44,6 +48,18 @@ var TransformExpressionInterface = (function (){
                 } else {
                     return ExpressionValue(transform.rz, 1/degToRads);
                 }
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "xRotation", {
+            get: function(){
+                    return ExpressionValue(transform.rx, 1/degToRads);
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "yRotation", {
+            get: function(){
+                    return ExpressionValue(transform.ry, 1/degToRads);
             }
         });
         Object.defineProperty(_thisFunction, "scale", {

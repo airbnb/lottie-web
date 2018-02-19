@@ -161,7 +161,7 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
@@ -169,7 +169,7 @@
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
-        anim.setSpeed(0.1);
+        anim.setSpeed(2);
         //anim.goToAndStop(9, true);
         anim.play();
     })
