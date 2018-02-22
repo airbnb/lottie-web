@@ -246,7 +246,7 @@ var PropertyFactory = (function(){
         var multipliedValue;
         if(this.propType === 'unidimensional') {
             multipliedValue = val * this.mult;
-            if(this.v !== multipliedValue) {
+            if(Math.abs(this.v - multipliedValue) > 0.00001) {
                 this.v = multipliedValue;
                 this._mdf = true;
             }
@@ -254,7 +254,7 @@ var PropertyFactory = (function(){
             var i = 0, len = this.v.length;
             while (i < len) {
                 multipliedValue = val[i] * this.mult;
-                if (this.v[i] !== multipliedValue) {
+                if (Math.abs(this.v[i] - multipliedValue) > 0.00001) {
                     this.v[i] = multipliedValue;
                     this._mdf = true;
                 }

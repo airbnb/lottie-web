@@ -2207,63 +2207,136 @@ var PropertyFactory = (function(){
         }else{
             var outX,outY,inX,inY, keyValue;
             len = keyData.s.length;
-            for(i=0;i<len;i+=1){
-                if(keyData.h !== 1){
-                    if(frameNum >= nextKeyData.t-offsetTime){
-                        perc = 1;
-                    }else if(frameNum < keyData.t-offsetTime){
-                        perc = 0;
-                    }else{
-                        if(keyData.o.x.constructor === Array){
-                            if(!keyData.__fnct){
-                                keyData.__fnct = [];
-                            }
-                            if (!keyData.__fnct[i]) {
-                                outX = keyData.o.x[i] || keyData.o.x[0];
-                                outY = keyData.o.y[i] || keyData.o.y[0];
-                                inX = keyData.i.x[i] || keyData.i.x[0];
-                                inY = keyData.i.y[i] || keyData.i.y[0];
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct[i] = fnc;
-                            } else {
-                                fnc = keyData.__fnct[i];
-                            }
-                        } else {
-                            if (!keyData.__fnct) {
-                                outX = keyData.o.x;
-                                outY = keyData.o.y;
-                                inX = keyData.i.x;
-                                inY = keyData.i.y;
-                                fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
-                                keyData.__fnct = fnc;
-                            } else{
-                                fnc = keyData.__fnct;
-                            }
-                        }
-                        perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
-                    }
-                }
-                if(this.sh && keyData.h !== 1){
-                    var initP = keyData.s[i];
-                    var endP = keyData.e[i];
-                    if(initP-endP < -180){
-                        initP += 360;
-                    } else if(initP-endP > 180){
-                        initP -= 360;
-                    }
-                    keyValue = initP+(endP-initP)*perc;
-                } else {
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
-                }
-                if(len === 1){
-                    newValue = keyValue;
+            if(this.sh && keyData.h !== 1) {
+                if(frameNum >= nextKeyData.t-offsetTime){
+                    newValue[0] = keyData.e[0];
+                    newValue[1] = keyData.e[1];
+                    newValue[2] = keyData.e[2];
+                }else if(frameNum <= keyData.t-offsetTime){
+                    newValue[0] = keyData.s[0];
+                    newValue[1] = keyData.s[1];
+                    newValue[2] = keyData.s[2];
                 }else{
-                    newValue[i] = keyValue;
+                    var quatStart = createQuaternion(keyData.s);
+                    var quatEnd = createQuaternion(keyData.e);
+                    var time = (frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
+                }
+                
+            } else {
+                for(i=0;i<len;i+=1){
+                    if(keyData.h !== 1){
+                        if(frameNum >= nextKeyData.t-offsetTime){
+                            perc = 1;
+                        }else if(frameNum < keyData.t-offsetTime){
+                            perc = 0;
+                        }else{
+                            if(keyData.o.x.constructor === Array){
+                                if(!keyData.__fnct){
+                                    keyData.__fnct = [];
+                                }
+                                if (!keyData.__fnct[i]) {
+                                    outX = keyData.o.x[i] || keyData.o.x[0];
+                                    outY = keyData.o.y[i] || keyData.o.y[0];
+                                    inX = keyData.i.x[i] || keyData.i.x[0];
+                                    inY = keyData.i.y[i] || keyData.i.y[0];
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct[i] = fnc;
+                                } else {
+                                    fnc = keyData.__fnct[i];
+                                }
+                            } else {
+                                if (!keyData.__fnct) {
+                                    outX = keyData.o.x;
+                                    outY = keyData.o.y;
+                                    inX = keyData.i.x;
+                                    inY = keyData.i.y;
+                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    keyData.__fnct = fnc;
+                                } else{
+                                    fnc = keyData.__fnct;
+                                }
+                            }
+                            perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
+                        }
+                    }
+
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
+
+                    if(len === 1){
+                        newValue = keyValue;
+                    }else{
+                        newValue[i] = keyValue;
+                    }
                 }
             }
         }
         caching.lastIndex = iterationIndex;
         return newValue;
+    }
+
+    //based on @Toji's https://github.com/toji/gl-matrix/
+    function slerp(a, b, t) {
+        var out = [];
+        var ax = a[0], ay = a[1], az = a[2], aw = a[3],
+        bx = b[0], by = b[1], bz = b[2], bw = b[3]
+
+        var omega, cosom, sinom, scale0, scale1;
+
+        cosom = ax * bx + ay * by + az * bz + aw * bw;
+        if (cosom < 0.0) {
+            cosom = -cosom;
+            bx = -bx;
+            by = -by;
+            bz = -bz;
+            bw = -bw;
+        }
+        if ((1.0 - cosom) > 0.000001) {
+            omega = Math.acos(cosom);
+            sinom = Math.sin(omega);
+            scale0 = Math.sin((1.0 - t) * omega) / sinom;
+            scale1 = Math.sin(t * omega) / sinom;
+        } else {
+            scale0 = 1.0 - t;
+            scale1 = t;
+        }
+        out[0] = scale0 * ax + scale1 * bx;
+        out[1] = scale0 * ay + scale1 * by;
+        out[2] = scale0 * az + scale1 * bz;
+        out[3] = scale0 * aw + scale1 * bw;
+
+        return out;
+    }
+
+    function quaternionToEuler(out, quat) {
+        var qx = quat[0];
+        var qy = quat[1];
+        var qz = quat[2];
+        var qw = quat[3];
+        var heading = Math.atan2(2*qy*qw-2*qx*qz , 1 - 2*qy*qy - 2*qz*qz)
+        var attitude = Math.asin(2*qx*qy + 2*qz*qw) 
+        var bank = Math.atan2(2*qx*qw-2*qy*qz , 1 - 2*qx*qx - 2*qz*qz);
+        out[0] = heading/degToRads;
+        out[1] = attitude/degToRads;
+        out[2] = bank/degToRads;
+    }
+
+    function createQuaternion(values) {
+        var heading = values[0] * degToRads;
+        var attitude = values[1] * degToRads;
+        var bank = values[2] * degToRads;
+        var c1 = Math.cos(heading / 2);
+        var c2 = Math.cos(attitude / 2);
+        var c3 = Math.cos(bank / 2);
+        var s1 = Math.sin(heading / 2);
+        var s2 = Math.sin(attitude / 2);
+        var s3 = Math.sin(bank / 2);
+        var w = c1 * c2 * c3 - s1 * s2 * s3;
+        var x = s1 * s2 * c3 + c1 * c2 * s3;
+        var y = s1 * c2 * c3 + c1 * s2 * s3;
+        var z = c1 * s2 * c3 - s1 * c2 * s3;
+
+        return [x,y,z,w];
     }
 
     function getValueAtCurrentTime(){
@@ -2295,7 +2368,7 @@ var PropertyFactory = (function(){
             var i = 0, len = this.v.length;
             while (i < len) {
                 multipliedValue = val[i] * this.mult;
-                if (this.v[i] !== multipliedValue) {
+                if (Math.abs(this.v[i] - multipliedValue) > 0.000001) {
                     this.v[i] = multipliedValue;
                     this._mdf = true;
                 }
@@ -2507,6 +2580,9 @@ var TransformPropertyFactory = (function() {
         if (this.s) {
             mat.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
         }
+        if (this.sk) {
+            mat.skewFromAxis(-this.sk.v, this.sa.v);
+        }
         if (this.r) {
             mat.rotate(-this.r.v);
         } else {
@@ -2601,11 +2677,11 @@ var TransformPropertyFactory = (function() {
         //var prevP = this.getValueAtTime();
     }
 
-    function TransformProperty(elem,data){
+    function TransformProperty(elem,data,container){
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
-        this.container = elem;
+        this.container = container || elem;
         this.dynamicProperties = [];
         this._mdf = false;
         this.data = data;
@@ -2665,8 +2741,8 @@ var TransformPropertyFactory = (function() {
         addDynamicProperty: addDynamicProperty
     }
 
-    function getTransformProperty(elem,data){
-        return new TransformProperty(elem,data);
+    function getTransformProperty(elem,data,container){
+        return new TransformProperty(elem,data,container);
     }
 
     return {
@@ -2888,6 +2964,7 @@ var ShapePropertyFactory = (function(){
     function ShapeProperty(elem, data, type){
         this.propType = 'shape';
         this.comp = elem.comp;
+        this.container = elem;
         this.elem = elem;
         this.data = data;
         this.k = false;
@@ -2902,13 +2979,22 @@ var ShapePropertyFactory = (function(){
         this.reset = resetShape;
         this.effectsSequence = [getShapeValue.bind(this)];
     }
+
+    function addEffect(effectFunction) {
+        this.effectsSequence.push(effectFunction);
+        this.container.addDynamicProperty(this);
+    }
+
     ShapeProperty.prototype.interpolateShape = interpolateShape;
     ShapeProperty.prototype.getValue = processEffectsSequence;
+    ShapeProperty.prototype.getValue = processEffectsSequence;
+    ShapeProperty.prototype.addEffect = addEffect;
 
     function KeyframedShapeProperty(elem,data,type){
         this.propType = 'shape';
         this.comp = elem.comp;
         this.elem = elem;
+        this.container = elem;
         this.offsetTime = elem.data.st;
         this.keyframes = type === 3 ? data.pt.k : data.ks.k;
         this.k = true;
@@ -2928,6 +3014,7 @@ var ShapePropertyFactory = (function(){
     }
     KeyframedShapeProperty.prototype.getValue = processEffectsSequence;
     KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
+    KeyframedShapeProperty.prototype.addEffect = addEffect;
 
     var EllShapeProperty = (function(){
 
@@ -2986,32 +3073,30 @@ var ShapePropertyFactory = (function(){
                 var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
                 var _cw = this.d !== 3;
                 var _v = this.v;
-                if(this.d !== 3){
-                    _v.v[0][0] = p0;
-                    _v.v[0][1] = p1 - s1;
-                    _v.v[1][0] = _cw ? p0 + s0 : p0 - s0;
-                    _v.v[1][1] = p1;
-                    _v.v[2][0] = p0;
-                    _v.v[2][1] = p1 + s1;
-                    _v.v[3][0] = _cw ? p0 - s0 : p0 + s0;
-                    _v.v[3][1] = p1;
-                    _v.i[0][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
-                    _v.i[0][1] = p1 - s1;
-                    _v.i[1][0] = _cw ? p0 + s0 : p0 - s0;
-                    _v.i[1][1] = p1 - s1 * cPoint;
-                    _v.i[2][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
-                    _v.i[2][1] = p1 + s1;
-                    _v.i[3][0] = _cw ? p0 - s0 : p0 + s0;
-                    _v.i[3][1] = p1 + s1 * cPoint;
-                    _v.o[0][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
-                    _v.o[0][1] = p1 - s1;
-                    _v.o[1][0] = _cw ? p0 + s0 : p0 - s0;
-                    _v.o[1][1] = p1 + s1 * cPoint;
-                    _v.o[2][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
-                    _v.o[2][1] = p1 + s1;
-                    _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
-                    _v.o[3][1] = p1 - s1 * cPoint;
-                }
+                _v.v[0][0] = p0;
+                _v.v[0][1] = p1 - s1;
+                _v.v[1][0] = _cw ? p0 + s0 : p0 - s0;
+                _v.v[1][1] = p1;
+                _v.v[2][0] = p0;
+                _v.v[2][1] = p1 + s1;
+                _v.v[3][0] = _cw ? p0 - s0 : p0 + s0;
+                _v.v[3][1] = p1;
+                _v.i[0][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
+                _v.i[0][1] = p1 - s1;
+                _v.i[1][0] = _cw ? p0 + s0 : p0 - s0;
+                _v.i[1][1] = p1 - s1 * cPoint;
+                _v.i[2][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
+                _v.i[2][1] = p1 + s1;
+                _v.i[3][0] = _cw ? p0 - s0 : p0 + s0;
+                _v.i[3][1] = p1 + s1 * cPoint;
+                _v.o[0][0] = _cw ? p0 + s0 * cPoint : p0 - s0 * cPoint;
+                _v.o[0][1] = p1 - s1;
+                _v.o[1][0] = _cw ? p0 + s0 : p0 - s0;
+                _v.o[1][1] = p1 + s1 * cPoint;
+                _v.o[2][0] = _cw ? p0 - s0 * cPoint : p0 + s0 * cPoint;
+                _v.o[2][1] = p1 + s1;
+                _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
+                _v.o[3][1] = p1 - s1 * cPoint;
             }
         }
 
@@ -6882,15 +6967,16 @@ IShapeElement.prototype = {
         return 0;
     },
     addProcessedElement: function(elem, pos){
-        var i = this.processedElements.length;
+        var i = this.processedElements.length, found = false;
         while(i){
             i -= 1;
             if(this.processedElements[i].elem === elem){
                 this.processedElements[i].pos = pos;
+                found = true;
                 break;
             }
         }
-        if(i === 0){
+        if(!found){
             this.processedElements.push(new ProcessedElement(elem, pos));
         }
     },
@@ -7437,7 +7523,7 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
 };
 
 SVGShapeElement.prototype.createTransformElement = function(data) {
-    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data), PropertyFactory.getProp(this,data.o,0,0.01,this));
+    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,this), PropertyFactory.getProp(this,data.o,0,0.01,this));
 };
 
 SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
@@ -10066,7 +10152,7 @@ CVShapeElement.prototype.createTransformElement = function(data) {
             _matMdf:false,
             _opMdf:false,
             op: PropertyFactory.getProp(this,data.o,0,0.01,this),
-            mProps: TransformPropertyFactory.getTransformProperty(this,data)
+            mProps: TransformPropertyFactory.getTransformProperty(this,data,this)
         },
         elements: []
     };
@@ -13058,6 +13144,10 @@ var TransformExpressionInterface = (function (){
                 case "ADBE Rotate Z":
                 case 10:
                     return _thisFunction.rotation;
+                case "ADBE Rotate X":
+                    return _thisFunction.xRotation;
+                case "ADBE Rotate Y":
+                    return _thisFunction.yRotation;
                 case "position":
                 case "Position":
                 case "ADBE Position":
@@ -13089,6 +13179,18 @@ var TransformExpressionInterface = (function (){
                 } else {
                     return ExpressionValue(transform.rz, 1/degToRads);
                 }
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "xRotation", {
+            get: function(){
+                    return ExpressionValue(transform.rx, 1/degToRads);
+            }
+        });
+
+        Object.defineProperty(_thisFunction, "yRotation", {
+            get: function(){
+                    return ExpressionValue(transform.ry, 1/degToRads);
             }
         });
         Object.defineProperty(_thisFunction, "scale", {
