@@ -159,13 +159,13 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'html',
         loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/cham.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
