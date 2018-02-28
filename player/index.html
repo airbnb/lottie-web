@@ -12,8 +12,8 @@
 
         #lottie{
             background-color:#000;
-            width:960px;
-            height:540px;
+            width:1024px;
+            height:768px;
             /*width:360px;
             height:640px;*/
             display:block;
@@ -158,7 +158,7 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'html',
         loop: false,
         autoplay: true,
         rendererSettings: {
@@ -167,6 +167,33 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+
+    anim.addEventListener('DOMLoaded', initiateAnimation)
+
+    function initiateAnimation() {
+        var name_input_container = document.getElementById('Name_Input');
+        while (name_input_container.firstChild) {
+            name_input_container.removeChild(name_input_container.firstChild);
+        }
+
+        var textInput = document.createElement('input');
+        textInput.style = "width: 500px;height: 150px;font-size: 60px;text-align:center"
+        name_input_container.appendChild(textInput);
+
+        /*<select>
+          <option></option>
+          <option>Option 1</option>
+        </select>*/
+        /*var textInput = document.createElement('select');
+        var option = document.createElement('option');
+        option.innerHTML = 'OPTION 1';
+        textInput.appendChild(option);
+        var option = document.createElement('option');
+        option.innerHTML = 'OPTION 2';
+        textInput.appendChild(option);
+        textInput.style = "width: 500px;height: 150px;font-size: 60px;text-align:center"
+        name_input_container.appendChild(textInput);*/
+    }
 </script>
 </body>
 </html>
