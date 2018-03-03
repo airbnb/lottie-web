@@ -1,6 +1,7 @@
 function HCameraElement(data,globalData,comp){
     this.initFrame();
     this.initBaseData(data,globalData,comp);
+    this.initHierarchy();
     var getProp = PropertyFactory.getProp;
     this.pe = getProp(this,data.pe,0,0,this);
     if(data.ks.p.s){
@@ -29,7 +30,7 @@ function HCameraElement(data,globalData,comp){
     this._prevMat = new Matrix();
     this._isFirstFrame = true;
 }
-extendPrototype([BaseElement, FrameElement], HCameraElement);
+extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 
 HCameraElement.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;
@@ -60,6 +61,22 @@ HCameraElement.prototype.renderFrame = function(){
     if(_mdf || (this.p && this.p._mdf) || (this.px && (this.px._mdf || this.py._mdf || this.pz._mdf)) || this.rx._mdf || this.ry._mdf || this.rz._mdf || this.or._mdf || (this.a && this.a._mdf)) {
         this.mat.reset();
 
+        if(this.hierarchy){
+            var mat;
+            len = this.hierarchy.length - 1;
+            for (i = len; i >= 0; i -= 1) {
+                /*mat = this.hierarchy[i].finalTransform.mProp.v.props;
+                console.log(mat)
+                this.mat.transform(-mat[0],-mat[1],-mat[2],-mat[3],-mat[4],-mat[5],-mat[6],-mat[7],-mat[8],-mat[9],-mat[10],-mat[11],-mat[12],-mat[13],-mat[14],mat[15]);
+                console.log(this.mat.props)*/
+                var mTransf = this.hierarchy[i].finalTransform.mProp;
+                this.mat.translate(-mTransf.p.v[0],-mTransf.p.v[1],mTransf.p.v[2]);
+                this.mat.rotateX(-mTransf.rx.v).rotateY(-mTransf.ry.v).rotateZ(mTransf.rz.v);
+                this.mat.scale(1/mTransf.s.v[0],1/mTransf.s.v[1],1/mTransf.s.v[2]);
+                this.mat.translate(mTransf.a.v[0],mTransf.a.v[1],mTransf.a.v[2]);
+            }
+        }
+
         if(this.p){
             this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
         }else{
@@ -80,14 +97,11 @@ HCameraElement.prototype.renderFrame = function(){
         this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
-        if(this.hierarchy){
-            var mat;
-            len = this.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.iv.props;
-                this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
-            }
-        }
+
+
+        
+
+
         if(!this._prevMat.equals(this.mat)) {
             len = this.comp.threeDElements.length;
             var comp;

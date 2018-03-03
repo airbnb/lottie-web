@@ -11,9 +11,15 @@
         }
 
         #lottie{
+<<<<<<< HEAD
             background-color:#fff;
             width:800px;
             height:600px;
+=======
+            background-color:#000;
+            width:1024px;
+            height:768px;
+>>>>>>> master
             /*width:360px;
             height:640px;*/
             display:block;
@@ -160,19 +166,28 @@
     var animData = {
         container: elem,
         renderer: 'html',
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/cham.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.addEventListener('DOMLoaded', function() {
-        //anim.goToAndStop(9, true);
-        anim.play();
-    })
-    //anim.setSubframe(false);
+
+    /*anim.addEventListener('DOMLoaded', initiateAnimation)
+    elem.addEventListener('click', function(){anim.play()})
+
+    function initiateAnimation() {
+        var name_input_container = document.getElementById('Name_Input');
+        while (name_input_container.firstChild) {
+            name_input_container.removeChild(name_input_container.firstChild);
+        }
+
+        var textInput = document.createElement('input');
+        textInput.style = "width: 500px;height: 150px;font-size: 60px;text-align:center;border: 0;padding: 0;color:white;background-color:transparent;box-sizing: border-box;padding: 50px;"
+        name_input_container.appendChild(textInput);
+    }*/
 </script>
 </body>
 </html>

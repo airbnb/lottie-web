@@ -22,3 +22,19 @@ HCompElement.prototype.createContainerElements = function(){
         this.transformedElement = this.layerElement;
     }
 };
+
+HCompElement.prototype.addTo3dContainer = function(elem,pos) {
+    var j = 0;
+    var nextElement;
+    while(j<pos){
+        if(this.elements[j] && this.elements[j].getBaseElement){
+            nextElement = this.elements[j].getBaseElement();
+        }
+        j += 1;
+    }
+    if(nextElement){
+        this.layerElement.insertBefore(elem, nextElement);
+    } else {
+        this.layerElement.appendChild(elem);
+    }
+}
