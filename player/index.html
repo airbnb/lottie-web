@@ -11,15 +11,9 @@
         }
 
         #lottie{
-<<<<<<< HEAD
-            background-color:#fff;
-            width:800px;
-            height:600px;
-=======
             background-color:#000;
-            width:1024px;
-            height:768px;
->>>>>>> master
+            width:100%;
+            height:100%;
             /*width:360px;
             height:640px;*/
             display:block;
@@ -31,6 +25,29 @@
 
         .botas_loop_3,.botas_loop_2{
             display:none
+        }
+
+        #bird_element.ready, #piano_element.ready, #cat_element.ready {
+            opacity: 1;
+            transition: opacity .6s ease-out;
+            cursor: pointer;
+        }
+
+        #bird_text_element, #piano_text_element, #cat_text_element {
+            opacity: 0;
+            transition: opacity .6s ease-out;
+        }
+
+        #bird_element.ready:hover ~ #bird_text_element,
+        #piano_element.ready:hover ~ #piano_text_element,
+        #cat_element.ready:hover ~ #cat_text_element {
+            opacity: 1;
+        }
+
+        #bird_element.ready:hover,
+        #piano_element.ready:hover,
+        #cat_element.ready:hover {
+            opacity: 0.2;
         }
 
     </style>
@@ -167,13 +184,14 @@
         container: elem,
         renderer: 'html',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/bm/data.json'
     };
     anim = lottie.loadAnimation(animData);
+
 
     /*anim.addEventListener('DOMLoaded', initiateAnimation)
     elem.addEventListener('click', function(){anim.play()})

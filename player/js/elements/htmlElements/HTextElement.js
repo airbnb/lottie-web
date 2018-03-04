@@ -201,20 +201,22 @@ HTextElement.prototype.renderInnerContent = function() {
         textPath = this.textPaths[i];
         renderedLetter = renderedLetters[count];
         count += 1;
-        if(!this.isMasked){
-            textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
-        }else{
-            textSpan.setAttribute('transform',renderedLetter.m);
+        if(renderedLetter._mdf.m) {
+            if(!this.isMasked){
+                textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
+            }else{
+                textSpan.setAttribute('transform',renderedLetter.m);
+            }
         }
         ////textSpan.setAttribute('opacity',renderedLetter.o);
         textSpan.style.opacity = renderedLetter.o;
-        if(renderedLetter.sw){
+        if(renderedLetter.sw && renderedLetter._mdf.sw){
             textPath.setAttribute('stroke-width',renderedLetter.sw);
         }
-        if(renderedLetter.sc){
+        if(renderedLetter.sc && renderedLetter._mdf.sc){
             textPath.setAttribute('stroke',renderedLetter.sc);
         }
-        if(renderedLetter.fc){
+        if(renderedLetter.fc && renderedLetter._mdf.fc){
             textPath.setAttribute('fill',renderedLetter.fc);
             textPath.style.color = renderedLetter.fc;
         }
