@@ -8,10 +8,10 @@ function DashProperty(elem, data, renderer) {
     this.k = false;
     this.dynamicProperties = [];
     this.dashStr = '';
-    this.dashArray = createTypedArray('float32',  data.length - 1);
+    this.dashArray = createTypedArray('float32',  data.length ? data.length - 1 : 0);
     this.dashoffset = createTypedArray('float32',  1);
-    var i, len = data.length, prop;
-    for(i=0;i<len;i+=1){
+    var i, len = data.length || 0, prop;
+    for(i = 0; i < len; i += 1) {
         prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);
         this.k = prop.k ? true : this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
