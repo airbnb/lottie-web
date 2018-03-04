@@ -102,7 +102,7 @@ HCameraElement.prototype.renderFrame = function(){
         
 
 
-        if(!this._prevMat.equals(this.mat)) {
+        if(!this._prevMat.equals(this.mat) && this.comp.threeDElements) {
             len = this.comp.threeDElements.length;
             var comp;
             for(i=0;i<len;i+=1){

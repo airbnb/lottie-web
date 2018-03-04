@@ -119,6 +119,7 @@ var FontManager = (function(){
             return;
         }
 
+
         var fontArr = fontData.list;
         var i, len = fontArr.length;
         for(i=0; i<len; i+= 1){
