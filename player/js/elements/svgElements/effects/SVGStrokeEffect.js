@@ -62,6 +62,9 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     var i, len = this.paths.length;
     var mask, path;
     for(i=0;i<len;i+=1){
+        if(this.paths[i].m === -1) {
+            continue;
+        }
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
         if(forceRender || this.filterManager._mdf || mask.prop._mdf){
