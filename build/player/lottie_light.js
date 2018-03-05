@@ -1999,6 +1999,7 @@ var FontManager = (function(){
             return;
         }
 
+
         var fontArr = fontData.list;
         var i, len = fontArr.length;
         for(i=0; i<len; i+= 1){
@@ -2360,7 +2361,7 @@ var PropertyFactory = (function(){
         var multipliedValue;
         if(this.propType === 'unidimensional') {
             multipliedValue = val * this.mult;
-            if(this.v !== multipliedValue) {
+            if(Math.abs(this.v - multipliedValue) > 0.00001) {
                 this.v = multipliedValue;
                 this._mdf = true;
             }
@@ -2368,7 +2369,7 @@ var PropertyFactory = (function(){
             var i = 0, len = this.v.length;
             while (i < len) {
                 multipliedValue = val[i] * this.mult;
-                if (Math.abs(this.v[i] - multipliedValue) > 0.000001) {
+                if (Math.abs(this.v[i] - multipliedValue) > 0.00001) {
                     this.v[i] = multipliedValue;
                     this._mdf = true;
                 }
@@ -4054,10 +4055,10 @@ function DashProperty(elem, data, renderer) {
     this.k = false;
     this.dynamicProperties = [];
     this.dashStr = '';
-    this.dashArray = createTypedArray('float32',  data.length - 1);
+    this.dashArray = createTypedArray('float32',  data.length ? data.length - 1 : 0);
     this.dashoffset = createTypedArray('float32',  1);
-    var i, len = data.length, prop;
-    for(i=0;i<len;i+=1){
+    var i, len = data.length || 0, prop;
+    for(i = 0; i < len; i += 1) {
         prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);
         this.k = prop.k ? true : this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
@@ -7980,6 +7981,9 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     var i, len = this.paths.length;
     var mask, path;
     for(i=0;i<len;i+=1){
+        if(this.paths[i].m === -1) {
+            continue;
+        }
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
         if(forceRender || this.filterManager._mdf || mask.prop._mdf){
@@ -9343,7 +9347,7 @@ function EffectsManager(){}
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.7';
+    lottiejs.version = '5.1.8';
 
     function checkReady() {
         if (document.readyState === "complete") {

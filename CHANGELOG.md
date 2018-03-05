@@ -1,3 +1,17 @@
+## V 5.1.8
+- FIX: centered tracking
+- FIX: augmenting linearity threshold
+- FIX: using quaternions to calculate 3d orientation
+- FIX: undeclared variables
+- FIX: CW CCW ellipse fix
+- EXPRESSIONS: added xRotation and yRotation support
+- FEATURE: added skew to transform calculations
+- FIX: Time remap on html renderer
+- FEATURE: calculating shape bounds for html shape elements without depending on getBBox
+- FEATURE: Supporting custom tags on html renderer
+- FIX: dash array fix
+
+
 ## V 5.1.7
 - FIX: looping and non looping animations end frame fix
 

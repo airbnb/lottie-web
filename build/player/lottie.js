@@ -1999,6 +1999,7 @@ var FontManager = (function(){
             return;
         }
 
+
         var fontArr = fontData.list;
         var i, len = fontArr.length;
         for(i=0; i<len; i+= 1){
@@ -2360,7 +2361,7 @@ var PropertyFactory = (function(){
         var multipliedValue;
         if(this.propType === 'unidimensional') {
             multipliedValue = val * this.mult;
-            if(this.v !== multipliedValue) {
+            if(Math.abs(this.v - multipliedValue) > 0.00001) {
                 this.v = multipliedValue;
                 this._mdf = true;
             }
@@ -2368,7 +2369,7 @@ var PropertyFactory = (function(){
             var i = 0, len = this.v.length;
             while (i < len) {
                 multipliedValue = val[i] * this.mult;
-                if (Math.abs(this.v[i] - multipliedValue) > 0.000001) {
+                if (Math.abs(this.v[i] - multipliedValue) > 0.00001) {
                     this.v[i] = multipliedValue;
                     this._mdf = true;
                 }
@@ -4054,10 +4055,10 @@ function DashProperty(elem, data, renderer) {
     this.k = false;
     this.dynamicProperties = [];
     this.dashStr = '';
-    this.dashArray = createTypedArray('float32',  data.length - 1);
+    this.dashArray = createTypedArray('float32',  data.length ? data.length - 1 : 0);
     this.dashoffset = createTypedArray('float32',  1);
-    var i, len = data.length, prop;
-    for(i=0;i<len;i+=1){
+    var i, len = data.length || 0, prop;
+    for(i = 0; i < len; i += 1) {
         prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);
         this.k = prop.k ? true : this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
@@ -7980,6 +7981,9 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     var i, len = this.paths.length;
     var mask, path;
     for(i=0;i<len;i+=1){
+        if(this.paths[i].m === -1) {
+            continue;
+        }
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
         if(forceRender || this.filterManager._mdf || mask.prop._mdf){
@@ -9687,7 +9691,7 @@ HybridRenderer.prototype.build3dContainers = function(){
     var i, len = this.layers.length;
     var lastThreeDContainerData;
     for(i=0;i<len;i+=1){
-        if(this.layers[i].ddd){
+        if(this.layers[i].ddd && this.layers[i].ty !== 3){
             if(!lastThreeDContainerData){
                 lastThreeDContainerData = this.createThreeDContainer(i);
             }
@@ -10703,7 +10707,7 @@ function HBaseElement(data,globalData,comp){}
 HBaseElement.prototype = {
     checkBlendMode: function(){},
     initRendererElement: function(){
-        this.baseElement = createTag('div');
+        this.baseElement = createTag(this.data.tg || 'div');
         if(this.data.hasMask) {
             this.svgElement = createNS('svg');
             this.layerElement = createNS('g');
@@ -10799,9 +10803,8 @@ function HCompElement(data,globalData,comp){
     this.completeLayers = false;
     this.pendingElements = [];
     this.elements = this.layers ? createSizedArray(this.layers.length) : [];
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this) : {_placeholder:true};
-    
     this.initElement(data,globalData,comp);
+    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate,this) : {_placeholder:true};
 }
 
 extendPrototype([HybridRenderer, ICompElement, HBaseElement], HCompElement);
@@ -10818,6 +10821,23 @@ HCompElement.prototype.createContainerElements = function(){
         this.transformedElement = this.layerElement;
     }
 };
+
+HCompElement.prototype.addTo3dContainer = function(elem,pos) {
+    var j = 0;
+    var nextElement;
+    while(j<pos){
+        if(this.elements[j] && this.elements[j].getBaseElement){
+            nextElement = this.elements[j].getBaseElement();
+        }
+        j += 1;
+    }
+    if(nextElement){
+        this.layerElement.insertBefore(elem, nextElement);
+    } else {
+        this.layerElement.appendChild(elem);
+    }
+}
+
 function HShapeElement(data,globalData,comp){
     //List of drawable elements
     this.shapes = [];
@@ -10864,27 +10884,158 @@ HShapeElement.prototype.createContent = function(){
     this.shapeCont = cont;
 };
 
+HShapeElement.prototype.getTransformedPoint = function(transformers, point) {
+    var i, len = transformers.length;
+    for(i = 0; i < len; i += 1) {
+        point = transformers[i].mProps.v.applyToPointArray(point[0], point[1], 0);
+    }
+    return point;
+}
+
+HShapeElement.prototype.calculateShapeBoundingBox = function(item, boundingBox) {
+    var shape = item.sh.v;
+    var transformers = item.transformers;
+    var i, len = shape._length, vPoint, oPoint, nextIPoint, nextVPoint, bounds;
+    if (len <= 1) {
+        return;
+    }
+    for (i = 0; i < len - 1; i += 1) {
+        vPoint = this.getTransformedPoint(transformers, shape.v[i]);
+        oPoint = this.getTransformedPoint(transformers, shape.o[i]);
+        nextIPoint = this.getTransformedPoint(transformers, shape.i[i + 1]);
+        nextVPoint = this.getTransformedPoint(transformers, shape.v[i + 1]);
+        this.checkBounds(vPoint, oPoint, nextIPoint, nextVPoint, boundingBox);
+    }
+    if(shape.c) {
+        vPoint = this.getTransformedPoint(transformers, shape.v[i]);
+        oPoint = this.getTransformedPoint(transformers, shape.o[i]);
+        nextIPoint = this.getTransformedPoint(transformers, shape.i[0]);
+        nextVPoint = this.getTransformedPoint(transformers, shape.v[0]);
+        this.checkBounds(vPoint, oPoint, nextIPoint, nextVPoint, boundingBox);
+    }
+}
+
+HShapeElement.prototype.checkBounds = function(vPoint, oPoint, nextIPoint, nextVPoint, boundingBox) {
+    this.getBoundsOfCurve(vPoint, oPoint, nextIPoint, nextVPoint);
+    var bounds = this.shapeBoundingBox;
+    boundingBox.x = bm_min(bounds.left, boundingBox.x);
+    boundingBox.xMax = bm_max(bounds.right, boundingBox.xMax);
+    boundingBox.y = bm_min(bounds.top, boundingBox.y);
+    boundingBox.yMax = bm_max(bounds.bottom, boundingBox.yMax);
+}
+
+HShapeElement.prototype.shapeBoundingBox = {
+    left:0,
+    right:0,
+    top:0,
+    bottom:0,
+}
+
+HShapeElement.prototype.tempBoundingBox = {
+    x:0,
+    xMax:0,
+    y:0,
+    yMax:0,
+    width:0,
+    height:0
+}
+
+HShapeElement.prototype.getBoundsOfCurve = function(p0, p1, p2, p3) {
+
+    var bounds = [[p0[0],p3[0]], [p0[1],p3[1]]];
+
+    for (var a, b, c, t, b2ac, t1, t2, i = 0; i < 2; ++i) {
+
+      b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
+      a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
+      c = 3 * p1[i] - 3 * p0[i];
+
+      b = b | 0;
+      a = a | 0;
+      c = c | 0;
+
+      if (a === 0) {
+
+        if (b === 0) {
+          continue;
+        }
+
+        t = -c / b;
+
+        if (0 < t && t < 1) {
+          bounds[i].push(this.calculateF(t,p0,p1,p2,p3,i));
+        }
+        continue;
+      }
+
+      b2ac = b * b - 4 * c * a;
+
+      if (b2ac < 0) {
+        continue;
+      }
+
+      t1 = (-b + bm_sqrt(b2ac))/(2 * a);
+      if (0 < t1 && t1 < 1) bounds[i].push(this.calculateF(t1,p0,p1,p2,p3,i));
+
+      t2 = (-b - bm_sqrt(b2ac))/(2 * a);
+      if (0 < t2 && t2 < 1) bounds[i].push(this.calculateF(t2,p0,p1,p2,p3,i));
+
+    }
+
+    this.shapeBoundingBox.left = bm_min.apply(null, bounds[0]);
+    this.shapeBoundingBox.top = bm_min.apply(null, bounds[1]);
+    this.shapeBoundingBox.right = bm_max.apply(null, bounds[0]);
+    this.shapeBoundingBox.bottom = bm_max.apply(null, bounds[1]);
+  };
+
+  HShapeElement.prototype.calculateF = function(t, p0, p1, p2, p3, i) {
+    return bm_pow(1-t, 3) * p0[i]
+        + 3 * bm_pow(1-t, 2) * t * p1[i]
+        + 3 * (1-t) * bm_pow(t, 2) * p2[i]
+        + bm_pow(t, 3) * p3[i];
+  }
+
+HShapeElement.prototype.calculateBoundingBox = function(itemsData, boundingBox) {
+    var i, len = itemsData.length, path;
+    for(i = 0; i < len; i += 1) {
+        if(itemsData[i] && itemsData[i].sh) {
+            this.calculateShapeBoundingBox(itemsData[i], boundingBox)
+        } else if(itemsData[i] && itemsData[i].it) {
+            this.calculateBoundingBox(itemsData[i].it, boundingBox)
+        }
+    }
+}
+
 HShapeElement.prototype.renderInnerContent = function() {
     this._renderShapeFrame();
 
     if(!this.hidden && (this._isFirstFrame || this._mdf)) {
-        var boundingBox = this.shapeCont.getBBox();
+        var tempBoundingBox = this.tempBoundingBox;
+        var max = 999999;
+        tempBoundingBox.x = max;
+        tempBoundingBox.xMax = -max;
+        tempBoundingBox.y = max;
+        tempBoundingBox.yMax = -max;
+        this.calculateBoundingBox(this.itemsData, tempBoundingBox);
+        tempBoundingBox.width = tempBoundingBox.xMax < tempBoundingBox.x ? 0 : tempBoundingBox.xMax - tempBoundingBox.x;
+        tempBoundingBox.height = tempBoundingBox.yMax < tempBoundingBox.y ? 0 : tempBoundingBox.yMax - tempBoundingBox.y;
+        //var tempBoundingBox = this.shapeCont.getBBox();
         var changed = false;
-        if(this.currentBBox.w !== boundingBox.width){
-            this.currentBBox.w = boundingBox.width;
-            this.shapeCont.setAttribute('width',boundingBox.width);
+        if(this.currentBBox.w !== tempBoundingBox.width){
+            this.currentBBox.w = tempBoundingBox.width;
+            this.shapeCont.setAttribute('width',tempBoundingBox.width);
             changed = true;
         }
-        if(this.currentBBox.h !== boundingBox.height){
-            this.currentBBox.h = boundingBox.height;
-            this.shapeCont.setAttribute('height',boundingBox.height);
+        if(this.currentBBox.h !== tempBoundingBox.height){
+            this.currentBBox.h = tempBoundingBox.height;
+            this.shapeCont.setAttribute('height',tempBoundingBox.height);
             changed = true;
         }
-        if(changed  || this.currentBBox.x !== boundingBox.x  || this.currentBBox.y !== boundingBox.y){
-            this.currentBBox.w = boundingBox.width;
-            this.currentBBox.h = boundingBox.height;
-            this.currentBBox.x = boundingBox.x;
-            this.currentBBox.y = boundingBox.y;
+        if(changed  || this.currentBBox.x !== tempBoundingBox.x  || this.currentBBox.y !== tempBoundingBox.y){
+            this.currentBBox.w = tempBoundingBox.width;
+            this.currentBBox.h = tempBoundingBox.height;
+            this.currentBBox.x = tempBoundingBox.x;
+            this.currentBBox.y = tempBoundingBox.y;
 
             this.shapeCont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
             this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
@@ -11095,20 +11246,22 @@ HTextElement.prototype.renderInnerContent = function() {
         textPath = this.textPaths[i];
         renderedLetter = renderedLetters[count];
         count += 1;
-        if(!this.isMasked){
-            textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
-        }else{
-            textSpan.setAttribute('transform',renderedLetter.m);
+        if(renderedLetter._mdf.m) {
+            if(!this.isMasked){
+                textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
+            }else{
+                textSpan.setAttribute('transform',renderedLetter.m);
+            }
         }
         ////textSpan.setAttribute('opacity',renderedLetter.o);
         textSpan.style.opacity = renderedLetter.o;
-        if(renderedLetter.sw){
+        if(renderedLetter.sw && renderedLetter._mdf.sw){
             textPath.setAttribute('stroke-width',renderedLetter.sw);
         }
-        if(renderedLetter.sc){
+        if(renderedLetter.sc && renderedLetter._mdf.sc){
             textPath.setAttribute('stroke',renderedLetter.sc);
         }
-        if(renderedLetter.fc){
+        if(renderedLetter.fc && renderedLetter._mdf.fc){
             textPath.setAttribute('fill',renderedLetter.fc);
             textPath.style.color = renderedLetter.fc;
         }
@@ -11169,6 +11322,7 @@ HImageElement.prototype.createContent = function(){
 function HCameraElement(data,globalData,comp){
     this.initFrame();
     this.initBaseData(data,globalData,comp);
+    this.initHierarchy();
     var getProp = PropertyFactory.getProp;
     this.pe = getProp(this,data.pe,0,0,this);
     if(data.ks.p.s){
@@ -11197,7 +11351,7 @@ function HCameraElement(data,globalData,comp){
     this._prevMat = new Matrix();
     this._isFirstFrame = true;
 }
-extendPrototype([BaseElement, FrameElement], HCameraElement);
+extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 
 HCameraElement.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;
@@ -11228,6 +11382,22 @@ HCameraElement.prototype.renderFrame = function(){
     if(_mdf || (this.p && this.p._mdf) || (this.px && (this.px._mdf || this.py._mdf || this.pz._mdf)) || this.rx._mdf || this.ry._mdf || this.rz._mdf || this.or._mdf || (this.a && this.a._mdf)) {
         this.mat.reset();
 
+        if(this.hierarchy){
+            var mat;
+            len = this.hierarchy.length - 1;
+            for (i = len; i >= 0; i -= 1) {
+                /*mat = this.hierarchy[i].finalTransform.mProp.v.props;
+                console.log(mat)
+                this.mat.transform(-mat[0],-mat[1],-mat[2],-mat[3],-mat[4],-mat[5],-mat[6],-mat[7],-mat[8],-mat[9],-mat[10],-mat[11],-mat[12],-mat[13],-mat[14],mat[15]);
+                console.log(this.mat.props)*/
+                var mTransf = this.hierarchy[i].finalTransform.mProp;
+                this.mat.translate(-mTransf.p.v[0],-mTransf.p.v[1],mTransf.p.v[2]);
+                this.mat.rotateX(-mTransf.rx.v).rotateY(-mTransf.ry.v).rotateZ(mTransf.rz.v);
+                this.mat.scale(1/mTransf.s.v[0],1/mTransf.s.v[1],1/mTransf.s.v[2]);
+                this.mat.translate(mTransf.a.v[0],mTransf.a.v[1],mTransf.a.v[2]);
+            }
+        }
+
         if(this.p){
             this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
         }else{
@@ -11248,15 +11418,12 @@ HCameraElement.prototype.renderFrame = function(){
         this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
-        if(this.hierarchy){
-            var mat;
-            len = this.hierarchy.length;
-            for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.iv.props;
-                this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
-            }
-        }
-        if(!this._prevMat.equals(this.mat)) {
+
+
+        
+
+
+        if(!this._prevMat.equals(this.mat) && this.comp.threeDElements) {
             len = this.comp.threeDElements.length;
             var comp;
             for(i=0;i<len;i+=1){
@@ -13699,7 +13866,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.7';
+    lottiejs.version = '5.1.8';
 
     function checkReady() {
         if (document.readyState === "complete") {

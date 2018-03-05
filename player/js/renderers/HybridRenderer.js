@@ -140,7 +140,7 @@ HybridRenderer.prototype.build3dContainers = function(){
     var i, len = this.layers.length;
     var lastThreeDContainerData;
     for(i=0;i<len;i+=1){
-        if(this.layers[i].ddd){
+        if(this.layers[i].ddd && this.layers[i].ty !== 3){
             if(!lastThreeDContainerData){
                 lastThreeDContainerData = this.createThreeDContainer(i);
             }
