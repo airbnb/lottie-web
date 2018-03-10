@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "properties": {
+    "e": {
+      "description": "End value of keyframe segment.",
+      "extended_name": "End",
+      "type": "number"
+    },
+    "s": {
+      "description": "Start value of keyframe segment.",
+      "extended_name": "Start",
+      "type": "number"
+    },
+    "t": {
+      "description": "Start time of keyframe segment.",
+      "extended_name": "Time",
+      "type": "number"
+    },
+    "i": {
+      "description": "Bezier curve interpolation in value.",
+      "extended_name": "In Value",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "bezier x axis",
+          "extended_name": "X axis",
+          "type": "number"
+        },
+        "y": {
+          "description": "bezier y axis",
+          "extended_name": "Y axis",
+          "type": "number"
+        }
+      }
+    }
+  }
+}
