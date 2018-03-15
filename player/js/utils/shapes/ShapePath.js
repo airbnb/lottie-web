@@ -75,6 +75,7 @@ ShapePath.prototype.reverse = function() {
     var cnt = this._length - 1;
     var len = this._length;
 
+    var i;
     for (i = init; i < len; i += 1) {
     	newPath.setTripleAt(vertices[cnt][0], vertices[cnt][1], inPoints[cnt][0], inPoints[cnt][1], outPoints[cnt][0], outPoints[cnt][1], i, false);
         cnt -= 1;
