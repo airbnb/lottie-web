@@ -28,6 +28,7 @@ HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderInnerC
 
 HShapeElement.prototype.createContent = function(){
     var cont;
+    this.baseElement.style.fontSize = 0;
     if (this.data.hasMask) {
         this.layerElement.appendChild(this.shapesContainer);
         cont = this.svgElement;

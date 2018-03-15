@@ -183,7 +183,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     styleDiv(resizerElem);
     resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
     if(this.renderConfig.className) {
-      wrapper.setAttribute('class', this.renderConfig.className);
+      resizerElem.setAttribute('class', this.renderConfig.className);
     }
     wrapper.appendChild(resizerElem);
 

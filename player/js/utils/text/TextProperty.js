@@ -142,7 +142,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var j, jLen;
     var fontData = fontManager.getFontByName(documentData.f);
     var charData, cLength = 0;
-    var styles = fontData.fStyle.split(' ');
+    var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
 
     var fWeight = 'normal', fStyle = 'normal';
     len = styles.length;
@@ -386,6 +386,7 @@ TextProperty.prototype.recalculate = function(index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
     this.keysIndex = -1;
+    this._isFirstFrame = true;
     this.getValue(true);
 }
 
