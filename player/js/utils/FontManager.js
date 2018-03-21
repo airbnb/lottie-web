@@ -149,7 +149,11 @@ var FontManager = (function(){
             fontArr[i].helper = createHelper(defs,fontArr[i]);
             this.fonts.push(fontArr[i]);
         }
-        checkLoadedFonts.bind(this)();
+        //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
+        //Adding this timeout seems to fix it
+        setTimeout(function() {
+            checkLoadedFonts.bind(this)();
+        }.bind(this), 100);
     }
 
     function addChars(chars){
