@@ -258,12 +258,10 @@ AnimationItem.prototype.configAnimation = function (animData) {
 AnimationItem.prototype.waitForFontsLoaded = (function(){
     function checkFontsLoaded(){
         if(this.renderer.globalData.fontManager.loaded){
-            console.log('ENTRO')
             dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
             //this.renderer.buildItems(this.animationData.layers);
             this.checkLoaded();
         }else{
-            console.log('NO ENTRO')
             setTimeout(checkFontsLoaded.bind(this),20);
         }
     }
