@@ -1,3 +1,10 @@
+## V 5.1.9
+- EXPRESSIONS: adding name property to shape property group
+- FIX: adding timeout before checking loaded fonts
+- IMPROVEMENT: html elements now hide their base container when off render time bounds
+- FIX: undeclared variable in reverse method
+- FIX: text font issues
+
 ## V 5.1.8
 - FIX: centered tracking
 - FIX: augmenting linearity threshold

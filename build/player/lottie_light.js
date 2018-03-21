@@ -2029,7 +2029,11 @@ var FontManager = (function(){
             fontArr[i].helper = createHelper(defs,fontArr[i]);
             this.fonts.push(fontArr[i]);
         }
-        checkLoadedFonts.bind(this)();
+        //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
+        //Adding this timeout seems to fix it
+        setTimeout(function() {
+            checkLoadedFonts.bind(this)();
+        }.bind(this), 100);
     }
 
     function addChars(chars){
@@ -2828,6 +2832,7 @@ ShapePath.prototype.reverse = function() {
     var cnt = this._length - 1;
     var len = this._length;
 
+    var i;
     for (i = init; i < len; i += 1) {
     	newPath.setTripleAt(vertices[cnt][0], vertices[cnt][1], inPoints[cnt][0], inPoints[cnt][1], outPoints[cnt][0], outPoints[cnt][1], i, false);
         cnt -= 1;
@@ -5086,7 +5091,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var j, jLen;
     var fontData = fontManager.getFontByName(documentData.f);
     var charData, cLength = 0;
-    var styles = fontData.fStyle.split(' ');
+    var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
 
     var fWeight = 'normal', fStyle = 'normal';
     len = styles.length;
@@ -5330,6 +5335,7 @@ TextProperty.prototype.recalculate = function(index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
     this.keysIndex = -1;
+    this._isFirstFrame = true;
     this.getValue(true);
 }
 
@@ -6484,14 +6490,16 @@ function RenderableDOMElement() {}
         },
         hide: function(){
             if (!this.hidden && (!this.isInRange || this.isTransparent)) {
-                this.layerElement.style.display = 'none';
+                var elem = this.baseElement || this.layerElement;
+                elem.style.display = 'none';
                 this.hidden = true;
             }
         },
         show: function(){
             if (this.isInRange && !this.isTransparent){
                 if (!this.data.hd) {
-                    this.layerElement.style.display = 'block';
+                    var elem = this.baseElement || this.layerElement;
+                    elem.style.display = 'block';
                 }
                 this.hidden = false;
                 this._isFirstFrame = true;
@@ -9347,7 +9355,7 @@ function EffectsManager(){}
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.8';
+    lottiejs.version = '5.1.9';
 
     function checkReady() {
         if (document.readyState === "complete") {
