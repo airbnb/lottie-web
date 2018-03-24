@@ -5,8 +5,8 @@ ITextElement.prototype.initElement = function(data,globalData,comp){
     this.lettersChangedFlag = true;
     this.initFrame();
     this.initBaseData(data, globalData, comp);
-    this.textAnimator = new TextAnimatorProperty(data.t, this.renderType, this);
     this.textProperty = new TextProperty(this, data.t, this.dynamicProperties);
+    this.textAnimator = new TextAnimatorProperty(data.t, this.renderType, this);
     this.initTransform(data, globalData, comp);
     this.initHierarchy();
     this.initRenderable();
@@ -25,6 +25,7 @@ ITextElement.prototype.prepareFrame = function(num) {
     if(this.textProperty._mdf || this.textProperty._isFirstFrame) {
         this.buildNewText();
         this.textProperty._isFirstFrame = false;
+        this.textProperty._mdf = false;
     }
 };
 
@@ -41,20 +42,14 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
 
 ITextElement.prototype.updateDocumentData = function(newData, index) {
     this.textProperty.updateDocumentData(newData, index);
-    this.buildNewText();
-    this.renderInnerContent();
 };
 
 ITextElement.prototype.canResizeFont = function(_canResize) {
     this.textProperty.canResizeFont(_canResize);
-    this.buildNewText();
-    this.renderInnerContent();
 };
 
 ITextElement.prototype.setMinimumFontSize = function(_fontSize) {
     this.textProperty.setMinimumFontSize(_fontSize);
-    this.buildNewText();
-    this.renderInnerContent();
 };
 
 ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
@@ -72,6 +67,7 @@ ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matr
     }
     matrixHelper.translate(xPos, yPos, 0);
 };
+
 
 ITextElement.prototype.buildColor = function(colorData) {
     return 'rgb(' + Math.round(colorData[0]*255) + ',' + Math.round(colorData[1]*255) + ',' + Math.round(colorData[2]*255) + ')';

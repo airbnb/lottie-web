@@ -147,6 +147,7 @@ var FontManager = (function(){
                 defs.appendChild(sc);
             }
             fontArr[i].helper = createHelper(defs,fontArr[i]);
+            fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
         //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
@@ -195,12 +196,17 @@ var FontManager = (function(){
         return emptyChar;
     }
 
-    function measureText(char, fontName, size){
+    function measureText(char, fontName, size) {
         var fontData = this.getFontByName(fontName);
-        var tHelper = fontData.helper;
-        //tHelper.textContent = char;
-        return tHelper.measureText(char).width*size/100;
-        //return tHelper.getComputedTextLength()*size/100;
+        var index = char.charCodeAt(0) + 1;
+        if(!fontData.cache[index]) {
+            var tHelper = fontData.helper;
+            fontData.cache[index] = tHelper.measureText(char).width / 100;
+            //SVG version
+            //tHelper.textContent = char;
+            //fontData.cache[index] = tHelper.getComputedTextLength()*size/100;
+        }
+        return fontData.cache[index] * size;
     }
 
     function getFontByName(name){
@@ -211,7 +217,7 @@ var FontManager = (function(){
             }
             i += 1;
         }
-        return 'sans-serif';
+        return this.fonts[0];
     }
 
     function getCombinedCharacterCodes() {

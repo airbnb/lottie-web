@@ -11,7 +11,7 @@
         }
 
         #lottie{
-            background-color:#000;
+            background-color:#ccc;
             width:100%;
             height:100%;
             /*width:600px;
@@ -190,14 +190,15 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/render/pinkbackground.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.setSubframe(false);
 </script>
 </body>
 </html>
