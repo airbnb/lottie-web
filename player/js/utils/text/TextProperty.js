@@ -422,7 +422,11 @@ TextProperty.prototype.completeTextData = function(documentData) {
 };
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
-	index = index === undefined ? this.keysIndex : index;
+	index = index === undefined 
+    ? this.keysIndex === -1 
+        ? 0 
+        : 1 
+    : index;
     var dData = this.data.d.k[index].s;
     for(var s in newData) {
         dData[s] = newData[s];

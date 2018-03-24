@@ -35,7 +35,6 @@ HTextElement.prototype.createContent = function(){
 };
 
 HTextElement.prototype.buildNewText = function(){
-    console.log('buildNewText')
     var documentData = this.textProperty.currentData;
     this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
     var innerElemStyle = this.innerElem.style;

@@ -94,7 +94,10 @@ var FontManager = (function(){
     function createHelper(def, fontData){
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
-        tHelper.style.fontFamily = fontData.fFamily;
+        //tHelper.style.fontFamily = fontData.fFamily;
+        tHelper.setAttribute('font-family', fontData.fFamily);
+        tHelper.setAttribute('font-style', fontData.fStyle);
+        tHelper.setAttribute('font-weight', fontData.fWeight);
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
@@ -104,8 +107,8 @@ var FontManager = (function(){
         }
         def.appendChild(tHelper);
         var tCanvasHelper = createTag('canvas').getContext('2d');
-        tCanvasHelper.font = '100px '+ fontData.fFamily;
-        return tCanvasHelper;
+        tCanvasHelper.font = '100px '+ fontData.fFamily + ' ' + fontData.fStyle + ' ' + fontData.fWeight;
+        return tHelper;
     }
 
     function addFonts(fontData, defs){
@@ -139,7 +142,8 @@ var FontManager = (function(){
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
-                defs.appendChild(l);
+                //defs.appendChild(l);
+                document.body.appendChild(l);
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var sc = createTag('script');
@@ -152,7 +156,7 @@ var FontManager = (function(){
         }
         //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
         //Adding this timeout seems to fix it
-        setTimeout(function() {
+       setTimeout(function() {
             checkLoadedFonts.bind(this)();
         }.bind(this), 100);
     }
@@ -201,10 +205,11 @@ var FontManager = (function(){
         var index = char.charCodeAt(0) + 1;
         if(!fontData.cache[index]) {
             var tHelper = fontData.helper;
-            fontData.cache[index] = tHelper.measureText(char).width / 100;
+            //Canvas version
+            //fontData.cache[index] = tHelper.measureText(char).width / 100;
             //SVG version
-            //tHelper.textContent = char;
-            //fontData.cache[index] = tHelper.getComputedTextLength()*size/100;
+            tHelper.textContent = char;
+            fontData.cache[index] = tHelper.getComputedTextLength()/100;
         }
         return fontData.cache[index] * size;
     }
