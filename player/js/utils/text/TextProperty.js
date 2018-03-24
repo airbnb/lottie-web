@@ -60,10 +60,10 @@ TextProperty.prototype.copyFromDocumentData = function(data) {
 }
 
 TextProperty.prototype.setCurrentData = function(data, currentTextValue){
-        if(!data.__complete) {
-            this.completeTextData(data);
-        }
         if(this.currentData !== data) {
+            if(!data.__complete) {
+                this.completeTextData(data);
+            }
             this.copyFromDocumentData(data);
             this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
             this.currentData.fillColorAnim = data.fillColorAnim || this.currentData.fillColorAnim;
@@ -72,6 +72,7 @@ TextProperty.prototype.setCurrentData = function(data, currentTextValue){
             this._mdf = true;
         } else if(currentTextValue !== this.currentData.t) {
             this._mdf = true;
+            this.completeTextData(data);
         }
 		/*var currentData = this.currentData;
         currentData.ascent = data.ascent;
