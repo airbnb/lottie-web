@@ -107,7 +107,8 @@ var FontManager = (function(){
         }
         def.appendChild(tHelper);
         var tCanvasHelper = createTag('canvas').getContext('2d');
-        tCanvasHelper.font = '100px '+ fontData.fFamily + ' ' + fontData.fStyle + ' ' + fontData.fWeight;
+        tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
+        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
         return tHelper;
     }
 
@@ -202,16 +203,23 @@ var FontManager = (function(){
 
     function measureText(char, fontName, size) {
         var fontData = this.getFontByName(fontName);
-        var index = char.charCodeAt(0) + 1;
-        if(!fontData.cache[index]) {
+        var index = char.charCodeAt(0);
+        if(!fontData.cache[index + 1]) {
             var tHelper = fontData.helper;
             //Canvas version
             //fontData.cache[index] = tHelper.measureText(char).width / 100;
             //SVG version
+            //console.log(tHelper.getBBox().width)
+            /*tHelper.textContent = '|' + char + '|';
+            var doubleSize = tHelper.getComputedTextLength();
+            tHelper.textContent = '||';
+            var singleSize = tHelper.getComputedTextLength();
+            fontData.cache[index + 1] = (doubleSize - singleSize)/100;*/
+           
             tHelper.textContent = char;
-            fontData.cache[index] = tHelper.getComputedTextLength()/100;
+            fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
         }
-        return fontData.cache[index] * size;
+        return fontData.cache[index + 1] * size;
     }
 
     function getFontByName(name){
