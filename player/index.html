@@ -190,16 +190,16 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'html',
-        loop: false,
-        autoplay: false,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
+    //anim.setSubframe(false);
 </script>
 </body>
 </html>

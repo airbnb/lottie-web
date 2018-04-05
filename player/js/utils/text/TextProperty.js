@@ -426,7 +426,7 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
 	index = index === undefined 
     ? this.keysIndex === -1 
         ? 0 
-        : 1 
+        : this.keysIndex 
     : index;
     var dData = this.data.d.k[index].s;
     for(var s in newData) {
