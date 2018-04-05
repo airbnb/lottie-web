@@ -582,6 +582,10 @@ AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };
 
+AnimationItem.prototype.getDuration = function (isFrame) {
+    return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
+};
+
 AnimationItem.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
