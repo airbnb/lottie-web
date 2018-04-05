@@ -1,3 +1,10 @@
+## V 5.1.10
+- TEXT LAYERS: font measuring and some text fixes
+- FIX: 2d and 3d layers stack fix
+- FEATURE: added support for assetsPath when using animationData (@kwilliams-curago)
+- FEATURE: added getDuration method. In frames and in seconds.
+- FIX: fixed breaking change from AE 15.1 with text layers
+
 ## V 5.1.9
 - EXPRESSIONS: adding name property to shape property group
 - FIX: adding timeout before checking loaded fonts

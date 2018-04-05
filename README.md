@@ -176,6 +176,9 @@ Animation instances have these main methods:
 ***
 ### destroy()
 ***
+### getDuration(inFrames)
+- `inFrames`:  If true, returns duration in frames, if false, in seconds.
+***
 
 ### Additional methods:
 - updateTextDocumentData -- updates a text layer's data

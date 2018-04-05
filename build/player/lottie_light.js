@@ -1974,7 +1974,10 @@ var FontManager = (function(){
     function createHelper(def, fontData){
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
-        tHelper.style.fontFamily = fontData.fFamily;
+        //tHelper.style.fontFamily = fontData.fFamily;
+        tHelper.setAttribute('font-family', fontData.fFamily);
+        tHelper.setAttribute('font-style', fontData.fStyle);
+        tHelper.setAttribute('font-weight', fontData.fWeight);
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
@@ -1984,8 +1987,9 @@ var FontManager = (function(){
         }
         def.appendChild(tHelper);
         var tCanvasHelper = createTag('canvas').getContext('2d');
-        tCanvasHelper.font = '100px '+ fontData.fFamily;
-        return tCanvasHelper;
+        tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
+        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+        return tHelper;
     }
 
     function addFonts(fontData, defs){
@@ -2019,7 +2023,8 @@ var FontManager = (function(){
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
-                defs.appendChild(l);
+                //defs.appendChild(l);
+                document.body.appendChild(l);
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
                 //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var sc = createTag('script');
@@ -2027,11 +2032,12 @@ var FontManager = (function(){
                 defs.appendChild(sc);
             }
             fontArr[i].helper = createHelper(defs,fontArr[i]);
+            fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
         //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
         //Adding this timeout seems to fix it
-        setTimeout(function() {
+       setTimeout(function() {
             checkLoadedFonts.bind(this)();
         }.bind(this), 100);
     }
@@ -2075,12 +2081,25 @@ var FontManager = (function(){
         return emptyChar;
     }
 
-    function measureText(char, fontName, size){
+    function measureText(char, fontName, size) {
         var fontData = this.getFontByName(fontName);
-        var tHelper = fontData.helper;
-        //tHelper.textContent = char;
-        return tHelper.measureText(char).width*size/100;
-        //return tHelper.getComputedTextLength()*size/100;
+        var index = char.charCodeAt(0);
+        if(!fontData.cache[index + 1]) {
+            var tHelper = fontData.helper;
+            //Canvas version
+            //fontData.cache[index] = tHelper.measureText(char).width / 100;
+            //SVG version
+            //console.log(tHelper.getBBox().width)
+            /*tHelper.textContent = '|' + char + '|';
+            var doubleSize = tHelper.getComputedTextLength();
+            tHelper.textContent = '||';
+            var singleSize = tHelper.getComputedTextLength();
+            fontData.cache[index + 1] = (doubleSize - singleSize)/100;*/
+           
+            tHelper.textContent = char;
+            fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
+        }
+        return fontData.cache[index + 1] * size;
     }
 
     function getFontByName(name){
@@ -2091,7 +2110,7 @@ var FontManager = (function(){
             }
             i += 1;
         }
-        return 'sans-serif';
+        return this.fonts[0];
     }
 
     function getCombinedCharacterCodes() {
@@ -4773,6 +4792,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                             matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
                         } else {
                             matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
+                        
                         }
                     }
                 }
@@ -4953,15 +4973,17 @@ function TextProperty(elem, data){
 	this.v = '';
 	this.kf = false;
 	this._isFirstFrame = true;
-	this._mdf = true;
+	this._mdf = false;
 	this.data = data;
 	this.elem = elem;
+    this.comp = this.elem.comp;
 	this.keysIndex = -1;
     this.canResize = false;
     this.minimumFontSize = 1;
+    this.effectsSequence = [];
 	this.currentData = {
 		ascent: 0,
-        boxWidth: [0,0],
+        boxWidth: this.defaultBoxWidth,
         f: '',
         fStyle: '',
         fWeight: '',
@@ -4979,26 +5001,49 @@ function TextProperty(elem, data){
         t: 0,
         tr: 0,
         sz:0,
-        ps:[0,0],
+        ps:null,
         fillColorAnim: false,
         strokeColorAnim: false,
         strokeWidthAnim: false,
         yOffset: 0,
-        __complete: false,
         finalSize:0,
         finalText:[],
-        finalLineHeight: 0
+        finalLineHeight: 0,
+        __test: true
 
 	};
-	if(this.searchProperty()) {
-        elem.addDynamicProperty(this);
-	} else {
-		this.getValue(true);
-	}
+    this.copyFromDocumentData(this.data.d.k[0].s);
+    
+    if(!this.searchProperty()) {
+        this.completeTextData(this.currentData);
+        this.keysIndex = 0;
+    }
 }
 
-TextProperty.prototype.setCurrentData = function(data){
-		var currentData = this.currentData;
+TextProperty.prototype.defaultBoxWidth = [0,0];
+
+TextProperty.prototype.copyFromDocumentData = function(data) {
+    for(var s in data) {
+        this.currentData[s] = data[s];
+    }
+}
+
+TextProperty.prototype.setCurrentData = function(data, currentTextValue){
+        if(this.currentData !== data) {
+            if(!data.__complete) {
+                this.completeTextData(data);
+            }
+            this.copyFromDocumentData(data);
+            this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
+            this.currentData.fillColorAnim = data.fillColorAnim || this.currentData.fillColorAnim;
+            this.currentData.strokeColorAnim = data.strokeColorAnim || this.currentData.strokeColorAnim;
+            this.currentData.strokeWidthAnim = data.strokeWidthAnim || this.currentData.strokeWidthAnim;
+            this._mdf = true;
+        } else if(currentTextValue !== this.currentData.t) {
+            this._mdf = true;
+            this.completeTextData(data);
+        }
+		/*var currentData = this.currentData;
         currentData.ascent = data.ascent;
         currentData.boxWidth = data.boxWidth ? data.boxWidth : currentData.boxWidth;
         currentData.f = data.f;
@@ -5025,21 +5070,50 @@ TextProperty.prototype.setCurrentData = function(data){
         currentData.yOffset = data.yOffset;
         currentData.finalSize = data.finalSize;
         currentData.finalLineHeight = data.finalLineHeight;
-        currentData.finalText = data.finalText;
-        currentData.__complete = false;
+        currentData.finalText = data.finalText;*/
 };
 
 TextProperty.prototype.searchProperty = function() {
-	this.kf = this.data.d.k.length > 1;
-	return this.kf;
+    return this.searchKeyframes();
 };
 
-TextProperty.prototype.getValue = function(_forceRender) {
-	this._mdf = false;
-	var frameId = this.elem.globalData.frameId;
-	if((frameId === this._frameId || !this.kf) && !this._isFirstFrame && !_forceRender) {
-		return;
-	}
+TextProperty.prototype.searchKeyframes = function() {
+    this.kf = this.data.d.k.length > 1;
+    if(this.kf) {
+        this.addEffect(this.getKeyframeValue.bind(this));
+    }
+    return this.kf;
+}
+
+TextProperty.prototype.addEffect = function(effectFunction) {
+	this.effectsSequence.push(effectFunction);
+    this.elem.addDynamicProperty(this);
+};
+
+TextProperty.prototype.getValue = function(_finalValue) {
+    if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
+        return;
+    }
+    var currentTextValue = this.currentData.t;        
+    if(this.lock) {
+        this.setCurrentData(this.currentData, currentTextValue);
+        return;
+    }
+    this.lock = true;
+    this._mdf = false;
+    var multipliedValue;
+    var i, len = this.effectsSequence.length;
+    var finalValue = _finalValue || this.currentData;
+    for(i = 0; i < len; i += 1) {
+        finalValue = this.effectsSequence[i](finalValue);
+    }
+    this.setCurrentData(finalValue, currentTextValue);
+    this.pv = this.v = this.currentData;
+    this.lock = false;
+    this.frameId = this.elem.globalData.frameId;
+}
+
+TextProperty.prototype.getKeyframeValue = function(currentValue) {
     var textKeys = this.data.d.k, textDocumentData;
     var frameNum = this.elem.comp.renderedFrame;
     var i = 0, len = textKeys.length;
@@ -5051,15 +5125,10 @@ TextProperty.prototype.getValue = function(_forceRender) {
         i += 1;
     }
     if(this.keysIndex !== i) {
-    	if(!textDocumentData.__complete) {
-            this.completeTextData(textDocumentData);
-        }
-        this.setCurrentData(textDocumentData);
-        this._mdf = !this._isFirstFrame;
-        this.pv = this.v = this.currentData.t;
+        currentValue = textDocumentData;
         this.keysIndex = i;
     }
-	this._frameId = frameId;
+    return currentValue;
 };
 
 TextProperty.prototype.buildFinalText = function(text) {
@@ -5323,7 +5392,11 @@ TextProperty.prototype.completeTextData = function(documentData) {
 };
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
-	index = index === undefined ? this.keysIndex : index;
+	index = index === undefined 
+    ? this.keysIndex === -1 
+        ? 0 
+        : this.keysIndex 
+    : index;
     var dData = this.data.d.k[index].s;
     for(var s in newData) {
         dData[s] = newData[s];
@@ -5334,9 +5407,9 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
 TextProperty.prototype.recalculate = function(index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
-    this.keysIndex = -1;
+    this.keysIndex = this.kf ? -1 : 0;
     this._isFirstFrame = true;
-    this.getValue(true);
+    this.getValue(dData);
 }
 
 TextProperty.prototype.canResizeFont = function(_canResize) {
@@ -5356,6 +5429,7 @@ var TextSelectorProp = (function(){
 
     function TextSelectorProp(elem,data){
         this._mdf = false;
+        this._currentTextLength = -1;
         this.k = false;
         this.data = data;
         this.dynamicProperties = [];
@@ -5382,6 +5456,9 @@ var TextSelectorProp = (function(){
     TextSelectorProp.prototype = {
         addDynamicProperty: addDynamicProperty,
         getMult: function(ind) {
+            if(this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
+                this.getValue();
+            }
             //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
             var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
             var mult = 0;
@@ -5463,11 +5540,11 @@ var TextSelectorProp = (function(){
                     }
                 }
             }
-            var totalChars = this.data.totalChars || this.elem.textProperty.currentData.l.length || 0;
+            this._currentTextLength = this.elem.textProperty.currentData.l.length || 0;
             if(newCharsFlag && this.data.r === 2) {
-                this.e.v = totalChars;
+                this.e.v = this._currentTextLength;
             }
-            var divisor = this.data.r === 2 ? 1 : 100 / totalChars;
+            var divisor = this.data.r === 2 ? 1 : 100 / this._currentTextLength;
             var o = this.o.v/divisor;
             var s = this.s.v/divisor + o;
             var e = (this.e.v/divisor) + o;
@@ -7018,8 +7095,8 @@ ITextElement.prototype.initElement = function(data,globalData,comp){
     this.lettersChangedFlag = true;
     this.initFrame();
     this.initBaseData(data, globalData, comp);
-    this.textAnimator = new TextAnimatorProperty(data.t, this.renderType, this);
     this.textProperty = new TextProperty(this, data.t, this.dynamicProperties);
+    this.textAnimator = new TextAnimatorProperty(data.t, this.renderType, this);
     this.initTransform(data, globalData, comp);
     this.initHierarchy();
     this.initRenderable();
@@ -7038,6 +7115,7 @@ ITextElement.prototype.prepareFrame = function(num) {
     if(this.textProperty._mdf || this.textProperty._isFirstFrame) {
         this.buildNewText();
         this.textProperty._isFirstFrame = false;
+        this.textProperty._mdf = false;
     }
 };
 
@@ -7054,20 +7132,14 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
 
 ITextElement.prototype.updateDocumentData = function(newData, index) {
     this.textProperty.updateDocumentData(newData, index);
-    this.buildNewText();
-    this.renderInnerContent();
 };
 
 ITextElement.prototype.canResizeFont = function(_canResize) {
     this.textProperty.canResizeFont(_canResize);
-    this.buildNewText();
-    this.renderInnerContent();
 };
 
 ITextElement.prototype.setMinimumFontSize = function(_fontSize) {
     this.textProperty.setMinimumFontSize(_fontSize);
-    this.buildNewText();
-    this.renderInnerContent();
 };
 
 ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
@@ -7085,6 +7157,7 @@ ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matr
     }
     matrixHelper.translate(xPos, yPos, 0);
 };
+
 
 ITextElement.prototype.buildColor = function(colorData) {
     return 'rgb(' + Math.round(colorData[0]*255) + ',' + Math.round(colorData[1]*255) + ',' + Math.round(colorData[2]*255) + ')';
@@ -9186,6 +9259,10 @@ AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };
 
+AnimationItem.prototype.getDuration = function (isFrame) {
+    return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
+};
+
 AnimationItem.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
@@ -9356,7 +9433,7 @@ function EffectsManager(){}
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.9';
+    lottiejs.version = '5.1.10';
 
     function checkReady() {
         if (document.readyState === "complete") {
