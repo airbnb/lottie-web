@@ -14,23 +14,13 @@ RenderableElement.prototype = {
         this.renderableComponents = [];
     },
     addRenderableComponent: function(component) {
-        var i = 0, len = this.renderableComponents;
-        while(i < len) {
-            if(this.renderableComponents[i] === component) {
-                return;
-            }
-            i += 1;
+        if(this.renderableComponents.indexOf(component) === -1) {
+            this.renderableComponents.push(component);
         }
-        this.renderableComponents.push(component);
     },
     removeRenderableComponent: function(component) {
-        var i = 0, len = this.renderableComponents;
-        while(i < len) {
-            if(this.renderableComponents[i] === component) {
-                this.renderableComponents.splice(i, 1);
-                return;
-            }
-            i += 1;
+        if(this.renderableComponents.indexOf(component) !== -1) {
+            this.renderableComponents.splice(this.renderableComponents.indexOf(component), 1);
         }
     },
     prepareRenderableFrame: function(num) {
