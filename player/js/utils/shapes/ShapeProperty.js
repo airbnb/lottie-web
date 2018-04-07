@@ -209,6 +209,7 @@ var ShapePropertyFactory = (function(){
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
+                this.k = false;
                 this.convertEllToPath();
             }
         };
@@ -305,6 +306,7 @@ var ShapePropertyFactory = (function(){
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
+                this.k = false;
                 this.convertToPath();
             }
         };
@@ -417,6 +419,7 @@ var ShapePropertyFactory = (function(){
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
+                this.k = false;
                 this.convertRectToPath();
             }
         };

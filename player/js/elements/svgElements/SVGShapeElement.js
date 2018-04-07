@@ -104,9 +104,6 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     }
     var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
     var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
-    if (elementData._isAnimated) {
-
-    }
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
     this.addToAnimatedContents(data, elementData);
@@ -241,7 +238,7 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     for(i=0;i<len;i+=1){
         this.stylesList[i].reset();
     }
-    this.renderShape2();
+    this.renderShape();
 
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i]._mdf || this._isFirstFrame) {
@@ -278,40 +275,16 @@ SVGShapeElement.prototype.createRenderFunction = function(data, element) {
     }
 }
 
-SVGShapeElement.prototype.renderShape2 = function() {
+SVGShapeElement.prototype.renderShape = function() {
     var i, len = this.animatedContents.length;
     var animatedContent;
     for(i = 0; i < len; i += 1) {
         animatedContent = this.animatedContents[i];
-        animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
-    }
-}
-
-SVGShapeElement.prototype.renderShape = function(items, data) {
-    var i, len = items.length - 1;
-    var ty;
-    for(i=0;i<=len;i+=1){
-        ty = items[i].ty;
-        if(ty == 'tr'){
-        }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){
-            this.renderPath(items[i],data[i]);
-        }else if(ty == 'fl'){
-            this.renderFill(items[i],data[i]);
-        }else if(ty == 'gf'){
-            this.renderGradient(items[i],data[i]);
-        }else if(ty == 'gs'){
-            this.renderGradient(items[i],data[i]);
-            this.renderStroke(items[i],data[i]);
-        }else if(ty == 'st'){
-            this.renderStroke(items[i],data[i]);
-        }else if(ty == 'gr'){
-            this.renderShape(items[i].it,data[i].it);
-        }else if(ty == 'tm'){
-            //
+        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+            animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }
-
-};
+}
 
 SVGShapeElement.prototype.renderContentTransform = function(styleData, itemData, isFirstFrame) {
     if(isFirstFrame || itemData.transform.op._mdf){
