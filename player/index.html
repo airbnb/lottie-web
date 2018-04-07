@@ -85,6 +85,7 @@
     <script src="js/utils/shapes/ShapeCollection.js"></script>
     <script src="js/utils/shapes/DashProperty.js"></script>
     <script src="js/utils/shapes/GradientProperty.js"></script>
+    <script src="js/utils/shapes/shapePathBuilder.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
@@ -119,6 +120,7 @@
     <script src="js/elements/helpers/shapes/SVGGradientFillStyleData.js"></script>
     <script src="js/elements/helpers/shapes/SVGGradientStrokeStyleData.js"></script>
     <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
+    <script src="js/elements/helpers/shapes/SVGElementsRenderer.js"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/NullElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
@@ -191,7 +193,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -199,7 +201,7 @@
         path: 'exports/bm/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    //anim.setSubframe(false);
+    anim.setSubframe(false);
 </script>
 </body>
 </html>
