@@ -10,6 +10,28 @@ RenderableElement.prototype = {
         this.hidden = false;
         // If layer's transparency equals 0, it can be hidden
         this.isTransparent = false;
+        //list of animated components
+        this.renderableComponents = [];
+    },
+    addRenderableComponent: function(component) {
+        var i = 0, len = this.renderableComponents;
+        while(i < len) {
+            if(this.renderableComponents[i] === component) {
+                return;
+            }
+            i += 1;
+        }
+        this.renderableComponents.push(component);
+    },
+    removeRenderableComponent: function(component) {
+        var i = 0, len = this.renderableComponents;
+        while(i < len) {
+            if(this.renderableComponents[i] === component) {
+                this.renderableComponents.splice(i, 1);
+                return;
+            }
+            i += 1;
+        }
     },
     prepareRenderableFrame: function(num) {
         this.checkLayerLimits(num);
@@ -51,8 +73,12 @@ RenderableElement.prototype = {
         }
     },
     renderRenderable: function() {
-        this.maskManager.renderFrame(this.finalTransform.mat);
-        this.renderableEffectsManager.renderFrame(this._isFirstFrame);
+        var i, len = this.renderableComponents.length;
+        for(i = 0; i < len; i += 1) {
+            this.renderableComponents[i].renderFrame(this._isFirstFrame);
+        }
+        /*this.maskManager.renderFrame(this.finalTransform.mat);
+        this.renderableEffectsManager.renderFrame(this._isFirstFrame);*/
     },
     sourceRectAtTime: function(){
         return {
