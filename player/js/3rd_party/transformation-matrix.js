@@ -314,7 +314,8 @@ var Matrix = (function(){
         if(this.isIdentity()) {
             return x + ',' + y;
         }
-        return (x * this.props[0] + y * this.props[4] + this.props[12])+','+(x * this.props[1] + y * this.props[5] + this.props[13]);
+        var _p = this.props;
+        return (x * _p[0] + y * _p[4] + _p[12])+','+(x * _p[1] + y * _p[5] + _p[13]);
     }
 
     function toCSS() {
@@ -334,14 +335,27 @@ var Matrix = (function(){
         return cssValue;
     }
 
+    function roundMatrixProperty(val) {
+        var v = 10000;
+        if((val < 0.000001 && val > 0) || (val > -0.000001 && val < 0)) {
+            return _rnd(val * v) / v;
+        }
+        return val;
+    }
+
     function to2dCSS() {
         //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
         /*if(this.isIdentity()) {
             return '';
         }*/
-        var v = 10000;
         var props = this.props;
-        return "matrix(" + _rnd(props[0]*v)/v + ',' + _rnd(props[1]*v)/v + ',' + _rnd(props[4]*v)/v + ',' + _rnd(props[5]*v)/v + ',' + _rnd(props[12]*v)/v + ',' + _rnd(props[13]*v)/v + ")";
+        var _a = roundMatrixProperty(props[0]);
+        var _b = roundMatrixProperty(props[1]);
+        var _c = roundMatrixProperty(props[4]);
+        var _d = roundMatrixProperty(props[5]);
+        var _e = roundMatrixProperty(props[12]);
+        var _f = roundMatrixProperty(props[13]);
+        return "matrix(" + _a + ',' + _b + ',' + _c + ',' + _d + ',' + _e + ',' + _f + ")";
     }
 
     return function(){
