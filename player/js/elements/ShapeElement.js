@@ -61,18 +61,18 @@ IShapeElement.prototype = {
         this.prepareProperties(num, this.isInRange);
     },
     buildShapeString: function(pathNodes, length, closed, mat) {
-        var i, shapeString = '';
-        for(i = 1; i < length; i += 1) {
-            if (i === 1) {
-                shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-            }
-            shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
+        if(length === 0) {
+            return '';
         }
-        if (length === 1) {
-            shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+        var _o = pathNodes.o;
+        var _i = pathNodes.i;
+        var _v = pathNodes.v;
+        var i, shapeString = " M" + mat.applyToPointStringified(_v[0][0], _v[0][1]);
+        for(i = 1; i < length; i += 1) {
+            shapeString += " C" + mat.applyToPointStringified(_o[i - 1][0], _o[i - 1][1]) + " " + mat.applyToPointStringified(_i[i][0], _i[i][1]) + " " + mat.applyToPointStringified(_v[i][0], _v[i][1]);
         }
         if (closed && length) {
-            shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
+            shapeString += " C" + mat.applyToPointStringified(_o[i - 1][0], _o[i - 1][1]) + " " + mat.applyToPointStringified(_i[0][0], _i[0][1]) + " " + mat.applyToPointStringified(_v[0][0], _v[0][1]);
             shapeString += 'z';
         }
         return shapeString;

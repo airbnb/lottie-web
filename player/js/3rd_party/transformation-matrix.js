@@ -314,7 +314,8 @@ var Matrix = (function(){
         if(this.isIdentity()) {
             return x + ',' + y;
         }
-        return (x * this.props[0] + y * this.props[4] + this.props[12])+','+(x * this.props[1] + y * this.props[5] + this.props[13]);
+        var _p = this.props;
+        return (x * _p[0] + y * _p[4] + _p[12])+','+(x * _p[1] + y * _p[5] + _p[13]);
     }
 
     function toCSS() {
