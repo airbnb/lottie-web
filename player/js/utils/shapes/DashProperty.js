@@ -13,12 +13,13 @@ function DashProperty(elem, data, renderer) {
     var i, len = data.length || 0, prop;
     for(i = 0; i < len; i += 1) {
         prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);
-        this.k = prop.k ? true : this.k;
+        this.k = prop.k || this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
     }
     if(!this.k){
         this.getValue(true);
     }
+    this._isAnimated = this.k;
 }
 
 DashProperty.prototype.addDynamicProperty = addDynamicProperty;

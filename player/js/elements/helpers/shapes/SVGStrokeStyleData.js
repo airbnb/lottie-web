@@ -4,4 +4,9 @@ function SVGStrokeStyleData(elem, data, styleOb){
 	this.d = new DashProperty(elem,data.d||{},'svg',elem);
 	this.c = PropertyFactory.getProp(elem,data.c,1,255,elem);
 	this.style = styleOb;
+    this._isAnimated = !!this._isAnimated 
+        || this.o.effectsSequence.length 
+        || this.w.effectsSequence.length
+        || this.c.effectsSequence.length
+        || this.d._isAnimated;
 }

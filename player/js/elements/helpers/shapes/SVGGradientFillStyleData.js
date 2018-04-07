@@ -13,6 +13,13 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
     this.setGradientOpacity(data, styleOb);
+    this._isAnimated = !!this._isAnimated 
+        || this.o.effectsSequence.length 
+        || this.s.effectsSequence.length
+        || this.e.effectsSequence.length
+        || this.h.effectsSequence.length
+        || this.a.effectsSequence.length
+        || this.g.prop.effectsSequence.length;
 
 };
 
