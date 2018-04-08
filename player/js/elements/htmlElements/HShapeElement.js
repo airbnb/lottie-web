@@ -44,6 +44,7 @@ HShapeElement.prototype.createContent = function(){
     }
 
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,0, [], true);
+    this.filterUniqueShapes();
     this.shapeCont = cont;
 };
 
@@ -169,6 +170,13 @@ HShapeElement.prototype.calculateBoundingBox = function(itemsData, boundingBox) 
     }
 }
 
+HShapeElement.prototype.currentBoxContains = function(box) {
+    return this.currentBBox.x <= box.x 
+    && this.currentBBox.y <= box.y 
+    && this.currentBBox.width + this.currentBBox.x >= box.x + box.width
+    && this.currentBBox.height + this.currentBBox.y >= box.y + box.height
+}
+
 HShapeElement.prototype.renderInnerContent = function() {
     this._renderShapeFrame();
 
@@ -183,6 +191,9 @@ HShapeElement.prototype.renderInnerContent = function() {
         tempBoundingBox.width = tempBoundingBox.xMax < tempBoundingBox.x ? 0 : tempBoundingBox.xMax - tempBoundingBox.x;
         tempBoundingBox.height = tempBoundingBox.yMax < tempBoundingBox.y ? 0 : tempBoundingBox.yMax - tempBoundingBox.y;
         //var tempBoundingBox = this.shapeCont.getBBox();
+        if(this.currentBoxContains(tempBoundingBox)) {
+            return;
+        }
         var changed = false;
         if(this.currentBBox.w !== tempBoundingBox.width){
             this.currentBBox.w = tempBoundingBox.width;

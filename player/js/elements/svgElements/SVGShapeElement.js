@@ -51,9 +51,7 @@ SVGShapeElement.prototype.filterUniqueShapes = function(){
             shape = this.shapes[i];
             if(shape.styles.indexOf(style) !== -1) {
                 tempShapes.push(shape);
-                if(shape.sh.k) {
-                    areAnimated = true;
-                }
+                areAnimated = shape._isAnimated || areAnimated;
             }
         }
         if(tempShapes.length > 1 && areAnimated) {
