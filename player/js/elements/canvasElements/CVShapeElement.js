@@ -89,7 +89,7 @@ CVShapeElement.prototype.createTransformElement = function(data) {
 CVShapeElement.prototype.createShapeElement = function(data) {
     var elementData = new CVShapeData(this, data);
     
-    this.shapes.push(elementData.sh);
+    this.shapes.push(elementData);
     this.addShapeToModifiers(elementData);
     var j, jLen = this.stylesList.length;
     var hasStrokes = false, hasFills = false;

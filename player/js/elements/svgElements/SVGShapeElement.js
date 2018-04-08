@@ -31,7 +31,43 @@ SVGShapeElement.prototype.buildExpressionInterface = function(){};
 
 SVGShapeElement.prototype.createContent = function(){
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
+    this.filterUniqueShapes();
 };
+
+/*
+This method searches for multiple shapes that affect a single element and one of them is animated
+*/
+SVGShapeElement.prototype.filterUniqueShapes = function(){
+    var i, len = this.shapes.length, shape;
+    var j, jLen = this.stylesList.length;
+    var style, count = 0;
+    var tempShapes = [];
+    var areAnimated = false;
+    for(j = 0; j < jLen; j += 1) {
+        style = this.stylesList[j];
+        areAnimated = false;
+        tempShapes.length = 0;
+        for(i = 0; i < len; i += 1) {
+            shape = this.shapes[i];
+            if(shape.styles.indexOf(style) !== -1) {
+                tempShapes.push(shape);
+                if(shape.sh.k) {
+                    areAnimated = true;
+                }
+            }
+        }
+        if(tempShapes.length > 1 && areAnimated) {
+            this.setShapesAsAnimated(tempShapes);
+        }
+    }
+}
+
+SVGShapeElement.prototype.setShapesAsAnimated = function(shapes){
+    var i, len = shapes.length;
+    for(i = 0; i < len; i += 1) {
+        shapes[i].setAsAnimated();
+    }
+}
 
 SVGShapeElement.prototype.createStyleElement = function(data, level){
     //TODO: prevent drawing of hidden styles
@@ -104,7 +140,7 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     }
     var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
     var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
-    this.shapes.push(elementData.sh);
+    this.shapes.push(elementData);
     this.addShapeToModifiers(elementData);
     this.addToAnimatedContents(data, elementData);
     return elementData;
@@ -142,6 +178,7 @@ SVGShapeElement.prototype.reloadShapes = function(){
         this.prevViewData[i] = this.itemsData[i];
     }
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
+    this.filterUniqueShapes();
     len = this.dynamicProperties.length;
     for(i = 0; i < len; i += 1) {
         this.dynamicProperties[i].getValue();

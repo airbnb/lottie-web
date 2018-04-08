@@ -83,10 +83,6 @@ var ShapePropertyFactory = (function(){
         return this.pv;
     }
 
-    function getShapeValue(){
-        return this.v;
-    }
-
     function resetShape(){
         this.paths = this.localShapeCollection;
     }
@@ -111,7 +107,7 @@ var ShapePropertyFactory = (function(){
         this.lock = true;
         this.frameId = this.elem.globalData.frameId;
         this._mdf = false;
-        var finalValue = this.kf ? this.pv : this.data.k;
+        var finalValue = this.kf ? this.pv : this.data.ks.k;
         var i, len = this.effectsSequence.length;
         for(i = 0; i < len; i += 1) {
             finalValue = this.effectsSequence[i](finalValue);
@@ -142,7 +138,7 @@ var ShapePropertyFactory = (function(){
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
-        this.effectsSequence = [getShapeValue.bind(this)];
+        this.effectsSequence = [];
     }
 
     function addEffect(effectFunction) {

@@ -23,7 +23,7 @@ IShapeElement.prototype = {
         }
         var i, len = this.shapes.length;
         for(i=0;i<len;i+=1){
-            this.shapes[i].reset();
+            this.shapes[i].sh.reset();
         }
 
         len = this.shapeModifiers.length;
