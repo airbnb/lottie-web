@@ -87,8 +87,8 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
 };
 
 SVGShapeElement.prototype.createTransformElement = function(data, container) {
-    //TODO check if opacity is being calculated twice inside SVGTransform and outside
-    var elementData = new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,this), PropertyFactory.getProp(this,data.o,0,0.01,this), container);
+    var transformProperty = TransformPropertyFactory.getTransformProperty(this,data,this);
+    var elementData = new SVGTransformData(transformProperty, transformProperty.o, container);
     this.addToAnimatedContents(data, elementData);
     return elementData;
 };
