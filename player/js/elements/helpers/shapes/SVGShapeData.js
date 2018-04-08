@@ -5,15 +5,17 @@ function SVGShapeData(transformers, level, shape) {
     this.lStr = '';
     this.sh = shape;
     this.lvl = level;
-    this._isAnimated = !!shape.k;
-    var i = 0, len = transformers.length;
+    //TODO find if there are some cases where _isAnimated can be false. for now, since shapes add up with other shapes. They have to be calculated every time.
+    this._isAnimated = true;
+    // TODO: commenting this for now since all shapes are animated
+    /*var i = 0, len = transformers.length;
     while(i < len) {
     	if(transformers[i].mProps.dynamicProperties.length) {
     		this._isAnimated = true;
     		break;
     	}
     	i += 1;
-    }
+    }*/
 }
 
 SVGShapeData.prototype.setAsAnimated = function() {
