@@ -3,6 +3,7 @@ extendPrototype([ShapeModifier],RoundCornersModifier);
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
     this.rd = PropertyFactory.getProp(elem,data.r,0,null,this);
+    this._isAnimated = !!this.rd.effectsSequence.length;
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){

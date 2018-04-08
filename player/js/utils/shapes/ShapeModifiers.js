@@ -25,6 +25,9 @@ ShapeModifier.prototype.addShape = function(data){
         var shapeData = {shape:data.sh, data: data, localShapeCollection:shapeCollection_pool.newShapeCollection()};
         this.shapes.push(shapeData);
         this.addShapeToModifier(shapeData);
+        if(this._isAnimated) {
+            data.setAsAnimated();
+        }
     }
 };
 ShapeModifier.prototype.init = function(elem,data){

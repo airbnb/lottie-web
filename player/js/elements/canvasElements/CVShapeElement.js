@@ -87,20 +87,8 @@ CVShapeElement.prototype.createTransformElement = function(data) {
 };
 
 CVShapeElement.prototype.createShapeElement = function(data) {
-    var elementData = {
-        nodes:[],
-        trNodes:[],
-        tr:[0,0,0,0,0,0]
-    };
-    var ty = 4;
-    if(data.ty == 'rc'){
-        ty = 5;
-    }else if(data.ty == 'el'){
-        ty = 6;
-    }else if(data.ty == 'sr'){
-        ty = 7;
-    }
-    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,this);
+    var elementData = new CVShapeData(this, data);
+    
     this.shapes.push(elementData.sh);
     this.addShapeToModifiers(elementData);
     var j, jLen = this.stylesList.length;

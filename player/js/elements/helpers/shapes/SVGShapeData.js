@@ -8,10 +8,14 @@ function SVGShapeData(transformers, level, shape) {
     this._isAnimated = !!shape.k;
     var i = 0, len = transformers.length;
     while(i < len) {
-    	if(transformers[i].k) {
+    	if(transformers[i].mProps.dynamicProperties.length) {
     		this._isAnimated = true;
     		break;
     	}
     	i += 1;
     }
+}
+
+SVGShapeData.prototype.setAsAnimated = function() {
+    this._isAnimated = true;
 }

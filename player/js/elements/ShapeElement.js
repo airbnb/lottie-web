@@ -8,6 +8,15 @@ IShapeElement.prototype = {
             this.shapeModifiers[i].addShape(data);
         }
     },
+    isShapeInAnimatedModifiers: function(data) {
+        var i = 0, len = this.shapeModifiers.length;
+        while(i < len) {
+            if(this.shapeModifiers[i].isAnimatedWithShape(data)) {
+                return true;
+            }
+        }
+        return false;
+    },
     renderModifiers: function() {
         if(!this.shapeModifiers.length){
             return;

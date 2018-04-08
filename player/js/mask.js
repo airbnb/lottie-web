@@ -41,7 +41,8 @@ function MaskElement(data,element,globalData) {
             this.viewData[i] = {
                 op: PropertyFactory.getProp(this.element,properties[i].o,0,0.01,this.element),
                 prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3),
-                elem: path
+                elem: path,
+                lastPath: ''
             };
             defs.appendChild(path);
             continue;
@@ -126,6 +127,8 @@ function MaskElement(data,element,globalData) {
         this.maskElement.setAttribute('id', layerId);
         this.element.maskedElement.setAttribute(maskRef, "url(" + locationHref + "#" + layerId + ")");
         defs.appendChild(this.maskElement);
+    }
+    if (this.viewData.length) {
         this.element.addRenderableComponent(this);
     }
 

@@ -35,6 +35,8 @@ function SVGEffects(elem){
     if(count){
         elem.globalData.defs.appendChild(fil);
         elem.layerElement.setAttribute('filter','url(' + locationHref + '#'+filId+')');
+    }
+    if (this.filters.length) {
         elem.addRenderableComponent(this);
     }
 }

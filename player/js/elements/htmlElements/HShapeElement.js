@@ -11,6 +11,8 @@ function HShapeElement(data,globalData,comp){
     this.itemsData = [];
     //List of items in previous shape tree
     this.processedElements = [];
+    // List of animated components
+    this.animatedContents = [];
     this.shapesContainer = createNS('g');
     this.initElement(data,globalData,comp);
     //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
