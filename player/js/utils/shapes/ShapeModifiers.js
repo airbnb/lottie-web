@@ -50,16 +50,8 @@ ShapeModifier.prototype.processKeys = function(){
     if(this.elem.globalData.frameId === this.frameId){
         return;
     }
-    this._mdf = false;
-    var i, len = this.dynamicProperties.length;
-
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i]._mdf){
-            this._mdf = true;
-        }
-    }
     this.frameId = this.elem.globalData.frameId;
+    this.iterateDynamicProperties();
 };
 
-ShapeModifier.prototype.addDynamicProperty = addDynamicProperty;
+extendPrototype([DynamicPropertyContainer], ShapeModifier);

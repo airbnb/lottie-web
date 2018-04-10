@@ -193,20 +193,15 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/bm/data.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
-
-    setTimeout(function() {
-        anim.playSegments([30,35], true)
-    }, 2000);
 </script>
 </body>
 </html>

@@ -18,8 +18,6 @@ function TextAnimatorProperty(textData, renderType, elem){
 
 }
 
-TextAnimatorProperty.prototype.addDynamicProperty = addDynamicProperty;
-
 TextAnimatorProperty.prototype.searchProperties = function(){
     var i, len = this._textData.a.length, animatorProps;
     var getProp = PropertyFactory.getProp;
@@ -561,13 +559,9 @@ TextAnimatorProperty.prototype.getValue = function(){
         return;
     }
     this._frameId = this._elem.globalData.frameId;
-	var i, len = this.dynamicProperties.length;
-    this._mdf = false;
-	for(i = 0; i < len; i += 1) {
-		this.dynamicProperties[i].getValue();
-        this._mdf = this.dynamicProperties[i]._mdf || this._mdf;
-	}
+    this.iterateDynamicProperties();
 };
 
 TextAnimatorProperty.prototype.mHelper = new Matrix();
 TextAnimatorProperty.prototype.defaultPropsArray = [];
+extendPrototype([DynamicPropertyContainer], TextAnimatorProperty);

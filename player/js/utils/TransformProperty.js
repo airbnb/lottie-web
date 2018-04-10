@@ -1,17 +1,9 @@
 var TransformPropertyFactory = (function() {
 
-    function searchDynamicProperties() {
-        var i, len = this.dynamicProperties.length;
-        for(i = 0; i < len; i += 1) {
-            this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i]._mdf) {
-                this._mdf = true;
-            }
-        }
-    }
-
     function applyToMatrix(mat) {
-        this.searchDynamicProperties();
+        var _mdf = this._mdf;
+        this.iterateDynamicProperties();
+        this._mdf = this._mdf || _mdf;
         if (this.a) {
             mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
         }
@@ -41,8 +33,7 @@ var TransformPropertyFactory = (function() {
             return;
         }
 
-        this._mdf = false;
-        this.searchDynamicProperties();
+        this.iterateDynamicProperties();
 
         if (this._mdf || forceRender) {
             this.v.cloneFromProps(this.pre.props);
@@ -210,13 +201,13 @@ var TransformPropertyFactory = (function() {
 
     TransformProperty.prototype = {
         applyToMatrix: applyToMatrix,
-        searchDynamicProperties: searchDynamicProperties,
         getValue: processKeys,
         precalculateMatrix: precalculateMatrix,
         setInverted: setInverted,
-        autoOrient: autoOrient,
-        addDynamicProperty: addDynamicProperty
+        autoOrient: autoOrient
     }
+
+    extendPrototype([DynamicPropertyContainer], TransformProperty);
 
     function getTransformProperty(elem,data,container){
         return new TransformProperty(elem,data,container);

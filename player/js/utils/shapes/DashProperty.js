@@ -22,23 +22,15 @@ function DashProperty(elem, data, renderer) {
     this._isAnimated = this.k;
 }
 
-DashProperty.prototype.addDynamicProperty = addDynamicProperty;
-
 DashProperty.prototype.getValue = function(forceRender) {
     if(this.elem.globalData.frameId === this.frameId && !forceRender){
         return;
     }
-    var i = 0, len = this.dataProps.length;
-    this._mdf = forceRender;
     this.frameId = this.elem.globalData.frameId;
-    while(i<len){
-        this.dataProps[i].p.getValue();
-        if(this.dataProps[i].p._mdf){
-            this._mdf = true;
-        }
-        i+=1;
-    }
+    this.iterateDynamicProperties();
+    this._mdf = this._mdf || forceRender;
     if (this._mdf) {
+        var i = 0, len = this.dataProps.length;
         if(this.renderer === 'svg') {
             this.dashStr = '';
         }
@@ -55,3 +47,4 @@ DashProperty.prototype.getValue = function(forceRender) {
         }
     }
 };
+extendPrototype([DynamicPropertyContainer], DashProperty);

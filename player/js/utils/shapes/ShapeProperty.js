@@ -107,7 +107,7 @@ var ShapePropertyFactory = (function(){
         this.lock = true;
         this.frameId = this.elem.globalData.frameId;
         this._mdf = false;
-        var finalValue = this.kf ? this.pv : this.data.ks.k;
+        var finalValue = this.kf ? this.pv : this.data.ks ? this.data.ks.k : this.data.pt.k;
         var i, len = this.effectsSequence.length;
         for(i = 0; i < len; i += 1) {
             finalValue = this.effectsSequence[i](finalValue);
@@ -212,25 +212,17 @@ var ShapePropertyFactory = (function(){
 
         EllShapeProperty.prototype = {
             reset: resetShape,
-            getValue: function (frameNum){
-                var i, len = this.dynamicProperties.length;
+            getValue: function (){
                 if(this.elem.globalData.frameId === this.frameId){
                     return;
                 }
-                this._mdf = false;
                 this.frameId = this.elem.globalData.frameId;
+                this.iterateDynamicProperties();
 
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue(frameNum);
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
                 if(this._mdf){
                     this.convertEllToPath();
                 }
             },
-            addDynamicProperty: addDynamicProperty,
             convertEllToPath: function() {
                 var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
                 var _cw = this.d !== 3;
@@ -262,18 +254,14 @@ var ShapePropertyFactory = (function(){
             }
         }
 
+        extendPrototype([DynamicPropertyContainer], EllShapeProperty);
+
         return EllShapeProperty;
     }());
 
     var StarShapeProperty = (function() {
 
         function StarShapeProperty(elem,data) {
-            /*this.v = {
-                v: [],
-                i: [],
-                o: [],
-                c: true
-            };*/
             this.v = shape_pool.newElement();
             this.v.setPathData(true, 0);
             this.elem = elem;
@@ -308,22 +296,13 @@ var ShapePropertyFactory = (function(){
         };
 
         StarShapeProperty.prototype = {
-            addDynamicProperty: addDynamicProperty,
             reset: resetShape,
             getValue: function() {
                 if(this.elem.globalData.frameId === this.frameId){
                     return;
                 }
-                this._mdf = false;
                 this.frameId = this.elem.globalData.frameId;
-                var i, len = this.dynamicProperties.length;
-
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue();
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
+                this.iterateDynamicProperties();
                 if(this._mdf){
                     this.convertToPath();
                 }
@@ -390,6 +369,7 @@ var ShapePropertyFactory = (function(){
             }
 
         }
+        extendPrototype([DynamicPropertyContainer], StarShapeProperty);
 
         return StarShapeProperty;
     }());
@@ -463,24 +443,16 @@ var ShapePropertyFactory = (function(){
                 if(this.elem.globalData.frameId === this.frameId){
                     return;
                 }
-                this._mdf = false;
                 this.frameId = this.elem.globalData.frameId;
-                var i, len = this.dynamicProperties.length;
-
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue(frameNum);
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
+                this.iterateDynamicProperties();
                 if(this._mdf){
                     this.convertRectToPath();
                 }
 
             },
-            addDynamicProperty: addDynamicProperty,
             reset: resetShape
         }
+        extendPrototype([DynamicPropertyContainer], RectShapeProperty);
 
         return RectShapeProperty;
     }());
