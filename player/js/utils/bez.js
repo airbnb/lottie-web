@@ -197,8 +197,8 @@ function bezFunction(){
         var u0 = 1 - t0;
         var u1 = 1 - t1;
         var u0u0u0 = u0*u0*u0;
-        var t0u0u0_3 = t0*u0*u0*3; // t0*u0*u0 + u0*t0*u0 + u0*u0*t0
-        var t0t0u0_3 = t0*t0*u0*3; // t0*t0*u0 + u0*t0*t0 + t0*u0*t0
+        var t0u0u0_3 = t0*u0*u0*3;
+        var t0t0u0_3 = t0*t0*u0*3;
         var t0t0t0 = t0*t0*t0;
         //
         var u0u0u1 = u0*u0*u1;
@@ -215,27 +215,17 @@ function bezFunction(){
         var t1u1u1_3 = t1*u1*u1 + u1*t1*u1 + u1*u1*t1;
         var t1t1u1_3 = t1*t1*u1 + u1*t1*t1 + t1*u1*t1;
         var t1t1t1 = t1*t1*t1;
-        //Math.round(num * 100) / 100
         for(i=0;i<len;i+=1){
             bezier_segment_points[i * 4] = Math.round((u0u0u0 * pt1[i] + t0u0u0_3 * pt3[i] + t0t0u0_3 * pt4[i] + t0t0t0 * pt2[i]) * 1000) / 1000;
             bezier_segment_points[i * 4 + 1] = Math.round((u0u0u1 * pt1[i] + t0u0u1_3 * pt3[i] + t0t0u1_3 * pt4[i] + t0t0t1 * pt2[i]) * 1000) / 1000;
             bezier_segment_points[i * 4 + 2] = Math.round((u0u1u1 * pt1[i] + t0u1u1_3 * pt3[i] + t0t1u1_3 * pt4[i] + t0t1t1 * pt2[i]) * 1000) / 1000;
             bezier_segment_points[i * 4 + 3] = Math.round((u1u1u1 * pt1[i] + t1u1u1_3 * pt3[i] + t1t1u1_3 * pt4[i] + t1t1t1 * pt2[i]) * 1000) / 1000;
-            // pts.pt1[i] = Math.round((u0u0u0 * pt1[i] + t0u0u0_3 * pt3[i] + t0t0u0_3 * pt4[i] + t0t0t0 * pt2[i]) * 1000) / 1000;
-            // pts.pt3[i] = Math.round((u0u0u1 * pt1[i] + t0u0u1_3 * pt3[i] + t0t0u1_3 * pt4[i] + t0t0t1 * pt2[i]) * 1000) / 1000;
-            // pts.pt4[i] = Math.round((u0u1u1 * pt1[i] + t0u1u1_3 * pt3[i] + t0t1u1_3 * pt4[i] + t0t1t1 * pt2[i]) * 1000) / 1000;
-            // pts.pt2[i] = Math.round((u1u1u1 * pt1[i] + t1u1u1_3 * pt3[i] + t1t1u1_3 * pt4[i] + t1t1t1 * pt2[i]) * 1000) / 1000;
-            // pts.pt1[i] =  Math.round((u0*u0*u0* pt1[i] + (t0*u0*u0 + u0*t0*u0 + u0*u0*t0) * pt3[i] + (t0*t0*u0 + u0*t0*t0 + t0*u0*t0)* pt4[i] + t0*t0*t0* pt2[i])* 1000) / 1000;
-            // pts.pt3[i] = Math.round((u0*u0*u1*pt1[i] + (t0*u0*u1 + u0*t0*u1 + u0*u0*t1)* pt3[i] + (t0*t0*u1 + u0*t0*t1 + t0*u0*t1)* pt4[i] + t0*t0*t1* pt2[i])* 1000) / 1000;
-            // pts.pt4[i] = Math.round((u0*u1*u1* pt1[i] + (t0*u1*u1 + u0*t1*u1 + u0*u1*t1)* pt3[i] + (t0*t1*u1 + u0*t1*t1 + t0*u1*t1)* pt4[i] + t0*t1*t1* pt2[i])* 1000) / 1000;
-            // pts.pt2[i] = Math.round((u1*u1*u1* pt1[i] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[i] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[i] + t1*t1*t1* pt2[i])* 1000) / 1000;
         }
 
         return bezier_segment_points;
     }
 
     return {
-        //getEasingCurve : getEasingCurve,
         getSegmentsLength : getSegmentsLength,
         getNewSegment : getNewSegment,
         getPointInSegment : getPointInSegment,

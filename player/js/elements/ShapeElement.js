@@ -42,28 +42,27 @@ IShapeElement.prototype = {
         '3': 'butt'
     },
     searchProcessedElement: function(elem){
-        var i = 0, len = this.processedElements.length;
+        var elements = this.processedElements;
+        var i = 0, len = elements.length;
         while(i < len){
-            if(this.processedElements[i].elem === elem){
-                return this.processedElements[i].pos;
+            if(elements[i].elem === elem){
+                return elements[i].pos;
             }
             i += 1;
         }
         return 0;
     },
     addProcessedElement: function(elem, pos){
-        var i = this.processedElements.length, found = false;
+        var elements = this.processedElements;
+        var i = elements.length;
         while(i){
             i -= 1;
-            if(this.processedElements[i].elem === elem){
-                this.processedElements[i].pos = pos;
-                found = true;
-                break;
+            if(elements[i].elem === elem){
+                elements[i].pos = pos;
+                return;
             }
         }
-        if(!found){
-            this.processedElements.push(new ProcessedElement(elem, pos));
-        }
+        elements.push(new ProcessedElement(elem, pos));
     },
     prepareFrame: function(num) {
         this.prepareRenderableFrame(num);

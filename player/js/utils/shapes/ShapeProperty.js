@@ -5,23 +5,24 @@ var ShapePropertyFactory = (function(){
     function interpolateShape(frameNum, previousValue, caching) {
         var iterationIndex = caching.lastIndex;
         var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue;
-        if(frameNum < this.keyframes[0].t-this.offsetTime){
-            keyPropS = this.keyframes[0].s[0];
+        var kf = this.keyframes;
+        if(frameNum < kf[0].t-this.offsetTime){
+            keyPropS = kf[0].s[0];
             isHold = true;
             iterationIndex = 0;
-        }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
-            if(this.keyframes[this.keyframes.length - 2].h === 1){
-                keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
+        }else if(frameNum >= kf[kf.length - 1].t-this.offsetTime){
+            if(kf[kf.length - 2].h === 1){
+                keyPropS = kf[kf.length - 1].s[0];
             }else{
-                keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
+                keyPropS = kf[kf.length - 2].e[0];
             }
             isHold = true;
         }else{
             var i = iterationIndex;
-            var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData;
+            var len = kf.length- 1,flag = true,keyData,nextKeyData;
             while(flag){
-                keyData = this.keyframes[i];
-                nextKeyData = this.keyframes[i+1];
+                keyData = kf[i];
+                nextKeyData = kf[i+1];
                 if((nextKeyData.t - this.offsetTime) > frameNum){
                     break;
                 }
@@ -66,6 +67,8 @@ var ShapePropertyFactory = (function(){
                 previousValue.v[j][k] = vertexValue;
             }
         }
+
+        window.contador = window.contador ? window.contador + 1 : 1;
     }
 
     function interpolateShapeCurrentTime(){

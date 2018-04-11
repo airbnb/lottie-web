@@ -238,10 +238,6 @@ var PropertyFactory = (function(){
         return this.pv;
     }
 
-    function getNoValue(){
-        this._mdf = false;
-    }
-
     function setVValue(val) {
         var multipliedValue;
         if(this.propType === 'unidimensional') {
