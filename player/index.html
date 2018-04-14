@@ -12,7 +12,7 @@
         }
 
         #lottie{
-            background-color:#000;
+            background-color:#ccc;
             width:100%;
             height:100%;
             /*width:600px;
@@ -58,6 +58,7 @@
         }
 
     </style>
+     <script src="lottie_api.js"></script>
     <!-- build:js lottie.js -->
      <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
@@ -199,9 +200,19 @@
         rendererSettings: {
             progressiveLoad:false,
         },
-        path: 'exports/bm/data.json'
+        path: 'exports/render/LottieLogo2.json'
     };
     anim = lottie.loadAnimation(animData);
+
+    anim.addEventListener('DOMLoaded', function() {
+        animationAPI = lottie_api.createAnimationApi(anim);
+        var null_animator = animationAPI.getKeyPath('Shape Layer 2, Transform, Scale');
+        animationAPI.addValueCallback(null_animator, function(currentValue) {
+            currentValue[0] = Math.random() * 100;
+            return currentValue
+        })
+    })
+    //anim.setSubframe(false);
 </script>
 </body>
 </html>

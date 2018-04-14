@@ -32,6 +32,10 @@ var TransformPropertyFactory = (function() {
         if (this.elem.globalData.frameId === this.frameId) {
             return;
         }
+        if(this._isDirty) {
+            this.precalculateMatrix();
+            this._isDirty = false;
+        }
 
         this.iterateDynamicProperties();
 
@@ -108,14 +112,14 @@ var TransformPropertyFactory = (function() {
         } else {
             return;
         }
-        if(!this.s.k) {
+        if(!this.s.effectsSequence.length) {
             this.pre.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
             this.appliedTransformations = 2;
         } else {
             return;
         }
         if(this.sk) {
-            if(!this.sk.k && !this.sa.k) {
+            if(!this.sk.effectsSequence.length && !this.sa.effectsSequence.length) {
                 this.pre.skewFromAxis(-this.sk.v, this.sa.v);
             this.appliedTransformations = 3;
             } else {
@@ -123,13 +127,13 @@ var TransformPropertyFactory = (function() {
             }
         }
         if (this.r) {
-            if(!this.r.k) {
+            if(!this.r.effectsSequence.length) {
                 this.pre.rotate(-this.r.v);
                 this.appliedTransformations = 4;
             } else {
                 return;
             }
-        } else if(!this.rz.k && !this.ry.k && !this.rx.k && !this.or.k) {
+        } else if(!this.rz.effectsSequence.length && !this.ry.effectsSequence.length && !this.rx.effectsSequence.length && !this.or.effectsSequence.length) {
             this.pre.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             this.appliedTransformations = 4;
         }
@@ -138,6 +142,12 @@ var TransformPropertyFactory = (function() {
     function autoOrient(){
         //
         //var prevP = this.getValueAtTime();
+    }
+
+    function addDynamicProperty(prop) {
+        this._addDynamicProperty(prop);
+        this.elem.addDynamicProperty(prop);
+        this._isDirty = true;
     }
 
     function TransformProperty(elem,data,container){
@@ -193,7 +203,7 @@ var TransformPropertyFactory = (function() {
         } else {
             this.o = {_mdf:false,v:1};
         }
-        this.precalculateMatrix();
+        this._isDirty = true;
         if(!this.dynamicProperties.length){
             this.getValue(true);
         }
@@ -208,6 +218,8 @@ var TransformPropertyFactory = (function() {
     }
 
     extendPrototype([DynamicPropertyContainer], TransformProperty);
+    TransformProperty.prototype.addDynamicProperty = addDynamicProperty;
+    TransformProperty.prototype._addDynamicProperty = DynamicPropertyContainer.prototype.addDynamicProperty;
 
     function getTransformProperty(elem,data,container){
         return new TransformProperty(elem,data,container);
