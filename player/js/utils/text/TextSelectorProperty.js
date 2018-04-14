@@ -4,16 +4,14 @@ var TextSelectorProp = (function(){
     var floor = Math.floor;
 
     function TextSelectorProp(elem,data){
-        this._mdf = false;
         this._currentTextLength = -1;
         this.k = false;
         this.data = data;
-        this.dynamicProperties = [];
         this.elem = elem;
-        this.container = elem;
         this.comp = elem.comp;
         this.finalS = 0;
         this.finalE = 0;
+        this.initDynamicPropertyContainer(elem);
         this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this);
         if('e' in data){
             this.e = PropertyFactory.getProp(elem,data.e,0,0,this);

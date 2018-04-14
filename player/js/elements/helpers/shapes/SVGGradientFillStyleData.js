@@ -1,25 +1,21 @@
 function SVGGradientFillStyleData(elem, data, styleOb){
+    this.initDynamicPropertyContainer(elem);
+    this.getValue = this.iterateDynamicProperties;
     this.initGradientData(elem, data, styleOb);
 }
 
 SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, styleOb){
-    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
-    this.s = PropertyFactory.getProp(elem,data.s,1,null,elem);
-    this.e = PropertyFactory.getProp(elem,data.e,1,null,elem);
-    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,elem);
-    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,elem);
-    this.g = new GradientProperty(elem,data.g,elem);
+    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this);
+    this.s = PropertyFactory.getProp(elem,data.s,1,null,this);
+    this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
+    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
+    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
+    this.g = new GradientProperty(elem,data.g,this);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
     this.setGradientOpacity(data, styleOb);
-    this._isAnimated = !!this._isAnimated 
-        || this.o.effectsSequence.length 
-        || this.s.effectsSequence.length
-        || this.e.effectsSequence.length
-        || this.h.effectsSequence.length
-        || this.a.effectsSequence.length
-        || this.g.prop.effectsSequence.length;
+    this._isAnimated = !!this._isAnimated;
 
 };
 
@@ -73,3 +69,5 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         styleOb.msElem = maskElement;
     }
 };
+
+extendPrototype([DynamicPropertyContainer], SVGGradientFillStyleData);

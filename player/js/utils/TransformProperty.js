@@ -82,29 +82,6 @@ var TransformPropertyFactory = (function() {
         this.frameId = this.elem.globalData.frameId;
     }
 
-    function setInverted(){
-        this.inverted = true;
-        this.iv = new Matrix();
-        if(!this.k){
-            if(this.data.p.s){
-                this.iv.translate(this.px.v,this.py.v,-this.pz.v);
-            }else{
-                this.iv.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
-            }
-            if(this.r){
-                this.iv.rotate(-this.r.v);
-            }else{
-                this.iv.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
-            }
-            if(this.s){
-                this.iv.scale(this.s.v[0],this.s.v[1],1);
-            }
-            if(this.a){
-                this.iv.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-            }
-        }
-    }
-
     function precalculateMatrix() {
         if(!this.a.k) {
             this.pre.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
@@ -154,14 +131,12 @@ var TransformPropertyFactory = (function() {
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
-        this.container = container || elem;
-        this.dynamicProperties = [];
-        this._mdf = false;
         this.data = data;
         this.v = new Matrix();
         //Precalculated matrix with non animated properties
         this.pre = new Matrix();
         this.appliedTransformations = 0;
+        this.initDynamicPropertyContainer(container || elem);
         if(data.p.s){
             this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
             this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
@@ -213,7 +188,6 @@ var TransformPropertyFactory = (function() {
         applyToMatrix: applyToMatrix,
         getValue: processKeys,
         precalculateMatrix: precalculateMatrix,
-        setInverted: setInverted,
         autoOrient: autoOrient
     }
 

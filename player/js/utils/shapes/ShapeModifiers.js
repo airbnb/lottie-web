@@ -31,13 +31,11 @@ ShapeModifier.prototype.addShape = function(data){
     }
 };
 ShapeModifier.prototype.init = function(elem,data){
-    this.dynamicProperties = [];
     this.shapes = [];
     this.elem = elem;
-    this.container = elem;
+    this.initDynamicPropertyContainer(elem);
     this.initModifierProperties(elem,data);
     this.frameId = initialDefaultFrame;
-    this._mdf = false;
     this.closed = false;
     this.k = false;
     if(this.dynamicProperties.length){

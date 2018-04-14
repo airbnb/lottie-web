@@ -197,12 +197,10 @@ var ShapePropertyFactory = (function(){
             this.paths = this.localShapeCollection;
             this.localShapeCollection.addShape(this.v);
             this.d = data.d;
-            this.dynamicProperties = [];
             this.elem = elem;
-            this.container = elem;
             this.comp = elem.comp;
             this.frameId = -1;
-            this._mdf = false;
+            this.initDynamicPropertyContainer(elem);
             this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
             this.s = PropertyFactory.getProp(elem,data.s,1,0,this);
             if(this.dynamicProperties.length){
@@ -268,13 +266,11 @@ var ShapePropertyFactory = (function(){
             this.v = shape_pool.newElement();
             this.v.setPathData(true, 0);
             this.elem = elem;
-            this.container = elem;
             this.comp = elem.comp;
             this.data = data;
             this.frameId = -1;
             this.d = data.d;
-            this.dynamicProperties = [];
-            this._mdf = false;
+            this.initDynamicPropertyContainer(elem);
             if(data.sy === 1){
                 this.ir = PropertyFactory.getProp(elem,data.ir,0,0,this);
                 this.is = PropertyFactory.getProp(elem,data.is,0,0.01,this);
@@ -386,12 +382,10 @@ var ShapePropertyFactory = (function(){
             this.localShapeCollection.addShape(this.v);
             this.paths = this.localShapeCollection;
             this.elem = elem;
-            this.container = elem;
             this.comp = elem.comp;
             this.frameId = -1;
             this.d = data.d;
-            this.dynamicProperties = [];
-            this._mdf = false;
+            this.initDynamicPropertyContainer(elem);
             this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
             this.s = PropertyFactory.getProp(elem,data.s,1,0,this);
             this.r = PropertyFactory.getProp(elem,data.r,0,0,this);

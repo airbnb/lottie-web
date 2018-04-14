@@ -33,15 +33,14 @@ RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix,
 
 RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData) {
     this.elem = elem;
-    this.container = elem;
     this.arr = arr;
     this.pos = pos;
     this.elemsData = elemsData;
     this._currentCopies = 0;
     this._elements = [];
     this._groups = [];
-    this.dynamicProperties = [];
     this.frameId = -1;
+    this.initDynamicPropertyContainer(elem);
     this.initModifierProperties(elem,arr[pos]);
     var cont = 0;
     while(pos>0){

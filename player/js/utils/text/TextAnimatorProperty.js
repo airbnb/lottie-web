@@ -1,13 +1,10 @@
 function TextAnimatorProperty(textData, renderType, elem){
-    this._mdf = false;
     this._isFirstFrame = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
-	this.dynamicProperties = [];
 	this._textData = textData;
 	this._renderType = renderType;
     this._elem = elem;
-	this.container = elem;
 	this._animatorsData = createSizedArray(this._textData.a.length);
 	this._pathData = {};
 	this._moreOptions = {
@@ -15,6 +12,7 @@ function TextAnimatorProperty(textData, renderType, elem){
 	};
 	this.renderedLetters = [];
     this.lettersChangedFlag = false;
+    this.initDynamicPropertyContainer(elem);
 
 }
 

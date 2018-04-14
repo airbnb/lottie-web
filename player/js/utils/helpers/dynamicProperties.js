@@ -4,6 +4,7 @@ DynamicPropertyContainer.prototype = {
 		if(this.dynamicProperties.indexOf(prop) === -1) {
 	        this.dynamicProperties.push(prop);
 	        this.container.addDynamicProperty(this);
+	    	this._isAnimated = true;
 	    }
 	},
 	iterateDynamicProperties: function(){
@@ -15,5 +16,11 @@ DynamicPropertyContainer.prototype = {
 	            this._mdf = true;
 	        }
 	    }
+	},
+	initDynamicPropertyContainer: function(container){
+	    this.container = container;
+	    this.dynamicProperties = [];
+	    this._mdf = false;
+	    this._isAnimated = false;
 	}
 }

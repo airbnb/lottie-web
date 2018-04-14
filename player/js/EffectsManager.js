@@ -10,8 +10,6 @@ function EffectsManager(data,element){
 }
 
 function GroupEffect(data,element){
-    this.container = element;
-    this.dynamicProperties = [];
     this.init(data,element);
 }
 
@@ -21,8 +19,8 @@ GroupEffect.prototype.getValue = GroupEffect.prototype.iterateDynamicProperties;
 
 GroupEffect.prototype.init = function(data,element){
     this.data = data;
-    this._mdf = false;
     this.effectElements = [];
+    this.initDynamicPropertyContainer(element);
     var i, len = this.data.ef.length;
     var eff, effects = this.data.ef;
     for(i=0;i<len;i+=1){

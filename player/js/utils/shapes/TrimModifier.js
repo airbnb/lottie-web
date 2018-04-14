@@ -91,6 +91,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
             s = e;
             e = _s;
         }
+        s = Math.round(s*1000)/1000;
+        e = Math.round(e*1000)/1000;
         this.sValue = s;
         this.eValue = e;
     } else {
