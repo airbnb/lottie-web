@@ -14,7 +14,7 @@ var EffectsExpressionInterface = (function (){
             }
 
             return function(name){
-                var effects = elem.data.ef, i = 0, len = effects.length;
+                var effects = elem.data.ef || [], i = 0, len = effects.length;
                 while(i<len) {
                     if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                         return effectElements[i];
