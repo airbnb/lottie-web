@@ -1,3 +1,7 @@
+## V 5.1.11
+- PERFORMANCE: significant improvement on the svg and canvas renderers
+- FIX: floating points fix
+
 ## V 5.1.10
 - TEXT LAYERS: font measuring and some text fixes
 - FIX: 2d and 3d layers stack fix
