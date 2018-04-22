@@ -67,8 +67,6 @@ var ShapePropertyFactory = (function(){
                 previousValue.v[j][k] = vertexValue;
             }
         }
-
-        window.contador = window.contador ? window.contador + 1 : 1;
     }
 
     function interpolateShapeCurrentTime(){

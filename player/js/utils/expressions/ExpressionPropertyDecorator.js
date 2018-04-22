@@ -142,11 +142,28 @@
 
     }
 
+    function getSpeedAtTime(frameNum) {
+        var delta = -0.01;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var speed = 0;
+        if(v1.length){
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                speed += Math.pow(v2[i] - v1[i], 2);
+            }
+            speed = Math.sqrt(speed) * 100;
+        } else {
+            speed = 0;
+        }
+        return speed;
+    }
+
     function getVelocityAtTime(frameNum) {
         if(this.vel !== undefined){
             return this.vel;
         }
-        var delta = -0.01;
+        var delta = -0.001;
         //frameNum += this.elem.data.st;
         var v1 = this.getValueAtTime(frameNum);
         var v2 = this.getValueAtTime(frameNum + delta);
@@ -243,7 +260,8 @@
         prop.setGroupProperty = setGroupProperty;
         prop.loopOut = loopOut;
         prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime;
+        prop.getVelocityAtTime = getVelocityAtTime.bind(prop);
+        prop.getSpeedAtTime = getSpeedAtTime.bind(prop);
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         prop.propertyIndex = data.ix;
         var value = 0;
