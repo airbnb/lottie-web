@@ -15,7 +15,8 @@ function CanvasRenderer(animationItem, config){
     this.globalData = {
         frameNum: -1,
         _mdf: false,
-        renderConfig: this.renderConfig
+        renderConfig: this.renderConfig,
+        currentGlobalAlpha: -1
     };
     var i, len = 15;
     this.contextData = new CVContextData();
@@ -71,10 +72,14 @@ CanvasRenderer.prototype.ctxOpacity = function(op){
     }*/
     if(!this.renderConfig.clearCanvas){
         this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
+        this.globalData.currentGlobalAlpha = this.contextData.cO;
         return;
     }
     this.contextData.cO *= op < 0 ? 0 : op;
-    this.canvasContext.globalAlpha = this.contextData.cO;
+    if(this.globalData.currentGlobalAlpha !== this.contextData.cO) {
+        this.canvasContext.globalAlpha = this.contextData.cO;
+        this.globalData.currentGlobalAlpha = this.contextData.cO;
+    }
 };
 
 CanvasRenderer.prototype.reset = function(){
@@ -123,7 +128,10 @@ CanvasRenderer.prototype.restore = function(actionFlag){
     this.canvasContext.setTransform(popped[0],popped[1],popped[4],popped[5],popped[12],popped[13]);
     popped = this.contextData.savedOp[this.contextData.cArrPos];
     this.contextData.cO = popped;
-    this.canvasContext.globalAlpha = popped;
+    if(this.globalData.currentGlobalAlpha !== popped) {
+        this.canvasContext.globalAlpha = popped;
+        this.globalData.currentGlobalAlpha = popped;
+    }
 };
 
 CanvasRenderer.prototype.configAnimation = function(animData){

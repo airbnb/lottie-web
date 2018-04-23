@@ -94,7 +94,10 @@ var FontManager = (function(){
     function createHelper(def, fontData){
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
-        tHelper.style.fontFamily = fontData.fFamily;
+        //tHelper.style.fontFamily = fontData.fFamily;
+        tHelper.setAttribute('font-family', fontData.fFamily);
+        tHelper.setAttribute('font-style', fontData.fStyle);
+        tHelper.setAttribute('font-weight', fontData.fWeight);
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
@@ -104,8 +107,9 @@ var FontManager = (function(){
         }
         def.appendChild(tHelper);
         var tCanvasHelper = createTag('canvas').getContext('2d');
-        tCanvasHelper.font = '100px '+ fontData.fFamily;
-        return tCanvasHelper;
+        tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
+        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+        return tHelper;
     }
 
     function addFonts(fontData, defs){
@@ -134,22 +138,25 @@ var FontManager = (function(){
                 s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                 defs.appendChild(s);
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
-                //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var l = createTag('link');
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
-                defs.appendChild(l);
+                document.body.appendChild(l);
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
-                //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var sc = createTag('script');
                 sc.setAttribute('src',fontArr[i].fPath);
                 defs.appendChild(sc);
             }
             fontArr[i].helper = createHelper(defs,fontArr[i]);
+            fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
-        checkLoadedFonts.bind(this)();
+        //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
+        //Adding this timeout seems to fix it
+       setTimeout(function() {
+            checkLoadedFonts.bind(this)();
+        }.bind(this), 100);
     }
 
     function addChars(chars){
@@ -191,12 +198,25 @@ var FontManager = (function(){
         return emptyChar;
     }
 
-    function measureText(char, fontName, size){
+    function measureText(char, fontName, size) {
         var fontData = this.getFontByName(fontName);
-        var tHelper = fontData.helper;
-        //tHelper.textContent = char;
-        return tHelper.measureText(char).width*size/100;
-        //return tHelper.getComputedTextLength()*size/100;
+        var index = char.charCodeAt(0);
+        if(!fontData.cache[index + 1]) {
+            var tHelper = fontData.helper;
+            //Canvas version
+            //fontData.cache[index] = tHelper.measureText(char).width / 100;
+            //SVG version
+            //console.log(tHelper.getBBox().width)
+            /*tHelper.textContent = '|' + char + '|';
+            var doubleSize = tHelper.getComputedTextLength();
+            tHelper.textContent = '||';
+            var singleSize = tHelper.getComputedTextLength();
+            fontData.cache[index + 1] = (doubleSize - singleSize)/100;*/
+           
+            tHelper.textContent = char;
+            fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
+        }
+        return fontData.cache[index + 1] * size;
     }
 
     function getFontByName(name){
@@ -207,7 +227,7 @@ var FontManager = (function(){
             }
             i += 1;
         }
-        return 'sans-serif';
+        return this.fonts[0];
     }
 
     function getCombinedCharacterCodes() {

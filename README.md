@@ -69,6 +69,14 @@ Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
 Skip directly to "Install third-party extensions"
 
+### Option 6:
+
+Install with [Homebrew](http://brew.sh)-[adobe](https://github.com/danielbayley/homebrew-adobe):
+```bash
+brew tap danielbayley/adobe
+brew cask install lottie
+```
+
 ### After installing
 - **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 - **Mac:** Go to Adobe After Effects > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
@@ -176,8 +184,11 @@ Animation instances have these main methods:
 ***
 ### destroy()
 ***
+### getDuration(inFrames)
+- `inFrames`:  If true, returns duration in frames, if false, in seconds.
+***
 
-### Aditional methods:
+### Additional methods:
 - updateTextDocumentData -- updates a text layer's data
 [More Info](https://github.com/airbnb/lottie-web/wiki/TextLayer.updateDocumentData)
 ***

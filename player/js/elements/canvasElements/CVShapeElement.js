@@ -87,21 +87,9 @@ CVShapeElement.prototype.createTransformElement = function(data) {
 };
 
 CVShapeElement.prototype.createShapeElement = function(data) {
-    var elementData = {
-        nodes:[],
-        trNodes:[],
-        tr:[0,0,0,0,0,0]
-    };
-    var ty = 4;
-    if(data.ty == 'rc'){
-        ty = 5;
-    }else if(data.ty == 'el'){
-        ty = 6;
-    }else if(data.ty == 'sr'){
-        ty = 7;
-    }
-    elementData.sh = ShapePropertyFactory.getShapeProp(this,data,ty,this);
-    this.shapes.push(elementData.sh);
+    var elementData = new CVShapeData(this, data);
+    
+    this.shapes.push(elementData);
     this.addShapeToModifiers(elementData);
     var j, jLen = this.stylesList.length;
     var hasStrokes = false, hasFills = false;
@@ -255,40 +243,43 @@ CVShapeElement.prototype.drawLayer = function() {
             ctx.fillStyle = currentStyle.co;
         }
         renderer.ctxOpacity(currentStyle.coOp);
-        if(type !== 'st'){
-            ctx.beginPath();
-        }
-        jLen = elems.length;
-        for(j=0;j<jLen;j+=1){
-            if(type === 'st'){
+        if(this.globalData.currentGlobalAlpha !== 0) {
+            if(type !== 'st'){
                 ctx.beginPath();
-                if(currentStyle.da){
-                    ctx.setLineDash(currentStyle.da);
-                    ctx.lineDashOffset = currentStyle.do;
-                    this.globalData.isDashed = true;
-                }else if(this.globalData.isDashed){
-                    ctx.setLineDash(this.dashResetter);
-                    this.globalData.isDashed = false;
-                }
             }
-            nodes = elems[j].trNodes;
-            kLen = nodes.length;
+            jLen = elems.length;
+            for(j=0;j<jLen;j+=1){
+                if(type === 'st'){
+                    ctx.beginPath();
+                    if(currentStyle.da){
+                        ctx.setLineDash(currentStyle.da);
+                        ctx.lineDashOffset = currentStyle.do;
+                        this.globalData.isDashed = true;
+                    }else if(this.globalData.isDashed){
+                        ctx.setLineDash(this.dashResetter);
+                        this.globalData.isDashed = false;
+                    }
+                }
+                nodes = elems[j].trNodes;
+                kLen = nodes.length;
 
-            for(k=0;k<kLen;k+=1){
-                if(nodes[k].t == 'm'){
-                    ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
-                }else if(nodes[k].t == 'c'){
-                    ctx.bezierCurveTo(nodes[k].pts[0],nodes[k].pts[1],nodes[k].pts[2],nodes[k].pts[3],nodes[k].pts[4],nodes[k].pts[5]);
-                }else{
-                    ctx.closePath();
+                for(k=0;k<kLen;k+=1){
+                    if(nodes[k].t == 'm'){
+                        ctx.moveTo(nodes[k].p[0],nodes[k].p[1]);
+                    }else if(nodes[k].t == 'c'){
+                        ctx.bezierCurveTo(nodes[k].pts[0],nodes[k].pts[1],nodes[k].pts[2],nodes[k].pts[3],nodes[k].pts[4],nodes[k].pts[5]);
+                    }else{
+                        ctx.closePath();
+                    }
+                }
+                if(type === 'st'){
+                    ctx.stroke();
                 }
             }
-            if(type === 'st'){
-                ctx.stroke();
+            if(type !== 'st'){
+                ctx.fill(currentStyle.r);
             }
-        }
-        if(type !== 'st'){
-            ctx.fill(currentStyle.r);
+            
         }
         renderer.restore();
     }

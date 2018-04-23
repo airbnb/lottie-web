@@ -6,7 +6,7 @@ var TextExpressionInterface = (function(){
         Object.defineProperty(_thisLayerFunction, "sourceText", {
             get: function(){
                 var stringValue = elem.textProperty.currentData.t;
-                if(elem.textProperty.currentData.t !== _prevValue) {
+                if(stringValue !== _prevValue) {
                     elem.textProperty.currentData.t = _prevValue;
                     _sourceText = new String(stringValue);
                     //If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive

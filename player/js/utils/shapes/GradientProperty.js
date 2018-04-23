@@ -1,8 +1,5 @@
 function GradientProperty(elem,data){
-    this.container = elem;
-    this.prop = PropertyFactory.getProp(elem,data.k,1,null,this);
     this.data = data;
-    this.k = this.prop.k;
     this.c = createTypedArray('uint8c', data.p*4);
     var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
     this.o = createTypedArray('float32', cLength);
@@ -10,12 +7,10 @@ function GradientProperty(elem,data){
     this._omdf = false;
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
-    this._mdf = false;
+    this.initDynamicPropertyContainer(elem);
+    this.prop = PropertyFactory.getProp(elem,data.k,1,null,this);
+    this.k = this.prop.k;
     this.getValue(true);
-}
-
-GradientProperty.prototype.addDynamicProperty = function(prop) {
-    this.container.addDynamicProperty(this);
 }
 
 GradientProperty.prototype.comparePoints = function(values, points) {
@@ -78,3 +73,5 @@ GradientProperty.prototype.getValue = function(forceRender){
         this._mdf = !forceRender;
     }
 };
+
+extendPrototype([DynamicPropertyContainer], GradientProperty);

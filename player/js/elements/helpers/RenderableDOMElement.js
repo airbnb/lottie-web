@@ -16,18 +16,19 @@ function RenderableDOMElement() {}
         },
         hide: function(){
             if (!this.hidden && (!this.isInRange || this.isTransparent)) {
-                this.layerElement.style.display = 'none';
+                var elem = this.baseElement || this.layerElement;
+                elem.style.display = 'none';
                 this.hidden = true;
             }
         },
         show: function(){
             if (this.isInRange && !this.isTransparent){
                 if (!this.data.hd) {
-                    this.layerElement.style.display = 'block';
+                    var elem = this.baseElement || this.layerElement;
+                    elem.style.display = 'block';
                 }
                 this.hidden = false;
                 this._isFirstFrame = true;
-                this.maskManager._isFirstFrame = true;
             }
         },
         renderFrame: function() {

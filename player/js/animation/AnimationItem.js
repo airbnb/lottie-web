@@ -65,6 +65,7 @@ AnimationItem.prototype.setParams = function(params) {
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
+    this.assetsPath = params.assetsPath;
     if(params.animationData){
         self.configAnimation(params.animationData);
     }else if(params.path){
@@ -81,7 +82,6 @@ AnimationItem.prototype.setParams = function(params) {
         }else{
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
-        this.assetsPath = params.assetsPath;
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
         xhr.open('GET', params.path, true);
@@ -580,6 +580,10 @@ AnimationItem.prototype.show = function () {
 
 AnimationItem.prototype.getAssets = function () {
     return this.assets;
+};
+
+AnimationItem.prototype.getDuration = function (isFrame) {
+    return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
 };
 
 AnimationItem.prototype.trigger = function(name){

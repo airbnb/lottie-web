@@ -72,6 +72,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
         this.svgElement.setAttribute('height',animData.h);
         this.svgElement.style.width = '100%';
         this.svgElement.style.height = '100%';
+        this.svgElement.style.transform = 'translate3d(0,0,0)';
     }
     if(this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);

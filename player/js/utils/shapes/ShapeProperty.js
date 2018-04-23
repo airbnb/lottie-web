@@ -5,23 +5,24 @@ var ShapePropertyFactory = (function(){
     function interpolateShape(frameNum, previousValue, caching) {
         var iterationIndex = caching.lastIndex;
         var keyPropS,keyPropE,isHold, j, k, jLen, kLen, perc, vertexValue;
-        if(frameNum < this.keyframes[0].t-this.offsetTime){
-            keyPropS = this.keyframes[0].s[0];
+        var kf = this.keyframes;
+        if(frameNum < kf[0].t-this.offsetTime){
+            keyPropS = kf[0].s[0];
             isHold = true;
             iterationIndex = 0;
-        }else if(frameNum >= this.keyframes[this.keyframes.length - 1].t-this.offsetTime){
-            if(this.keyframes[this.keyframes.length - 2].h === 1){
-                keyPropS = this.keyframes[this.keyframes.length - 1].s[0];
+        }else if(frameNum >= kf[kf.length - 1].t-this.offsetTime){
+            if(kf[kf.length - 2].h === 1){
+                keyPropS = kf[kf.length - 1].s[0];
             }else{
-                keyPropS = this.keyframes[this.keyframes.length - 2].e[0];
+                keyPropS = kf[kf.length - 2].e[0];
             }
             isHold = true;
         }else{
             var i = iterationIndex;
-            var len = this.keyframes.length- 1,flag = true,keyData,nextKeyData;
+            var len = kf.length- 1,flag = true,keyData,nextKeyData;
             while(flag){
-                keyData = this.keyframes[i];
-                nextKeyData = this.keyframes[i+1];
+                keyData = kf[i];
+                nextKeyData = kf[i+1];
                 if((nextKeyData.t - this.offsetTime) > frameNum){
                     break;
                 }
@@ -66,6 +67,8 @@ var ShapePropertyFactory = (function(){
                 previousValue.v[j][k] = vertexValue;
             }
         }
+
+        window.contador = window.contador ? window.contador + 1 : 1;
     }
 
     function interpolateShapeCurrentTime(){
@@ -81,10 +84,6 @@ var ShapePropertyFactory = (function(){
         }
         this._caching.lastFrame = frameNum;
         return this.pv;
-    }
-
-    function getShapeValue(){
-        return this.v;
     }
 
     function resetShape(){
@@ -111,7 +110,7 @@ var ShapePropertyFactory = (function(){
         this.lock = true;
         this.frameId = this.elem.globalData.frameId;
         this._mdf = false;
-        var finalValue = this.kf ? this.pv : this.data.k;
+        var finalValue = this.kf ? this.pv : this.data.ks ? this.data.ks.k : this.data.pt.k;
         var i, len = this.effectsSequence.length;
         for(i = 0; i < len; i += 1) {
             finalValue = this.effectsSequence[i](finalValue);
@@ -142,7 +141,7 @@ var ShapePropertyFactory = (function(){
         this.paths = this.localShapeCollection;
         this.paths.addShape(this.v);
         this.reset = resetShape;
-        this.effectsSequence = [getShapeValue.bind(this)];
+        this.effectsSequence = [];
     }
 
     function addEffect(effectFunction) {
@@ -198,42 +197,33 @@ var ShapePropertyFactory = (function(){
             this.paths = this.localShapeCollection;
             this.localShapeCollection.addShape(this.v);
             this.d = data.d;
-            this.dynamicProperties = [];
             this.elem = elem;
-            this.container = elem;
             this.comp = elem.comp;
             this.frameId = -1;
-            this._mdf = false;
+            this.initDynamicPropertyContainer(elem);
             this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
             this.s = PropertyFactory.getProp(elem,data.s,1,0,this);
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
+                this.k = false;
                 this.convertEllToPath();
             }
         };
 
         EllShapeProperty.prototype = {
             reset: resetShape,
-            getValue: function (frameNum){
-                var i, len = this.dynamicProperties.length;
+            getValue: function (){
                 if(this.elem.globalData.frameId === this.frameId){
                     return;
                 }
-                this._mdf = false;
                 this.frameId = this.elem.globalData.frameId;
+                this.iterateDynamicProperties();
 
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue(frameNum);
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
                 if(this._mdf){
                     this.convertEllToPath();
                 }
             },
-            addDynamicProperty: addDynamicProperty,
             convertEllToPath: function() {
                 var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
                 var _cw = this.d !== 3;
@@ -265,28 +255,22 @@ var ShapePropertyFactory = (function(){
             }
         }
 
+        extendPrototype([DynamicPropertyContainer], EllShapeProperty);
+
         return EllShapeProperty;
     }());
 
     var StarShapeProperty = (function() {
 
         function StarShapeProperty(elem,data) {
-            /*this.v = {
-                v: [],
-                i: [],
-                o: [],
-                c: true
-            };*/
             this.v = shape_pool.newElement();
             this.v.setPathData(true, 0);
             this.elem = elem;
-            this.container = elem;
             this.comp = elem.comp;
             this.data = data;
             this.frameId = -1;
             this.d = data.d;
-            this.dynamicProperties = [];
-            this._mdf = false;
+            this.initDynamicPropertyContainer(elem);
             if(data.sy === 1){
                 this.ir = PropertyFactory.getProp(elem,data.ir,0,0,this);
                 this.is = PropertyFactory.getProp(elem,data.is,0,0.01,this);
@@ -305,27 +289,19 @@ var ShapePropertyFactory = (function(){
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
+                this.k = false;
                 this.convertToPath();
             }
         };
 
         StarShapeProperty.prototype = {
-            addDynamicProperty: addDynamicProperty,
             reset: resetShape,
             getValue: function() {
                 if(this.elem.globalData.frameId === this.frameId){
                     return;
                 }
-                this._mdf = false;
                 this.frameId = this.elem.globalData.frameId;
-                var i, len = this.dynamicProperties.length;
-
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue();
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
+                this.iterateDynamicProperties();
                 if(this._mdf){
                     this.convertToPath();
                 }
@@ -392,6 +368,7 @@ var ShapePropertyFactory = (function(){
             }
 
         }
+        extendPrototype([DynamicPropertyContainer], StarShapeProperty);
 
         return StarShapeProperty;
     }());
@@ -405,18 +382,17 @@ var ShapePropertyFactory = (function(){
             this.localShapeCollection.addShape(this.v);
             this.paths = this.localShapeCollection;
             this.elem = elem;
-            this.container = elem;
             this.comp = elem.comp;
             this.frameId = -1;
             this.d = data.d;
-            this.dynamicProperties = [];
-            this._mdf = false;
+            this.initDynamicPropertyContainer(elem);
             this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
             this.s = PropertyFactory.getProp(elem,data.s,1,0,this);
             this.r = PropertyFactory.getProp(elem,data.r,0,0,this);
             if(this.dynamicProperties.length){
                 this.k = true;
             }else{
+                this.k = false;
                 this.convertRectToPath();
             }
         };
@@ -464,24 +440,16 @@ var ShapePropertyFactory = (function(){
                 if(this.elem.globalData.frameId === this.frameId){
                     return;
                 }
-                this._mdf = false;
                 this.frameId = this.elem.globalData.frameId;
-                var i, len = this.dynamicProperties.length;
-
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue(frameNum);
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
+                this.iterateDynamicProperties();
                 if(this._mdf){
                     this.convertRectToPath();
                 }
 
             },
-            addDynamicProperty: addDynamicProperty,
             reset: resetShape
         }
+        extendPrototype([DynamicPropertyContainer], RectShapeProperty);
 
         return RectShapeProperty;
     }());

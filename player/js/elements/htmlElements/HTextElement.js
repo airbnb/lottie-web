@@ -36,7 +36,7 @@ HTextElement.prototype.createContent = function(){
 
 HTextElement.prototype.buildNewText = function(){
     var documentData = this.textProperty.currentData;
-    this.renderedLetters = createSizedArray(this.textProperty.currentData.l ? this.textProperty.currentData.l.length : 0);
+    this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
     var innerElemStyle = this.innerElem.style;
     innerElemStyle.color = innerElemStyle.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
     if(documentData.sc){
@@ -131,12 +131,12 @@ HTextElement.prototype.buildNewText = function(){
                     tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
 
                     letters[i].yOffset = boundingBox.y-1;
-                    tParent.appendChild(tCont);
 
                 } else{
                     tCont.setAttribute('width',1);
                     tCont.setAttribute('height',1);
                 }
+                    tParent.appendChild(tCont);
             }else{
                 this.innerElem.appendChild(tSpan);
             }

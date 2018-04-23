@@ -55,6 +55,7 @@ var ShapeExpressionInterface = (function(){
        interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
        interfaceFunction.numProperties = interfaces.length;
        interfaceFunction.propertyIndex = shape.cix;
+       interfaceFunction._name = shape.nm;
 
        return interfaceFunction;
    }

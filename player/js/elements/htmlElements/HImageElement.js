@@ -23,6 +23,6 @@ HImageElement.prototype.createContent = function(){
     }
     img.src = assetPath;
     if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
+        this.baseElement.setAttribute('id',this.data.ln);
     }
 };

@@ -4,15 +4,17 @@ function TextProperty(elem, data){
 	this.v = '';
 	this.kf = false;
 	this._isFirstFrame = true;
-	this._mdf = true;
+	this._mdf = false;
 	this.data = data;
 	this.elem = elem;
+    this.comp = this.elem.comp;
 	this.keysIndex = -1;
     this.canResize = false;
     this.minimumFontSize = 1;
+    this.effectsSequence = [];
 	this.currentData = {
 		ascent: 0,
-        boxWidth: [0,0],
+        boxWidth: this.defaultBoxWidth,
         f: '',
         fStyle: '',
         fWeight: '',
@@ -30,26 +32,49 @@ function TextProperty(elem, data){
         t: 0,
         tr: 0,
         sz:0,
-        ps:[0,0],
+        ps:null,
         fillColorAnim: false,
         strokeColorAnim: false,
         strokeWidthAnim: false,
         yOffset: 0,
-        __complete: false,
         finalSize:0,
         finalText:[],
-        finalLineHeight: 0
+        finalLineHeight: 0,
+        __test: true
 
 	};
-	if(this.searchProperty()) {
-        elem.addDynamicProperty(this);
-	} else {
-		this.getValue(true);
-	}
+    this.copyFromDocumentData(this.data.d.k[0].s);
+    
+    if(!this.searchProperty()) {
+        this.completeTextData(this.currentData);
+        this.keysIndex = 0;
+    }
 }
 
-TextProperty.prototype.setCurrentData = function(data){
-		var currentData = this.currentData;
+TextProperty.prototype.defaultBoxWidth = [0,0];
+
+TextProperty.prototype.copyFromDocumentData = function(data) {
+    for(var s in data) {
+        this.currentData[s] = data[s];
+    }
+}
+
+TextProperty.prototype.setCurrentData = function(data, currentTextValue){
+        if(this.currentData !== data) {
+            if(!data.__complete) {
+                this.completeTextData(data);
+            }
+            this.copyFromDocumentData(data);
+            this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
+            this.currentData.fillColorAnim = data.fillColorAnim || this.currentData.fillColorAnim;
+            this.currentData.strokeColorAnim = data.strokeColorAnim || this.currentData.strokeColorAnim;
+            this.currentData.strokeWidthAnim = data.strokeWidthAnim || this.currentData.strokeWidthAnim;
+            this._mdf = true;
+        } else if(currentTextValue !== this.currentData.t) {
+            this._mdf = true;
+            this.completeTextData(data);
+        }
+		/*var currentData = this.currentData;
         currentData.ascent = data.ascent;
         currentData.boxWidth = data.boxWidth ? data.boxWidth : currentData.boxWidth;
         currentData.f = data.f;
@@ -76,21 +101,50 @@ TextProperty.prototype.setCurrentData = function(data){
         currentData.yOffset = data.yOffset;
         currentData.finalSize = data.finalSize;
         currentData.finalLineHeight = data.finalLineHeight;
-        currentData.finalText = data.finalText;
-        currentData.__complete = false;
+        currentData.finalText = data.finalText;*/
 };
 
 TextProperty.prototype.searchProperty = function() {
-	this.kf = this.data.d.k.length > 1;
-	return this.kf;
+    return this.searchKeyframes();
 };
 
-TextProperty.prototype.getValue = function(_forceRender) {
-	this._mdf = false;
-	var frameId = this.elem.globalData.frameId;
-	if((frameId === this._frameId || !this.kf) && !this._isFirstFrame && !_forceRender) {
-		return;
-	}
+TextProperty.prototype.searchKeyframes = function() {
+    this.kf = this.data.d.k.length > 1;
+    if(this.kf) {
+        this.addEffect(this.getKeyframeValue.bind(this));
+    }
+    return this.kf;
+}
+
+TextProperty.prototype.addEffect = function(effectFunction) {
+	this.effectsSequence.push(effectFunction);
+    this.elem.addDynamicProperty(this);
+};
+
+TextProperty.prototype.getValue = function(_finalValue) {
+    if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
+        return;
+    }
+    var currentTextValue = this.currentData.t;        
+    if(this.lock) {
+        this.setCurrentData(this.currentData, currentTextValue);
+        return;
+    }
+    this.lock = true;
+    this._mdf = false;
+    var multipliedValue;
+    var i, len = this.effectsSequence.length;
+    var finalValue = _finalValue || this.currentData;
+    for(i = 0; i < len; i += 1) {
+        finalValue = this.effectsSequence[i](finalValue);
+    }
+    this.setCurrentData(finalValue, currentTextValue);
+    this.pv = this.v = this.currentData;
+    this.lock = false;
+    this.frameId = this.elem.globalData.frameId;
+}
+
+TextProperty.prototype.getKeyframeValue = function(currentValue) {
     var textKeys = this.data.d.k, textDocumentData;
     var frameNum = this.elem.comp.renderedFrame;
     var i = 0, len = textKeys.length;
@@ -102,15 +156,10 @@ TextProperty.prototype.getValue = function(_forceRender) {
         i += 1;
     }
     if(this.keysIndex !== i) {
-    	if(!textDocumentData.__complete) {
-            this.completeTextData(textDocumentData);
-        }
-        this.setCurrentData(textDocumentData);
-        this._mdf = !this._isFirstFrame;
-        this.pv = this.v = this.currentData.t;
+        currentValue = textDocumentData;
         this.keysIndex = i;
     }
-	this._frameId = frameId;
+    return currentValue;
 };
 
 TextProperty.prototype.buildFinalText = function(text) {
@@ -142,7 +191,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var j, jLen;
     var fontData = fontManager.getFontByName(documentData.f);
     var charData, cLength = 0;
-    var styles = fontData.fStyle.split(' ');
+    var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
 
     var fWeight = 'normal', fStyle = 'normal';
     len = styles.length;
@@ -374,7 +423,11 @@ TextProperty.prototype.completeTextData = function(documentData) {
 };
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
-	index = index === undefined ? this.keysIndex : index;
+	index = index === undefined 
+    ? this.keysIndex === -1 
+        ? 0 
+        : this.keysIndex 
+    : index;
     var dData = this.data.d.k[index].s;
     for(var s in newData) {
         dData[s] = newData[s];
@@ -385,8 +438,9 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
 TextProperty.prototype.recalculate = function(index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
-    this.keysIndex = -1;
-    this.getValue(true);
+    this.keysIndex = this.kf ? -1 : 0;
+    this._isFirstFrame = true;
+    this.getValue(dData);
 }
 
 TextProperty.prototype.canResizeFont = function(_canResize) {
