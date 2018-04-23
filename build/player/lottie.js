@@ -646,7 +646,7 @@ var Matrix = (function(){
             return x + ',' + y;
         }
         var _p = this.props;
-        return (x * _p[0] + y * _p[4] + _p[12])+','+(x * _p[1] + y * _p[5] + _p[13]);
+        return Math.round((x * _p[0] + y * _p[4] + _p[12]) * 100) / 100+','+ Math.round((x * _p[1] + y * _p[5] + _p[13]) * 100) / 100;
     }
 
     function toCSS() {
@@ -2815,8 +2815,6 @@ var ShapePropertyFactory = (function(){
                 previousValue.v[j][k] = vertexValue;
             }
         }
-
-        window.contador = window.contador ? window.contador + 1 : 1;
     }
 
     function interpolateShapeCurrentTime(){
@@ -8863,7 +8861,7 @@ AnimationItem.prototype.loadSegments = function() {
 
 AnimationItem.prototype.configAnimation = function (animData) {
     var _this = this;
-    if(this.renderer && this.renderer.destroyed){
+    if(!this.renderer){
         return;
     }
     this.animationData = animData;
@@ -9151,15 +9149,8 @@ AnimationItem.prototype.checkSegments = function(offset){
     return false;
 };
 
-AnimationItem.prototype.remove = function (name) {
-    if(name && this.name != name){
-        return;
-    }
-    this.renderer.destroy();
-};
-
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || (this.renderer && this.renderer.destroyed)){
+    if((name && this.name != name) || !this.renderer){
         return;
     }
     this.renderer.destroy();
@@ -11930,6 +11921,13 @@ var ExpressionManager = (function(){
         var height = elem.data.sh ? elem.data.sh : 0;
         var loopIn, loop_in, loopOut, loop_out;
         var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var __expression_functions = [];
+        if(data.xf) {
+            var i, len = data.xf.length;
+            for(i = 0; i < len; i += 1) {
+                __expression_functions[i] = eval('(function(){ return ' + data.xf[i] + '}())');
+            }
+        }
 
         var scoped_bm_rt;
         var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
@@ -12314,11 +12312,28 @@ var ExpressionManager = (function(){
 
     }
 
+    function getSpeedAtTime(frameNum) {
+        var delta = -0.01;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var speed = 0;
+        if(v1.length){
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                speed += Math.pow(v2[i] - v1[i], 2);
+            }
+            speed = Math.sqrt(speed) * 100;
+        } else {
+            speed = 0;
+        }
+        return speed;
+    }
+
     function getVelocityAtTime(frameNum) {
         if(this.vel !== undefined){
             return this.vel;
         }
-        var delta = -0.01;
+        var delta = -0.001;
         //frameNum += this.elem.data.st;
         var v1 = this.getValueAtTime(frameNum);
         var v2 = this.getValueAtTime(frameNum + delta);
@@ -12415,7 +12430,8 @@ var ExpressionManager = (function(){
         prop.setGroupProperty = setGroupProperty;
         prop.loopOut = loopOut;
         prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime;
+        prop.getVelocityAtTime = getVelocityAtTime.bind(prop);
+        prop.getSpeedAtTime = getSpeedAtTime.bind(prop);
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         prop.propertyIndex = data.ix;
         var value = 0;
@@ -13312,6 +13328,10 @@ var LayerExpressionInterface = (function (){
         return toWorldMat.inversePoint(arr);
     }
 
+    function sampleImage() {
+        return [1,1,1,1];
+    }
+
 
     return function(elem){
 
@@ -13345,6 +13365,7 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.fromWorld = fromWorld;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction.fromComp = fromComp;
+        _thisLayerFunction.sampleImage = sampleImage;
         _thisLayerFunction.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
         _thisLayerFunction._elem = elem;
         transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
@@ -13589,7 +13610,7 @@ var EffectsExpressionInterface = (function (){
             }
 
             return function(name){
-                var effects = elem.data.ef, i = 0, len = effects.length;
+                var effects = elem.data.ef || [], i = 0, len = effects.length;
                 while(i<len) {
                     if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                         return effectElements[i];
@@ -13750,6 +13771,8 @@ var ExpressionValue = (function() {
             }
         };
         expressionValue.valueAtTime = elementProp.getValueAtTime;
+        expressionValue.speedAtTime = elementProp.getSpeedAtTime;
+        expressionValue.velocityAtTime = elementProp.getVelocityAtTime;
         expressionValue.propertyGroup = elementProp.propertyGroup;
         return expressionValue;
 	};
@@ -13971,7 +13994,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.11';
+    lottiejs.version = '5.1.12';
 
     function checkReady() {
         if (document.readyState === "complete") {
@@ -14003,4 +14026,4 @@ GroupEffect.prototype.init = function(data,element){
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));

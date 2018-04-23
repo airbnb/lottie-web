@@ -646,7 +646,7 @@ var Matrix = (function(){
             return x + ',' + y;
         }
         var _p = this.props;
-        return (x * _p[0] + y * _p[4] + _p[12])+','+(x * _p[1] + y * _p[5] + _p[13]);
+        return Math.round((x * _p[0] + y * _p[4] + _p[12]) * 100) / 100+','+ Math.round((x * _p[1] + y * _p[5] + _p[13]) * 100) / 100;
     }
 
     function toCSS() {
@@ -2815,8 +2815,6 @@ var ShapePropertyFactory = (function(){
                 previousValue.v[j][k] = vertexValue;
             }
         }
-
-        window.contador = window.contador ? window.contador + 1 : 1;
     }
 
     function interpolateShapeCurrentTime(){
@@ -8863,7 +8861,7 @@ AnimationItem.prototype.loadSegments = function() {
 
 AnimationItem.prototype.configAnimation = function (animData) {
     var _this = this;
-    if(this.renderer && this.renderer.destroyed){
+    if(!this.renderer){
         return;
     }
     this.animationData = animData;
@@ -9151,15 +9149,8 @@ AnimationItem.prototype.checkSegments = function(offset){
     return false;
 };
 
-AnimationItem.prototype.remove = function (name) {
-    if(name && this.name != name){
-        return;
-    }
-    this.renderer.destroy();
-};
-
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || (this.renderer && this.renderer.destroyed)){
+    if((name && this.name != name) || !this.renderer){
         return;
     }
     this.renderer.destroy();
@@ -9404,7 +9395,7 @@ function EffectsManager(){}
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.11';
+    lottiejs.version = '5.1.12';
 
     function checkReady() {
         if (document.readyState === "complete") {
@@ -9436,4 +9427,4 @@ function EffectsManager(){}
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));

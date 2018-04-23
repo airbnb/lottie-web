@@ -1,3 +1,10 @@
+## V 5.1.12
+- EXPRESSIONS: improved memory management for declared functions
+- EXPRESSIONS: speedAtTime support
+- FIX: trimmed paths fix
+- FIX: destroy method fix
+- SSR: checking for navigator to create library
+
 ## V 5.1.11
 - PERFORMANCE: significant improvement on the svg and canvas renderers
 - FIX: floating points fix

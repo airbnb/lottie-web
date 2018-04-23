@@ -315,7 +315,7 @@ var Matrix = (function(){
             return x + ',' + y;
         }
         var _p = this.props;
-        return (x * _p[0] + y * _p[4] + _p[12])+','+(x * _p[1] + y * _p[5] + _p[13]);
+        return Math.round((x * _p[0] + y * _p[4] + _p[12]) * 100) / 100+','+ Math.round((x * _p[1] + y * _p[5] + _p[13]) * 100) / 100;
     }
 
     function toCSS() {
