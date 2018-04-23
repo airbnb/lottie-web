@@ -40,6 +40,8 @@ var ExpressionValue = (function() {
             }
         };
         expressionValue.valueAtTime = elementProp.getValueAtTime;
+        expressionValue.speedAtTime = elementProp.getSpeedAtTime;
+        expressionValue.velocityAtTime = elementProp.getVelocityAtTime;
         expressionValue.propertyGroup = elementProp.propertyGroup;
         return expressionValue;
 	};

@@ -12,12 +12,16 @@ function CVMaskElement(data,element){
         this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3);
     }
     this.hasMasks = hasMasks;
+    if(hasMasks) {
+        this.element.addRenderableComponent(this);
+    }
 }
 
-CVMaskElement.prototype.renderFrame = function (transform) {
+CVMaskElement.prototype.renderFrame = function () {
     if(!this.hasMasks){
         return;
     }
+    var transform = this.element.finalTransform.mat;
     var ctx = this.element.canvasContext;
     var i, len = this.masksProperties.length;
     var pt,pts,data;

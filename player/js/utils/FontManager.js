@@ -138,15 +138,12 @@ var FontManager = (function(){
                 s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                 defs.appendChild(s);
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
-                //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var l = createTag('link');
                 l.type = "text/css";
                 l.rel = "stylesheet";
                 l.href = fontArr[i].fPath;
-                //defs.appendChild(l);
                 document.body.appendChild(l);
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
-                //<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
                 var sc = createTag('script');
                 sc.setAttribute('src',fontArr[i].fPath);
                 defs.appendChild(sc);

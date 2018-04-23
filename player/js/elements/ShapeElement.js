@@ -8,13 +8,22 @@ IShapeElement.prototype = {
             this.shapeModifiers[i].addShape(data);
         }
     },
+    isShapeInAnimatedModifiers: function(data) {
+        var i = 0, len = this.shapeModifiers.length;
+        while(i < len) {
+            if(this.shapeModifiers[i].isAnimatedWithShape(data)) {
+                return true;
+            }
+        }
+        return false;
+    },
     renderModifiers: function() {
         if(!this.shapeModifiers.length){
             return;
         }
         var i, len = this.shapes.length;
         for(i=0;i<len;i+=1){
-            this.shapes[i].reset();
+            this.shapes[i].sh.reset();
         }
 
         len = this.shapeModifiers.length;
@@ -33,48 +42,30 @@ IShapeElement.prototype = {
         '3': 'butt'
     },
     searchProcessedElement: function(elem){
-        var i = 0, len = this.processedElements.length;
+        var elements = this.processedElements;
+        var i = 0, len = elements.length;
         while(i < len){
-            if(this.processedElements[i].elem === elem){
-                return this.processedElements[i].pos;
+            if(elements[i].elem === elem){
+                return elements[i].pos;
             }
             i += 1;
         }
         return 0;
     },
     addProcessedElement: function(elem, pos){
-        var i = this.processedElements.length, found = false;
+        var elements = this.processedElements;
+        var i = elements.length;
         while(i){
             i -= 1;
-            if(this.processedElements[i].elem === elem){
-                this.processedElements[i].pos = pos;
-                found = true;
-                break;
+            if(elements[i].elem === elem){
+                elements[i].pos = pos;
+                return;
             }
         }
-        if(!found){
-            this.processedElements.push(new ProcessedElement(elem, pos));
-        }
+        elements.push(new ProcessedElement(elem, pos));
     },
     prepareFrame: function(num) {
         this.prepareRenderableFrame(num);
         this.prepareProperties(num, this.isInRange);
-    },
-    buildShapeString: function(pathNodes, length, closed, mat) {
-        var i, shapeString = '';
-        for(i = 1; i < length; i += 1) {
-            if (i === 1) {
-                shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-            }
-            shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[i][0], pathNodes.i[i][1]) + " " + mat.applyToPointStringified(pathNodes.v[i][0], pathNodes.v[i][1]);
-        }
-        if (length === 1) {
-            shapeString += " M" + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-        }
-        if (closed && length) {
-            shapeString += " C" + mat.applyToPointStringified(pathNodes.o[i - 1][0], pathNodes.o[i - 1][1]) + " " + mat.applyToPointStringified(pathNodes.i[0][0], pathNodes.i[0][1]) + " " + mat.applyToPointStringified(pathNodes.v[0][0], pathNodes.v[0][1]);
-            shapeString += 'z';
-        }
-        return shapeString;
     }
 };

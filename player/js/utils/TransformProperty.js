@@ -1,17 +1,9 @@
 var TransformPropertyFactory = (function() {
 
-    function searchDynamicProperties() {
-        var i, len = this.dynamicProperties.length;
-        for(i = 0; i < len; i += 1) {
-            this.dynamicProperties[i].getValue();
-            if (this.dynamicProperties[i]._mdf) {
-                this._mdf = true;
-            }
-        }
-    }
-
     function applyToMatrix(mat) {
-        this.searchDynamicProperties();
+        var _mdf = this._mdf;
+        this.iterateDynamicProperties();
+        this._mdf = this._mdf || _mdf;
         if (this.a) {
             mat.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
         }
@@ -40,24 +32,27 @@ var TransformPropertyFactory = (function() {
         if (this.elem.globalData.frameId === this.frameId) {
             return;
         }
+        if(this._isDirty) {
+            this.precalculateMatrix();
+            this._isDirty = false;
+        }
 
-        this._mdf = false;
-        this.searchDynamicProperties();
+        this.iterateDynamicProperties();
 
         if (this._mdf || forceRender) {
-            this.v.reset();
-            if (this.a) {
+            this.v.cloneFromProps(this.pre.props);
+            if (this.appliedTransformations < 1) {
                 this.v.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
             }
-            if(this.s) {
+            if(this.appliedTransformations < 2) {
                 this.v.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
             }
-            if (this.sk) {
+            if (this.sk && this.appliedTransformations < 3) {
                 this.v.skewFromAxis(-this.sk.v, this.sa.v);
             }
-            if (this.r) {
+            if (this.r && this.appliedTransformations < 4) {
                 this.v.rotate(-this.r.v);
-            } else {
+            } else if (!this.r && this.appliedTransformations < 4){
                 this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
             if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
@@ -87,26 +82,37 @@ var TransformPropertyFactory = (function() {
         this.frameId = this.elem.globalData.frameId;
     }
 
-    function setInverted(){
-        this.inverted = true;
-        this.iv = new Matrix();
-        if(!this.k){
-            if(this.data.p.s){
-                this.iv.translate(this.px.v,this.py.v,-this.pz.v);
-            }else{
-                this.iv.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+    function precalculateMatrix() {
+        if(!this.a.k) {
+            this.pre.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
+            this.appliedTransformations = 1;
+        } else {
+            return;
+        }
+        if(!this.s.effectsSequence.length) {
+            this.pre.scale(this.s.v[0], this.s.v[1], this.s.v[2]);
+            this.appliedTransformations = 2;
+        } else {
+            return;
+        }
+        if(this.sk) {
+            if(!this.sk.effectsSequence.length && !this.sa.effectsSequence.length) {
+                this.pre.skewFromAxis(-this.sk.v, this.sa.v);
+            this.appliedTransformations = 3;
+            } else {
+                return;
             }
-            if(this.r){
-                this.iv.rotate(-this.r.v);
-            }else{
-                this.iv.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
+        }
+        if (this.r) {
+            if(!this.r.effectsSequence.length) {
+                this.pre.rotate(-this.r.v);
+                this.appliedTransformations = 4;
+            } else {
+                return;
             }
-            if(this.s){
-                this.iv.scale(this.s.v[0],this.s.v[1],1);
-            }
-            if(this.a){
-                this.iv.translate(-this.a.v[0],-this.a.v[1],this.a.v[2]);
-            }
+        } else if(!this.rz.effectsSequence.length && !this.ry.effectsSequence.length && !this.rx.effectsSequence.length && !this.or.effectsSequence.length) {
+            this.pre.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+            this.appliedTransformations = 4;
         }
     }
 
@@ -115,15 +121,22 @@ var TransformPropertyFactory = (function() {
         //var prevP = this.getValueAtTime();
     }
 
+    function addDynamicProperty(prop) {
+        this._addDynamicProperty(prop);
+        this.elem.addDynamicProperty(prop);
+        this._isDirty = true;
+    }
+
     function TransformProperty(elem,data,container){
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
-        this.container = container || elem;
-        this.dynamicProperties = [];
-        this._mdf = false;
         this.data = data;
         this.v = new Matrix();
+        //Precalculated matrix with non animated properties
+        this.pre = new Matrix();
+        this.appliedTransformations = 0;
+        this.initDynamicPropertyContainer(container || elem);
         if(data.p.s){
             this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
             this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
@@ -165,6 +178,7 @@ var TransformPropertyFactory = (function() {
         } else {
             this.o = {_mdf:false,v:1};
         }
+        this._isDirty = true;
         if(!this.dynamicProperties.length){
             this.getValue(true);
         }
@@ -172,12 +186,14 @@ var TransformPropertyFactory = (function() {
 
     TransformProperty.prototype = {
         applyToMatrix: applyToMatrix,
-        searchDynamicProperties: searchDynamicProperties,
         getValue: processKeys,
-        setInverted: setInverted,
-        autoOrient: autoOrient,
-        addDynamicProperty: addDynamicProperty
+        precalculateMatrix: precalculateMatrix,
+        autoOrient: autoOrient
     }
+
+    extendPrototype([DynamicPropertyContainer], TransformProperty);
+    TransformProperty.prototype.addDynamicProperty = addDynamicProperty;
+    TransformProperty.prototype._addDynamicProperty = DynamicPropertyContainer.prototype.addDynamicProperty;
 
     function getTransformProperty(elem,data,container){
         return new TransformProperty(elem,data,container);

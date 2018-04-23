@@ -11,10 +11,13 @@ function SVGShapeElement(data,globalData,comp){
     this.itemsData = [];
     //List of items in previous shape tree
     this.processedElements = [];
+    // List of animated components
+    this.animatedContents = [];
     this.initElement(data,globalData,comp);
     //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     // List of elements that have been created
     this.prevViewData = [];
+    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,IShapeElement,HierarchyElement,FrameElement,RenderableDOMElement], SVGShapeElement);
@@ -28,7 +31,41 @@ SVGShapeElement.prototype.buildExpressionInterface = function(){};
 
 SVGShapeElement.prototype.createContent = function(){
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
+    this.filterUniqueShapes();
 };
+
+/*
+This method searches for multiple shapes that affect a single element and one of them is animated
+*/
+SVGShapeElement.prototype.filterUniqueShapes = function(){
+    var i, len = this.shapes.length, shape;
+    var j, jLen = this.stylesList.length;
+    var style, count = 0;
+    var tempShapes = [];
+    var areAnimated = false;
+    for(j = 0; j < jLen; j += 1) {
+        style = this.stylesList[j];
+        areAnimated = false;
+        tempShapes.length = 0;
+        for(i = 0; i < len; i += 1) {
+            shape = this.shapes[i];
+            if(shape.styles.indexOf(style) !== -1) {
+                tempShapes.push(shape);
+                areAnimated = shape._isAnimated || areAnimated;
+            }
+        }
+        if(tempShapes.length > 1 && areAnimated) {
+            this.setShapesAsAnimated(tempShapes);
+        }
+    }
+}
+
+SVGShapeElement.prototype.setShapesAsAnimated = function(shapes){
+    var i, len = shapes.length;
+    for(i = 0; i < len; i += 1) {
+        shapes[i].setAsAnimated();
+    }
+}
 
 SVGShapeElement.prototype.createStyleElement = function(data, level){
     //TODO: prevent drawing of hidden styles
@@ -71,6 +108,7 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
         pathElement.setAttribute('class',data.cl);
     }
     this.stylesList.push(styleOb);
+    this.addToAnimatedContents(data, elementData);
     return elementData;
 };
 
@@ -82,8 +120,11 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     return elementData;
 };
 
-SVGShapeElement.prototype.createTransformElement = function(data) {
-    return new SVGTransformData(TransformPropertyFactory.getTransformProperty(this,data,this), PropertyFactory.getProp(this,data.o,0,0.01,this));
+SVGShapeElement.prototype.createTransformElement = function(data, container) {
+    var transformProperty = TransformPropertyFactory.getTransformProperty(this,data,this);
+    var elementData = new SVGTransformData(transformProperty, transformProperty.o, container);
+    this.addToAnimatedContents(data, elementData);
+    return elementData;
 };
 
 SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
@@ -97,9 +138,25 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     }
     var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
     var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
-    this.shapes.push(elementData.sh);
+    this.shapes.push(elementData);
     this.addShapeToModifiers(elementData);
+    this.addToAnimatedContents(data, elementData);
     return elementData;
+};
+
+SVGShapeElement.prototype.addToAnimatedContents = function(data, element) {
+    var i = 0, len = this.animatedContents.length;
+    while(i < len) {
+        if(this.animatedContents[i].element === element) {
+            return;
+        }
+        i += 1;
+    }
+    this.animatedContents.push({
+        fn: SVGElementsRenderer.createRenderFunction(data),
+        element: element,
+        data: data
+    });
 };
 
 SVGShapeElement.prototype.setElementStyles = function(elementData){
@@ -119,6 +176,7 @@ SVGShapeElement.prototype.reloadShapes = function(){
         this.prevViewData[i] = this.itemsData[i];
     }
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
+    this.filterUniqueShapes();
     len = this.dynamicProperties.length;
     for(i = 0; i < len; i += 1) {
         this.dynamicProperties[i].getValue();
@@ -163,7 +221,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
             }
         }else if(arr[i].ty == 'tr'){
             if(!processedPos){
-                itemsData[i] = this.createTransformElement(arr[i]);
+                itemsData[i] = this.createTransformElement(arr[i], container);
             }
             currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
@@ -215,7 +273,7 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     for(i=0;i<len;i+=1){
         this.stylesList[i].reset();
     }
-    this.renderShape(this.shapesData, this.itemsData, this.layerElement);
+    this.renderShape();
 
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i]._mdf || this._isFirstFrame) {
@@ -229,194 +287,16 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     }
 };
 
-
-SVGShapeElement.prototype.renderShape = function(items, data, container) {
-    var i, len = items.length - 1;
-    var ty;
-    for(i=0;i<=len;i+=1){
-        ty = items[i].ty;
-        if(ty == 'tr'){
-            if(this._isFirstFrame || data[i].transform.op._mdf){
-                container.setAttribute('opacity',data[i].transform.op.v);
-            }
-            if(this._isFirstFrame || data[i].transform.mProps._mdf){
-                container.setAttribute('transform',data[i].transform.mProps.v.to2dCSS());
-            }
-        }else if(items[i]._render && (ty == 'sh' || ty == 'el' || ty == 'rc' || ty == 'sr')){
-            this.renderPath(data[i]);
-        }else if(ty == 'fl'){
-            this.renderFill(items[i],data[i]);
-        }else if(ty == 'gf'){
-            this.renderGradient(items[i],data[i]);
-        }else if(ty == 'gs'){
-            this.renderGradient(items[i],data[i]);
-            this.renderStroke(items[i],data[i]);
-        }else if(ty == 'st'){
-            this.renderStroke(items[i],data[i]);
-        }else if(ty == 'gr'){
-            this.renderShape(items[i].it,data[i].it, data[i].gr);
-        }else if(ty == 'tm'){
-            //
+SVGShapeElement.prototype.renderShape = function() {
+    var i, len = this.animatedContents.length;
+    var animatedContent;
+    for(i = 0; i < len; i += 1) {
+        animatedContent = this.animatedContents[i];
+        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+            animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }
-
-};
-
-SVGShapeElement.prototype.renderPath = function(itemData){
-    var j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
-    var lvl = itemData.lvl;
-    var paths, mat, props, iterations, k;
-    for(l=0;l<lLen;l+=1){
-        redraw = itemData.sh._mdf || this._isFirstFrame;
-        if(itemData.styles[l].lvl < lvl){
-            mat = this.mHelper.reset();
-            iterations = lvl - itemData.styles[l].lvl;
-            k = itemData.transformers.length-1;
-            while(iterations > 0) {
-                redraw = itemData.transformers[k].mProps._mdf || redraw;
-                props = itemData.transformers[k].mProps.v.props;
-                mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-                iterations --;
-                k --;
-            }
-        } else {
-            mat = this.identityMatrix;
-        }
-        paths = itemData.sh.paths;
-        jLen = paths._length;
-        if(redraw){
-            pathStringTransformed = '';
-            for(j=0;j<jLen;j+=1){
-                pathNodes = paths.shapes[j];
-                if(pathNodes && pathNodes._length){
-                    pathStringTransformed += this.buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
-                }
-            }
-            itemData.caches[l] = pathStringTransformed;
-        } else {
-            pathStringTransformed = itemData.caches[l];
-        }
-        itemData.styles[l].d += pathStringTransformed;
-        itemData.styles[l]._mdf = redraw || itemData.styles[l]._mdf;
-    }
-};
-
-SVGShapeElement.prototype.renderFill = function(styleData,itemData){
-    var styleElem = itemData.style;
-
-    if(itemData.c._mdf || this._isFirstFrame){
-        styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
-    }
-    if(itemData.o._mdf || this._isFirstFrame){
-        styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
-    }
-};
-
-SVGShapeElement.prototype.renderGradient = function(styleData, itemData) {
-    var gfill = itemData.gf;
-    var hasOpacity = itemData.g._hasOpacity;
-    var pt1 = itemData.s.v, pt2 = itemData.e.v;
-
-    if (itemData.o._mdf || this._isFirstFrame) {
-        var attr = styleData.ty === 'gf' ? 'fill-opacity' : 'stroke-opacity';
-        itemData.style.pElem.setAttribute(attr, itemData.o.v);
-    }
-    if (itemData.s._mdf || this._isFirstFrame) {
-        var attr1 = styleData.t === 1 ? 'x1' : 'cx';
-        var attr2 = attr1 === 'x1' ? 'y1' : 'cy';
-        gfill.setAttribute(attr1, pt1[0]);
-        gfill.setAttribute(attr2, pt1[1]);
-        if (hasOpacity && !itemData.g._collapsable) {
-            itemData.of.setAttribute(attr1, pt1[0]);
-            itemData.of.setAttribute(attr2, pt1[1]);
-        }
-    }
-    var stops, i, len, stop;
-    if (itemData.g._cmdf || this._isFirstFrame) {
-        stops = itemData.cst;
-        var cValues = itemData.g.c;
-        len = stops.length;
-        for (i = 0; i < len; i += 1){
-            stop = stops[i];
-            stop.setAttribute('offset', cValues[i * 4] + '%');
-            stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
-        }
-    }
-    if (hasOpacity && (itemData.g._omdf || this._isFirstFrame)) {
-        var oValues = itemData.g.o;
-        if(itemData.g._collapsable) {
-            stops = itemData.cst;
-        } else {
-            stops = itemData.ost;
-        }
-        len = stops.length;
-        for (i = 0; i < len; i += 1) {
-            stop = stops[i];
-            if(!itemData.g._collapsable) {
-                stop.setAttribute('offset', oValues[i * 2] + '%');
-            }
-            stop.setAttribute('stop-opacity', oValues[i * 2 + 1]);
-        }
-    }
-    if (styleData.t === 1) {
-        if (itemData.e._mdf  || this._isFirstFrame) {
-            gfill.setAttribute('x2', pt2[0]);
-            gfill.setAttribute('y2', pt2[1]);
-            if (hasOpacity && !itemData.g._collapsable) {
-                itemData.of.setAttribute('x2', pt2[0]);
-                itemData.of.setAttribute('y2', pt2[1]);
-            }
-        }
-    } else {
-        var rad;
-        if (itemData.s._mdf || itemData.e._mdf || this._isFirstFrame) {
-            rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
-            gfill.setAttribute('r', rad);
-            if(hasOpacity && !itemData.g._collapsable){
-                itemData.of.setAttribute('r', rad);
-            }
-        }
-        if (itemData.e._mdf || itemData.h._mdf || itemData.a._mdf || this._isFirstFrame) {
-            if (!rad) {
-                rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
-            }
-            var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
-
-            var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
-            var dist = rad * percent;
-            var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
-            var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
-            gfill.setAttribute('fx', x);
-            gfill.setAttribute('fy', y);
-            if (hasOpacity && !itemData.g._collapsable) {
-                itemData.of.setAttribute('fx', x);
-                itemData.of.setAttribute('fy', y);
-            }
-        }
-        //gfill.setAttribute('fy','200');
-    }
-};
-
-SVGShapeElement.prototype.renderStroke = function(styleData, itemData) {
-    var styleElem = itemData.style;
-    var d = itemData.d;
-    if (d && (d._mdf || this._isFirstFrame) && d.dashStr) {
-        styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
-        styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
-    }
-    if(itemData.c && (itemData.c._mdf || this._isFirstFrame)){
-        styleElem.pElem.setAttribute('stroke','rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
-    }
-    if(itemData.o._mdf || this._isFirstFrame){
-        styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);
-    }
-    if(itemData.w._mdf || this._isFirstFrame){
-        styleElem.pElem.setAttribute('stroke-width', itemData.w.v);
-        if(styleElem.msElem){
-            styleElem.msElem.setAttribute('stroke-width', itemData.w.v);
-        }
-    }
-};
+}
 
 SVGShapeElement.prototype.destroy = function(){
     this.destroyBaseElement();

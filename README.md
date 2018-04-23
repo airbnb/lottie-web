@@ -45,29 +45,37 @@ CC 2014 and up.
 
 ### Option 4:
 - Close After Effects<br/>
-- Extract the zipped file on build/extension/bodymovin.zxp to the adobe CEP folder:<br/>
+- Extract the zipped file on `build/extension/bodymovin.zxp` to the adobe CEP folder:<br/>
 WINDOWS:<br/>
-C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or<br/>
-C:\<username>\AppData\Roaming\Adobe\CEP\extensions<br/>
+`C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or`<br/>
+`C:\<username>\AppData\Roaming\Adobe\CEP\extensions`<br/>
 MAC:<br/>
-/Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+`/Library/Application\ Support/Adobe/CEP/extensions/bodymovin`<br/>
 (you can open the terminal and type:<br/>
-cp -R YOURUNZIPEDFOLDERPATH/extension /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+`$ cp -R YOURUNZIPEDFOLDERPATH/extension /Library/Application\ Support/Adobe/CEP/extensions/bodymovin`<br/>
 then type:<br/>
-ls /Library/Application\ Support/Adobe/CEP/extensions/bodymovin<br/>
+`$ ls /Library/Application\ Support/Adobe/CEP/extensions/bodymovin`<br/>
 to make sure it was copied correctly type)<br/>
 
 - Edit the registry key:<br/>
 WINDOWS:<br/>
-open the registry key HKEY_CURRENT_USER/Software/Adobe/CSXS.6 and add a key named PlayerDebugMode, of type String, and value 1.<br/>
+open the registry key `HKEY_CURRENT_USER/Software/Adobe/CSXS.6` and add a key named `PlayerDebugMode`, of type String, and value `1`.<br/>
 MAC:<br/>
-open the file ~/Library/Preferences/com.adobe.CSXS.6.plist and add a row with key PlayerDebugMode, of type String, and value 1.<br/>
+open the file `~/Library/Preferences/com.adobe.CSXS.6.plist` and add a row with key `PlayerDebugMode`, of type String, and value `1`.<br/>
 
 ### Option 5:
 
 Install the zxp manually following the instructions here:
 https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
 Skip directly to "Install third-party extensions"
+
+### Option 6:
+
+Install with [Homebrew](http://brew.sh)-[adobe](https://github.com/danielbayley/homebrew-adobe):
+```bash
+brew tap danielbayley/adobe
+brew cask install lottie
+```
 
 ### After installing
 - **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"

@@ -59,7 +59,7 @@
 
     </style>
     <!-- build:js lottie.js -->
-     <script src="js/main.js"></script>
+    <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
     <script src="js/utils/BaseEvent.js"></script>
     <script src="js/utils/helpers/arrays.js"></script>
@@ -85,6 +85,7 @@
     <script src="js/utils/shapes/ShapeCollection.js"></script>
     <script src="js/utils/shapes/DashProperty.js"></script>
     <script src="js/utils/shapes/GradientProperty.js"></script>
+    <script src="js/utils/shapes/shapePathBuilder.js"></script>
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
@@ -119,6 +120,8 @@
     <script src="js/elements/helpers/shapes/SVGGradientFillStyleData.js"></script>
     <script src="js/elements/helpers/shapes/SVGGradientStrokeStyleData.js"></script>
     <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
+    <script src="js/elements/helpers/shapes/SVGElementsRenderer.js"></script>
+    <script src="js/elements/helpers/shapes/CVShapeData.js" data-light-skip="true"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/NullElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
@@ -199,6 +202,16 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    //anim.setSubframe(false);
+
+    /*anim.addEventListener('DOMLoaded', function() {
+        animationAPI = lottie_api.createAnimationApi(anim);
+        var null_animator = animationAPI.getKeyPath('Shape Layer 2, Transform, Scale');
+        animationAPI.addValueCallback(null_animator, function(currentValue) {
+            currentValue[0] = Math.random() * 100;
+            return currentValue
+        })
+    })*/
     //anim.setSubframe(false);
 </script>
 </body>

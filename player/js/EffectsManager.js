@@ -10,28 +10,17 @@ function EffectsManager(data,element){
 }
 
 function GroupEffect(data,element){
-    this.container = element;
-    this.dynamicProperties = [];
     this.init(data,element);
 }
 
-GroupEffect.prototype.getValue = function(){
-    this._mdf = false;
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i]._mdf) {
-            this._mdf = true;
-        }
-    }
-};
+extendPrototype([DynamicPropertyContainer], GroupEffect);
 
-GroupEffect.prototype.addDynamicProperty = addDynamicProperty;
+GroupEffect.prototype.getValue = GroupEffect.prototype.iterateDynamicProperties;
 
 GroupEffect.prototype.init = function(data,element){
     this.data = data;
-    this._mdf = false;
     this.effectElements = [];
+    this.initDynamicPropertyContainer(element);
     var i, len = this.data.ef.length;
     var eff, effects = this.data.ef;
     for(i=0;i<len;i+=1){

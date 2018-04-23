@@ -4,16 +4,14 @@ var TextSelectorProp = (function(){
     var floor = Math.floor;
 
     function TextSelectorProp(elem,data){
-        this._mdf = false;
         this._currentTextLength = -1;
         this.k = false;
         this.data = data;
-        this.dynamicProperties = [];
         this.elem = elem;
-        this.container = elem;
         this.comp = elem.comp;
         this.finalS = 0;
         this.finalE = 0;
+        this.initDynamicPropertyContainer(elem);
         this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this);
         if('e' in data){
             this.e = PropertyFactory.getProp(elem,data.e,0,0,this);
@@ -30,7 +28,6 @@ var TextSelectorProp = (function(){
     }
 
     TextSelectorProp.prototype = {
-        addDynamicProperty: addDynamicProperty,
         getMult: function(ind) {
             if(this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
                 this.getValue();
@@ -106,16 +103,8 @@ var TextSelectorProp = (function(){
             return mult*this.a.v;
         },
         getValue: function(newCharsFlag) {
-            this._mdf = newCharsFlag || false;
-            if(this.dynamicProperties.length){
-                var i, len = this.dynamicProperties.length;
-                for(i=0;i<len;i+=1){
-                    this.dynamicProperties[i].getValue();
-                    if(this.dynamicProperties[i]._mdf){
-                        this._mdf = true;
-                    }
-                }
-            }
+            this.iterateDynamicProperties();
+            this._mdf = newCharsFlag || this._mdf;
             this._currentTextLength = this.elem.textProperty.currentData.l.length || 0;
             if(newCharsFlag && this.data.r === 2) {
                 this.e.v = this._currentTextLength;
@@ -133,6 +122,7 @@ var TextSelectorProp = (function(){
             this.finalE = e;
         }
     }
+    extendPrototype([DynamicPropertyContainer], TextSelectorProp);
 
     function getTextSelectorProp(elem, data,arr) {
         return new TextSelectorProp(elem, data, arr);

@@ -55,6 +55,10 @@ var LayerExpressionInterface = (function (){
         return toWorldMat.inversePoint(arr);
     }
 
+    function sampleImage() {
+        return [1,1,1,1];
+    }
+
 
     return function(elem){
 
@@ -88,6 +92,7 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.fromWorld = fromWorld;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction.fromComp = fromComp;
+        _thisLayerFunction.sampleImage = sampleImage;
         _thisLayerFunction.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
         _thisLayerFunction._elem = elem;
         transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
