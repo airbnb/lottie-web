@@ -1,4 +1,4 @@
-(function(root, factory) {
+(typeof navigator !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
             return factory(root);
