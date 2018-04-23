@@ -194,15 +194,15 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
-        autoplay: false,
+        loop: true,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
+    //anim.setSubframe(false);
 
     /*anim.addEventListener('DOMLoaded', function() {
         animationAPI = lottie_api.createAnimationApi(anim);

@@ -215,7 +215,7 @@ AnimationItem.prototype.loadSegments = function() {
 
 AnimationItem.prototype.configAnimation = function (animData) {
     var _this = this;
-    if(this.renderer && this.renderer.destroyed){
+    if(!this.renderer){
         return;
     }
     this.animationData = animData;
@@ -503,15 +503,8 @@ AnimationItem.prototype.checkSegments = function(offset){
     return false;
 };
 
-AnimationItem.prototype.remove = function (name) {
-    if(name && this.name != name){
-        return;
-    }
-    this.renderer.destroy();
-};
-
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || (this.renderer && this.renderer.destroyed)){
+    if((name && this.name != name) || !this.renderer){
         return;
     }
     this.renderer.destroy();
