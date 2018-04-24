@@ -13994,7 +13994,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.12';
+    lottiejs.version = '5.1.13';
 
     function checkReady() {
         if (document.readyState === "complete") {

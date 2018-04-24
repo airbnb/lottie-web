@@ -20,7 +20,7 @@ var through = require('through2');
 var replace = require('gulp-replace');
 var batch_replace = require('gulp-batch-replace');
 
-var bm_version = '5.1.12';
+var bm_version = '5.1.13';
 
 var files = [
     {
@@ -39,7 +39,7 @@ moduleWrap = moduleWrap.replace('/*<%= contents %>*/','<%= contents %>');
 moduleWrap = moduleWrap.replace('[[BM_VERSION]]',bm_version);
 
 gulp.task('gzipFile', function(){
-  gulp.src('build/player/lottie_light.min.js')
+  gulp.src('player/exports/render/data.json')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('demo/'));
 });

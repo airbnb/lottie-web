@@ -1,3 +1,7 @@
+## V 5.1.13
+- EXPRESSIONS: fix for global variables used in functions
+- EXPRESSIONS: operations supported for arrays
+
 ## V 5.1.12
 - EXPRESSIONS: improved memory management for declared functions
 - EXPRESSIONS: speedAtTime support
