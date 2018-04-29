@@ -2,79 +2,56 @@
 function CVMaskElement(data,element){
     this.data = data;
     this.element = element;
-    this.dynamicProperties = [];
-    this.masksProperties = this.data.masksProperties;
-    this.viewData = new Array(this.masksProperties.length);
-    var i, len = this.masksProperties.length;
+    this.masksProperties = this.data.masksProperties || [];
+    this.viewData = createSizedArray(this.masksProperties.length);
+    var i, len = this.masksProperties.length, hasMasks = false;
     for (i = 0; i < len; i++) {
-        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3,this.dynamicProperties,null);
+        if(this.masksProperties[i].mode !== 'n'){
+            hasMasks = true;
+        }
+        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3);
+    }
+    this.hasMasks = hasMasks;
+    if(hasMasks) {
+        this.element.addRenderableComponent(this);
     }
 }
 
-CVMaskElement.prototype.getMaskProperty = function(pos){
-    return this.viewData[pos];
-};
-
-CVMaskElement.prototype.prepareFrame = function(num){
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue(num);
-        if(this.dynamicProperties[i].mdf){
-            this.element.globalData.mdf = true;
-        }
+CVMaskElement.prototype.renderFrame = function () {
+    if(!this.hasMasks){
+        return;
     }
-};
-
-CVMaskElement.prototype.renderFrame = function (transform) {
+    var transform = this.element.finalTransform.mat;
     var ctx = this.element.canvasContext;
-    var i, len = this.data.masksProperties.length;
-    var pt,pt2,pt3,data, hasMasks = false;
+    var i, len = this.masksProperties.length;
+    var pt,pts,data;
+    ctx.beginPath();
     for (i = 0; i < len; i++) {
-        if(this.masksProperties[i].mode === 'n'){
-            continue;
+        if(this.masksProperties[i].mode !== 'n'){
+            if (this.masksProperties[i].inv) {
+                ctx.moveTo(0, 0);
+                ctx.lineTo(this.element.globalData.compWidth, 0);
+                ctx.lineTo(this.element.globalData.compWidth, this.element.globalData.compHeight);
+                ctx.lineTo(0, this.element.globalData.compHeight);
+                ctx.lineTo(0, 0);
+            }
+            data = this.viewData[i].v;
+            pt = transform.applyToPointArray(data.v[0][0],data.v[0][1],0);
+            ctx.moveTo(pt[0], pt[1]);
+            var j, jLen = data._length;
+            for (j = 1; j < jLen; j++) {
+                pts = transform.applyToTriplePoints(data.o[j - 1], data.i[j], data.v[j]);
+                ctx.bezierCurveTo(pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]);
+            }
+            pts = transform.applyToTriplePoints(data.o[j - 1], data.i[0], data.v[0]);
+            ctx.bezierCurveTo(pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]);
         }
-        if(hasMasks === false){
-            ctx.beginPath();
-            hasMasks = true;
-        }
-        if (this.masksProperties[i].inv) {
-            ctx.moveTo(0, 0);
-            ctx.lineTo(this.element.globalData.compWidth, 0);
-            ctx.lineTo(this.element.globalData.compWidth, this.element.globalData.compHeight);
-            ctx.lineTo(0, this.element.globalData.compHeight);
-            ctx.lineTo(0, 0);
-        }
-        data = this.viewData[i].v;
-        pt = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0):data.v[0];
-        ctx.moveTo(pt[0], pt[1]);
-        var j, jLen = data._length;
-        for (j = 1; j < jLen; j++) {
-            pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-            pt2 = transform ? transform.applyToPointArray(data.i[j][0],data.i[j][1],0) : data.i[j];
-            pt3 = transform ? transform.applyToPointArray(data.v[j][0],data.v[j][1],0) : data.v[j];
-            ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
-        }
-        pt = transform ? transform.applyToPointArray(data.o[j - 1][0],data.o[j - 1][1],0) : data.o[j - 1];
-        pt2 = transform ? transform.applyToPointArray(data.i[0][0],data.i[0][1],0) : data.i[0];
-        pt3 = transform ? transform.applyToPointArray(data.v[0][0],data.v[0][1],0) : data.v[0];
-        ctx.bezierCurveTo(pt[0], pt[1], pt2[0], pt2[1], pt3[0], pt3[1]);
     }
-    if(hasMasks){
-        ctx.clip();
-    }
+    this.element.globalData.renderer.save(true);
+    ctx.clip();
 };
 
-CVMaskElement.prototype.getMask = function(nm){
-    var i = 0, len = this.masksProperties.length;
-    while(i<len){
-        if(this.masksProperties[i].nm === nm){
-            return {
-                maskPath: this.viewData[i].pv
-            }
-        }
-        i += 1;
-    }
-};
+CVMaskElement.prototype.getMaskProperty = MaskElement.prototype.getMaskProperty;
 
 CVMaskElement.prototype.destroy = function(){
     this.element = null;

@@ -16,24 +16,24 @@ SVGStrokeEffect.prototype.initialize = function(){
         i = this.filterManager.effectElements[0].p.v - 1;
         len = i + 1;
     }
-    groupPath = document.createElementNS(svgNS,'g'); 
+    groupPath = createNS('g'); 
     groupPath.setAttribute('fill','none');
     groupPath.setAttribute('stroke-linecap','round');
     groupPath.setAttribute('stroke-dashoffset',1);
     for(i;i<len;i+=1){
-        path = document.createElementNS(svgNS,'path');
+        path = createNS('path');
         groupPath.appendChild(path);
         this.paths.push({p:path,m:i});
     }
     if(this.filterManager.effectElements[10].p.v === 3){
-        var mask = document.createElementNS(svgNS,'mask');
+        var mask = createNS('mask');
         var id = 'stms_' + randomString(10);
         mask.setAttribute('id',id);
         mask.setAttribute('mask-type','alpha');
         mask.appendChild(groupPath);
         this.elem.globalData.defs.appendChild(mask);
-        var g = document.createElementNS(svgNS,'g');
-        g.setAttribute('mask','url(#'+id+')');
+        var g = createNS('g');
+        g.setAttribute('mask','url(' + locationHref + '#'+id+')');
         if(elemChildren[0]){
             g.appendChild(elemChildren[0]);
         }
@@ -42,7 +42,7 @@ SVGStrokeEffect.prototype.initialize = function(){
         groupPath.setAttribute('stroke','#fff');
     } else if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
         if(this.filterManager.effectElements[10].p.v === 2){
-            var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
+            elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
             while(elemChildren.length){
                 this.elem.layerElement.removeChild(elemChildren[0]);
             }
@@ -53,7 +53,7 @@ SVGStrokeEffect.prototype.initialize = function(){
     }
     this.initialized = true;
     this.pathMasker = groupPath;
-}
+};
 
 SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     if(!this.initialized){
@@ -62,12 +62,15 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
     var i, len = this.paths.length;
     var mask, path;
     for(i=0;i<len;i+=1){
+        if(this.paths[i].m === -1) {
+            continue;
+        }
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
-        if(forceRender || this.filterManager.mdf || mask.prop.mdf){
+        if(forceRender || this.filterManager._mdf || mask.prop._mdf){
             path.setAttribute('d',mask.lastPath);
         }
-        if(forceRender || this.filterManager.effectElements[9].p.mdf || this.filterManager.effectElements[4].p.mdf || this.filterManager.effectElements[7].p.mdf || this.filterManager.effectElements[8].p.mdf || mask.prop.mdf){
+        if(forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf){
             var dasharrayValue;
             if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100){
                 var s = Math.min(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
@@ -88,15 +91,15 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
             path.setAttribute('stroke-dasharray',dasharrayValue);
         }
     }
-    if(forceRender || this.filterManager.effectElements[4].p.mdf){
+    if(forceRender || this.filterManager.effectElements[4].p._mdf){
         this.pathMasker.setAttribute('stroke-width',this.filterManager.effectElements[4].p.v*2);
     }
     
-    if(forceRender || this.filterManager.effectElements[6].p.mdf){
+    if(forceRender || this.filterManager.effectElements[6].p._mdf){
         this.pathMasker.setAttribute('opacity',this.filterManager.effectElements[6].p.v);
     }
     if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
-        if(forceRender || this.filterManager.effectElements[3].p.mdf){
+        if(forceRender || this.filterManager.effectElements[3].p._mdf){
             var color = this.filterManager.effectElements[3].p.v;
             this.pathMasker.setAttribute('stroke','rgb('+bm_floor(color[0]*255)+','+bm_floor(color[1]*255)+','+bm_floor(color[2]*255)+')');
         }

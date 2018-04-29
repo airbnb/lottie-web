@@ -1,23 +1,23 @@
-function SliderEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function SliderEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function AngleEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function AngleEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function ColorEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
+function ColorEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,1,0,container);
 }
-function PointEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,1,0,dynamicProperties);
+function PointEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,1,0,container);
 }
-function LayerIndexEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function LayerIndexEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function MaskIndexEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function MaskIndexEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
-function CheckboxEffect(data,elem, dynamicProperties){
-    this.p = PropertyFactory.getProp(elem,data.v,0,0,dynamicProperties);
+function CheckboxEffect(data,elem, container){
+    this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
 function NoValueEffect(){
     this.p = {};

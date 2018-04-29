@@ -1,41 +1,43 @@
-function ICompElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    this.layers = data.layers;
-    this.supports3d = true;
-    this.completeLayers = false;
-    this.pendingElements = [];
-    this.elements = this.layers ? Array.apply(null,{length:this.layers.length}) : [];
-    if(this.data.tm){
-        this.tm = PropertyFactory.getProp(this,this.data.tm,0,globalData.frameRate,this.dynamicProperties);
-    }
-    if(this.data.xt){
-        this.layerElement = document.createElementNS(svgNS,'g');
-        this.buildAllItems();
-    } else if(!globalData.progressiveLoad){
-        this.buildAllItems();
-    }
-}
-createElement(SVGBaseElement, ICompElement);
+function ICompElement(){}
 
-ICompElement.prototype.hide = function(){
+extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
+
+ICompElement.prototype.initElement = function(data,globalData,comp) {
+    this.initFrame();
+    this.initBaseData(data, globalData, comp);
+    this.initTransform(data, globalData, comp);
+    this.initRenderable();
+    this.initHierarchy();
+    this.initRendererElement();
+    this.createContainerElements();
+    this.addMasks();
+    if(this.data.xt || !globalData.progressiveLoad){
+        this.buildAllItems();
+    }
+    this.hide();
+};
+
+/*ICompElement.prototype.hide = function(){
     if(!this.hidden){
+        this.hideElement();
         var i,len = this.elements.length;
         for( i = 0; i < len; i+=1 ){
             if(this.elements[i]){
                 this.elements[i].hide();
             }
         }
-        this.hidden = true;
     }
-};
+};*/
 
 ICompElement.prototype.prepareFrame = function(num){
-    this._parent.prepareFrame.call(this,num);
-    if(this.isVisible===false && !this.data.xt){
+    this._mdf = false;
+    this.prepareRenderableFrame(num);
+    this.prepareProperties(num, this.isInRange);
+    if(!this.isInRange && !this.data.xt){
         return;
     }
 
-    if(this.tm){
+    if (!this.tm._placeholder) {
         var timeRemapped = this.tm.v;
         if(timeRemapped === this.data.op){
             timeRemapped = this.data.op - 1;
@@ -51,26 +53,19 @@ ICompElement.prototype.prepareFrame = function(num){
     for( i = 0; i < len; i+=1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
+            if(this.elements[i]._mdf) {
+                this._mdf = true;
+            }
         }
     }
 };
 
-ICompElement.prototype.renderFrame = function(parentMatrix){
-    var renderParent = this._parent.renderFrame.call(this,parentMatrix);
+ICompElement.prototype.renderInnerContent = function() {
     var i,len = this.layers.length;
-    if(renderParent===false){
-        this.hide();
-        return;
-    }
-
-    this.hidden = false;
-    for( i = 0; i < len; i+=1 ){
+    for( i = 0; i < len; i += 1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].renderFrame();
         }
-    }
-    if(this.firstFrame){
-        this.firstFrame = false;
     }
 };
 
@@ -82,8 +77,7 @@ ICompElement.prototype.getElements = function(){
     return this.elements;
 };
 
-ICompElement.prototype.destroy = function(){
-    this._parent.destroy.call(this._parent);
+ICompElement.prototype.destroyElements = function(){
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ){
         if(this.elements[i]){
@@ -92,17 +86,7 @@ ICompElement.prototype.destroy = function(){
     }
 };
 
-ICompElement.prototype.checkLayers = SVGRenderer.prototype.checkLayers;
-ICompElement.prototype.buildItem = SVGRenderer.prototype.buildItem;
-ICompElement.prototype.buildAllItems = SVGRenderer.prototype.buildAllItems;
-ICompElement.prototype.buildElementParenting = SVGRenderer.prototype.buildElementParenting;
-ICompElement.prototype.createItem = SVGRenderer.prototype.createItem;
-ICompElement.prototype.createImage = SVGRenderer.prototype.createImage;
-ICompElement.prototype.createComp = SVGRenderer.prototype.createComp;
-ICompElement.prototype.createSolid = SVGRenderer.prototype.createSolid;
-ICompElement.prototype.createShape = SVGRenderer.prototype.createShape;
-ICompElement.prototype.createText = SVGRenderer.prototype.createText;
-ICompElement.prototype.createBase = SVGRenderer.prototype.createBase;
-ICompElement.prototype.appendElementInPos = SVGRenderer.prototype.appendElementInPos;
-ICompElement.prototype.checkPendingElements = SVGRenderer.prototype.checkPendingElements;
-ICompElement.prototype.addPendingElement = SVGRenderer.prototype.addPendingElement;
+ICompElement.prototype.destroy = function(){
+    this.destroyElements();
+    this.destroyBaseElement();
+};

@@ -5,11 +5,10 @@ function PIXIMaskElement(data,element,globalData) {
     this.globalData = globalData;
     this.paths = [];
     this.storedData = [];
-    this.masksProperties = this.data.masksProperties;
+    this.masksProperties = this.data.masksProperties || [];
     this.viewData = new Array(this.masksProperties.length);
     this.maskElement = null;
     this.PMaskElement = null;
-    this.firstFrame = true;
     var defs = this.globalData.defs;
     var i, len = this.masksProperties.length;
 
@@ -42,7 +41,7 @@ function PIXIMaskElement(data,element,globalData) {
         PPath = new PIXI.Graphics;
         if(properties[i].mode == 'n' || properties[i].cl === false) {
             this.viewData[i] = {
-                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null),
+                prop: ShapePropertyFactory.getShapeProp(this.element,properties[i],3),
                 elem: path
             };
             defs.appendChild(path);
@@ -70,7 +69,7 @@ function PIXIMaskElement(data,element,globalData) {
         if(properties[i].x.k !== 0){
             maskType = 'mask';
             maskRef = 'mask';
-            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.dynamicProperties);
+            x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.element);
             var filterID = 'fi_'+randomString(10);
             expansor = document.createElementNS(svgNS,'filter');
             expansor.setAttribute('id',filterID);
@@ -127,7 +126,7 @@ function PIXIMaskElement(data,element,globalData) {
             elem: path,
             PElem: PPath,
             lastPath: '',
-            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3,this.dynamicProperties,null)
+            prop:ShapePropertyFactory.getShapeProp(this.element,properties[i],3)
         };
         if(rect){
             this.viewData[i].invRect = rect;
@@ -146,59 +145,28 @@ function PIXIMaskElement(data,element,globalData) {
         //this.PMaskElement.addChild(currentPMasks[i]);
     }
 
-    this.maskElement.setAttribute('id', layerId);
     if(count > 0){
         this.element.maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
         this.element.PMaskedElement.mask = currentPMasks[0];
         this.element.PMaskedElement.addChild(currentPMasks[0]);
     }
+    if (this.viewData.length) {
+        this.element.addRenderableComponent(this);
+    }
 
-    defs.appendChild(this.maskElement);
 };
 
 PIXIMaskElement.prototype.getMaskProperty = function(pos){
     return this.viewData[pos].prop;
 };
 
-PIXIMaskElement.prototype.prepareFrame = function(){
-    var i, len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-
-    }
-};
-
-PIXIMaskElement.prototype.renderFrame = function (finalMat) {
+PIXIMaskElement.prototype.renderFrame = function (isFirstFrame) {
     var i, len = this.masksProperties.length;
     for (i = 0; i < len; i++) {
-        if(this.viewData[i].prop.mdf || this.firstFrame){
+        if(this.viewData[i].prop._mdf || isFirstFrame){
             this.drawPath(this.masksProperties[i],this.viewData[i].prop.v,this.viewData[i]);
         }
-        if(this.masksProperties[i].mode !== 'n' && this.masksProperties[i].cl !== false){
-            if(this.viewData[i].invRect && (this.element.finalTransform.mProp.mdf || this.firstFrame)){
-                this.viewData[i].invRect.setAttribute('x', -finalMat.props[12]);
-                this.viewData[i].invRect.setAttribute('y', -finalMat.props[13]);
-            }
-            if(this.storedData[i].x && (this.storedData[i].x.mdf || this.firstFrame)){
-                var feMorph = this.storedData[i].expan;
-                if(this.storedData[i].x.v < 0){
-                    if(this.storedData[i].lastOperator !== 'erode'){
-                        this.storedData[i].lastOperator = 'erode';
-                        this.storedData[i].elem.setAttribute('filter','url(#'+this.storedData[i].filterId+')');
-                    }
-                    feMorph.setAttribute('radius',-this.storedData[i].x.v);
-                }else{
-                    if(this.storedData[i].lastOperator !== 'dilate'){
-                        this.storedData[i].lastOperator = 'dilate';
-                        this.storedData[i].elem.setAttribute('filter',null);
-                    }
-                    this.storedData[i].elem.setAttribute('stroke-width', this.storedData[i].x.v*2);
-
-                }
-            }
-        }
     }
-    this.firstFrame = false;
 };
 
 PIXIMaskElement.prototype.getMaskelement = function () {

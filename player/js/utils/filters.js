@@ -4,7 +4,7 @@ var filtersFactory = (function(){
 	ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
 	function createFilter(filId){
-        	var fil = document.createElementNS(svgNS,'filter');
+        	var fil = createNS('filter');
         	fil.setAttribute('id',filId);
                 fil.setAttribute('filterUnits','objectBoundingBox');
                 fil.setAttribute('x','0%');
@@ -15,12 +15,12 @@ var filtersFactory = (function(){
 	}
 
 	function createAlphaToLuminanceFilter(){
-                var feColorMatrix = document.createElementNS(svgNS,'feColorMatrix');
+                var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type','matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters','sRGB');
-                feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1');
+                feColorMatrix.setAttribute('values','0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 1 1');
                 return feColorMatrix;
 	}
 
 	return ob;
-}())
+}());

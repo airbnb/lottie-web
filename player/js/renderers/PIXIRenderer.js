@@ -15,33 +15,35 @@ function PIXIRenderer(animationItem, config){
 
 }
 
-extendPrototype(BaseRenderer,PIXIRenderer);
+extendPrototype([BaseRenderer],PIXIRenderer);
 
 PIXIRenderer.prototype.createBase = function (data) {
-    return new PIXIBaseElement(data, this.layerElement,this.globalData,this);
+    return new PIXIBaseElement(data,this.globalData,this);
 };
 
 PIXIRenderer.prototype.createShape = function (data) {
-    return new PIXIShapeElement(data, this.layerElement,this.globalData,this);
+    return new PIXIShapeElement(data,this.globalData,this);
 };
 
 PIXIRenderer.prototype.createText = function (data) {
-    return new SVGTextElement(data, this.layerElement,this.globalData,this);
+    return new SVGTextElement(data,this.globalData,this);
 
 };
 
 PIXIRenderer.prototype.createImage = function (data) {
-    return new PIXIImageElement(data, this.layerElement,this.globalData,this);
+    return new PIXIImageElement(data,this.globalData,this);
 };
 
 PIXIRenderer.prototype.createComp = function (data) {
-    return new PIXICompElement(data, this.layerElement,this.globalData,this);
+    return new PIXICompElement(data,this.globalData,this);
 
 };
 
 PIXIRenderer.prototype.createSolid = function (data) {
-    return new PIXISolidElement(data, this.layerElement,this.globalData,this);
+    return new PIXISolidElement(data,this.globalData,this);
 };
+
+PIXIRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
 PIXIRenderer.prototype.configAnimation = function(animData){
     animData.width = animData.width/blitter;
@@ -62,7 +64,7 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     //this.animationItem.wrapper.appendChild(this.layerElement);
     ///
     this.renderer = new PIXI.WebGLRenderer(animData.w, animData.h,{antialias:true,transparent:true});
-    this.renderer.view.style.transform = 'scale(0.5,0.5)';
+    //this.renderer.view.style.transform = 'scale(0.5,0.5)';
     this.renderer.view.style.transformOrigin = '0 0';
     this.animationItem.wrapper.appendChild(this.renderer.view);
     this.stage = new PIXI.Container();
@@ -184,29 +186,22 @@ PIXIRenderer.prototype.renderFrame = function(num){
 
 PIXIRenderer.prototype.appendElementInPos = function(element, pos){
     var newElement = element.getBaseElement();
-    var newPIXIElement = element.getPBaseElement();
-    if(!newPIXIElement){
-        console.log(element);
-    }
     if(!newElement){
         return;
     }
     var i = 0;
-    var nextElement,pNextElement;
+    var nextElement;
     while(i<pos){
         if(this.elements[i] && this.elements[i].getBaseElement()){
             nextElement = this.elements[i].getBaseElement();
-            pNextElement = this.elements[i].getPBaseElement();
         }
         i += 1;
     }
     if(nextElement){
-        this.layerElement.insertBefore(newElement, nextElement);
-        var index = this.PLayerElement.getChildIndex(pNextElement);
-        this.PLayerElement.addChildAt(newPIXIElement,index);
+        var index = this.PLayerElement.getChildIndex(nextElement);
+        this.PLayerElement.addChildAt(newElement,index);
     } else {
-        this.layerElement.appendChild(newElement);
-        this.PLayerElement.addChild(newPIXIElement);
+        this.PLayerElement.addChild(newElement);
     }
 };
 

@@ -23,21 +23,21 @@ BaseRenderer.prototype.createItem = function(layer){
             return this.createComp(layer);
         case 1:
             return this.createSolid(layer);
+        case 3:
+            return this.createNull(layer);
         case 4:
             return this.createShape(layer);
         case 5:
             return this.createText(layer);
         case 13:
             return this.createCamera(layer);
-        case 99:
-            return null;
     }
-    return this.createBase(layer);
+    return this.createNull(layer);
 };
 
 BaseRenderer.prototype.createCamera = function(){
     throw new Error('You\'re using a 3d camera. Try the html renderer.');
-}
+};
 
 BaseRenderer.prototype.buildAllItems = function(){
     var i, len = this.layers.length;
@@ -72,27 +72,24 @@ BaseRenderer.prototype.initItems = function(){
         this.buildAllItems();
     }
 };
-BaseRenderer.prototype.buildElementParenting = function(element, parentName, hierarchy){
-    hierarchy = hierarchy || [];
+BaseRenderer.prototype.buildElementParenting = function(element, parentName, hierarchy) {
     var elements = this.elements;
     var layers = this.layers;
     var i=0, len = layers.length;
-    while(i<len){
-        if(layers[i].ind == parentName){
-            if(!elements[i] || elements[i] === true){
+    while (i < len) {
+        if (layers[i].ind == parentName) {
+            if (!elements[i] || elements[i] === true) {
                 this.buildItem(i);
                 this.addPendingElement(element);
-            } else if(layers[i].parent !== undefined){
-                hierarchy.push(elements[i]);
-                elements[i]._isParent = true;
-                this.buildElementParenting(element,layers[i].parent, hierarchy);
             } else {
                 hierarchy.push(elements[i]);
-                elements[i]._isParent = true;
-                element.setHierarchy(hierarchy);
+                elements[i].setAsParent();
+                if(layers[i].parent !== undefined) {
+                    this.buildElementParenting(element, layers[i].parent, hierarchy);
+                } else {
+                    element.setHierarchy(hierarchy);
+                }
             }
-
-
         }
         i += 1;
     }
@@ -100,4 +97,15 @@ BaseRenderer.prototype.buildElementParenting = function(element, parentName, hie
 
 BaseRenderer.prototype.addPendingElement = function(element){
     this.pendingElements.push(element);
+};
+
+BaseRenderer.prototype.searchExtraCompositions = function(assets){
+    var i, len = assets.length;
+    for(i=0;i<len;i+=1){
+        if(assets[i].xt){
+            var comp = this.createComp(assets[i]);
+            comp.initExpressions();
+            this.globalData.projectInterface.registerComposition(comp);
+        }
+    }
 };

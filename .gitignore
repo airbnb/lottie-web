@@ -8,3 +8,6 @@ esprima/
 bodymovinCert.p12
 ZXPSignCmd.exe
 signer.bat
+commands.txt
+debug.txt
+package-lock.json

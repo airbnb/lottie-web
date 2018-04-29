@@ -1,30 +1,13 @@
-function RoundCornersModifier(){};
-extendPrototype(ShapeModifier,RoundCornersModifier);
-RoundCornersModifier.prototype.processKeys = function(forceRender){
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
-        return;
-    }
-    this.mdf = forceRender ? true : false;
-    this.frameId = this.elem.globalData.frameId;
-    var i, len = this.dynamicProperties.length;
-
-    for(i=0;i<len;i+=1){
-        this.dynamicProperties[i].getValue();
-        if(this.dynamicProperties[i].mdf){
-            this.mdf = true;
-        }
-    }
-}
+function RoundCornersModifier(){}
+extendPrototype([ShapeModifier],RoundCornersModifier);
 RoundCornersModifier.prototype.initModifierProperties = function(elem,data){
     this.getValue = this.processKeys;
-    this.rd = PropertyFactory.getProp(elem,data.r,0,null,this.dynamicProperties);
-    if(!this.dynamicProperties.length){
-        this.getValue(true);
-    }
+    this.rd = PropertyFactory.getProp(elem,data.r,0,null,this);
+    this._isAnimated = !!this.rd.effectsSequence.length;
 };
 
 RoundCornersModifier.prototype.processPath = function(path, round){
-    var cloned_path = shape_pool.newShape();
+    var cloned_path = shape_pool.newElement();
     cloned_path.c = path.c;
     var i, len = path._length;
     var currentV,currentI,currentO,closerV, newV,newO,newI,distance,newPosPerc,index = 0;
@@ -53,12 +36,6 @@ RoundCornersModifier.prototype.processPath = function(path, round){
                 oX = vX-(vX-currentV[0])*roundCorner;
                 oY = vY-(vY-currentV[1])*roundCorner;
                 cloned_path.setTripleAt(vX,vY,oX,oY,iX,iY,index);
-                /*newV = [currentV[0]+(closerV[0]-currentV[0])*newPosPerc,currentV[1]-(currentV[1]-closerV[1])*newPosPerc];
-                newI = newV;
-                newO = [newV[0]-(newV[0]-currentV[0])*roundCorner,newV[1]-(newV[1]-currentV[1])*roundCorner];
-                cloned_path.v[index] = newV;
-                cloned_path.i[index] = newI;
-                cloned_path.o[index] = newO;*/
                 index += 1;
 
                 if(i === len - 1){
@@ -73,27 +50,17 @@ RoundCornersModifier.prototype.processPath = function(path, round){
                 iX = vX-(vX-currentV[0])*roundCorner;
                 iY = vY-(vY-currentV[1])*roundCorner;
                 cloned_path.setTripleAt(vX,vY,oX,oY,iX,iY,index);
-
-                /*newV = [currentV[0]+(closerV[0]-currentV[0])*newPosPerc,currentV[1]+(closerV[1]-currentV[1])*newPosPerc];
-                newI = [newV[0]-(newV[0]-currentV[0])*roundCorner,newV[1]-(newV[1]-currentV[1])*roundCorner];
-                newO = newV;
-                cloned_path.v[index] = newV;
-                cloned_path.i[index] = newI;
-                cloned_path.o[index] = newO;*/
                 index += 1;
             }
         } else {
-            /*cloned_path.v[index] = path.v[i];
-            cloned_path.o[index] = path.o[i];
-            cloned_path.i[index] = path.i[i];*/
             cloned_path.setTripleAt(path.v[i][0],path.v[i][1],path.o[i][0],path.o[i][1],path.i[i][0],path.i[i][1],index);
             index += 1;
         }
     }
     return cloned_path;
-}
+};
 
-RoundCornersModifier.prototype.processShapes = function(firstFrame){
+RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
@@ -105,9 +72,9 @@ RoundCornersModifier.prototype.processShapes = function(firstFrame){
             shapeData = this.shapes[i];
             newPaths = shapeData.shape.paths;
             localShapeCollection = shapeData.localShapeCollection;
-            if(!(!shapeData.shape.mdf && !this.mdf && !firstFrame)){
+            if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)){
                 localShapeCollection.releaseShapes();
-                shapeData.shape.mdf = true;
+                shapeData.shape._mdf = true;
                 shapePaths = shapeData.shape.paths.shapes;
                 jLen = shapeData.shape.paths._length;
                 for(j=0;j<jLen;j+=1){
@@ -119,9 +86,8 @@ RoundCornersModifier.prototype.processShapes = function(firstFrame){
 
     }
     if(!this.dynamicProperties.length){
-        this.mdf = false;
+        this._mdf = false;
     }
-}
-
+};
 
 ShapeModifiers.registerModifier('rd',RoundCornersModifier);

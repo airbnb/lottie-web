@@ -1,69 +1,88 @@
-(function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        define( factory);
-    } else if(typeof module === "object" && module.exports) {
-        module.exports = factory();
+(typeof navigator !== "undefined") && (function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(function() {
+            return factory(root);
+        });
+    } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(root);
     } else {
-        root.bodymovin = factory();
+        root.lottie = factory(root);
+        root.bodymovin = root.lottie;
     }
-}(window, function() {
-    var bodymovinjs = {};
+}((window || {}), function(window) {
+    "use strict";
+    /*<%= contents %>*/
+    var lottiejs = {};
 
+    function setLocationHref (href) {
+        locationHref = href;
+    }
     function play(animation){
         animationManager.play(animation);
     }
-    function pause(animation){
+
+    function pause(animation) {
         animationManager.pause(animation);
     }
-    function togglePause(animation){
+
+    function togglePause(animation) {
         animationManager.togglePause(animation);
     }
-    function setSpeed(value,animation){
+
+    function setSpeed(value, animation) {
         animationManager.setSpeed(value, animation);
     }
-    function setDirection(value,animation){
+
+    function setDirection(value, animation) {
         animationManager.setDirection(value, animation);
     }
-    function stop(animation){
+
+    function stop(animation) {
         animationManager.stop(animation);
     }
-    function moveFrame(value){
-        animationManager.moveFrame(value);
-    }
-    function searchAnimations(){
-        if(standalone === true){
-            animationManager.searchAnimations(animationData,standalone, renderer);
-        }else{
+
+    function searchAnimations() {
+        if (standalone === true) {
+            animationManager.searchAnimations(animationData, standalone, renderer);
+        } else {
             animationManager.searchAnimations();
         }
     }
-    function registerAnimation(elem){
+
+    function registerAnimation(elem) {
         return animationManager.registerAnimation(elem);
     }
-    function resize(){
+
+    function resize() {
         animationManager.resize();
     }
-    function start(){
+
+    /*function start() {
         animationManager.start();
+    }*/
+
+    function goToAndStop(val, isFrame, animation) {
+        animationManager.goToAndStop(val, isFrame, animation);
     }
-    function goToAndStop(val,isFrame, animation){
-        animationManager.goToAndStop(val,isFrame, animation);
-    }
-    function setSubframeRendering(flag){
+
+    function setSubframeRendering(flag) {
         subframeEnabled = flag;
     }
-    function loadAnimation(params){
-        if(standalone === true){
+
+    function loadAnimation(params) {
+        if (standalone === true) {
             params.animationData = JSON.parse(animationData);
         }
         return animationManager.loadAnimation(params);
     }
-    function destroy(animation){
+
+    function destroy(animation) {
         return animationManager.destroy(animation);
     }
-    function setQuality(value){
-        if(typeof value === 'string'){
-            switch(value){
+
+    function setQuality(value) {
+        if (typeof value === 'string') {
+            switch (value) {
                 case 'high':
                     defaultCurveSegments = 200;
                     break;
@@ -74,24 +93,28 @@
                     defaultCurveSegments = 10;
                     break;
             }
-        }else if(!isNaN(value) && value > 1){
+        } else if (!isNaN(value) && value > 1) {
             defaultCurveSegments = value;
         }
-        if(defaultCurveSegments >= 50){
+        if (defaultCurveSegments >= 50) {
             roundValues(false);
-        }else{
+        } else {
             roundValues(true);
         }
-
     }
-    function installPlugin(type,plugin){
-        if(type==='expressions'){
+
+    function inBrowser() {
+        return typeof navigator !== 'undefined';
+    }
+
+    function installPlugin(type, plugin) {
+        if (type === 'expressions') {
             expressionsPlugin = plugin;
         }
     }
 
-    function getFactory(name){
-        switch(name){
+    function getFactory(name) {
+        switch (name) {
             case "propertyFactory":
                 return PropertyFactory;
             case "shapePropertyFactory":
@@ -100,28 +123,28 @@
                 return Matrix;
         }
     }
+    lottiejs.play = play;
+    lottiejs.pause = pause;
+    lottiejs.setLocationHref = setLocationHref;
+    lottiejs.togglePause = togglePause;
+    lottiejs.setSpeed = setSpeed;
+    lottiejs.setDirection = setDirection;
+    lottiejs.stop = stop;
+    lottiejs.searchAnimations = searchAnimations;
+    lottiejs.registerAnimation = registerAnimation;
+    lottiejs.loadAnimation = loadAnimation;
+    lottiejs.setSubframeRendering = setSubframeRendering;
+    lottiejs.resize = resize;
+    //lottiejs.start = start;
+    lottiejs.goToAndStop = goToAndStop;
+    lottiejs.destroy = destroy;
+    lottiejs.setQuality = setQuality;
+    lottiejs.inBrowser = inBrowser;
+    lottiejs.installPlugin = installPlugin;
+    lottiejs.__getFactory = getFactory;
+    lottiejs.version = '[[BM_VERSION]]';
 
-    bodymovinjs.play = play;
-    bodymovinjs.pause = pause;
-    bodymovinjs.togglePause = togglePause;
-    bodymovinjs.setSpeed = setSpeed;
-    bodymovinjs.setDirection = setDirection;
-    bodymovinjs.stop = stop;
-    bodymovinjs.moveFrame = moveFrame;
-    bodymovinjs.searchAnimations = searchAnimations;
-    bodymovinjs.registerAnimation = registerAnimation;
-    bodymovinjs.loadAnimation = loadAnimation;
-    bodymovinjs.setSubframeRendering = setSubframeRendering;
-    bodymovinjs.resize = resize;
-    bodymovinjs.start = start;
-    bodymovinjs.goToAndStop = goToAndStop;
-    bodymovinjs.destroy = destroy;
-    bodymovinjs.setQuality = setQuality;
-    bodymovinjs.installPlugin = installPlugin;
-    bodymovinjs.__getFactory = getFactory;
-    bodymovinjs.version = '4.1.9';
-
-    function checkReady(){
+    function checkReady() {
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
             searchAnimations();
@@ -137,20 +160,18 @@
             }
         }
     }
-
     var standalone = '__[STANDALONE]__';
     var animationData = '__[ANIMATIONDATA]__';
-
     var renderer = '';
-    if(standalone) {
+    if (standalone) {
         var scripts = document.getElementsByTagName('script');
         var index = scripts.length - 1;
-        var myScript = scripts[index] || { src: '' };
-        var queryString = myScript.src.replace(/^[^\?]+\??/,'');
+        var myScript = scripts[index] || {
+            src: ''
+        };
+        var queryString = myScript.src.replace(/^[^\?]+\??/, '');
         renderer = getQueryVariable('renderer');
     }
-
     var readyStateCheckInterval = setInterval(checkReady, 100);
-
-    return bodymovinjs;
+    return lottiejs;
 }));

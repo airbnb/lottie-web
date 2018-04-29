@@ -1,15 +1,18 @@
-function HCameraElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
-    this.pe = PropertyFactory.getProp(this,data.pe,0,0,this.dynamicProperties);
+function HCameraElement(data,globalData,comp){
+    this.initFrame();
+    this.initBaseData(data,globalData,comp);
+    this.initHierarchy();
+    var getProp = PropertyFactory.getProp;
+    this.pe = getProp(this,data.pe,0,0,this);
     if(data.ks.p.s){
-        this.px = PropertyFactory.getProp(this,data.ks.p.x,1,0,this.dynamicProperties);
-        this.py = PropertyFactory.getProp(this,data.ks.p.y,1,0,this.dynamicProperties);
-        this.pz = PropertyFactory.getProp(this,data.ks.p.z,1,0,this.dynamicProperties);
+        this.px = getProp(this,data.ks.p.x,1,0,this);
+        this.py = getProp(this,data.ks.p.y,1,0,this);
+        this.pz = getProp(this,data.ks.p.z,1,0,this);
     }else{
-        this.p = PropertyFactory.getProp(this,data.ks.p,1,0,this.dynamicProperties);
+        this.p = getProp(this,data.ks.p,1,0,this);
     }
     if(data.ks.a){
-        this.a = PropertyFactory.getProp(this,data.ks.a,1,0,this.dynamicProperties);
+        this.a = getProp(this,data.ks.a,1,0,this);
     }
     if(data.ks.or.k.length && data.ks.or.k[0].to){
         var i,len = data.ks.or.k.length;
@@ -18,23 +21,27 @@ function HCameraElement(data,parentContainer,globalData,comp, placeholder){
             data.ks.or.k[i].ti = null;
         }
     }
-    this.or = PropertyFactory.getProp(this,data.ks.or,1,degToRads,this.dynamicProperties);
+    this.or = getProp(this,data.ks.or,1,degToRads,this);
     this.or.sh = true;
-    this.rx = PropertyFactory.getProp(this,data.ks.rx,0,degToRads,this.dynamicProperties);
-    this.ry = PropertyFactory.getProp(this,data.ks.ry,0,degToRads,this.dynamicProperties);
-    this.rz = PropertyFactory.getProp(this,data.ks.rz,0,degToRads,this.dynamicProperties);
+    this.rx = getProp(this,data.ks.rx,0,degToRads,this);
+    this.ry = getProp(this,data.ks.ry,0,degToRads,this);
+    this.rz = getProp(this,data.ks.rz,0,degToRads,this);
     this.mat = new Matrix();
+    this._prevMat = new Matrix();
+    this._isFirstFrame = true;
 }
-createElement(HBaseElement, HCameraElement);
+extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 
 HCameraElement.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;
     for(i=0;i<len;i+=1){
         //[perspectiveElem,container]
         comp = this.comp.threeDElements[i];
-        comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
-        comp.container.style.transformOrigin = comp.container.style.mozTransformOrigin = comp.container.style.webkitTransformOrigin = "0px 0px 0px";
-        comp.perspectiveElem.style.transform = comp.perspectiveElem.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+        if(comp.type === '3d') {
+            comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
+            comp.container.style.transformOrigin = comp.container.style.mozTransformOrigin = comp.container.style.webkitTransformOrigin = "0px 0px 0px";
+            comp.perspectiveElem.style.transform = comp.perspectiveElem.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+        }
     }
 };
 
@@ -45,16 +52,32 @@ HCameraElement.prototype.hide = function(){
 };
 
 HCameraElement.prototype.renderFrame = function(){
-    var mdf = this.firstFrame;
+    var _mdf = this._isFirstFrame;
     var i, len;
     if(this.hierarchy){
         len = this.hierarchy.length;
         for(i=0;i<len;i+=1){
-            mdf = this.hierarchy[i].finalTransform.mProp.mdf ? true : mdf;
+            _mdf = this.hierarchy[i].finalTransform.mProp._mdf || _mdf;
         }
     }
-    if(mdf || (this.p && this.p.mdf) || (this.px && (this.px.mdf || this.py.mdf || this.pz.mdf)) || this.rx.mdf || this.ry.mdf || this.rz.mdf || this.or.mdf || (this.a && this.a.mdf)) {
+    if(_mdf || (this.p && this.p._mdf) || (this.px && (this.px._mdf || this.py._mdf || this.pz._mdf)) || this.rx._mdf || this.ry._mdf || this.rz._mdf || this.or._mdf || (this.a && this.a._mdf)) {
         this.mat.reset();
+
+        if(this.hierarchy){
+            var mat;
+            len = this.hierarchy.length - 1;
+            for (i = len; i >= 0; i -= 1) {
+                /*mat = this.hierarchy[i].finalTransform.mProp.v.props;
+                console.log(mat)
+                this.mat.transform(-mat[0],-mat[1],-mat[2],-mat[3],-mat[4],-mat[5],-mat[6],-mat[7],-mat[8],-mat[9],-mat[10],-mat[11],-mat[12],-mat[13],-mat[14],mat[15]);
+                console.log(this.mat.props)*/
+                var mTransf = this.hierarchy[i].finalTransform.mProp;
+                this.mat.translate(-mTransf.p.v[0],-mTransf.p.v[1],mTransf.p.v[2]);
+                this.mat.rotateX(-mTransf.rx.v).rotateY(-mTransf.ry.v).rotateZ(mTransf.rz.v);
+                this.mat.scale(1/mTransf.s.v[0],1/mTransf.s.v[1],1/mTransf.s.v[2]);
+                this.mat.translate(mTransf.a.v[0],mTransf.a.v[1],mTransf.a.v[2]);
+            }
+        }
 
         if(this.p){
             this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
@@ -76,23 +99,31 @@ HCameraElement.prototype.renderFrame = function(){
         this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
         this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
         this.mat.translate(0,0,this.pe.v);
-        if(this.hierarchy){
-            var mat;
-            len = this.hierarchy.length;
+
+
+        
+
+
+        if(!this._prevMat.equals(this.mat) && this.comp.threeDElements) {
+            len = this.comp.threeDElements.length;
+            var comp;
             for(i=0;i<len;i+=1){
-                mat = this.hierarchy[i].finalTransform.mProp.iv.props;
-                this.mat.transform(mat[0],mat[1],mat[2],mat[3],mat[4],mat[5],mat[6],mat[7],mat[8],mat[9],mat[10],mat[11],-mat[12],-mat[13],mat[14],mat[15]);
+                comp = this.comp.threeDElements[i];
+                if(comp.type === '3d') {
+                    comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+                }
             }
-        }
-        len = this.comp.threeDElements.length;
-        var comp;
-        for(i=0;i<len;i+=1){
-            comp = this.comp.threeDElements[i];
-            comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+            this.mat.clone(this._prevMat);
         }
     }
-    this.firstFrame = false;
+    this._isFirstFrame = false;
+};
+
+HCameraElement.prototype.prepareFrame = function(num) {
+    this.prepareProperties(num, true);
 };
 
 HCameraElement.prototype.destroy = function(){
 };
+HCameraElement.prototype.initExpressions = function(){};
+HCameraElement.prototype.getBaseElement = function(){return null;};

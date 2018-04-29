@@ -24,7 +24,7 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
     wrapper.addEventListener('bmPlay',function(){self.playStarted();});
     wrapper.addEventListener('bmPause',function(){self.pauseStarted();});
 
-    this.controls = document.createElement('div');
+    this.controls = createTag('div');
     this.controls.style.width = '100%';
     this.controls.style.height = '70px';
     this.controls.style.position = 'absolute';
@@ -32,16 +32,14 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
     this.controls.style.bottom = 0;
     this.controls.style.backgroundColor = 'rgba(0,0,0,.3)';
     wrapper.appendChild(this.controls);
-    styleUnselectableDiv(this.controls);
 
-    this.scrollBar = document.createElement('div');
+    this.scrollBar = createTag('div');
     this.scrollBar.style.width = '100%';
     this.scrollBar.style.height = '14px';
     this.scrollBar.style.backgroundColor = 'rgba(25,25,25,1)';
-    styleUnselectableDiv(this.scrollBar);
     this.controls.appendChild(this.scrollBar);
 
-    this.scrollBarThumb = document.createElement('div');
+    this.scrollBarThumb = createTag('div');
     this.scrollBarThumb.style.width = '18px';
     this.scrollBarThumb.style.height = '18px';
     this.scrollBarThumb.style.position = 'absolute';
@@ -53,7 +51,6 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
     this.scrollBarThumb.style.backgroundColor = 'rgba(255,255,255,1)';
     this.scrollBarThumb.style.cursor = 'pointer';
     this.controls.appendChild(this.scrollBarThumb);
-    styleUnselectableDiv(this.scrollBarThumb);
 
     this.scrollBar.addEventListener('mousedown', function (ev) {
         var mousePos = ev.layerX;
@@ -64,7 +61,7 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
         self.scrollAnimation();
     });
 
-    this.playButton = document.createElement('div');
+    this.playButton = createTag('div');
     this.playButton.style.width = '40px';
     this.playButton.style.height = '30px';
     this.playButton.style.marginTop = '12px';
@@ -80,12 +77,11 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
     this.playAnimation = animationManager.registerAnimation(this.playButton);
     this.playAnimation.loop = false;
     this.controls.appendChild(this.playButton);
-    styleUnselectableDiv(this.playButton);
     this.playButton.addEventListener('click', function () {
         self.animationItem.play();
     });
 
-    this.pauseButton = document.createElement('div');
+    this.pauseButton = createTag('div');
     this.pauseButton.style.width = '40px';
     this.pauseButton.style.height = '30px';
     this.pauseButton.style.marginTop = '12px';
@@ -101,7 +97,6 @@ BasicPlayer.prototype.buildControls = function(item, wrapper){
     this.pauseAnimation.wrapper.addEventListener('bmLoaded',function(){self.pauseAnimation.goToAndStop(self.pauseAnimation.totalFrames - 1);});
     this.pauseAnimation.loop = false;
     this.controls.appendChild(this.pauseButton);
-    styleUnselectableDiv(this.pauseButton);
     this.pauseButton.addEventListener('click', function () {
         self.animationItem.pause();
     });

@@ -1,12 +1,12 @@
 function ShapeCollection(){
 	this._length = 0;
 	this._maxLength = 4;
-	this.shapes = Array.apply(null,{length:this._maxLength});
-};
+	this.shapes = createSizedArray(this._maxLength);
+}
 
 ShapeCollection.prototype.addShape = function(shapeData){
 	if(this._length === this._maxLength){
-		this.shapes = this.shapes.concat(Array.apply(null,{length:this._maxLength}));
+		this.shapes = this.shapes.concat(createSizedArray(this._maxLength));
 		this._maxLength *= 2;
 	}
 	this.shapes[this._length] = shapeData;

@@ -1,40 +1,22 @@
-function HSolidElement(data,parentContainer,globalData,comp, placeholder){
-    this._parent.constructor.call(this,data,parentContainer,globalData,comp, placeholder);
+function HSolidElement(data,globalData,comp){
+    this.initElement(data,globalData,comp);
 }
-createElement(HBaseElement, HSolidElement);
+extendPrototype([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], HSolidElement);
 
-HSolidElement.prototype.createElements = function(){
-    var parent = document.createElement('div');
-    styleDiv(parent);
-    var cont = document.createElementNS(svgNS,'svg');
-    styleDiv(cont);
-    cont.setAttribute('width',this.data.sw);
-    cont.setAttribute('height',this.data.sh);
-    parent.appendChild(cont);
-    this.layerElement = parent;
-    this.transformedElement = parent;
-    //this.appendNodeToParent(parent);
-    this.baseElement = parent;
-    this.innerElem = parent;
-    if(this.data.ln){
-        this.innerElem.setAttribute('id',this.data.ln);
-    }
-    if(this.data.bm !== 0){
-        this.setBlendMode();
-    }
-    var rect = document.createElementNS(svgNS,'rect');
-    rect.setAttribute('width',this.data.sw);
-    rect.setAttribute('height',this.data.sh);
-    rect.setAttribute('fill',this.data.sc);
-    cont.appendChild(rect);
+HSolidElement.prototype.createContent = function(){
+    var rect;
     if(this.data.hasMask){
-        this.maskedElement = rect;
+        rect = createNS('rect');
+        rect.setAttribute('width',this.data.sw);
+        rect.setAttribute('height',this.data.sh);
+        rect.setAttribute('fill',this.data.sc);
+        this.svgElement.setAttribute('width',this.data.sw);
+        this.svgElement.setAttribute('height',this.data.sh);
+    } else {
+        rect = createTag('div');
+        rect.style.width = this.data.sw + 'px';
+        rect.style.height = this.data.sh + 'px';
+        rect.style.backgroundColor = this.data.sc;
     }
-    this.checkParenting();
+    this.layerElement.appendChild(rect);
 };
-
-
-
-HSolidElement.prototype.hide = IImageElement.prototype.hide;
-HSolidElement.prototype.renderFrame = IImageElement.prototype.renderFrame;
-HSolidElement.prototype.destroy = IImageElement.prototype.destroy;

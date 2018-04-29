@@ -1,15 +1,12 @@
 var shapeCollection_pool = (function(){
 	var ob = {
 		newShapeCollection: newShapeCollection,
-		release: release,
-		clone: clone
-	}
+		release: release
+	};
 
 	var _length = 0;
 	var _maxLength = 4;
-	var pool = Array.apply(null,{length:_maxLength});
-
-	var cont = 0;
+	var pool = createSizedArray(_maxLength);
 
 	function newShapeCollection(){
 		var shapeCollection;
@@ -36,17 +33,6 @@ var shapeCollection_pool = (function(){
 		pool[_length] = shapeCollection;
 		_length += 1;
 	}
-
-	function clone(shapeCollection, originCollection) {
-		release(shapeCollection);
-		if(_length === _maxLength) {
-			pool = pooling.double(pool);
-			_maxLength = _maxLength*2;
-		}
-		pool[_length] = shapeCollection;
-		_length += 1;
-	}
-
 
 	return ob;
 }());

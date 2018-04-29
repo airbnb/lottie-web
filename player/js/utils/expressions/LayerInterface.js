@@ -1,8 +1,16 @@
 var LayerExpressionInterface = (function (){
-    function toWorld(arr){
+    function toWorld(arr, time){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
-        this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
+        var transformMat;
+        if(time) {
+            //Todo implement value at time on transform properties
+            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
+            transformMat = this._elem.finalTransform.mProp;
+        } else {
+            transformMat = this._elem.finalTransform.mProp;
+        }
+        transformMat.applyToMatrix(toWorldMat);
         if(this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
@@ -11,6 +19,27 @@ var LayerExpressionInterface = (function (){
             return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
         }
         return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
+    }
+    function fromWorld(arr, time){
+        var toWorldMat = new Matrix();
+        toWorldMat.reset();
+        var transformMat;
+        if(time) {
+            //Todo implement value at time on transform properties
+            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
+            transformMat = this._elem.finalTransform.mProp;
+        } else {
+            transformMat = this._elem.finalTransform.mProp;
+        }
+        transformMat.applyToMatrix(toWorldMat);
+        if(this._elem.hierarchy && this._elem.hierarchy.length){
+            var i, len = this._elem.hierarchy.length;
+            for(i=0;i<len;i+=1){
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+            }
+            return toWorldMat.inversePoint(arr);
+        }
+        return toWorldMat.inversePoint(arr);
     }
     function fromComp(arr){
         var toWorldMat = new Matrix();
@@ -26,13 +55,17 @@ var LayerExpressionInterface = (function (){
         return toWorldMat.inversePoint(arr);
     }
 
+    function sampleImage() {
+        return [1,1,1,1];
+    }
+
 
     return function(elem){
 
-        var transformInterface = TransformExpressionInterface(elem.transform);
+        var transformInterface;
 
         function _registerMaskInterface(maskManager){
-            _thisLayerFunction.mask = maskManager.getMask.bind(maskManager);
+            _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);
         }
         function _registerEffectsInterface(effects){
             _thisLayerFunction.effect = effects;
@@ -45,6 +78,7 @@ var LayerExpressionInterface = (function (){
                 case 2:
                     return _thisLayerFunction.shapeInterface;
                 case 1:
+                case 6:
                 case "Transform":
                 case "transform":
                 case "ADBE Transform Group":
@@ -55,93 +89,51 @@ var LayerExpressionInterface = (function (){
             }
         }
         _thisLayerFunction.toWorld = toWorld;
+        _thisLayerFunction.fromWorld = fromWorld;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction.fromComp = fromComp;
+        _thisLayerFunction.sampleImage = sampleImage;
+        _thisLayerFunction.sourceRectAtTime = elem.sourceRectAtTime.bind(elem);
         _thisLayerFunction._elem = elem;
-        Object.defineProperty(_thisLayerFunction, 'hasParent', {
-            get: function(){
-                return !!elem.hierarchy;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, 'parent', {
-            get: function(){
-                return elem.hierarchy[0].layerInterface;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, "rotation", {
-            get: function(){
-                return transformInterface.rotation;
-            }
-        });
-        Object.defineProperty(_thisLayerFunction, "scale", {
-            get: function () {
-                return transformInterface.scale;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "position", {
-            get: function () {
-                return transformInterface.position;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "anchorPoint", {
-            get: function () {
-                return transformInterface.anchorPoint;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "transform", {
-            get: function () {
-                return transformInterface;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "width", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.w
+        transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
+        var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
+        Object.defineProperties(_thisLayerFunction,{
+            hasParent: {
+                get: function(){
+                    return elem.hierarchy.length;
                 }
-                return 100;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "height", {
-            get: function () {
-                if(elem.data.ty === 0) {
-                    return elem.data.h
+            },
+            parent: {
+                get: function(){
+                    return elem.hierarchy[0].layerInterface;
                 }
-                return 100;
+            },
+            rotation: getDescriptor(transformInterface, 'rotation'),
+            scale: getDescriptor(transformInterface, 'scale'),
+            position: getDescriptor(transformInterface, 'position'),
+            opacity: getDescriptor(transformInterface, 'opacity'),
+            anchorPoint: anchorPointDescriptor,
+            anchor_point: anchorPointDescriptor,
+            transform: {
+                get: function () {
+                    return transformInterface;
+                }
+            },
+            active: {
+                get: function(){
+                    return elem.isInRange;
+                }
             }
         });
 
-        Object.defineProperty(_thisLayerFunction, "source", {
-            get: function () {
-                return elem.data.refId;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "_name", { value:elem.data.nm });
-        Object.defineProperty(_thisLayerFunction, "content", {
-            get: function(){
-                return _thisLayerFunction.shapeInterface;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "active", {
-            get: function(){
-                return elem.isVisible;
-            }
-        });
-
-        Object.defineProperty(_thisLayerFunction, "text", {
-            get: function(){
-                return _thisLayerFunction.textInterface;
-            }
-        });
+        _thisLayerFunction.startTime = elem.data.st;
+        _thisLayerFunction.index = elem.data.ind;
+        _thisLayerFunction.source = elem.data.refId;
+        _thisLayerFunction.height = elem.data.ty === 0 ? elem.data.h : 100;
+        _thisLayerFunction.width = elem.data.ty === 0 ? elem.data.w : 100;
 
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;
         return _thisLayerFunction;
-    }
+    };
 }());

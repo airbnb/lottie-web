@@ -12,7 +12,6 @@ var AnimationItem = function () {
     this.playDirection = 1;
     this.pendingElements = 0;
     this.playCount = 0;
-    this.prerenderFramesFlag = true;
     this.animationData = {};
     this.layers = [];
     this.assets = [];
@@ -21,16 +20,16 @@ var AnimationItem = function () {
     this.loop = true;
     this.renderer = null;
     this.animationID = randomString(10);
-    this.scaleMode = 'fit';
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
     this.subframeEnabled = subframeEnabled;
     this.segments = [];
-    this.pendingSegment = false;
     this._idle = true;
     this.projectInterface = ProjectInterface();
 };
+
+extendPrototype([BaseEvent], AnimationItem);
 
 AnimationItem.prototype.setParams = function(params) {
     var self = this;
@@ -70,8 +69,8 @@ AnimationItem.prototype.setParams = function(params) {
     }
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
-    this.prerenderFramesFlag = 'prerender' in params ? params.prerender : true;
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
+    this.assetsPath = params.assetsPath;
     if(params.animationData){
         self.configAnimation(params.animationData);
     }else if(params.path){
@@ -88,7 +87,6 @@ AnimationItem.prototype.setParams = function(params) {
         }else{
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
-        this.assetsPath = params.assetsPath;
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
         xhr.open('GET', params.path, true);
@@ -178,7 +176,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     if(expressionsPlugin){
         expressionsPlugin.initExpressions(this);
     }
-    this.renderer.renderFrame(null);
+    this.renderer.renderFrame(-1);
     this.loadNextSegment();
 };
 
@@ -221,12 +219,10 @@ AnimationItem.prototype.loadSegments = function() {
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
-    if(this.renderer && this.renderer.destroyed){
+    var _this = this;
+    if(!this.renderer){
         return;
     }
-    //console.log(JSON.parse(JSON.stringify(animData)));
-    //animData.w = Math.round(animData.w/blitter);
-    //animData.h = Math.round(animData.h/blitter);
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
     this.animationData.tf = this.totalFrames;
@@ -249,7 +245,11 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.imagePreloader = new ImagePreloader();
     this.imagePreloader.setAssetsPath(this.assetsPath);
     this.imagePreloader.setPath(this.path);
-    this.imagePreloader.loadAssets(animData.assets);
+    this.imagePreloader.loadAssets(animData.assets, function(err) {
+        if(!err) {
+            _this.trigger('loaded_images');
+        }
+    });
     this.loadSegments();
     this.updaFrameModifier();
     if(this.renderer.globalData.fontManager){
@@ -273,12 +273,12 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
 
     return function(){
         checkFontsLoaded.bind(this)();
-    }
+    };
 }());
 
 AnimationItem.prototype.addPendingElement = function () {
     this.pendingElements += 1;
-}
+};
 
 AnimationItem.prototype.elementLoaded = function () {
     this.pendingElements--;
@@ -308,14 +308,10 @@ AnimationItem.prototype.resize = function () {
 
 AnimationItem.prototype.setSubframe = function(flag){
     this.subframeEnabled = flag ? true : false;
-}
+};
 
 AnimationItem.prototype.gotoFrame = function () {
-    if(this.subframeEnabled){
-        this.currentFrame = this.currentRawFrame;
-    }else{
-        this.currentFrame = Math.floor(this.currentRawFrame);
-    }
+    this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
 
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
@@ -328,7 +324,6 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    //console.log('this.currentFrame:',this.currentFrame + this.firstFrame);
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
 };
 
@@ -351,10 +346,8 @@ AnimationItem.prototype.pause = function (name) {
     }
     if(this.isPaused === false){
         this.isPaused = true;
-        if(!this.pendingSegment){
-            this._idle = true;
-            this.trigger('_idle');
-        }
+        this._idle = true;
+        this.trigger('_idle');
     }
 };
 
@@ -374,9 +367,8 @@ AnimationItem.prototype.stop = function (name) {
         return;
     }
     this.pause();
-    this.currentFrame = this.currentRawFrame = 0;
     this.playCount = 0;
-    this.gotoFrame();
+    this.setCurrentRawFrameValue(0);
 };
 
 AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
@@ -397,32 +389,49 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.advanceTime = function (value) {
-    if(this.pendingSegment){
-        this.pendingSegment = false;
-        this.adjustSegment(this.segments.shift());
-        if(this.isPaused){
-            this.play();
-        }
-        return;
-    }
     if (this.isPaused === true || this.isLoaded === false) {
         return;
     }
-    this.setCurrentRawFrameValue(this.currentRawFrame + value * this.frameModifier);
-};
-
-AnimationItem.prototype.updateAnimation = function (perc) {
-    this.setCurrentRawFrameValue(this.totalFrames * perc);
-};
-
-AnimationItem.prototype.moveFrame = function (value, name) {
-    if(name && this.name != name){
-        return;
+    var nextValue = this.currentRawFrame + value * this.frameModifier;
+    var _isComplete = false;
+    // Checking if nextValue > totalFrames - 1 for addressing non looping and looping animations.
+    // If animation won't loop, it should stop at totalFrames - 1. If it will loop it should complete the last frame and then loop.
+    if (nextValue >= this.totalFrames - 1 && this.frameModifier > 0) {
+        if (!this.loop || this.playCount === this.loop) {
+            if (!this.checkSegments(nextValue % this.totalFrames)) {
+                _isComplete = true;
+                nextValue = this.totalFrames - 1;
+            }
+        } else if (nextValue >= this.totalFrames) {
+            this.playCount += 1;
+            if (!this.checkSegments(nextValue % this.totalFrames)) {
+                this.setCurrentRawFrameValue(nextValue % this.totalFrames);
+                this.trigger('loopComplete');
+            }
+        } else {
+            this.setCurrentRawFrameValue(nextValue);
+        }
+    } else if(nextValue < 0) {
+        if (!this.checkSegments(nextValue % this.totalFrames)) {
+            if (this.loop && !(this.playCount-- <= 0 && this.loop !== true)) {
+                this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
+                this.trigger('loopComplete');
+            } else {
+                _isComplete = true;
+                nextValue = 0;
+            }
+        }
+    } else {
+        this.setCurrentRawFrameValue(nextValue);
     }
-    this.setCurrentRawFrameValue(this.currentRawFrame+value);
+    if (_isComplete) {
+        this.setCurrentRawFrameValue(nextValue);
+        this.pause();
+        this.trigger('complete');
+    }
 };
 
-AnimationItem.prototype.adjustSegment = function(arr){
+AnimationItem.prototype.adjustSegment = function(arr, offset){
     this.playCount = 0;
     if(arr[1] < arr[0]){
         if(this.frameModifier > 0){
@@ -432,9 +441,9 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(-1);
             }
         }
-        this.totalFrames = arr[0] - arr[1];
+        this.timeCompleted = this.totalFrames = arr[0] - arr[1];
         this.firstFrame = arr[1];
-        this.setCurrentRawFrameValue(this.totalFrames - 0.01);
+        this.setCurrentRawFrameValue(this.totalFrames - 0.001 - offset);
     } else if(arr[1] > arr[0]){
         if(this.frameModifier < 0){
             if(this.playSpeed < 0){
@@ -443,9 +452,9 @@ AnimationItem.prototype.adjustSegment = function(arr){
                 this.setDirection(1);
             }
         }
-        this.totalFrames = arr[1] - arr[0];
+        this.timeCompleted = this.totalFrames = arr[1] - arr[0];
         this.firstFrame = arr[0];
-        this.setCurrentRawFrameValue(0);
+        this.setCurrentRawFrameValue(0.001 + offset);
     }
     this.trigger('segmentStart');
 };
@@ -455,16 +464,16 @@ AnimationItem.prototype.setSegment = function (init,end) {
         if (this.currentRawFrame + this.firstFrame < init) {
             pendingFrame = init;
         } else if (this.currentRawFrame + this.firstFrame > end) {
-            pendingFrame = end - init - 0.01;
+            pendingFrame = end - init;
         }
     }
 
     this.firstFrame = init;
-    this.totalFrames = end - init;
+    this.timeCompleted = this.totalFrames = end - init;
     if(pendingFrame !== -1) {
         this.goToAndStop(pendingFrame,true);
     }
-}
+};
 
 AnimationItem.prototype.playSegments = function (arr,forceFlag) {
     if(typeof arr[0] === 'object'){
@@ -476,7 +485,7 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
         this.segments.push(arr);
     }
     if(forceFlag){
-        this.adjustSegment(this.segments.shift());
+        this.checkSegments(0);
     }
     if(this.isPaused){
         this.play();
@@ -485,78 +494,33 @@ AnimationItem.prototype.playSegments = function (arr,forceFlag) {
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
-    this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
+    this.segments.push([this.animationData.ip,this.animationData.op]);
+    //this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
     if(forceFlag){
-        this.adjustSegment(this.segments.shift());
+        this.checkSegments(0);
     }
 };
-AnimationItem.prototype.checkSegments = function(){
-    if(this.segments.length){
-        this.pendingSegment = true;
+AnimationItem.prototype.checkSegments = function(offset){
+    if(this.segments.length) {
+        this.adjustSegment(this.segments.shift(), offset);
+        return true;
     }
-}
-
-AnimationItem.prototype.remove = function (name) {
-    if(name && this.name != name){
-        return;
-    }
-    this.renderer.destroy();
+    return false;
 };
 
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || (this.renderer && this.renderer.destroyed)){
+    if((name && this.name != name) || !this.renderer){
         return;
     }
     this.renderer.destroy();
     this.trigger('destroy');
     this._cbs = null;
     this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
+    this.renderer = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
     this.currentRawFrame = value;
-    //console.log(this.totalFrames);
-    if (this.currentRawFrame >= this.totalFrames) {
-        this.checkSegments();
-        if(this.loop === false){
-            this.currentRawFrame = this.totalFrames - 0.01;
-            this.gotoFrame();
-            this.pause();
-            this.trigger('complete');
-            return;
-        }else{
-            this.trigger('loopComplete');
-            this.playCount += 1;
-            if((this.loop !== true && this.playCount == this.loop) || this.pendingSegment){
-                this.currentRawFrame = this.totalFrames - 0.01;
-                this.gotoFrame();
-                this.pause();
-                this.trigger('complete');
-                return;
-            } else {
-                this.currentRawFrame = this.currentRawFrame % this.totalFrames;
-            }
-        }
-    } else if (this.currentRawFrame < 0) {
-        this.checkSegments();
-        this.playCount -= 1;
-        if(this.playCount < 0){
-            this.playCount = 0;
-        }
-        if(this.loop === false  || this.pendingSegment){
-            this.currentRawFrame = 0;
-            this.gotoFrame();
-            this.pause();
-            this.trigger('complete');
-            return;
-        }else{
-            this.trigger('loopComplete');
-            this.currentRawFrame = (this.totalFrames + this.currentRawFrame) % this.totalFrames;
-            this.gotoFrame();
-            return;
-        }
-    }
-
     this.gotoFrame();
 };
 
@@ -616,6 +580,10 @@ AnimationItem.prototype.getAssets = function () {
     return this.assets;
 };
 
+AnimationItem.prototype.getDuration = function (isFrame) {
+    return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
+};
+
 AnimationItem.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
@@ -654,7 +622,3 @@ AnimationItem.prototype.trigger = function(name){
         this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
-
-AnimationItem.prototype.addEventListener = _addEventListener;
-AnimationItem.prototype.removeEventListener = _removeEventListener;
-AnimationItem.prototype.triggerEvent = _triggerEvent;
