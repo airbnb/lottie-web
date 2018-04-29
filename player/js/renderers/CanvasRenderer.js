@@ -278,7 +278,7 @@ CanvasRenderer.prototype.renderFrame = function(num){
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
-    this.globalData._mdf = false;
+    this.globalData._mdf = !this.renderConfig.clearCanvas;
     this.globalData.projectInterface.currentFrame = num;
 
      // console.log('--------');
