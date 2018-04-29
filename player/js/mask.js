@@ -28,8 +28,8 @@ function MaskElement(data,element,globalData) {
         if((properties[i].mode == 's' || properties[i].mode == 'i') && count === 0){
             rect = createNS( 'rect');
             rect.setAttribute('fill', '#ffffff');
-            rect.setAttribute('width', this.element.comp.data.w);
-            rect.setAttribute('height', this.element.comp.data.h);
+            rect.setAttribute('width', this.element.comp.data.w || 0);
+            rect.setAttribute('height', this.element.comp.data.h || 0);
             currentMasks.push(rect);
         } else {
             rect = null;
