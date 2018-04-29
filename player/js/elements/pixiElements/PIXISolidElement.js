@@ -22,3 +22,5 @@ PIXISolidElement.prototype.initElement = function(data,globalData,comp) {
     this.createContent();
     this.hide();
 }
+
+PIXISolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;

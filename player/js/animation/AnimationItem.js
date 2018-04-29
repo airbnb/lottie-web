@@ -544,6 +544,7 @@ AnimationItem.prototype.getPath = function () {
 
 AnimationItem.prototype.getAssetsPath = function (assetData) {
     var path = '';
+    console.log('getAssetsPath')
     if(this.assetsPath){
         var imagePath = assetData.p;
         if(imagePath.indexOf('images/') !== -1){

@@ -166,6 +166,8 @@
     <script src="js/elements/pixiElements/PIXIShapeElement.js" data-light-skip="true"></script>
     <script src="js/elements/pixiElements/PIXICompElement.js" data-light-skip="true"></script>
     <script src="js/elements/pixiElements/PIXIMask.js" data-light-skip="true"></script>
+    <script src="js/elements/pixiElements/PIXIEffects.js"></script>
+    <script src="js/elements/pixiElements/effects/PIXIGaussianBlurEffect.js"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -195,6 +197,13 @@
 <body>
 <div id="lottie"></div>
 
+<script id="shader" type="shader">
+
+void main(){
+   gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+}
+</script>
+
 <script>
     var anim;
     var elem = document.getElementById('lottie');
@@ -202,7 +211,7 @@
     var animData = {
         container: elem,
         renderer: 'pixi',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,

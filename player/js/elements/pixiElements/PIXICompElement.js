@@ -8,3 +8,12 @@ function PIXICompElement(data, globalData, comp){
 }
 
 extendPrototype([PIXIRenderer, ICompElement, PIXIBaseElement], PIXICompElement);
+
+PIXICompElement.prototype.renderInnerContent = function() {
+    var i,len = this.layers.length;
+    for( i = len - 1; i >= 0; i -= 1 ){
+        if(this.completeLayers || this.elements[i]){
+            this.elements[i].renderFrame();
+        }
+    }
+};

@@ -44,7 +44,7 @@ PIXIShapeElement.prototype.identityMatrix = new Matrix();
 PIXIShapeElement.prototype.buildExpressionInterface = function(){};
 
 PIXIShapeElement.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.PLayerElement, 0, [], true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
     this.filterUniqueShapes();
 };
 

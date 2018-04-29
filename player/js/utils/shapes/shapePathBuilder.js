@@ -41,5 +41,19 @@ var buildPIXIShape = function(pathNodes, length, closed, mat) {
             c:mat.applyToPointArray(_o[i - 1][0], _o[i - 1][1], 0).concat(mat.applyToPointArray(_i[0][0], _i[0][1], 0)).concat(mat.applyToPointArray(_v[0][0], _v[0][1], 0))
         })
     }
+
+    //Fix for shapes with no length.
+    //Todo: search a better solution. AE draws a point on this cases so the shape can't be removed.
+    if(_PIXIcommands.length === 2 
+        && _PIXIcommands[0].c[0] === _PIXIcommands[1].c[0]
+        && _PIXIcommands[0].c[1] === _PIXIcommands[1].c[1]
+        && _PIXIcommands[0].c[0] === _PIXIcommands[1].c[3]
+        && _PIXIcommands[0].c[1] === _PIXIcommands[1].c[4]
+        && _PIXIcommands[0].c[0] === _PIXIcommands[1].c[6]
+        && _PIXIcommands[0].c[1] === _PIXIcommands[1].c[7]
+        ) {
+        _PIXIcommands[1].c[6] += 0.5;
+        _PIXIcommands[1].c[7] += 0.5;
+    }
     return _PIXIcommands;
 };

@@ -146,9 +146,8 @@ function PIXIMaskElement(data,element,globalData) {
     }
 
     if(count > 0){
-        this.element.maskedElement.setAttribute(maskRef, "url(#" + layerId + ")");
-        this.element.PMaskedElement.mask = currentPMasks[0];
-        this.element.PMaskedElement.addChild(currentPMasks[0]);
+        this.element.maskedElement.mask = currentPMasks[0];
+        this.element.maskedElement.addChild(currentPMasks[0]);
     }
     if (this.viewData.length) {
         this.element.addRenderableComponent(this);

@@ -36,7 +36,6 @@ PIXIRenderer.prototype.createImage = function (data) {
 
 PIXIRenderer.prototype.createComp = function (data) {
     return new PIXICompElement(data,this.globalData,this);
-
 };
 
 PIXIRenderer.prototype.createSolid = function (data) {
@@ -64,20 +63,19 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     //this.animationItem.wrapper.appendChild(this.layerElement);
     ///
     this.renderer = new PIXI.WebGLRenderer(animData.w, animData.h,{antialias:true,transparent:true});
-    //this.renderer.view.style.transform = 'scale(0.5,0.5)';
+    this.renderer.view.style.transform = 'scale(0.5,0.5)';
     this.renderer.view.style.transformOrigin = '0 0';
     this.animationItem.wrapper.appendChild(this.renderer.view);
     this.stage = new PIXI.Container();
-    this.PLayerElement = this.stage;
+    this.layerElement = this.stage;
 
     ///
     //Mask animation
     var defs = document.createElementNS(svgNS, 'defs');
     this.globalData.defs = defs;
-    this.layerElement.appendChild(defs);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
+    this.globalData.renderConfig = this.renderConfig;
     this.globalData.frameId = 0;
     this.globalData.compSize = {
         w: animData.w,
@@ -85,7 +83,9 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     };
     this.data = animData;
     this.globalData.frameRate = animData.fr;
-    var maskElement = document.createElementNS(svgNS, 'clipPath');
+
+    //Todo mask main container and remove this block of code
+    /*var maskElement = document.createElementNS(svgNS, 'clipPath');
     var rect = document.createElementNS(svgNS,'rect');
     rect.setAttribute('width',animData.w);
     rect.setAttribute('height',animData.h);
@@ -98,7 +98,8 @@ PIXIRenderer.prototype.configAnimation = function(animData){
     maskedElement.setAttribute("clip-path", "url(#"+maskId+")");
     this.layerElement.appendChild(maskedElement);
     defs.appendChild(maskElement);
-    this.layerElement = maskedElement;
+    this.layerElement = maskedElement;*/
+
     this.layers = animData.layers;
     this.globalData.fontManager = new FontManager();
     this.globalData.fontManager.addChars(animData.chars);
@@ -198,10 +199,10 @@ PIXIRenderer.prototype.appendElementInPos = function(element, pos){
         i += 1;
     }
     if(nextElement){
-        var index = this.PLayerElement.getChildIndex(nextElement);
-        this.PLayerElement.addChildAt(newElement,index);
+        var index = this.layerElement.getChildIndex(nextElement);
+        this.layerElement.addChildAt(newElement,index);
     } else {
-        this.PLayerElement.addChild(newElement);
+        this.layerElement.addChild(newElement);
     }
 };
 
