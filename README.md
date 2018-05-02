@@ -271,7 +271,7 @@ You can preview or take an svg snapshot of the animation to use as poster. After
 
 ### Files
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors, right click each layer and do: "Create shapes from Vector Layers"), they will be saved to an images folder relative to the destination json folder.
-Beware not to overwrite an exiting folder on that same location.
+Beware not to overwrite an existing folder on that same location.
 
 
 ### Performance
