@@ -33,7 +33,7 @@ CVBaseElement.prototype = {
         }
     },
     renderFrame: function() {
-        if (this.hidden) {
+        if (this.hidden || this.data.hd) {
             return;
         }
         this.renderTransform();
