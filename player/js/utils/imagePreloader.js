@@ -22,6 +22,7 @@ var ImagePreloader = (function(){
             if(assetUrl.indexOf('http://') == -1 && assetUrl.indexOf('https://') == -1){
                 path = this.path;
             }
+            path += assetUrl;
             path += assetData.p;
         }
         return path;

@@ -550,6 +550,7 @@ AnimationItem.prototype.getAssetsPath = function (assetData) {
         if(assetUrl.indexOf('http://') == -1 && assetUrl.indexOf('https://') == -1){
             path = this.path;
         }
+        path += assetUrl;
         path += assetData.p;
     }
     return path;
