@@ -4082,8 +4082,10 @@ var ImagePreloader = (function(){
             }
             path = this.assetsPath + imagePath;
         } else {
-            path = this.path;
-            path += assetData.u ? assetData.u : '';
+            var assetUrl=assetData.u ? assetData.u : '';
+            if(assetUrl.indexOf('http://') == -1 && assetUrl.indexOf('https://') == -1){
+                path = this.path;
+            }
             path += assetData.p;
         }
         return path;
@@ -9192,8 +9194,10 @@ AnimationItem.prototype.getAssetsPath = function (assetData) {
         }
         path = this.assetsPath + imagePath;
     } else {
-        path = this.path;
-        path += assetData.u ? assetData.u : '';
+        var assetUrl=assetData.u ? assetData.u : '';
+        if(assetUrl.indexOf('http://') == -1 && assetUrl.indexOf('https://') == -1){
+            path = this.path;
+        }
         path += assetData.p;
     }
     return path;
@@ -9427,4 +9431,5 @@ function EffectsManager(){}
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));
+
