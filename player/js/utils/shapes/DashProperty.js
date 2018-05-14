@@ -1,4 +1,4 @@
-function DashProperty(elem, data, renderer) {
+function DashProperty(elem, data, renderer, container) {
     this.elem = elem;
     this.frameId = -1;
     this.dataProps = createSizedArray(data.length);
@@ -7,7 +7,7 @@ function DashProperty(elem, data, renderer) {
     this.dashStr = '';
     this.dashArray = createTypedArray('float32',  data.length ? data.length - 1 : 0);
     this.dashoffset = createTypedArray('float32',  1);
-    this.initDynamicPropertyContainer(elem);
+    this.initDynamicPropertyContainer(container);
     var i, len = data.length || 0, prop;
     for(i = 0; i < len; i += 1) {
         prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);

@@ -193,8 +193,8 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'canvas',
-        loop: true,
+        renderer: 'svg',
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -202,7 +202,8 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    //anim.setSubframe(false);
+    // anim.setSubframe(false);
+     // anim.setSpeed(0.1);
 
     /*anim.addEventListener('DOMLoaded', function() {
         animationAPI = lottie_api.createAnimationApi(anim);
