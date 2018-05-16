@@ -1,3 +1,9 @@
+## V 5.1.14
+- FIX: Dash property animated
+- FIX: Canvas renderer skips hidden layers
+- FIX: When clearCanvas is set to true on the canvas renderer, every frame is rendered
+- FIX: calculation error on masks
+
 ## V 5.1.13
 - EXPRESSIONS: fix for global variables used in functions
 - EXPRESSIONS: operations supported for arrays
