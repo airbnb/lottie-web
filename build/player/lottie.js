@@ -4075,7 +4075,9 @@ var ImagePreloader = (function(){
 
     function getAssetsPath(assetData){
         var path = '';
-        if(this.assetsPath){
+        if(assetData.e) {
+            path = assetData.p;
+        }else if(this.assetsPath){
             var imagePath = assetData.p;
             if(imagePath.indexOf('images/') !== -1){
                 imagePath = imagePath.split('/')[1];
@@ -7309,7 +7311,8 @@ ICompElement.prototype.prepareFrame = function(num){
     if(!this.completeLayers){
         this.checkLayers(this.renderedFrame);
     }
-    for( i = 0; i < len; i+=1 ){
+    //This iteration needs to be backwards because of how expressions connect between each other
+    for( i = len - 1; i >= 0; i -= 1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
             if(this.elements[i]._mdf) {
@@ -8440,9 +8443,9 @@ var animationManager = (function(){
     var registeredAnimations = [];
     var initTime = 0;
     var len = 0;
-    var idled = true;
     var playingAnimationsNum = 0;
     var _stopped = true;
+    var _isFrozen = false;
 
     function removeElement(ev){
         var i = 0;
@@ -8477,6 +8480,15 @@ var animationManager = (function(){
         return animItem;
     }
 
+    function getRegisteredAnimations() {
+        var i, len = registeredAnimations.length;
+        var animations = [];
+        for(i = 0; i < len; i += 1) {
+            animations.push(registeredAnimations[i].animation);
+        }
+        return animations;
+    }
+
     function addPlayingCount(){
         playingAnimationsNum += 1;
         activate();
@@ -8484,9 +8496,6 @@ var animationManager = (function(){
 
     function subtractPlayingCount(){
         playingAnimationsNum -= 1;
-        if(playingAnimationsNum === 0){
-            idled = true;
-        }
     }
 
     function setupAnimation(animItem, element){
@@ -8532,7 +8541,7 @@ var animationManager = (function(){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        if(!idled) {
+        if(playingAnimationsNum && !_isFrozen) {
             window.requestAnimationFrame(resume);
         } else {
             _stopped = true;
@@ -8611,13 +8620,8 @@ var animationManager = (function(){
         }
     }
 
-    /*function start(){
-        window.requestAnimationFrame(first);
-    }*/
-
     function activate(){
-        if(idled){
-            idled = false;
+        if(!_isFrozen && playingAnimationsNum){
             if(_stopped) {
                 window.requestAnimationFrame(first);
                 _stopped = false;
@@ -8625,9 +8629,14 @@ var animationManager = (function(){
         }
     }
 
-    //start();
+    function freeze() {
+        _isFrozen = true;
+    }
 
-    //setTimeout(start,0);
+    function unfreeze() {
+        _isFrozen = false;
+        activate();
+    }
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
@@ -8642,6 +8651,9 @@ var animationManager = (function(){
     //moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
     moduleOb.destroy = destroy;
+    moduleOb.freeze = freeze;
+    moduleOb.unfreeze = unfreeze;
+    moduleOb.getRegisteredAnimations = getRegisteredAnimations;
     return moduleOb;
 }());
 
@@ -8914,7 +8926,7 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
     }
 
     return function(){
-        checkFontsLoaded.bind(this)();
+        setTimeout(checkFontsLoaded.bind(this),0);
     };
 }());
 
@@ -8923,7 +8935,7 @@ AnimationItem.prototype.addPendingElement = function () {
 };
 
 AnimationItem.prototype.elementLoaded = function () {
-    this.pendingElements--;
+    this.pendingElements -= 1;
     this.checkLoaded();
 };
 
@@ -9186,7 +9198,9 @@ AnimationItem.prototype.getPath = function () {
 
 AnimationItem.prototype.getAssetsPath = function (assetData) {
     var path = '';
-    if(this.assetsPath){
+    if(assetData.e) {
+        path = assetData.p;
+    } else if(this.assetsPath){
         var imagePath = assetData.p;
         if(imagePath.indexOf('images/') !== -1){
             imagePath = imagePath.split('/')[1];
@@ -13576,8 +13590,8 @@ var ProjectInterface = (function (){
             var i = 0, len = this.compositions.length;
             while(i<len){
                 if(this.compositions[i].data && this.compositions[i].data.nm === name){
-                    if(this.compositions[i].prepareFrame) {
-                        this.compositions[i].prepareFrame(this.compositions[i].data.xt ? this.currentFrame : this.compositions[i].renderedFrame);
+                    if(this.compositions[i].prepareFrame && this.compositions[i].data.xt) {
+                        this.compositions[i].prepareFrame(this.currentFrame);
                     }
                     return this.compositions[i].compInterface;
                 }
@@ -13867,31 +13881,10 @@ GroupEffect.prototype.init = function(data,element){
 };
     var lottiejs = {};
 
+    var _isFrozen = false;
+
     function setLocationHref (href) {
         locationHref = href;
-    }
-    function play(animation){
-        animationManager.play(animation);
-    }
-
-    function pause(animation) {
-        animationManager.pause(animation);
-    }
-
-    function togglePause(animation) {
-        animationManager.togglePause(animation);
-    }
-
-    function setSpeed(value, animation) {
-        animationManager.setSpeed(value, animation);
-    }
-
-    function setDirection(value, animation) {
-        animationManager.setDirection(value, animation);
-    }
-
-    function stop(animation) {
-        animationManager.stop(animation);
     }
 
     function searchAnimations() {
@@ -13900,22 +13893,6 @@ GroupEffect.prototype.init = function(data,element){
         } else {
             animationManager.searchAnimations();
         }
-    }
-
-    function registerAnimation(elem) {
-        return animationManager.registerAnimation(elem);
-    }
-
-    function resize() {
-        animationManager.resize();
-    }
-
-    /*function start() {
-        animationManager.start();
-    }*/
-
-    function goToAndStop(val, isFrame, animation) {
-        animationManager.goToAndStop(val, isFrame, animation);
     }
 
     function setSubframeRendering(flag) {
@@ -13927,10 +13904,6 @@ GroupEffect.prototype.init = function(data,element){
             params.animationData = JSON.parse(animationData);
         }
         return animationManager.loadAnimation(params);
-    }
-
-    function destroy(animation) {
-        return animationManager.destroy(animation);
     }
 
     function setQuality(value) {
@@ -13976,26 +13949,30 @@ GroupEffect.prototype.init = function(data,element){
                 return Matrix;
         }
     }
-    lottiejs.play = play;
-    lottiejs.pause = pause;
+
+    lottiejs.play = animationManager.play;
+    lottiejs.pause = animationManager.pause;
     lottiejs.setLocationHref = setLocationHref;
-    lottiejs.togglePause = togglePause;
-    lottiejs.setSpeed = setSpeed;
-    lottiejs.setDirection = setDirection;
-    lottiejs.stop = stop;
+    lottiejs.togglePause = animationManager.togglePause;
+    lottiejs.setSpeed = animationManager.setSpeed;
+    lottiejs.setDirection = animationManager.setDirection;
+    lottiejs.stop = animationManager.stop;
     lottiejs.searchAnimations = searchAnimations;
-    lottiejs.registerAnimation = registerAnimation;
+    lottiejs.registerAnimation = animationManager.registerAnimation;
     lottiejs.loadAnimation = loadAnimation;
     lottiejs.setSubframeRendering = setSubframeRendering;
-    lottiejs.resize = resize;
+    lottiejs.resize = animationManager.resize;
     //lottiejs.start = start;
-    lottiejs.goToAndStop = goToAndStop;
-    lottiejs.destroy = destroy;
+    lottiejs.goToAndStop = animationManager.goToAndStop;
+    lottiejs.destroy = animationManager.destroy;
     lottiejs.setQuality = setQuality;
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
+    lottiejs.freeze = animationManager.freeze;
+    lottiejs.unfreeze = animationManager.unfreeze;
+    lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.14';
+    lottiejs.version = '5.1.15';
 
     function checkReady() {
         if (document.readyState === "complete") {

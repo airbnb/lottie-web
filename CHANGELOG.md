@@ -1,3 +1,11 @@
+## V 5.1.15
+- FEATURE: Added freeze/unfreeze methods to stop prevent any animation from playing
+- FEATURE: Added getRegisterdAnimations method to get all current animations handled by lottie
+- FEATURE: Exporting PNGs with render queue in order to fix black pixels around images
+- FEATURE: Support for compressed jpgs when image is not transparent
+- FEATURE: Support for exporting base 64 encoded images inlined in the json file
+- FIX: Some small expression fixes
+
 ## V 5.1.14
 - FIX: Dash property animated
 - FIX: Canvas renderer skips hidden layers
