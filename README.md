@@ -222,7 +222,7 @@ you can also use addEventListener with the following events:
 - destroy
 
 #### Other loading options
-- if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
+- if you want to use an existing canvas to draw, you can pass an extra object: 'rendererSettings' with the following configuration:
 ```js
 lottie.loadAnimation({
   container: element, // the dom element
