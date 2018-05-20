@@ -19,29 +19,6 @@
     function setLocationHref (href) {
         locationHref = href;
     }
-    function play(animation){
-        animationManager.play(animation);
-    }
-
-    function pause(animation) {
-        animationManager.pause(animation);
-    }
-
-    function togglePause(animation) {
-        animationManager.togglePause(animation);
-    }
-
-    function setSpeed(value, animation) {
-        animationManager.setSpeed(value, animation);
-    }
-
-    function setDirection(value, animation) {
-        animationManager.setDirection(value, animation);
-    }
-
-    function stop(animation) {
-        animationManager.stop(animation);
-    }
 
     function searchAnimations() {
         if (standalone === true) {
@@ -49,22 +26,6 @@
         } else {
             animationManager.searchAnimations();
         }
-    }
-
-    function registerAnimation(elem) {
-        return animationManager.registerAnimation(elem);
-    }
-
-    function resize() {
-        animationManager.resize();
-    }
-
-    /*function start() {
-        animationManager.start();
-    }*/
-
-    function goToAndStop(val, isFrame, animation) {
-        animationManager.goToAndStop(val, isFrame, animation);
     }
 
     function setSubframeRendering(flag) {
@@ -76,10 +37,6 @@
             params.animationData = JSON.parse(animationData);
         }
         return animationManager.loadAnimation(params);
-    }
-
-    function destroy(animation) {
-        return animationManager.destroy(animation);
     }
 
     function setQuality(value) {
@@ -126,26 +83,27 @@
         }
     }
 
-    lottiejs.play = play;
-    lottiejs.pause = pause;
+    lottiejs.play = animationManager.play;
+    lottiejs.pause = animationManager.pause;
     lottiejs.setLocationHref = setLocationHref;
-    lottiejs.togglePause = togglePause;
-    lottiejs.setSpeed = setSpeed;
-    lottiejs.setDirection = setDirection;
-    lottiejs.stop = stop;
+    lottiejs.togglePause = animationManager.togglePause;
+    lottiejs.setSpeed = animationManager.setSpeed;
+    lottiejs.setDirection = animationManager.setDirection;
+    lottiejs.stop = animationManager.stop;
     lottiejs.searchAnimations = searchAnimations;
-    lottiejs.registerAnimation = registerAnimation;
+    lottiejs.registerAnimation = animationManager.registerAnimation;
     lottiejs.loadAnimation = loadAnimation;
     lottiejs.setSubframeRendering = setSubframeRendering;
-    lottiejs.resize = resize;
+    lottiejs.resize = animationManager.resize;
     //lottiejs.start = start;
-    lottiejs.goToAndStop = goToAndStop;
-    lottiejs.destroy = destroy;
+    lottiejs.goToAndStop = animationManager.goToAndStop;
+    lottiejs.destroy = animationManager.destroy;
     lottiejs.setQuality = setQuality;
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
+    lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
     lottiejs.version = '[[BM_VERSION]]';
 

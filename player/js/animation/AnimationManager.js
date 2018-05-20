@@ -40,6 +40,15 @@ var animationManager = (function(){
         return animItem;
     }
 
+    function getRegisteredAnimations() {
+        var i, len = registeredAnimations.length;
+        var animations = [];
+        for(i = 0; i < len; i += 1) {
+            animations.push(registeredAnimations[i].animation);
+        }
+        return animations;
+    }
+
     function addPlayingCount(){
         playingAnimationsNum += 1;
         activate();
@@ -204,5 +213,6 @@ var animationManager = (function(){
     moduleOb.destroy = destroy;
     moduleOb.freeze = freeze;
     moduleOb.unfreeze = unfreeze;
+    moduleOb.getRegisteredAnimations = getRegisteredAnimations;
     return moduleOb;
 }());
