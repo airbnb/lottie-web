@@ -193,27 +193,15 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'canvas',
-        loop: false,
-        autoplay: false,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
         },
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    // anim.setSubframe(false);
-     // anim.setSpeed(0.1);
-
-    /*anim.addEventListener('DOMLoaded', function() {
-        animationAPI = lottie_api.createAnimationApi(anim);
-        var null_animator = animationAPI.getKeyPath('Shape Layer 2, Transform, Scale');
-        animationAPI.addValueCallback(null_animator, function(currentValue) {
-            currentValue[0] = Math.random() * 100;
-            return currentValue
-        })
-    })*/
-    //anim.setSubframe(false);
 </script>
 </body>
 </html>

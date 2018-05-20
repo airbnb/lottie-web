@@ -14,6 +14,8 @@
     /*<%= contents %>*/
     var lottiejs = {};
 
+    var _isFrozen = false;
+
     function setLocationHref (href) {
         locationHref = href;
     }
@@ -123,6 +125,7 @@
                 return Matrix;
         }
     }
+
     lottiejs.play = play;
     lottiejs.pause = pause;
     lottiejs.setLocationHref = setLocationHref;
@@ -141,6 +144,8 @@
     lottiejs.setQuality = setQuality;
     lottiejs.inBrowser = inBrowser;
     lottiejs.installPlugin = installPlugin;
+    lottiejs.freeze = animationManager.freeze;
+    lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.__getFactory = getFactory;
     lottiejs.version = '[[BM_VERSION]]';
 
