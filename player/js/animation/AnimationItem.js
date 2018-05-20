@@ -267,7 +267,7 @@ AnimationItem.prototype.waitForFontsLoaded = (function(){
     }
 
     return function(){
-        checkFontsLoaded.bind(this)();
+        setTimeout(checkFontsLoaded.bind(this),0);
     };
 }());
 
@@ -276,7 +276,7 @@ AnimationItem.prototype.addPendingElement = function () {
 };
 
 AnimationItem.prototype.elementLoaded = function () {
-    this.pendingElements--;
+    this.pendingElements -= 1;
     this.checkLoaded();
 };
 
@@ -539,7 +539,9 @@ AnimationItem.prototype.getPath = function () {
 
 AnimationItem.prototype.getAssetsPath = function (assetData) {
     var path = '';
-    if(this.assetsPath){
+    if(assetData.e) {
+        path = assetData.p;
+    } else if(this.assetsPath){
         var imagePath = assetData.p;
         if(imagePath.indexOf('images/') !== -1){
             imagePath = imagePath.split('/')[1];
