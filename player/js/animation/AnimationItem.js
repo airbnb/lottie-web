@@ -257,6 +257,11 @@ AnimationItem.prototype.configAnimation = function (animData) {
 
 AnimationItem.prototype.waitForFontsLoaded = (function(){
     function checkFontsLoaded(){
+        var isDestory = this.renderer === null
+        if(isDestory){
+            return;
+        }
+        
         if(this.renderer.globalData.fontManager.loaded){
             dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
             //this.renderer.buildItems(this.animationData.layers);
