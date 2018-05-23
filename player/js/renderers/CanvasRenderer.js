@@ -154,7 +154,6 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.globalData.canvasContext = this.canvasContext;
     this.globalData.renderer = this;
     this.globalData.isDashed = false;
-    this.globalData.totalFrames = Math.floor(animData.tf);
     this.globalData.compWidth = animData.w;
     this.globalData.compHeight = animData.h;
     this.globalData.frameRate = animData.fr;

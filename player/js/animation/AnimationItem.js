@@ -13,7 +13,6 @@ var AnimationItem = function () {
     this.pendingElements = 0;
     this.playCount = 0;
     this.animationData = {};
-    this.layers = [];
     this.assets = [];
     this.isPaused = true;
     this.autoplay = false;
@@ -137,7 +136,6 @@ AnimationItem.prototype.includeLayers = function(data) {
     if(data.op > this.animationData.op){
         this.animationData.op = data.op;
         this.totalFrames = Math.floor(data.op - this.animationData.ip);
-        this.animationData.tf = this.totalFrames;
     }
     var layers = this.animationData.layers;
     var i, len = layers.length;
@@ -163,15 +161,12 @@ AnimationItem.prototype.includeLayers = function(data) {
             this.animationData.assets.push(data.assets[i]);
         }
     }
-    //this.totalFrames = 50;
-    //this.animationData.tf = 50;
     this.animationData.__complete = false;
     dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin){
         expressionsPlugin.initExpressions(this);
     }
-    this.renderer.renderFrame(-1);
     this.loadNextSegment();
 };
 
@@ -179,7 +174,7 @@ AnimationItem.prototype.loadNextSegment = function() {
     var segments = this.animationData.segments;
     if(!segments || segments.length === 0 || !this.autoloadSegments){
         this.trigger('data_ready');
-        this.timeCompleted = this.animationData.tf;
+        this.timeCompleted = this.totalFrames;
         return;
     }
     var segment = segments.shift();
@@ -208,68 +203,60 @@ AnimationItem.prototype.loadNextSegment = function() {
 AnimationItem.prototype.loadSegments = function() {
     var segments = this.animationData.segments;
     if(!segments) {
-        this.timeCompleted = this.animationData.tf;
+        this.timeCompleted = this.totalFrames;
     }
     this.loadNextSegment();
 };
 
+AnimationItem.prototype.preloadImages = function() {
+    this.imagePreloader = new ImagePreloader();
+    this.imagePreloader.setAssetsPath(this.assetsPath);
+    this.imagePreloader.setPath(this.path);
+    this.imagePreloader.loadAssets(this.animationData.assets, function(err) {
+        if(!err) {
+            this.trigger('loaded_images');
+        }
+    }.bind(this));
+}
+
 AnimationItem.prototype.configAnimation = function (animData) {
-    var _this = this;
     if(!this.renderer){
         return;
     }
     this.animationData = animData;
     this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-    this.animationData.tf = this.totalFrames;
     this.renderer.configAnimation(animData);
     if(!animData.assets){
         animData.assets = [];
     }
-    if(animData.comps) {
-        animData.assets = animData.assets.concat(animData.comps);
-        animData.comps = null;
-    }
     this.renderer.searchExtraCompositions(animData.assets);
 
-    this.layers = this.animationData.layers;
     this.assets = this.animationData.assets;
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
     this.trigger('config_ready');
-    this.imagePreloader = new ImagePreloader();
-    this.imagePreloader.setAssetsPath(this.assetsPath);
-    this.imagePreloader.setPath(this.path);
-    this.imagePreloader.loadAssets(animData.assets, function(err) {
-        if(!err) {
-            _this.trigger('loaded_images');
-        }
-    });
+    this.preloadImages();
     this.loadSegments();
     this.updaFrameModifier();
-    if(this.renderer.globalData.fontManager){
-        this.waitForFontsLoaded();
-    }else{
-        dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-        this.checkLoaded();
-    }
+    this.waitForFontsLoaded();
 };
 
-AnimationItem.prototype.waitForFontsLoaded = (function(){
-    function checkFontsLoaded(){
-        if(this.renderer.globalData.fontManager.loaded){
-            dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-            //this.renderer.buildItems(this.animationData.layers);
-            this.checkLoaded();
-        }else{
-            setTimeout(checkFontsLoaded.bind(this),20);
-        }
-    }
+AnimationItem.prototype.completeData = function() {
+    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
+    this.checkLoaded();
+}
 
-    return function(){
-        setTimeout(checkFontsLoaded.bind(this),0);
-    };
-}());
+AnimationItem.prototype.waitForFontsLoaded = function(){
+    if(!this.renderer) {
+        return;
+    }
+    if(this.renderer.globalData.fontManager.loaded){
+        this.completeData();
+    }else{
+        setTimeout(this.waitForFontsLoaded.bind(this),20);
+    }
+}
 
 AnimationItem.prototype.addPendingElement = function () {
     this.pendingElements += 1;
