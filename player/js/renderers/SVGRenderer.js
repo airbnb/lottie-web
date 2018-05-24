@@ -20,10 +20,7 @@ function SVGRenderer(animationItem, config){
         _mdf: false,
         frameNum: -1,
         defs: defs,
-        frameId: 0,
-        compSize: {w:0,h:0},
-        renderConfig: this.renderConfig,
-        fontManager: new FontManager()
+        renderConfig: this.renderConfig
     };
     this.elements = [];
     this.pendingElements = [];
@@ -84,13 +81,8 @@ SVGRenderer.prototype.configAnimation = function(animData){
     //Mask animation
     var defs = this.globalData.defs;
 
-    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
+    this.setupGlobalData(animData, defs);
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
-    this.globalData.nm = animData.nm;
-    this.globalData.compSize.w = animData.w;
-    this.globalData.compSize.h = animData.h;
-    this.globalData.frameRate = animData.fr;
     this.data = animData;
 
     var maskElement = createNS( 'clipPath');
@@ -106,8 +98,6 @@ SVGRenderer.prototype.configAnimation = function(animData){
 
     defs.appendChild(maskElement);
     this.layers = animData.layers;
-    this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,defs);
     this.elements = createSizedArray(animData.layers.length);
 };
 

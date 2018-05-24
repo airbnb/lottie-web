@@ -31,7 +31,6 @@ var AnimationItem = function () {
 extendPrototype([BaseEvent], AnimationItem);
 
 AnimationItem.prototype.setParams = function(params) {
-    var self = this;
     if(params.context){
         this.context = params.context;
     }
@@ -66,7 +65,7 @@ AnimationItem.prototype.setParams = function(params) {
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
     if(params.animationData){
-        self.configAnimation(params.animationData);
+        this.configAnimation(params.animationData);
     }else if(params.path){
         if(params.path.substr(-4) != 'json'){
             if (params.path.substr(-1, 1) != '/') {
@@ -75,7 +74,6 @@ AnimationItem.prototype.setParams = function(params) {
             params.path += 'data.json';
         }
 
-        var xhr = new XMLHttpRequest();
         if(params.path.lastIndexOf('\\') != -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
         }else{
@@ -83,21 +81,8 @@ AnimationItem.prototype.setParams = function(params) {
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
-        xhr.open('GET', params.path, true);
-        xhr.send();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if(xhr.status == 200){
-                    self.configAnimation(JSON.parse(xhr.responseText));
-                }else{
-                    try{
-                        var response = JSON.parse(xhr.responseText);
-                        self.configAnimation(response);
-                    }catch(err){
-                    }
-                }
-            }
-        };
+
+        assetLoader.load(params.path, this.configAnimation.bind(this));
     }
 };
 
@@ -179,25 +164,9 @@ AnimationItem.prototype.loadNextSegment = function() {
     }
     var segment = segments.shift();
     this.timeCompleted = segment.time * this.frameRate;
-    var xhr = new XMLHttpRequest();
-    var self = this;
     var segmentPath = this.path+this.fileName+'_' + this.segmentPos + '.json';
     this.segmentPos += 1;
-    xhr.open('GET', segmentPath, true);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if(xhr.status == 200){
-                self.includeLayers(JSON.parse(xhr.responseText));
-            }else{
-                try{
-                    var response = JSON.parse(xhr.responseText);
-                    self.includeLayers(response);
-                }catch(err){
-                }
-            }
-        }
-    };
+    assetLoader.load(segmentPath, this.includeLayers.bind(this));
 };
 
 AnimationItem.prototype.loadSegments = function() {

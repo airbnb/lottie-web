@@ -30,9 +30,9 @@ CVMaskElement.prototype.renderFrame = function () {
         if(this.masksProperties[i].mode !== 'n'){
             if (this.masksProperties[i].inv) {
                 ctx.moveTo(0, 0);
-                ctx.lineTo(this.element.globalData.compWidth, 0);
-                ctx.lineTo(this.element.globalData.compWidth, this.element.globalData.compHeight);
-                ctx.lineTo(0, this.element.globalData.compHeight);
+                ctx.lineTo(this.element.globalData.compSize.w, 0);
+                ctx.lineTo(this.element.globalData.compSize.w, this.element.globalData.compSize.h);
+                ctx.lineTo(0, this.element.globalData.compSize.h);
                 ctx.lineTo(0, 0);
             }
             data = this.viewData[i].v;

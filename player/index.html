@@ -89,6 +89,7 @@
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
+    <script src="js/utils/asset_loader.js"></script>
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
     <script src="js/utils/text/TextAnimatorDataProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
@@ -194,8 +195,8 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
-        autoplay: false,
+        loop: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
         },

@@ -214,22 +214,11 @@ HybridRenderer.prototype.configAnimation = function(animData){
     this.resizerElem.appendChild(svg);
     var defs = createNS('defs');
     svg.appendChild(defs);
-    this.globalData.defs = defs;
     this.data = animData;
     //Mask animation
-    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this.globalData.frameId = 0;
-    this.globalData.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this.globalData.frameRate = animData.fr;
+    this.setupGlobalData(animData, svg);
+    this.globalData.defs = defs;
     this.layers = animData.layers;
-    this.globalData.fontManager = new FontManager();
-    this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,svg);
     this.layerElement = this.resizerElem;
     this.build3dContainers();
     this.updateContainerSize();

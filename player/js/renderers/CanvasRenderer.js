@@ -18,7 +18,6 @@ function CanvasRenderer(animationItem, config){
         renderConfig: this.renderConfig,
         currentGlobalAlpha: -1
     };
-    var i, len = 15;
     this.contextData = new CVContextData();
     this.elements = [];
     this.pendingElements = [];
@@ -151,18 +150,6 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.canvasContext = this.renderConfig.context;
     }
     this.data = animData;
-    this.globalData.canvasContext = this.canvasContext;
-    this.globalData.renderer = this;
-    this.globalData.isDashed = false;
-    this.globalData.compWidth = animData.w;
-    this.globalData.compHeight = animData.h;
-    this.globalData.frameRate = animData.fr;
-    this.globalData.frameId = 0;
-    this.globalData.compSize = {
-        w: animData.w,
-        h: animData.h
-    };
-    this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.layers = animData.layers;
     this.transformCanvas = {
         w: animData.w,
@@ -172,13 +159,11 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         tx:0,
         ty:0
     };
-    this.globalData.fontManager = new FontManager();
-    this.globalData.fontManager.addChars(animData.chars);
-    this.globalData.fontManager.addFonts(animData.fonts,document.body);
-    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
-    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
+    this.setupGlobalData(animData, document.body);
+    this.globalData.canvasContext = this.canvasContext;
+    this.globalData.renderer = this;
+    this.globalData.isDashed = false;
+    this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.globalData.transformCanvas = this.transformCanvas;
     this.elements = createSizedArray(animData.layers.length);
 
