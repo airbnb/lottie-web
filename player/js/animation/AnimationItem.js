@@ -529,10 +529,6 @@ AnimationItem.prototype.show = function () {
     this.renderer.show();
 };
 
-AnimationItem.prototype.getAssets = function () {
-    return this.assets;
-};
-
 AnimationItem.prototype.getDuration = function (isFrame) {
     return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
 };
