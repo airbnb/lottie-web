@@ -9372,7 +9372,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.15';
+    lottiejs.version = '5.1.16';
 
     function checkReady() {
         if (document.readyState === "complete") {

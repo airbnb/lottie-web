@@ -11907,7 +11907,7 @@ var ExpressionManager = (function(){
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
         var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -12118,6 +12118,7 @@ var ExpressionManager = (function(){
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
                 fromComp = thisLayer.fromComp.bind(thisLayer);
+                toComp = thisLayer.toComp.bind(thisLayer);
                 mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer) : null;
                 fromCompToSurface = fromComp;
             }
@@ -12448,6 +12449,7 @@ var ExpressionManager = (function(){
             };
         }
         if(frameNum !== this._cachingAtTime.lastTime) {
+            this._cachingAtTime.lastIndex = this._cachingAtTime.lastTime < frameNum ? this._caching.lastIndex : 0;
             this._cachingAtTime.lastTime = frameNum;
             frameNum *= this.elem.globalData.frameRate;
             this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, this._cachingAtTime);
@@ -13944,7 +13946,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.15';
+    lottiejs.version = '5.1.16';
 
     function checkReady() {
         if (document.readyState === "complete") {
