@@ -1,3 +1,7 @@
+## V 5.1.16
+- FIX: exporting images for older version of AE.
+- FEATURE: if needed can skip images export once exported a first time.
+
 ## V 5.1.15
 - FEATURE: Added freeze/unfreeze methods to stop prevent any animation from playing
 - FEATURE: Added getRegisterdAnimations method to get all current animations handled by lottie
