@@ -217,6 +217,7 @@ you can also use addEventListener with the following events:
 - segmentStart
 - config_ready (when initial config is done)
 - data_ready (when all parts of the animation have been loaded)
+- data_failed (when part of the animation can not be loaded)
 - loaded_images (when all image loads have either succeeded or errored)
 - DOMLoaded (when elements have been added to the DOM)
 - destroy
