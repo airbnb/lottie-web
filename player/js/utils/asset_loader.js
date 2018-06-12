@@ -10,7 +10,7 @@ var assetLoader = (function(){
 		}
 	}
 
-	function loadAsset(path, callback, error) {
+	function loadAsset(path, callback, errorCallback) {
 		var response;
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', path, true);
@@ -27,8 +27,8 @@ var assetLoader = (function(){
 	            		response = formatResponse(xhr);
 	            		callback(response);
 	                }catch(err){
-	                	if(error_callback) {
-	                		error_callback(err);
+	                	if(errorCallback) {
+	                		errorCallback(err);
 	                	}
 	                }
 	            }
