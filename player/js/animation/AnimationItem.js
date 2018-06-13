@@ -82,7 +82,9 @@ AnimationItem.prototype.setParams = function(params) {
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
 
-        assetLoader.load(params.path, this.configAnimation.bind(this));
+        assetLoader.load(params.path, this.configAnimation.bind(this), function() {
+            this.trigger('data_failed');
+        }.bind(this));
     }
 };
 
@@ -166,7 +168,9 @@ AnimationItem.prototype.loadNextSegment = function() {
     this.timeCompleted = segment.time * this.frameRate;
     var segmentPath = this.path+this.fileName+'_' + this.segmentPos + '.json';
     this.segmentPos += 1;
-    assetLoader.load(segmentPath, this.includeLayers.bind(this));
+    assetLoader.load(segmentPath, this.includeLayers.bind(this), function() {
+        this.trigger('data_failed');
+    }.bind(this));
 };
 
 AnimationItem.prototype.loadSegments = function() {
