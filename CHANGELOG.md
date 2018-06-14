@@ -1,3 +1,8 @@
+## V 5.1.17
+- FIX: asset error handling
+- FEATURE: Rove across time support
+- FIX: bevel line support
+
 ## V 5.1.16
 - FIX: exporting images for older version of AE.
 - FEATURE: if needed can skip images export once exported a first time.

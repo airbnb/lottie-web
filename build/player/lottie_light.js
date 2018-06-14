@@ -4181,7 +4181,7 @@ var assetLoader = (function(){
 		}
 	}
 
-	function loadAsset(path, callback, error) {
+	function loadAsset(path, callback, errorCallback) {
 		var response;
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', path, true);
@@ -4198,8 +4198,8 @@ var assetLoader = (function(){
 	            		response = formatResponse(xhr);
 	            		callback(response);
 	                }catch(err){
-	                	if(error_callback) {
-	                		error_callback(err);
+	                	if(errorCallback) {
+	                		errorCallback(err);
 	                	}
 	                }
 	            }
@@ -4210,6 +4210,7 @@ var assetLoader = (function(){
 		load: loadAsset
 	}
 }())
+
 function TextAnimatorProperty(textData, renderType, elem){
     this._isFirstFrame = true;
 	this._hasMaskedPath = false;
@@ -7196,7 +7197,7 @@ IShapeElement.prototype = {
     ljEnum: {
         '1': 'miter',
         '2': 'round',
-        '3': 'butt'
+        '3': 'bevel'
     },
     searchProcessedElement: function(elem){
         var elements = this.processedElements;
@@ -8788,7 +8789,9 @@ AnimationItem.prototype.setParams = function(params) {
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
 
-        assetLoader.load(params.path, this.configAnimation.bind(this));
+        assetLoader.load(params.path, this.configAnimation.bind(this), function() {
+            this.trigger('data_failed');
+        }.bind(this));
     }
 };
 
@@ -8872,7 +8875,9 @@ AnimationItem.prototype.loadNextSegment = function() {
     this.timeCompleted = segment.time * this.frameRate;
     var segmentPath = this.path+this.fileName+'_' + this.segmentPos + '.json';
     this.segmentPos += 1;
-    assetLoader.load(segmentPath, this.includeLayers.bind(this));
+    assetLoader.load(segmentPath, this.includeLayers.bind(this), function() {
+        this.trigger('data_failed');
+    }.bind(this));
 };
 
 AnimationItem.prototype.loadSegments = function() {
@@ -9055,7 +9060,7 @@ AnimationItem.prototype.advanceTime = function (value) {
     // If animation won't loop, it should stop at totalFrames - 1. If it will loop it should complete the last frame and then loop.
     if (nextValue >= this.totalFrames - 1 && this.frameModifier > 0) {
         if (!this.loop || this.playCount === this.loop) {
-            if (!this.checkSegments(nextValue % this.totalFrames)) {
+            if (!this.checkSegments(nextValue >  this.totalFrames ? nextValue % this.totalFrames : 0)) {
                 _isComplete = true;
                 nextValue = this.totalFrames - 1;
             }
@@ -9372,7 +9377,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.16';
+    lottiejs.version = '5.1.17';
 
     function checkReady() {
         if (document.readyState === "complete") {
