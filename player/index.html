@@ -12,7 +12,7 @@
         }
 
         #lottie{
-            background-color:#ccc;
+            background-color:#333;
             width:100%;
             height:100%;
             /*width:600px;
@@ -195,10 +195,11 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true,
+            progressiveLoad:false,
+            imagePreserveAspectRatio: 'xMidYMid meet'
         },
         path: 'exports/render/data.json'
     };

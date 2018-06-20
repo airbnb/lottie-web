@@ -5,6 +5,7 @@ function CanvasRenderer(animationItem, config){
         context: (config && config.context) || null,
         progressiveLoad: (config && config.progressiveLoad) || false,
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
+        imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
         className: (config && config.className) || ''
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;

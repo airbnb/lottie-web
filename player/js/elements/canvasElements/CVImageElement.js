@@ -23,7 +23,8 @@ CVImageElement.prototype.imageLoaded = function() {
         var imgRel = imgW / imgH;
         var canvasRel = this.assetData.w/this.assetData.h;
         var widthCrop, heightCrop;
-        if(imgRel>canvasRel){
+        var par = this.assetData.pr || this.globalData.renderConfig.imagePreserveAspectRatio;
+        if((imgRel > canvasRel && par === 'xMidYMid slice') || (imgRel < canvasRel && par !== 'xMidYMid slice')) {
             heightCrop = imgH;
             widthCrop = heightCrop*canvasRel;
         } else {

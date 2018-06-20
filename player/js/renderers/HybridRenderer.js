@@ -4,6 +4,7 @@ function HybridRenderer(animationItem, config){
     this.renderedFrame = -1;
     this.renderConfig = {
         className: (config && config.className) || '',
+        imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
     };
     this.globalData = {
