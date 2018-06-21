@@ -1,3 +1,9 @@
+## V 5.1.18
+- FIX: Moved defs to top to avoid Safari issues 
+- FEATURE: Added crossOrigin attribute to images to avoid tainted canvases
+- FEATURE: Added imagePreserveAspectRatio to rendererSettings for image layers
+- FIX: splitting animations in multiple files
+
 ## V 5.1.17
 - FIX: asset error handling
 - FEATURE: Rove across time support

@@ -5758,6 +5758,7 @@ function SVGRenderer(animationItem, config){
     this.layerElement = maskElement;
     this.renderConfig = {
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
+        imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
         progressiveLoad: (config && config.progressiveLoad) || false,
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
         viewBoxOnly: (config && config.viewBoxOnly) || false,
@@ -7415,7 +7416,7 @@ IImageElement.prototype.createContent = function(){
     this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
-    this.innerElem.setAttribute('preserveAspectRatio','xMidYMid slice');
+    this.innerElem.setAttribute('preserveAspectRatio',this.assetData.pr || this.globalData.renderConfig.imagePreserveAspectRatio);
     this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
     
     this.layerElement.appendChild(this.innerElem);
@@ -9377,7 +9378,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.17';
+    lottiejs.version = '5.1.18';
 
     function checkReady() {
         if (document.readyState === "complete") {
@@ -9409,4 +9410,4 @@ function EffectsManager(){}
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));
