@@ -1,6 +1,7 @@
 function CVImageElement(data, globalData, comp){
     this.failed = false;
     this.img = new Image();
+    this.img.crossOrigin = 'anonymous';
     this.assetData = globalData.getAssetData(data.refId);
     this.initElement(data,globalData,comp);
     this.globalData.addPendingElement();
