@@ -15,8 +15,8 @@
             background-color:#333;
             width:100%;
             height:100%;
-            /*width:600px;
-            height:400px;*/
+            width:1920px;
+            height:1080px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -194,7 +194,7 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'html',
         loop: false,
         autoplay: true,
         rendererSettings: {
@@ -204,6 +204,7 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.setSubframe(false);
 </script>
 </body>
 </html>
