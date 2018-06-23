@@ -131,6 +131,8 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.source = elem.data.refId;
         _thisLayerFunction.height = elem.data.ty === 0 ? elem.data.h : 100;
         _thisLayerFunction.width = elem.data.ty === 0 ? elem.data.w : 100;
+        _thisLayerFunction.inPoint = elem.data.ip/elem.comp.globalData.frameRate;
+        _thisLayerFunction.outPoint = elem.data.op/elem.comp.globalData.frameRate;
 
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;
