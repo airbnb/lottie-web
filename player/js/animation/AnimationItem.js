@@ -25,6 +25,7 @@ var AnimationItem = function () {
     this.subframeEnabled = subframeEnabled;
     this.segments = [];
     this._idle = true;
+    this._completedLoop = false;
     this.projectInterface = ProjectInterface();
 };
 
@@ -323,6 +324,7 @@ AnimationItem.prototype.stop = function (name) {
     }
     this.pause();
     this.playCount = 0;
+    this._completedLoop = false;
     this.setCurrentRawFrameValue(0);
 };
 
@@ -361,6 +363,7 @@ AnimationItem.prototype.advanceTime = function (value) {
             this.playCount += 1;
             if (!this.checkSegments(nextValue % this.totalFrames)) {
                 this.setCurrentRawFrameValue(nextValue % this.totalFrames);
+                this._completedLoop = true;
                 this.trigger('loopComplete');
             }
         } else {
@@ -370,8 +373,14 @@ AnimationItem.prototype.advanceTime = function (value) {
         if (!this.checkSegments(nextValue % this.totalFrames)) {
             if (this.loop && !(this.playCount-- <= 0 && this.loop !== true)) {
                 this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
-                this.trigger('loopComplete');
-            } else {
+                if(!this._completedLoop) {
+                    this._completedLoop = true;
+                } else {
+                    this.trigger('loopComplete');
+                }
+            } else if (!this.loop && this.playCount-- === 0) {
+                this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
+            }else {
                 _isComplete = true;
                 nextValue = 0;
             }
