@@ -195,7 +195,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -204,7 +204,14 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.addEventListener('complete', function(){
+        console.log('COMPLETE')
+    });
+    anim.addEventListener('loopComplete', function(){
+        console.log('loopComplete')
+    });
     anim.setSubframe(false);
+    anim.setSpeed(5);
 </script>
 </body>
 </html>

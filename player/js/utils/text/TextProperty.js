@@ -40,11 +40,11 @@ function TextProperty(elem, data){
         finalSize:0,
         finalText:[],
         finalLineHeight: 0,
-        __test: true
+        __complete: false
 
 	};
     this.copyFromDocumentData(this.data.d.k[0].s);
-    
+
     if(!this.searchProperty()) {
         this.completeTextData(this.currentData);
         this.keysIndex = 0;
@@ -70,38 +70,10 @@ TextProperty.prototype.setCurrentData = function(data, currentTextValue){
             this.currentData.strokeColorAnim = data.strokeColorAnim || this.currentData.strokeColorAnim;
             this.currentData.strokeWidthAnim = data.strokeWidthAnim || this.currentData.strokeWidthAnim;
             this._mdf = true;
-        } else if(currentTextValue !== this.currentData.t) {
+        } else if(currentTextValue !== this.currentData.t || !data.__complete) {
             this._mdf = true;
             this.completeTextData(data);
         }
-		/*var currentData = this.currentData;
-        currentData.ascent = data.ascent;
-        currentData.boxWidth = data.boxWidth ? data.boxWidth : currentData.boxWidth;
-        currentData.f = data.f;
-        currentData.fStyle = data.fStyle;
-        currentData.fWeight = data.fWeight;
-        currentData.fc = data.fc;
-        currentData.j = data.j;
-        currentData.justifyOffset = data.justifyOffset;
-        currentData.l = data.l;
-        currentData.lh = data.lh;
-        currentData.lineWidths = data.lineWidths;
-        currentData.ls = data.ls;
-        currentData.of = data.of;
-        currentData.s = data.s;
-        currentData.sc = data.sc;
-        currentData.sw = data.sw;
-        currentData.sz = data.sz;
-        currentData.ps = data.ps;
-        currentData.t = data.t;
-        currentData.tr = data.tr;
-        currentData.fillColorAnim = data.fillColorAnim || currentData.fillColorAnim;
-        currentData.strokeColorAnim = data.strokeColorAnim || currentData.strokeColorAnim;
-        currentData.strokeWidthAnim = data.strokeWidthAnim || currentData.strokeWidthAnim;
-        currentData.yOffset = data.yOffset;
-        currentData.finalSize = data.finalSize;
-        currentData.finalLineHeight = data.finalLineHeight;
-        currentData.finalText = data.finalText;*/
 };
 
 TextProperty.prototype.searchProperty = function() {
@@ -138,6 +110,7 @@ TextProperty.prototype.getValue = function(_finalValue) {
     for(i = 0; i < len; i += 1) {
         finalValue = this.effectsSequence[i](finalValue);
     }
+    finalValue.t = finalValue.t.toString();
     this.setCurrentData(finalValue, currentTextValue);
     this.pv = this.v = this.currentData;
     this.lock = false;
