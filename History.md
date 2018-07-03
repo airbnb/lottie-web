@@ -1,3 +1,12 @@
+## V 5.1.19
+- FIX: Trim Paths with empty paths fix
+- FIX: linear method fix for inverted values
+- FEATURE: Ignoring merge path's last path if square
+- FIX: Camera zoom
+- FIX: Validating if text data is complete on first render
+- FIX: Loop counting when playing backwards
+- FEATURE: Added inPoint and outPoint to layer's expressions
+
 ## V 5.1.18
 - FIX: Moved defs to top to avoid Safari issues 
 - FEATURE: Added crossOrigin attribute to images to avoid tainted canvases

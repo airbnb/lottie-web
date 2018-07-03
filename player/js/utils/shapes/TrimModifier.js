@@ -273,7 +273,7 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) 
                 segmentCount += 1;
             }
         }
-        if (shapePaths[i].c) {
+        if (shapePaths[i].c && lengths.length) {
             currentLengthData = lengths[j - 1];
             if (addedLength <= shapeSegment.e) {
                 var segmentLength = lengths[j - 1].addedLength;

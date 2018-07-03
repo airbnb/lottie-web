@@ -15,8 +15,6 @@
             background-color:#333;
             width:100%;
             height:100%;
-            width:1920px;
-            height:1080px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -204,14 +202,6 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.addEventListener('complete', function(){
-        console.log('COMPLETE')
-    });
-    anim.addEventListener('loopComplete', function(){
-        console.log('loopComplete')
-    });
-    anim.setSubframe(false);
-    anim.setSpeed(5);
 </script>
 </body>
 </html>
