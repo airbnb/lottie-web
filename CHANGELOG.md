@@ -1,3 +1,8 @@
+## V 5.1.20
+- FIX: instaceof Array on expressions fixed
+- FIX: text value on expressions fix
+- FEATURE: new expressions supported
+
 ## V 5.1.19
 - FIX: Trim Paths with empty paths fix
 - FIX: linear method fix for inverted values

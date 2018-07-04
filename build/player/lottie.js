@@ -4867,10 +4867,10 @@ function TextProperty(elem, data){
 	this.kf = false;
 	this._isFirstFrame = true;
 	this._mdf = false;
-	this.data = data;
+    this.data = data;
 	this.elem = elem;
     this.comp = this.elem.comp;
-	this.keysIndex = -1;
+	this.keysIndex = 0;
     this.canResize = false;
     this.minimumFontSize = 1;
     this.effectsSequence = [];
@@ -4905,37 +4905,31 @@ function TextProperty(elem, data){
         __complete: false
 
 	};
-    this.copyFromDocumentData(this.data.d.k[0].s);
+    this.copyData(this.currentData, this.data.d.k[0].s);
 
     if(!this.searchProperty()) {
         this.completeTextData(this.currentData);
-        this.keysIndex = 0;
     }
 }
 
 TextProperty.prototype.defaultBoxWidth = [0,0];
 
-TextProperty.prototype.copyFromDocumentData = function(data) {
+TextProperty.prototype.copyData = function(obj, data) {
     for(var s in data) {
-        this.currentData[s] = data[s];
+        if(data.hasOwnProperty(s)) {
+            obj[s] = data[s];
+        }
     }
+    return obj;
 }
 
-TextProperty.prototype.setCurrentData = function(data, currentTextValue){
-        if(this.currentData !== data) {
-            if(!data.__complete) {
-                this.completeTextData(data);
-            }
-            this.copyFromDocumentData(data);
-            this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
-            this.currentData.fillColorAnim = data.fillColorAnim || this.currentData.fillColorAnim;
-            this.currentData.strokeColorAnim = data.strokeColorAnim || this.currentData.strokeColorAnim;
-            this.currentData.strokeWidthAnim = data.strokeWidthAnim || this.currentData.strokeWidthAnim;
-            this._mdf = true;
-        } else if(currentTextValue !== this.currentData.t || !data.__complete) {
-            this._mdf = true;
-            this.completeTextData(data);
-        }
+TextProperty.prototype.setCurrentData = function(data){
+    if(!data.__complete) {
+        this.completeTextData(data);
+    }
+    this.currentData = data;
+    this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
+    this._mdf = true;
 };
 
 TextProperty.prototype.searchProperty = function() {
@@ -4959,7 +4953,8 @@ TextProperty.prototype.getValue = function(_finalValue) {
     if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
         return;
     }
-    var currentTextValue = this.currentData.t;        
+    var currentValue = this.currentData;
+    var currentIndex = this.keysIndex;
     if(this.lock) {
         this.setCurrentData(this.currentData, currentTextValue);
         return;
@@ -4968,18 +4963,24 @@ TextProperty.prototype.getValue = function(_finalValue) {
     this._mdf = false;
     var multipliedValue;
     var i, len = this.effectsSequence.length;
-    var finalValue = _finalValue || this.currentData;
+    var finalValue = _finalValue || this.data.d.k[this.keysIndex].s;
     for(i = 0; i < len; i += 1) {
-        finalValue = this.effectsSequence[i](finalValue);
+        //Checking if index changed to prevent creating a new object every time the expression updates.
+        if(currentIndex !== this.keysIndex) {
+            finalValue = this.effectsSequence[i](finalValue, finalValue.t);
+        } else {
+            finalValue = this.effectsSequence[i](this.currentData, finalValue.t);
+        }
     }
-    finalValue.t = finalValue.t.toString();
-    this.setCurrentData(finalValue, currentTextValue);
+    if(currentValue !== finalValue) {
+        this.setCurrentData(finalValue);
+    }
     this.pv = this.v = this.currentData;
     this.lock = false;
     this.frameId = this.elem.globalData.frameId;
 }
 
-TextProperty.prototype.getKeyframeValue = function(currentValue) {
+TextProperty.prototype.getKeyframeValue = function() {
     var textKeys = this.data.d.k, textDocumentData;
     var frameNum = this.elem.comp.renderedFrame;
     var i = 0, len = textKeys.length;
@@ -4991,10 +4992,9 @@ TextProperty.prototype.getKeyframeValue = function(currentValue) {
         i += 1;
     }
     if(this.keysIndex !== i) {
-        currentValue = textDocumentData;
         this.keysIndex = i;
     }
-    return currentValue;
+    return this.data.d.k[this.keysIndex].s;
 };
 
 TextProperty.prototype.buildFinalText = function(text) {
@@ -5258,22 +5258,17 @@ TextProperty.prototype.completeTextData = function(documentData) {
 };
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
-	index = index === undefined 
-    ? this.keysIndex === -1 
-        ? 0 
-        : this.keysIndex 
-    : index;
-    var dData = this.data.d.k[index].s;
-    for(var s in newData) {
-        dData[s] = newData[s];
-    }
+	index = index === undefined ? this.keysIndex : index;
+    var dData = this.copyData({}, this.data.d.k[index].s);
+    dData = this.copyData(dData, newData);
+    this.data.d.k[index].s = dData;
     this.recalculate(index);
 };
 
 TextProperty.prototype.recalculate = function(index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
-    this.keysIndex = this.kf ? -1 : 0;
+    this.keysIndex = 0;
     this._isFirstFrame = true;
     this.getValue(dData);
 }
@@ -7482,9 +7477,7 @@ SVGTextElement.prototype.buildNewText = function(){
     var letters = documentData.l || [];
     var usesGlyphs = this.globalData.fontManager.chars;
     len = letters.length;
-    if(!len){
-        return;
-    }
+
     var tSpan;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
@@ -7566,7 +7559,7 @@ SVGTextElement.prototype.buildNewText = function(){
             }
             //
         }
-        if (singleShape) {
+        if (singleShape && tSpan) {
             tSpan.setAttribute('d',shapeStr);
         }
     }
@@ -10762,9 +10755,6 @@ CVTextElement.prototype.renderInnerContent = function(){
             this.globalData.renderer.restore();
         }
     }
-    /*if(this.data.hasMask){
-     this.globalData.renderer.restore(true);
-     }*/
 };
 function CVEffects() {
 
@@ -11558,24 +11548,7 @@ var ExpressionManager = (function(){
     var window = null;
     var document = null;
 
-    function duplicatePropertyValue(value, mult) {
-        mult = mult || 1;
-
-        if (typeof value === 'number'  || value instanceof Number) {
-            return value * mult;
-        } else if(value.i) {
-            return shape_pool.clone(value);
-        } else {
-            var arr = createTypedArray('float32', value.length);
-            var i, len = value.length;
-            for (i = 0; i < len; i += 1) {
-                arr[i] = value[i] * mult;
-            }
-            return arr;
-        }
-    }
-
-    function isTypeOfArray(arr) {
+    function $bm_isInstanceOfArray(arr) {
         return arr.constructor === Array || arr.constructor === Float32Array;
     }
 
@@ -11588,7 +11561,7 @@ var ExpressionManager = (function(){
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
             return -a;
         }
-        if(isTypeOfArray(a)){
+        if($bm_isInstanceOfArray(a)){
             var i, lenA = a.length;
             var retArr = [];
             for(i=0;i<lenA;i+=1){
@@ -11607,17 +11580,17 @@ var ExpressionManager = (function(){
         if(isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
             return a + b;
         }
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             a = a.slice(0);
             a[0] = a[0] + b;
             return a;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             b = b.slice(0);
             b[0] = a + b[0];
             return b;
         }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
             
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
@@ -11647,17 +11620,17 @@ var ExpressionManager = (function(){
             }
             return a - b;
         }
-        if( isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if( $bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             a = a.slice(0);
             a[0] = a[0] - b;
             return a;
         }
-        if(isNumerable(tOfA, a) &&  isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) &&  $bm_isInstanceOfArray(b)){
             b = b.slice(0);
             b[0] = a - b[0];
             return b;
         }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -11682,7 +11655,7 @@ var ExpressionManager = (function(){
         }
 
         var i, len;
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             len = a.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -11690,7 +11663,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             len = b.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -11709,7 +11682,7 @@ var ExpressionManager = (function(){
             return a / b;
         }
         var i, len;
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             len = a.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -11717,7 +11690,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             len = b.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -12099,7 +12072,27 @@ var ExpressionManager = (function(){
             return elem.sourceRectAtTime();
         }
 
-        var time, velocity, value, textIndex, textTotal, selectorValue;
+        function substring(init, end) {
+            if(typeof value === 'string') {
+                if(end === undefined) {
+                return value.substring(init)
+                }
+                return value.substring(init, end)
+            }
+            return '';
+        }
+
+        function substr(init, end) {
+            if(typeof value === 'string') {
+                if(end === undefined) {
+                return value.substr(init)
+                }
+                return value.substr(init, end)
+            }
+            return '';
+        }
+
+        var time, velocity, value, text, textIndex, textTotal, selectorValue;
         var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
@@ -12118,6 +12111,7 @@ var ExpressionManager = (function(){
                 selectorValue = this.selectorValue;
             }
             if (!thisLayer) {
+                text = elem.layerInterface.text;
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
                 toWorld = thisLayer.toWorld.bind(thisLayer);
@@ -12148,6 +12142,7 @@ var ExpressionManager = (function(){
             }
             expression_function();
             this.frameExpressionId = elem.globalData.frameId;
+
 
             //TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === "shape") {
@@ -12590,9 +12585,15 @@ var ExpressionManager = (function(){
         }
     }
 
-    TextProperty.prototype.getExpressionValue = function(currentValue) {
-        var newValue = this.calculateExpression(currentValue.t);
-        currentValue.t = newValue;
+    TextProperty.prototype.getExpressionValue = function(currentValue, text) {
+        var newValue = this.calculateExpression(text);
+        if(currentValue.t !== newValue) {
+            var newData = {};
+            this.copyData(newData, currentValue);
+            newData.t = newValue.toString();
+            newData.__complete = false;
+            return newData;
+        }
         return currentValue;
     }
 
@@ -13953,7 +13954,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.19';
+    lottiejs.version = '5.1.20';
 
     function checkReady() {
         if (document.readyState === "complete") {
