@@ -5,24 +5,7 @@ var ExpressionManager = (function(){
     var window = null;
     var document = null;
 
-    function duplicatePropertyValue(value, mult) {
-        mult = mult || 1;
-
-        if (typeof value === 'number'  || value instanceof Number) {
-            return value * mult;
-        } else if(value.i) {
-            return shape_pool.clone(value);
-        } else {
-            var arr = createTypedArray('float32', value.length);
-            var i, len = value.length;
-            for (i = 0; i < len; i += 1) {
-                arr[i] = value[i] * mult;
-            }
-            return arr;
-        }
-    }
-
-    function isTypeOfArray(arr) {
+    function $bm_isInstanceOfArray(arr) {
         return arr.constructor === Array || arr.constructor === Float32Array;
     }
 
@@ -35,7 +18,7 @@ var ExpressionManager = (function(){
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
             return -a;
         }
-        if(isTypeOfArray(a)){
+        if($bm_isInstanceOfArray(a)){
             var i, lenA = a.length;
             var retArr = [];
             for(i=0;i<lenA;i+=1){
@@ -54,17 +37,17 @@ var ExpressionManager = (function(){
         if(isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
             return a + b;
         }
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             a = a.slice(0);
             a[0] = a[0] + b;
             return a;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             b = b.slice(0);
             b[0] = a + b[0];
             return b;
         }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
             
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
@@ -94,17 +77,17 @@ var ExpressionManager = (function(){
             }
             return a - b;
         }
-        if( isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if( $bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             a = a.slice(0);
             a[0] = a[0] - b;
             return a;
         }
-        if(isNumerable(tOfA, a) &&  isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) &&  $bm_isInstanceOfArray(b)){
             b = b.slice(0);
             b[0] = a - b[0];
             return b;
         }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -129,7 +112,7 @@ var ExpressionManager = (function(){
         }
 
         var i, len;
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             len = a.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -137,7 +120,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             len = b.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -156,7 +139,7 @@ var ExpressionManager = (function(){
             return a / b;
         }
         var i, len;
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             len = a.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -164,7 +147,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             len = b.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
