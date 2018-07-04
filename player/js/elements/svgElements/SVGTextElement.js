@@ -57,9 +57,7 @@ SVGTextElement.prototype.buildNewText = function(){
     var letters = documentData.l || [];
     var usesGlyphs = this.globalData.fontManager.chars;
     len = letters.length;
-    if(!len){
-        return;
-    }
+
     var tSpan;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '', singleShape = this.data.singleShape;
@@ -141,7 +139,7 @@ SVGTextElement.prototype.buildNewText = function(){
             }
             //
         }
-        if (singleShape) {
+        if (singleShape && tSpan) {
             tSpan.setAttribute('d',shapeStr);
         }
     }

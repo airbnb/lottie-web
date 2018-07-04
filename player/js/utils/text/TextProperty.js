@@ -5,10 +5,10 @@ function TextProperty(elem, data){
 	this.kf = false;
 	this._isFirstFrame = true;
 	this._mdf = false;
-	this.data = data;
+    this.data = data;
 	this.elem = elem;
     this.comp = this.elem.comp;
-	this.keysIndex = -1;
+	this.keysIndex = 0;
     this.canResize = false;
     this.minimumFontSize = 1;
     this.effectsSequence = [];
@@ -43,37 +43,31 @@ function TextProperty(elem, data){
         __complete: false
 
 	};
-    this.copyFromDocumentData(this.data.d.k[0].s);
+    this.copyData(this.currentData, this.data.d.k[0].s);
 
     if(!this.searchProperty()) {
         this.completeTextData(this.currentData);
-        this.keysIndex = 0;
     }
 }
 
 TextProperty.prototype.defaultBoxWidth = [0,0];
 
-TextProperty.prototype.copyFromDocumentData = function(data) {
+TextProperty.prototype.copyData = function(obj, data) {
     for(var s in data) {
-        this.currentData[s] = data[s];
+        if(data.hasOwnProperty(s)) {
+            obj[s] = data[s];
+        }
     }
+    return obj;
 }
 
-TextProperty.prototype.setCurrentData = function(data, currentTextValue){
-        if(this.currentData !== data) {
-            if(!data.__complete) {
-                this.completeTextData(data);
-            }
-            this.copyFromDocumentData(data);
-            this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
-            this.currentData.fillColorAnim = data.fillColorAnim || this.currentData.fillColorAnim;
-            this.currentData.strokeColorAnim = data.strokeColorAnim || this.currentData.strokeColorAnim;
-            this.currentData.strokeWidthAnim = data.strokeWidthAnim || this.currentData.strokeWidthAnim;
-            this._mdf = true;
-        } else if(currentTextValue !== this.currentData.t || !data.__complete) {
-            this._mdf = true;
-            this.completeTextData(data);
-        }
+TextProperty.prototype.setCurrentData = function(data){
+    if(!data.__complete) {
+        this.completeTextData(data);
+    }
+    this.currentData = data;
+    this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
+    this._mdf = true;
 };
 
 TextProperty.prototype.searchProperty = function() {
@@ -97,7 +91,8 @@ TextProperty.prototype.getValue = function(_finalValue) {
     if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
         return;
     }
-    var currentTextValue = this.currentData.t;        
+    var currentValue = this.currentData;
+    var currentIndex = this.keysIndex;
     if(this.lock) {
         this.setCurrentData(this.currentData, currentTextValue);
         return;
@@ -106,18 +101,24 @@ TextProperty.prototype.getValue = function(_finalValue) {
     this._mdf = false;
     var multipliedValue;
     var i, len = this.effectsSequence.length;
-    var finalValue = _finalValue || this.currentData;
+    var finalValue = _finalValue || this.data.d.k[this.keysIndex].s;
     for(i = 0; i < len; i += 1) {
-        finalValue = this.effectsSequence[i](finalValue);
+        //Checking if index changed to prevent creating a new object every time the expression updates.
+        if(currentIndex !== this.keysIndex) {
+            finalValue = this.effectsSequence[i](finalValue, finalValue.t);
+        } else {
+            finalValue = this.effectsSequence[i](this.currentData, finalValue.t);
+        }
     }
-    finalValue.t = finalValue.t.toString();
-    this.setCurrentData(finalValue, currentTextValue);
+    if(currentValue !== finalValue) {
+        this.setCurrentData(finalValue);
+    }
     this.pv = this.v = this.currentData;
     this.lock = false;
     this.frameId = this.elem.globalData.frameId;
 }
 
-TextProperty.prototype.getKeyframeValue = function(currentValue) {
+TextProperty.prototype.getKeyframeValue = function() {
     var textKeys = this.data.d.k, textDocumentData;
     var frameNum = this.elem.comp.renderedFrame;
     var i = 0, len = textKeys.length;
@@ -129,10 +130,9 @@ TextProperty.prototype.getKeyframeValue = function(currentValue) {
         i += 1;
     }
     if(this.keysIndex !== i) {
-        currentValue = textDocumentData;
         this.keysIndex = i;
     }
-    return currentValue;
+    return this.data.d.k[this.keysIndex].s;
 };
 
 TextProperty.prototype.buildFinalText = function(text) {
@@ -396,22 +396,17 @@ TextProperty.prototype.completeTextData = function(documentData) {
 };
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
-	index = index === undefined 
-    ? this.keysIndex === -1 
-        ? 0 
-        : this.keysIndex 
-    : index;
-    var dData = this.data.d.k[index].s;
-    for(var s in newData) {
-        dData[s] = newData[s];
-    }
+	index = index === undefined ? this.keysIndex : index;
+    var dData = this.copyData({}, this.data.d.k[index].s);
+    dData = this.copyData(dData, newData);
+    this.data.d.k[index].s = dData;
     this.recalculate(index);
 };
 
 TextProperty.prototype.recalculate = function(index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
-    this.keysIndex = this.kf ? -1 : 0;
+    this.keysIndex = 0;
     this._isFirstFrame = true;
     this.getValue(dData);
 }
