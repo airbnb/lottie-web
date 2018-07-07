@@ -56,6 +56,7 @@
         }
 
     </style>
+    <script src="js/modules/pathkit.js"></script>
     <!-- build:js lottie.js -->
     <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
@@ -78,6 +79,7 @@
     <script src="js/utils/shapes/ShapeProperty.js"></script>
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
+    <script src="js/utils/shapes/MergePathModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
     <script src="js/utils/shapes/RepeaterModifier.js"></script>
     <script src="js/utils/shapes/ShapeCollection.js"></script>
@@ -193,7 +195,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -201,7 +203,10 @@
         },
         path: 'exports/render/data.json'
     };
-    anim = lottie.loadAnimation(animData);
+    setTimeout(function() {
+        anim = lottie.loadAnimation(animData);
+        anim.setSubframe(false);
+    },750)
 
 </script>
 </body>
