@@ -4,8 +4,9 @@ function WSolidElement(data, globalData, comp) {
     var rgbColor = hexToRgb(this.data.sc);
     var vsh = 'attribute vec4 a_position;';
     vsh += 'uniform mat4 uMatrix;';
+    vsh += 'uniform mat4 localMatrix;';
     vsh += 'void main() {';
-    vsh += 'gl_Position = uMatrix * a_position;';
+    vsh += 'gl_Position = uMatrix * localMatrix * a_position;';
     vsh += '}';
 
     var fsh = 'precision mediump float;';
@@ -20,22 +21,17 @@ function WSolidElement(data, globalData, comp) {
 
 
     this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
+    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
     this.mat4UniformLoc = this.gl.getUniformLocation(this.program, "uMatrix");
+    this.localmat4UniformLoc = this.gl.getUniformLocation(this.program, "localMatrix");
 
-    this.positionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-    // three 2d points
-    var positions = [
-      0, 0,
-      this.data.sw, this.data.sh,
-      0, this.data.sh,
-      0, 0,
-      this.data.sw, 0,
-      this.data.sw, this.data.sh,
-    ];
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
+    this.gl.useProgram(this.program);
+    var localMatrix = new Matrix();
+    localMatrix.scale(this.data.sw, this.data.sh);
+    this.gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
 
     this.gl.enableVertexAttribArray(this.positionAttributeLocation);
+    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
      
 
 }
@@ -49,19 +45,13 @@ WSolidElement.prototype.renderInnerContent = function() {
 
     this.gl.useProgram(this.program);
 
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     //var size = 2;          // 2 components per iteration
     //var type = this.gl.FLOAT;   // the data is 32bit floats
     //var normalize = false; // don't normalize the data
     //var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
     //var offset = 0;        // start at the beginning of the buffer
-    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
-    this.globalData.pushTransform(this.finalTransform.mat);
-    var transform = this.globalData.getTransform();
-    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, transform.props);
-    this.globalData.popTransform();
+    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, this.globalData.getTransform().props);
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     //

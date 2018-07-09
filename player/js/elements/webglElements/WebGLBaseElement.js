@@ -38,10 +38,12 @@ WebGLBaseElement.prototype = {
         this.renderTransform();
         this.renderRenderable();
         this.setBlendMode();
+        this.globalData.pushTransform(this.finalTransform.mat);
         this.renderInnerContent();
         if (this._isFirstFrame) {
             this._isFirstFrame = false;
         }
+        this.globalData.popTransform();
     },
     destroy: function(){
         this.canvasContext = null;

@@ -8,10 +8,11 @@ function WImageElement(data, globalData, comp) {
 
     var vsh = 'attribute vec4 a_position;';
     vsh += 'uniform mat4 uMatrix;';
+    vsh += 'uniform mat4 localMatrix;';
     vsh += 'varying vec2 v_texCoord;';
     vsh += 'attribute vec2 a_texCoord;';
     vsh += 'void main() {';
-    vsh += 'gl_Position = uMatrix * a_position;';
+    vsh += 'gl_Position = uMatrix * localMatrix * a_position;';
     vsh += 'v_texCoord = a_texCoord;';
     vsh += '}';
 
@@ -27,8 +28,17 @@ function WImageElement(data, globalData, comp) {
     var fragmentShader = WebGLProgramFactory.createShader(this.gl, this.gl.FRAGMENT_SHADER, fsh);
     this.program = WebGLProgramFactory.createProgram(this.gl, vertexShader, fragmentShader);
     this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
+    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
     this.mat4UniformLoc = this.gl.getUniformLocation(this.program, "uMatrix");
+    this.localmat4UniformLoc = this.gl.getUniformLocation(this.program, "localMatrix");
     this.texcoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
+
+    var localMatrix = new Matrix();
+    localMatrix.scale(this.assetData.w, this.assetData.h);
+    this.gl.useProgram(this.program);
+    this.gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
+    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+    
 }
 
 extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyElement, FrameElement, RenderableElement], WImageElement);
@@ -53,32 +63,9 @@ WImageElement.prototype.imageLoaded = function() {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
     gl.enableVertexAttribArray(this.texcoordLocation);
-    var texcoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-       0.0,  0.0,
-      1,  1.0,
-      0.0,  1,
-      0.0,  0,
-      1,  0.0,
-      1,  1,
-    ]), gl.STATIC_DRAW);
 
     gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
     // Turn on the teccord attribute
-
-    this.positionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-    // three 2d points
-    var positions = [
-      0, 0,
-      image.width, image.height,
-      0, image.height,
-      0, 0,
-      image.width, 0,
-      image.width, image.height,
-    ];
-    gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
 
 
     this.globalData.elementLoaded();
@@ -102,15 +89,11 @@ WImageElement.prototype.renderInnerContent = function() {
     this.gl.useProgram(this.program);
 
 	if(this.texture) {
-	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-	    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
-	    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
 
-	    this.globalData.pushTransform(this.finalTransform.mat);
 	    var transform = this.globalData.getTransform();
 	    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, transform.props);
-	    this.globalData.popTransform();
 
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
 	    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 	}
     //

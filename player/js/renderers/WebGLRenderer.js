@@ -75,6 +75,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.globalData.pushTransform = this.pushTransform.bind(this);
     this.globalData.popTransform = this.popTransform.bind(this);
     this.globalData.getTransform = this.getTransform.bind(this);
+    this.globalData.globalBuffer = this.positionBuffer;
     this.elements = createSizedArray(animData.layers.length);
 
     this.updateContainerSize();
@@ -142,6 +143,10 @@ WebGLRenderer.prototype.createImage = function (data) {
 
 WebGLRenderer.prototype.createSolid = function (data) {
     return new WSolidElement(data, this.globalData, this);
+};
+
+WebGLRenderer.prototype.createComp = function (data) {
+    return new WCompElement(data, this.globalData, this);
 };
 
 WebGLRenderer.prototype.createNull = SVGRenderer.prototype.createNull;

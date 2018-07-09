@@ -174,6 +174,7 @@
     <script src="js/elements/webglElements/WebGLBaseElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLSolidElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLImageElement.js" data-light-skip="true"></script>
+    <script src="js/elements/webglElements/WebGLCompElement.js" data-light-skip="true"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -202,7 +203,7 @@
 </head>
 <body>
 <div id="lottie"></div>
-<div id="lottie2" style="opacity: 0.5; transform: translate(0%,0);"></div>
+<div id="lottie2" style="opacity: 0; transform: translate(0%,0);"></div>
 
 <script>
     var anim;
@@ -224,7 +225,7 @@
 
 
 
-    var elem = document.getElementById('lottie2');
+    /*var elem = document.getElementById('lottie2');
     //elem.style.display = 'none';
     var animData = {
         container: elem,
@@ -237,7 +238,7 @@
         },
         path: 'exports/render/data.json'
     };
-    anim = lottie.loadAnimation(animData);
+    anim = lottie.loadAnimation(animData);*/
 
 </script>
 </body>
