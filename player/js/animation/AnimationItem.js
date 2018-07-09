@@ -46,6 +46,9 @@ AnimationItem.prototype.setParams = function(params) {
         case 'svg':
             this.renderer = new SVGRenderer(this, params.rendererSettings);
             break;
+        case 'webgl':
+            this.renderer = new WebGLRenderer(this, params.rendererSettings);
+            break;
         default:
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;

@@ -171,8 +171,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
     this.updateContainerSize();
 };
 
-CanvasRenderer.prototype.updateContainerSize = function () {
-    this.reset();
+CanvasRenderer.prototype.calculateTransformSize = function() {
     var elementWidth,elementHeight;
     if(this.animationItem.wrapper && this.animationItem.container){
         elementWidth = this.animationItem.wrapper.offsetWidth;
@@ -233,6 +232,12 @@ CanvasRenderer.prototype.updateContainerSize = function () {
             this.elements[i].resize(this.globalData.transformCanvas);
         }
     }*/
+}
+
+CanvasRenderer.prototype.updateContainerSize = function () {
+    this.reset();
+    this.calculateTransformSize();
+    
     this.ctxTransform(this.transformCanvas.props);
     this.canvasContext.beginPath();
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
