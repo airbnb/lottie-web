@@ -55,9 +55,11 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.layers = animData.layers;
     this.setupGlobalData(animData, document.body);
     this.globalData.canvasContext = this.canvasContext;
-    //
-    this.positionBuffer = this.canvasContext.createBuffer();
-    this.canvasContext.bindBuffer(this.canvasContext.ARRAY_BUFFER, this.positionBuffer);
+    
+    // Position buffer data
+    var gl = this.canvasContext;
+    this.positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
 
     var positions = [
       0, 0,
@@ -67,7 +69,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
       1, 0,
       1, 1,
     ];
-    this.canvasContext.bufferData(this.canvasContext.ARRAY_BUFFER, new Float32Array(positions), this.canvasContext.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     //
     this.globalData.renderer = this;
     this.globalData.isDashed = false;
@@ -75,6 +77,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.globalData.pushTransform = this.pushTransform.bind(this);
     this.globalData.popTransform = this.popTransform.bind(this);
     this.globalData.getTransform = this.getTransform.bind(this);
+    this.globalData.resetViewport = this.resetViewport.bind(this);
     this.globalData.globalBuffer = this.positionBuffer;
     this.elements = createSizedArray(animData.layers.length);
 
@@ -114,7 +117,6 @@ WebGLRenderer.prototype.buildItem = function(pos){
 WebGLRenderer.prototype.calculateTransformSize = CanvasRenderer.prototype.calculateTransformSize;
 WebGLRenderer.prototype.updateContainerSize = function() {
 	this.calculateTransformSize();
-	this.transformMat.reset();
 	var scaleX = 1, scaleY = 1;
     var elementWidth,elementHeight, elementRel;
     elementWidth = this.canvasContext.canvas.width;
@@ -128,13 +130,18 @@ WebGLRenderer.prototype.updateContainerSize = function() {
     }
 
 
+    this.transformMat.reset();
 	this.transformMat.scale(scaleX, scaleY);
 	this.transformMat.scale(1 / this.data.w, 1 / this.data.h);
 	this.transformMat.scale(2, 2);
 	this.transformMat.translate(-1, -1);
 	this.transformMat.translate(1 - scaleX, 1 - scaleY);
 	this.transformMat.scale(1, -1);
-  	this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
+    this.resetViewport();
+};
+
+WebGLRenderer.prototype.resetViewport = function (data) {
+    this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
 };
 
 WebGLRenderer.prototype.createImage = function (data) {

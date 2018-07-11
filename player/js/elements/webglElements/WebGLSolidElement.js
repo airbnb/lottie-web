@@ -45,6 +45,7 @@ WSolidElement.prototype.renderInnerContent = function() {
 
     this.gl.useProgram(this.program);
 
+    this.globalData.pushTransform(this.finalTransform.mat);
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     //var size = 2;          // 2 components per iteration
     //var type = this.gl.FLOAT;   // the data is 32bit floats
@@ -54,5 +55,7 @@ WSolidElement.prototype.renderInnerContent = function() {
     this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, this.globalData.getTransform().props);
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    
+    this.globalData.popTransform();
     //
 };

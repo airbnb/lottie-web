@@ -38,6 +38,11 @@ function WImageElement(data, globalData, comp) {
     this.gl.useProgram(this.program);
     this.gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
     this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+    // creating frame buffers
+    if(this.renderableEffectsManager.filters.length) {
+        this.createFramebuffers(this.gl, this.assetData.w, this.assetData.h);
+    }
     
 }
 
@@ -52,13 +57,7 @@ WImageElement.prototype.imageLoaded = function() {
 	var gl = this.gl;
 	var image = this.img;
 
-	this.texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    // Set the parameters so we can render any size image.
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	this.texture = textureFactory(gl);
     // Upload the image into the texture.
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
@@ -86,15 +85,49 @@ WImageElement.prototype.createContent = function(){
 
 WImageElement.prototype.renderInnerContent = function() {
 
-    this.gl.useProgram(this.program);
 
 	if(this.texture) {
+        var gl = this.gl;
+
+        gl.useProgram(this.program);
+        this.globalData.pushTransform(this.finalTransform.mat);
 
 	    var transform = this.globalData.getTransform();
-	    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, transform.props);
+	    gl.uniformMatrix4fv(this.mat4UniformLoc, false, transform.props);
 
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-	    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
+        //rendering effects
+        var filters = this.renderableEffectsManager.filters;
+        if(filters.length) {
+            var i, len = filters.length;
+            for (i = 0; i < len; ++i) {
+                // Setup to draw into one of the framebuffers.
+                gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffersData.framebuffers[i % 2]);
+                gl.viewport(0, 0, this.assetData.w, this.assetData.h);
+                filters[i].renderFrame();
+             
+                // for the next draw, use the texture we just rendered to.
+                gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
+            }
+            gl.useProgram(this.program);
+        }
+
+        //
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.globalData.resetViewport();
+	    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        this.globalData.popTransform();
 	}
     //
 };
+
+function setFramebuffer(gl, fbo, width, height) {
+    // make this the framebuffer we are rendering to.
+ 
+    // Tell the shader the resolution of the framebuffer.
+    // gl.uniform2f(resolutionLocation, width, height);
+ 
+    // Tell webgl the viewport setting needed for framebuffer.
+  }
