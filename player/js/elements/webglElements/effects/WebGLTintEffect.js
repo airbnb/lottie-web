@@ -1,35 +1,8 @@
 function WTintFilter(filterManager, gl){
     
-    var vsh = 'attribute vec4 a_position;';
-    vsh += 'varying vec2 v_texCoord;';
-    vsh += 'attribute vec2 a_texCoord;';
-    vsh += 'void main() {';
-    vsh += 'vec4 zeroToOne = a_position / 1.0;';
-    vsh += 'vec4 zeroToTwo = zeroToOne * 2.0;';
-    vsh += 'vec4 clipSpace = zeroToTwo - 1.0;';
-    vsh += 'gl_Position = vec4(clipSpace);';
-    vsh += 'v_texCoord = a_texCoord;';
-    vsh += '}';
+    var vsh = get_shader('base_effect_shader_vert');
 
-    var fsh = 'precision mediump float;';
-    fsh += 'uniform sampler2D u_image;';
-    fsh += 'varying vec2 v_texCoord;';
-    fsh += 'uniform vec2 u_textureSize;';
-    fsh += 'uniform float color_amount;';
-    fsh += 'uniform vec4 whiteToColor;';
-    fsh += 'uniform vec4 blackToColor;';
-
-    fsh += 'void main() {';
-    fsh += 'vec4 textureValue = texture2D(u_image, v_texCoord);'
-    fsh += 'float saturation = (textureValue.r + textureValue.g + textureValue.b) / 3.0;'
-    fsh += 'float r_component = blackToColor.r + (whiteToColor.r - blackToColor.r) * saturation;'
-    fsh += 'float g_component = blackToColor.g + (whiteToColor.g - blackToColor.g) * saturation;'
-    fsh += 'float b_component = blackToColor.b + (whiteToColor.b - blackToColor.b) * saturation;'
-    fsh += 'gl_FragColor = vec4(r_component * color_amount + textureValue.r * (1.0 - color_amount),'
-    fsh += 'g_component * color_amount + textureValue.g * (1.0 - color_amount),'
-    fsh += 'b_component * color_amount + textureValue.b * (1.0 - color_amount),'
-    fsh += '1);'
-    fsh += '}';
+    var fsh = get_shader('tint_shader_frag');
 
     var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
     var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);

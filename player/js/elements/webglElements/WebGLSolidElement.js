@@ -2,18 +2,8 @@ function WSolidElement(data, globalData, comp) {
     this.initElement(data,globalData,comp);
     this.gl = globalData.canvasContext;
     var rgbColor = hexToRgb(this.data.sc);
-    var vsh = 'attribute vec4 a_position;';
-    vsh += 'uniform mat4 uMatrix;';
-    vsh += 'uniform mat4 localMatrix;';
-    vsh += 'void main() {';
-    vsh += 'gl_Position = uMatrix * localMatrix * a_position;';
-    vsh += '}';
-
-    var fsh = 'precision mediump float;';
-    fsh += 'void main() {';
-    fsh += 'gl_FragColor = vec4(' + rgbColor.r / 255 +', ' + rgbColor.g / 255 +', ' + rgbColor.b / 255 +', 1.0); '; // Look into passing a uniform for the color
-    fsh += '}';
-
+    var vsh = get_shader('base_layer_shader_vert');
+    var fsh = get_shader('solid_layer_shader_frag');
 
     var vertexShader = WebGLProgramFactory.createShader(this.gl, this.gl.VERTEX_SHADER, vsh);
     var fragmentShader = WebGLProgramFactory.createShader(this.gl, this.gl.FRAGMENT_SHADER, fsh);
@@ -32,7 +22,9 @@ function WSolidElement(data, globalData, comp) {
 
     this.gl.enableVertexAttribArray(this.positionAttributeLocation);
     this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
-     
+
+    var color_loc = this.gl.getUniformLocation(this.program, "colorUniform");
+    this.gl.uniform4fv(color_loc, [rgbColor.r / 255,rgbColor.g / 255,rgbColor.b / 255,1]);
 
 }
 extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyElement, FrameElement, RenderableElement], WSolidElement);

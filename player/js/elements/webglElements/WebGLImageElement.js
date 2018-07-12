@@ -6,22 +6,9 @@ function WImageElement(data, globalData, comp) {
     this.gl = globalData.canvasContext;
     this.globalData.addPendingElement();
 
-    var vsh = 'attribute vec4 a_position;';
-    vsh += 'uniform mat4 uMatrix;';
-    vsh += 'uniform mat4 localMatrix;';
-    vsh += 'varying vec2 v_texCoord;';
-    vsh += 'attribute vec2 a_texCoord;';
-    vsh += 'void main() {';
-    vsh += 'gl_Position = uMatrix * localMatrix * a_position;';
-    vsh += 'v_texCoord = a_texCoord;';
-    vsh += '}';
+    var vsh = get_shader('image_layer_shader_vert');
 
-    var fsh = 'precision mediump float;';
-    fsh += 'uniform sampler2D u_image;';
-    fsh += 'varying vec2 v_texCoord;';
-    fsh += 'void main() {';
-    fsh += 'gl_FragColor = texture2D(u_image, v_texCoord);';
-    fsh += '}';
+    var fsh = get_shader('image_layer_shader_frag');
 
 
     var vertexShader = WebGLProgramFactory.createShader(this.gl, this.gl.VERTEX_SHADER, vsh);
@@ -122,12 +109,3 @@ WImageElement.prototype.renderInnerContent = function() {
 	}
     //
 };
-
-function setFramebuffer(gl, fbo, width, height) {
-    // make this the framebuffer we are rendering to.
- 
-    // Tell the shader the resolution of the framebuffer.
-    // gl.uniform2f(resolutionLocation, width, height);
- 
-    // Tell webgl the viewport setting needed for framebuffer.
-  }
