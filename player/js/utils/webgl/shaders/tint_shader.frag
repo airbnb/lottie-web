@@ -1,7 +1,6 @@
 precision mediump float;
 uniform sampler2D u_image;
 varying vec2 v_texCoord;
-uniform vec2 u_textureSize;
 uniform float color_amount;
 uniform vec4 whiteToColor;
 uniform vec4 blackToColor;
