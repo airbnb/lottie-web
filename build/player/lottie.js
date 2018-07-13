@@ -4998,6 +4998,10 @@ TextProperty.prototype.getKeyframeValue = function() {
 };
 
 TextProperty.prototype.buildFinalText = function(text) {
+    if (typeof Array.from === 'function') {
+        return Array.from(text);
+    }
+
     var combinedCharacters = FontManager.getCombinedCharacterCodes();
     var charactersArray = [];
     var i = 0, len = text.length;
@@ -13986,4 +13990,4 @@ GroupEffect.prototype.init = function(data,element){
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));
