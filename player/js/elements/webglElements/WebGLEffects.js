@@ -5,9 +5,9 @@ function WEffects(elem){
     for(i=0;i<len;i+=1){
         filterManager = null;
         if(elem.data.ef[i].ty === 20){
-            filterManager = new WTintFilter(elem.effectsManager.effectElements[i], elem.globalData.canvasContext);
+            filterManager = new WTintFilter(elem.effectsManager.effectElements[i], elem);
         } else if(elem.data.ef[i].ty === 30){
-            filterManager = new WTwirlEffect(elem.effectsManager.effectElements[i], elem.globalData.canvasContext);
+            filterManager = new WTwirlEffect(elem.effectsManager.effectElements[i], elem);
         }
         if(filterManager) {
             this.filters.push(filterManager);

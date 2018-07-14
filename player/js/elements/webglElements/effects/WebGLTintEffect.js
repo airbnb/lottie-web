@@ -1,5 +1,5 @@
-function WTintFilter(filterManager, gl){
-    
+function WTintFilter(filterManager, elem){
+    var gl = elem.globalData.canvasContext;
     var vsh = get_shader('base_effect_shader_vert');
 
     var fsh = get_shader('tint_shader_frag');

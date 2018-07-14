@@ -109,3 +109,7 @@ WImageElement.prototype.renderInnerContent = function() {
 	}
     //
 };
+
+WImageElement.prototype.getSize = function() {
+    return this.assetData;
+}

@@ -216,9 +216,9 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'webgl',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet',
@@ -228,7 +228,7 @@
     anim = lottie.loadAnimation(animData);
     anim.addEventListener('DOMLoaded', function() {
         setTimeout(function(){
-            //anim.play()
+            anim.play()
         }, 500);
     })
 
