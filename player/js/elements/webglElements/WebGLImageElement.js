@@ -77,10 +77,14 @@ WImageElement.prototype.renderInnerContent = function() {
         var gl = this.gl;
 
         gl.useProgram(this.program);
-        this.globalData.pushTransform(this.finalTransform.mat);
-
-	    var transform = this.globalData.getTransform();
-	    gl.uniformMatrix4fv(this.mat4UniformLoc, false, transform.props);
+	    
+        var tr = this.comp.getTransform();
+        var newTransform = new Matrix();
+        this.finalTransform.mat.clone(newTransform);
+        var p = tr.props;
+        newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
+        //this.finalTransform.mat
+        this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
 
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
@@ -98,14 +102,14 @@ WImageElement.prototype.renderInnerContent = function() {
                 gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
             }
             gl.useProgram(this.program);
+            this.comp.switchBuffer();
         }
 
+        //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        //this.globalData.resetViewport();
         //
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        this.globalData.resetViewport();
 	    gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-        this.globalData.popTransform();
 	}
     //
 };

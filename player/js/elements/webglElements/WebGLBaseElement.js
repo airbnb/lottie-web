@@ -54,28 +54,37 @@ WebGLBaseElement.prototype = {
         var textures = [];
         var framebuffers = [];
         for (var ii = 0; ii < 2; ++ii) {
-            var texture = textureFactory(gl);
-            textures.push(texture);
-
-            // make the texture the same size as the image
-            gl.texImage2D(
-                gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0,
-                gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-            // Create a framebuffer
-            var fbo = gl.createFramebuffer();
-            framebuffers.push(fbo);
-            gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-
-            // Attach a texture to it.
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+            var bufferWithTexture = this.createFrameBufferWithTexture(gl, width, height);
+            textures.push(bufferWithTexture.texture);
+            framebuffers.push(bufferWithTexture.framebuffer);
         }
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         this.framebuffersData = {
             textures: textures,
             framebuffers: framebuffers
         }
     },
+    createFrameBufferWithTexture: function(gl, width, height) {
+
+        // Create a framebuffer
+        var framebuffer = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+
+        // Attach a texture to it.
+        var texture = textureFactory(gl);
+
+        // make the texture the same size as the image
+        gl.texImage2D(
+            gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0,
+            gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        
+        return {
+            texture: texture,
+            framebuffer: framebuffer
+        }
+    },
+
     //
     mHelper: new Matrix()
 };

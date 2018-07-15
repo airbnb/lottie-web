@@ -18,11 +18,13 @@ function WebGLRenderer(animationItem, config){
         _mdf: false,
         renderConfig: this.renderConfig
     };
+    this._stencilCount = 0;
     this.elements = [];
     this.pendingElements = [];
     this.transformMat = new Matrix();
-    this.transformStack = [this.transformMat];
+    this.precompStack = [];
     this.completeLayers = false;
+    this._root = true;
 
 }
 extendPrototype([BaseRenderer],WebGLRenderer);
@@ -36,7 +38,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
         //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
-        this.canvasContext = this.animationItem.container.getContext('webgl');
+        this.canvasContext = this.animationItem.container.getContext('webgl', {stencil: true, alpha: true});
         if(this.renderConfig.className) {
             this.animationItem.container.setAttribute('class', this.renderConfig.className);
         }
@@ -58,6 +60,8 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     
     // Position buffer data
     var gl = this.canvasContext;
+
+    //General Array Buffer. Position buffer. Will be used by all layers.
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
 
@@ -74,31 +78,20 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.globalData.renderer = this;
     this.globalData.isDashed = false;
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
-    this.globalData.pushTransform = this.pushTransform.bind(this);
-    this.globalData.popTransform = this.popTransform.bind(this);
-    this.globalData.getTransform = this.getTransform.bind(this);
     this.globalData.resetViewport = this.resetViewport.bind(this);
+    this.globalData.pushPrecomp = this.pushPrecomp.bind(this);
+    this.globalData.popPrecomp = this.popPrecomp.bind(this);
     this.globalData.globalBuffer = this.positionBuffer;
     this.elements = createSizedArray(animData.layers.length);
 
     this.updateContainerSize();
 };
 
-WebGLRenderer.prototype.pushTransform = function(transform) {
-	var currentTransform = this.transformStack[this.transformStack.length - 1];
-	var newTransform = new Matrix();
-	transform.clone(newTransform);
-	var p = currentTransform.props;
-	newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
-	this.transformStack.push(newTransform);
-}
-
-WebGLRenderer.prototype.popTransform = function() {
-	this.transformStack.pop();
-}
-
 WebGLRenderer.prototype.getTransform = function() {
-	return this.transformStack[this.transformStack.length - 1];
+    if(this.comp) {
+        //return this.comp.getTransform();
+    }
+    return this.transformMat;
 }
 
 WebGLRenderer.prototype.buildItem = function(pos){
@@ -140,8 +133,42 @@ WebGLRenderer.prototype.updateContainerSize = function() {
     this.resetViewport();
 };
 
+WebGLRenderer.prototype.switchBuffer = function() {
+    if(this._root) {
+        this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, null);
+        this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
+    } else {
+        var gl = this.gl;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.bufferData.framebuffer);
+        gl.viewport(0, 0, this.data.w, this.data.h);
+    }
+}
+
 WebGLRenderer.prototype.resetViewport = function (data) {
     this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
+};
+
+WebGLRenderer.prototype.pushPrecomp = function (w, h, fbo, texture) {
+    this.precompStack.push({w: w, h: h, fbo: fbo, texture: texture});
+    this.canvasContext.viewport(0, 0, w, h);
+    this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, fbo);
+    //this.canvasContext.bindTexture(this.canvasContext.TEXTURE_2D, texture);
+    //this.canvasContext.bindTexture(this.canvasContext.FRAMEBUFFER, fbo);
+};
+
+WebGLRenderer.prototype.popPrecomp = function () {
+    this.precompStack.pop();
+    if(this.precompStack.length) {
+        var precompData = this.precompStack[this.precompStack.length - 1];
+        this.canvasContext.viewport(0, 0, precompData.w, precompData.h);
+        this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, precompData.fbo);
+        //this.canvasContext.bindTexture(this.canvasContext.TEXTURE_2D, precompData.texture);
+    } else {
+        console.log('ROOT')
+        //this.canvasContext.bindTexture(this.canvasContext.TEXTURE_2D, null);
+        this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, null);
+        this.resetViewport();
+    }
 };
 
 WebGLRenderer.prototype.createImage = function (data) {
