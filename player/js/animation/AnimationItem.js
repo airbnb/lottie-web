@@ -378,9 +378,7 @@ AnimationItem.prototype.advanceTime = function (value) {
                 } else {
                     this.trigger('loopComplete');
                 }
-            } else if (!this.loop && this.playCount-- === 0) {
-                this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
-            }else {
+            } else {
                 _isComplete = true;
                 nextValue = 0;
             }
