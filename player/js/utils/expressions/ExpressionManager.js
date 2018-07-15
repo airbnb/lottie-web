@@ -341,6 +341,7 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
+        var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out;
         var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
@@ -570,6 +571,7 @@ var ExpressionManager = (function(){
             if (!thisLayer) {
                 text = elem.layerInterface.text;
                 thisLayer = elem.layerInterface;
+                console.log(thisLayer)
                 thisComp = elem.comp.compInterface;
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
