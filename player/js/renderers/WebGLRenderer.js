@@ -38,7 +38,10 @@ WebGLRenderer.prototype.configAnimation = function(animData){
         //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
-        this.canvasContext = this.animationItem.container.getContext('webgl', {stencil: true, alpha: true});
+        this.canvasContext = this.animationItem.container.getContext('webgl');
+        // Enabled blend and sets blend func to handle opacity.
+        this.canvasContext.enable(this.canvasContext.BLEND);
+        this.canvasContext.blendFunc(this.canvasContext.SRC_ALPHA, this.canvasContext.ONE_MINUS_SRC_ALPHA);
         if(this.renderConfig.className) {
             this.animationItem.container.setAttribute('class', this.renderConfig.className);
         }
@@ -79,8 +82,6 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.globalData.isDashed = false;
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
     this.globalData.resetViewport = this.resetViewport.bind(this);
-    this.globalData.pushPrecomp = this.pushPrecomp.bind(this);
-    this.globalData.popPrecomp = this.popPrecomp.bind(this);
     this.globalData.globalBuffer = this.positionBuffer;
     this.elements = createSizedArray(animData.layers.length);
 
@@ -136,7 +137,7 @@ WebGLRenderer.prototype.updateContainerSize = function() {
 WebGLRenderer.prototype.switchBuffer = function() {
     if(this._root) {
         this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, null);
-        this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
+        this.resetViewport();
     } else {
         var gl = this.gl;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.bufferData.framebuffer);
@@ -146,29 +147,6 @@ WebGLRenderer.prototype.switchBuffer = function() {
 
 WebGLRenderer.prototype.resetViewport = function (data) {
     this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
-};
-
-WebGLRenderer.prototype.pushPrecomp = function (w, h, fbo, texture) {
-    this.precompStack.push({w: w, h: h, fbo: fbo, texture: texture});
-    this.canvasContext.viewport(0, 0, w, h);
-    this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, fbo);
-    //this.canvasContext.bindTexture(this.canvasContext.TEXTURE_2D, texture);
-    //this.canvasContext.bindTexture(this.canvasContext.FRAMEBUFFER, fbo);
-};
-
-WebGLRenderer.prototype.popPrecomp = function () {
-    this.precompStack.pop();
-    if(this.precompStack.length) {
-        var precompData = this.precompStack[this.precompStack.length - 1];
-        this.canvasContext.viewport(0, 0, precompData.w, precompData.h);
-        this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, precompData.fbo);
-        //this.canvasContext.bindTexture(this.canvasContext.TEXTURE_2D, precompData.texture);
-    } else {
-        console.log('ROOT')
-        //this.canvasContext.bindTexture(this.canvasContext.TEXTURE_2D, null);
-        this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, null);
-        this.resetViewport();
-    }
 };
 
 WebGLRenderer.prototype.createImage = function (data) {

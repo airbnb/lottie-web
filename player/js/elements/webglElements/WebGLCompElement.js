@@ -52,9 +52,8 @@ WCompElement.prototype.renderInnerContent = function() {
 
     gl.viewport(0, 0, this.data.w, this.data.h);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.bufferData.framebuffer);
-    //this.globalData.pushPrecomp(this.data.w, this.data.h, this.bufferData.framebuffer, this.bufferData.texture);
-    //gl.clearColor(0, 0, 0, 0);
-    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
@@ -63,8 +62,7 @@ WCompElement.prototype.renderInnerContent = function() {
         }
     }
 
-    //this.comp.focusBuffer();
-    //this.globalData.popPrecomp();
+    this.gl.bindTexture(gl.TEXTURE_2D, this.bufferData.texture);
     gl.useProgram(this.program);
     this.comp.switchBuffer();
 
@@ -75,13 +73,7 @@ WCompElement.prototype.renderInnerContent = function() {
     var p = tr.props;
     newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
     this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
-    //this.gl.bindTexture(this.gl.FRAMEBUFFER, this.bufferData.texture);
-    if(this.data.nm === 'webgl_precomp') {
-        console.log('DRAWING webgl_precomp')
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-    } else {
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-    }
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
 WCompElement.prototype.destroy = function(){

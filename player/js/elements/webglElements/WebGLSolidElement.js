@@ -35,8 +35,6 @@ WSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 WSolidElement.prototype.renderInnerContent = function() {
 
-    console.log('DRAWING SOLID')
-
     this.gl.useProgram(this.program);
 
     this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);

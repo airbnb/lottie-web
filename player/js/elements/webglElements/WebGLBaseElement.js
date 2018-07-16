@@ -77,7 +77,7 @@ WebGLBaseElement.prototype = {
             gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0,
             gl.RGBA, gl.UNSIGNED_BYTE, null);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         
         return {
             texture: texture,

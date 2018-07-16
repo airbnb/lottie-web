@@ -76,37 +76,36 @@ WImageElement.prototype.renderInnerContent = function() {
 	if(this.texture) {
         var gl = this.gl;
 
-        gl.useProgram(this.program);
-	    
-        var tr = this.comp.getTransform();
-        var newTransform = new Matrix();
-        this.finalTransform.mat.clone(newTransform);
-        var p = tr.props;
-        newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
-        //this.finalTransform.mat
-        this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
 
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
+        
         //rendering effects
         var filters = this.renderableEffectsManager.filters;
         if(filters.length) {
             var i, len = filters.length;
-            for (i = 0; i < len; ++i) {
+            gl.viewport(0, 0, this.assetData.w, this.assetData.h);
+            for (i = 0; i < len; i++) {
                 // Setup to draw into one of the framebuffers.
                 gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffersData.framebuffers[i % 2]);
-                gl.viewport(0, 0, this.assetData.w, this.assetData.h);
                 filters[i].renderFrame();
              
                 // for the next draw, use the texture we just rendered to.
                 gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
             }
-            gl.useProgram(this.program);
             this.comp.switchBuffer();
+            //TODO: if filters didn't change, skip processing them and bind directly the last binded texture in previous iteration.
         }
 
-        //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        //this.globalData.resetViewport();
+        gl.useProgram(this.program);
+        
+        //Parent comp transform + localTransform
+        var tr = this.comp.getTransform();
+        var newTransform = new Matrix();
+        this.finalTransform.mat.clone(newTransform);
+        var p = tr.props;
+        newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
+        this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
         //
 	    gl.drawArrays(gl.TRIANGLES, 0, 6);
 
