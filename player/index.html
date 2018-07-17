@@ -177,6 +177,7 @@
     <script src="js/elements/webglElements/WebGLSolidElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLImageElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLCompElement.js" data-light-skip="true"></script>
+    <script src="js/elements/webglElements/WebGLShapeElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLEffects.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/effects/WebGLTintEffect.js"></script>
     <script src="js/elements/webglElements/effects/WebGLTwirlEffect.js"></script>
@@ -220,7 +221,7 @@
         container: elem,
         renderer: 'webgl',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet',
@@ -228,9 +229,10 @@
         path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.setSubframe(false);
     anim.addEventListener('DOMLoaded', function() {
         setTimeout(function(){
-            anim.play()
+            //anim.play()
         }, 500);
     })
 

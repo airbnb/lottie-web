@@ -18,7 +18,7 @@ CVShapeElement.prototype.transformHelper = {opacity:1,mat:new Matrix(),_matMdf:f
 CVShapeElement.prototype.dashResetter = [];
 
 CVShapeElement.prototype.createContent = function(){
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true, 0, []);
 };
 
 CVShapeElement.prototype.createStyleElement = function(data){
@@ -86,8 +86,18 @@ CVShapeElement.prototype.createTransformElement = function(data) {
     return elementData;
 };
 
-CVShapeElement.prototype.createShapeElement = function(data) {
-    var elementData = new CVShapeData(this, data);
+CVShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
+    var ty = 4;
+    if(data.ty === 'rc'){
+        ty = 5;
+    }else if(data.ty === 'el'){
+        ty = 6;
+    }else if(data.ty === 'sr'){
+        ty = 7;
+    }
+    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
+
+    var elementData = new CVShapeData(ownTransformers, level, shapeProperty);
     
     this.shapes.push(elementData);
     this.addShapeToModifiers(elementData);
@@ -114,7 +124,7 @@ CVShapeElement.prototype.reloadShapes = function(){
     for(i=0;i<len;i+=1){
         this.prevViewData[i] = this.itemsData[i];
     }
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true);
+    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true, 0, []);
     len = this.dynamicProperties.length;
     for(i=0;i<len;i+=1){
         this.dynamicProperties[i].getValue();
@@ -122,7 +132,8 @@ CVShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 };
 
-CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, render){
+CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, render, level, transformers){
+    var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
     var ownArrays = [], ownModifiers = [], processedPos, modifier;
@@ -150,14 +161,15 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, re
                     itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
-            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData, render);
+            this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData, render, level + 1, ownTransformers);
         }else if(arr[i].ty == 'tr'){
             if(!processedPos){
                 itemsData[i] = this.createTransformElement(arr[i]);
             }
+            ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i]);
+                itemsData[i] = this.createShapeElement(arr[i], ownTransformers);
             }
             
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){

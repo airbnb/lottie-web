@@ -163,6 +163,11 @@ WebGLRenderer.prototype.createComp = function (data) {
 
 WebGLRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
+
+WebGLRenderer.prototype.createShape = function (data) {
+    return new WShapeElement(data,this.globalData,this);
+};
+
 WebGLRenderer.prototype.checkPendingElements  = function(){
     while(this.pendingElements.length){
         var element = this.pendingElements.pop();
@@ -193,7 +198,6 @@ WebGLRenderer.prototype.renderFrame = function(num){
         }
     }
     if(this.globalData._mdf) {
-
 		this.canvasContext.clearColor(0, 0, 0, 0);
 		this.canvasContext.clear(this.canvasContext.COLOR_BUFFER_BIT);
 
