@@ -76,27 +76,29 @@ MergePathModifier.prototype.addPathToCommands = function(path, transformers, lev
 
 MergePathModifier.prototype.floatTypedArrayFrom2D = function(arr) {
 	// expects 2d array where index 0 is verb and index 1-n are args
-	let len = 0;
-	for (cmd of arr) {
-	  len += cmd.length;
+	var len = 0, cmd, c, ii, jj;
+	for (ii = 0; ii < arr.length; ii += 1) {
+	  len += arr[ii].length;
 	}
 
-	const ta = new Float32Array(len);
-	let i = 0;
-	for (cmd of arr) {
-	  for (c of cmd) {
-	    ta[i] = c;
+	var ta = new Float32Array(len);
+	var i = 0;
+	for (ii = 0; ii < arr.length; ii += 1) {
+	  for (jj = 0; jj < arr[ii].length; jj += 1) {
+	    ta[i] = arr[ii][jj];
 	    i++;
 	  }
 	}
 
-	retVal = Module._malloc(ta.length * ta.BYTES_PER_ELEMENT);
+	var retVal = Module._malloc(ta.length * ta.BYTES_PER_ELEMENT);
 	Module.HEAPF32.set(ta, retVal / ta.BYTES_PER_ELEMENT);
 	return [retVal, len];
 }
 
 MergePathModifier.prototype.SkPathFromCmdTyped = function(cmdArr) {
-	var [cmd, len] = this.floatTypedArrayFrom2D(cmdArr);
+	var typedArrayFrom2D = this.floatTypedArrayFrom2D(cmdArr);
+	var cmd = typedArrayFrom2D[0];
+	var len = typedArrayFrom2D[1];
 	var path = Module.SkPathFromCmdTyped(cmd, len);
 	Module._free(cmd);
 	return path;
