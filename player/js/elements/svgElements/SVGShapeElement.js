@@ -136,7 +136,7 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     }else if(data.ty === 'sr'){
         ty = 7;
     }
-    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
+    var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty);
     var elementData = new SVGShapeData(ownTransformers, level, shapeProperty);
     this.shapes.push(elementData);
     this.addShapeToModifiers(elementData);
@@ -237,11 +237,24 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
                 modifier.init(this,arr[i]);
                 itemsData[i] = modifier;
                 this.shapeModifiers.push(modifier);
+                //
+                if(arr[i].ty === 'mm') {
+                    modifier.setTransformData(ownTransformers, level);
+                    this.shapes.push(modifier);
+                    //TODO: check if I should add this shape-modifier to other modifiers
+                    this.addShapeToModifiers(modifier);
+                    //TODO: check if I should add it to animated content as well.
+                    this.addToAnimatedContents(arr[i], modifier);
+                }
+                //
             } else {
                 modifier = itemsData[i];
                 modifier.closed = false;
             }
             ownModifiers.push(modifier);
+            if(arr[i].ty === 'mm') {
+                this.setElementStyles(itemsData[i]);
+            }
         }else if(arr[i].ty == 'rp'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);

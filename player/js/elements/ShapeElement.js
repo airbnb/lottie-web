@@ -5,6 +5,9 @@ IShapeElement.prototype = {
     addShapeToModifiers: function(data) {
         var i, len = this.shapeModifiers.length;
         for(i=0;i<len;i+=1){
+            if(this.shapeModifiers[i] === data) {
+                continue
+            }
             this.shapeModifiers[i].addShape(data);
         }
     },

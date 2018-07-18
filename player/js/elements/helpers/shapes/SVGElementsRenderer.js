@@ -21,6 +21,7 @@ var SVGElementsRenderer = (function() {
 	        case 'el':
 	        case 'rc':
 	        case 'sr':
+	        case 'mm':
 	        return renderPath;
 	        case 'tr':
 	        return renderContentTransform;
