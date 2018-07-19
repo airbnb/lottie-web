@@ -136,7 +136,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, re
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
-    var ownArrays = [], ownModifiers = [], processedPos, modifier;
+    var ownArrays = [], ownModifiers = [], processedPos, modifier, currentTransform;
     for(i=len;i>=0;i-=1){
         processedPos = this.searchProcessedElement(arr[i]);
         if(!processedPos){
@@ -166,6 +166,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, re
             if(!processedPos){
                 itemsData[i] = this.createTransformElement(arr[i]);
             }
+            currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){

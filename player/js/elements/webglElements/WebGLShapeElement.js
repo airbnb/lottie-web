@@ -8,10 +8,19 @@ function WShapeElement(data, globalData, comp) {
     }
     _localGlobalData.renderer = this;
     this._localGlobalData = _localGlobalData;
-    this.canvasElement = new CVShapeElement(data,_localGlobalData,comp);
+    // Replacing transform data with generic object
+    var canvas_data = {}
+    for(var s in data) {
+        if(data.hasOwnProperty(s)) {
+            canvas_data[s] = data[s];
+        }
+    }
+    canvas_data.ks = {a:{k:[0,0],a:0},p:{k:[0,0],a:0},r:{k:0,a:0},s:{k:[0,0],a:0},o:{k:0,a:0}};
+    this.canvasElement = new CVShapeElement(canvas_data,_localGlobalData,comp);
     this.renderConfig = {
         clearCanvas: true
     }
+    this.transformMat = new Matrix();
     this.contextData = new CVContextData();
     this.canvas = createTag('canvas');
     document.body.appendChild(this.canvas);
@@ -58,6 +67,7 @@ WShapeElement.prototype.prepareFrame = function(num) {
     this.canvasElement.prepareFrame(num);
     this.hidden = this.canvasElement.hidden;
     this.globalData._mdf = this._localGlobalData._mdf ? true : this.globalData._mdf;
+    var gl = this.gl;
     if(this._localGlobalData._mdf) {
         var tempBoundingBox = this.canvasElement.tempBoundingBox;
         var max = 999999;
@@ -76,19 +86,19 @@ WShapeElement.prototype.prepareFrame = function(num) {
             this.currentBox.yMax = tempBoundingBox.yMax;
             this.canvas.width = tempBoundingBox.xMax - tempBoundingBox.x;
             this.canvas.height = tempBoundingBox.yMax - tempBoundingBox.y;
-            this.canvasContext.setTransform(1, 0, 0, 1, -tempBoundingBox.x, -tempBoundingBox.y);
+            this.texture = textureFactory(gl);
+            // Upload the image into the texture.
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        } else {
+            this.canvasContext.clearRect(this.currentBox.x, this.currentBox.y, this.currentBox.xMax - this.currentBox.x, this.currentBox.yMax - this.currentBox.y);
         }
+        //this.transformMat.reset();
+        this.ctxTransform([1,0,0,0,0,1,0,0,0,0,0,0,-this.currentBox.x, -this.currentBox.y,0,0]);
         var localMatrix = new Matrix();
         localMatrix.scale(this.currentBox.xMax - this.currentBox.x, this.currentBox.yMax - this.currentBox.y);
-        var gl = this.gl;
 
         gl.useProgram(this.program);
         gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
-
-        this.texture = textureFactory(gl);
-        // Upload the image into the texture.
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
 
         gl.enableVertexAttribArray(this.texcoordLocation);
 
@@ -97,15 +107,16 @@ WShapeElement.prototype.prepareFrame = function(num) {
 };
 
 WShapeElement.prototype.renderInnerContent = function() {
-    if(this._localGlobalData._mdf) {
-        this.canvasElement.renderInnerContent();
-    }
-    //
 
     var gl = this.gl;
 
 
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    if(this._localGlobalData._mdf) {
+        this.canvasElement.renderInnerContent();
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
+    }
+    //
 
     gl.useProgram(this.program);
     

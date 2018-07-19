@@ -26,6 +26,7 @@ function WImageElement(data, globalData, comp) {
     this.gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
     this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
 
+    this.texture = textureFactory(this.gl);
     // creating frame buffers
     if(this.renderableEffectsManager.filters.length) {
         this.createFramebuffers(this.gl, this.assetData.w, this.assetData.h);
@@ -44,7 +45,7 @@ WImageElement.prototype.imageLoaded = function() {
 	var gl = this.gl;
 	var image = this.img;
 
-	this.texture = textureFactory(gl);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
     // Upload the image into the texture.
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
