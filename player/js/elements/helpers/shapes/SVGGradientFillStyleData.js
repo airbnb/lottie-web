@@ -10,7 +10,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g,this);
+    this.g = new GradientProperty(elem,data.g);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
