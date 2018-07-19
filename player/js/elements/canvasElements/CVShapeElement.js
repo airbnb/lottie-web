@@ -388,6 +388,8 @@ CVShapeElement.prototype.renderGradientFill = function(styleData,itemData, group
 
     var grd;
     var pt1 = itemData.s.v, pt2 = itemData.e.v;
+    pt1 = groupTransform.mat.applyToPointArray(pt1[0], pt1[1], 0);
+    pt2 = groupTransform.mat.applyToPointArray(pt2[0], pt2[1], 0);
     if(styleData.t === 1) {
         grd=ctx.createLinearGradient(pt1[0],pt1[1],pt2[0],pt2[1]);
     } else {
