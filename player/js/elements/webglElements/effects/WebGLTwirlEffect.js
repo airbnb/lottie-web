@@ -26,10 +26,12 @@ WTwirlEffect.prototype.renderFrame = function(forceRender, buffer){
     this.gl.uniform1f(this.angleLocation, effectElements[0].p.v);
     this.gl.uniform1f(this.radiusLocation, effectElements[1].p.v / 100);
 
-    var elemSize = this.elem.getSize();
+    var elemCoords = this.elem.getCenter();
+
     this.gl.uniform2fv(this.centerLocation
-        , [ 0.5 * ((effectElements[2].p.v[0] - (elemSize.w * 0.5)) / (elemSize.w * 0.5))
-        , (effectElements[2].p.v[1] - (elemSize.h * 0.5)) / (elemSize.h * 0.5)] );
+        , [ 0.5 * ((effectElements[2].p.v[0] - (elemCoords.x)) / elemCoords.x)
+        , 0.5 * ((effectElements[2].p.v[1] - elemCoords.y) / elemCoords.y)] );
+
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
          
     if(forceRender || this.filterManager._mdf){

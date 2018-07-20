@@ -43,6 +43,28 @@ WebGLBaseElement.prototype = {
             this._isFirstFrame = false;
         }
     },
+
+    renderEffects: function() {
+        var gl = this.gl;
+        //rendering effects
+        var filters = this.renderableEffectsManager.filters;
+        if(filters.length) {
+            var size = this.getSize();
+            var i, len = filters.length;
+            gl.viewport(0, 0, size.w, size.h);
+            for (i = 0; i < len; i++) {
+                // Setup to draw into one of the framebuffers.
+                gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffersData.framebuffers[i % 2]);
+                filters[i].renderFrame();
+             
+                // for the next draw, use the texture we just rendered to.
+                gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
+            }
+            this.comp.switchBuffer();
+            //TODO: if filters didn't change, skip processing them and bind directly the last binded texture in previous iteration.
+        }
+    },
+
     destroy: function(){
         this.canvasContext = null;
         this.data = null;

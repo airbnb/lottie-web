@@ -9,5 +9,5 @@ void main() {
     vec4 textureValue = texture2D(u_image, v_texCoord);
     float saturation = (textureValue.r + textureValue.g + textureValue.b) / 3.0;
     vec4 textureMapped = blackToColor + (whiteToColor - blackToColor) * saturation;
-    gl_FragColor = mix(textureValue, textureMapped, color_amount);
+    gl_FragColor = vec4(mix(textureValue.rgb, textureMapped.rgb, color_amount),textureValue.a);
 }

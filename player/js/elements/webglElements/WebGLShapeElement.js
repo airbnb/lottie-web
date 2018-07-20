@@ -23,10 +23,10 @@ function WShapeElement(data, globalData, comp) {
     this.transformMat = new Matrix();
     this.contextData = new CVContextData();
     this.canvas = createTag('canvas');
-    document.body.appendChild(this.canvas);
+    /*document.body.appendChild(this.canvas);
     this.canvas.style.position = 'absolute';
     this.canvas.style.zIndex = '1000';
-    this.canvas.style.top = '500px';
+    this.canvas.style.top = '500px';*/
     this.canvasContext = this.canvas.getContext('2d');
     _localGlobalData.canvasContext = this.canvasContext;
     var max = 999999;
@@ -36,7 +36,6 @@ function WShapeElement(data, globalData, comp) {
         xMax: -max,
         yMax: -max
     }
-
 
 
     this.gl = globalData.canvasContext;
@@ -52,6 +51,7 @@ function WShapeElement(data, globalData, comp) {
     this.localmat4UniformLoc = this.gl.getUniformLocation(this.program, "localMatrix");
     this.texcoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
     this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+
 
 }
 extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyElement, FrameElement, RenderableElement], WShapeElement);
@@ -84,11 +84,17 @@ WShapeElement.prototype.prepareFrame = function(num) {
             this.currentBox.y = tempBoundingBox.y;
             this.currentBox.xMax = tempBoundingBox.xMax;
             this.currentBox.yMax = tempBoundingBox.yMax;
-            this.canvas.width = tempBoundingBox.xMax - tempBoundingBox.x;
-            this.canvas.height = tempBoundingBox.yMax - tempBoundingBox.y;
+            this.currentBox.w = this.currentBox.xMax - this.currentBox.x;
+            this.currentBox.h = this.currentBox.yMax - this.currentBox.y;
+            this.canvas.width = this.currentBox.w;
+            this.canvas.height = this.currentBox.h;
             this.texture = textureFactory(gl);
             // Upload the image into the texture.
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
+            // creating frame buffers
+            if(this.renderableEffectsManager.filters.length) {
+                this.createFramebuffers(this.gl, this.currentBox.w, this.currentBox.h);
+            }
         } else {
             this.canvasContext.clearRect(this.currentBox.x, this.currentBox.y, this.currentBox.xMax - this.currentBox.x, this.currentBox.yMax - this.currentBox.y);
         }
@@ -116,6 +122,8 @@ WShapeElement.prototype.renderInnerContent = function() {
         this.canvasElement.renderInnerContent();
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
     }
+
+    this.renderEffects();
     //
 
     gl.useProgram(this.program);
@@ -134,6 +142,14 @@ WShapeElement.prototype.renderInnerContent = function() {
 
 WShapeElement.prototype.updateModifiedState = function() {
     this.globalData._mdf = true;
+}
+
+WShapeElement.prototype.getSize = function() {
+    return this.currentBox;
+}
+
+WShapeElement.prototype.getCenter = function() {
+    return {x: this.currentBox.w * 0.5, y: this.currentBox.h * 0.5};
 }
 
 WShapeElement.prototype.save = CanvasRenderer.prototype.save;
