@@ -28,3 +28,7 @@ WEffects.prototype.renderFrame = function(_isFirstFrame){
         this.filters[i].renderFrame(_isFirstFrame);
     }
 };
+
+WEffects.prototype.spliceEffect = function(pos, effect){
+    this.filters.splice(pos,0,effect);
+};

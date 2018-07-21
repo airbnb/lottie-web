@@ -6,10 +6,8 @@ WebGLBaseElement.prototype = {
     initRendererElement: function(){},
     createContainerElements: function(){
         this.renderableEffectsManager = new WEffects(this);
-        // creating frame buffers
         if(this.renderableEffectsManager.filters.length) {
-            var compSize = this.getSize();
-            this.createFramebuffers(this.gl, compSize.w, compSize.h);
+            this.createFramebuffers(this.gl);
         }
     },
     createContent: function(){},
@@ -23,6 +21,9 @@ WebGLBaseElement.prototype = {
     },
     addMasks: function(){
         this.maskManager = new WMaskElement(this.data, this);
+        if(this.maskManager.hasMasks) {
+            this.createFramebuffers(this.gl);
+        }
     },
     hideElement: function(){
         if (!this.hidden && (!this.isInRange || this.isTransparent)) {
@@ -70,6 +71,12 @@ WebGLBaseElement.prototype = {
         }
     },
 
+    renderMasks: function() {
+        if(this.maskManager.hasMasks) {
+            this.maskManager.renderFrame();
+        }
+    },
+
     renderLayer: function() {
         var gl = this.gl;
         gl.useProgram(this.program);
@@ -91,12 +98,16 @@ WebGLBaseElement.prototype = {
         this.globalData = null;
         this.maskManager.destroy();
     },
-    createFramebuffers: function(gl, width, height){
+    createFramebuffers: function(gl){
+        if(this.framebuffersData) {
+            return;
+        }
+        var compSize = this.getSize();
         // Frame buffer objects fof effects
         var textures = [];
         var framebuffers = [];
         for (var ii = 0; ii < 2; ++ii) {
-            var bufferWithTexture = this.createFrameBufferWithTexture(gl, width, height);
+            var bufferWithTexture = this.createFrameBufferWithTexture(gl, compSize.w, compSize.h);
             textures.push(bufferWithTexture.texture);
             framebuffers.push(bufferWithTexture.framebuffer);
         }

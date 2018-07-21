@@ -64,10 +64,10 @@ function WShapeElement(data, globalData, comp) {
     gl.useProgram(this.program);
     gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
     
-    this.texture = textureFactory(gl);
     gl.enableVertexAttribArray(this.texcoordLocation);
     gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
 
+    this.texture = textureFactory(gl);
 
 }
 extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyElement, FrameElement, RenderableElement], WShapeElement);
