@@ -184,6 +184,7 @@
     <script src="js/elements/webglElements/effects/WebGLTwirlEffect.js"></script>
     <script src="js/elements/webglElements/effects/WebGLRippleEffect.js"></script>
     <script src="js/elements/webglElements/effects/WebGLSpherizeEffect.js"></script>
+    <script src="js/elements/webglElements/effects/WebGLNoOpEffect.js"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -221,8 +222,8 @@
     var animData = {
         container: elem,
         renderer: 'webgl',
-        loop: true,
-        autoplay: false,
+        loop: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet',
@@ -233,7 +234,7 @@
     anim.setSubframe(false);
     anim.addEventListener('DOMLoaded', function() {
         setTimeout(function(){
-            anim.play()
+            //anim.play()
         }, 500);
     })
 

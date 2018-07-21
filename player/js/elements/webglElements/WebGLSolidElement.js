@@ -5,9 +5,8 @@ function WSolidElement(data, globalData, comp) {
         h: data.sh
     }
     this.initElement(data,globalData,comp);
-    var rgbColor = hexToRgb(this.data.sc);
-    var vsh = get_shader(this.maskManager.hasMasks ? 'base_layer_with_mask_shader_vert' : 'base_layer_shader_vert');
-    var fsh = get_shader(this.maskManager.hasMasks ? 'solid_layer_with_mask_shader_frag' : 'solid_layer_shader_frag');
+    var vsh = get_shader('image_layer_shader_vert');
+    var fsh = get_shader('image_layer_shader_frag');
 
     var vertexShader = WebGLProgramFactory.createShader(this.gl, this.gl.VERTEX_SHADER, vsh);
     var fragmentShader = WebGLProgramFactory.createShader(this.gl, this.gl.FRAGMENT_SHADER, fsh);
@@ -28,14 +27,20 @@ function WSolidElement(data, globalData, comp) {
     gl.enableVertexAttribArray(this.positionAttributeLocation);
     gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    var color_loc = gl.getUniformLocation(this.program, "colorUniform");
-    gl.uniform4fv(color_loc, [rgbColor.r / 255,rgbColor.g / 255,rgbColor.b / 255,1]);
-
-    if(this.maskManager.hasMasks) {
-        this.texcoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
-        gl.enableVertexAttribArray(this.texcoordLocation);
-        gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
-    }
+    this.texture = textureFactory(gl);
+    var canvas = createTag('canvas');
+    canvas.width = this.data.sw;
+    canvas.height = this.data.sh;
+    var canvasContext = canvas.getContext('2d');
+    canvasContext.fillStyle = this.data.sc;
+    canvasContext.rect(0,0,this.data.sw, this.data.sh);
+    canvasContext.fill();
+    /*document.body.appendChild(canvas);
+    canvas.style.position = 'absolute';
+    canvas.style.zIndex = '1000';
+    canvas.style.top = '500px';*/
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 
 }
 extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyElement, FrameElement, RenderableElement], WSolidElement);
@@ -45,9 +50,11 @@ WSolidElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 WSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 WSolidElement.prototype.renderInnerContent = function() {
-    
-    this.renderLayer();
+
+    var gl = this.gl;
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
     this.renderEffects();
+    this.renderLayer();
     //
 };
 

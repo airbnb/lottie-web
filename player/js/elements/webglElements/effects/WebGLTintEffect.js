@@ -51,7 +51,6 @@ WTintFilter.prototype.renderFrame = function(forceRender, buffer){
     }
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
          
-    //drawWithKernel();
     if(forceRender || this.filterManager._mdf){
     }
 };
