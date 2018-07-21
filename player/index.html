@@ -178,6 +178,7 @@
     <script src="js/elements/webglElements/WebGLImageElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLCompElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLShapeElement.js" data-light-skip="true"></script>
+    <script src="js/elements/webglElements/WebGLMaskElement.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/WebGLEffects.js" data-light-skip="true"></script>
     <script src="js/elements/webglElements/effects/WebGLTintEffect.js"></script>
     <script src="js/elements/webglElements/effects/WebGLTwirlEffect.js"></script>
@@ -220,8 +221,8 @@
     var animData = {
         container: elem,
         renderer: 'webgl',
-        loop: false,
-        autoplay: false,
+        loop: true,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet',
@@ -232,7 +233,7 @@
     anim.setSubframe(false);
     anim.addEventListener('DOMLoaded', function() {
         setTimeout(function(){
-            //anim.play()
+            anim.play()
         }, 500);
     })
 

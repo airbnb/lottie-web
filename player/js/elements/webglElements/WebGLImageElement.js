@@ -2,37 +2,35 @@ function WImageElement(data, globalData, comp) {
     this.assetData = globalData.getAssetData(data.refId);
     this.img = new Image();
     this.img.crossOrigin = 'anonymous';
-    this.initElement(data,globalData,comp);
     this.gl = globalData.canvasContext;
+    this.initElement(data,globalData,comp);
     this.globalData.addPendingElement();
 
     var vsh = get_shader('image_layer_shader_vert');
 
     var fsh = get_shader('image_layer_shader_frag');
 
-
-    var vertexShader = WebGLProgramFactory.createShader(this.gl, this.gl.VERTEX_SHADER, vsh);
-    var fragmentShader = WebGLProgramFactory.createShader(this.gl, this.gl.FRAGMENT_SHADER, fsh);
-    this.program = WebGLProgramFactory.createProgram(this.gl, vertexShader, fragmentShader);
-    this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
-    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
-    this.mat4UniformLoc = this.gl.getUniformLocation(this.program, "uMatrix");
-    this.localmat4UniformLoc = this.gl.getUniformLocation(this.program, "localMatrix");
-    this.texcoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
+    var gl = this.gl;
+    var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
+    var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
+    this.program = WebGLProgramFactory.createProgram(gl, vertexShader, fragmentShader);
+    this.positionAttributeLocation = gl.getAttribLocation(this.program, "a_position");
+    gl.enableVertexAttribArray(this.positionAttributeLocation);
+    this.mat4UniformLoc = gl.getUniformLocation(this.program, "uMatrix");
+    this.localmat4UniformLoc = gl.getUniformLocation(this.program, "localMatrix");
+    this.texcoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
 
     var localMatrix = new Matrix();
     localMatrix.scale(this.assetData.w, this.assetData.h);
-    this.gl.useProgram(this.program);
-    this.gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
-    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+    gl.useProgram(this.program);
+    gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
+    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    this.texture = textureFactory(this.gl);
-    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE,
+    this.texture = textureFactory(gl);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
               new Uint8Array([0, 0, 0, 0]));
-    // creating frame buffers
-    if(this.renderableEffectsManager.filters.length) {
-        this.createFramebuffers(this.gl, this.assetData.w, this.assetData.h);
-    }
+    gl.enableVertexAttribArray(this.texcoordLocation);
+    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
     
 }
 
@@ -50,10 +48,6 @@ WImageElement.prototype.imageLoaded = function() {
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     // Upload the image into the texture.
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-    gl.enableVertexAttribArray(this.texcoordLocation);
-
-    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
     // Turn on the teccord attribute
 
 
@@ -75,30 +69,13 @@ WImageElement.prototype.createContent = function(){
 
 WImageElement.prototype.renderInnerContent = function() {
 
-
     var gl = this.gl;
-
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    
     this.renderEffects();
-    gl.useProgram(this.program);
-    
-    //Parent comp transform + localTransform
-    var tr = this.comp.getTransform();
-    var newTransform = new Matrix();
-    this.finalTransform.mat.clone(newTransform);
-    var p = tr.props;
-    newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
-    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
-    //
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    this.renderLayer();
     //
 };
 
 WImageElement.prototype.getSize = function() {
     return this.assetData;
-}
-
-WImageElement.prototype.getCenter = function() {
-    return {x: this.assetData.w * 0.5, y: this.assetData.h * 0.5};
 }

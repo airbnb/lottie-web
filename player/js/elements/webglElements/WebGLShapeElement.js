@@ -1,4 +1,5 @@
 function WShapeElement(data, globalData, comp) {
+    this.gl = globalData.canvasContext;
     this.initElement(data,globalData,comp);
     var _localGlobalData = {};
     for(var prop in globalData) {
@@ -15,7 +16,9 @@ function WShapeElement(data, globalData, comp) {
             canvas_data[s] = data[s];
         }
     }
-    canvas_data.ks = {a:{k:[0,0],a:0},p:{k:[0,0],a:0},r:{k:0,a:0},s:{k:[0,0],a:0},o:{k:0,a:0}};
+
+    //TODO: keep this to use whem transform is applied to vertex shader instead of the inner canvas
+    //canvas_data.ks = {a:{k:[0,0],a:0},p:{k:[0,0],a:0},r:{k:0,a:0},s:{k:[0,0],a:0},o:{k:0,a:0}};
     this.canvasElement = new CVShapeElement(canvas_data,_localGlobalData,comp);
     this.renderConfig = {
         clearCanvas: true
@@ -23,6 +26,9 @@ function WShapeElement(data, globalData, comp) {
     this.transformMat = new Matrix();
     this.contextData = new CVContextData();
     this.canvas = createTag('canvas');
+    var compSize = this.comp.getSize();
+    this.canvas.width = compSize.w;
+    this.canvas.height = compSize.h;
     /*document.body.appendChild(this.canvas);
     this.canvas.style.position = 'absolute';
     this.canvas.style.zIndex = '1000';
@@ -38,19 +44,29 @@ function WShapeElement(data, globalData, comp) {
     }
 
 
-    this.gl = globalData.canvasContext;
     var vsh = get_shader('image_layer_shader_vert');
     var fsh = get_shader('image_layer_shader_frag');
+    var gl = this.gl;
 
-    var vertexShader = WebGLProgramFactory.createShader(this.gl, this.gl.VERTEX_SHADER, vsh);
-    var fragmentShader = WebGLProgramFactory.createShader(this.gl, this.gl.FRAGMENT_SHADER, fsh);
-    this.program = WebGLProgramFactory.createProgram(this.gl, vertexShader, fragmentShader);
-    this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
-    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
-    this.mat4UniformLoc = this.gl.getUniformLocation(this.program, "uMatrix");
-    this.localmat4UniformLoc = this.gl.getUniformLocation(this.program, "localMatrix");
-    this.texcoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
-    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+    var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
+    var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
+    this.program = WebGLProgramFactory.createProgram(gl, vertexShader, fragmentShader);
+    this.positionAttributeLocation = gl.getAttribLocation(this.program, "a_position");
+    gl.enableVertexAttribArray(this.positionAttributeLocation);
+    this.mat4UniformLoc = gl.getUniformLocation(this.program, "uMatrix");
+    this.localmat4UniformLoc = gl.getUniformLocation(this.program, "localMatrix");
+    this.texcoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
+    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+    
+    var localMatrix = new Matrix();
+    localMatrix.scale(compSize.w, compSize.h);
+
+    gl.useProgram(this.program);
+    gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
+    
+    this.texture = textureFactory(gl);
+    gl.enableVertexAttribArray(this.texcoordLocation);
+    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
 
 
 }
@@ -69,46 +85,7 @@ WShapeElement.prototype.prepareFrame = function(num) {
     this.globalData._mdf = this._localGlobalData._mdf ? true : this.globalData._mdf;
     var gl = this.gl;
     if(this._localGlobalData._mdf) {
-        var tempBoundingBox = this.canvasElement.tempBoundingBox;
-        var max = 999999;
-        tempBoundingBox.x = max;
-        tempBoundingBox.xMax = -max;
-        tempBoundingBox.y = max;
-        tempBoundingBox.yMax = -max;
-        this.canvasElement.calculateBoundingBox(this.canvasElement.itemsData, tempBoundingBox);
-        if(this.currentBox.x !== tempBoundingBox.x
-            || this.currentBox.y !== tempBoundingBox.y
-            || this.currentBox.xMax !== tempBoundingBox.xMax
-            || this.currentBox.yMax !== tempBoundingBox.yMax) {
-            this.currentBox.x = tempBoundingBox.x;
-            this.currentBox.y = tempBoundingBox.y;
-            this.currentBox.xMax = tempBoundingBox.xMax;
-            this.currentBox.yMax = tempBoundingBox.yMax;
-            this.currentBox.w = this.currentBox.xMax - this.currentBox.x;
-            this.currentBox.h = this.currentBox.yMax - this.currentBox.y;
-            this.canvas.width = this.currentBox.w;
-            this.canvas.height = this.currentBox.h;
-            this.texture = textureFactory(gl);
-            // Upload the image into the texture.
-            gl.bindTexture(gl.TEXTURE_2D, this.texture);
-            // creating frame buffers
-            if(this.renderableEffectsManager.filters.length) {
-                this.createFramebuffers(this.gl, this.currentBox.w, this.currentBox.h);
-            }
-        } else {
-            this.canvasContext.clearRect(this.currentBox.x, this.currentBox.y, this.currentBox.xMax - this.currentBox.x, this.currentBox.yMax - this.currentBox.y);
-        }
-        //this.transformMat.reset();
-        this.ctxTransform([1,0,0,0,0,1,0,0,0,0,0,0,-this.currentBox.x, -this.currentBox.y,0,0]);
-        var localMatrix = new Matrix();
-        localMatrix.scale(this.currentBox.xMax - this.currentBox.x, this.currentBox.yMax - this.currentBox.y);
-
-        gl.useProgram(this.program);
-        gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
-
-        gl.enableVertexAttribArray(this.texcoordLocation);
-
-        gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+        this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 };
 
@@ -116,10 +93,9 @@ WShapeElement.prototype.renderInnerContent = function() {
 
     var gl = this.gl;
 
-
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     if(this._localGlobalData._mdf) {
-        this.canvasElement.renderInnerContent();
+        this.canvasElement.renderFrame();
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
     }
 
@@ -128,14 +104,15 @@ WShapeElement.prototype.renderInnerContent = function() {
 
     gl.useProgram(this.program);
     
+    //TODO the transform is being applied to the inner canvas. Would be good to apply transform here.
     //Parent comp transform + localTransform
     var tr = this.comp.getTransform();
-    var newTransform = new Matrix();
-    this.finalTransform.mat.clone(newTransform);
-    var p = tr.props;
-    newTransform.translate(this.currentBox.x,this.currentBox.y);
-    newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
-    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
+    //var newTransform = new Matrix();
+    //this.finalTransform.mat.clone(newTransform);
+    // var p = tr.props;
+    //newTransform.translate(this.currentBox.x,this.currentBox.y);
+    //newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
+    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, tr.props);
     //
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
@@ -145,11 +122,7 @@ WShapeElement.prototype.updateModifiedState = function() {
 }
 
 WShapeElement.prototype.getSize = function() {
-    return this.currentBox;
-}
-
-WShapeElement.prototype.getCenter = function() {
-    return {x: this.currentBox.w * 0.5, y: this.currentBox.h * 0.5};
+    return this.comp.getSize();
 }
 
 WShapeElement.prototype.save = CanvasRenderer.prototype.save;

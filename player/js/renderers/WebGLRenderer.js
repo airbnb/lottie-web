@@ -175,6 +175,10 @@ WebGLRenderer.prototype.checkPendingElements  = function(){
     }
 };
 
+WebGLRenderer.prototype.getSize = function(){
+    return this.transformCanvas;
+}
+
 WebGLRenderer.prototype.renderFrame = function(num){
     if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === -1){
         return;

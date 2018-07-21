@@ -6,6 +6,11 @@ WebGLBaseElement.prototype = {
     initRendererElement: function(){},
     createContainerElements: function(){
         this.renderableEffectsManager = new WEffects(this);
+        // creating frame buffers
+        if(this.renderableEffectsManager.filters.length) {
+            var compSize = this.getSize();
+            this.createFramebuffers(this.gl, compSize.w, compSize.h);
+        }
     },
     createContent: function(){},
     setBlendMode: function(){
@@ -17,7 +22,7 @@ WebGLBaseElement.prototype = {
         }
     },
     addMasks: function(){
-        this.maskManager = new CVMaskElement(this.data, this);
+        this.maskManager = new WMaskElement(this.data, this);
     },
     hideElement: function(){
         if (!this.hidden && (!this.isInRange || this.isTransparent)) {
@@ -65,6 +70,21 @@ WebGLBaseElement.prototype = {
         }
     },
 
+    renderLayer: function() {
+        var gl = this.gl;
+        gl.useProgram(this.program);
+        
+        //Parent comp transform + localTransform
+        var tr = this.comp.getTransform();
+        var newTransform = new Matrix();
+        this.finalTransform.mat.clone(newTransform);
+        var p = tr.props;
+        newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
+        //TODO: only update the uniform if needed. This is costly.
+        this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+    },
+
     destroy: function(){
         this.canvasContext = null;
         this.data = null;
@@ -99,7 +119,8 @@ WebGLBaseElement.prototype = {
             gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0,
             gl.RGBA, gl.UNSIGNED_BYTE, null);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-        //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         
         return {
             texture: texture,
