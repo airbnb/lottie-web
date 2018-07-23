@@ -73,7 +73,8 @@ WMaskElement.prototype.renderFrame = function () {
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
-    gl.activeTexture(gl.TEXTURE0);
+    //TODO : check this
+    //gl.activeTexture(gl.TEXTURE0);
     gl.useProgram(this.program);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 };

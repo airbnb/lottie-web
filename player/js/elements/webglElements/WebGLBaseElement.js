@@ -22,7 +22,7 @@ WebGLBaseElement.prototype = {
     addMasks: function(){
 
         this.maskManager = new WMaskElement(this.data, this);
-        if(this.maskManager.hasMasks) {
+        if(this.maskManager.hasMasks || this.data.tt) {
             this.createFramebuffers(this.gl);
         }
     },

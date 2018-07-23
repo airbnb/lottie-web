@@ -103,9 +103,9 @@ WebGLRenderer.prototype.buildItem = function(pos){
     var element = this.createItem(this.layers[pos], this,this.globalData);
     elements[pos] = element;
     element.initExpressions();
-    /*if(this.layers[pos].ty === 0){
-        element.resize(this.globalData.transformCanvas);
-    }*/
+    if(this.layers[pos].tt === 1){
+        element.renderableEffectsManager.spliceEffect(0,new WTrackMatte(element, elements[pos - 1]));
+    }
 };
 
 WebGLRenderer.prototype.calculateTransformSize = CanvasRenderer.prototype.calculateTransformSize;
@@ -206,7 +206,7 @@ WebGLRenderer.prototype.renderFrame = function(num){
 		this.canvasContext.clear(this.canvasContext.COLOR_BUFFER_BIT);
 
         for (i = len - 1; i >= 0; i-=1) {
-            if(this.completeLayers || this.elements[i]){
+            if(!this.elements[i].data.td) {
                 this.elements[i].renderFrame();
             }
         }
