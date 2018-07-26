@@ -383,39 +383,40 @@ CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransfor
 
 CVShapeElement.prototype.renderGradientFill = function(styleData,itemData, groupTransform){
     var styleElem = itemData.style;
+    if(!styleElem.grd || itemData.g._mdf || itemData.s._mdf || itemData.e._mdf || (styleData.t !== 1 && (itemData.h._mdf || itemData.a._mdf))) {
+        var ctx = this.globalData.canvasContext;
+        var grd;
+        var pt1 = itemData.s.v, pt2 = itemData.e.v;
+        pt1 = groupTransform.mat.applyToPointArray(pt1[0], pt1[1], 0);
+        pt2 = groupTransform.mat.applyToPointArray(pt2[0], pt2[1], 0);
+        if(styleData.t === 1) {
+            grd=ctx.createLinearGradient(pt1[0],pt1[1],pt2[0],pt2[1]);
+        } else {
+            var rad;
+            rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
+            var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
 
-    var ctx = this.globalData.canvasContext;
-
-    var grd;
-    var pt1 = itemData.s.v, pt2 = itemData.e.v;
-    pt1 = groupTransform.mat.applyToPointArray(pt1[0], pt1[1], 0);
-    pt2 = groupTransform.mat.applyToPointArray(pt2[0], pt2[1], 0);
-    if(styleData.t === 1) {
-        grd=ctx.createLinearGradient(pt1[0],pt1[1],pt2[0],pt2[1]);
-    } else {
-        var rad;
-        rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
-        var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
-
-        var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
-        var dist = rad * percent;
-        var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
-        var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
-        var grd=ctx.createRadialGradient(x,y,0,pt1[0],pt1[1],rad);
-    }
-
-    var i, len = styleData.g.p;
-    var cValues = itemData.g.c;
-    var opacity = 1;
-
-    for (i = 0; i < len; i += 1){
-        if(itemData.g._hasOpacity && itemData.g._collapsable) {
-            opacity = itemData.g.o[i*2 + 1];
+            var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
+            var dist = rad * percent;
+            var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
+            var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
+            var grd=ctx.createRadialGradient(x,y,0,pt1[0],pt1[1],rad);
         }
-        grd.addColorStop(cValues[i * 4] / 100,'rgba('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ',' + opacity + ')');
+
+        var i, len = styleData.g.p;
+        var cValues = itemData.g.c;
+        var opacity = 1;
+
+        for (i = 0; i < len; i += 1){
+            if(itemData.g._hasOpacity && itemData.g._collapsable) {
+                opacity = itemData.g.o[i*2 + 1];
+            }
+            grd.addColorStop(cValues[i * 4] / 100,'rgba('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ',' + opacity + ')');
+        }
+        styleElem.grd = grd;
     }
+    styleElem.coOp = itemData.o.v*groupTransform.opacity;
     
-    styleElem.grd = grd;
 };
 
 CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransform){
