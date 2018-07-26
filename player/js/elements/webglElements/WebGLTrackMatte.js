@@ -49,16 +49,18 @@ WTrackMatte.prototype.renderFrame = function() {
     // bind mask texture / framebuffer to texture unit 1
     // 
 
-
 	var gl = this.gl;
-    gl.useProgram(this.program);
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, this.mask.texture);
-    //this.mask.renderFrame();
-    //this.mask.renderEffects();
-    //this.mask.renderLayer();
     gl.activeTexture(gl.TEXTURE0);
-    //
+    //Rendering mask content
+    gl.bindTexture(gl.TEXTURE_2D, this.mask.texture);
+    this.mask.renderEffects();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.element.currentBuffer);
+    //Resetting textures and buffers to element texture and buffer
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, this.mask._finalTexture);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.element._finalTexture);
+    gl.useProgram(this.program);
     var layerSize = this.element.getSize();
     // Creating Mask Texture transformation matrix 
     var localMatrix = new Matrix();

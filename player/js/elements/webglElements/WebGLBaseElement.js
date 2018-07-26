@@ -62,6 +62,7 @@ WebGLBaseElement.prototype = {
             for (i = 0; i < len; i++) {
                 // Setup to draw into one of the framebuffers.
                 gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffersData.framebuffers[i % 2]);
+                this.currentBuffer = this.framebuffersData.framebuffers[i % 2];
                 gl.clearColor(0, 0, 0, 0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
                 filters[i].renderFrame();
@@ -69,6 +70,7 @@ WebGLBaseElement.prototype = {
                 // for the next draw, use the texture we just rendered to.
                 //gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
+                this._finalTexture = this.framebuffersData.textures[i % 2];
             }
             //TODO: if filters didn't change, skip processing them and bind directly the last binded texture in previous iteration.
         }
@@ -83,7 +85,7 @@ WebGLBaseElement.prototype = {
     renderLayer: function() {
         // copy to own frame buffer
         this.comp.switchBuffer();
-        
+
         var gl = this.gl;
         gl.useProgram(this.program);
         

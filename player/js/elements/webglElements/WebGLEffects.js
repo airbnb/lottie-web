@@ -32,3 +32,7 @@ WEffects.prototype.renderFrame = function(_isFirstFrame){
 WEffects.prototype.spliceEffect = function(pos, effect){
     this.filters.splice(pos,0,effect);
 };
+
+WEffects.prototype.pushEffect = function(effect){
+    this.filters.push(effect);
+};

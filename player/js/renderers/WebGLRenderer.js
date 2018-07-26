@@ -105,7 +105,7 @@ WebGLRenderer.prototype.buildItem = function(pos){
     elements[pos] = element;
     element.initExpressions();
     if(this.layers[pos].tt){
-        element.renderableEffectsManager.spliceEffect(0,new WTrackMatte(element, elements[pos - 1]));
+        element.renderableEffectsManager.pushEffect(new WTrackMatte(element, elements[pos - 1]));
     }
 };
 

@@ -32,7 +32,6 @@ function WSolidElement(data, globalData, comp) {
     canvas.width = this.data.sw;
     canvas.height = this.data.sh;
     var canvasContext = canvas.getContext('2d');
-    console.log(this.data)
     canvasContext.fillStyle = this.data.sc;
     canvasContext.rect(0,0,this.data.sw, this.data.sh);
     canvasContext.fill();
@@ -41,6 +40,7 @@ function WSolidElement(data, globalData, comp) {
     canvas.style.zIndex = '1000';
     canvas.style.top = '500px';*/
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    this._finalTexture = this.texture;
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 
 }
@@ -51,9 +51,9 @@ WSolidElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 WSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 WSolidElement.prototype.renderInnerContent = function() {
-
     var gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    this._finalTexture = this.texture;
     this.renderEffects();
     this.renderLayer();
     //
