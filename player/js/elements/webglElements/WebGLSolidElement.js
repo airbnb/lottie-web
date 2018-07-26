@@ -24,14 +24,15 @@ function WSolidElement(data, globalData, comp) {
     localMatrix.scale(this.data.sw, this.data.sh);
     gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
 
-    gl.enableVertexAttribArray(this.positionAttributeLocation);
-    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+    /*gl.enableVertexAttribArray(this.positionAttributeLocation);
+    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);*/
 
     this.texture = textureFactory(gl);
     var canvas = createTag('canvas');
     canvas.width = this.data.sw;
     canvas.height = this.data.sh;
     var canvasContext = canvas.getContext('2d');
+    console.log(this.data)
     canvasContext.fillStyle = this.data.sc;
     canvasContext.rect(0,0,this.data.sw, this.data.sh);
     canvasContext.fill();

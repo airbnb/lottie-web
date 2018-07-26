@@ -70,7 +70,6 @@ WebGLBaseElement.prototype = {
                 //gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
             }
-            this.comp.switchBuffer();
             //TODO: if filters didn't change, skip processing them and bind directly the last binded texture in previous iteration.
         }
     },
@@ -82,6 +81,9 @@ WebGLBaseElement.prototype = {
     },
 
     renderLayer: function() {
+        // copy to own frame buffer
+        this.comp.switchBuffer();
+        
         var gl = this.gl;
         gl.useProgram(this.program);
         
@@ -106,12 +108,12 @@ WebGLBaseElement.prototype = {
         if(this.framebuffersData) {
             return;
         }
-        var compSize = this.getSize();
+        var layerSize = this.getSize();
         // Frame buffer objects fof effects
         var textures = [];
         var framebuffers = [];
         for (var ii = 0; ii < 2; ++ii) {
-            var bufferWithTexture = this.createFrameBufferWithTexture(gl, compSize.w, compSize.h);
+            var bufferWithTexture = this.createFrameBufferWithTexture(gl, layerSize.w, layerSize.h);
             textures.push(bufferWithTexture.texture);
             framebuffers.push(bufferWithTexture.framebuffer);
         }

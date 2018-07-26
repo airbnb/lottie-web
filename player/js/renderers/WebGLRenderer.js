@@ -40,6 +40,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
         this.animationItem.wrapper.appendChild(this.animationItem.container);
         this.canvasContext = this.animationItem.container.getContext('webgl');
         // Enabled blend and sets blend func to handle opacity.
+        //TODO: rename to glContext
         this.canvasContext.enable(this.canvasContext.BLEND);
         this.canvasContext.blendFunc(this.canvasContext.SRC_ALPHA, this.canvasContext.ONE_MINUS_SRC_ALPHA);
         if(this.renderConfig.className) {
@@ -103,7 +104,7 @@ WebGLRenderer.prototype.buildItem = function(pos){
     var element = this.createItem(this.layers[pos], this,this.globalData);
     elements[pos] = element;
     element.initExpressions();
-    if(this.layers[pos].tt === 1){
+    if(this.layers[pos].tt){
         element.renderableEffectsManager.spliceEffect(0,new WTrackMatte(element, elements[pos - 1]));
     }
 };
@@ -203,8 +204,9 @@ WebGLRenderer.prototype.renderFrame = function(num){
     }
     if(this.globalData._mdf) {
 		this.canvasContext.clearColor(0, 0, 0, 0);
-		this.canvasContext.clear(this.canvasContext.COLOR_BUFFER_BIT);
+		this.canvasContext.clear(this.canvasContext.COLOR_BUFFER_BIT | this.canvasContext.DEPTH_BUFFER_BIT);
 
+        // Look into rendering masks first
         for (i = len - 1; i >= 0; i-=1) {
             if(!this.elements[i].data.td) {
                 this.elements[i].renderFrame();
