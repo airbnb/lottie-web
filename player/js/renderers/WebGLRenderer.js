@@ -96,6 +96,16 @@ WebGLRenderer.prototype.getTransform = function() {
     return this.transformMat;
 }
 
+WebGLRenderer.prototype.getTrackMatteElement = function(element) {
+    var i = 0, len = this.elements.length;
+    while (i < len) {
+        if(this.elements[i] === element) {
+            return this.elements[i - 1];
+        }
+        i += 1;
+    }
+}
+
 WebGLRenderer.prototype.buildItem = function(pos){
     var elements = this.elements;
     if(elements[pos] || this.layers[pos].ty == 99){
@@ -206,7 +216,7 @@ WebGLRenderer.prototype.renderFrame = function(num){
 		this.canvasContext.clearColor(0, 0, 0, 0);
 		this.canvasContext.clear(this.canvasContext.COLOR_BUFFER_BIT | this.canvasContext.DEPTH_BUFFER_BIT);
 
-        // Look into rendering masks first
+        // TODO: Look into rendering track mattes first
         for (i = len - 1; i >= 0; i-=1) {
             if(!this.elements[i].data.td) {
                 this.elements[i].renderFrame();

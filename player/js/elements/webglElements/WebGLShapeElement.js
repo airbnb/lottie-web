@@ -68,6 +68,7 @@ function WShapeElement(data, globalData, comp) {
     gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
 
     this.texture = textureFactory(gl);
+    this._finalTexture = this.texture;
 
 }
 extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyElement, FrameElement, RenderableElement], WShapeElement);

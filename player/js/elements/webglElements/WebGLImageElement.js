@@ -31,6 +31,7 @@ function WImageElement(data, globalData, comp) {
               new Uint8Array([0, 0, 0, 0]));
     gl.enableVertexAttribArray(this.texcoordLocation);
     gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+    this._finalTexture = this.texture;
     
 }
 

@@ -1,12 +1,11 @@
 function WTrackMatte(element, mask) {
 	this.element = element;
 	this.mask = mask;
+    this.gl = this.element.globalData.canvasContext;
 
-	var gl = mask.globalData.canvasContext;
+	var gl = this.gl;
     var vsh = get_shader('track_matte_shader_vert');
-
     var fsh = get_shader('track_matte_shader_frag');
-
     var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
     var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
     this.program = WebGLProgramFactory.createProgram(gl, vertexShader, fragmentShader);
@@ -30,20 +29,13 @@ function WTrackMatte(element, mask) {
     this.mat4UniformLoc = gl.getUniformLocation(this.program, "uMatrix");
     gl.uniform1i(origin_image, 0);  // texture unit 0
     gl.uniform1i(mask_image, 1);  // texture unit 1
-
-
-    /*this.canvas = createTag('canvas');
-    this.canvas.width = layerSize.w;
-    this.canvas.height = layerSize.h;
-    this.canvasContext = this.canvas.getContext('2d');*/
-
-
-    // Create buffer for mask
-
-    this.gl = gl;
 }
 
 WTrackMatte.prototype.renderFrame = function() {
+
+    if(!this.mask) {
+        this.element.comp.getTrackMatteElement(this.element);
+    }
 
     // activate texture unit 1
     // bind mask texture / framebuffer to texture unit 1
