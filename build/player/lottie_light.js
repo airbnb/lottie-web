@@ -2513,17 +2513,38 @@ var TransformPropertyFactory = (function() {
             } else if (!this.r && this.appliedTransformations < 4){
                 this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
-            if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
-                var v1,v2;
-                if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
-                    v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
-                    v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
-                } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
-                    v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
-                    v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
-                } else {
-                    v1 = this.p.pv;
-                    v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
+            if (this.autoOriented) {
+                var v1,v2, frameRate = this.elem.globalData.frameRate;
+                if(this.p && this.p.keyframes && this.p.getValueAtTime) {
+                    if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / frameRate,0);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t / frameRate, 0);
+                    } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / frameRate), 0);
+                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / frameRate, 0);
+                    } else {
+                        v1 = this.p.pv;
+                        v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / frameRate, this.p.offsetTime);
+                    }
+                } else if(this.px && this.px.keyframes && this.py.keyframes && this.px.getValueAtTime && this.py.getValueAtTime) {
+                    v1 = [];
+                    v2 = [];
+                    var px = this.px, py = this.py, frameRate;
+                    if (px._caching.lastFrame+px.offsetTime <= px.keyframes[0].t) {
+                        v1[0] = px.getValueAtTime((px.keyframes[0].t + 0.01) / frameRate,0);
+                        v1[1] = py.getValueAtTime((py.keyframes[0].t + 0.01) / frameRate,0);
+                        v2[0] = px.getValueAtTime((px.keyframes[0].t) / frameRate,0);
+                        v2[1] = py.getValueAtTime((py.keyframes[0].t) / frameRate,0);
+                    } else if(px._caching.lastFrame+px.offsetTime >= px.keyframes[px.keyframes.length - 1].t) {
+                        v1[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t / frameRate),0);
+                        v1[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t / frameRate),0);
+                        v2[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t - 0.01) / frameRate,0);
+                        v2[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t - 0.01) / frameRate,0);
+                    } else {
+                        v1 = [px.pv, py.pv];
+                        v2[0] = px.getValueAtTime((px._caching.lastFrame+px.offsetTime - 0.01) / frameRate,px.offsetTime);
+                        v2[1] = py.getValueAtTime((py._caching.lastFrame+py.offsetTime - 0.01) / frameRate,py.offsetTime);
+                    }
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
@@ -3490,6 +3511,9 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         }
     } else if (this._mdf) {
         for (i = 0; i < len; i += 1) {
+            //Releasign Trim Cached paths data when no trim applied in case shapes are modified inbetween.
+            //Don't remove this even if it's losing cached info.
+            this.shapes[i].pathsData.length = 0;
             this.shapes[i].shape._mdf = true;
         }
     }
@@ -6575,7 +6599,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g,this);
+    this.g = new GradientProperty(elem,data.g);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -7927,7 +7951,7 @@ SVGShapeElement.prototype.renderShape = function() {
 
 SVGShapeElement.prototype.destroy = function(){
     this.destroyBaseElement();
-    this.shapeData = null;
+    this.shapesData = null;
     this.itemsData = null;
 };
 
@@ -9052,9 +9076,7 @@ AnimationItem.prototype.advanceTime = function (value) {
                 } else {
                     this.trigger('loopComplete');
                 }
-            } else if (!this.loop && this.playCount-- === 0) {
-                this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
-            }else {
+            } else {
                 _isComplete = true;
                 nextValue = 0;
             }
@@ -9353,7 +9375,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.20';
+    lottiejs.version = '5.2.0';
 
     function checkReady() {
         if (document.readyState === "complete") {

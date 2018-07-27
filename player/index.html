@@ -194,14 +194,17 @@
         container: elem,
         renderer: 'canvas',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'exports/render/data2.json'
+        path: 'exports/bm/data.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.addEventListener('DOMLoaded', function() {
+        anim.playSegments([30,0], true);
+    })
 
 </script>
 </body>

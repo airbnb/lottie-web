@@ -2513,17 +2513,38 @@ var TransformPropertyFactory = (function() {
             } else if (!this.r && this.appliedTransformations < 4){
                 this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
-            if (this.autoOriented && this.p.keyframes && this.p.getValueAtTime) {
-                var v1,v2;
-                if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
-                    v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / this.elem.globalData.frameRate,0);
-                    v2 = this.p.getValueAtTime(this.p.keyframes[0].t / this.elem.globalData.frameRate, 0);
-                } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
-                    v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / this.elem.globalData.frameRate), 0);
-                    v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / this.elem.globalData.frameRate, 0);
-                } else {
-                    v1 = this.p.pv;
-                    v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / this.elem.globalData.frameRate, this.p.offsetTime);
+            if (this.autoOriented) {
+                var v1,v2, frameRate = this.elem.globalData.frameRate;
+                if(this.p && this.p.keyframes && this.p.getValueAtTime) {
+                    if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / frameRate,0);
+                        v2 = this.p.getValueAtTime(this.p.keyframes[0].t / frameRate, 0);
+                    } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
+                        v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / frameRate), 0);
+                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / frameRate, 0);
+                    } else {
+                        v1 = this.p.pv;
+                        v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / frameRate, this.p.offsetTime);
+                    }
+                } else if(this.px && this.px.keyframes && this.py.keyframes && this.px.getValueAtTime && this.py.getValueAtTime) {
+                    v1 = [];
+                    v2 = [];
+                    var px = this.px, py = this.py, frameRate;
+                    if (px._caching.lastFrame+px.offsetTime <= px.keyframes[0].t) {
+                        v1[0] = px.getValueAtTime((px.keyframes[0].t + 0.01) / frameRate,0);
+                        v1[1] = py.getValueAtTime((py.keyframes[0].t + 0.01) / frameRate,0);
+                        v2[0] = px.getValueAtTime((px.keyframes[0].t) / frameRate,0);
+                        v2[1] = py.getValueAtTime((py.keyframes[0].t) / frameRate,0);
+                    } else if(px._caching.lastFrame+px.offsetTime >= px.keyframes[px.keyframes.length - 1].t) {
+                        v1[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t / frameRate),0);
+                        v1[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t / frameRate),0);
+                        v2[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t - 0.01) / frameRate,0);
+                        v2[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t - 0.01) / frameRate,0);
+                    } else {
+                        v1 = [px.pv, py.pv];
+                        v2[0] = px.getValueAtTime((px._caching.lastFrame+px.offsetTime - 0.01) / frameRate,px.offsetTime);
+                        v2[1] = py.getValueAtTime((py._caching.lastFrame+py.offsetTime - 0.01) / frameRate,py.offsetTime);
+                    }
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
@@ -3490,6 +3511,9 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         }
     } else if (this._mdf) {
         for (i = 0; i < len; i += 1) {
+            //Releasign Trim Cached paths data when no trim applied in case shapes are modified inbetween.
+            //Don't remove this even if it's losing cached info.
+            this.shapes[i].pathsData.length = 0;
             this.shapes[i].shape._mdf = true;
         }
     }
@@ -6575,7 +6599,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g,this);
+    this.g = new GradientProperty(elem,data.g);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -7927,7 +7951,7 @@ SVGShapeElement.prototype.renderShape = function() {
 
 SVGShapeElement.prototype.destroy = function(){
     this.destroyBaseElement();
-    this.shapeData = null;
+    this.shapesData = null;
     this.itemsData = null;
 };
 
@@ -9052,9 +9076,7 @@ AnimationItem.prototype.advanceTime = function (value) {
                 } else {
                     this.trigger('loopComplete');
                 }
-            } else if (!this.loop && this.playCount-- === 0) {
-                this.setCurrentRawFrameValue(this.totalFrames + (nextValue % this.totalFrames));
-            }else {
+            } else {
                 _isComplete = true;
                 nextValue = 0;
             }
@@ -10179,9 +10201,15 @@ CVShapeElement.prototype.createStyleElement = function(data){
         if(!elementData.c.k){
             styleElem.co = 'rgb('+bm_floor(elementData.c.v[0])+','+bm_floor(elementData.c.v[1])+','+bm_floor(elementData.c.v[2])+')';
         }
+    } else if (data.ty === 'gf' || data.ty === 'gs') {
+        elementData.s = PropertyFactory.getProp(this,data.s,1,null,this);
+        elementData.e = PropertyFactory.getProp(this,data.e,1,null,this);
+        elementData.h = PropertyFactory.getProp(this,data.h||{k:0},0,0.01,this);
+        elementData.a = PropertyFactory.getProp(this,data.a||{k:0},0,degToRads,this);
+        elementData.g = new GradientProperty(this,data.g);
     }
     elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,this);
-    if(data.ty == 'st') {
+    if(data.ty == 'st' || data.ty == 'gs') {
         styleElem.lc = this.lcEnum[data.lc] || 'round';
         styleElem.lj = this.ljEnum[data.lj] || 'round';
         if(data.lj == 1) {
@@ -10199,9 +10227,7 @@ CVShapeElement.prototype.createStyleElement = function(data){
                 styleElem.do = elementData.d.dashoffset[0];
             }
         }
-
     } else {
-
         styleElem.r = data.r === 2 ? 'evenodd' : 'nonzero';
     }
     this.stylesList.push(styleElem);
@@ -10279,7 +10305,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, re
         } else {
             itemsData[i] = prevViewData[processedPos - 1];
         }
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st'){
+        if(arr[i].ty == 'fl' || arr[i].ty == 'st'|| arr[i].ty == 'gf'|| arr[i].ty == 'gs'){
             if(!processedPos){
                 itemsData[i] = this.createStyleElement(arr[i]);
             } else {
@@ -10374,28 +10400,28 @@ CVShapeElement.prototype.drawLayer = function() {
     for(i=0;i<len;i+=1){
         currentStyle = this.stylesList[i];
         type = currentStyle.type;
-        if((type === 'st' && currentStyle.wi === 0) || !currentStyle.data._render || currentStyle.coOp === 0){
+        if(((type === 'st' || type === 'gs') && currentStyle.wi === 0) || !currentStyle.data._render || currentStyle.coOp === 0){
             continue;
         }
         renderer.save();
         elems = currentStyle.elements;
-        if(type === 'st'){
-            ctx.strokeStyle = currentStyle.co;
+        if(type === 'st' || type === 'gs'){
+            ctx.strokeStyle = type === 'st' ? currentStyle.co : currentStyle.grd;
             ctx.lineWidth = currentStyle.wi;
             ctx.lineCap = currentStyle.lc;
             ctx.lineJoin = currentStyle.lj;
             ctx.miterLimit = currentStyle.ml || 0;
-        }else{
-            ctx.fillStyle = currentStyle.co;
+        } else {
+            ctx.fillStyle = type === 'fl' ? currentStyle.co : currentStyle.grd;
         }
         renderer.ctxOpacity(currentStyle.coOp);
         if(this.globalData.currentGlobalAlpha !== 0) {
-            if(type !== 'st'){
+            if(type !== 'st' && type !== 'gs'){
                 ctx.beginPath();
             }
             jLen = elems.length;
             for(j=0;j<jLen;j+=1){
-                if(type === 'st'){
+                if(type === 'st' || type === 'gs'){
                     ctx.beginPath();
                     if(currentStyle.da){
                         ctx.setLineDash(currentStyle.da);
@@ -10418,11 +10444,11 @@ CVShapeElement.prototype.drawLayer = function() {
                         ctx.closePath();
                     }
                 }
-                if(type === 'st'){
+                if(type === 'st' || type === 'gs'){
                     ctx.stroke();
                 }
             }
-            if(type !== 'st'){
+            if(type !== 'st' && type !== 'gs'){
                 ctx.fill(currentStyle.r);
             }
             
@@ -10445,6 +10471,8 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             this.renderFill(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'st'){
             this.renderStroke(items[i],data[i],groupTransform);
+        }else if(items[i].ty == 'gf' || items[i].ty == 'gs'){
+            this.renderGradientFill(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'gr'){
             this.renderShape(groupTransform,items[i].it,data[i].it);
         }else if(items[i].ty == 'tm'){
@@ -10510,8 +10538,6 @@ CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform)
     }
 };
 
-
-
 CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransform){
     var styleElem = itemData.style;
 
@@ -10521,6 +10547,44 @@ CVShapeElement.prototype.renderFill = function(styleData,itemData, groupTransfor
     if(itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame){
         styleElem.coOp = itemData.o.v*groupTransform.opacity;
     }
+};
+
+CVShapeElement.prototype.renderGradientFill = function(styleData,itemData, groupTransform){
+    var styleElem = itemData.style;
+    if(!styleElem.grd || itemData.g._mdf || itemData.s._mdf || itemData.e._mdf || (styleData.t !== 1 && (itemData.h._mdf || itemData.a._mdf))) {
+        var ctx = this.globalData.canvasContext;
+        var grd;
+        var pt1 = itemData.s.v, pt2 = itemData.e.v;
+        pt1 = groupTransform.mat.applyToPointArray(pt1[0], pt1[1], 0);
+        pt2 = groupTransform.mat.applyToPointArray(pt2[0], pt2[1], 0);
+        if(styleData.t === 1) {
+            grd=ctx.createLinearGradient(pt1[0],pt1[1],pt2[0],pt2[1]);
+        } else {
+            var rad;
+            rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
+            var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
+
+            var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
+            var dist = rad * percent;
+            var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
+            var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
+            var grd=ctx.createRadialGradient(x,y,0,pt1[0],pt1[1],rad);
+        }
+
+        var i, len = styleData.g.p;
+        var cValues = itemData.g.c;
+        var opacity = 1;
+
+        for (i = 0; i < len; i += 1){
+            if(itemData.g._hasOpacity && itemData.g._collapsable) {
+                opacity = itemData.g.o[i*2 + 1];
+            }
+            grd.addColorStop(cValues[i * 4] / 100,'rgba('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ',' + opacity + ')');
+        }
+        styleElem.grd = grd;
+    }
+    styleElem.coOp = itemData.o.v*groupTransform.opacity;
+    
 };
 
 CVShapeElement.prototype.renderStroke = function(styleData,itemData, groupTransform){
@@ -11884,6 +11948,7 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
+        var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out;
         var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
@@ -13401,6 +13466,7 @@ var LayerExpressionInterface = (function (){
         _thisLayerFunction.width = elem.data.ty === 0 ? elem.data.w : 100;
         _thisLayerFunction.inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         _thisLayerFunction.outPoint = elem.data.op/elem.comp.globalData.frameRate;
+        _thisLayerFunction._name = elem.data.nm;
 
         _thisLayerFunction.registerMaskInterface = _registerMaskInterface;
         _thisLayerFunction.registerEffectsInterface = _registerEffectsInterface;
@@ -13954,7 +14020,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.1.20';
+    lottiejs.version = '5.2.0';
 
     function checkReady() {
         if (document.readyState === "complete") {
