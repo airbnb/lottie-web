@@ -54,6 +54,10 @@ WTrackMatte.prototype.renderFrame = function() {
     gl.bindTexture(gl.TEXTURE_2D, this.element._finalTexture);
     gl.useProgram(this.program);
     var layerSize = this.element.getSize();
+    ///
+    /// TODO: look into
+    /// For any invertible n-by-n matrices A and B, (AB)^−1 = (B^−1)(A^−1)
+    ///
     // Creating Mask Texture transformation matrix 
     var localMatrix = new Matrix();
     // Scaling matrix by layer size

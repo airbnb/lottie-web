@@ -12,6 +12,8 @@ function WEffects(elem){
             filterManager = new WRippleEffect(elem.effectsManager.effectElements[i], elem);
         } else if(elem.data.ef[i].ty === 33){
             filterManager = new WSpherizeEffect(elem.effectsManager.effectElements[i], elem);
+        } else if(elem.data.ef[i].ty === 34){
+            filterManager = new WPuppetPinEffect(elem.effectsManager.effectElements[i], elem);
         }
         if(filterManager) {
             this.filters.push(filterManager);

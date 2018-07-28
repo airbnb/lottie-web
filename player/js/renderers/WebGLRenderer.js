@@ -77,8 +77,27 @@ WebGLRenderer.prototype.configAnimation = function(animData){
       1, 0,
       1, 1,
     ];
+    var i, j, len = 10, jlen = 10;
+    for(j = 0; j < jlen; j += 1) {
+        for(i = 0; i < len; i += 1) {
+            positions.push(i/10);
+            positions.push(j/10);
+            positions.push((i+1)/10);
+            positions.push(j/10);
+            positions.push(i/10);
+            positions.push((j+1)/10);
+            positions.push((i+1)/10);
+            positions.push(j/10);
+            positions.push((i+1)/10);
+            positions.push((j+1)/10);
+            positions.push(i/10);
+            positions.push((j+1)/10);
+        }   
+    }
+    console.log(positions)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     //
+    this.globalData.positions = positions;
     this.globalData.renderer = this;
     this.globalData.isDashed = false;
     this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
