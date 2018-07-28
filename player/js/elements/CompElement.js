@@ -50,7 +50,8 @@ ICompElement.prototype.prepareFrame = function(num){
     if(!this.completeLayers){
         this.checkLayers(this.renderedFrame);
     }
-    for( i = 0; i < len; i+=1 ){
+    //This iteration needs to be backwards because of how expressions connect between each other
+    for( i = len - 1; i >= 0; i -= 1 ){
         if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
             if(this.elements[i]._mdf) {

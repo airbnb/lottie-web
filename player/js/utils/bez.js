@@ -77,7 +77,7 @@ function bezFunction(){
             lengths[i] = getBezierLength(pathV[i],pathV[i+1],pathO[i],pathI[i+1]);
             totalLength += lengths[i].addedLength;
         }
-        if(closed){
+        if(closed && len){
             lengths[i] = getBezierLength(pathV[i],pathV[0],pathO[i],pathI[0]);
             totalLength += lengths[i].addedLength;
         }

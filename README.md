@@ -217,12 +217,13 @@ you can also use addEventListener with the following events:
 - segmentStart
 - config_ready (when initial config is done)
 - data_ready (when all parts of the animation have been loaded)
+- data_failed (when part of the animation can not be loaded)
 - loaded_images (when all image loads have either succeeded or errored)
 - DOMLoaded (when elements have been added to the DOM)
 - destroy
 
 #### Other loading options
-- if you want to use an existing canvas to draw, you can pass an extra object: 'renderer' with the following configuration:
+- if you want to use an existing canvas to draw, you can pass an extra object: 'rendererSettings' with the following configuration:
 ```js
 lottie.loadAnimation({
   container: element, // the dom element
@@ -271,7 +272,7 @@ You can preview or take an svg snapshot of the animation to use as poster. After
 
 ### Files
 If you have any images or AI layers that you haven't converted to shapes (I recommend that you convert them, so they get exported as vectors, right click each layer and do: "Create shapes from Vector Layers"), they will be saved to an images folder relative to the destination json folder.
-Beware not to overwrite an exiting folder on that same location.
+Beware not to overwrite an existing folder on that same location.
 
 
 ### Performance

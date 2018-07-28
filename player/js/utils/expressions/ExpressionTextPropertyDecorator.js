@@ -8,9 +8,15 @@
         }
     }
 
-    TextProperty.prototype.getExpressionValue = function(currentValue) {
-        var newValue = this.calculateExpression(currentValue.t);
-        currentValue.t = newValue;
+    TextProperty.prototype.getExpressionValue = function(currentValue, text) {
+        var newValue = this.calculateExpression(text);
+        if(currentValue.t !== newValue) {
+            var newData = {};
+            this.copyData(newData, currentValue);
+            newData.t = newValue.toString();
+            newData.__complete = false;
+            return newData;
+        }
         return currentValue;
     }
 

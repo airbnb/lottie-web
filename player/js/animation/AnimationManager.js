@@ -3,9 +3,9 @@ var animationManager = (function(){
     var registeredAnimations = [];
     var initTime = 0;
     var len = 0;
-    var idled = true;
     var playingAnimationsNum = 0;
     var _stopped = true;
+    var _isFrozen = false;
 
     function removeElement(ev){
         var i = 0;
@@ -40,6 +40,15 @@ var animationManager = (function(){
         return animItem;
     }
 
+    function getRegisteredAnimations() {
+        var i, len = registeredAnimations.length;
+        var animations = [];
+        for(i = 0; i < len; i += 1) {
+            animations.push(registeredAnimations[i].animation);
+        }
+        return animations;
+    }
+
     function addPlayingCount(){
         playingAnimationsNum += 1;
         activate();
@@ -47,9 +56,6 @@ var animationManager = (function(){
 
     function subtractPlayingCount(){
         playingAnimationsNum -= 1;
-        if(playingAnimationsNum === 0){
-            idled = true;
-        }
     }
 
     function setupAnimation(animItem, element){
@@ -95,7 +101,7 @@ var animationManager = (function(){
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
-        if(!idled) {
+        if(playingAnimationsNum && !_isFrozen) {
             window.requestAnimationFrame(resume);
         } else {
             _stopped = true;
@@ -174,13 +180,8 @@ var animationManager = (function(){
         }
     }
 
-    /*function start(){
-        window.requestAnimationFrame(first);
-    }*/
-
     function activate(){
-        if(idled){
-            idled = false;
+        if(!_isFrozen && playingAnimationsNum){
             if(_stopped) {
                 window.requestAnimationFrame(first);
                 _stopped = false;
@@ -188,9 +189,14 @@ var animationManager = (function(){
         }
     }
 
-    //start();
+    function freeze() {
+        _isFrozen = true;
+    }
 
-    //setTimeout(start,0);
+    function unfreeze() {
+        _isFrozen = false;
+        activate();
+    }
 
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
@@ -205,5 +211,8 @@ var animationManager = (function(){
     //moduleOb.start = start;
     moduleOb.goToAndStop = goToAndStop;
     moduleOb.destroy = destroy;
+    moduleOb.freeze = freeze;
+    moduleOb.unfreeze = unfreeze;
+    moduleOb.getRegisteredAnimations = getRegisteredAnimations;
     return moduleOb;
 }());

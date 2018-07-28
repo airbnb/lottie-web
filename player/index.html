@@ -15,8 +15,6 @@
             background-color:#000;
             width:100%;
             height:100%;
-            /*width:600px;
-            height:400px;*/
             display:block;
             transform: translate3d(0,0,0);
             margin: auto;
@@ -89,6 +87,7 @@
     <script src="js/utils/imagePreloader.js"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
+    <script src="js/utils/asset_loader.js"></script>
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
     <script src="js/utils/text/TextAnimatorDataProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
@@ -215,21 +214,13 @@ void main(){
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
+            imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'exports/render/data.json'
+        path: 'exports/bm/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);
 
-    /*anim.addEventListener('DOMLoaded', function() {
-        animationAPI = lottie_api.createAnimationApi(anim);
-        var null_animator = animationAPI.getKeyPath('Shape Layer 2, Transform, Scale');
-        animationAPI.addValueCallback(null_animator, function(currentValue) {
-            currentValue[0] = Math.random() * 100;
-            return currentValue
-        })
-    })*/
-    //anim.setSubframe(false);
 </script>
 </body>
 </html>

@@ -109,3 +109,20 @@ BaseRenderer.prototype.searchExtraCompositions = function(assets){
         }
     }
 };
+
+BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
+    this.globalData.fontManager = new FontManager();
+    this.globalData.fontManager.addChars(animData.chars);
+    this.globalData.fontManager.addFonts(animData.fonts, fontsContainer);
+    this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
+    this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
+    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
+    this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
+    this.globalData.frameId = 0;
+    this.globalData.frameRate = animData.fr;
+    this.globalData.nm = animData.nm;
+    this.globalData.compSize = {
+        w: animData.w,
+        h: animData.h
+    }
+}

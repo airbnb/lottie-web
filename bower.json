@@ -1,7 +1,7 @@
 {
   "name": "bodymovin",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
-  "main": "./build/player/bodymovin.js",
+  "main": "./build/player/lottie.js",
   "authors": [
     "hernan <bodymovin@users.noreply.github.com>"
   ],

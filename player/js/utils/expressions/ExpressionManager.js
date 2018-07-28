@@ -5,24 +5,7 @@ var ExpressionManager = (function(){
     var window = null;
     var document = null;
 
-    function duplicatePropertyValue(value, mult) {
-        mult = mult || 1;
-
-        if (typeof value === 'number'  || value instanceof Number) {
-            return value * mult;
-        } else if(value.i) {
-            return shape_pool.clone(value);
-        } else {
-            var arr = createTypedArray('float32', value.length);
-            var i, len = value.length;
-            for (i = 0; i < len; i += 1) {
-                arr[i] = value[i] * mult;
-            }
-            return arr;
-        }
-    }
-
-    function isTypeOfArray(arr) {
+    function $bm_isInstanceOfArray(arr) {
         return arr.constructor === Array || arr.constructor === Float32Array;
     }
 
@@ -35,7 +18,7 @@ var ExpressionManager = (function(){
         if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
             return -a;
         }
-        if(isTypeOfArray(a)){
+        if($bm_isInstanceOfArray(a)){
             var i, lenA = a.length;
             var retArr = [];
             for(i=0;i<lenA;i+=1){
@@ -54,17 +37,17 @@ var ExpressionManager = (function(){
         if(isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
             return a + b;
         }
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             a = a.slice(0);
             a[0] = a[0] + b;
             return a;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             b = b.slice(0);
             b[0] = a + b[0];
             return b;
         }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
             
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
@@ -94,17 +77,17 @@ var ExpressionManager = (function(){
             }
             return a - b;
         }
-        if( isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if( $bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             a = a.slice(0);
             a[0] = a[0] - b;
             return a;
         }
-        if(isNumerable(tOfA, a) &&  isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) &&  $bm_isInstanceOfArray(b)){
             b = b.slice(0);
             b[0] = a - b[0];
             return b;
         }
-        if(isTypeOfArray(a) && isTypeOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
             while(i<lenA || i < lenB){
@@ -129,7 +112,7 @@ var ExpressionManager = (function(){
         }
 
         var i, len;
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             len = a.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -137,7 +120,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             len = b.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -156,7 +139,7 @@ var ExpressionManager = (function(){
             return a / b;
         }
         var i, len;
-        if(isTypeOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
             len = a.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -164,7 +147,7 @@ var ExpressionManager = (function(){
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && isTypeOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
             len = b.length;
             arr = createTypedArray('float32', len);
             for(i=0;i<len;i+=1){
@@ -278,7 +261,15 @@ var ExpressionManager = (function(){
 
     function linear(t, tMin, tMax, value1, value2){
         if(value1 === undefined || value2 === undefined){
-            return linear(t,0,1,tMin,tMax);
+            value1 = tMin;
+            value2 = tMax;
+            tMin = 0;
+            tMax = 1;
+        }
+        if(tMax < tMin) {
+            var _tMin = tMax;
+            tMax = tMin;
+            tMin = _tMin;
         }
         if(t <= tMin) {
             return value1;
@@ -350,8 +341,9 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
+        var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -538,7 +530,27 @@ var ExpressionManager = (function(){
             return elem.sourceRectAtTime();
         }
 
-        var time, velocity, value, textIndex, textTotal, selectorValue;
+        function substring(init, end) {
+            if(typeof value === 'string') {
+                if(end === undefined) {
+                return value.substring(init)
+                }
+                return value.substring(init, end)
+            }
+            return '';
+        }
+
+        function substr(init, end) {
+            if(typeof value === 'string') {
+                if(end === undefined) {
+                return value.substr(init)
+                }
+                return value.substr(init, end)
+            }
+            return '';
+        }
+
+        var time, velocity, value, text, textIndex, textTotal, selectorValue;
         var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
@@ -557,11 +569,13 @@ var ExpressionManager = (function(){
                 selectorValue = this.selectorValue;
             }
             if (!thisLayer) {
+                text = elem.layerInterface.text;
                 thisLayer = elem.layerInterface;
                 thisComp = elem.comp.compInterface;
                 toWorld = thisLayer.toWorld.bind(thisLayer);
                 fromWorld = thisLayer.fromWorld.bind(thisLayer);
                 fromComp = thisLayer.fromComp.bind(thisLayer);
+                toComp = thisLayer.toComp.bind(thisLayer);
                 mask = thisLayer.mask ? thisLayer.mask.bind(thisLayer) : null;
                 fromCompToSurface = fromComp;
             }
@@ -586,6 +600,7 @@ var ExpressionManager = (function(){
             }
             expression_function();
             this.frameExpressionId = elem.globalData.frameId;
+
 
             //TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === "shape") {

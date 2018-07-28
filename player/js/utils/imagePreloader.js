@@ -11,7 +11,9 @@ var ImagePreloader = (function(){
 
     function getAssetsPath(assetData){
         var path = '';
-        if(this.assetsPath){
+        if(assetData.e) {
+            path = assetData.p;
+        }else if(this.assetsPath){
             var imagePath = assetData.p;
             if(imagePath.indexOf('images/') !== -1){
                 imagePath = imagePath.split('/')[1];

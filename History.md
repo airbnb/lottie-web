@@ -1,3 +1,53 @@
+## V 5.2.0
+- FEATURE: gradient support in canvas renderer (some cases are not supported)
+- EXPRESSIONS: layer name support for expressions
+- FIX: reverse play on non loops
+- SUPPORT: Orient along path with separate dimensions
+- FIX: trim cache issue fixed
+
+## V 5.1.20
+- FIX: instaceof Array on expressions fixed
+- FIX: text value on expressions fix
+- FEATURE: new expressions supported
+
+## V 5.1.19
+- FIX: Trim Paths with empty paths fix
+- FIX: linear method fix for inverted values
+- FEATURE: Ignoring merge path's last path if square
+- FIX: Camera zoom
+- FIX: Validating if text data is complete on first render
+- FIX: Loop counting when playing backwards
+- FEATURE: Added inPoint and outPoint to layer's expressions
+
+## V 5.1.18
+- FIX: Moved defs to top to avoid Safari issues 
+- FEATURE: Added crossOrigin attribute to images to avoid tainted canvases
+- FEATURE: Added imagePreserveAspectRatio to rendererSettings for image layers
+- FIX: splitting animations in multiple files
+
+## V 5.1.17
+- FIX: asset error handling
+- FEATURE: Rove across time support
+- FIX: bevel line support
+
+## V 5.1.16
+- FIX: exporting images for older version of AE.
+- FEATURE: if needed can skip images export once exported a first time.
+
+## V 5.1.15
+- FEATURE: Added freeze/unfreeze methods to stop prevent any animation from playing
+- FEATURE: Added getRegisterdAnimations method to get all current animations handled by lottie
+- FEATURE: Exporting PNGs with render queue in order to fix black pixels around images
+- FEATURE: Support for compressed jpgs when image is not transparent
+- FEATURE: Support for exporting base 64 encoded images inlined in the json file
+- FIX: Some small expression fixes
+
+## V 5.1.14
+- FIX: Dash property animated
+- FIX: Canvas renderer skips hidden layers
+- FIX: When clearCanvas is set to true on the canvas renderer, every frame is rendered
+- FIX: calculation error on masks
+
 ## V 5.1.13
 - EXPRESSIONS: fix for global variables used in functions
 - EXPRESSIONS: operations supported for arrays

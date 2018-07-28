@@ -188,7 +188,4 @@ CVTextElement.prototype.renderInnerContent = function(){
             this.globalData.renderer.restore();
         }
     }
-    /*if(this.data.hasMask){
-     this.globalData.renderer.restore(true);
-     }*/
 };

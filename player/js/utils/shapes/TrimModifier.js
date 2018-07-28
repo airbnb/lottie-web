@@ -196,6 +196,9 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         }
     } else if (this._mdf) {
         for (i = 0; i < len; i += 1) {
+            //Releasign Trim Cached paths data when no trim applied in case shapes are modified inbetween.
+            //Don't remove this even if it's losing cached info.
+            this.shapes[i].pathsData.length = 0;
             this.shapes[i].shape._mdf = true;
         }
     }
@@ -273,7 +276,7 @@ TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) 
                 segmentCount += 1;
             }
         }
-        if (shapePaths[i].c) {
+        if (shapePaths[i].c && lengths.length) {
             currentLengthData = lengths[j - 1];
             if (addedLength <= shapeSegment.e) {
                 var segmentLength = lengths[j - 1].addedLength;
