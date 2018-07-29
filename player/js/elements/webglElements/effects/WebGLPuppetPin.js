@@ -26,14 +26,125 @@ function WPuppetPinEffect(filterManager, elem) {
     this.filterManager = filterManager;
     this.gl = gl;
     this.elem = elem;
+
+    var positions = [];
+    var i, j, len = 10, jlen = 10;
+    for(j = 0; j < jlen; j += 1) {
+        for(i = 0; i < len; i += 1) {
+            /*positions.push(i/10);
+            positions.push(j/10);
+            positions.push((i+1)/10);
+            positions.push(j/10);
+            positions.push(i/10);
+            positions.push((j+1)/10);
+            positions.push((i+1)/10);
+            positions.push(j/10);
+            positions.push((i+1)/10);
+            positions.push((j+1)/10);
+            positions.push(i/10);
+            positions.push((j+1)/10);*/
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+        }   
+    }
+    this.positions = new Float32Array(positions);
+    this.positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
+
+    var texture_positions = [];
+    var i, j, len = 10, jlen = 10;
+    for(j = 0; j < jlen; j += 1) {
+        for(i = 0; i < len; i += 1) {
+            /*texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());
+            texture_positions.push(Math.random());*/
+            texture_positions.push(i/10);
+            texture_positions.push(j/10);
+            texture_positions.push((i+1)/10);
+            texture_positions.push(j/10);
+            texture_positions.push(i/10);
+            texture_positions.push((j+1)/10);
+            texture_positions.push((i+1)/10);
+            texture_positions.push(j/10);
+            texture_positions.push((i+1)/10);
+            texture_positions.push((j+1)/10);
+            texture_positions.push(i/10);
+            texture_positions.push((j+1)/10);
+        }   
+    }
+    this.texture_positions = new Float32Array(texture_positions);
+    this.textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.texture_positions, gl.STATIC_DRAW);
 }
 
 WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
     var effectElements = this.filterManager.effectElements;
     var gl = this.gl;
-    this.positionAttributeLocation = gl.getAttribLocation(this.program, "a_position");
-    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 4 * 12 * 1);
-    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 4 * 12 * 1);
     this.gl.useProgram(this.program);
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6 * 75);
+    
+    //POSITION
+    var positions = [];
+    var i, j, len = 10, jlen = 10;
+    for(j = 0; j < jlen; j += 1) {
+        for(i = 0; i < len; i += 1) {
+            /*positions.push(i/10);
+            positions.push(j/10);
+            positions.push((i+1)/10);
+            positions.push(j/10);
+            positions.push(i/10);
+            positions.push((j+1)/10);
+            positions.push((i+1)/10);
+            positions.push(j/10);
+            positions.push((i+1)/10);
+            positions.push((j+1)/10);
+            positions.push(i/10);
+            positions.push((j+1)/10);*/
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+            positions.push(Math.random());
+        }   
+    }
+    this.positions = new Float32Array(positions);
+    this.positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(this.positionAttributeLocation);
+    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+    //TEXTURE
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.enableVertexAttribArray(this.texcoordLocation);
+    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+    //DRAWING
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6 * 100);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.elem.globalData.positionBuffer);
 };
