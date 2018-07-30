@@ -68,6 +68,7 @@
         }
 
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
     <!-- build:js lottie.js -->
     <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
@@ -243,6 +244,12 @@
     }, 1000);
 
 
+    const global_options = {
+      spring_force: 0.5
+    }
+    var gui = new dat.GUI()
+
+    gui.add(global_options, 'spring_force', 0, 1).step(.01)
 
 
     /*var elem = document.getElementById('lottie2');

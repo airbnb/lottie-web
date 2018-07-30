@@ -98,41 +98,49 @@ function WPuppetPinEffect(filterManager, elem) {
     gl.bufferData(gl.ARRAY_BUFFER, this.texture_positions, gl.STATIC_DRAW);
 }
 
+function WPuppetPinParticle(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+WPuppetPinParticle.prototype.addForce = function(x, y) {
+    this.x += x;
+    this.y += y;
+}
+
 WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
     var effectElements = this.filterManager.effectElements;
     var gl = this.gl;
     this.gl.useProgram(this.program);
-    
+
     //POSITION
+    var particles = []
     var positions = [];
     var i, j, len = 10, jlen = 10;
     for(j = 0; j < jlen; j += 1) {
         for(i = 0; i < len; i += 1) {
-            /*positions.push(i/10);
-            positions.push(j/10);
-            positions.push((i+1)/10);
-            positions.push(j/10);
-            positions.push(i/10);
-            positions.push((j+1)/10);
-            positions.push((i+1)/10);
-            positions.push(j/10);
-            positions.push((i+1)/10);
-            positions.push((j+1)/10);
-            positions.push(i/10);
-            positions.push((j+1)/10);*/
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
-            positions.push(Math.random());
+            particles.push(new WPuppetPinParticle(i / 10, j / 10));
+            particles.push(new WPuppetPinParticle((i + 1) / 10, j / 10));
+            particles.push(new WPuppetPinParticle(i / 10, (j + 1) / 10));
+            particles.push(new WPuppetPinParticle((i + 1) / 10, j / 10));
+            particles.push(new WPuppetPinParticle((i + 1) / 10, (j + 1) / 10));
+            particles.push(new WPuppetPinParticle(i / 10, (j + 1) / 10));
+
+            /*particles.push(new WPuppetPinParticle(Math.random(), Math.random()));
+            particles.push(new WPuppetPinParticle(Math.random(), Math.random()));
+            particles.push(new WPuppetPinParticle(Math.random(), Math.random()));
+            particles.push(new WPuppetPinParticle(Math.random(), Math.random()));
+            particles.push(new WPuppetPinParticle(Math.random(), Math.random()));
+            particles.push(new WPuppetPinParticle(Math.random(), Math.random()));*/
+            
         }   
+    }
+    for(i = 0; i < particles.length; i += 1) {
+        if(i > 40 && i < 70) {
+            particles[i].addForce(0.01,0.01);
+        }
+        positions.push(particles[i].x);
+        positions.push(particles[i].y);
     }
     this.positions = new Float32Array(positions);
     this.positionBuffer = gl.createBuffer();
