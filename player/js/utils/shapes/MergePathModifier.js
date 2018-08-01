@@ -71,6 +71,7 @@ MergePathModifier.prototype.addPathToCommands = function(path, transformers, lev
 		pt2 = this.transformPoint(path.i[0], transformers, level);
 		pt3 = this.transformPoint(path.v[0], transformers, level);
 		commands.push([Module.CUBIC_VERB, pt1[0], pt1[1], pt2[0], pt2[1], pt3[0], pt3[1]]);
+		commands.push([Module.CLOSE_VERB]);
 	}
 }
 
@@ -133,20 +134,24 @@ MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
 		return;
 	}
 
+	var isFirstShape = false;
 	for(i = len - 1; i >= 0; i -= 1) {
 		shapeData = this.shapes[i];
 		shape = shapeData.shape;
 		this.addShapeToCommands(shape, shapeData.data.transformers, shapeData.data.lvl, commands);
 		if(merge_mode !== 'none') {
-			if(i === len - 1 && (merge_mode === Module.PathOp.DIFFERENCE || merge_mode === Module.PathOp.REVERSE_DIFFERENCE || merge_mode === Module.PathOp.INTERSECT)) {
+			if(!isFirstShape && (merge_mode === Module.PathOp.DIFFERENCE || merge_mode === Module.PathOp.REVERSE_DIFFERENCE || merge_mode === Module.PathOp.INTERSECT)) {
 				current_shape_merge_mode = Module.PathOp.UNION;
 			} else {
 				current_shape_merge_mode = merge_mode;
 			}
-			skPath = this.SkPathFromCmdTyped(commands);
-			builder.add(skPath, current_shape_merge_mode);
-			skPath.delete();
-			commands.length = 0;
+			if(commands.length) {
+				isFirstShape = true;
+				skPath = this.SkPathFromCmdTyped(commands);
+				builder.add(skPath, current_shape_merge_mode);
+				skPath.delete();
+				commands.length = 0;
+			}
 		}
 		//if(i > 0) {
             shapeData.shape._mdf = true;
