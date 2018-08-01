@@ -33,7 +33,7 @@ function WPuppetPinEffect(filterManager, elem) {
     this.particles = [];
     var i, j, len = this.MASSES_PER_ROW;
     var restingLength = 1 / (this.MASSES_PER_ROW - 1);
-    restingLength /= 20;
+    //restingLength /= 20;
     for(j = 0; j < len ; j += 1) {
         for(i = 0; i < len ; i += 1) {
             var p = new WPuppetPinParticle(i / (len - 1), j / (len - 1), this.particles);
@@ -54,9 +54,9 @@ function WPuppetPinEffect(filterManager, elem) {
     }
     this.positions = createTypedArray('float32', this.particles.length * 12);
     this.particles[0].fixed = true;
-    this.particles[this.MASSES_PER_ROW - 1].fixed = true;
-    this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - 1].fixed = true;
-    this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - this.MASSES_PER_ROW].fixed = true;
+    //this.particles[this.MASSES_PER_ROW - 1].fixed = true;
+    //this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - 1].fixed = true;
+    //this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - this.MASSES_PER_ROW].fixed = true;
 
     var texture_positions = [];
     var i, j, len = (this.MASSES_PER_ROW - 1);
@@ -95,13 +95,27 @@ function WPuppetPinEffect(filterManager, elem) {
 }
 
 function WPuppetPinParticle(x, y, particles) {
-    this.x = x;
-    this.y = y;
+    this.startPosition = [x, y];
+    this.fixedPosition = [x, y];
+    this.position = [x, y];
+    this.previous = [x, y];
+    
     this.force = [0, 0];
     this.springs = [];
     this.particles = particles;
     this.fixed = false;
+
+    var TIMESTEP = 1800 / 1000;
+    this.TIMESTEP_SQ = TIMESTEP * TIMESTEP;
+    this.DRAG = TIMESTEP * TIMESTEP;
+    var DAMPING = 0.03;
+    this.DRAG = 1 - DAMPING;
 }
+
+WPuppetPinParticle.prototype.reset = function() {
+  this.position[0] = this.previous[0] = this.startPosition[0];
+  this.position[1] = this.previous[1] = this.startPosition[1];
+};
 
 WPuppetPinParticle.prototype.addSpring = function(target, restingLength) {
   this.springs.push({
@@ -110,14 +124,51 @@ WPuppetPinParticle.prototype.addSpring = function(target, restingLength) {
   });
 }
 
-WPuppetPinParticle.prototype.addForce = function(force) {
-    this.x += force[0];
-    this.y += force[1];
+WPuppetPinParticle.prototype.integrate = function(force) {
+  if ( this.fixed ) {
+    // Direction in which we move
+    var newPosition = [this.fixedPosition[0] - this.position[0],
+                       this.fixedPosition[1] - this.position[1]];
+
+    // Normalize our step
+    var delta = Math.sqrt(newPosition[0] * newPosition[0] +
+                          newPosition[1] * newPosition[1]);
+    if ( delta < 0.0001 ) {
+      return;
+    }
+    newPosition[0] /= delta;
+    newPosition[1] /= delta;
+
+    // Cap step to limit
+    var limit = 0.0001 * this.TIMESTEP_SQ;
+    delta = Math.min(delta, limit);
+    newPosition[0] *= delta;
+    newPosition[1] *= delta;
+
+    // Update
+    newPosition[0] += this.position[0];
+    newPosition[1] += this.position[1];
+  } else {
+    var newPosition = [this.position[0] - this.previous[0],
+                       this.position[1] - this.previous[1]];
+
+    newPosition[0] *= this.DRAG;
+    newPosition[1] *= this.DRAG;
+    newPosition[0] += this.position[0];
+    newPosition[1] += this.position[1];
+    newPosition[0] += this.TIMESTEP_SQ * force[0];
+    newPosition[1] += this.TIMESTEP_SQ * force[1];
+  }
+
+  this.previous[0] = this.position[0];
+  this.previous[1] = this.position[1];
+  this.position[0] = newPosition[0];
+  this.position[1] = newPosition[1];
 }
 
 WPuppetPinParticle.prototype.distanceTo = function(other) {
-  var deltaX = this.x - other.x;
-  var deltaY = this.y - other.y;
+  var deltaX = this.position[0] - other.position[0];
+  var deltaY = this.position[1] - other.position[1];
   return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 }
 
@@ -132,8 +183,8 @@ WPuppetPinParticle.prototype.resolveForce = function() {
     var D = this.distanceTo(other);
     var extension = D - spring.restingLength;
     var force = -k * extension;
-    F[0] += force * (this.x - other.x) / D;
-    F[1] += force * (this.y - other.y) / D;
+    F[0] += force * (this.position[0] - other.position[0]) / D;
+    F[1] += force * (this.position[1] - other.position[1]) / D;
   }
 
   return F;
@@ -142,23 +193,38 @@ WPuppetPinParticle.prototype.resolveForce = function() {
 WPuppetPinEffect.prototype.simulationStep = function(){
     // Sweeping across particles, calculate forces
     var i, len = this.particles.length, particles;
+    var maxForce = 0;
     for(i = 0; i < len; i += 1) {
         particle = this.particles[i];
         if (!particle.fixed) {
-          particle.resolveForce();
+          var F = particle.resolveForce();
+          var magnitude = Math.sqrt(F[0] * F[0] + F[1] * F[1]);
+          if ( magnitude > maxForce ) {
+            maxForce = magnitude;
+          }
         }
     }
       
     // Apply forces and update positions
     for(i = 0; i < len; i += 1) {
         particle = this.particles[i];
-        if (!particle.fixed) {
-          particle.addForce(particle.force);
-        }
+        //if (!particle.fixed) {
+          particle.integrate(particle.force);
+        //}
     }
+
+  return maxForce;
 }
 
 WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
+    console.log('renderFrame')
+    var i, len = this.particles.length;
+    for(i = 0; i < len; i += 1) {
+        //this.particles[i].reset();
+    }
+    this.particles[0].fixedPosition[0] = global_options.spring_force;
+    this.particles[0].fixedPosition[1] = global_options.spring_force;
+
     var effectElements = this.filterManager.effectElements;
     var gl = this.gl;
     this.gl.useProgram(this.program);
@@ -166,10 +232,12 @@ WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
     //POSITION
     var positions = [];
     //var size = 1 / this.MASSES_PER_ROW;
-    var i = 0;
 
-    for(i = 0; i < 10; i += 1) {
-      this.simulationStep();
+    for(i = 0; i < 1000; i += 1) {
+      var maxForce = this.simulationStep();
+      if ( maxForce < 0.000001 ) {
+        break;
+      }
     }
 
     var len = this.MASSES_PER_ROW;
@@ -182,18 +250,18 @@ WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
             next_y_particle = this.particles[(j + 1) * len + i];
             next_x_y_particle = this.particles[(j + 1) * len + i + 1];
             
-            this.positions[_count++] = particle.x;
-            this.positions[_count++] = particle.y;
-            this.positions[_count++] = next_x_particle.x;
-            this.positions[_count++] = next_x_particle.y;
-            this.positions[_count++] = next_y_particle.x;
-            this.positions[_count++] = next_y_particle.y;
-            this.positions[_count++] = next_x_particle.x;
-            this.positions[_count++] = next_x_particle.y;
-            this.positions[_count++] = next_x_y_particle.x;
-            this.positions[_count++] = next_x_y_particle.y;
-            this.positions[_count++] = next_y_particle.x;
-            this.positions[_count++] = next_y_particle.y;
+            this.positions[_count++] = particle.position[0];
+            this.positions[_count++] = particle.position[1];
+            this.positions[_count++] = next_x_particle.position[0];
+            this.positions[_count++] = next_x_particle.position[1];
+            this.positions[_count++] = next_y_particle.position[0];
+            this.positions[_count++] = next_y_particle.position[1];
+            this.positions[_count++] = next_x_particle.position[0];
+            this.positions[_count++] = next_x_particle.position[1];
+            this.positions[_count++] = next_x_y_particle.position[0];
+            this.positions[_count++] = next_x_y_particle.position[1];
+            this.positions[_count++] = next_y_particle.position[0];
+            this.positions[_count++] = next_y_particle.position[1];
         }   
     }
 
