@@ -6,13 +6,14 @@ function WPuppetPinEffect(filterManager, elem) {
 	//// try warping and mapping texture correctly
 	// TODO: look into geometry instancing
 	// interpolate on the graphics card
-	// 
+	// TODO: look for  ARAP ("as rigid as possible") deformation algorithms
 
 	// setup network of masses and springs
 
 	var gl = elem.globalData.canvasContext;
     var vsh = get_shader('puppet_pin_shader_vert');
     var fsh = get_shader('puppet_pin_shader_frag');
+
 
     var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
     var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
@@ -28,52 +29,61 @@ function WPuppetPinEffect(filterManager, elem) {
     this.gl = gl;
     this.elem = elem;
 
-    this.MASSES_PER_ROW = 20;
+    this.MASSES_PER_ROW = 10;
 
+    // Define the mass-spring network
     this.particles = [];
     var i, j, len = this.MASSES_PER_ROW;
-    var restingLength = 1 / (this.MASSES_PER_ROW - 1);
-    //restingLength /= 20;
+    var restingLength = 1 / (this.MASSES_PER_ROW - 1); // Spacing between masses
+    //restingLength *= 0.9;
     for(j = 0; j < len ; j += 1) {
         for(i = 0; i < len ; i += 1) {
+            // Creating a a mass at a given location, not connecting yet
             var p = new WPuppetPinParticle(i / (len - 1), j / (len - 1), this.particles);
             this.particles.push(p);
+
+            // Create connections to neighbours (above, below, left & right and diagonals)
+            // 8 springs in total. Provide their resting length on creation
+            // TODO we are assuming all springs have the same spring constant. Should try
+            // to give diagonal spring a different spring constant to adjust how material
+            // behaves
+         
             // Connect left and right
             if ( i > 0 ) { p.addSpring(this.particles.length - 2, restingLength) }
             if ( i < len - 1 ) { p.addSpring(this.particles.length, restingLength) }
             // Connect up and down
             if ( j > 0 ) { p.addSpring(this.particles.length - 1 - len, restingLength) }
             if ( j < len - 1 ) { p.addSpring(this.particles.length - 1 + len, restingLength) }
-            // Diagonal springs
+
+            // Diagonal springs (sqrt2 assumes square network)
             var diagonal = Math.SQRT2 * restingLength; 
             if ( i > 0 && j > 0) { p.addSpring(this.particles.length - 2 - len, diagonal) }
             if ( i < len - 1 && j > 0) { p.addSpring(this.particles.length - len, diagonal) }
             if ( i > 0 && j < len - 1) { p.addSpring(this.particles.length - 2 + len, diagonal) }
             if ( i < len - 1 && j < len - 1) { p.addSpring(this.particles.length + len, diagonal) }
+
+            // Possible to add more springs to simulate other forces, e.g. shearing forces
+            // E.g. connect a mass to a mass two rows below/across
         }   
     }
-    this.positions = createTypedArray('float32', this.particles.length * 12);
-    this.particles[0].fixed = true;
+
+    // Create array to hold vertices.
+    // One square per segment, 2 triangles per square, 3 2D vertices per triangle
+    var n = (len - 1) * (len - 1); 
+    this.positions = createTypedArray('float32', n * 12);
+    
+    // To add constraints we fix certain masses so that forces do not move them
+    this.particles[1 * this.MASSES_PER_ROW + 1].fixed = true;
     //this.particles[this.MASSES_PER_ROW - 1].fixed = true;
     //this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - 1].fixed = true;
-    //this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - this.MASSES_PER_ROW].fixed = true;
+    this.particles[this.MASSES_PER_ROW * this.MASSES_PER_ROW - this.MASSES_PER_ROW - 1 - 1 * this.MASSES_PER_ROW].fixed = true;
 
+    // Map texture coordinates to the masses. This has the same number of elements as the positions array
+    // but does not update based on the particles
     var texture_positions = [];
     var i, j, len = (this.MASSES_PER_ROW - 1);
     for(j = 0; j < len; j += 1) {
         for(i = 0; i < len; i += 1) {
-            /*texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());
-            texture_positions.push(Math.random());*/
             texture_positions.push(i/len);
             texture_positions.push(j/len);
             texture_positions.push((i+1)/len);
@@ -94,24 +104,26 @@ function WPuppetPinEffect(filterManager, elem) {
     gl.bufferData(gl.ARRAY_BUFFER, this.texture_positions, gl.STATIC_DRAW);
 }
 
+// Model for a particle
 function WPuppetPinParticle(x, y, particles) {
-    this.startPosition = [x, y];
-    this.fixedPosition = [x, y];
-    this.position = [x, y];
-    this.previous = [x, y];
+    this.startPosition = [x, y]; // Stored to enable reseting the particle
+    this.fixedPosition = [x, y]; // If fixed, desired location of particle
+    this.position = [x, y]; // Current position
+    this.previous = [x, y]; // Previous position, used for Verlet integration
     
-    this.force = [0, 0];
-    this.springs = [];
+    this.force = [0, 0]; // Used to store sum of all forces on particle
+    this.springs = []; // list of springs, defined as: indices to other particles, and resting length
     this.particles = particles;
-    this.fixed = false;
+    this.fixed = false; // When a particle is fixed, forces do not move but it slowly moves towards fixedPosition
 
+    // Variables for physics simulation
     var TIMESTEP = 1800 / 1000;
-    this.TIMESTEP_SQ = TIMESTEP * TIMESTEP;
-    this.DRAG = TIMESTEP * TIMESTEP;
-    var DAMPING = 0.03;
-    this.DRAG = 1 - DAMPING;
+    this.TIMESTEP_SQ = TIMESTEP * TIMESTEP; // A smaller timestep will be more accurate but run slower
+    var DAMPING = 0.03; // Damping factor allows simulation to settle down, removing oscillations
+    this.DRAG = 1 - DAMPING; // Drag force slows down particle, acting as friction
 }
 
+// Reset moves particle back to starting point
 WPuppetPinParticle.prototype.reset = function() {
   this.position[0] = this.previous[0] = this.startPosition[0];
   this.position[1] = this.previous[1] = this.startPosition[1];
@@ -126,44 +138,65 @@ WPuppetPinParticle.prototype.addSpring = function(target, restingLength) {
 
 WPuppetPinParticle.prototype.integrate = function(force) {
   if ( this.fixed ) {
-    // Direction in which we move
+    // When we are fixed, just move particle towards its fixedPosition, ignoring all force
+    // We need to do this in gradual steps to avoid tearing apart the network
+    // Analogy is we want to walk towards a wall in fixed steps
+    
+    // Direction in which we move as a vector from position to fixedPosition
     var newPosition = [this.fixedPosition[0] - this.position[0],
                        this.fixedPosition[1] - this.position[1]];
 
-    // Normalize our step
+    // Get distance from position to fixedPosition
     var delta = Math.sqrt(newPosition[0] * newPosition[0] +
                           newPosition[1] * newPosition[1]);
     if ( delta < 0.0001 ) {
-      return;
+      // If we are close to the fixed position, exit early indicating we didn't move
+      return 0;
     }
+  
+    // Normalize our direction
     newPosition[0] /= delta;
     newPosition[1] /= delta;
 
-    // Cap step to limit
+    // Set the length of direction to a limit (or delta if it is smaller)
     var limit = 0.0001 * this.TIMESTEP_SQ;
     delta = Math.min(delta, limit);
     newPosition[0] *= delta;
     newPosition[1] *= delta;
 
-    // Update
+    // Get our new position by adding step to our old position
     newPosition[0] += this.position[0];
     newPosition[1] += this.position[1];
   } else {
+    // Perform Verlet integration
+    // https://en.wikipedia.org/wiki/Verlet_integration
     var newPosition = [this.position[0] - this.previous[0],
                        this.position[1] - this.previous[1]];
 
+    // Drag parameter slows us down
     newPosition[0] *= this.DRAG;
     newPosition[1] *= this.DRAG;
     newPosition[0] += this.position[0];
     newPosition[1] += this.position[1];
+
+    // Sum of all forces on particle changes our position
+    // This part assumes the particle has mass of 1
     newPosition[0] += this.TIMESTEP_SQ * force[0];
     newPosition[1] += this.TIMESTEP_SQ * force[1];
   }
 
+  // Save off the current position for next frame in previous
   this.previous[0] = this.position[0];
   this.previous[1] = this.position[1];
+
+  // Update our position to our newPosition
   this.position[0] = newPosition[0];
   this.position[1] = newPosition[1];
+
+  // Return the distance moved to enable to detect when network is stationary
+  var deltaX = this.position[0] - this.previous[0];
+  var deltaY = this.position[1] - this.previous[1];
+  return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 }
 
 WPuppetPinParticle.prototype.distanceTo = function(other) {
@@ -172,6 +205,7 @@ WPuppetPinParticle.prototype.distanceTo = function(other) {
   return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 }
 
+// Calculates the total force on a particle due to all connected springs
 WPuppetPinParticle.prototype.resolveForce = function() {
   var F = this.force;
   F[0] = 0;
@@ -193,37 +227,38 @@ WPuppetPinParticle.prototype.resolveForce = function() {
 WPuppetPinEffect.prototype.simulationStep = function(){
     // Sweeping across particles, calculate forces
     var i, len = this.particles.length, particles;
-    var maxForce = 0;
     for(i = 0; i < len; i += 1) {
         particle = this.particles[i];
         if (!particle.fixed) {
-          var F = particle.resolveForce();
-          var magnitude = Math.sqrt(F[0] * F[0] + F[1] * F[1]);
-          if ( magnitude > maxForce ) {
-            maxForce = magnitude;
-          }
+          particle.resolveForce();
         }
     }
       
+    var maxDistance = 0;
     // Apply forces and update positions
     for(i = 0; i < len; i += 1) {
         particle = this.particles[i];
-        //if (!particle.fixed) {
-          particle.integrate(particle.force);
-        //}
+        var d = particle.integrate(particle.force);
+
+        // Keep track of the maximum distance moved by any particle
+        if ( d > maxDistance ) {
+          maxDistance = d;
+        }
     }
 
-  return maxForce;
+  return maxDistance;
 }
 
 WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
-    console.log('renderFrame')
+    // Reset the state of the particles first so network has no "memory"
     var i, len = this.particles.length;
     for(i = 0; i < len; i += 1) {
-        //this.particles[i].reset();
+        this.particles[i].reset();
     }
-    this.particles[0].fixedPosition[0] = global_options.spring_force;
-    this.particles[0].fixedPosition[1] = global_options.spring_force;
+
+    // Update one of the constraints for testing
+    this.particles[1 * this.MASSES_PER_ROW + 1].fixedPosition[0] = global_options.spring_force;
+    this.particles[1 * this.MASSES_PER_ROW + 1].fixedPosition[1] = global_options.spring_force;
 
     var effectElements = this.filterManager.effectElements;
     var gl = this.gl;
@@ -233,13 +268,18 @@ WPuppetPinEffect.prototype.renderFrame = function(forceRender, buffer){
     var positions = [];
     //var size = 1 / this.MASSES_PER_ROW;
 
-    for(i = 0; i < 1000; i += 1) {
-      var maxForce = this.simulationStep();
-      if ( maxForce < 0.000001 ) {
+    // Now that we have all constraints in place we run network until we find a solution
+    for(i = 0; i < 10000; i += 1) {
+      var maxDistance = this.simulationStep();
+      if ( maxDistance < 0.000001 ) {
         break;
       }
     }
+    // TODO handle case we don't find solution
 
+    // Map vertices from the particles
+    // TODO investigate using an indexed geometry, which in effect would
+    // allow us to directly upload the particles array
     var len = this.MASSES_PER_ROW;
     var _count = 0;
     var particle,next_x_particle,next_y_particle,next_x_y_particle;

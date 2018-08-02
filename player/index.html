@@ -225,7 +225,7 @@
     var animData = {
         container: elem,
         renderer: 'webgl',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -238,8 +238,8 @@
         anim.setSubframe(false);
         anim.addEventListener('DOMLoaded', function() {
             setTimeout(function(){
-                //anim.play()
-            }, 500);
+                anim.pause()
+            }, 50);
         })
     }, 1000);
 

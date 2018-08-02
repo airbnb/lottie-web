@@ -33,17 +33,17 @@ function WSolidElement(data, globalData, comp) {
     canvas.height = this.data.sh;
     var canvasContext = canvas.getContext('2d');
 
-    var grd=canvasContext.createLinearGradient(0,0,this.data.sw,this.data.sh);
+    /*var grd=canvasContext.createLinearGradient(0,0,this.data.sw,this.data.sh);
     grd.addColorStop(0,"red");
     grd.addColorStop(1,"green");
-    canvasContext.fillStyle=grd;
-    //canvasContext.fillStyle = this.data.sc;
+    canvasContext.fillStyle=grd;*/
+    canvasContext.fillStyle = this.data.sc;
     canvasContext.rect(0,0,this.data.sw, this.data.sh);
     canvasContext.fill();
-    document.body.appendChild(canvas);
+    /*document.body.appendChild(canvas);
     canvas.style.position = 'absolute';
     canvas.style.zIndex = '1000';
-    canvas.style.top = '500px';
+    canvas.style.top = '500px';*/
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     this._finalTexture = this.texture;
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);

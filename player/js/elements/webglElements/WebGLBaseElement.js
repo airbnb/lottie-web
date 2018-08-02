@@ -59,6 +59,7 @@ WebGLBaseElement.prototype = {
             var size = this.getSize();
             var i, len = filters.length;
             gl.viewport(0, 0, size.w, size.h);
+            this._finalTexture = this.texture;
             for (i = 0; i < len; i++) {
                 // Setup to draw into one of the framebuffers.
                 gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffersData.framebuffers[i % 2]);
