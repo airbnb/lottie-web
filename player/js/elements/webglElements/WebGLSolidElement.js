@@ -60,7 +60,6 @@ WSolidElement.prototype.renderInnerContent = function() {
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     this._finalTexture = this.texture;
     this.renderEffects();
-    this.renderLayer();
     //
 };
 

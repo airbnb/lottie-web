@@ -1,5 +1,18 @@
 function WShapeElement(data, globalData, comp) {
     this.gl = globalData.canvasContext;
+
+    // Replacing transform data with generic object
+    var canvas_data = {}
+    for(var s in data) {
+        if(data.hasOwnProperty(s)) {
+            canvas_data[s] = data[s];
+        }
+    }
+    canvas_data.masksProperties = [];
+    //TODO: might make sense to reset transform of canvas instead of transform of shape layer
+    data.ks = {a:{k:[0,0,0],a:0},p:{k:[0,0,0],a:0},r:{k:0,a:0},s:{k:[100,100,100],a:0},o:{k:100,a:0}};
+
+
     this.initElement(data,globalData,comp);
     var _localGlobalData = {};
     for(var prop in globalData) {
@@ -9,16 +22,7 @@ function WShapeElement(data, globalData, comp) {
     }
     _localGlobalData.renderer = this;
     this._localGlobalData = _localGlobalData;
-    // Replacing transform data with generic object
-    var canvas_data = {}
-    for(var s in data) {
-        if(data.hasOwnProperty(s)) {
-            canvas_data[s] = data[s];
-        }
-    }
 
-    //TODO: keep this to use whem transform is applied to vertex shader instead of the inner canvas
-    //canvas_data.ks = {a:{k:[0,0],a:0},p:{k:[0,0],a:0},r:{k:0,a:0},s:{k:[0,0],a:0},o:{k:0,a:0}};
     this.canvasElement = new CVShapeElement(canvas_data,_localGlobalData,comp);
     this.renderConfig = {
         clearCanvas: true
@@ -102,20 +106,6 @@ WShapeElement.prototype.renderInnerContent = function() {
 
     this.renderEffects();
     //
-
-    gl.useProgram(this.program);
-    
-    //TODO the transform is being applied to the inner canvas. Would be good to apply transform here.
-    //Parent comp transform + localTransform
-    var tr = this.comp.getTransform();
-    //var newTransform = new Matrix();
-    //this.finalTransform.mat.clone(newTransform);
-    // var p = tr.props;
-    //newTransform.translate(this.currentBox.x,this.currentBox.y);
-    //newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
-    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, tr.props);
-    //
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
 WShapeElement.prototype.updateModifiedState = function() {

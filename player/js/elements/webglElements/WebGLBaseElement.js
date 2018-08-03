@@ -46,6 +46,7 @@ WebGLBaseElement.prototype = {
         this.renderRenderable();
         this.setBlendMode();
         this.renderInnerContent();
+        this.renderLayer();
         if (this._isFirstFrame) {
             this._isFirstFrame = false;
         }

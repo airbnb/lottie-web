@@ -44,8 +44,7 @@ WTrackMatte.prototype.renderFrame = function() {
 	var gl = this.gl;
     gl.activeTexture(gl.TEXTURE0);
     //Rendering mask content
-    gl.bindTexture(gl.TEXTURE_2D, this.mask.texture);
-    this.mask.renderEffects();
+    this.mask.renderInnerContent();
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.element.currentBuffer);
     //Resetting textures and buffers to element texture and buffer
     gl.activeTexture(gl.TEXTURE1);

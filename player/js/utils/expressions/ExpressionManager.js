@@ -331,6 +331,7 @@ var ExpressionManager = (function(){
 
     function initiateExpression(elem,data,property){
         var val = data.x;
+        var active = true;
         var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;

@@ -44,15 +44,17 @@ function WCompElement(data, globalData, comp) {
     this.transformMat.scale(2, 2);
     this.transformMat.translate(-1, -1);
 
+    this._finalTexture = this.texture = this.bufferData.texture;
+
 }
 
 extendPrototype([WebGLRenderer, ICompElement, WebGLBaseElement], WCompElement);
 
-WCompElement.prototype.renderInnerContent = function() {
-
+WCompElement.prototype.renderNestedLayers = function() {
     var gl = this.gl;
 
     gl.viewport(0, 0, this.data.w, this.data.h);
+    // Binding this comp's FRAME BUFFER to draw nested elements
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.bufferData.framebuffer);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -63,14 +65,13 @@ WCompElement.prototype.renderInnerContent = function() {
             this.elements[i].renderFrame();
         }
     }
-
     this.gl.bindTexture(gl.TEXTURE_2D, this.bufferData.texture);
+}
 
+WCompElement.prototype.renderInnerContent = function() {
+
+    this.renderNestedLayers();
     this.renderEffects();
-
-    this.comp.switchBuffer();
-    
-    this.renderLayer();
 };
 
 WCompElement.prototype.destroy = function(){

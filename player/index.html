@@ -224,7 +224,7 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'webgl',
+        renderer: 'svg',
         loop: false,
         autoplay: true,
         rendererSettings: {
@@ -238,7 +238,7 @@
         anim.setSubframe(false);
         anim.addEventListener('DOMLoaded', function() {
             setTimeout(function(){
-                anim.pause()
+                //anim.pause()
             }, 50);
         })
     }, 1000);

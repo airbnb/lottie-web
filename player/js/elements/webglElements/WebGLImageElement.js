@@ -73,7 +73,6 @@ WImageElement.prototype.renderInnerContent = function() {
     var gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     this.renderEffects();
-    this.renderLayer();
     //
 };
 
