@@ -189,11 +189,15 @@ AnimationItem.prototype.preloadImages = function() {
     this.imagePreloader = new ImagePreloader();
     this.imagePreloader.setAssetsPath(this.assetsPath);
     this.imagePreloader.setPath(this.path);
-    this.imagePreloader.loadAssets(this.animationData.assets, function(err) {
-        if(!err) {
-            this.trigger('loaded_images');
-        }
-    }.bind(this));
+    this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
+    this.renderer.globalData.imagePreloader = this.imagePreloader;
+}
+
+AnimationItem.prototype.imagesLoaded = function(err) {
+    if(!err) {
+        this.trigger('loaded_images');
+    }
+    this.checkLoaded();
 }
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -245,7 +249,7 @@ AnimationItem.prototype.elementLoaded = function () {
 };
 
 AnimationItem.prototype.checkLoaded = function () {
-    if (this.pendingElements === 0) {
+    if (this.pendingElements === 0 && this.imagePreloader.pendingImages === 0 && !this.isLoaded) {
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }

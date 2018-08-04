@@ -1,16 +1,17 @@
 function WImageElement(data, globalData, comp) {
     this.assetData = globalData.getAssetData(data.refId);
-    this.img = new Image();
-    this.img.crossOrigin = 'anonymous';
     this.gl = globalData.canvasContext;
+    var gl = this.gl;
+    this.texture = textureFactory(gl);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+              new Uint8Array([0, 0, 0, 0]));
+
     this.initElement(data,globalData,comp);
-    this.globalData.addPendingElement();
 
     var vsh = get_shader('image_layer_shader_vert');
 
     var fsh = get_shader('image_layer_shader_frag');
 
-    var gl = this.gl;
     var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
     var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
     this.program = WebGLProgramFactory.createProgram(gl, vertexShader, fragmentShader);
@@ -19,6 +20,8 @@ function WImageElement(data, globalData, comp) {
     this.mat4UniformLoc = gl.getUniformLocation(this.program, "uMatrix");
     this.localmat4UniformLoc = gl.getUniformLocation(this.program, "localMatrix");
     this.texcoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
+    gl.enableVertexAttribArray(this.texcoordLocation);
+    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
 
     var localMatrix = new Matrix();
     localMatrix.scale(this.assetData.w, this.assetData.h);
@@ -26,11 +29,6 @@ function WImageElement(data, globalData, comp) {
     gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
     gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    this.texture = textureFactory(gl);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-              new Uint8Array([0, 0, 0, 0]));
-    gl.enableVertexAttribArray(this.texcoordLocation);
-    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
     this._finalTexture = this.texture;
     
 }
@@ -60,11 +58,19 @@ WImageElement.prototype.imageFailed = function() {
 }
 
 WImageElement.prototype.createContent = function(){
-    var img = this.img;
-    img.addEventListener('load', this.imageLoaded.bind(this), false);
-    img.addEventListener('error', this.imageFailed.bind(this), false);
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
-    img.src = assetPath;
+    var img = this.globalData.imagePreloader.getImageById(this.assetData.id);
+    if(img) {
+        this.img = img;
+        this.imageLoaded();
+    } else {
+        this.img = new Image();
+        this.img.crossOrigin = 'anonymous';
+        this.img.addEventListener('load', this.imageLoaded.bind(this), false);
+        this.img.addEventListener('error', this.imageFailed.bind(this), false);
+        var assetPath = this.globalData.getAssetsPath(this.assetData);
+        this.img.src = assetPath;
+    }
+        this.globalData.addPendingElement();
     
 };
 

@@ -1,8 +1,8 @@
 var ImagePreloader = (function(){
 
     function imageLoaded(){
-        this.loadedAssets += 1;
-        if(this.loadedAssets === this.totalImages){
+        this.pendingImages -= 1;
+        if(this.pendingImages === 0){
             if(this.imagesLoadedCb) {
                 this.imagesLoadedCb(null);
             }
@@ -29,18 +29,24 @@ var ImagePreloader = (function(){
 
     function loadImage(path){
         var img = createTag('img');
+        img.crossOrigin = 'anonymous';
         img.addEventListener('load', imageLoaded.bind(this), false);
         img.addEventListener('error', imageLoaded.bind(this), false);
         img.src = path;
+        return img;
     }
     function loadAssets(assets, cb){
         this.imagesLoadedCb = cb;
         this.totalAssets = assets.length;
-        var i;
-        for(i=0;i<this.totalAssets;i+=1){
-            if(!assets[i].layers){
-                loadImage.bind(this)(getAssetsPath.bind(this)(assets[i]));
-                this.totalImages += 1;
+        var i, image;
+        for (i = 0; i < this.totalAssets; i +=1) {
+            if (!assets[i].layers) {
+                image = loadImage.bind(this)(getAssetsPath.bind(this)(assets[i]));
+                this.imagesData.push({
+                    img: image,
+                    data: assets[i]
+                })
+                this.pendingImages += 1;
             }
         }
     }
@@ -55,6 +61,18 @@ var ImagePreloader = (function(){
 
     function destroy() {
         this.imagesLoadedCb = null;
+        this.imagesData = null;
+    }
+
+    function getImageById(id) {
+        var i = 0, len = this.imagesData.length;
+        while(i < len) {
+            if(this.imagesData[i].data.id === id) {
+                return this.imagesData[i].img;
+            }
+            i += 1;
+        }
+        return null;
     }
 
     return function ImagePreloader(){
@@ -62,11 +80,12 @@ var ImagePreloader = (function(){
         this.setAssetsPath = setAssetsPath;
         this.setPath = setPath;
         this.destroy = destroy;
+        this.getImageById = getImageById;
         this.assetsPath = '';
         this.path = '';
         this.totalAssets = 0;
-        this.totalImages = 0;
-        this.loadedAssets = 0;
+        this.pendingImages = 0;
         this.imagesLoadedCb = null;
+        this.imagesData = [];
     };
 }());
