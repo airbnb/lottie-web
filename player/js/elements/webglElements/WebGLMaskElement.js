@@ -14,9 +14,9 @@ function WMaskElement(data,element){
     if(hasMasks) {
 
         this.canvas = createTag('canvas');
-        var compSize = this.element.getSize();
-        this.canvas.width = compSize.w;
-        this.canvas.height = compSize.h;
+        var elemSize = this.element.getSize();
+        this.canvas.width = elemSize.w;
+        this.canvas.height = elemSize.h;
         this.canvasContext = this.canvas.getContext('2d');
         /*document.body.appendChild(this.canvas);
         this.canvas.style.position = 'absolute';

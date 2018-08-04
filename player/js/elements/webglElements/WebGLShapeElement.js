@@ -8,8 +8,8 @@ function WShapeElement(data, globalData, comp) {
             canvas_data[s] = data[s];
         }
     }
-    canvas_data.masksProperties = [];
     //TODO: might make sense to reset transform of canvas instead of transform of shape layer
+    data.masksProperties = [];
     data.ks = {a:{k:[0,0,0],a:0},p:{k:[0,0,0],a:0},r:{k:0,a:0},s:{k:[100,100,100],a:0},o:{k:100,a:0}};
 
 
@@ -23,7 +23,6 @@ function WShapeElement(data, globalData, comp) {
     _localGlobalData.renderer = this;
     this._localGlobalData = _localGlobalData;
 
-    this.canvasElement = new CVShapeElement(canvas_data,_localGlobalData,comp);
     this.renderConfig = {
         clearCanvas: true
     }
@@ -39,6 +38,8 @@ function WShapeElement(data, globalData, comp) {
     this.canvas.style.top = '500px';*/
     this.canvasContext = this.canvas.getContext('2d');
     _localGlobalData.canvasContext = this.canvasContext;
+    this.canvasElement = new CVShapeElement(canvas_data,_localGlobalData,comp);
+
     var max = 999999;
     this.currentBox = {
         x: max,
