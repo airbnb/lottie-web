@@ -1,3 +1,10 @@
+## V 5.2.0
+- FEATURE: gradient support in canvas renderer (some cases are not supported)
+- EXPRESSIONS: layer name support for expressions
+- FIX: reverse play on non loops
+- SUPPORT: Orient along path with separate dimensions
+- FIX: trim cache issue fixed
+
 ## V 5.1.20
 - FIX: instaceof Array on expressions fixed
 - FIX: text value on expressions fix
