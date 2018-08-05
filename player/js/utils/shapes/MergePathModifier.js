@@ -8,6 +8,7 @@ MergePathModifier.prototype.initModifierProperties = function(elem, data) {
     this.lStr = '';
     var shapeProperty = ShapePropertyFactory.getShapeProp(this,{ks:{a:0,k:{v:[[0,0]],i:[[0,0]],o:[[0,0]],c:true}}},4);
     this.sh = shapeProperty;
+    this.merge_mode = data.mm;
     //this.transformers = transformers;
     //this.lvl = level;
 
@@ -75,6 +76,26 @@ MergePathModifier.prototype.addPathToCommands = function(path, transformers, lev
 	}
 }
 
+// _PAPER_FUNCTION
+MergePathModifier.prototype.addPathToCommands_PAPER_FUNCTION = function(path, transformers, level, paper_path) {
+	var i, len = path._length;
+	var pt1, pt2, pt3;
+	var segment;
+	for(i = 0; i < len; i += 1) {
+		pt1 = this.transformPoint(path.v[i], transformers, level);
+		pt2 = this.transformPoint(path.i[i], transformers, level);
+		pt3 = this.transformPoint(path.o[i], transformers, level);
+		segment = new paper.Segment(new paper.Point(pt1[0],pt1[1])
+			, new paper.Point(pt2[0] - pt1[0], pt2[1] - pt1[1])
+			, new paper.Point(pt3[0] - pt1[0], pt3[1] - pt1[1]))
+		paper_path.add(segment);
+	}
+	if(path.c) {
+		paper_path.closed = true;
+	}
+	return paper_path
+}
+
 MergePathModifier.prototype.floatTypedArrayFrom2D = function(arr) {
 	// expects 2d array where index 0 is verb and index 1-n are args
 	var len = 0, cmd, c, ii, jj;
@@ -100,7 +121,7 @@ MergePathModifier.prototype.SkPathFromCmdTyped = function(cmdArr) {
 	var typedArrayFrom2D = this.floatTypedArrayFrom2D(cmdArr);
 	var cmd = typedArrayFrom2D[0];
 	var len = typedArrayFrom2D[1];
-	var path = Module.SkPathFromCmdTyped(cmd, len);
+	var path = Module.FromCmds(cmd, len);
 	Module._free(cmd);
 	return path;
 }
@@ -112,31 +133,27 @@ MergePathModifier.prototype.addShapeToCommands = function(shape, transformers, l
 	}
 }
 
-MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
+// _PAPER_FUNCTION
+MergePathModifier.prototype.addShapeToCommands_PAPER_FUNCTION = function(shape, transformers, level) {
+	var paper_path = new paper.Path();
+	var i, len = shape.paths._length;
+	for(i = 0; i < len; i += 1) {
+		this.addPathToCommands_PAPER_FUNCTION(shape.paths.shapes[i], transformers, level, paper_path);
+	}
+	return paper_path;
+}
+
+MergePathModifier.prototype.getPath = function(shapes) {
 	var commands = [];
-	var i = 0, len = this.shapes.length;
-	var shapeData, shape, skPath;
-	var merge_mode = this.mode;
-	var skPath;
+	var i = 0, len = shapes.length;
 	var builder = new Module.SkOpBuilder();
+	var skPath;
 	var current_shape_merge_mode;
-
-	var hasNewShapes = false;
-	while(i < len) {
-		if(this.shapes[i].shape._mdf) {
-			hasNewShapes = true;
-			break;
-		}
-		i += 1;
-	}
-
-	if(!hasNewShapes && !_isFirstFrame) {
-		return;
-	}
-
+	var merge_mode = this.mode;
 	var isFirstShape = false;
+	var shapeData, shape;
 	for(i = len - 1; i >= 0; i -= 1) {
-		shapeData = this.shapes[i];
+		shapeData = shapes[i];
 		shape = shapeData.shape;
 		this.addShapeToCommands(shape, shapeData.data.transformers, shapeData.data.lvl, commands);
 		if(merge_mode !== 'none') {
@@ -153,73 +170,174 @@ MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
 				commands.length = 0;
 			}
 		}
-		//if(i > 0) {
-            shapeData.shape._mdf = true;
-            shapeData.shape.paths = shapeData.localShapeCollection;
-		//} else {
-			//shapeData.data.lvl = 0;
-		//}
+        shape.paths = shapeData.localShapeCollection;
 	}
 	if(merge_mode === 'none') {
     	skPath = this.SkPathFromCmdTyped(commands);
 	} else {
-    	skPath = Module.ResolveBuilder(builder);
+    	skPath = builder.resolve();
     	builder.delete();
 	}
+  	commands = skPath.toCmds();
+	skPath.delete();
+	return commands;
+}
 
-	shapeData = this.sh;
+MergePathModifier.prototype.PathToCommands = function(path, commands) {
+	var segments = path.segments;
+	if(!segments.length) {
+		return;
+	}
+	var i, len = segments.length;
+	var pt1, pt2, pt3, prev_pt;
+	pt1 = segments[0].point;
+	commands.push([0,pt1.x, pt1.y]);
+	for(i = 1; i < len; i += 1) {
+		prev_pt = segments[i - 1].point;
+		pt1 = segments[i - 1].handleOut;
+		pt2 = segments[i].handleIn;
+		pt3 = segments[i].point;
+		commands.push([4,prev_pt.x + pt1.x, prev_pt.y + pt1.y,pt3.x + pt2.x, pt3.y + pt2.y,pt3.x, pt3.y]);
+	}
+	prev_pt = segments[len - 1].point;
+	pt1 = segments[len - 1].handleOut;
+	pt2 = segments[0].handleIn;
+	pt3 = segments[0].point;
+	commands.push([4,prev_pt.x + pt1.x, prev_pt.y + pt1.y,pt3.x + pt2.x, pt3.y + pt2.y,pt3.x, pt3.y]);
+	commands.push([5]);
+}
+
+MergePathModifier.prototype.toCmds = function(path) {
+	var commands = [];
+	if(path.children) {
+		var i, len = path.children.length;
+		for(i = 0; i < len; i += 1) {
+			this.PathToCommands(path.children[i], commands);
+		}
+	} else {
+		this.PathToCommands(path, commands);
+	}
+	return commands;
+	//console.log(commands)
+}
+
+// _PAPER_FUNCTION
+MergePathModifier.prototype.getPath_PAPER_FUNCTION = function(shapes) {
+	var paper_path = [];
+	var i = 0, len = shapes.length;
+	var skPath;
+	var current_shape_merge_mode;
+	var merge_mode = this.mode;
+	var isFirstShape = false;
+	var prev_path;
+	for(i = len - 1; i >= 0; i -= 1) {
+		shapeData = shapes[i];
+		shape = shapeData.shape;
+		paper_path = this.addShapeToCommands_PAPER_FUNCTION(shape, shapeData.data.transformers, shapeData.data.lvl);
+		if(prev_path) {
+			if(this.merge_mode === 2) {
+				prev_path = prev_path.unite(paper_path);
+			} else {
+				prev_path = prev_path.intersect(paper_path);
+			}
+		} else if(paper_path.segments.length) {
+			prev_path = paper_path;
+		}
+        shape.paths = shapeData.localShapeCollection;
+	}
+	return this.toCmds(prev_path);
+}
+
+MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
+	paper.project.activeLayer.removeChildren();
+	var commands = [];
+	var i = 0, len = this.shapes.length;
+	var shapeData, shape, skPath;
+
+	var hasNewShapes = false;
+	while(i < len) {
+		if(this.shapes[i].shape._mdf) {
+			hasNewShapes = true;
+			break;
+		}
+		i += 1;
+	}
+
+	if(!hasNewShapes && !_isFirstFrame) {
+		this.sh._mdf = false;
+		for(i = 0; i < len; i += 1) {
+			shapeData = this.shapes[i];
+        	shapeData.shape.paths = shapeData.localShapeCollection;
+		}
+	} else {
+		if(window.global_properties.use_paper_library) {
+			commands = this.getPath_PAPER_FUNCTION(this.shapes);
+		} else {
+			commands = this.getPath(this.shapes);
+		}
+		var shapeData = this.sh;
+		var localShapeCollection = shapeData.localShapeCollection;
+		localShapeCollection = this.createPathFromCommands(commands, localShapeCollection);
+	  	shapeData._mdf = true;
+	    shapeData.paths = shapeData.localShapeCollection;
+	}
+}
+
+
+MergePathModifier.prototype.createPathFromCommands = function(commands, localShapeCollection) {
+
+	var i, len;
+	var shapeData = this.sh;
 	var localShapeCollection = shapeData.localShapeCollection;
     localShapeCollection.releaseShapes();
-    var verbs = [];
-  	var args = [];
-  	Module.SkPathToVerbsArgsArray(skPath, verbs, args);
-	skPath.delete();
-  	var i, len = verbs.length;
+  	var i, len = commands.length;
   	var new_path;
-  	var args_index = 0, node_index = 0;
+  	var node_index = 0;
 	var hasClosedPath = false;
+	var command, prev_command;
   	for(i = 0; i < len; i += 1) {
-  		if(verbs[i] === Module.MOVE_VERB) {
+  		command = commands[i];
+  		if(command[0] === 0) {
   			if(new_path) {
   				if(!hasClosedPath) {
-					new_path.setXYAt(args[args_index - 2],args[args_index - 1],'o',new_path._length - 1, false);
+  					prev_command = commands[i - 1];
+					new_path.setXYAt(prev_command[prev_command.length - 2], prev_command[prev_command.length - 1], 'o', new_path._length - 1, false);
   				}
   				localShapeCollection.addShape(new_path);
   			}
 			hasClosedPath = false;
   			node_index = 0;
 			new_path = shape_pool.newElement();
-			new_path.setXYAt(args[args_index],args[args_index + 1],'v',node_index, false);
-			new_path.setXYAt(args[args_index],args[args_index + 1],'i',node_index, false);
-			args_index += 2;
+			new_path.setXYAt(command[1], command[2], 'v', node_index, false);
+			new_path.setXYAt(command[1], command[2], 'i', node_index, false);
 			node_index += 1;
-  		} else if(verbs[i] === Module.LINE_VERB) {
-			new_path.setXYAt(args[args_index],args[args_index + 1],'v',node_index, false);
-			new_path.setXYAt(args[args_index - 2],args[args_index - 1], 'o',node_index - 1, false);
-			new_path.setXYAt(args[args_index],args[args_index + 1], 'i',node_index, false);
-			args_index += 2;
+  		} else if(command[0] === 1) {
+			prev_command = commands[i - 1];
+			new_path.setXYAt(command[1], command[2], 'v', node_index, false);
+			new_path.setXYAt(prev_command[prev_command.length - 2], prev_command[prev_command.length - 1], 'o',node_index - 1, false);
+			new_path.setXYAt(command[1], command[2], 'i', node_index, false);
 			node_index += 1;
-  		} else if(verbs[i] === Module.CUBIC_VERB) {
-			new_path.setXYAt(args[args_index + 4],args[args_index + 5],'v',node_index, false);
-			new_path.setXYAt(args[args_index],args[args_index + 1], 'o',node_index - 1, false);
-			new_path.setXYAt(args[args_index + 2],args[args_index + 3], 'i',node_index, false);
-			args_index += 6;
+  		} else if(command[0] === 4) {
+			new_path.setXYAt(command[5], command[6], 'v', node_index, false);
+			new_path.setXYAt(command[1], command[2], 'o', node_index - 1, false);
+			new_path.setXYAt(command[3], command[4], 'i', node_index, false);
 			node_index += 1;
-  		} else if(verbs[i] === Module.CLOSE_VERB) {
+  		} else if(command[0] === 5) {
+			prev_command = commands[i - 1];
 			new_path.c = true;
-			new_path.setXYAt(args[args_index - 2],args[args_index - 1],'o',node_index - 1, false);
+			new_path.setXYAt(prev_command[prev_command.length - 2], prev_command[prev_command.length - 1], 'o', node_index - 1, false);
 			node_index += 1;
 			hasClosedPath = true;
   		}
   	}
 	if(new_path) {
 		if(!hasClosedPath) {
-			new_path.setXYAt(args[args_index - 2],args[args_index - 1],'o',new_path._length - 1, false);
+			prev_command = commands[i - 1];
+			new_path.setXYAt(prev_command[prev_command.length - 2], prev_command[prev_command.length - 1], 'o', new_path._length - 1, false);
 		}
 		localShapeCollection.addShape(new_path);
 	}
-  	shapeData._mdf = true;
-    shapeData.paths = shapeData.localShapeCollection;
+	return localShapeCollection;
 }
 
 

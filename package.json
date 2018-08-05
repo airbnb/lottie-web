@@ -38,5 +38,8 @@
     "gulp-wrap": "^0.11.0",
     "through2": "^2.0.3"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "experimental-pathkit-wasm": "^0.1.0"
+  }
 }

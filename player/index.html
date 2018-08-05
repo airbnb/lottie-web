@@ -56,7 +56,6 @@
         }
 
     </style>
-    <script src="js/modules/pathkit.js"></script>
     <!-- build:js lottie.js -->
     <script src="js/main.js"></script>
     <script src="js/utils/common.js"></script>
@@ -195,7 +194,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -203,10 +202,27 @@
         },
         path: 'exports/render/data.json'
     };
-    setTimeout(function() {
+    var use_paper_library = false;
+    /*setTimeout(function() {
+    },750)*/
+    var paper_canvas = document.createElement('canvas');
+    paper.setup(paper_canvas);
+
+    var Module;
+
+    PathKitInit({
+        locateFile: (file) => 'js/modules/pathkit.wasm',
+    }).then((PathKit) => {
+        Module = PathKit;
         anim = lottie.loadAnimation(animData);
-        anim.setSubframe(false);
-    },750)
+        // anim.setSubframe(false);
+    });
+
+    var global_properties = {
+        use_paper_library: false
+    }
+    var gui = new dat.GUI();
+    gui.add(global_properties, 'use_paper_library');
 
 </script>
 </body>
