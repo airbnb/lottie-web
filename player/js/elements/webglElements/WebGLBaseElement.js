@@ -3,14 +3,17 @@ function WebGLBaseElement(){
 
 WebGLBaseElement.prototype = {
     createElements: function(){},
-    initRendererElement: function(){},
+    initRendererElement: function(){
+        this.localTransform = new Matrix();
+    },
     createContainerElements: function(){
         this.renderableEffectsManager = new WEffects(this);
         if(this.renderableEffectsManager.filters.length) {
             this.createFramebuffers(this.gl);
         }
     },
-    createContent: function(){},
+    createContent: function(){
+    },
     setBlendMode: function(){
         var globalData = this.globalData;
         if(globalData.blendMode !== this.data.bm) {
@@ -84,21 +87,27 @@ WebGLBaseElement.prototype = {
         }
     },
 
+    calculateTransform: function() {
+        if(this.finalTransform._matMdf) {
+            //Parent comp transform + localTransform
+            var tr = this.comp.getTransform();
+            var newTransform = this.localTransform;
+            this.finalTransform.mat.clone(newTransform);
+            var p = tr.props;
+            newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
+            //TODO: only update the uniform if needed. This is costly.
+            this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, this.localTransform.props);
+        }
+    },
+
     renderLayer: function() {
         // copy to own frame buffer
         this.comp.switchBuffer();
 
         var gl = this.gl;
         gl.useProgram(this.program);
-        
-        //Parent comp transform + localTransform
-        var tr = this.comp.getTransform();
-        var newTransform = new Matrix();
-        this.finalTransform.mat.clone(newTransform);
-        var p = tr.props;
-        newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
-        //TODO: only update the uniform if needed. This is costly.
-        this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, newTransform.props);
+
+        this.calculateTransform();
         gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
         gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
         gl.drawArrays(gl.TRIANGLES, 0, 6);

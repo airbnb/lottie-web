@@ -91,9 +91,6 @@ WebGLRenderer.prototype.configAnimation = function(animData){
 };
 
 WebGLRenderer.prototype.getTransform = function() {
-    if(this.comp) {
-        //return this.comp.getTransform();
-    }
     return this.transformMat;
 }
 

@@ -39,6 +39,8 @@ function WShapeElement(data, globalData, comp) {
     this.canvasContext = this.canvas.getContext('2d');
     _localGlobalData.canvasContext = this.canvasContext;
     this.canvasElement = new CVShapeElement(canvas_data,_localGlobalData,comp);
+    this.finalTransform = this.canvasElement.finalTransform;
+    this.canvasElement.hierarchy = this.hierarchy;
 
     var max = 999999;
     this.currentBox = {
@@ -80,6 +82,17 @@ extendPrototype([BaseElement, TransformElement, WebGLBaseElement, HierarchyEleme
 
 WShapeElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 
+//Overwriting render transform taken care by the inner canvas element
+WShapeElement.prototype.renderTransform = function() {}
+
+WShapeElement.prototype.calculateTransform = function() {
+    //Parent comp transform + localTransform
+    var tr = this.comp.getTransform();
+    var newTransform = this.localTransform;
+    newTransform.cloneFromProps(tr.props);
+    this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, this.localTransform.props);
+}
+
 WShapeElement.prototype.prepareFrame = function(num) {
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
@@ -108,10 +121,6 @@ WShapeElement.prototype.renderInnerContent = function() {
     this.renderEffects();
     //
 };
-
-WShapeElement.prototype.updateModifiedState = function() {
-    this.globalData._mdf = true;
-}
 
 WShapeElement.prototype.getSize = function() {
     return this.comp.getSize();
