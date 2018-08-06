@@ -194,7 +194,7 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet'
@@ -203,9 +203,6 @@
     };
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);
-    anim.addEventListener('DOMLoaded', function(){
-        anim.goToAndStop(10, true);
-    })
 
 </script>
 </body>

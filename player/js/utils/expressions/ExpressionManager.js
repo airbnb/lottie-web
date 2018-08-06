@@ -322,8 +322,8 @@ var ExpressionManager = (function(){
         path.setPathData(!!closed, len);
         var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
-            inVertexPoint = inTangents ? inTangents[i] : arrPlaceholder;
-            outVertexPoint = outTangents ? outTangents[i] : arrPlaceholder;
+            inVertexPoint = (inTangents && inTangents[i]) ? inTangents[i] : arrPlaceholder;
+            outVertexPoint = (outTangents && outTangents[i]) ? outTangents[i] : arrPlaceholder;
             path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
         }
         return path;
@@ -355,6 +355,8 @@ var ExpressionManager = (function(){
         var scoped_bm_rt;
         var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
         var numKeys = property.kf ? data.k.length : 0;
+
+        var active = !this.data || this.data.hd !== true;
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;

@@ -25,7 +25,8 @@ CVShapeElement.prototype.createStyleElement = function(data){
     var styleElem = {
         data: data,
         type: data.ty,
-        elements: []
+        elements: [],
+        closed: data.hd === true
     };
     var elementData = {};
     if(data.ty == 'fl' || data.ty == 'st'){
@@ -318,7 +319,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
 };
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
     var len, i, j,jLen;
-    var redraw = groupTransform._matMdf || itemData.sh._mdf || this._isFirstFrame;
+    var redraw = pathData.hd !== true && (groupTransform._matMdf || itemData.sh._mdf || this._isFirstFrame);
     if(redraw) {
         var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
         jLen = pathData._render === false ? 0 : paths._length;

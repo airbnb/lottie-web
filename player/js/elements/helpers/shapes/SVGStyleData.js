@@ -4,7 +4,7 @@ function SVGStyleData(data, level) {
 	this.d = '';
 	this.lvl = level;
 	this._mdf = false;
-	this.closed = false;
+	this.closed = data.hd === true;
 	this.pElem = createNS('path');
 	this.msElem = null;
 }

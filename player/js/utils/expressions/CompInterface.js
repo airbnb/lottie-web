@@ -8,7 +8,8 @@ var CompExpressionInterface = (function (){
                 }
                 i += 1;
             }
-            return {active:false};
+            return null;
+            //return {active:false};
         }
         Object.defineProperty(_thisLayerFunction, "_name", { value:comp.data.nm });
         _thisLayerFunction.layer = _thisLayerFunction;

@@ -78,7 +78,7 @@ var SVGElementsRenderer = (function() {
 	        } else {
 	            pathStringTransformed = itemData.caches[l];
 	        }
-	        itemData.styles[l].d += pathStringTransformed;
+	        itemData.styles[l].d += styleData.hd === true ? '' : pathStringTransformed;
 	        itemData.styles[l]._mdf = redraw || itemData.styles[l]._mdf;
 	    }
 	}
