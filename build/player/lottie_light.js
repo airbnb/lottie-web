@@ -6523,7 +6523,7 @@ function SVGStyleData(data, level) {
 	this.d = '';
 	this.lvl = level;
 	this._mdf = false;
-	this.closed = false;
+	this.closed = data.hd === true;
 	this.pElem = createNS('path');
 	this.msElem = null;
 }
@@ -6755,7 +6755,7 @@ var SVGElementsRenderer = (function() {
 	        } else {
 	            pathStringTransformed = itemData.caches[l];
 	        }
-	        itemData.styles[l].d += pathStringTransformed;
+	        itemData.styles[l].d += styleData.hd === true ? '' : pathStringTransformed;
 	        itemData.styles[l]._mdf = redraw || itemData.styles[l]._mdf;
 	    }
 	}
@@ -7943,7 +7943,7 @@ SVGShapeElement.prototype.renderShape = function() {
     var animatedContent;
     for(i = 0; i < len; i += 1) {
         animatedContent = this.animatedContents[i];
-        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+        if((this._isFirstFrame || animatedContent.element._isAnimated) && animatedContent.data !== true) {
             animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }
@@ -9375,7 +9375,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.2.0';
+    lottiejs.version = '5.2.1';
 
     function checkReady() {
         if (document.readyState === "complete") {

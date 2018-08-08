@@ -1,3 +1,7 @@
+## V 5.2.1
+- FIX: text animators based on words and percentages
+- EXPRESSIONS: Latest Duik version support
+
 ## V 5.2.0
 - FEATURE: gradient support in canvas renderer (some cases are not supported)
 - EXPRESSIONS: layer name support for expressions

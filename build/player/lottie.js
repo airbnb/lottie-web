@@ -6523,7 +6523,7 @@ function SVGStyleData(data, level) {
 	this.d = '';
 	this.lvl = level;
 	this._mdf = false;
-	this.closed = false;
+	this.closed = data.hd === true;
 	this.pElem = createNS('path');
 	this.msElem = null;
 }
@@ -6755,7 +6755,7 @@ var SVGElementsRenderer = (function() {
 	        } else {
 	            pathStringTransformed = itemData.caches[l];
 	        }
-	        itemData.styles[l].d += pathStringTransformed;
+	        itemData.styles[l].d += styleData.hd === true ? '' : pathStringTransformed;
 	        itemData.styles[l]._mdf = redraw || itemData.styles[l]._mdf;
 	    }
 	}
@@ -7943,7 +7943,7 @@ SVGShapeElement.prototype.renderShape = function() {
     var animatedContent;
     for(i = 0; i < len; i += 1) {
         animatedContent = this.animatedContents[i];
-        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+        if((this._isFirstFrame || animatedContent.element._isAnimated) && animatedContent.data !== true) {
             animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }
@@ -10193,7 +10193,8 @@ CVShapeElement.prototype.createStyleElement = function(data){
     var styleElem = {
         data: data,
         type: data.ty,
-        elements: []
+        elements: [],
+        closed: data.hd === true
     };
     var elementData = {};
     if(data.ty == 'fl' || data.ty == 'st'){
@@ -10486,7 +10487,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
 };
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
     var len, i, j,jLen;
-    var redraw = groupTransform._matMdf || itemData.sh._mdf || this._isFirstFrame;
+    var redraw = pathData.hd !== true && (groupTransform._matMdf || itemData.sh._mdf || this._isFirstFrame);
     if(redraw) {
         var paths = itemData.sh.paths, groupTransformMat = groupTransform.mat;
         jLen = pathData._render === false ? 0 : paths._length;
@@ -11929,8 +11930,8 @@ var ExpressionManager = (function(){
         path.setPathData(!!closed, len);
         var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
-            inVertexPoint = inTangents ? inTangents[i] : arrPlaceholder;
-            outVertexPoint = outTangents ? outTangents[i] : arrPlaceholder;
+            inVertexPoint = (inTangents && inTangents[i]) ? inTangents[i] : arrPlaceholder;
+            outVertexPoint = (outTangents && outTangents[i]) ? outTangents[i] : arrPlaceholder;
             path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
         }
         return path;
@@ -11962,6 +11963,8 @@ var ExpressionManager = (function(){
         var scoped_bm_rt;
         var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
         var numKeys = property.kf ? data.k.length : 0;
+
+        var active = !this.data || this.data.hd !== true;
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
@@ -13484,7 +13487,8 @@ var CompExpressionInterface = (function (){
                 }
                 i += 1;
             }
-            return {active:false};
+            return null;
+            //return {active:false};
         }
         Object.defineProperty(_thisLayerFunction, "_name", { value:comp.data.nm });
         _thisLayerFunction.layer = _thisLayerFunction;
@@ -14020,7 +14024,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.2.0';
+    lottiejs.version = '5.2.1';
 
     function checkReady() {
         if (document.readyState === "complete") {
