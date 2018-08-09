@@ -11951,7 +11951,7 @@ var ExpressionManager = (function(){
         var height = elem.data.sh ? elem.data.sh : 0;
         var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -12191,7 +12191,12 @@ var ExpressionManager = (function(){
             }
             if (!transform) {
                 transform = elem.layerInterface("ADBE Transform Group");
-                anchorPoint = transform.anchorPoint;
+                if(transform) {
+                    anchorPoint = transform.anchorPoint;
+                    position = transform.position;
+                    rotation = transform.rotation;
+                    scale = transform.scale;
+                }
             }
             
             if (elemType === 4 && !content) {
