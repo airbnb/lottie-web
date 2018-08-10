@@ -248,6 +248,21 @@ MergePathModifier.prototype.getPath_PAPER_FUNCTION = function(shapes) {
 	return this.toCmds(prev_path);
 }
 
+MergePathModifier.prototype.checkIfHasModified = function(shapeData) {
+	if(shapeData.shape._mdf) {
+		return true;
+	}
+	var transforms = shapeData.data.transformers;
+	var i = 0, len = transforms.length;
+	while(i < len) {
+		if(transforms[i].mProps._mdf) {
+			return true;
+		}
+		i += 1;
+	}
+	return false;
+}
+
 MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
 	if(window.global_properties.use_paper_library) {
 		paper.project.activeLayer.removeChildren();
@@ -258,7 +273,7 @@ MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
 
 	var hasNewShapes = false;
 	while(i < len) {
-		if(this.shapes[i].shape._mdf) {
+		if(this.checkIfHasModified(this.shapes[i])) {
 			hasNewShapes = true;
 			break;
 		}

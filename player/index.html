@@ -195,7 +195,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
@@ -216,7 +216,7 @@
     }).then((PathKit) => {
         Module = PathKit;
         anim = lottie.loadAnimation(animData);
-        // anim.setSubframe(false);
+        anim.setSubframe(false);
     });
 
     var global_properties = {
