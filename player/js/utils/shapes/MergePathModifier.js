@@ -249,7 +249,9 @@ MergePathModifier.prototype.getPath_PAPER_FUNCTION = function(shapes) {
 }
 
 MergePathModifier.prototype.processShapes = function(_isFirstFrame) {
-	paper.project.activeLayer.removeChildren();
+	if(window.global_properties.use_paper_library) {
+		paper.project.activeLayer.removeChildren();
+	}
 	var commands = [];
 	var i = 0, len = this.shapes.length;
 	var shapeData, shape, skPath;

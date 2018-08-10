@@ -40,6 +40,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "experimental-pathkit-wasm": "^0.1.0"
+    "experimental-pathkit-wasm": "^0.1.5"
   }
 }
