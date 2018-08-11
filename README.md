@@ -227,7 +227,7 @@ you can also use addEventListener with the following events:
 ```js
 lottie.loadAnimation({
   container: element, // the dom element
-  renderer: 'svg',
+  renderer: 'canvas',
   loop: true,
   autoplay: true,
   animationData: animationData, // the animation data
