@@ -61,33 +61,44 @@ OffsetPathModifier.prototype.removeInnerShape = function(commands) {
 	return commands;
 }
 
-OffsetPathModifier.prototype.processShapes = function(elem, data) {
+OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
     var shapePaths;
     var i, len = this.shapes.length;
     var amount = this.amount.v;
-
-    if(amount !== 0){
-
+    if(amount === 0){
+		return;
     }
 	var commands = [];
-	var skPath, transformedSkPath;
+	var skPath, offsettedSkPath, outerSkPath, finalSkPath;
 
 	for(i = 0; i < len; i += 1) {
 		shapeData = this.shapes[i];
-		shape = shapeData.shape;
-		commands.length = 0;
-		this.addShapeToCommands(shape, shapeData.data.transformers, shapeData.data.lvl, commands);
-		skPath = this.SkPathFromCmdTyped(commands);
-		transformedSkPath = skPath.stroke(amount * 2, Module.StrokeJoin.ROUND, Module.StrokeCap.SQUARE);
-	  	commands = transformedSkPath.toCmds();
-	  	console.log('commands: ', commands)
-	  	commands = this.removeInnerShape(commands);
-	  	console.log('commands: ', commands)
-		skPath.delete();
-		transformedSkPath.delete();
-        localShapeCollection = shapeData.localShapeCollection;
-        localShapeCollection.releaseShapes();
-        localShapeCollection = this.createPathFromCommands(commands, localShapeCollection);
+		if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)){
+			shape = shapeData.shape;
+			commands.length = 0;
+			this.addShapeToCommands(shape, shapeData.data.transformers, shapeData.data.lvl, commands);
+			skPath = this.SkPathFromCmdTyped(commands);
+			offsettedSkPath = skPath.stroke(amount * 2, Module.StrokeJoin.MITER, Module.StrokeCap.BUTT);
+			if(commands[commands.length - 1][0] === 5) {
+				// outerSkPath = offsettedSkPath.op(skPath, Module.PathOp.DIFFERENCE); // subtract the original path out
+				// offsettedSkPath.delete();
+				outerSkPath = offsettedSkPath;
+				// finalSkPath = outerSkPath.simplify();
+				// outerSkPath.delete();
+				finalSkPath = outerSkPath;
+			} else {
+				finalSkPath = offsettedSkPath.simplify();
+				offsettedSkPath.delete();
+				// finalSkPath = offsettedSkPath;
+			}
+		  	commands = finalSkPath.toCmds();
+			skPath.delete();
+			finalSkPath.delete();
+	        localShapeCollection = shapeData.localShapeCollection;
+	        localShapeCollection.releaseShapes();
+	        localShapeCollection = this.createPathFromCommands(commands, localShapeCollection);
+	        shapeData.shape._mdf = true;
+		}
         shapeData.shape.paths = shapeData.localShapeCollection;
 	}
 
