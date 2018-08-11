@@ -305,7 +305,7 @@ SVGShapeElement.prototype.renderShape = function() {
     var animatedContent;
     for(i = 0; i < len; i += 1) {
         animatedContent = this.animatedContents[i];
-        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+        if((this._isFirstFrame || animatedContent.element._isAnimated) && animatedContent.data !== true) {
             animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }
@@ -313,6 +313,6 @@ SVGShapeElement.prototype.renderShape = function() {
 
 SVGShapeElement.prototype.destroy = function(){
     this.destroyBaseElement();
-    this.shapeData = null;
+    this.shapesData = null;
     this.itemsData = null;
 };

@@ -322,8 +322,8 @@ var ExpressionManager = (function(){
         path.setPathData(!!closed, len);
         var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
-            inVertexPoint = inTangents ? inTangents[i] : arrPlaceholder;
-            outVertexPoint = outTangents ? outTangents[i] : arrPlaceholder;
+            inVertexPoint = (inTangents && inTangents[i]) ? inTangents[i] : arrPlaceholder;
+            outVertexPoint = (outTangents && outTangents[i]) ? outTangents[i] : arrPlaceholder;
             path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
         }
         return path;
@@ -341,8 +341,9 @@ var ExpressionManager = (function(){
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
+        var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -354,6 +355,8 @@ var ExpressionManager = (function(){
         var scoped_bm_rt;
         var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
         var numKeys = property.kf ? data.k.length : 0;
+
+        var active = !this.data || this.data.hd !== true;
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
@@ -580,7 +583,12 @@ var ExpressionManager = (function(){
             }
             if (!transform) {
                 transform = elem.layerInterface("ADBE Transform Group");
-                anchorPoint = transform.anchorPoint;
+                if(transform) {
+                    anchorPoint = transform.anchorPoint;
+                    position = transform.position;
+                    rotation = transform.rotation;
+                    scale = transform.scale;
+                }
             }
             
             if (elemType === 4 && !content) {
