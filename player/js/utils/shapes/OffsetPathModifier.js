@@ -77,12 +77,18 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
 			shape = shapeData.shape;
 			commands.length = 0;
 			this.addShapeToCommands(shape, shapeData.data.transformers, shapeData.data.lvl, commands);
+			// commands = [[0,50,-50]];
+			// commands.push([1,50,50]);
+			// commands.push([1,-50,50]);
+			// commands.push([1,-50,-50]);
+			// commands.push([5]);
+			console.log(commands)
 			skPath = this.SkPathFromCmdTyped(commands);
 			offsettedSkPath = skPath.stroke(amount * 2, Module.StrokeJoin.MITER, Module.StrokeCap.BUTT);
 			if(commands[commands.length - 1][0] === 5) {
-				// outerSkPath = offsettedSkPath.op(skPath, Module.PathOp.DIFFERENCE); // subtract the original path out
-				// offsettedSkPath.delete();
-				outerSkPath = offsettedSkPath;
+				outerSkPath = offsettedSkPath.op(skPath, Module.PathOp.DIFFERENCE); // subtract the original path out
+				offsettedSkPath.delete();
+				// outerSkPath = offsettedSkPath;
 				// finalSkPath = outerSkPath.simplify();
 				// outerSkPath.delete();
 				finalSkPath = outerSkPath;
@@ -92,6 +98,8 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
 				// finalSkPath = offsettedSkPath;
 			}
 		  	commands = finalSkPath.toCmds();
+		  	console.log(commands)
+		  	// commands.length = 44;
 			skPath.delete();
 			finalSkPath.delete();
 	        localShapeCollection = shapeData.localShapeCollection;
