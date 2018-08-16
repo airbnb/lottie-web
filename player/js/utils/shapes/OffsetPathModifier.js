@@ -4,6 +4,7 @@ extendPrototype([ShapeModifier], OffsetPathModifier);
 
 OffsetPathModifier.prototype.initModifierProperties = function(elem, data) {
     this.amount = PropertyFactory.getProp(elem, data.a, 0, null, this);
+    this.lineJoin = data.lj;
     this.getValue = this.processKeys;
 };
 
@@ -69,7 +70,7 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
 		return;
     }
 	var commands = [];
-	var skPath, offsettedSkPath, outerSkPath, finalSkPath;
+	var skPath, offsettedSkPath;
 
 	for(i = 0; i < len; i += 1) {
 		shapeData = this.shapes[i];
@@ -77,31 +78,39 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
 			shape = shapeData.shape;
 			commands.length = 0;
 			this.addShapeToCommands(shape, shapeData.data.transformers, shapeData.data.lvl, commands);
-			// commands = [[0,50,-50]];
-			// commands.push([1,50,50]);
-			// commands.push([1,-50,50]);
-			// commands.push([1,-50,-50]);
-			// commands.push([5]);
-			console.log(commands)
-			skPath = this.SkPathFromCmdTyped(commands);
-			offsettedSkPath = skPath.stroke(amount * 2, Module.StrokeJoin.MITER, Module.StrokeCap.BUTT);
-			if(commands[commands.length - 1][0] === 5) {
-				outerSkPath = offsettedSkPath.op(skPath, Module.PathOp.DIFFERENCE); // subtract the original path out
-				offsettedSkPath.delete();
-				// outerSkPath = offsettedSkPath;
-				// finalSkPath = outerSkPath.simplify();
-				// outerSkPath.delete();
-				finalSkPath = outerSkPath;
-			} else {
-				finalSkPath = offsettedSkPath.simplify();
-				offsettedSkPath.delete();
-				// finalSkPath = offsettedSkPath;
+
+			skPath = skpaths_factory.createFromCommands(commands);
+			if(amount < 0) {
+				skPath = skPath.opAndReplace(Module.PathOp.UNION);
+				// skPath = skpaths_factory.replaceFromBooleanOperation(skPath, skPath, Module.PathOp.UNION);
 			}
-		  	commands = finalSkPath.toCmds();
-		  	console.log(commands)
+			var joinType, strokeCap;
+			switch(this.lineJoin) {
+				case 2:
+				joinType = Module.StrokeJoin.ROUND;
+				strokeCap = Module.StrokeCap.ROUND;
+				break;
+				default: 
+				joinType = Module.StrokeJoin.MITER;
+				strokeCap = Module.StrokeCap.BUTT;
+				break;
+			}
+			if(commands[commands.length - 1][0] === 5) {
+				offsettedSkPath = skPath.stroke(Math.abs(amount) * 2, joinType, strokeCap);
+				let operation = amount < 0 ? Module.PathOp.REVERSE_DIFFERENCE : Module.PathOp.UNION;
+				skPath = offsettedSkPath
+					.opAndReplace(operation, skPath)
+					.simplifyAndReplace();
+			} else {
+				skPath = skPath
+				.strokeAndReplace(Math.abs(amount) * 2, joinType, strokeCap)
+				// .opAndReplace(Module.PathOp.UNION)
+				.setFillType(Module.FillType.EVENODD)
+				.simplifyAndReplace();
+			}
+		  	commands = skPath.toCmds();
 		  	// commands.length = 44;
-			skPath.delete();
-			finalSkPath.delete();
+			//skPath.destroy();
 	        localShapeCollection = shapeData.localShapeCollection;
 	        localShapeCollection.releaseShapes();
 	        localShapeCollection = this.createPathFromCommands(commands, localShapeCollection);
@@ -114,36 +123,6 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
         this._mdf = false;
     }
 };
-
-OffsetPathModifier.prototype.floatTypedArrayFrom2D = function(arr) {
-	// expects 2d array where index 0 is verb and index 1-n are args
-	var len = 0, cmd, c, ii, jj;
-	for (ii = 0; ii < arr.length; ii += 1) {
-	  len += arr[ii].length;
-	}
-
-	var ta = new Float32Array(len);
-	var i = 0;
-	for (ii = 0; ii < arr.length; ii += 1) {
-	  for (jj = 0; jj < arr[ii].length; jj += 1) {
-	    ta[i] = arr[ii][jj];
-	    i++;
-	  }
-	}
-
-	var retVal = Module._malloc(ta.length * ta.BYTES_PER_ELEMENT);
-	Module.HEAPF32.set(ta, retVal / ta.BYTES_PER_ELEMENT);
-	return [retVal, len];
-}
-
-OffsetPathModifier.prototype.SkPathFromCmdTyped = function(cmdArr) {
-	var typedArrayFrom2D = this.floatTypedArrayFrom2D(cmdArr);
-	var cmd = typedArrayFrom2D[0];
-	var len = typedArrayFrom2D[1];
-	var path = Module.FromCmds(cmd, len);
-	Module._free(cmd);
-	return path;
-}
 
 OffsetPathModifier.prototype.createPathFromCommands = function(commands, localShapeCollection) {
 

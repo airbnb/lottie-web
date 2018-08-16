@@ -96,7 +96,7 @@ MergePathModifier.prototype.addPathToCommands_PAPER_FUNCTION = function(path, tr
 	return paper_path
 }
 
-MergePathModifier.prototype.floatTypedArrayFrom2D = function(arr) {
+/*MergePathModifier.prototype.floatTypedArrayFrom2D = function(arr) {
 	// expects 2d array where index 0 is verb and index 1-n are args
 	var len = 0, cmd, c, ii, jj;
 	for (ii = 0; ii < arr.length; ii += 1) {
@@ -115,7 +115,7 @@ MergePathModifier.prototype.floatTypedArrayFrom2D = function(arr) {
 	var retVal = Module._malloc(ta.length * ta.BYTES_PER_ELEMENT);
 	Module.HEAPF32.set(ta, retVal / ta.BYTES_PER_ELEMENT);
 	return [retVal, len];
-}
+}*/
 
 MergePathModifier.prototype.SkPathFromCmdTyped = function(cmdArr) {
 	var typedArrayFrom2D = this.floatTypedArrayFrom2D(cmdArr);
