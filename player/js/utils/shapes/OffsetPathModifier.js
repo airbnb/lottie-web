@@ -81,7 +81,7 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
 
 			skPath = skpaths_factory.createFromCommands(commands);
 			if(amount < 0) {
-				skPath = skPath.opAndReplace(Module.PathOp.UNION);
+				skPath = skPath.op(skPath, Module.PathOp.UNION);
 				// skPath = skpaths_factory.replaceFromBooleanOperation(skPath, skPath, Module.PathOp.UNION);
 			}
 			var joinType, strokeCap;
@@ -96,19 +96,22 @@ OffsetPathModifier.prototype.processShapes = function(_isFirstFrame) {
 				break;
 			}
 			if(commands[commands.length - 1][0] === 5) {
-				offsettedSkPath = skPath.stroke(Math.abs(amount) * 2, joinType, strokeCap);
+				var clonedSkPath = skpaths_factory.createFromCommands(skPath.toCmds());
+				skPath = skPath.stroke({width: Math.abs(amount) * 2, join: joinType, cap: strokeCap});
 				let operation = amount < 0 ? Module.PathOp.REVERSE_DIFFERENCE : Module.PathOp.UNION;
-				skPath = offsettedSkPath
-					.opAndReplace(operation, skPath)
-					.simplifyAndReplace();
+				skPath = skPath
+					.op(clonedSkPath, operation)
+					.simplify();
+				clonedSkPath.delete();
 			} else {
 				skPath = skPath
-				.strokeAndReplace(Math.abs(amount) * 2, joinType, strokeCap)
-				// .opAndReplace(Module.PathOp.UNION)
-				.setFillType(Module.FillType.EVENODD)
-				.simplifyAndReplace();
+				.stroke({width: Math.abs(amount) * 2, join: joinType, cap: strokeCap})
+				// .op(Module.PathOp.UNION)
+				skPath.setFillType(Module.FillType.EVENODD);
+				skPath = skPath.simplify();
 			}
 		  	commands = skPath.toCmds();
+			skPath.delete();
 		  	// commands.length = 44;
 			//skPath.destroy();
 	        localShapeCollection = shapeData.localShapeCollection;

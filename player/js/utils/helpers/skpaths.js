@@ -9,7 +9,7 @@ var skpaths_factory = (function() {
 		var len = typedArrayFrom2D[1];
 		var path = Module.FromCmds(cmd, len);
 		Module._free(cmd);
-		return new WASMPath(path);
+		return path;
 	}
 
 	function floatTypedArrayFrom2D(arr) {
