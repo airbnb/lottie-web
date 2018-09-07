@@ -259,10 +259,6 @@ CVShapeElement.prototype.drawLayer = function() {
                     if(currentStyle.da){
                         ctx.setLineDash(currentStyle.da);
                         ctx.lineDashOffset = currentStyle.do;
-                        this.globalData.isDashed = true;
-                    }else if(this.globalData.isDashed){
-                        ctx.setLineDash(this.dashResetter);
-                        this.globalData.isDashed = false;
                     }
                 }
                 nodes = elems[j].trNodes;
@@ -279,6 +275,9 @@ CVShapeElement.prototype.drawLayer = function() {
                 }
                 if(type === 'st' || type === 'gs'){
                     ctx.stroke();
+                    if(currentStyle.da){
+                        ctx.setLineDash(this.dashResetter);
+                    }
                 }
             }
             if(type !== 'st' && type !== 'gs'){
