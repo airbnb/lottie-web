@@ -192,14 +192,14 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'https://storage.googleapis.com/skia-cdn/misc/dna.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
     // anim.setSubframe(false);
