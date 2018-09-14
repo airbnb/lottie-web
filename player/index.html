@@ -192,16 +192,21 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: true,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/blah_blah_2.json'
     };
     anim = lottie.loadAnimation(animData);
+    anim.addEventListener('DOMLoaded', function() {
+        setTimeout(function() {
+            anim.goToAndStop(400, true);
+        }, 100)
+    })
     // anim.setSubframe(false);
 
 </script>
