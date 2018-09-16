@@ -320,12 +320,12 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
 };
 
 CVShapeElement.prototype.renderStyledShape = function(styledShape, shape){
-    var transformSequence = styledShape.transforms;
-    var pathStringTransformed = styledShape.trNodes;
     if(this._isFirstFrame || shape._mdf || transformSequence._mdf) {
+        var transformSequence = styledShape.transforms;
+        var shapeNodes = styledShape.trNodes;
         var paths = shape.paths;
         var j, jLen = paths._length;
-        pathStringTransformed.length = 0;
+        shapeNodes.length = 0;
         var groupTransformMat = transformSequence.finalTransform;
         for (j = 0; j < jLen; j += 1) {
             var pathNodes = paths.shapes[j];
@@ -333,46 +333,42 @@ CVShapeElement.prototype.renderStyledShape = function(styledShape, shape){
                 len = pathNodes._length;
                 for (i = 1; i < len; i += 1) {
                     if (i === 1) {
-                        pathStringTransformed.push({
+                        shapeNodes.push({
                             t: 'm',
                             p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                         });
                     }
-                    pathStringTransformed.push({
+                    shapeNodes.push({
                         t: 'c',
                         pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[i], pathNodes.v[i])
                     });
                 }
                 if (len === 1) {
-                    pathStringTransformed.push({
+                    shapeNodes.push({
                         t: 'm',
                         p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
                     });
                 }
                 if (pathNodes.c && len) {
-                    pathStringTransformed.push({
+                    shapeNodes.push({
                         t: 'c',
                         pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[0], pathNodes.v[0])
                     });
-                    pathStringTransformed.push({
+                    shapeNodes.push({
                         t: 'z'
                     });
                 }
             }
         }
-        styledShape.trNodes = pathStringTransformed;
+        styledShape.trNodes = shapeNodes;
     }
 }
 
 CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
-    var len, i, j,jLen;
-    var redraw = pathData.hd !== true;
-    if(redraw) {
-        if(pathData._shouldRender) {
-            len = itemData.styledShapes.length;
-            for (i = 0; i < len; i += 1) {
-                this.renderStyledShape(itemData.styledShapes[i], itemData.sh);
-            }
+    if(pathData.hd !== true && pathData._shouldRender) {
+        var i, len = itemData.styledShapes.length;
+        for (i = 0; i < len; i += 1) {
+            this.renderStyledShape(itemData.styledShapes[i], itemData.sh);
         }
     }
 };

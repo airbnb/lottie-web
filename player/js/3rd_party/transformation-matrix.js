@@ -108,8 +108,10 @@ var Matrix = (function(){
     }
 
     function scale(sx, sy, sz) {
-        sz = isNaN(sz) ? 1 : sz;
-        if(sx == 1 && sy == 1 && sz == 1){
+        if(!sz && sz !== 0) {
+            sz = 1;
+        }
+        if(sx === 1 && sy === 1 && sz === 1){
             return this;
         }
         return this._t(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1);
