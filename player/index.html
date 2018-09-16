@@ -120,6 +120,7 @@
     <script src="js/elements/helpers/shapes/SVGGradientStrokeStyleData.js"></script>
     <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
     <script src="js/elements/helpers/shapes/SVGElementsRenderer.js"></script>
+    <script src="js/elements/helpers/shapes/ShapeTransformManager.js"></script>
     <script src="js/elements/helpers/shapes/CVShapeData.js" data-light-skip="true"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/NullElement.js"></script>
@@ -192,14 +193,15 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: false,
+        renderer: 'canvas',
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
+            preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'exports/render/data.json'
+        path: 'exports/gumball/data.json'
     };
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);

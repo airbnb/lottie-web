@@ -21,7 +21,7 @@
   "devDependencies": {
     "event-stream": "^3.3.4",
     "events-stream": "^0.2.0",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-batch-replace": "0.0.0",
     "gulp-cheerio": "^0.6.2",
     "gulp-concat": "^2.6.0",
