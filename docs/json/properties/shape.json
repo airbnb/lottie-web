@@ -5,29 +5,8 @@
     "k": {
       "description": "Property Value",
       "extended_name": "Value",
-      "properties": [
-        {
-          "description": "Closed property of shape",
-          "extended_name": "Closed",
-          "type": "boolean"
-        },
-        {
-          "description": "Bezier curve In points. Array of 2 dimensional arrays.",
-          "extended_name": "In Point",
-          "type": "array"
-        },
-        {
-          "description": "Bezier curve Out points. Array of 2 dimensional arrays.",
-          "extended_name": "Out Point",
-          "type": "array"
-        },
-        {
-          "description": "Bezier curve Vertices. Array of 2 dimensional arrays.",
-          "extended_name": "Vertices",
-          "type": "array"
-        }
-      ],
-      "type": "object"
+      "type": "object",
+      "$ref": "#/properties/shapeProp"
     },
     "x": {
       "description": "Property Expression. An AE expression that modifies the value.",
