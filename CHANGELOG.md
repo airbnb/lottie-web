@@ -1,3 +1,13 @@
+## V 5.3.0
+- REFACTOR: canvas shape renderer had an important refactor. Should support new render cases and have a performance improvement.
+- EXPRESSIONS: preprocessing expressions allows to prevent getting values if not needed on expressions
+- EXPRESSIONS: support for position, scale and anchorPoint variables
+- EXPRESSIONS: added numLayer property support to comp interfaces
+- REPEATERS: support for start and end opacity
+- FIX: Rendering effects before masks fixes some small render cases
+- FIX: added orientation support for 3d cameras
+- FIX: dashed lines were not resetted in some scenarios
+
 ## V 5.2.1
 - FIX: text animators based on words and percentages
 - EXPRESSIONS: Latest Duik version support

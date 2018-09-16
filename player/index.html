@@ -193,7 +193,7 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
         autoplay: true,
         rendererSettings: {
@@ -201,7 +201,7 @@
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'exports/render/dna.json'
+        path: 'exports/render/data.json'
     };
     anim = lottie.loadAnimation(animData);
 
