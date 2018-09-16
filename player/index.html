@@ -12,7 +12,7 @@
         }
 
         #lottie{
-            background-color:#333;
+            background-color:#fff;
             width:100%;
             height:100%;
             display:block;
@@ -193,18 +193,17 @@
     //elem.style.display = 'none';
     var animData = {
         container: elem,
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: true,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
-        path: 'exports/gumball/data.json'
+        path: 'exports/render/dna.json'
     };
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
 
 </script>
 </body>

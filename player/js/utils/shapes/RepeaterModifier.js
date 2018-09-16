@@ -6,6 +6,8 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this);
     this.tr = TransformPropertyFactory.getTransformProperty(elem,data.tr,this);
+    this.so = PropertyFactory.getProp(elem,data.tr.so,0,0.01,this);
+    this.eo = PropertyFactory.getProp(elem,data.tr.eo,0,0.01,this);
     this.data = data;
     if(!this.dynamicProperties.length){
         this.getValue(true);
@@ -157,6 +159,7 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
             jLen = itemsTransform.length;
             items[items.length - 1].transform.mProps._mdf = true;
             items[items.length - 1].transform.op._mdf = true;
+            items[items.length - 1].transform.op.v = this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
             if(iteration !== 0){
                 if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);

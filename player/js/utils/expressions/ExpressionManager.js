@@ -334,7 +334,7 @@ var ExpressionManager = (function(){
         var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
-        var transform,content,effect;
+        var transform,$bm_transform,content,effect;
         var thisProperty = property;
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
@@ -583,11 +583,12 @@ var ExpressionManager = (function(){
             }
             if (!transform) {
                 transform = elem.layerInterface("ADBE Transform Group");
+                $bm_transform = transform;
                 if(transform) {
                     anchorPoint = transform.anchorPoint;
-                    position = transform.position;
+                    /*position = transform.position;
                     rotation = transform.rotation;
-                    scale = transform.scale;
+                    scale = transform.scale;*/
                 }
             }
             

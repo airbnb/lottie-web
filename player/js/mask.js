@@ -201,7 +201,6 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     }
     //pathNodes.__renderedString = pathString;
 
-
     if(viewData.lastPath !== pathString){
         var pathShapeValue = '';
         if(viewData.elem){
