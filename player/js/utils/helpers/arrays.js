@@ -16,6 +16,10 @@ var createTypedArray = (function(){
 		return arr;
 	}
 	function createTypedArray(type, len){
+		if (isNaN(len)) {
+			len = 0;
+		}
+		
 		if(type === 'float32') {
 			return new Float32Array(len);
 		} else if(type === 'int16') {
