@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "e": {
+      "description": "End value of keyframe segment.",
+      "extended_name": "End",
+      "items": {
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "s": {
+      "description": "Start value of keyframe segment.",
+      "extended_name": "Start",
+      "items": {
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "t": {
+      "description": "Start time of keyframe segment.",
+      "extended_name": "Time",
+      "type": "number"
+    },
+    "i": {
+      "description": "Bezier curve interpolation in value.",
+      "extended_name": "In Value",
+      "properties": {
+        "x": {
+          "description": "bezier x axis. Array of numbers.",
+          "extended_name": "X axis",
+          "type": "array"
+        },
+        "y": {
+          "description": "bezier y axis. Array of numbers.",
+          "extended_name": "Y axis",
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "o": {
+      "description": "Bezier curve interpolation out value.",
+      "extended_name": "Out Value",
+      "properties": {
+        "x": {
+          "description": "bezier x axis. Array of numbers.",
+          "extended_name": "X axis",
+          "type": "array"
+        },
+        "y": {
+          "description": "bezier y axis. Array of numbers.",
+          "extended_name": "Y axis",
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "nm": {
+      "description": "Bezier curve name. Used for caching.",
+      "extended_name": "Name",
+      "type": "number"
+    }
+  }
+}
