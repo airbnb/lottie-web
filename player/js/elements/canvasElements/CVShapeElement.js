@@ -43,7 +43,7 @@ CVShapeElement.prototype.createStyleElement = function(data, transforms) {
         elementData.e = PropertyFactory.getProp(this,data.e,1,null,this);
         elementData.h = PropertyFactory.getProp(this,data.h||{k:0},0,0.01,this);
         elementData.a = PropertyFactory.getProp(this,data.a||{k:0},0,degToRads,this);
-        elementData.g = new GradientProperty(this,data.g);
+        elementData.g = new GradientProperty(this,data.g,this);
     }
     elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,this);
     if(data.ty == 'st' || data.ty == 'gs') {
