@@ -3997,7 +3997,7 @@ DashProperty.prototype.getValue = function(forceRender) {
     }
 };
 extendPrototype([DynamicPropertyContainer], DashProperty);
-function GradientProperty(elem,data){
+function GradientProperty(elem,data,container){
     this.data = data;
     this.c = createTypedArray('uint8c', data.p*4);
     var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
@@ -4006,7 +4006,7 @@ function GradientProperty(elem,data){
     this._omdf = false;
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
-    this.initDynamicPropertyContainer(elem);
+    this.initDynamicPropertyContainer(container);
     this.prop = PropertyFactory.getProp(elem,data.k,1,null,this);
     this.k = this.prop.k;
     this.getValue(true);
@@ -6603,7 +6603,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g);
+    this.g = new GradientProperty(elem,data.g,this);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -10279,7 +10279,7 @@ CVShapeElement.prototype.createStyleElement = function(data, transforms) {
         elementData.e = PropertyFactory.getProp(this,data.e,1,null,this);
         elementData.h = PropertyFactory.getProp(this,data.h||{k:0},0,0.01,this);
         elementData.a = PropertyFactory.getProp(this,data.a||{k:0},0,degToRads,this);
-        elementData.g = new GradientProperty(this,data.g);
+        elementData.g = new GradientProperty(this,data.g,this);
     }
     elementData.o = PropertyFactory.getProp(this,data.o,0,0.01,this);
     if(data.ty == 'st' || data.ty == 'gs') {
@@ -14102,7 +14102,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.3.0';
+    lottiejs.version = '5.3.1';
 
     function checkReady() {
         if (document.readyState === "complete") {

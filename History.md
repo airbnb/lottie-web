@@ -1,3 +1,7 @@
+## V 5.3.1
+- FIX: expressions with non computed memberExpressions
+- FIX: animated gradient in svgs 
+
 ## V 5.3.0
 - REFACTOR: canvas shape renderer had an important refactor. Should support new render cases and have a performance improvement.
 - EXPRESSIONS: preprocessing expressions allows to prevent getting values if not needed on expressions
