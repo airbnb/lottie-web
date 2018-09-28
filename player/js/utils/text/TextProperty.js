@@ -401,6 +401,7 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
     dData = this.copyData(dData, newData);
     this.data.d.k[index].s = dData;
     this.recalculate(index);
+    this.elem.addDynamicProperty(this);
 };
 
 TextProperty.prototype.recalculate = function(index) {
@@ -414,9 +415,11 @@ TextProperty.prototype.recalculate = function(index) {
 TextProperty.prototype.canResizeFont = function(_canResize) {
     this.canResize = _canResize;
     this.recalculate(this.keysIndex);
+    this.elem.addDynamicProperty(this);
 };
 
 TextProperty.prototype.setMinimumFontSize = function(_fontValue) {
     this.minimumFontSize = Math.floor(_fontValue) || 1;
     this.recalculate(this.keysIndex);
+    this.elem.addDynamicProperty(this);
 };
