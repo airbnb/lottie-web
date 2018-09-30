@@ -24,6 +24,7 @@ function CanvasRenderer(animationItem, config){
     this.pendingElements = [];
     this.transformMat = new Matrix();
     this.completeLayers = false;
+    this.rendererType = 'canvas';
 }
 extendPrototype([BaseRenderer],CanvasRenderer);
 

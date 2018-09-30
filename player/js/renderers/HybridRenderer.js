@@ -18,6 +18,7 @@ function HybridRenderer(animationItem, config){
     this.destroyed = false;
     this.camera = null;
     this.supports3d = true;
+    this.rendererType = 'html';
 
 }
 

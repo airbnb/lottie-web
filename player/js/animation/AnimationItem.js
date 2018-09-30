@@ -10,7 +10,6 @@ var AnimationItem = function () {
     this.frameMult = 0;
     this.playSpeed = 1;
     this.playDirection = 1;
-    this.pendingElements = 0;
     this.playCount = 0;
     this.animationData = {};
     this.assets = [];
@@ -27,6 +26,7 @@ var AnimationItem = function () {
     this._idle = true;
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
+    this.imagePreloader = new ImagePreloader();
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -182,15 +182,15 @@ AnimationItem.prototype.loadSegments = function() {
     this.loadNextSegment();
 };
 
+AnimationItem.prototype.imagesLoaded = function() {
+    this.trigger('loaded_images');
+    this.checkLoaded()
+}
+
 AnimationItem.prototype.preloadImages = function() {
-    this.imagePreloader = new ImagePreloader();
     this.imagePreloader.setAssetsPath(this.assetsPath);
     this.imagePreloader.setPath(this.path);
-    this.imagePreloader.loadAssets(this.animationData.assets, function(err) {
-        if(!err) {
-            this.trigger('loaded_images');
-        }
-    }.bind(this));
+    this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
 }
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -232,24 +232,15 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
     }
 }
 
-AnimationItem.prototype.addPendingElement = function () {
-    this.pendingElements += 1;
-};
-
-AnimationItem.prototype.elementLoaded = function () {
-    this.pendingElements -= 1;
-    this.checkLoaded();
-};
-
 AnimationItem.prototype.checkLoaded = function () {
-    if (this.pendingElements === 0) {
+    if (!this.isLoaded && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
         this.renderer.initItems();
-        setTimeout(function(){
+        setTimeout(function() {
             this.trigger('DOMLoaded');
-        }.bind(this),0);
+        }.bind(this), 0);
         this.isLoaded = true;
         this.gotoFrame();
         if(this.autoplay){
@@ -475,6 +466,7 @@ AnimationItem.prototype.destroy = function (name) {
         return;
     }
     this.renderer.destroy();
+    this.imagePreloader.destroy();
     this.trigger('destroy');
     this._cbs = null;
     this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
