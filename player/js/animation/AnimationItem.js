@@ -428,19 +428,22 @@ AnimationItem.prototype.setSegment = function (init,end) {
     }
 };
 
-AnimationItem.prototype.playSegments = function (arr,forceFlag) {
-    if(typeof arr[0] === 'object'){
+AnimationItem.prototype.playSegments = function (arr, forceFlag) {
+    if (forceFlag) {
+        this.segments.length = 0;
+    }
+    if (typeof arr[0] === 'object') {
         var i, len = arr.length;
-        for(i=0;i<len;i+=1){
+        for (i = 0; i < len; i += 1) {
             this.segments.push(arr[i]);
         }
-    }else{
+    } else {
         this.segments.push(arr);
     }
-    if(forceFlag){
-        this.checkSegments(0);
+    if (this.segments.length) {
+        this.adjustSegment(this.segments.shift(), 0);
     }
-    if(this.isPaused){
+    if (this.isPaused) {
         this.play();
     }
 };
@@ -449,12 +452,12 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
     this.segments.push([this.animationData.ip,this.animationData.op]);
     //this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
-    if(forceFlag){
+    if (forceFlag) {
         this.checkSegments(0);
     }
 };
-AnimationItem.prototype.checkSegments = function(offset){
-    if(this.segments.length) {
+AnimationItem.prototype.checkSegments = function(offset) {
+    if (this.segments.length) {
         this.adjustSegment(this.segments.shift(), offset);
         return true;
     }
@@ -462,7 +465,7 @@ AnimationItem.prototype.checkSegments = function(offset){
 };
 
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || !this.renderer){
+    if ((name && this.name != name) || !this.renderer) {
         return;
     }
     this.renderer.destroy();
