@@ -1,3 +1,6 @@
+## V 5.3.3
+- FIX: light version fix
+
 ## V 5.3.2
 - FIX: .playSegments when forcing a new segment correctly removes the previous list
 - FIX: loading external assets before rendering the first frame of the animation on canvas renderer
