@@ -1,3 +1,11 @@
+## V 5.3.2
+- FIX: .playSegments when forcing a new segment correctly removes the previous list
+- FIX: loading external assets before rendering the first frame of the animation on canvas renderer
+- FIX: clearing caching spatial bezier data when previous frame is reached
+- FIX: promoting text property to dynamic properties when using text update methods
+- FIX: extra comps width and height properties supported
+- FIX: multiple trims fixed
+
 ## V 5.3.1
 - FIX: expressions with non computed memberExpressions
 - FIX: animated gradient in svgs 
