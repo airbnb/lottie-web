@@ -216,24 +216,21 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.waitForFontsLoaded();
 };
 
-AnimationItem.prototype.completeData = function() {
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-    this.checkLoaded();
-}
-
 AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded){
-        this.completeData();
+    if(this.renderer.globalData.fontManager.loaded()){
+        this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
     }
 }
 
 AnimationItem.prototype.checkLoaded = function () {
-    if (!this.isLoaded && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+        this.isLoaded = true;
+        dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
@@ -241,7 +238,6 @@ AnimationItem.prototype.checkLoaded = function () {
         setTimeout(function() {
             this.trigger('DOMLoaded');
         }.bind(this), 0);
-        this.isLoaded = true;
         this.gotoFrame();
         if(this.autoplay){
             this.play();

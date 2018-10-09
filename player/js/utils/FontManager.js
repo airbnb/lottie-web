@@ -84,9 +84,9 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            setTimeout(checkLoadedFonts.bind(this),20);
+            setTimeout(this.checkLoadedFonts.bind(this),20);
         }else{
-            setTimeout(function(){this.loaded = true;}.bind(this),0);
+            setTimeout(function(){this.isLoaded = true;}.bind(this),0);
 
         }
     }
@@ -114,11 +114,11 @@ var FontManager = (function(){
 
     function addFonts(fontData, defs){
         if(!fontData){
-            this.loaded = true;
+            this.isLoaded = true;
             return;
         }
         if(this.chars){
-            this.loaded = true;
+            this.isLoaded = true;
             this.fonts = fontData.list;
             return;
         }
@@ -126,12 +126,14 @@ var FontManager = (function(){
 
         var fontArr = fontData.list;
         var i, len = fontArr.length;
+        var _pendingFonts = len;
         for(i=0; i<len; i+= 1){
             fontArr[i].loaded = false;
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
+                _pendingFonts -= 1;
             }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
                 var s = createTag('style');
                 s.type = "text/css";
@@ -152,11 +154,13 @@ var FontManager = (function(){
             fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
-        //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
-        //Adding this timeout seems to fix it
-       setTimeout(function() {
-            checkLoadedFonts.bind(this)();
-        }.bind(this), 100);
+        if (_pendingFonts === 0) {
+            this.isLoaded = true;
+        } else {
+            //On some cases even if the font is loaded, it won't load correctly when measuring text on canvas.
+            //Adding this timeout seems to fix it
+           setTimeout(this.checkLoadedFonts.bind(this), 100);
+        }
     }
 
     function addChars(chars){
@@ -234,11 +238,15 @@ var FontManager = (function(){
         return combinedCharacters;
     }
 
+    function loaded() {
+        return this.isLoaded;
+    }
+
     var Font = function(){
         this.fonts = [];
         this.chars = null;
         this.typekitLoaded = 0;
-        this.loaded = false;
+        this.isLoaded = false;
         this.initTime = Date.now();
     };
     //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
@@ -249,6 +257,8 @@ var FontManager = (function(){
     Font.prototype.getCharData = getCharData;
     Font.prototype.getFontByName = getFontByName;
     Font.prototype.measureText = measureText;
+    Font.prototype.checkLoadedFonts = checkLoadedFonts;
+    Font.prototype.loaded = loaded;
 
     return Font;
 
