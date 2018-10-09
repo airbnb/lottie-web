@@ -1,3 +1,7 @@
+## V 5.3.4
+- FIX: font load fix
+- TEXT: End of Text character support
+
 ## V 5.3.3
 - FIX: light version fix
 

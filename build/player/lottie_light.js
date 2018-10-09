@@ -1844,9 +1844,9 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            setTimeout(checkLoadedFonts.bind(this),20);
+            setTimeout(this.checkLoadedFonts.bind(this),20);
         }else{
-            setTimeout(function(){this.loaded = true;}.bind(this),0);
+            setTimeout(function(){this.isLoaded = true;}.bind(this),0);
 
         }
     }
@@ -1874,11 +1874,11 @@ var FontManager = (function(){
 
     function addFonts(fontData, defs){
         if(!fontData){
-            this.loaded = true;
+            this.isLoaded = true;
             return;
         }
         if(this.chars){
-            this.loaded = true;
+            this.isLoaded = true;
             this.fonts = fontData.list;
             return;
         }
@@ -1886,12 +1886,14 @@ var FontManager = (function(){
 
         var fontArr = fontData.list;
         var i, len = fontArr.length;
+        var _pendingFonts = len;
         for(i=0; i<len; i+= 1){
             fontArr[i].loaded = false;
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
+                _pendingFonts -= 1;
             }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
                 var s = createTag('style');
                 s.type = "text/css";
@@ -1912,11 +1914,13 @@ var FontManager = (function(){
             fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
-        //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
-        //Adding this timeout seems to fix it
-       setTimeout(function() {
-            checkLoadedFonts.bind(this)();
-        }.bind(this), 100);
+        if (_pendingFonts === 0) {
+            this.isLoaded = true;
+        } else {
+            //On some cases even if the font is loaded, it won't load correctly when measuring text on canvas.
+            //Adding this timeout seems to fix it
+           setTimeout(this.checkLoadedFonts.bind(this), 100);
+        }
     }
 
     function addChars(chars){
@@ -1994,11 +1998,15 @@ var FontManager = (function(){
         return combinedCharacters;
     }
 
+    function loaded() {
+        return this.isLoaded;
+    }
+
     var Font = function(){
         this.fonts = [];
         this.chars = null;
         this.typekitLoaded = 0;
-        this.loaded = false;
+        this.isLoaded = false;
         this.initTime = Date.now();
     };
     //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
@@ -2009,6 +2017,8 @@ var FontManager = (function(){
     Font.prototype.getCharData = getCharData;
     Font.prototype.getFontByName = getFontByName;
     Font.prototype.measureText = measureText;
+    Font.prototype.checkLoadedFonts = checkLoadedFonts;
+    Font.prototype.loaded = loaded;
 
     return Font;
 
@@ -5137,6 +5147,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.finalText = this.buildFinalText(documentData.t);
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
+    var charCode;
     if(documentData.sz){
         var flag = true;
         var boxWidth = documentData.sz[0];
@@ -5144,6 +5155,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         var currentHeight, finalText;
         while(flag) {
             finalText = this.buildFinalText(documentData.t);
+            charCode = finalText[i].charCodeAt(0);
             currentHeight = 0;
             lineWidth = 0;
             len = finalText.length;
@@ -5153,7 +5165,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
                 newLineFlag = false;
                 if(finalText[i] === ' '){
                     lastSpaceIndex = i;
-                }else if(finalText[i].charCodeAt(0) === 13){
+                }else if(charCode === 13 || charCode === 3){
                     lineWidth = 0;
                     newLineFlag = true;
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
@@ -5200,9 +5212,10 @@ TextProperty.prototype.completeTextData = function(documentData) {
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         currentChar = documentData.finalText[i];
-        if(currentChar === ' '){
+        charCode = currentChar.charCodeAt(0);
+        if (currentChar === ' '){
             val = '\u00A0';
-        }else if(currentChar.charCodeAt(0) === 13){
+        } else if (charCode === 13 || charCode === 3) {
             uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
@@ -7569,7 +7582,7 @@ SVGTextElement.prototype.buildTextContents = function(textArray) {
     var i = 0, len = textArray.length;
     var textContents = [], currentTextContent = '';
     while (i < len) {
-        if(textArray[i] === String.fromCharCode(13)) {
+        if(textArray[i] === String.fromCharCode(13) || textArray[i] === String.fromCharCode(3)) {
             textContents.push(currentTextContent);
             currentTextContent = '';
         } else {
@@ -7607,7 +7620,7 @@ SVGTextElement.prototype.buildNewText = function(){
     }
 
     var letters = documentData.l || [];
-    var usesGlyphs = this.globalData.fontManager.chars;
+    var usesGlyphs = !!this.globalData.fontManager.chars;
     len = letters.length;
 
     var tSpan;
@@ -9022,24 +9035,21 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.waitForFontsLoaded();
 };
 
-AnimationItem.prototype.completeData = function() {
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-    this.checkLoaded();
-}
-
 AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded){
-        this.completeData();
+    if(this.renderer.globalData.fontManager.loaded()){
+        this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
     }
 }
 
 AnimationItem.prototype.checkLoaded = function () {
-    if (!this.isLoaded && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+        this.isLoaded = true;
+        dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
@@ -9047,7 +9057,6 @@ AnimationItem.prototype.checkLoaded = function () {
         setTimeout(function() {
             this.trigger('DOMLoaded');
         }.bind(this), 0);
-        this.isLoaded = true;
         this.gotoFrame();
         if(this.autoplay){
             this.play();
@@ -9478,7 +9487,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.3.3';
+    lottiejs.version = '5.3.4';
 
     function checkReady() {
         if (document.readyState === "complete") {
