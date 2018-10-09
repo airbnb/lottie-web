@@ -201,6 +201,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.finalText = this.buildFinalText(documentData.t);
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
+    var charCode;
     if(documentData.sz){
         var flag = true;
         var boxWidth = documentData.sz[0];
@@ -208,6 +209,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         var currentHeight, finalText;
         while(flag) {
             finalText = this.buildFinalText(documentData.t);
+            charCode = finalText[i].charCodeAt(0);
             currentHeight = 0;
             lineWidth = 0;
             len = finalText.length;
@@ -217,7 +219,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
                 newLineFlag = false;
                 if(finalText[i] === ' '){
                     lastSpaceIndex = i;
-                }else if(finalText[i].charCodeAt(0) === 13){
+                }else if(charCode === 13 || charCode === 3){
                     lineWidth = 0;
                     newLineFlag = true;
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
@@ -264,9 +266,10 @@ TextProperty.prototype.completeTextData = function(documentData) {
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         currentChar = documentData.finalText[i];
-        if(currentChar === ' '){
+        charCode = currentChar.charCodeAt(0);
+        if (currentChar === ' '){
             val = '\u00A0';
-        }else if(currentChar.charCodeAt(0) === 13){
+        } else if (charCode === 13 || charCode === 3) {
             uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;

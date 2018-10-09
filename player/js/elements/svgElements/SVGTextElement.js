@@ -17,7 +17,7 @@ SVGTextElement.prototype.buildTextContents = function(textArray) {
     var i = 0, len = textArray.length;
     var textContents = [], currentTextContent = '';
     while (i < len) {
-        if(textArray[i] === String.fromCharCode(13)) {
+        if(textArray[i] === String.fromCharCode(13) || textArray[i] === String.fromCharCode(3)) {
             textContents.push(currentTextContent);
             currentTextContent = '';
         } else {
@@ -55,7 +55,7 @@ SVGTextElement.prototype.buildNewText = function(){
     }
 
     var letters = documentData.l || [];
-    var usesGlyphs = this.globalData.fontManager.chars;
+    var usesGlyphs = !!this.globalData.fontManager.chars;
     len = letters.length;
 
     var tSpan;
