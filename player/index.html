@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         body, html{
-            background-color:#000;
+            background-color:#fff;
             margin: 0px;
             height: 100%;
             overflow-x: hidden;
@@ -18,41 +18,7 @@
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
-            margin: auto;
             /*display:none;*/
-        }
-
-        .botas_loop_3,.botas_loop_2{
-            display:none
-        }
-
-        #bird_element.ready, #piano_element.ready, #cat_element.ready {
-            opacity: 1;
-            transition: opacity .6s ease-out;
-            cursor: pointer;
-        }
-
-        #bird_text_element, #piano_text_element, #cat_text_element {
-            opacity: 0;
-            transition: opacity .6s ease-out;
-        }
-
-        #bird_element.ready:hover ~ #bird_text_element,
-        #piano_element.ready:hover ~ #piano_text_element,
-        #cat_element.ready:hover ~ #cat_text_element {
-            opacity: 1;
-        }
-
-        #bird_element.ready:hover,
-        #piano_element.ready:hover,
-        #cat_element.ready:hover {
-            opacity: 0.2;
-        }
-
-        button {
-            padding: 0;
-            border: none;
-            background-color: transparent;
         }
 
     </style>
@@ -193,10 +159,10 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false,
+            progressiveLoad:true,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet'
         },
