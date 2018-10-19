@@ -128,6 +128,9 @@ var FontManager = (function(){
         var i, len = fontArr.length;
         var _pendingFonts = len;
         for(i=0; i<len; i+= 1){
+            var shouldLoadFont = true;
+            var loadedSelector;
+            var j;
             fontArr[i].loaded = false;
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
@@ -135,20 +138,57 @@ var FontManager = (function(){
                 fontArr[i].loaded = true;
                 _pendingFonts -= 1;
             }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
-                var s = createTag('style');
-                s.type = "text/css";
-                s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
-                defs.appendChild(s);
+                loadedSelector = document.querySelectorAll('style[f-forigin="p"][f-family="'+ fontArr[i].fFamily +'"], style[f-origin="3"][f-family="'+ fontArr[i].fFamily +'"]');
+
+                if (loadedSelector.length > 0) {
+                    shouldLoadFont = false;
+                }
+
+                if (shouldLoadFont) {
+                    var s = createTag('style');
+                    s.setAttribute('f-forigin', fontArr[i].fOrigin);
+                    s.setAttribute('f-origin', fontArr[i].origin);
+                    s.setAttribute('f-family', fontArr[i].fFamily);
+                    s.type = "text/css";
+                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                    defs.appendChild(s);
+                }
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
-                var l = createTag('link');
-                l.type = "text/css";
-                l.rel = "stylesheet";
-                l.href = fontArr[i].fPath;
-                document.body.appendChild(l);
+                loadedSelector = document.querySelectorAll('link[f-forigin="g"], link[f-origin="1"]');
+
+                for (j = 0; j < loadedSelector.length; j++) {
+                    if (loadedSelector[j].href.indexOf(fontArr[i].fPath) !== -1) {
+                        // Font is already loaded
+                        shouldLoadFont = false;
+                    }
+                }
+
+                if (shouldLoadFont) {
+                    var l = createTag('link');
+                    l.setAttribute('f-forigin', fontArr[i].fOrigin);
+                    l.setAttribute('f-origin', fontArr[i].origin);
+                    l.type = "text/css";
+                    l.rel = "stylesheet";
+                    l.href = fontArr[i].fPath;
+                    document.body.appendChild(l);
+                }
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
-                var sc = createTag('script');
-                sc.setAttribute('src',fontArr[i].fPath);
-                defs.appendChild(sc);
+                loadedSelector = document.querySelectorAll('script[f-forigin="t"], script[f-origin="2"]');
+
+                for (j = 0; j < loadedSelector.length; j++) {
+                    if (fontArr[i].fPath === loadedSelector[j].src) {
+                        // Font is already loaded
+                        shouldLoadFont = false;
+                    }
+                }
+
+                if (shouldLoadFont) {
+                    var sc = createTag('script');
+                    sc.setAttribute('f-forigin', fontArr[i].fOrigin);
+                    sc.setAttribute('f-origin', fontArr[i].origin);
+                    sc.setAttribute('src',fontArr[i].fPath);
+                    defs.appendChild(sc);
+                }
             }
             fontArr[i].helper = createHelper(defs,fontArr[i]);
             fontArr[i].cache = {};
@@ -216,7 +256,6 @@ var FontManager = (function(){
             tHelper.textContent = '||';
             var singleSize = tHelper.getComputedTextLength();
             fontData.cache[index + 1] = (doubleSize - singleSize)/100;*/
-           
             tHelper.textContent = char;
             fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
         }

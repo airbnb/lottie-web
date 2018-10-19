@@ -209,13 +209,13 @@ TextProperty.prototype.completeTextData = function(documentData) {
         var currentHeight, finalText;
         while(flag) {
             finalText = this.buildFinalText(documentData.t);
-            charCode = finalText[i].charCodeAt(0);
             currentHeight = 0;
             lineWidth = 0;
             len = finalText.length;
             trackingOffset = documentData.tr/1000*documentData.finalSize;
             var lastSpaceIndex = -1;
             for(i=0;i<len;i+=1){
+                charCode = finalText[i].charCodeAt(0);
                 newLineFlag = false;
                 if(finalText[i] === ' '){
                     lastSpaceIndex = i;
