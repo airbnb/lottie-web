@@ -574,7 +574,9 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
+        var globalData = elem.globalData;
         function executeExpression(_value) {
+            // globalData.pushExpression();
             value = _value;
             if (_needsRandom) {
                 seedRandom(randSeed);
@@ -631,6 +633,7 @@ var ExpressionManager = (function(){
             if (scoped_bm_rt.propType === "shape") {
                 scoped_bm_rt = shape_pool.clone(scoped_bm_rt.v);
             }
+            // globalData.popExpression();
             return scoped_bm_rt;
         }
         return executeExpression;

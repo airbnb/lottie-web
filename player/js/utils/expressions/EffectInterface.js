@@ -78,11 +78,17 @@ var EffectsExpressionInterface = (function (){
     }
 
     function createValueInterface(element, type, elem, propertyGroup){
+        var expressionProperty
+        if (element.p.propType === 'unidimensional') {
+            expressionProperty = ExpressionUnidimensionalValueFactory(element.p, 1);
+        } else if (element.p.propType === 'multidimensional') {
+            expressionProperty = ExpressionMultidimensionalValueFactory(element.p, 1);
+        }
         function interfaceFunction(){
             if(type === 10){
                 return elem.comp.compInterface(element.p.v);
             }
-            return ExpressionValue(element.p);
+            return expressionProperty();
         }
 
         if(element.p.setGroupProperty) {

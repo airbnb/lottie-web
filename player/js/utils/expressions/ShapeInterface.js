@@ -109,13 +109,12 @@ var ShapeExpressionInterface = (function(){
         Object.defineProperties(interfaceFunction, {
             'color': {
                 get: function() {
+                    //TODO fix color
                     return ExpressionValue(view.c, 1 / view.c.mult, 'color');
                 }
             },
             'opacity': {
-                get: function() {
-                    return ExpressionValue(view.o, 100);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.o, 100)
             },
             '_name': { value: shape.nm },
             'mn': { value: shape.mn }
@@ -143,9 +142,7 @@ var ShapeExpressionInterface = (function(){
         }
         function addPropertyToDashOb(i) {
             Object.defineProperty(dashOb, shape.d[i].nm, {
-                get: function(){
-                    return ExpressionValue(view.d.dataProps[i].p);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.d.dataProps[i].p, 1)
             });
         }
         var i, len = shape.d ? shape.d.length : 0;
@@ -164,21 +161,20 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.strokeWidth;
             }
         }
+        var _color = ExpressionMultidimensionalValueFactory(view.c, 1 / view.c.mult);
         Object.defineProperties(interfaceFunction, {
             'color': {
                 get: function() {
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
+                    return _color();
+                    //TODO fix color
+                    // return ExpressionValue(view.c, 1 / view.c.mult, 'color');
                 }
             },
             'opacity': {
-                get: function() {
-                    return ExpressionValue(view.o, 100);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.o, 100)
             },
             'strokeWidth': {
-                get: function() {
-                    return ExpressionValue(view.w);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.w, 1)
             },
             'dash': {
                 get: function() {
@@ -224,19 +220,13 @@ var ShapeExpressionInterface = (function(){
 
         Object.defineProperties(interfaceFunction, {
             'start': {
-                get: function() {
-                    return ExpressionValue(view.s, 1 / view.s.mult);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.s, 1 / view.s.mult)
             },
             'end': {
-                get: function() {
-                    return ExpressionValue(view.e, 1 / view.e.mult);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.e, 1 / view.e.mult)
             },
             'offset': {
-                get: function() {
-                    return ExpressionValue(view.o);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.o, 1)
             },
             '_name': { value: shape.nm }
         });
@@ -289,39 +279,25 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'opacity': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.o, 1/view.transform.mProps.o.mult);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.transform.mProps.o, 1 / view.transform.mProps.o.mult)
             },
             'position': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.p);
-                }
+                get: ExpressionMultidimensionalValueFactory(view.transform.mProps.p, 1)
             },
             'anchorPoint': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.a);
-                }
+                get: ExpressionMultidimensionalValueFactory(view.transform.mProps.a, 1)
             },
             'scale': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.s, 1 / view.transform.mProps.s.mult);
-                }
+                get: ExpressionMultidimensionalValueFactory(view.transform.mProps.s, 1 / view.transform.mProps.s.mult)
             },
             'rotation': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.r, 1 / view.transform.mProps.r.mult);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.transform.mProps.r, 1 / view.transform.mProps.r.mult)
             },
             'skew': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sk);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.transform.mProps.sk, 1)
             },
             'skewAxis': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sa);
-                }
+                get: ExpressionUnidimensionalValueFactory(view.transform.mProps.sa, 1)
             },
             '_name': { value: shape.nm }
         });
@@ -350,16 +326,13 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.size;
             }
         }
+
         Object.defineProperties(interfaceFunction, {
             'size': {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
+                get: ExpressionMultidimensionalValueFactory(prop.s, 1)
             },
             'position': {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
+                get: ExpressionMultidimensionalValueFactory(prop.p, 1)
             },
             '_name': { value: shape.nm }
         });
@@ -411,47 +384,28 @@ var ShapeExpressionInterface = (function(){
             }
 
         }
+
         Object.defineProperties(interfaceFunction, {
             'position': {
-                get: function() {
-                    return ExpressionValue(prop.p);
-                }
+                get: ExpressionMultidimensionalValueFactory(prop.p, 1)
             },
             'rotation': {
-                get: function() {
-                    return ExpressionValue(prop.r, 1 / prop.r.mult);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.r, 1 / prop.r.mult)
             },
             'points': {
-                get: function() {
-                    return ExpressionValue(prop.pt);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.pt, 1)
             },
             'outerRadius': {
-                get: function() {
-                    return ExpressionValue(prop.or);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.or, 1)
             },
             'outerRoundness': {
-                get: function(){
-                    return ExpressionValue(prop.os);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.os, 1)
             },
             'innerRadius': {
-                get: function(){
-                    if(!prop.ir){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.ir);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.ir, 1)
             },
             'innerRoundness': {
-                get: function(){
-                    if(!prop.is){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.is, 1 / prop.is.mult);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.is, 1 / prop.is.mult)
             },
             '_name': { value: shape.nm }
         });
@@ -487,19 +441,13 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'position': {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
+                get: ExpressionMultidimensionalValueFactory(prop.p, 1)
             },
             'roundness': {
-                get: function(){
-                    return ExpressionValue(prop.r);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.r, 1)
             },
             'size': {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
+                get: ExpressionMultidimensionalValueFactory(prop.s, 1)
             },
             '_name': { value: shape.nm }
         });
@@ -527,9 +475,7 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'radius': {
-                get: function() {
-                    return ExpressionValue(prop.rd);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.rd, 1)
             },
             '_name': { value: shape.nm }
         });
@@ -560,14 +506,10 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'copies': {
-                get: function(){
-                    return ExpressionValue(prop.c);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.c, 1)
             },
             'offset': {
-                get: function(){
-                    return ExpressionValue(prop.o);
-                }
+                get: ExpressionUnidimensionalValueFactory(prop.o, 1)
             },
             '_name': { value: shape.nm }
         });
