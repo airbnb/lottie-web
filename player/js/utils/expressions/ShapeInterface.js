@@ -108,10 +108,7 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'color': {
-                get: function() {
-                    //TODO fix color
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
+                get: ExpressionMultidimensionalValueFactory(view.c, 1 / view.c.mult)
             },
             'opacity': {
                 get: ExpressionUnidimensionalValueFactory(view.o, 100)
