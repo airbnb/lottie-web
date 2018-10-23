@@ -42,22 +42,26 @@ var TransformExpressionInterface = (function (){
         }
 
         Object.defineProperty(_thisFunction, "rotation", {
-            get: ExpressionUnidimensionalValueFactory(transform.r || transform.rz, 1 / degToRads)
+            get: ExpressionPropertyInterface(transform.r || transform.rz)
+        });
+
+        Object.defineProperty(_thisFunction, "zRotation", {
+            get: ExpressionPropertyInterface(transform.rz || transform.r)
         });
 
         Object.defineProperty(_thisFunction, "xRotation", {
-            get: ExpressionUnidimensionalValueFactory(transform.rx, 1 / degToRads)
+            get: ExpressionPropertyInterface(transform.rx)
         });
 
         Object.defineProperty(_thisFunction, "yRotation", {
-            get: ExpressionUnidimensionalValueFactory(transform.ry, 1 / degToRads)
+            get: ExpressionPropertyInterface(transform.ry)
         });
         Object.defineProperty(_thisFunction, "scale", {
-            get: ExpressionMultidimensionalValueFactory(transform.s, 100)
+            get: ExpressionPropertyInterface(transform.s)
         });
 
         if(transform.p) {
-            var _transformFactory = ExpressionMultidimensionalValueFactory(transform.p, 1);
+            var _transformFactory = ExpressionPropertyInterface(transform.p);
         }
         Object.defineProperty(_thisFunction, "position", {
             get: function () {
@@ -70,39 +74,35 @@ var TransformExpressionInterface = (function (){
         });
 
         Object.defineProperty(_thisFunction, "xPosition", {
-            get: ExpressionUnidimensionalValueFactory(transform.px, 1)
+            get: ExpressionPropertyInterface(transform.px)
         });
 
         Object.defineProperty(_thisFunction, "yPosition", {
-            get: ExpressionUnidimensionalValueFactory(transform.py, 1)
+            get: ExpressionPropertyInterface(transform.py)
         });
 
         Object.defineProperty(_thisFunction, "zPosition", {
-            get: ExpressionUnidimensionalValueFactory(transform.pz, 1)
+            get: ExpressionPropertyInterface(transform.pz)
         });
 
         Object.defineProperty(_thisFunction, "anchorPoint", {
-            get: ExpressionMultidimensionalValueFactory(transform.a, 1)
+            get: ExpressionPropertyInterface(transform.a)
         });
 
         Object.defineProperty(_thisFunction, "opacity", {
-            get: ExpressionUnidimensionalValueFactory(transform.o, 100)
+            get: ExpressionPropertyInterface(transform.o)
         });
 
         Object.defineProperty(_thisFunction, "skew", {
-            get: ExpressionUnidimensionalValueFactory(transform.sk, 1)
+            get: ExpressionPropertyInterface(transform.sk)
         });
 
         Object.defineProperty(_thisFunction, "skewAxis", {
-            get: ExpressionUnidimensionalValueFactory(transform.sa, 1)
+            get: ExpressionPropertyInterface(transform.sa)
         });
 
         Object.defineProperty(_thisFunction, "orientation", {
-            get: ExpressionMultidimensionalValueFactory(transform.or, 1)
-            //TODO: check if multi or unidimensional
-            /*get: function () {
-                return ExpressionValue(transform.or);
-            }*/
+            get: ExpressionPropertyInterface(transform.or)
         });
 
         return _thisFunction;
