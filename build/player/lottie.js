@@ -1888,11 +1888,9 @@ var FontManager = (function(){
         var i, len = fontArr.length;
         var _pendingFonts = len;
         for(i=0; i<len; i+= 1){
-
             var shouldLoadFont = true;
             var loadedSelector;
             var j;
-
             fontArr[i].loaded = false;
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
@@ -2018,7 +2016,6 @@ var FontManager = (function(){
             tHelper.textContent = '||';
             var singleSize = tHelper.getComputedTextLength();
             fontData.cache[index + 1] = (doubleSize - singleSize)/100;*/
-
             tHelper.textContent = char;
             fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
         }
@@ -3465,8 +3462,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
             s = e;
             e = _s;
         }
-        s = Math.round(s*1000)/1000;
-        e = Math.round(e*1000)/1000;
+        s = Math.round(s * 10000) * 0.0001;
+        e = Math.round(e * 10000) * 0.0001;
         this.sValue = s;
         this.eValue = e;
     } else {
@@ -6730,7 +6727,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
         gfill.appendChild(stop);
         stops.push(stop);
     }
-    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(#'+gradientId+')');
+    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+gradientId+')');
     
     this.gf = gfill;
     this.cst = stops;
@@ -6757,7 +6754,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
             opFill.appendChild(stop);
             stops.push(stop);
         }
-        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(#'+opacityId+')');
+        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+opacityId+')');
         this.of = opFill;
         this.ms = mask;
         this.ost = stops;
@@ -7898,7 +7895,7 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
         if (elementData.maskId) {
             this.globalData.defs.appendChild(elementData.ms);
             this.globalData.defs.appendChild(elementData.of);
-            pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
+            pathElement.setAttribute('mask','url(' + locationHref + '#' + elementData.maskId + ')');
         }
     }
     
@@ -11750,8 +11747,40 @@ var Expressions = (function(){
 
 
     function initExpressions(animation){
+
+    	var stackCount = 0;
+    	var registers = [];
+
+    	function pushExpression() {
+			stackCount += 1;
+    	}
+
+    	function popExpression() {
+			stackCount -= 1;
+			if (stackCount === 0) {
+				releaseInstances();
+			}
+    	}
+
+    	function registerExpressionProperty(expression) {
+    		if (registers.indexOf(expression) === -1) {
+				registers.push(expression)
+    		}
+    	}
+
+    	function releaseInstances() {
+    		var i, len = registers.length;
+    		for (i = 0; i < len; i += 1) {
+				registers[i].release();
+    		}
+    		registers.length = 0;
+    	}
+
         animation.renderer.compInterface = CompExpressionInterface(animation.renderer);
         animation.renderer.globalData.projectInterface.registerComposition(animation.renderer);
+        animation.renderer.globalData.pushExpression = pushExpression;
+        animation.renderer.globalData.popExpression = popExpression;
+        animation.renderer.globalData.registerExpressionProperty = registerExpressionProperty;
     }
    return ob;
 }());
@@ -12100,6 +12129,7 @@ var ExpressionManager = (function(){
         var elemType = elem.data.ty;
         var transform,$bm_transform,content,effect;
         var thisProperty = property;
+        thisProperty.valueAtTime = thisProperty.getValueAtTime;
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
@@ -12334,7 +12364,9 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
+        var globalData = elem.globalData;
         function executeExpression(_value) {
+            // globalData.pushExpression();
             value = _value;
             if (_needsRandom) {
                 seedRandom(randSeed);
@@ -12391,6 +12423,7 @@ var ExpressionManager = (function(){
             if (scoped_bm_rt.propType === "shape") {
                 scoped_bm_rt = shape_pool.clone(scoped_bm_rt.v);
             }
+            // globalData.popExpression();
             return scoped_bm_rt;
         }
         return executeExpression;
@@ -12961,14 +12994,10 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'color': {
-                get: function() {
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
+                get: ExpressionPropertyInterface(view.c)
             },
             'opacity': {
-                get: function() {
-                    return ExpressionValue(view.o, 100);
-                }
+                get: ExpressionPropertyInterface(view.o)
             },
             '_name': { value: shape.nm },
             'mn': { value: shape.mn }
@@ -12996,9 +13025,7 @@ var ShapeExpressionInterface = (function(){
         }
         function addPropertyToDashOb(i) {
             Object.defineProperty(dashOb, shape.d[i].nm, {
-                get: function(){
-                    return ExpressionValue(view.d.dataProps[i].p);
-                }
+                get: ExpressionPropertyInterface(view.d.dataProps[i].p)
             });
         }
         var i, len = shape.d ? shape.d.length : 0;
@@ -13019,19 +13046,13 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'color': {
-                get: function() {
-                    return ExpressionValue(view.c, 1 / view.c.mult, 'color');
-                }
+                get: ExpressionPropertyInterface(view.c)
             },
             'opacity': {
-                get: function() {
-                    return ExpressionValue(view.o, 100);
-                }
+                get: ExpressionPropertyInterface(view.o)
             },
             'strokeWidth': {
-                get: function() {
-                    return ExpressionValue(view.w);
-                }
+                get: ExpressionPropertyInterface(view.w)
             },
             'dash': {
                 get: function() {
@@ -13077,19 +13098,13 @@ var ShapeExpressionInterface = (function(){
 
         Object.defineProperties(interfaceFunction, {
             'start': {
-                get: function() {
-                    return ExpressionValue(view.s, 1 / view.s.mult);
-                }
+                get: ExpressionPropertyInterface(view.s)
             },
             'end': {
-                get: function() {
-                    return ExpressionValue(view.e, 1 / view.e.mult);
-                }
+                get: ExpressionPropertyInterface(view.e)
             },
             'offset': {
-                get: function() {
-                    return ExpressionValue(view.o);
-                }
+                get: ExpressionPropertyInterface(view.o)
             },
             '_name': { value: shape.nm }
         });
@@ -13142,39 +13157,25 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'opacity': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.o, 1/view.transform.mProps.o.mult);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.o)
             },
             'position': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.p);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.p)
             },
             'anchorPoint': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.a);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.a)
             },
             'scale': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.s, 1 / view.transform.mProps.s.mult);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.s)
             },
             'rotation': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.r, 1 / view.transform.mProps.r.mult);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.r)
             },
             'skew': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sk);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.sk)
             },
             'skewAxis': {
-                get: function(){
-                    return ExpressionValue(view.transform.mProps.sa);
-                }
+                get: ExpressionPropertyInterface(view.transform.mProps.sa)
             },
             '_name': { value: shape.nm }
         });
@@ -13203,16 +13204,13 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.size;
             }
         }
+
         Object.defineProperties(interfaceFunction, {
             'size': {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
+                get: ExpressionPropertyInterface(prop.s)
             },
             'position': {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
+                get: ExpressionPropertyInterface(prop.p)
             },
             '_name': { value: shape.nm }
         });
@@ -13264,47 +13262,28 @@ var ShapeExpressionInterface = (function(){
             }
 
         }
+
         Object.defineProperties(interfaceFunction, {
             'position': {
-                get: function() {
-                    return ExpressionValue(prop.p);
-                }
+                get: ExpressionPropertyInterface(prop.p)
             },
             'rotation': {
-                get: function() {
-                    return ExpressionValue(prop.r, 1 / prop.r.mult);
-                }
+                get: ExpressionPropertyInterface(prop.r)
             },
             'points': {
-                get: function() {
-                    return ExpressionValue(prop.pt);
-                }
+                get: ExpressionPropertyInterface(prop.pt)
             },
             'outerRadius': {
-                get: function() {
-                    return ExpressionValue(prop.or);
-                }
+                get: ExpressionPropertyInterface(prop.or)
             },
             'outerRoundness': {
-                get: function(){
-                    return ExpressionValue(prop.os);
-                }
+                get: ExpressionPropertyInterface(prop.os)
             },
             'innerRadius': {
-                get: function(){
-                    if(!prop.ir){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.ir);
-                }
+                get: ExpressionPropertyInterface(prop.ir)
             },
             'innerRoundness': {
-                get: function(){
-                    if(!prop.is){
-                        return 0;
-                    }
-                    return ExpressionValue(prop.is, 1 / prop.is.mult);
-                }
+                get: ExpressionPropertyInterface(prop.is)
             },
             '_name': { value: shape.nm }
         });
@@ -13340,19 +13319,13 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'position': {
-                get: function(){
-                    return ExpressionValue(prop.p);
-                }
+                get: ExpressionPropertyInterface(prop.p)
             },
             'roundness': {
-                get: function(){
-                    return ExpressionValue(prop.r);
-                }
+                get: ExpressionPropertyInterface(prop.r)
             },
             'size': {
-                get: function(){
-                    return ExpressionValue(prop.s);
-                }
+                get: ExpressionPropertyInterface(prop.s)
             },
             '_name': { value: shape.nm }
         });
@@ -13380,9 +13353,7 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'radius': {
-                get: function() {
-                    return ExpressionValue(prop.rd);
-                }
+                get: ExpressionPropertyInterface(prop.rd)
             },
             '_name': { value: shape.nm }
         });
@@ -13413,14 +13384,10 @@ var ShapeExpressionInterface = (function(){
         }
         Object.defineProperties(interfaceFunction, {
             'copies': {
-                get: function(){
-                    return ExpressionValue(prop.c);
-                }
+                get: ExpressionPropertyInterface(prop.c)
             },
             'offset': {
-                get: function(){
-                    return ExpressionValue(prop.o);
-                }
+                get: ExpressionPropertyInterface(prop.o)
             },
             '_name': { value: shape.nm }
         });
@@ -13720,36 +13687,31 @@ var TransformExpressionInterface = (function (){
         }
 
         Object.defineProperty(_thisFunction, "rotation", {
-            get: function(){
-                if(transform.r) {
-                    return ExpressionValue(transform.r, 1/degToRads);
-                } else {
-                    return ExpressionValue(transform.rz, 1/degToRads);
-                }
-            }
+            get: ExpressionPropertyInterface(transform.r || transform.rz)
+        });
+
+        Object.defineProperty(_thisFunction, "zRotation", {
+            get: ExpressionPropertyInterface(transform.rz || transform.r)
         });
 
         Object.defineProperty(_thisFunction, "xRotation", {
-            get: function(){
-                    return ExpressionValue(transform.rx, 1/degToRads);
-            }
+            get: ExpressionPropertyInterface(transform.rx)
         });
 
         Object.defineProperty(_thisFunction, "yRotation", {
-            get: function(){
-                    return ExpressionValue(transform.ry, 1/degToRads);
-            }
+            get: ExpressionPropertyInterface(transform.ry)
         });
         Object.defineProperty(_thisFunction, "scale", {
-            get: function () {
-                return ExpressionValue(transform.s, 100);
-            }
+            get: ExpressionPropertyInterface(transform.s)
         });
 
+        if(transform.p) {
+            var _transformFactory = ExpressionPropertyInterface(transform.p);
+        }
         Object.defineProperty(_thisFunction, "position", {
             get: function () {
                 if(transform.p) {
-                    return ExpressionValue(transform.p);
+                    return _transformFactory();
                 } else {
                     return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
                 }
@@ -13757,51 +13719,35 @@ var TransformExpressionInterface = (function (){
         });
 
         Object.defineProperty(_thisFunction, "xPosition", {
-            get: function () {
-                return ExpressionValue(transform.px);
-            }
+            get: ExpressionPropertyInterface(transform.px)
         });
 
         Object.defineProperty(_thisFunction, "yPosition", {
-            get: function () {
-                return ExpressionValue(transform.py);
-            }
+            get: ExpressionPropertyInterface(transform.py)
         });
 
         Object.defineProperty(_thisFunction, "zPosition", {
-            get: function () {
-                return ExpressionValue(transform.pz);
-            }
+            get: ExpressionPropertyInterface(transform.pz)
         });
 
         Object.defineProperty(_thisFunction, "anchorPoint", {
-            get: function () {
-                return ExpressionValue(transform.a);
-            }
+            get: ExpressionPropertyInterface(transform.a)
         });
 
         Object.defineProperty(_thisFunction, "opacity", {
-            get: function () {
-                return ExpressionValue(transform.o, 100);
-            }
+            get: ExpressionPropertyInterface(transform.o)
         });
 
         Object.defineProperty(_thisFunction, "skew", {
-            get: function () {
-                return ExpressionValue(transform.sk);
-            }
+            get: ExpressionPropertyInterface(transform.sk)
         });
 
         Object.defineProperty(_thisFunction, "skewAxis", {
-            get: function () {
-                return ExpressionValue(transform.sa);
-            }
+            get: ExpressionPropertyInterface(transform.sa)
         });
 
         Object.defineProperty(_thisFunction, "orientation", {
-            get: function () {
-                return ExpressionValue(transform.or);
-            }
+            get: ExpressionPropertyInterface(transform.or)
         });
 
         return _thisFunction;
@@ -13917,11 +13863,12 @@ var EffectsExpressionInterface = (function (){
     }
 
     function createValueInterface(element, type, elem, propertyGroup){
+        var expressionProperty = ExpressionPropertyInterface(element.p);
         function interfaceFunction(){
             if(type === 10){
                 return elem.comp.compInterface(element.p.v);
             }
-            return ExpressionValue(element.p);
+            return expressionProperty();
         }
 
         if(element.p.setGroupProperty) {
@@ -13972,54 +13919,92 @@ var MaskManagerInterface = (function(){
 	return MaskManager;
 }());
 
-var ExpressionValue = (function() {
-	return function(elementProp, mult, type) {
-        mult = mult || 1;
-        var expressionValue, arrayValue;
+var ExpressionPropertyInterface = (function() {
 
-		if (elementProp.k) {
-            elementProp.getValue();
-        }
-        var i, len, arrValue, val;
-        if (type) {
-        	if(type === 'color') {
-        		len = 4;
-                expressionValue = createTypedArray('float32', len);
-                arrValue = createTypedArray('float32', len);
-		        for (i = 0; i < len; i += 1) {
-		            expressionValue[i] = arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
-		        }
-	        	expressionValue.value = arrValue;
-        	}
-        } else if (elementProp.propType === 'unidimensional'){
-            val = elementProp.v * mult;
-            expressionValue = new Number(val);
-            expressionValue.value = val;
-        } else {
-        	len = elementProp.pv.length;
-            expressionValue = createTypedArray('float32', len);
-            arrValue = createTypedArray('float32', len);
-	        for (i = 0; i < len; i += 1) {
-	            expressionValue[i] = arrValue[i] = elementProp.v[i] * mult;
-	        }
-	        expressionValue.value = arrValue;
-        }
-        
-        expressionValue.numKeys = elementProp.keyframes ? elementProp.keyframes.length : 0;
+    var defaultUnidimensionalValue = {pv:0, v:0, mult: 1}
+    var defaultMultidimensionalValue = {pv:[0,0,0], v:[0,0,0], mult: 1}
+
+    function completeProperty(expressionValue, property) {
+        Object.defineProperty(expressionValue, 'velocity', {
+            get: function(){
+                return property.getVelocityAtTime(property.comp.currentFrame);
+            }
+        });
+        expressionValue.numKeys = property.keyframes ? property.keyframes.length : 0;
         expressionValue.key = function(pos) {
             if (!expressionValue.numKeys) {
                 return 0;
             } else {
-                return elementProp.keyframes[pos-1].t;
+                return property.keyframes[pos-1].t;
             }
         };
-        expressionValue.valueAtTime = elementProp.getValueAtTime;
-        expressionValue.speedAtTime = elementProp.getSpeedAtTime;
-        expressionValue.velocityAtTime = elementProp.getVelocityAtTime;
-        expressionValue.propertyGroup = elementProp.propertyGroup;
-        return expressionValue;
-	};
-}());
+        expressionValue.valueAtTime = property.getValueAtTime;
+        expressionValue.speedAtTime = property.getSpeedAtTime;
+        expressionValue.velocityAtTime = property.getVelocityAtTime;
+        expressionValue.propertyGroup = property.propertyGroup;
+    }
+
+    function UnidimensionalPropertyInterface(property) {
+        if(!property || !('pv' in property)) {
+            property = defaultUnidimensionalValue;
+        }
+        var mult = 1 / property.mult;
+        var val = property.pv * mult;
+        var expressionValue = new Number(val);
+        expressionValue.value = val;
+        completeProperty(expressionValue, property);
+
+        return function() {
+            if (property.k) {
+                property.getValue();
+            }
+            val = property.v * mult;
+            if(expressionValue.value !== val) {
+                expressionValue = new Number(val);
+                expressionValue.value = val;
+                completeProperty(expressionValue, property);
+            }
+            return expressionValue;
+        }
+    }
+
+    function MultidimensionalPropertyInterface(property) {
+        if(!property || !('pv' in property)) {
+            property = defaultMultidimensionalValue;
+        }
+        var mult = 1 / property.mult;
+        var len = property.pv.length;
+        var expressionValue = createTypedArray('float32', len);
+        var arrValue = createTypedArray('float32', len);
+        expressionValue.value = arrValue;
+        completeProperty(expressionValue, property);
+
+        return function() {
+            if (property.k) {
+                property.getValue();
+            }
+            for (i = 0; i < len; i += 1) {
+                expressionValue[i] = arrValue[i] = property.v[i] * mult;
+            }
+            return expressionValue;
+        }
+    }
+
+    //TODO: try to avoid using this getter
+    function defaultGetter() {
+        return defaultUnidimensionalValue;
+    }
+    
+    return function(property) {
+        if(!property) {
+            return defaultGetter;
+        } else if (property.propType === 'unidimensional') {
+            return UnidimensionalPropertyInterface(property);
+        } else {
+            return MultidimensionalPropertyInterface(property);
+        }
+    }
+}())
 function SliderEffect(data,elem, container){
     this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
@@ -14232,4 +14217,4 @@ GroupEffect.prototype.init = function(data,element){
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));
