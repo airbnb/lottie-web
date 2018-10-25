@@ -632,7 +632,7 @@ var ExpressionManager = (function(){
 
             //TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === "shape") {
-                scoped_bm_rt = shape_pool.clone(scoped_bm_rt.v);
+                scoped_bm_rt = scoped_bm_rt.v;
             }
             // globalData.popExpression();
             return scoped_bm_rt;

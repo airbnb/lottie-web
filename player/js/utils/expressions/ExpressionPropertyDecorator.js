@@ -305,6 +305,9 @@
     function ShapeExpressions(){}
     ShapeExpressions.prototype = {
         vertices: function(prop, time){
+            if (this.k) {
+                this.getValue();
+            }
             var shapePath = this.v;
             if(time !== undefined) {
                 shapePath = this.getValueAtTime(time, 0);
