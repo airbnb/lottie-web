@@ -62,7 +62,7 @@ var ExpressionPropertyInterface = (function() {
             if (property.k) {
                 property.getValue();
             }
-            for (i = 0; i < len; i += 1) {
+            for (var i = 0; i < len; i += 1) {
                 expressionValue[i] = arrValue[i] = property.v[i] * mult;
             }
             return expressionValue;
