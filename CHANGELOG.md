@@ -1,3 +1,14 @@
+## V 5.4.0
+- EXPRESSIONS: easing functions refactored
+- FIX: stroke effect fix with multiple children elements
+- FIX: adding max and min values to trim path start and end
+- EXPRESSIONS: added velocity property
+- FIX(text): Fix charCode assignment and optimize FontManager (thanks @kwilliams-curago)
+- FIX: fix for small trim paths
+- EXPRESSIONS: added valueAtTime property to expression thisProperty variable
+- FIX:  added locationHref to gradient data
+- EXPRESSIONS: big performance improvement for all expressions that use Expression Values heavily
+
 ## V 5.3.4
 - FIX: font load fix
 - TEXT: End of Text character support
