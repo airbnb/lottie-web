@@ -14000,7 +14000,7 @@ var ExpressionPropertyInterface = (function() {
             if (property.k) {
                 property.getValue();
             }
-            for (i = 0; i < len; i += 1) {
+            for (var i = 0; i < len; i += 1) {
                 expressionValue[i] = arrValue[i] = property.v[i] * mult;
             }
             return expressionValue;
@@ -14022,6 +14022,7 @@ var ExpressionPropertyInterface = (function() {
         }
     }
 }())
+
 function SliderEffect(data,elem, container){
     this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
@@ -14202,7 +14203,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.4.0';
+    lottiejs.version = '5.4.1';
 
     function checkReady() {
         if (document.readyState === "complete") {

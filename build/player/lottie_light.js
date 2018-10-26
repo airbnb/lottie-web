@@ -9540,7 +9540,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.4.0';
+    lottiejs.version = '5.4.1';
 
     function checkReady() {
         if (document.readyState === "complete") {

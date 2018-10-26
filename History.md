@@ -1,3 +1,6 @@
+## V 5.4.1
+- FIX: missing variable declaration
+
 ## V 5.4.0
 - EXPRESSIONS: easing functions refactored
 - FIX: stroke effect fix with multiple children elements
