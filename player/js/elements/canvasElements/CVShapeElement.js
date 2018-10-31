@@ -125,6 +125,15 @@ CVShapeElement.prototype.addTransformToStyleList = function(transform) {
     }
 }
 
+CVShapeElement.prototype.removeTransformFromStyleList = function() {
+    var i, len = this.stylesList.length;
+    for (i = 0; i < len; i += 1) {
+        if(!this.stylesList[i].closed) {
+            this.stylesList[i].transforms.pop();
+        }
+    }
+}
+
 CVShapeElement.prototype.closeStyles = function(styles) {
     var i, len = styles.length, j, jLen;
     for (i = 0; i < len; i += 1) {
@@ -200,6 +209,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, sh
         }
         this.addProcessedElement(arr[i], i + 1);
     }
+    this.removeTransformFromStyleList();
     this.closeStyles(ownStyles);
     len = ownModifiers.length;
     for(i=0;i<len;i+=1){
@@ -299,7 +309,7 @@ CVShapeElement.prototype.renderShape = function(parentTransform,items,data,isMai
             groupTransform = data[i].transform;
             this.renderShapeTransform(parentTransform, groupTransform);
         }else if(items[i].ty == 'sh' || items[i].ty == 'el' || items[i].ty == 'rc' || items[i].ty == 'sr'){
-            this.renderPath(items[i],data[i],groupTransform);
+            this.renderPath(items[i],data[i]);
         }else if(items[i].ty == 'fl'){
             this.renderFill(items[i],data[i],groupTransform);
         }else if(items[i].ty == 'st'){
@@ -362,7 +372,7 @@ CVShapeElement.prototype.renderStyledShape = function(styledShape, shape){
     }
 }
 
-CVShapeElement.prototype.renderPath = function(pathData,itemData,groupTransform){
+CVShapeElement.prototype.renderPath = function(pathData,itemData){
     if(pathData.hd !== true && pathData._shouldRender) {
         var i, len = itemData.styledShapes.length;
         for (i = 0; i < len; i += 1) {
