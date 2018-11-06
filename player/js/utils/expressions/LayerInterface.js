@@ -85,6 +85,8 @@ var LayerExpressionInterface = (function (){
                     return transformInterface;
                 case 4:
                 case "ADBE Effect Parade":
+                case "effects":
+                case "Effects":
                     return _thisLayerFunction.effect;
             }
         }
