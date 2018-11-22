@@ -73,7 +73,7 @@ var EffectsExpressionInterface = (function (){
                 return data.np;
             }
         });
-        groupInterface.active = data.en !== 0;
+        groupInterface.active = groupInterface.enabled = data.en !== 0;
         return groupInterface;
     }
 

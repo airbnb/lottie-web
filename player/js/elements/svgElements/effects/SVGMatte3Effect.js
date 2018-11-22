@@ -74,10 +74,11 @@ SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
 
 SVGMatte3Effect.prototype.initialize = function() {
     var ind = this.filterManager.effectElements[0].p.v;
-    var i = 0, len = this.elem.comp.elements.length;
+    var elements = this.elem.comp.elements;
+    var i = 0, len = elements.length;
     while (i < len) {
-    	if (this.elem.comp.elements[i].data.ind === ind) {
-    		this.setElementAsMask(this.elem, this.elem.comp.elements[i]);
+    	if (elements[i] && elements[i].data.ind === ind) {
+    		this.setElementAsMask(this.elem, elements[i]);
     	}
     	i += 1;
     }
