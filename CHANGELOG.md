@@ -1,3 +1,12 @@
+## V 5.4.2
+- FIX: added enabled property on effect interfaces for expression
+- FIX: font measuring fix for white spaces
+- FIX: supporting Effects property on layers in expressions
+- FIX: canvas sibling shapes with same style fix
+- FIX: caching valueAtTime correctly
+- FIX: AVD exporter fix on clip paths
+- FIX: AVD exporter fix on initial and end values
+
 ## V 5.4.1
 - FIX: missing variable declaration
 
