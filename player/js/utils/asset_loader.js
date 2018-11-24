@@ -6,7 +6,7 @@ var assetLoader = (function(){
 		} else if(xhr.response && typeof xhr.response === 'string') {
 			return JSON.parse(xhr.response);
 		} else if(xhr.responseText) {
-			return JSON.parse(xhr.response);
+			return JSON.parse(xhr.responseText);
 		}
 	}
 

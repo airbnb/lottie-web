@@ -4317,7 +4317,7 @@ var assetLoader = (function(){
 		} else if(xhr.response && typeof xhr.response === 'string') {
 			return JSON.parse(xhr.response);
 		} else if(xhr.responseText) {
-			return JSON.parse(xhr.response);
+			return JSON.parse(xhr.responseText);
 		}
 	}
 
@@ -7944,6 +7944,9 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     var elementData = new ShapeGroupData();
     if(data.ln){
         elementData.gr.setAttribute('id',data.ln);
+    }
+    if(data.cl){
+        elementData.gr.setAttribute('class',data.cl);
     }
     return elementData;
 };

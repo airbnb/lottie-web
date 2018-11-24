@@ -6,6 +6,8 @@
 - FIX: caching valueAtTime correctly
 - FIX: AVD exporter fix on clip paths
 - FIX: AVD exporter fix on initial and end values
+- FIX: formatResponse if responseText - thanks @ansmonjol
+- NEW: renders class name for nested group elements - thanks @russellgoldenberg
 
 ## V 5.4.1
 - FIX: missing variable declaration
