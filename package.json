@@ -19,7 +19,7 @@
     "export"
   ],
   "devDependencies": {
-    "event-stream": "^3.3.4",
+    "event-stream": "3.3.4",
     "events-stream": "^0.2.0",
     "gulp": "^3.9.1",
     "gulp-batch-replace": "0.0.0",
