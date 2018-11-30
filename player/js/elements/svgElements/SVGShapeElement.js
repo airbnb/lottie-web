@@ -279,14 +279,14 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     this.renderShape();
 
     for (i = 0; i < len; i += 1) {
-        if (this.stylesList[i]._mdf || this._isFirstFrame) {
-            if(this.stylesList[i].msElem){
-                this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
-                //Adding M0 0 fixes same mask bug on all browsers
-                this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
-            }
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
+        const sl = this.stylesList[i];
+        if(!sl._mdf && !this._isFirstFrame) continue;
+        if(sl.msElem){
+            sl.msElem.setAttribute('d', sl.d);
+            //Adding M0 0 fixes same mask bug on all browsers
+            sl.d = 'M0 0' + sl.d;
         }
+        sl.pElem.setAttribute('d', sl.d || 'M0 0');
     }
 };
 

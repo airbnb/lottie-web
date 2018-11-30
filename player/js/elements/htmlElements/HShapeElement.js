@@ -211,8 +211,8 @@ HShapeElement.prototype.renderInnerContent = function() {
             this.currentBBox.x = tempBoundingBox.x;
             this.currentBBox.y = tempBoundingBox.y;
 
-            this.shapeCont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+            this.shapeCont.setAttribute('viewBox', [this.currentBBox.x,this.currentBBox.y,this.currentBBox.w,this.currentBBox.h].join(' '));
+            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = ['translate(', this.currentBBox.x, 'px,', this.currentBBox.y, 'px)'].join('');
         }
     }
 
