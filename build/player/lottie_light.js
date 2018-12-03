@@ -8108,7 +8108,7 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     this.renderShape();
 
     for (i = 0; i < len; i += 1) {
-        const sl = this.stylesList[i];
+        var sl = this.stylesList[i];
         if(!sl._mdf && !this._isFirstFrame) continue;
         if(sl.msElem){
             sl.msElem.setAttribute('d', sl.d);
