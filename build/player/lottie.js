@@ -4154,13 +4154,12 @@ var buildShapeString = function(pathNodes, length, closed, mat) {
         var _o = pathNodes.o;
         var _i = pathNodes.i;
         var _v = pathNodes.v;
-        var i, shapeString = " M" + mat.applyToPointStringified(_v[0][0], _v[0][1]);
+        var i, shapeString = ' M' + mat.applyToPointStringified(_v[0][0], _v[0][1]);
         for(i = 1; i < length; i += 1) {
-            shapeString += " C" + mat.applyToPointStringified(_o[i - 1][0], _o[i - 1][1]) + " " + mat.applyToPointStringified(_i[i][0], _i[i][1]) + " " + mat.applyToPointStringified(_v[i][0], _v[i][1]);
+            shapeString += [' C', mat.applyToPointStringified(_o[i - 1][0], _o[i - 1][1]), ' ', mat.applyToPointStringified(_i[i][0], _i[i][1]), ' ', mat.applyToPointStringified(_v[i][0], _v[i][1])].join('');
         }
         if (closed && length) {
-            shapeString += " C" + mat.applyToPointStringified(_o[i - 1][0], _o[i - 1][1]) + " " + mat.applyToPointStringified(_i[0][0], _i[0][1]) + " " + mat.applyToPointStringified(_v[0][0], _v[0][1]);
-            shapeString += 'z';
+            shapeString += [' C', mat.applyToPointStringified(_o[i - 1][0], _o[i - 1][1]), ' ', mat.applyToPointStringified(_i[0][0], _i[0][1]), ' ', mat.applyToPointStringified(_v[0][0], _v[0][1]), 'z'].join('');
         }
         return shapeString;
 }
@@ -8109,14 +8108,14 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     this.renderShape();
 
     for (i = 0; i < len; i += 1) {
-        if (this.stylesList[i]._mdf || this._isFirstFrame) {
-            if(this.stylesList[i].msElem){
-                this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
-                //Adding M0 0 fixes same mask bug on all browsers
-                this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
-            }
-            this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');
+        var sl = this.stylesList[i];
+        if(!sl._mdf && !this._isFirstFrame) continue;
+        if(sl.msElem){
+            sl.msElem.setAttribute('d', sl.d);
+            //Adding M0 0 fixes same mask bug on all browsers
+            sl.d = 'M0 0' + sl.d;
         }
+        sl.pElem.setAttribute('d', sl.d || 'M0 0');
     }
 };
 
@@ -11354,8 +11353,8 @@ HShapeElement.prototype.renderInnerContent = function() {
             this.currentBBox.x = tempBoundingBox.x;
             this.currentBBox.y = tempBoundingBox.y;
 
-            this.shapeCont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
-            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+            this.shapeCont.setAttribute('viewBox', [this.currentBBox.x,this.currentBBox.y,this.currentBBox.w,this.currentBBox.h].join(' '));
+            this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = ['translate(', this.currentBBox.x, 'px,', this.currentBBox.y, 'px)'].join('');
         }
     }
 
@@ -14269,4 +14268,4 @@ GroupEffect.prototype.init = function(data,element){
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));
