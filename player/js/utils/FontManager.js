@@ -47,20 +47,7 @@ var FontManager = (function(){
                 loadedCount -= 1;
                 continue;
             }
-            if(this.fonts[i].fOrigin === 't' || this.fonts[i].origin === 2){
-                if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
-                    this.typekitLoaded = 1;
-                    try{window.Typekit.load({
-                        async: true,
-                        active: function() {
-                            this.typekitLoaded = 2;
-                        }.bind(this)
-                    });}catch(e){}
-                }
-                if(this.typekitLoaded === 2) {
-                    this.fonts[i].loaded = true;
-                }
-            } else if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
+            if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
                 this.fonts[i].loaded = true;
             } else{
                 node = this.fonts[i].monoCase.node;
@@ -183,10 +170,11 @@ var FontManager = (function(){
                 }
 
                 if (shouldLoadFont) {
-                    var sc = createTag('script');
+                    var sc = createTag('link');
                     sc.setAttribute('f-forigin', fontArr[i].fOrigin);
                     sc.setAttribute('f-origin', fontArr[i].origin);
-                    sc.setAttribute('src',fontArr[i].fPath);
+                    sc.setAttribute('rel','stylesheet');
+                    sc.setAttribute('href',fontArr[i].fPath);
                     defs.appendChild(sc);
                 }
             }

@@ -149,6 +149,8 @@
     <!-- <script src="lottie.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
 
+
+
 </head>
 <body>
 <div id="lottie"></div>
@@ -158,8 +160,8 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: false,
+        renderer: 'html',
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
@@ -168,8 +170,11 @@
         },
         path: 'exports/render/data.json'
     };
-    anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
+    setTimeout(()=>{
+        anim = lottie.loadAnimation(animData);
+        // anim.setSubframe(false);
+        
+    },0)
 
 </script>
 </body>
