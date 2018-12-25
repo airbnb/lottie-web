@@ -23,11 +23,10 @@ CVShapeElement.prototype.createContent = function(){
 };
 
 CVShapeElement.prototype.createStyleElement = function(data, transforms) {
-    var transformsSequence = this.transformsManager.addTransformSequence(transforms);
     var styleElem = {
         data: data,
         type: data.ty,
-        preTransforms: transformsSequence,
+        preTransforms: this.transformsManager.addTransformSequence(transforms),
         transforms: [],
         elements: [],
         closed: data.hd === true
@@ -104,12 +103,12 @@ CVShapeElement.prototype.createShapeElement = function(data) {
 CVShapeElement.prototype.reloadShapes = function() {
     this._isFirstFrame = true;
     var i, len = this.itemsData.length;
-    for(i=0;i<len;i+=1){
+    for (i = 0; i < len; i += 1) {
         this.prevViewData[i] = this.itemsData[i];
     }
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData, true, []);
     len = this.dynamicProperties.length;
-    for(i=0;i<len;i+=1){
+    for (i = 0; i < len; i += 1) {
         this.dynamicProperties[i].getValue();
     }
     this.renderModifiers();
@@ -175,9 +174,9 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, sh
             if(!processedPos){
                 currentTransform = this.createTransformElement(arr[i]);
                 itemsData[i] = currentTransform;
-                ownTransforms.push(currentTransform);
-                this.addTransformToStyleList(currentTransform);
             }
+            ownTransforms.push(itemsData[i]);
+            this.addTransformToStyleList(itemsData[i]);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
                 itemsData[i] = this.createShapeElement(arr[i]);

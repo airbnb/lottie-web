@@ -77,7 +77,7 @@ RepeaterModifier.prototype.cloneElements = function(elements){
 
 RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
     var i, len = elements.length;
-    for(i = 0; i < len ; i += 1) {
+    for(i = 0; i < len; i += 1) {
         elements[i]._render = renderFlag;
         if(elements[i].ty === 'gr') {
             this.changeGroupRender(elements[i].it, renderFlag);

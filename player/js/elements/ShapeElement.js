@@ -44,8 +44,8 @@ IShapeElement.prototype = {
     searchProcessedElement: function(elem){
         var elements = this.processedElements;
         var i = 0, len = elements.length;
-        while(i < len){
-            if(elements[i].elem === elem){
+        while (i < len) {
+            if (elements[i].elem === elem) {
                 return elements[i].pos;
             }
             i += 1;
@@ -55,9 +55,9 @@ IShapeElement.prototype = {
     addProcessedElement: function(elem, pos){
         var elements = this.processedElements;
         var i = elements.length;
-        while(i){
+        while(i) {
             i -= 1;
-            if(elements[i].elem === elem){
+            if (elements[i].elem === elem) {
                 elements[i].pos = pos;
                 return;
             }

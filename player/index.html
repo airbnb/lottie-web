@@ -160,7 +160,7 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'html',
+        renderer: 'canvas',
         loop: true,
         autoplay: true,
         rendererSettings: {
@@ -170,9 +170,15 @@
         },
         path: 'exports/render/data.json'
     };
+    // lottie.setQuality('low');
     setTimeout(()=>{
         anim = lottie.loadAnimation(animData);
-        // anim.setSubframe(false);
+        anim.setSubframe(false);
+
+        setTimeout(()=>{
+            // anim.goToAndStop(10, true);
+            
+        },0)
         
     },0)
 
