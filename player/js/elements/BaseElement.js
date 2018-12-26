@@ -33,28 +33,8 @@ BaseElement.prototype = {
             this.layerInterface.text = this.layerInterface.textInterface;
         }
     },
-    blendModeEnums: {
-        1:'multiply',
-        2:'screen',
-        3:'overlay',
-        4:'darken',
-        5:'lighten',
-        6:'color-dodge',
-        7:'color-burn',
-        8:'hard-light',
-        9:'soft-light',
-        10:'difference',
-        11:'exclusion',
-        12:'hue',
-        13:'saturation',
-        14:'color',
-        15:'luminosity'
-    },
-    getBlendMode: function(){
-        return this.blendModeEnums[this.data.bm] || '';
-    },
     setBlendMode: function(){
-        var blendModeValue = this.getBlendMode();
+        var blendModeValue = getBlendMode(this.data.bm);
         var elem = this.baseElement || this.layerElement;
 
         elem.style['mix-blend-mode'] = blendModeValue;

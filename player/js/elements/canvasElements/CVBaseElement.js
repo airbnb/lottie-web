@@ -13,7 +13,7 @@ CVBaseElement.prototype = {
         var globalData = this.globalData;
         if(globalData.blendMode !== this.data.bm) {
             globalData.blendMode = this.data.bm;
-            var blendModeValue = this.getBlendMode();
+            var blendModeValue = getBlendMode(this.data.bm);
             globalData.canvasContext.globalCompositeOperation = blendModeValue;
         }
     },

@@ -107,6 +107,9 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
     if(data.cl){
         pathElement.setAttribute('class',data.cl);
     }
+    if(data.bm){
+        pathElement.style['mix-blend-mode'] = getBlendMode(data.bm);
+    }
     this.stylesList.push(styleOb);
     this.addToAnimatedContents(data, elementData);
     return elementData;
@@ -119,6 +122,9 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     }
     if(data.cl){
         elementData.gr.setAttribute('class',data.cl);
+    }
+    if(data.bm){
+        elementData.gr.style['mix-blend-mode'] = getBlendMode(data.bm);
     }
     return elementData;
 };
