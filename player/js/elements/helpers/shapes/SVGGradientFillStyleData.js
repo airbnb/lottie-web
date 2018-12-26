@@ -21,7 +21,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
 
 SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
 
-    var gradientId = 'gr_'+randomString(10);
+    var gradientId = createElementID();
     var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
@@ -46,8 +46,8 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         var mask = createNS("mask");
         var maskElement = createNS( 'path');
         mask.appendChild(maskElement);
-        var opacityId = 'op_'+randomString(10);
-        var maskId = 'mk_'+randomString(10);
+        var opacityId = createElementID();
+        var maskId = createElementID();
         mask.setAttribute('id',maskId);
         var opFill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
         opFill.setAttribute('id',opacityId);

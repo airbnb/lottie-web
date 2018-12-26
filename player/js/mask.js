@@ -15,7 +15,7 @@ function MaskElement(data,element,globalData) {
     var count = 0;
     var currentMasks = [];
     var j, jLen;
-    var layerId = randomString(10);
+    var layerId = createElementID();
     var rect, expansor, feMorph,x;
     var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
@@ -57,7 +57,7 @@ function MaskElement(data,element,globalData) {
             maskType = 'mask';
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.element);
-            filterID = 'fi_'+randomString(10);
+            filterID = createElementID();
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
             feMorph = createNS('feMorphology');

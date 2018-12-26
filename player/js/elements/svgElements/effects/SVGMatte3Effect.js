@@ -1,5 +1,4 @@
 var _svgMatteSymbols = [];
-var _svgMatteMaskCounter = 0;
 
 function SVGMatte3Effect(filterElem, filterManager, elem){
     this.initialized = false;
@@ -51,7 +50,7 @@ SVGMatte3Effect.prototype.replaceInParent = function(mask, symbolId) {
 
 SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
     if(!this.findSymbol(mask)) {
-        var symbolId = 'matte_' + randomString(5) + '_' + _svgMatteMaskCounter++;
+        var symbolId = createElementID();
         var masker = createNS('mask');
         masker.setAttribute('id', mask.layerId);
         masker.setAttribute('mask-type', 'alpha');

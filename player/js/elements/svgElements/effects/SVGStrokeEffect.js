@@ -27,7 +27,7 @@ SVGStrokeEffect.prototype.initialize = function(){
     }
     if(this.filterManager.effectElements[10].p.v === 3){
         var mask = createNS('mask');
-        var id = 'stms_' + randomString(10);
+        var id = createElementID();
         mask.setAttribute('id',id);
         mask.setAttribute('mask-type','alpha');
         mask.appendChild(groupPath);

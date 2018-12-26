@@ -63,7 +63,7 @@ BaseElement.prototype = {
         this.globalData = globalData;
         this.comp = comp;
         this.data = data;
-        this.layerId = 'ly_'+randomString(10);
+        this.layerId = createElementID();
         
         //Stretch factor for old animations missing this property.
         if(!this.data.sr){
