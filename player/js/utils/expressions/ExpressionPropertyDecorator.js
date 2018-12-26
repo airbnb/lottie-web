@@ -290,10 +290,12 @@
                 lastTime: initialDefaultFrame
             };
         }
+        
+        frameNum *= this.elem.globalData.frameRate;
+        frameNum -= this.offsetTime;
         if(frameNum !== this._cachingAtTime.lastTime) {
             this._cachingAtTime.lastIndex = this._cachingAtTime.lastTime < frameNum ? this._caching.lastIndex : 0;
             this._cachingAtTime.lastTime = frameNum;
-            frameNum *= this.elem.globalData.frameRate;
             this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, this._cachingAtTime);
         }
         return this._cachingAtTime.shapeValue;
