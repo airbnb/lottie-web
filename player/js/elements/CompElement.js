@@ -10,7 +10,7 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initHierarchy();
     this.initRendererElement();
     this.createContainerElements();
-    this.addMasks();
+    this.createRenderableComponents();
     if(this.data.xt || !globalData.progressiveLoad){
         this.buildAllItems();
     }

@@ -58,7 +58,7 @@ WImageElement.prototype.imageFailed = function() {
 }
 
 WImageElement.prototype.createContent = function(){
-    var img = this.globalData.imagePreloader.getImageById(this.assetData.id);
+    var img = this.globalData.imageLoader.getImage(this.assetData);
     if(img) {
         this.img = img;
         this.imageLoaded();

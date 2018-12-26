@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "properties": {
+    "c": {
+      "description": "Closed property of shape",
+      "extended_name": "Closed",
+      "type": "boolean"
+    },
+    "i": {
+      "description": "Bezier curve In points. Array of 2 dimensional arrays.",
+      "extended_name": "In Point",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "number"
+        }
+      }
+    },
+    "o": {
+      "description": "Bezier curve Out points. Array of 2 dimensional arrays.",
+      "extended_name": "Out Point",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "number"
+        }
+      }
+    },
+    "v": {
+      "description": "Bezier curve Vertices. Array of 2 dimensional arrays.",
+      "extended_name": "Vertices",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

@@ -81,8 +81,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         if (o < 0) {
             o += 1;
         }
-        s = this.s.v + o;
-        e = this.e.v + o;
+        s = (this.s.v > 1 ? 1 : this.s.v < 0 ? 0 : this.s.v) + o;
+        e = (this.e.v > 1 ? 1 : this.e.v < 0 ? 0 : this.e.v) + o;
         if (s === e) {
 
         }
@@ -91,8 +91,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
             s = e;
             e = _s;
         }
-        s = Math.round(s*1000)/1000;
-        e = Math.round(e*1000)/1000;
+        s = Math.round(s * 10000) * 0.0001;
+        e = Math.round(e * 10000) * 0.0001;
         this.sValue = s;
         this.eValue = e;
     } else {
@@ -178,7 +178,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
                     var newShapesData = this.addShapes(shapeData,segments[0]);
                     if (segments[0].s !== segments[0].e) {
                         if (segments.length > 1) {
-                            if (shapeData.shape.v.c) {
+                            var lastShapeInCollection = shapeData.shape.paths.shapes[shapeData.shape.paths._length - 1];
+                            if (lastShapeInCollection.c) {
                                 var lastShape = newShapesData.pop();
                                 this.addPaths(newShapesData, localShapeCollection);
                                 newShapesData = this.addShapes(shapeData, segments[1], lastShape);

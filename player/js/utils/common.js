@@ -92,15 +92,12 @@ function BMDestroyEvent(n,t){
     this.target = t;
 }
 
-function randomString(length, chars){
-    if(chars === undefined){
-        chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+var createElementID = (function(){
+    var _count = 0;
+    return function createID() {
+        return '__lottie_element_' + ++_count
     }
-    var i;
-    var result = '';
-    for (i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
-    return result;
-}
+}())
 
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;

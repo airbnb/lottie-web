@@ -26,6 +26,7 @@ function SVGRenderer(animationItem, config){
     this.elements = [];
     this.pendingElements = [];
     this.destroyed = false;
+    this.rendererType = 'svg';
 
 }
 
@@ -92,7 +93,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
     rect.setAttribute('y',0);
-    var maskId = 'animationMask_'+randomString(10);
+    var maskId = createElementID();
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
     this.layerElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");

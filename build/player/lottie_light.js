@@ -439,8 +439,10 @@ var Matrix = (function(){
     }
 
     function scale(sx, sy, sz) {
-        sz = isNaN(sz) ? 1 : sz;
-        if(sx == 1 && sy == 1 && sz == 1){
+        if(!sz && sz !== 0) {
+            sz = 1;
+        }
+        if(sx === 1 && sy === 1 && sz === 1){
             return this;
         }
         return this._t(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1);
@@ -1805,20 +1807,7 @@ var FontManager = (function(){
                 loadedCount -= 1;
                 continue;
             }
-            if(this.fonts[i].fOrigin === 't' || this.fonts[i].origin === 2){
-                if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
-                    this.typekitLoaded = 1;
-                    try{window.Typekit.load({
-                        async: true,
-                        active: function() {
-                            this.typekitLoaded = 2;
-                        }.bind(this)
-                    });}catch(e){}
-                }
-                if(this.typekitLoaded === 2) {
-                    this.fonts[i].loaded = true;
-                }
-            } else if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
+            if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
                 this.fonts[i].loaded = true;
             } else{
                 node = this.fonts[i].monoCase.node;
@@ -1842,9 +1831,9 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            setTimeout(checkLoadedFonts.bind(this),20);
+            setTimeout(this.checkLoadedFonts.bind(this),20);
         }else{
-            setTimeout(function(){this.loaded = true;}.bind(this),0);
+            setTimeout(function(){this.isLoaded = true;}.bind(this),0);
 
         }
     }
@@ -1872,11 +1861,11 @@ var FontManager = (function(){
 
     function addFonts(fontData, defs){
         if(!fontData){
-            this.loaded = true;
+            this.isLoaded = true;
             return;
         }
         if(this.chars){
-            this.loaded = true;
+            this.isLoaded = true;
             this.fonts = fontData.list;
             return;
         }
@@ -1884,37 +1873,82 @@ var FontManager = (function(){
 
         var fontArr = fontData.list;
         var i, len = fontArr.length;
+        var _pendingFonts = len;
         for(i=0; i<len; i+= 1){
+            var shouldLoadFont = true;
+            var loadedSelector;
+            var j;
             fontArr[i].loaded = false;
             fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
             fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
+                _pendingFonts -= 1;
             }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
-                var s = createTag('style');
-                s.type = "text/css";
-                s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
-                defs.appendChild(s);
+                loadedSelector = document.querySelectorAll('style[f-forigin="p"][f-family="'+ fontArr[i].fFamily +'"], style[f-origin="3"][f-family="'+ fontArr[i].fFamily +'"]');
+
+                if (loadedSelector.length > 0) {
+                    shouldLoadFont = false;
+                }
+
+                if (shouldLoadFont) {
+                    var s = createTag('style');
+                    s.setAttribute('f-forigin', fontArr[i].fOrigin);
+                    s.setAttribute('f-origin', fontArr[i].origin);
+                    s.setAttribute('f-family', fontArr[i].fFamily);
+                    s.type = "text/css";
+                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                    defs.appendChild(s);
+                }
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
-                var l = createTag('link');
-                l.type = "text/css";
-                l.rel = "stylesheet";
-                l.href = fontArr[i].fPath;
-                document.body.appendChild(l);
+                loadedSelector = document.querySelectorAll('link[f-forigin="g"], link[f-origin="1"]');
+
+                for (j = 0; j < loadedSelector.length; j++) {
+                    if (loadedSelector[j].href.indexOf(fontArr[i].fPath) !== -1) {
+                        // Font is already loaded
+                        shouldLoadFont = false;
+                    }
+                }
+
+                if (shouldLoadFont) {
+                    var l = createTag('link');
+                    l.setAttribute('f-forigin', fontArr[i].fOrigin);
+                    l.setAttribute('f-origin', fontArr[i].origin);
+                    l.type = "text/css";
+                    l.rel = "stylesheet";
+                    l.href = fontArr[i].fPath;
+                    document.body.appendChild(l);
+                }
             } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
-                var sc = createTag('script');
-                sc.setAttribute('src',fontArr[i].fPath);
-                defs.appendChild(sc);
+                loadedSelector = document.querySelectorAll('script[f-forigin="t"], script[f-origin="2"]');
+
+                for (j = 0; j < loadedSelector.length; j++) {
+                    if (fontArr[i].fPath === loadedSelector[j].src) {
+                        // Font is already loaded
+                        shouldLoadFont = false;
+                    }
+                }
+
+                if (shouldLoadFont) {
+                    var sc = createTag('link');
+                    sc.setAttribute('f-forigin', fontArr[i].fOrigin);
+                    sc.setAttribute('f-origin', fontArr[i].origin);
+                    sc.setAttribute('rel','stylesheet');
+                    sc.setAttribute('href',fontArr[i].fPath);
+                    defs.appendChild(sc);
+                }
             }
             fontArr[i].helper = createHelper(defs,fontArr[i]);
             fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
-        //On some cases the font even if it is loaded, it won't load correctly when measuring text on canvas.
-        //Adding this timeout seems to fix it
-       setTimeout(function() {
-            checkLoadedFonts.bind(this)();
-        }.bind(this), 100);
+        if (_pendingFonts === 0) {
+            this.isLoaded = true;
+        } else {
+            //On some cases even if the font is loaded, it won't load correctly when measuring text on canvas.
+            //Adding this timeout seems to fix it
+           setTimeout(this.checkLoadedFonts.bind(this), 100);
+        }
     }
 
     function addChars(chars){
@@ -1965,14 +1999,16 @@ var FontManager = (function(){
             //fontData.cache[index] = tHelper.measureText(char).width / 100;
             //SVG version
             //console.log(tHelper.getBBox().width)
-            /*tHelper.textContent = '|' + char + '|';
-            var doubleSize = tHelper.getComputedTextLength();
-            tHelper.textContent = '||';
-            var singleSize = tHelper.getComputedTextLength();
-            fontData.cache[index + 1] = (doubleSize - singleSize)/100;*/
-           
-            tHelper.textContent = char;
-            fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
+            if (char === ' ') {
+                tHelper.textContent = '|' + char + '|';
+                var doubleSize = tHelper.getComputedTextLength();
+                tHelper.textContent = '||';
+                var singleSize = tHelper.getComputedTextLength();
+                fontData.cache[index + 1] = (doubleSize - singleSize)/100;
+            } else {
+                tHelper.textContent = char;
+                fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
+            }
         }
         return fontData.cache[index + 1] * size;
     }
@@ -1992,11 +2028,15 @@ var FontManager = (function(){
         return combinedCharacters;
     }
 
+    function loaded() {
+        return this.isLoaded;
+    }
+
     var Font = function(){
         this.fonts = [];
         this.chars = null;
         this.typekitLoaded = 0;
-        this.loaded = false;
+        this.isLoaded = false;
         this.initTime = Date.now();
     };
     //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
@@ -2007,6 +2047,8 @@ var FontManager = (function(){
     Font.prototype.getCharData = getCharData;
     Font.prototype.getFontByName = getFontByName;
     Font.prototype.measureText = measureText;
+    Font.prototype.checkLoadedFonts = checkLoadedFonts;
+    Font.prototype.loaded = loaded;
 
     return Font;
 
@@ -2016,61 +2058,62 @@ var PropertyFactory = (function(){
     var initFrame = initialDefaultFrame;
     var math_abs = Math.abs;
 
-    function interpolateValue(frameNum, caching){
+    function interpolateValue(frameNum, caching) {
         var offsetTime = this.offsetTime;
         var newValue;
-        if(this.propType === 'multidimensional') {
+        if (this.propType === 'multidimensional') {
             newValue = createTypedArray('float32', this.pv.length);
         }
         var iterationIndex = caching.lastIndex;
         var i = iterationIndex;
-        var len = this.keyframes.length- 1,flag = true;
+        var len = this.keyframes.length - 1, flag = true;
         var keyData, nextKeyData;
 
-        while(flag){
+        while (flag) {
             keyData = this.keyframes[i];
-            nextKeyData = this.keyframes[i+1];
-            if(i == len-1 && frameNum >= nextKeyData.t - offsetTime){
+            nextKeyData = this.keyframes[i + 1];
+            if (i === len - 1 && frameNum >= nextKeyData.t - offsetTime){
                 if(keyData.h){
                     keyData = nextKeyData;
                 }
                 iterationIndex = 0;
                 break;
             }
-            if((nextKeyData.t - offsetTime) > frameNum){
+            if ((nextKeyData.t - offsetTime) > frameNum){
                 iterationIndex = i;
                 break;
             }
-            if(i < len - 1){
+            if (i < len - 1){
                 i += 1;
-            }else{
+            } else {
                 iterationIndex = 0;
                 flag = false;
             }
         }
 
-        var k, kLen,perc,jLen, j, fnc;
-        if(keyData.to){
-
-            if(!keyData.bezierData){
+        var k, kLen, perc, jLen, j, fnc;
+        var nextKeyTime = nextKeyData.t - offsetTime;
+        var keyTime = keyData.t - offsetTime;
+        if (keyData.to) {
+            if (!keyData.bezierData) {
                 bez.buildBezierData(keyData);
             }
             var bezierData = keyData.bezierData;
-            if(frameNum >= nextKeyData.t-offsetTime || frameNum < keyData.t-offsetTime){
-                var ind = frameNum >= nextKeyData.t-offsetTime ? bezierData.points.length - 1 : 0;
+            if (frameNum >= nextKeyTime || frameNum < keyTime) {
+                var ind = frameNum >= nextKeyTime ? bezierData.points.length - 1 : 0;
                 kLen = bezierData.points[ind].point.length;
-                for(k = 0; k < kLen; k += 1){
+                for (k = 0; k < kLen; k += 1) {
                     newValue[k] = bezierData.points[ind].point[k];
                 }
-                caching._lastBezierData = null;
-            }else{
-                if(keyData.__fnct){
+                // caching._lastBezierData = null;
+            } else {
+                if (keyData.__fnct) {
                     fnc = keyData.__fnct;
-                }else{
-                    fnc = BezierFactory.getBezierEasing(keyData.o.x,keyData.o.y,keyData.i.x,keyData.i.y,keyData.n).get;
+                } else {
+                    fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y, keyData.n).get;
                     keyData.__fnct = fnc;
                 }
-                perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
+                perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
                 var distanceInLine = bezierData.segmentLength*perc;
 
                 var segmentPerc;
@@ -2078,25 +2121,25 @@ var PropertyFactory = (function(){
                 j =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastPoint : 0;
                 flag = true;
                 jLen = bezierData.points.length;
-                while(flag){
-                    addedLength +=bezierData.points[j].partialLength;
-                    if(distanceInLine === 0 || perc === 0 || j == bezierData.points.length - 1){
+                while (flag) {
+                    addedLength += bezierData.points[j].partialLength;
+                    if (distanceInLine === 0 || perc === 0 || j === bezierData.points.length - 1) {
                         kLen = bezierData.points[j].point.length;
-                        for(k=0;k<kLen;k+=1){
+                        for (k = 0; k < kLen; k += 1) {
                             newValue[k] = bezierData.points[j].point[k];
                         }
                         break;
-                    }else if(distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j+1].partialLength){
-                        segmentPerc = (distanceInLine-addedLength)/(bezierData.points[j+1].partialLength);
+                    } else if (distanceInLine >= addedLength && distanceInLine < addedLength + bezierData.points[j + 1].partialLength) {
+                        segmentPerc = (distanceInLine - addedLength) / bezierData.points[j + 1].partialLength;
                         kLen = bezierData.points[j].point.length;
-                        for(k=0;k<kLen;k+=1){
-                            newValue[k] = bezierData.points[j].point[k] + (bezierData.points[j+1].point[k] - bezierData.points[j].point[k])*segmentPerc;
+                        for (k = 0; k < kLen; k += 1) {
+                            newValue[k] = bezierData.points[j].point[k] + (bezierData.points[j + 1].point[k] - bezierData.points[j].point[k]) * segmentPerc;
                         }
                         break;
                     }
-                    if(j < jLen - 1){
+                    if (j < jLen - 1){
                         j += 1;
-                    }else{
+                    } else {
                         flag = false;
                     }
                 }
@@ -2104,43 +2147,44 @@ var PropertyFactory = (function(){
                 caching._lastAddedLength = addedLength - bezierData.points[j].partialLength;
                 caching._lastBezierData = bezierData;
             }
-        }else{
-            var outX,outY,inX,inY, keyValue;
+        } else {
+            var outX, outY, inX, inY, keyValue;
             len = keyData.s.length;
-            if(this.sh && keyData.h !== 1) {
-                if(frameNum >= nextKeyData.t-offsetTime){
+            if (this.sh && keyData.h !== 1) {
+                if (frameNum >= nextKeyTime) {
                     newValue[0] = keyData.e[0];
                     newValue[1] = keyData.e[1];
                     newValue[2] = keyData.e[2];
-                }else if(frameNum <= keyData.t-offsetTime){
+                } else if (frameNum <= keyTime) {
                     newValue[0] = keyData.s[0];
                     newValue[1] = keyData.s[1];
                     newValue[2] = keyData.s[2];
-                }else{
+                } else {
                     var quatStart = createQuaternion(keyData.s);
                     var quatEnd = createQuaternion(keyData.e);
-                    var time = (frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime));
+                    var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
                     quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
                 }
                 
             } else {
-                for(i=0;i<len;i+=1){
-                    if(keyData.h !== 1){
-                        if(frameNum >= nextKeyData.t-offsetTime){
+                for(i = 0; i < len; i += 1) {
+                    if (keyData.h !== 1) {
+                        if (frameNum >= nextKeyTime) {
                             perc = 1;
-                        }else if(frameNum < keyData.t-offsetTime){
+                        } else if(frameNum < keyTime) {
                             perc = 0;
-                        }else{
-                            if(keyData.o.x.constructor === Array){
-                                if(!keyData.__fnct){
+                        } else {
+                            if(keyData.o.x.constructor === Array) {
+                                if (!keyData.__fnct) {
                                     keyData.__fnct = [];
                                 }
                                 if (!keyData.__fnct[i]) {
-                                    outX = keyData.o.x[i] || keyData.o.x[0];
-                                    outY = keyData.o.y[i] || keyData.o.y[0];
-                                    inX = keyData.i.x[i] || keyData.i.x[0];
-                                    inY = keyData.i.y[i] || keyData.i.y[0];
-                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    outX = (typeof keyData.o.x[i] === undefined) ? keyData.o.x[0] : keyData.o.x[i];
+                                    outY = (typeof keyData.o.y[i] === undefined) ? keyData.o.y[0] : keyData.o.y[i];
+                                    inX = (typeof keyData.i.x[i] === undefined) ? keyData.i.x[0] : keyData.i.x[i];
+                                    inY = (typeof keyData.i.y[i] === undefined) ? keyData.i.y[0] : keyData.i.y[i];
+ 
+                                    fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
                                     keyData.__fnct[i] = fnc;
                                 } else {
                                     fnc = keyData.__fnct[i];
@@ -2151,21 +2195,21 @@ var PropertyFactory = (function(){
                                     outY = keyData.o.y;
                                     inX = keyData.i.x;
                                     inY = keyData.i.y;
-                                    fnc = BezierFactory.getBezierEasing(outX,outY,inX,inY).get;
+                                    fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
                                     keyData.__fnct = fnc;
-                                } else{
+                                } else {
                                     fnc = keyData.__fnct;
                                 }
                             }
-                            perc = fnc((frameNum-(keyData.t-offsetTime))/((nextKeyData.t-offsetTime)-(keyData.t-offsetTime)));
+                            perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime ));
                         }
                     }
 
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i]+(keyData.e[i]-keyData.s[i])*perc;
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (keyData.e[i] - keyData.s[i]) * perc;
 
-                    if(len === 1){
+                    if (len === 1) {
                         newValue = keyValue;
-                    }else{
+                    } else {
                         newValue[i] = keyValue;
                     }
                 }
@@ -2244,7 +2288,11 @@ var PropertyFactory = (function(){
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
-            this._caching.lastIndex = this._caching.lastFrame < frameNum ? this._caching.lastIndex : 0;
+            if(this._caching.lastFrame >= frameNum) {
+                this._caching._lastBezierData = null;
+                this._caching.lastIndex = 0;
+            }
+
             var renderResult = this.interpolateValue(frameNum, this._caching);
             this.pv = renderResult;
         }
@@ -2352,7 +2400,7 @@ var PropertyFactory = (function(){
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.frameId = -1;
-        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0};
+        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastBezierData: null};
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -2863,33 +2911,46 @@ var ShapePropertyFactory = (function(){
         }
         var i, len = shape1._length;
         for(i = 0; i < len; i += 1) {
-            if(shape1.v[i][0] !== shape2.v[i][0] || shape1.v[i][1] !== shape2.v[i][1] || shape1.o[i][0] !== shape2.o[i][0] || shape1.o[i][1] !== shape2.o[i][1] || shape1.i[i][0] !== shape2.i[i][0] || shape1.i[i][1] !== shape2.i[i][1]){
+            if(shape1.v[i][0] !== shape2.v[i][0] 
+            || shape1.v[i][1] !== shape2.v[i][1] 
+            || shape1.o[i][0] !== shape2.o[i][0] 
+            || shape1.o[i][1] !== shape2.o[i][1] 
+            || shape1.i[i][0] !== shape2.i[i][0] 
+            || shape1.i[i][1] !== shape2.i[i][1]) {
                 return false;
             }
         }
         return true;
     }
 
+    function setVValue(newPath) {
+        if(!shapesEqual(this.v, newPath)) {
+            this.v = shape_pool.clone(newPath);
+            this.localShapeCollection.releaseShapes();
+            this.localShapeCollection.addShape(this.v);
+            this._mdf = true;
+            this.paths = this.localShapeCollection;
+        }
+    }
+
     function processEffectsSequence() {
-        if(this.lock || this.elem.globalData.frameId === this.frameId) {
+        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+            return;
+        }
+        if(this.lock) {
+            this.setVValue(this.pv);
             return;
         }
         this.lock = true;
-        this.frameId = this.elem.globalData.frameId;
         this._mdf = false;
         var finalValue = this.kf ? this.pv : this.data.ks ? this.data.ks.k : this.data.pt.k;
         var i, len = this.effectsSequence.length;
         for(i = 0; i < len; i += 1) {
             finalValue = this.effectsSequence[i](finalValue);
         }
-        if(!shapesEqual(this.v, finalValue)) {
-            this.v = shape_pool.clone(finalValue);
-            this.localShapeCollection.releaseShapes();
-            this.localShapeCollection.addShape(this.v);
-            this._mdf = true;
-            this.paths = this.localShapeCollection;
-        }
+        this.setVValue(finalValue);
         this.lock = false;
+        this.frameId = this.elem.globalData.frameId;
     };
 
     function ShapeProperty(elem, data, type){
@@ -2918,7 +2979,7 @@ var ShapePropertyFactory = (function(){
 
     ShapeProperty.prototype.interpolateShape = interpolateShape;
     ShapeProperty.prototype.getValue = processEffectsSequence;
-    ShapeProperty.prototype.getValue = processEffectsSequence;
+    ShapeProperty.prototype.setVValue = setVValue;
     ShapeProperty.prototype.addEffect = addEffect;
 
     function KeyframedShapeProperty(elem,data,type){
@@ -2945,6 +3006,7 @@ var ShapePropertyFactory = (function(){
     }
     KeyframedShapeProperty.prototype.getValue = processEffectsSequence;
     KeyframedShapeProperty.prototype.interpolateShape = interpolateShape;
+    KeyframedShapeProperty.prototype.setVValue = setVValue;
     KeyframedShapeProperty.prototype.addEffect = addEffect;
 
     var EllShapeProperty = (function(){
@@ -3396,8 +3458,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
         if (o < 0) {
             o += 1;
         }
-        s = this.s.v + o;
-        e = this.e.v + o;
+        s = (this.s.v > 1 ? 1 : this.s.v < 0 ? 0 : this.s.v) + o;
+        e = (this.e.v > 1 ? 1 : this.e.v < 0 ? 0 : this.e.v) + o;
         if (s === e) {
 
         }
@@ -3406,8 +3468,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
             s = e;
             e = _s;
         }
-        s = Math.round(s*1000)/1000;
-        e = Math.round(e*1000)/1000;
+        s = Math.round(s * 10000) * 0.0001;
+        e = Math.round(e * 10000) * 0.0001;
         this.sValue = s;
         this.eValue = e;
     } else {
@@ -3493,7 +3555,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
                     var newShapesData = this.addShapes(shapeData,segments[0]);
                     if (segments[0].s !== segments[0].e) {
                         if (segments.length > 1) {
-                            if (shapeData.shape.v.c) {
+                            var lastShapeInCollection = shapeData.shape.paths.shapes[shapeData.shape.paths._length - 1];
+                            if (lastShapeInCollection.c) {
                                 var lastShape = newShapesData.pop();
                                 this.addPaths(newShapesData, localShapeCollection);
                                 newShapesData = this.addShapes(shapeData, segments[1], lastShape);
@@ -3731,6 +3794,8 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this);
     this.tr = TransformPropertyFactory.getTransformProperty(elem,data.tr,this);
+    this.so = PropertyFactory.getProp(elem,data.tr.so,0,0.01,this);
+    this.eo = PropertyFactory.getProp(elem,data.tr.eo,0,0.01,this);
     this.data = data;
     if(!this.dynamicProperties.length){
         this.getValue(true);
@@ -3800,7 +3865,7 @@ RepeaterModifier.prototype.cloneElements = function(elements){
 
 RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
     var i, len = elements.length;
-    for(i = 0; i < len ; i += 1) {
+    for(i = 0; i < len; i += 1) {
         elements[i]._render = renderFlag;
         if(elements[i].ty === 'gr') {
             this.changeGroupRender(elements[i].it, renderFlag);
@@ -3882,6 +3947,7 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
             jLen = itemsTransform.length;
             items[items.length - 1].transform.mProps._mdf = true;
             items[items.length - 1].transform.op._mdf = true;
+            items[items.length - 1].transform.op.v = this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
             if(iteration !== 0){
                 if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)){
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
@@ -3992,7 +4058,7 @@ DashProperty.prototype.getValue = function(forceRender) {
     }
 };
 extendPrototype([DynamicPropertyContainer], DashProperty);
-function GradientProperty(elem,data){
+function GradientProperty(elem,data,container){
     this.data = data;
     this.c = createTypedArray('uint8c', data.p*4);
     var cLength = data.k.k[0].s ? (data.k.k[0].s.length - data.p*4) : data.k.k.length - data.p*4;
@@ -4001,7 +4067,7 @@ function GradientProperty(elem,data){
     this._omdf = false;
     this._collapsable = this.checkCollapsable();
     this._hasOpacity = cLength;
-    this.initDynamicPropertyContainer(elem);
+    this.initDynamicPropertyContainer(container);
     this.prop = PropertyFactory.getProp(elem,data.k,1,null,this);
     this.k = this.prop.k;
     this.getValue(true);
@@ -4088,6 +4154,16 @@ var buildShapeString = function(pathNodes, length, closed, mat) {
 }
 var ImagePreloader = (function(){
 
+    var proxyImage = (function(){
+        var canvas = createTag('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FF0000';
+        ctx.fillRect(0, 0, 1, 1);
+        return canvas;
+    }())
+
     function imageLoaded(){
         this.loadedAssets += 1;
         if(this.loadedAssets === this.totalImages){
@@ -4097,38 +4173,48 @@ var ImagePreloader = (function(){
         }
     }
 
-    function getAssetsPath(assetData){
+    function getAssetsPath(assetData, assetsPath, original_path) {
         var path = '';
-        if(assetData.e) {
+        if (assetData.e) {
             path = assetData.p;
-        }else if(this.assetsPath){
+        } else if(assetsPath) {
             var imagePath = assetData.p;
-            if(imagePath.indexOf('images/') !== -1){
+            if (imagePath.indexOf('images/') !== -1) {
                 imagePath = imagePath.split('/')[1];
             }
-            path = this.assetsPath + imagePath;
+            path = assetsPath + imagePath;
         } else {
-            path = this.path;
+            path = original_path;
             path += assetData.u ? assetData.u : '';
             path += assetData.p;
         }
         return path;
     }
 
-    function loadImage(path){
+    function createImageData(assetData) {
+        var path = getAssetsPath(assetData, this.assetsPath, this.path);
         var img = createTag('img');
-        img.addEventListener('load', imageLoaded.bind(this), false);
-        img.addEventListener('error', imageLoaded.bind(this), false);
+        img.crossOrigin = 'anonymous';
+        img.addEventListener('load', this._imageLoaded.bind(this), false);
+        img.addEventListener('error', function() {
+            ob.img = proxyImage;
+            this._imageLoaded();
+        }.bind(this), false);
         img.src = path;
+        var ob = {
+            img: img,
+            assetData: assetData
+        }
+        return ob;
     }
+
     function loadAssets(assets, cb){
         this.imagesLoadedCb = cb;
-        this.totalAssets = assets.length;
-        var i;
-        for(i=0;i<this.totalAssets;i+=1){
+        var i, len = assets.length;
+        for (i = 0; i < len; i += 1) {
             if(!assets[i].layers){
-                loadImage.bind(this)(getAssetsPath.bind(this)(assets[i]));
                 this.totalImages += 1;
+                this.images.push(this._createImageData(assets[i]));
             }
         }
     }
@@ -4141,21 +4227,40 @@ var ImagePreloader = (function(){
         this.assetsPath = path || '';
     }
 
+    function getImage(assetData) {
+        var i = 0, len = this.images.length;
+        while (i < len) {
+            if (this.images[i].assetData === assetData) {
+                return this.images[i].img;
+            }
+            i += 1;
+        }
+    }
+
     function destroy() {
         this.imagesLoadedCb = null;
+        this.images.length = 0;
+    }
+
+    function loaded() {
+        return this.totalImages === this.loadedAssets;
     }
 
     return function ImagePreloader(){
         this.loadAssets = loadAssets;
         this.setAssetsPath = setAssetsPath;
         this.setPath = setPath;
+        this.loaded = loaded;
         this.destroy = destroy;
+        this.getImage = getImage;
+        this._createImageData = createImageData;
+        this._imageLoaded = imageLoaded;
         this.assetsPath = '';
         this.path = '';
-        this.totalAssets = 0;
         this.totalImages = 0;
         this.loadedAssets = 0;
         this.imagesLoadedCb = null;
+        this.images = [];
     };
 }());
 var featureSupport = (function(){
@@ -4201,7 +4306,7 @@ var assetLoader = (function(){
 		} else if(xhr.response && typeof xhr.response === 'string') {
 			return JSON.parse(xhr.response);
 		} else if(xhr.responseText) {
-			return JSON.parse(xhr.response);
+			return JSON.parse(xhr.responseText);
 		}
 	}
 
@@ -4977,10 +5082,11 @@ TextProperty.prototype.getValue = function(_finalValue) {
     if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
         return;
     }
+    this.currentData.t = this.data.d.k[this.keysIndex].s.t;
     var currentValue = this.currentData;
     var currentIndex = this.keysIndex;
     if(this.lock) {
-        this.setCurrentData(this.currentData, currentTextValue);
+        this.setCurrentData(this.currentData);
         return;
     }
     this.lock = true;
@@ -5087,6 +5193,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.finalText = this.buildFinalText(documentData.t);
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
+    var charCode;
     if(documentData.sz){
         var flag = true;
         var boxWidth = documentData.sz[0];
@@ -5100,10 +5207,11 @@ TextProperty.prototype.completeTextData = function(documentData) {
             trackingOffset = documentData.tr/1000*documentData.finalSize;
             var lastSpaceIndex = -1;
             for(i=0;i<len;i+=1){
+                charCode = finalText[i].charCodeAt(0);
                 newLineFlag = false;
                 if(finalText[i] === ' '){
                     lastSpaceIndex = i;
-                }else if(finalText[i].charCodeAt(0) === 13){
+                }else if(charCode === 13 || charCode === 3){
                     lineWidth = 0;
                     newLineFlag = true;
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
@@ -5150,9 +5258,10 @@ TextProperty.prototype.completeTextData = function(documentData) {
     for (i = 0;i < len ;i += 1) {
         newLineFlag = false;
         currentChar = documentData.finalText[i];
-        if(currentChar === ' '){
+        charCode = currentChar.charCodeAt(0);
+        if (currentChar === ' '){
             val = '\u00A0';
-        }else if(currentChar.charCodeAt(0) === 13){
+        } else if (charCode === 13 || charCode === 3) {
             uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
@@ -5287,6 +5396,7 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
     dData = this.copyData(dData, newData);
     this.data.d.k[index].s = dData;
     this.recalculate(index);
+    this.elem.addDynamicProperty(this);
 };
 
 TextProperty.prototype.recalculate = function(index) {
@@ -5300,11 +5410,13 @@ TextProperty.prototype.recalculate = function(index) {
 TextProperty.prototype.canResizeFont = function(_canResize) {
     this.canResize = _canResize;
     this.recalculate(this.keysIndex);
+    this.elem.addDynamicProperty(this);
 };
 
 TextProperty.prototype.setMinimumFontSize = function(_fontValue) {
     this.minimumFontSize = Math.floor(_fontValue) || 1;
     this.recalculate(this.keysIndex);
+    this.elem.addDynamicProperty(this);
 };
 
 var TextSelectorProp = (function(){
@@ -5418,7 +5530,7 @@ var TextSelectorProp = (function(){
             if(newCharsFlag && this.data.r === 2) {
                 this.e.v = this._currentTextLength;
             }
-            var divisor = this.data.r === 2 ? 1 : 100 / this._currentTextLength;
+            var divisor = this.data.r === 2 ? 1 : 100 / this.data.totalChars;
             var o = this.o.v/divisor;
             var s = this.s.v/divisor + o;
             var e = (this.e.v/divisor) + o;
@@ -5728,8 +5840,7 @@ BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
     this.globalData.fontManager.addFonts(animData.fonts, fontsContainer);
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
-    this.globalData.elementLoaded = this.animationItem.elementLoaded.bind(this.animationItem);
-    this.globalData.addPendingElement = this.animationItem.addPendingElement.bind(this.animationItem);
+    this.globalData.imageLoader = this.animationItem.imagePreloader;
     this.globalData.frameId = 0;
     this.globalData.frameRate = animData.fr;
     this.globalData.nm = animData.nm;
@@ -5766,6 +5877,7 @@ function SVGRenderer(animationItem, config){
     this.elements = [];
     this.pendingElements = [];
     this.destroyed = false;
+    this.rendererType = 'svg';
 
 }
 
@@ -6168,7 +6280,6 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData){
     }
     //pathNodes.__renderedString = pathString;
 
-
     if(viewData.lastPath !== pathString){
         var pathShapeValue = '';
         if(viewData.elem){
@@ -6464,7 +6575,7 @@ function RenderableDOMElement() {}
             this.initRenderable();
             this.initRendererElement();
             this.createContainerElements();
-            this.addMasks();
+            this.createRenderableComponents();
             this.createContent();
             this.hide();
         },
@@ -6523,7 +6634,7 @@ function SVGStyleData(data, level) {
 	this.d = '';
 	this.lvl = level;
 	this._mdf = false;
-	this.closed = false;
+	this.closed = data.hd === true;
 	this.pElem = createNS('path');
 	this.msElem = null;
 }
@@ -6599,7 +6710,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g);
+    this.g = new GradientProperty(elem,data.g,this);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -6623,7 +6734,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
         gfill.appendChild(stop);
         stops.push(stop);
     }
-    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(#'+gradientId+')');
+    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+gradientId+')');
     
     this.gf = gfill;
     this.cst = stops;
@@ -6650,7 +6761,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
             opFill.appendChild(stop);
             stops.push(stop);
         }
-        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(#'+opacityId+')');
+        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+opacityId+')');
         this.of = opFill;
         this.ms = mask;
         this.ost = stops;
@@ -6755,7 +6866,7 @@ var SVGElementsRenderer = (function() {
 	        } else {
 	            pathStringTransformed = itemData.caches[l];
 	        }
-	        itemData.styles[l].d += pathStringTransformed;
+	        itemData.styles[l].d += styleData.hd === true ? '' : pathStringTransformed;
 	        itemData.styles[l]._mdf = redraw || itemData.styles[l]._mdf;
 	    }
 	}
@@ -6884,6 +6995,62 @@ var SVGElementsRenderer = (function() {
 
 	return ob;
 }())
+function ShapeTransformManager() {
+	this.sequences = {};
+	this.sequenceList = [];
+    this.transform_key_count = 0;
+}
+
+ShapeTransformManager.prototype = {
+	addTransformSequence: function(transforms) {
+		var i, len = transforms.length;
+		var key = '_';
+		for(i = 0; i < len; i += 1) {
+			key += transforms[i].transform.key + '_';
+		}
+		var sequence = this.sequences[key];
+		if(!sequence) {
+			sequence = {
+				transforms: [].concat(transforms),
+				finalTransform: new Matrix(),
+				_mdf: false
+			};
+			this.sequences[key] = sequence;
+			this.sequenceList.push(sequence);
+		}
+		return sequence;
+	},
+	processSequence: function(sequence, isFirstFrame) {
+		var i = 0, len = sequence.transforms.length, _mdf = isFirstFrame;
+		while (i < len && !isFirstFrame) {
+			if (sequence.transforms[i].transform.mProps._mdf) {
+				_mdf = true;
+				break;
+			}
+			i += 1
+		}
+		if (_mdf) {
+			var props;
+			sequence.finalTransform.reset();
+			for (i = len - 1; i >= 0; i -= 1) {
+		        props = sequence.transforms[i].transform.mProps.v.props;
+		        sequence.finalTransform.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+			}
+		}
+		sequence._mdf = _mdf;
+		
+	},
+	processSequences: function(isFirstFrame) {
+		var i, len = this.sequenceList.length;
+		for (i = 0; i < len; i += 1) {
+			this.processSequence(this.sequenceList[i], isFirstFrame);
+		}
+
+	},
+	getNewKey: function() {
+		return '_' + this.transform_key_count++;
+	}
+}
 function BaseElement(){
 }
 
@@ -7117,7 +7284,6 @@ SVGBaseElement.prototype = {
         if (this.data.bm !== 0) {
             this.setBlendMode();
         }
-        this.renderableEffectsManager = new SVGEffects(this);
 
     },
     renderElement: function() {
@@ -7139,8 +7305,9 @@ SVGBaseElement.prototype = {
         }
         return this.baseElement;
     },
-    addMasks: function() {
+    createRenderableComponents: function() {
         this.maskManager = new MaskElement(this.data, this, this.globalData);
+        this.renderableEffectsManager = new SVGEffects(this);
     },
     setMatte: function(id) {
         if (!this.matteElement) {
@@ -7195,8 +7362,8 @@ IShapeElement.prototype = {
     searchProcessedElement: function(elem){
         var elements = this.processedElements;
         var i = 0, len = elements.length;
-        while(i < len){
-            if(elements[i].elem === elem){
+        while (i < len) {
+            if (elements[i].elem === elem) {
                 return elements[i].pos;
             }
             i += 1;
@@ -7206,9 +7373,9 @@ IShapeElement.prototype = {
     addProcessedElement: function(elem, pos){
         var elements = this.processedElements;
         var i = elements.length;
-        while(i){
+        while(i) {
             i -= 1;
-            if(elements[i].elem === elem){
+            if (elements[i].elem === elem) {
                 elements[i].pos = pos;
                 return;
             }
@@ -7234,7 +7401,7 @@ ITextElement.prototype.initElement = function(data,globalData,comp){
     this.initRenderable();
     this.initRendererElement();
     this.createContainerElements();
-    this.addMasks();
+    this.createRenderableComponents();
     this.createContent();
     this.hide();
     this.textAnimator.searchProperties(this.dynamicProperties);
@@ -7312,7 +7479,7 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initHierarchy();
     this.initRendererElement();
     this.createContainerElements();
-    this.addMasks();
+    this.createRenderableComponents();
     if(this.data.xt || !globalData.progressiveLoad){
         this.buildAllItems();
     }
@@ -7461,7 +7628,7 @@ SVGTextElement.prototype.buildTextContents = function(textArray) {
     var i = 0, len = textArray.length;
     var textContents = [], currentTextContent = '';
     while (i < len) {
-        if(textArray[i] === String.fromCharCode(13)) {
+        if(textArray[i] === String.fromCharCode(13) || textArray[i] === String.fromCharCode(3)) {
             textContents.push(currentTextContent);
             currentTextContent = '';
         } else {
@@ -7499,7 +7666,7 @@ SVGTextElement.prototype.buildNewText = function(){
     }
 
     var letters = documentData.l || [];
-    var usesGlyphs = this.globalData.fontManager.chars;
+    var usesGlyphs = !!this.globalData.fontManager.chars;
     len = letters.length;
 
     var tSpan;
@@ -7735,7 +7902,7 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
         if (elementData.maskId) {
             this.globalData.defs.appendChild(elementData.ms);
             this.globalData.defs.appendChild(elementData.of);
-            pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
+            pathElement.setAttribute('mask','url(' + locationHref + '#' + elementData.maskId + ')');
         }
     }
     
@@ -7767,6 +7934,9 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     var elementData = new ShapeGroupData();
     if(data.ln){
         elementData.gr.setAttribute('id',data.ln);
+    }
+    if(data.cl){
+        elementData.gr.setAttribute('class',data.cl);
     }
     return elementData;
 };
@@ -7943,7 +8113,7 @@ SVGShapeElement.prototype.renderShape = function() {
     var animatedContent;
     for(i = 0; i < len; i += 1) {
         animatedContent = this.animatedContents[i];
-        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+        if((this._isFirstFrame || animatedContent.element._isAnimated) && animatedContent.data !== true) {
             animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }
@@ -8043,7 +8213,7 @@ SVGStrokeEffect.prototype.initialize = function(){
         this.elem.globalData.defs.appendChild(mask);
         var g = createNS('g');
         g.setAttribute('mask','url(' + locationHref + '#'+id+')');
-        if(elemChildren[0]){
+        while (elemChildren[0]) {
             g.appendChild(elemChildren[0]);
         }
         this.elem.layerElement.appendChild(g);
@@ -8413,10 +8583,11 @@ SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
 
 SVGMatte3Effect.prototype.initialize = function() {
     var ind = this.filterManager.effectElements[0].p.v;
-    var i = 0, len = this.elem.comp.elements.length;
+    var elements = this.elem.comp.elements;
+    var i = 0, len = elements.length;
     while (i < len) {
-    	if (this.elem.comp.elements[i].data.ind === ind) {
-    		this.setElementAsMask(this.elem, this.elem.comp.elements[i]);
+    	if (elements[i] && elements[i].data.ind === ind) {
+    		this.setElementAsMask(this.elem, elements[i]);
     	}
     	i += 1;
     }
@@ -8708,7 +8879,6 @@ var AnimationItem = function () {
     this.frameMult = 0;
     this.playSpeed = 1;
     this.playDirection = 1;
-    this.pendingElements = 0;
     this.playCount = 0;
     this.animationData = {};
     this.assets = [];
@@ -8725,6 +8895,7 @@ var AnimationItem = function () {
     this._idle = true;
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
+    this.imagePreloader = new ImagePreloader();
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -8880,15 +9051,15 @@ AnimationItem.prototype.loadSegments = function() {
     this.loadNextSegment();
 };
 
+AnimationItem.prototype.imagesLoaded = function() {
+    this.trigger('loaded_images');
+    this.checkLoaded()
+}
+
 AnimationItem.prototype.preloadImages = function() {
-    this.imagePreloader = new ImagePreloader();
     this.imagePreloader.setAssetsPath(this.assetsPath);
     this.imagePreloader.setPath(this.path);
-    this.imagePreloader.loadAssets(this.animationData.assets, function(err) {
-        if(!err) {
-            this.trigger('loaded_images');
-        }
-    }.bind(this));
+    this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
 }
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -8914,41 +9085,28 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.waitForFontsLoaded();
 };
 
-AnimationItem.prototype.completeData = function() {
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-    this.checkLoaded();
-}
-
 AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded){
-        this.completeData();
+    if(this.renderer.globalData.fontManager.loaded()){
+        this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
     }
 }
 
-AnimationItem.prototype.addPendingElement = function () {
-    this.pendingElements += 1;
-};
-
-AnimationItem.prototype.elementLoaded = function () {
-    this.pendingElements -= 1;
-    this.checkLoaded();
-};
-
 AnimationItem.prototype.checkLoaded = function () {
-    if (this.pendingElements === 0) {
+    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+        this.isLoaded = true;
+        dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
         this.renderer.initItems();
-        setTimeout(function(){
+        setTimeout(function() {
             this.trigger('DOMLoaded');
-        }.bind(this),0);
-        this.isLoaded = true;
+        }.bind(this), 0);
         this.gotoFrame();
         if(this.autoplay){
             this.play();
@@ -9135,19 +9293,22 @@ AnimationItem.prototype.setSegment = function (init,end) {
     }
 };
 
-AnimationItem.prototype.playSegments = function (arr,forceFlag) {
-    if(typeof arr[0] === 'object'){
+AnimationItem.prototype.playSegments = function (arr, forceFlag) {
+    if (forceFlag) {
+        this.segments.length = 0;
+    }
+    if (typeof arr[0] === 'object') {
         var i, len = arr.length;
-        for(i=0;i<len;i+=1){
+        for (i = 0; i < len; i += 1) {
             this.segments.push(arr[i]);
         }
-    }else{
+    } else {
         this.segments.push(arr);
     }
-    if(forceFlag){
-        this.checkSegments(0);
+    if (this.segments.length) {
+        this.adjustSegment(this.segments.shift(), 0);
     }
-    if(this.isPaused){
+    if (this.isPaused) {
         this.play();
     }
 };
@@ -9156,12 +9317,12 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
     this.segments.push([this.animationData.ip,this.animationData.op]);
     //this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
-    if(forceFlag){
+    if (forceFlag) {
         this.checkSegments(0);
     }
 };
-AnimationItem.prototype.checkSegments = function(offset){
-    if(this.segments.length) {
+AnimationItem.prototype.checkSegments = function(offset) {
+    if (this.segments.length) {
         this.adjustSegment(this.segments.shift(), offset);
         return true;
     }
@@ -9169,10 +9330,11 @@ AnimationItem.prototype.checkSegments = function(offset){
 };
 
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || !this.renderer){
+    if ((name && this.name != name) || !this.renderer) {
         return;
     }
     this.renderer.destroy();
+    this.imagePreloader.destroy();
     this.trigger('destroy');
     this._cbs = null;
     this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
@@ -9282,6 +9444,7 @@ AnimationItem.prototype.trigger = function(name){
 };
 
 function EffectsManager(){}
+
     var lottiejs = {};
 
     var _isFrozen = false;
@@ -9375,7 +9538,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.2.0';
+    lottiejs.version = '5.4.2';
 
     function checkReady() {
         if (document.readyState === "complete") {
@@ -9407,4 +9570,4 @@ function EffectsManager(){}
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));

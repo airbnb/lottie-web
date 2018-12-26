@@ -10,7 +10,6 @@ var AnimationItem = function () {
     this.frameMult = 0;
     this.playSpeed = 1;
     this.playDirection = 1;
-    this.pendingElements = 0;
     this.playCount = 0;
     this.animationData = {};
     this.assets = [];
@@ -18,7 +17,7 @@ var AnimationItem = function () {
     this.autoplay = false;
     this.loop = true;
     this.renderer = null;
-    this.animationID = randomString(10);
+    this.animationID = createElementID();
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
@@ -27,6 +26,7 @@ var AnimationItem = function () {
     this._idle = true;
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
+    this.imagePreloader = new ImagePreloader();
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -185,19 +185,15 @@ AnimationItem.prototype.loadSegments = function() {
     this.loadNextSegment();
 };
 
+AnimationItem.prototype.imagesLoaded = function() {
+    this.trigger('loaded_images');
+    this.checkLoaded()
+}
+
 AnimationItem.prototype.preloadImages = function() {
-    this.imagePreloader = new ImagePreloader();
     this.imagePreloader.setAssetsPath(this.assetsPath);
     this.imagePreloader.setPath(this.path);
     this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
-    this.renderer.globalData.imagePreloader = this.imagePreloader;
-}
-
-AnimationItem.prototype.imagesLoaded = function(err) {
-    if(!err) {
-        this.trigger('loaded_images');
-    }
-    this.checkLoaded();
 }
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -223,41 +219,28 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.waitForFontsLoaded();
 };
 
-AnimationItem.prototype.completeData = function() {
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
-    this.checkLoaded();
-}
-
 AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded){
-        this.completeData();
+    if(this.renderer.globalData.fontManager.loaded()){
+        this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
     }
 }
 
-AnimationItem.prototype.addPendingElement = function () {
-    this.pendingElements += 1;
-};
-
-AnimationItem.prototype.elementLoaded = function () {
-    this.pendingElements -= 1;
-    this.checkLoaded();
-};
-
 AnimationItem.prototype.checkLoaded = function () {
-    if (this.pendingElements === 0 && this.imagePreloader.pendingImages === 0 && !this.isLoaded) {
+    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+        this.isLoaded = true;
+        dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
             expressionsPlugin.initExpressions(this);
         }
         this.renderer.initItems();
-        setTimeout(function(){
+        setTimeout(function() {
             this.trigger('DOMLoaded');
-        }.bind(this),0);
-        this.isLoaded = true;
+        }.bind(this), 0);
         this.gotoFrame();
         if(this.autoplay){
             this.play();
@@ -444,19 +427,22 @@ AnimationItem.prototype.setSegment = function (init,end) {
     }
 };
 
-AnimationItem.prototype.playSegments = function (arr,forceFlag) {
-    if(typeof arr[0] === 'object'){
+AnimationItem.prototype.playSegments = function (arr, forceFlag) {
+    if (forceFlag) {
+        this.segments.length = 0;
+    }
+    if (typeof arr[0] === 'object') {
         var i, len = arr.length;
-        for(i=0;i<len;i+=1){
+        for (i = 0; i < len; i += 1) {
             this.segments.push(arr[i]);
         }
-    }else{
+    } else {
         this.segments.push(arr);
     }
-    if(forceFlag){
-        this.checkSegments(0);
+    if (this.segments.length) {
+        this.adjustSegment(this.segments.shift(), 0);
     }
-    if(this.isPaused){
+    if (this.isPaused) {
         this.play();
     }
 };
@@ -465,12 +451,12 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
     this.segments.push([this.animationData.ip,this.animationData.op]);
     //this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
-    if(forceFlag){
+    if (forceFlag) {
         this.checkSegments(0);
     }
 };
-AnimationItem.prototype.checkSegments = function(offset){
-    if(this.segments.length) {
+AnimationItem.prototype.checkSegments = function(offset) {
+    if (this.segments.length) {
         this.adjustSegment(this.segments.shift(), offset);
         return true;
     }
@@ -478,10 +464,11 @@ AnimationItem.prototype.checkSegments = function(offset){
 };
 
 AnimationItem.prototype.destroy = function (name) {
-    if((name && this.name != name) || !this.renderer){
+    if ((name && this.name != name) || !this.renderer) {
         return;
     }
     this.renderer.destroy();
+    this.imagePreloader.destroy();
     this.trigger('destroy');
     this._cbs = null;
     this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;

@@ -84,7 +84,7 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
         if (elementData.maskId) {
             this.globalData.defs.appendChild(elementData.ms);
             this.globalData.defs.appendChild(elementData.of);
-            pathElement.setAttribute('mask','url(#' + elementData.maskId + ')');
+            pathElement.setAttribute('mask','url(' + locationHref + '#' + elementData.maskId + ')');
         }
     }
     
@@ -107,6 +107,9 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
     if(data.cl){
         pathElement.setAttribute('class',data.cl);
     }
+    if(data.bm){
+        pathElement.style['mix-blend-mode'] = getBlendMode(data.bm);
+    }
     this.stylesList.push(styleOb);
     this.addToAnimatedContents(data, elementData);
     return elementData;
@@ -116,6 +119,12 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     var elementData = new ShapeGroupData();
     if(data.ln){
         elementData.gr.setAttribute('id',data.ln);
+    }
+    if(data.cl){
+        elementData.gr.setAttribute('class',data.cl);
+    }
+    if(data.bm){
+        elementData.gr.style['mix-blend-mode'] = getBlendMode(data.bm);
     }
     return elementData;
 };
@@ -292,7 +301,7 @@ SVGShapeElement.prototype.renderShape = function() {
     var animatedContent;
     for(i = 0; i < len; i += 1) {
         animatedContent = this.animatedContents[i];
-        if(this._isFirstFrame || animatedContent.element._isAnimated) {
+        if((this._isFirstFrame || animatedContent.element._isAnimated) && animatedContent.data !== true) {
             animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
         }
     }

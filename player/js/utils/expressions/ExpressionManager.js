@@ -28,6 +28,10 @@ var ExpressionManager = (function(){
         }
     }
 
+    var easeInBez = BezierFactory.getBezierEasing(0.333,0,.833,.833, 'easeIn').get;
+    var easeOutBez = BezierFactory.getBezierEasing(0.167,0.167,.667,1, 'easeOut').get;
+    var easeInOutBez = BezierFactory.getBezierEasing(.33,0,.667,1, 'easeInOut').get;
+
     function sum(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
@@ -322,8 +326,8 @@ var ExpressionManager = (function(){
         path.setPathData(!!closed, len);
         var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
-            inVertexPoint = inTangents ? inTangents[i] : arrPlaceholder;
-            outVertexPoint = outTangents ? outTangents[i] : arrPlaceholder;
+            inVertexPoint = (inTangents && inTangents[i]) ? inTangents[i] : arrPlaceholder;
+            outVertexPoint = (outTangents && outTangents[i]) ? outTangents[i] : arrPlaceholder;
             path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
         }
         return path;
@@ -335,16 +339,18 @@ var ExpressionManager = (function(){
         var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
-        var transform,content,effect;
+        var transform,$bm_transform,content,effect;
         var thisProperty = property;
+        thisProperty.valueAtTime = thisProperty.getValueAtTime;
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
+        elem.comp.displayStartTime = 0;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
         var outPoint = elem.data.op/elem.comp.globalData.frameRate;
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
         var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface,anchorPoint,thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -356,6 +362,8 @@ var ExpressionManager = (function(){
         var scoped_bm_rt;
         var expression_function = eval('[function _expression_function(){' + val+';scoped_bm_rt=$bm_rt}' + ']')[0];
         var numKeys = property.kf ? data.k.length : 0;
+
+        var active = !this.data || this.data.hd !== true;
 
         var wiggle = function wiggle(freq,amp){
             var i,j, len = this.pv.length ? this.pv.length : 1;
@@ -424,23 +432,36 @@ var ExpressionManager = (function(){
         }
 
         function easeOut(t, tMin, tMax, val1, val2){
-            if(val1 === undefined){
-                val1 = tMin;
-                val2 = tMax;
-            } else {
-                t = (t - tMin) / (tMax - tMin);
-            }
-            return -(val2-val1) * t*(t-2) + val1;
+            return applyEase(easeOutBez, t, tMin, tMax, val1, val2);
         }
 
         function easeIn(t, tMin, tMax, val1, val2){
+            return applyEase(easeInBez, t, tMin, tMax, val1, val2);
+        }
+
+        function ease(t, tMin, tMax, val1, val2){
+            return applyEase(easeInOutBez, t, tMin, tMax, val1, val2);
+        }
+
+        function applyEase(fn, t, tMin, tMax, val1, val2) {
             if(val1 === undefined){
                 val1 = tMin;
                 val2 = tMax;
             } else {
                 t = (t - tMin) / (tMax - tMin);
             }
-            return (val2-val1)*t*t + val1;
+            t = t > 1 ? 1 : t < 0 ? 0 : t;
+            var mult = fn(t);
+            if($bm_isInstanceOfArray(val1)) {
+                var i, len = val1.length;
+                var arr = createTypedArray('float32', len);
+                for (i = 0; i < len; i += 1) {
+                    arr[i] = (val2[i] - val1[i]) * mult + val1[i];
+                }
+                return arr;
+            } else {
+                return (val2 - val1) * mult + val1;
+            }
         }
 
         function nearestKey(time){
@@ -556,7 +577,9 @@ var ExpressionManager = (function(){
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
         var parent;
         var randSeed = Math.floor(Math.random()*1000000);
+        var globalData = elem.globalData;
         function executeExpression(_value) {
+            // globalData.pushExpression();
             value = _value;
             if (_needsRandom) {
                 seedRandom(randSeed);
@@ -582,7 +605,13 @@ var ExpressionManager = (function(){
             }
             if (!transform) {
                 transform = elem.layerInterface("ADBE Transform Group");
-                anchorPoint = transform.anchorPoint;
+                $bm_transform = transform;
+                if(transform) {
+                    anchorPoint = transform.anchorPoint;
+                    /*position = transform.position;
+                    rotation = transform.rotation;
+                    scale = transform.scale;*/
+                }
             }
             
             if (elemType === 4 && !content) {
@@ -605,8 +634,9 @@ var ExpressionManager = (function(){
 
             //TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === "shape") {
-                scoped_bm_rt = shape_pool.clone(scoped_bm_rt.v);
+                scoped_bm_rt = scoped_bm_rt.v;
             }
+            // globalData.popExpression();
             return scoped_bm_rt;
         }
         return executeExpression;

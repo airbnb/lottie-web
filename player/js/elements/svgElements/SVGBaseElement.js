@@ -24,7 +24,7 @@ SVGBaseElement.prototype = {
                 // This is only for IE and Edge when mask if of type alpha
                 if (!featureSupport.maskType && this.data.td == 1) {
                     masker.setAttribute('mask-type', 'luminance');
-                    filId = randomString(10);
+                    filId = createElementID();
                     fil = filtersFactory.createFilter(filId);
                     this.globalData.defs.appendChild(fil);
                     fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
@@ -40,7 +40,7 @@ SVGBaseElement.prototype = {
                 maskGroup.setAttribute('mask-type','alpha');
                 var maskGrouper = createNS('g');
                 maskGroup.appendChild(maskGrouper);
-                filId = randomString(10);
+                filId = createElementID();
                 fil = filtersFactory.createFilter(filId);
                 ////
 
@@ -99,7 +99,7 @@ SVGBaseElement.prototype = {
             var cp = createNS( 'clipPath');
             var pt = createNS('path');
             pt.setAttribute('d','M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
-            var clipId = 'cp_'+randomString(8);
+            var clipId = createElementID();
             cp.setAttribute('id',clipId);
             cp.appendChild(pt);
             this.globalData.defs.appendChild(cp);
@@ -122,7 +122,6 @@ SVGBaseElement.prototype = {
         if (this.data.bm !== 0) {
             this.setBlendMode();
         }
-        this.renderableEffectsManager = new SVGEffects(this);
 
     },
     renderElement: function() {
@@ -144,8 +143,9 @@ SVGBaseElement.prototype = {
         }
         return this.baseElement;
     },
-    addMasks: function() {
+    createRenderableComponents: function() {
         this.maskManager = new MaskElement(this.data, this, this.globalData);
+        this.renderableEffectsManager = new SVGEffects(this);
     },
     setMatte: function(id) {
         if (!this.matteElement) {

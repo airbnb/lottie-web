@@ -10,7 +10,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
     this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
     this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g);
+    this.g = new GradientProperty(elem,data.g,this);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -21,7 +21,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
 
 SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
 
-    var gradientId = 'gr_'+randomString(10);
+    var gradientId = createElementID();
     var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
@@ -34,7 +34,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
         gfill.appendChild(stop);
         stops.push(stop);
     }
-    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(#'+gradientId+')');
+    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+gradientId+')');
     
     this.gf = gfill;
     this.cst = stops;
@@ -46,8 +46,8 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         var mask = createNS("mask");
         var maskElement = createNS( 'path');
         mask.appendChild(maskElement);
-        var opacityId = 'op_'+randomString(10);
-        var maskId = 'mk_'+randomString(10);
+        var opacityId = createElementID();
+        var maskId = createElementID();
         mask.setAttribute('id',maskId);
         var opFill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
         opFill.setAttribute('id',opacityId);
@@ -61,7 +61,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
             opFill.appendChild(stop);
             stops.push(stop);
         }
-        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(#'+opacityId+')');
+        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+opacityId+')');
         this.of = opFill;
         this.ms = mask;
         this.ost = stops;

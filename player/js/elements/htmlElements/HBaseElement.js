@@ -61,8 +61,10 @@ HBaseElement.prototype = {
             this.maskManager = null;
         }
     },
-    addMasks: function(){
+    createRenderableComponents: function(){
         this.maskManager = new MaskElement(this.data, this, this.globalData);
+    },
+    addEffects: function(){
     },
     setMatte: function(){}
 };

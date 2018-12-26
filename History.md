@@ -1,3 +1,61 @@
+## V 5.4.2
+- FIX: added enabled property on effect interfaces for expression
+- FIX: font measuring fix for white spaces
+- FIX: supporting Effects property on layers in expressions
+- FIX: canvas sibling shapes with same style fix
+- FIX: caching valueAtTime correctly
+- FIX: AVD exporter fix on clip paths
+- FIX: AVD exporter fix on initial and end values
+- FIX: formatResponse if responseText - thanks @ansmonjol
+- NEW: renders class name for nested group elements - thanks @russellgoldenberg
+
+## V 5.4.1
+- FIX: missing variable declaration
+
+## V 5.4.0
+- EXPRESSIONS: easing functions refactored
+- FIX: stroke effect fix with multiple children elements
+- FIX: adding max and min values to trim path start and end
+- EXPRESSIONS: added velocity property
+- FIX(text): Fix charCode assignment and optimize FontManager (thanks @kwilliams-curago)
+- FIX: fix for small trim paths
+- EXPRESSIONS: added valueAtTime property to expression thisProperty variable
+- FIX:  added locationHref to gradient data
+- EXPRESSIONS: big performance improvement for all expressions that use Expression Values heavily
+
+## V 5.3.4
+- FIX: font load fix
+- TEXT: End of Text character support
+
+## V 5.3.3
+- FIX: light version fix
+
+## V 5.3.2
+- FIX: .playSegments when forcing a new segment correctly removes the previous list
+- FIX: loading external assets before rendering the first frame of the animation on canvas renderer
+- FIX: clearing caching spatial bezier data when previous frame is reached
+- FIX: promoting text property to dynamic properties when using text update methods
+- FIX: extra comps width and height properties supported
+- FIX: multiple trims fixed
+
+## V 5.3.1
+- FIX: expressions with non computed memberExpressions
+- FIX: animated gradient in svgs 
+
+## V 5.3.0
+- REFACTOR: canvas shape renderer had an important refactor. Should support new render cases and have a performance improvement.
+- EXPRESSIONS: preprocessing expressions allows to prevent getting values if not needed on expressions
+- EXPRESSIONS: support for position, scale and anchorPoint variables
+- EXPRESSIONS: added numLayer property support to comp interfaces
+- REPEATERS: support for start and end opacity
+- FIX: Rendering effects before masks fixes some small render cases
+- FIX: added orientation support for 3d cameras
+- FIX: dashed lines were not resetted in some scenarios
+
+## V 5.2.1
+- FIX: text animators based on words and percentages
+- EXPRESSIONS: Latest Duik version support
+
 ## V 5.2.0
 - FEATURE: gradient support in canvas renderer (some cases are not supported)
 - EXPRESSIONS: layer name support for expressions

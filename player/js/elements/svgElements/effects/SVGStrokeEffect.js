@@ -27,14 +27,14 @@ SVGStrokeEffect.prototype.initialize = function(){
     }
     if(this.filterManager.effectElements[10].p.v === 3){
         var mask = createNS('mask');
-        var id = 'stms_' + randomString(10);
+        var id = createElementID();
         mask.setAttribute('id',id);
         mask.setAttribute('mask-type','alpha');
         mask.appendChild(groupPath);
         this.elem.globalData.defs.appendChild(mask);
         var g = createNS('g');
         g.setAttribute('mask','url(' + locationHref + '#'+id+')');
-        if(elemChildren[0]){
+        while (elemChildren[0]) {
             g.appendChild(elemChildren[0]);
         }
         this.elem.layerElement.appendChild(g);
