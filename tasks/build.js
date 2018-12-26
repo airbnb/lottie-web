@@ -33,7 +33,7 @@ function parseHTML(html) {
 function getScripts($) {
 	return new Promise((resolve, reject)=> {
 		try {
-			const defaultBuilds = ['full','light','svg','canvas','html']
+			const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light']
 			const scriptNodes = []
 			let shouldAddToScripts = false;
 			$("head").contents().each((index, node) => {
@@ -148,12 +148,62 @@ function buildVersions(scripts) {
 		},
 		{
 			fileName: 'lottie_light.js',
-			build: 'light',
+			build: 'svg_light',
 			process: noop
 		},
 		{
 			fileName: 'lottie_light.min.js',
-			build: 'light',
+			build: 'svg_light',
+			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_svg.js',
+			build: 'svg',
+			process: noop
+		},
+		{
+			fileName: 'lottie_svg.min.js',
+			build: 'svg',
+			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_light_canvas.js',
+			build: 'canvas_light',
+			process: noop
+		},
+		{
+			fileName: 'lottie_light_canvas.min.js',
+			build: 'canvas_light',
+			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_canvas.js',
+			build: 'canvas',
+			process: noop
+		},
+		{
+			fileName: 'lottie_canvas.min.js',
+			build: 'canvas',
+			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_html.js',
+			build: 'html',
+			process: noop
+		},
+		{
+			fileName: 'lottie_html.min.js',
+			build: 'html',
+			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_light_html.js',
+			build: 'html_light',
+			process: noop
+		},
+		{
+			fileName: 'lottie_light_html.min.js',
+			build: 'html_light',
 			process: uglifyCode
 		}];
 

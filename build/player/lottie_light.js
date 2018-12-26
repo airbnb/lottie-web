@@ -1807,20 +1807,7 @@ var FontManager = (function(){
                 loadedCount -= 1;
                 continue;
             }
-            if(this.fonts[i].fOrigin === 't' || this.fonts[i].origin === 2){
-                if(window.Typekit && window.Typekit.load && this.typekitLoaded === 0){
-                    this.typekitLoaded = 1;
-                    try{window.Typekit.load({
-                        async: true,
-                        active: function() {
-                            this.typekitLoaded = 2;
-                        }.bind(this)
-                    });}catch(e){}
-                }
-                if(this.typekitLoaded === 2) {
-                    this.fonts[i].loaded = true;
-                }
-            } else if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
+            if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
                 this.fonts[i].loaded = true;
             } else{
                 node = this.fonts[i].monoCase.node;
@@ -1943,10 +1930,11 @@ var FontManager = (function(){
                 }
 
                 if (shouldLoadFont) {
-                    var sc = createTag('script');
+                    var sc = createTag('link');
                     sc.setAttribute('f-forigin', fontArr[i].fOrigin);
                     sc.setAttribute('f-origin', fontArr[i].origin);
-                    sc.setAttribute('src',fontArr[i].fPath);
+                    sc.setAttribute('rel','stylesheet');
+                    sc.setAttribute('href',fontArr[i].fPath);
                     defs.appendChild(sc);
                 }
             }
@@ -3877,7 +3865,7 @@ RepeaterModifier.prototype.cloneElements = function(elements){
 
 RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
     var i, len = elements.length;
-    for(i = 0; i < len ; i += 1) {
+    for(i = 0; i < len; i += 1) {
         elements[i]._render = renderFlag;
         if(elements[i].ty === 'gr') {
             this.changeGroupRender(elements[i].it, renderFlag);
@@ -7374,8 +7362,8 @@ IShapeElement.prototype = {
     searchProcessedElement: function(elem){
         var elements = this.processedElements;
         var i = 0, len = elements.length;
-        while(i < len){
-            if(elements[i].elem === elem){
+        while (i < len) {
+            if (elements[i].elem === elem) {
                 return elements[i].pos;
             }
             i += 1;
@@ -7385,9 +7373,9 @@ IShapeElement.prototype = {
     addProcessedElement: function(elem, pos){
         var elements = this.processedElements;
         var i = elements.length;
-        while(i){
+        while(i) {
             i -= 1;
-            if(elements[i].elem === elem){
+            if (elements[i].elem === elem) {
                 elements[i].pos = pos;
                 return;
             }
@@ -9456,6 +9444,7 @@ AnimationItem.prototype.trigger = function(name){
 };
 
 function EffectsManager(){}
+
     var lottiejs = {};
 
     var _isFrozen = false;
@@ -9581,4 +9570,4 @@ function EffectsManager(){}
     }
     var readyStateCheckInterval = setInterval(checkReady, 100);
     return lottiejs;
-}));
+}));
