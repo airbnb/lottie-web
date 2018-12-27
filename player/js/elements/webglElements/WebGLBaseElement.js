@@ -18,15 +18,8 @@ WebGLBaseElement.prototype = {
         var globalData = this.globalData;
         if(globalData.blendMode !== this.data.bm) {
             globalData.blendMode = this.data.bm;
-            var blendModeValue = this.getBlendMode();
+            var blendModeValue = getBlendMode(this.data.bm);
             globalData.canvasContext.globalCompositeOperation = blendModeValue;
-        }
-    },
-    addMasks: function(){
-
-        this.maskManager = new WMaskElement(this.data, this);
-        if(this.maskManager.hasMasks || this.data.tt) {
-            this.createFramebuffers(this.gl);
         }
     },
     hideElement: function(){
@@ -157,6 +150,12 @@ WebGLBaseElement.prototype = {
         return {
             texture: texture,
             framebuffer: framebuffer
+        }
+    },
+    createRenderableComponents: function() {
+        this.maskManager = new WMaskElement(this.data, this);
+        if(this.maskManager.hasMasks || this.data.tt) {
+            this.createFramebuffers(this.gl);
         }
     },
 

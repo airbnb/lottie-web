@@ -17,8 +17,8 @@
             height:100%;
             /*width:1000px;
             height:500px;*/
-            width:700px;
-            height:500px;
+            width:600px;
+            height:300px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -72,13 +72,13 @@
     <script src="js/utils/pooling/shapeCollection_pool.js"></script>
     <script src="js/utils/pooling/segments_length_pool.js"></script>
     <script src="js/utils/pooling/bezier_length_pool.js"></script>
-    <script src="js/utils/webgl/programFactory.js"></script>
-    <script src="js/utils/webgl/textureFactory.js"></script>
-    <script src="js/utils/webgl/shader_provider.js"></script>
+    <script src="js/utils/webgl/programFactory.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/utils/webgl/textureFactory.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/utils/webgl/shader_provider.js" data-builds="webgl,webgl_light"></script>
     <script src="js/renderers/BaseRenderer.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/renderers/WebGLRenderer.js" data-builds="full,webgl,webgl_light"></script>
+    <script src="js/renderers/WebGLRenderer.js" data-builds="webgl,webgl_light"></script>
     <script src="js/renderers/HybridRenderer.js" data-builds="full,html,html_light"></script>
     <script src="js/mask.js"></script>
     <script src="js/elements/helpers/HierarchyElement.js"></script>
@@ -134,20 +134,20 @@
     <script src="js/elements/htmlElements/HImageElement.js" data-builds="full,html,html_light"></script>
     <script src="js/elements/htmlElements/HCameraElement.js" data-builds="full,html,html_light"></script>
     <script src="js/elements/htmlElements/HEffects.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/webglElements/WebGLBaseElement.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLSolidElement.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLImageElement.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLCompElement.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLShapeElement.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLMaskElement.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLTrackMatte.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/WebGLEffects.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/effects/WebGLTintEffect.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/effects/WebGLTwirlEffect.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/effects/WebGLRippleEffect.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/effects/WebGLSpherizeEffect.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/effects/WebGLNoOpEffect.js"  data-builds="full,webgl,webgl_light"></script>
-    <script src="js/elements/webglElements/effects/WebGLPuppetPin.js"  data-builds="full,webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLBaseElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLSolidElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLImageElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLCompElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLShapeElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLMaskElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLTrackMatte.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLEffects.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/effects/WebGLTintEffect.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/effects/WebGLTwirlEffect.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/effects/WebGLRippleEffect.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/effects/WebGLSpherizeEffect.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/effects/WebGLNoOpEffect.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/effects/WebGLPuppetPin.js" data-builds="webgl,webgl_light"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <script src="js/animation/AnimationItem.js"></script>
     <!-- Expressions -->
@@ -185,8 +185,8 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
+        renderer: 'webgl',
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,

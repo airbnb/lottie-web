@@ -179,7 +179,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, sh
             this.addTransformToStyleList(itemsData[i]);
         }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
             if(!processedPos){
-                itemsData[i] = this.createShapeElement(arr[i], ownTransformers);
+                itemsData[i] = this.createShapeElement(arr[i]);
             }
             
         }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
