@@ -8,7 +8,8 @@
     "url": "https://github.com/airbnb/lottie-web.git"
   },
   "scripts": {
-    "start": "node tasks/build.js"
+    "start": "node tasks/build.js",
+    "shaders": "node tasks/shaders_task.js"
   },
   "keywords": [
     "animation",
