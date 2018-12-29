@@ -12,13 +12,13 @@
         }
 
         #lottie{
-            background-color:#ccc;
+            background-color:#000;
             width:100%;
             height:100%;
             /*width:1000px;
             height:500px;*/
-            width:600px;
-            height:300px;
+            width:1200px;
+            height:600px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -36,6 +36,7 @@
     <script src="js/utils/helpers/html_elements.js"></script>
     <script src="js/utils/helpers/dynamicProperties.js"></script>
     <script src="js/utils/helpers/blendModes.js"></script>
+    <script src="js/utils/helpers/effectsRegisterer.js"></script>
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
@@ -170,6 +171,7 @@
     <!-- end Expressions -->
     <!-- endbuild -->
     <script src="js/module.js" ></script>
+    <script src="js/elements/webglElements/effects/WebGLGaussianBlurEFfect.js" data-builds="webgl,webgl_light"></script>
     <!-- <script src="lottie.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
 
@@ -186,8 +188,8 @@
     var animData = {
         container: elem,
         renderer: 'webgl',
-        loop: false,
-        autoplay: true,
+        loop: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:true,
             preserveAspectRatio: 'xMidYMid meet',

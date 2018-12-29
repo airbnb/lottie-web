@@ -4,8 +4,19 @@ function WEffects(elem){
     var filterManager;
     for(i=0;i<len;i+=1){
         filterManager = null;
+        var effect = effectsRegisterer.getEffect(elem.data.ef[i].mn) || effectsRegisterer.getEffect(elem.data.ef[i].nm);
+        if(effect) {
+            filterManager = new effect(elem.effectsManager.effectElements[i], elem);
+            this.filters.push(filterManager);
+        }
+        /*if(effectsRegisterer.getEffect(elem.data.ef[i].mn)) {
+            console.log('ENCON')
+            filterManager = new WTintFilter(elem.effectsManager.effectElements[i], elem);
+        }
         if(elem.data.ef[i].ty === 20){
             filterManager = new WTintFilter(elem.effectsManager.effectElements[i], elem);
+        } else if(elem.data.ef[i].ty === 29){
+            filterManager = new WGaussianBlurEffect(elem.effectsManager.effectElements[i], elem);
         } else if(elem.data.ef[i].ty === 30){
             filterManager = new WTwirlEffect(elem.effectsManager.effectElements[i], elem);
         } else if(elem.data.ef[i].ty === 32){
@@ -17,7 +28,7 @@ function WEffects(elem){
         }
         if(filterManager) {
             this.filters.push(filterManager);
-        }
+        }*/
     }
     /*if (this.filters.length) {
         elem.addRenderableComponent(this);

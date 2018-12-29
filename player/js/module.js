@@ -104,6 +104,7 @@
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+    lottiejs.registerEffect = effectsRegisterer.registerEffect;
     lottiejs.__getFactory = getFactory;
     lottiejs.version = '[[BM_VERSION]]';
 

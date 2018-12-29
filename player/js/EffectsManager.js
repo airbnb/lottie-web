@@ -17,6 +17,18 @@ extendPrototype([DynamicPropertyContainer], GroupEffect);
 
 GroupEffect.prototype.getValue = GroupEffect.prototype.iterateDynamicProperties;
 
+GroupEffect.prototype.getEffectByName = function(nm) {
+    var effects = this.data.ef;
+    var i = 0, len = effects.length;
+    while(i < len) {
+        if(effects[i].nm === nm || effects[i].mn === nm) {
+            return this.effectElements[i];
+        }
+        i += 1;
+    }
+    return null;
+}
+
 GroupEffect.prototype.init = function(data,element){
     this.data = data;
     this.effectElements = [];

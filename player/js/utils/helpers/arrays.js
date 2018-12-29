@@ -20,6 +20,14 @@ var createTypedArray = (function(){
 			return new Float32Array(len);
 		} else if(type === 'int16') {
 			return new Int16Array(len);
+		} else if(type === 'int32') {
+			return new Int32Array(len);
+		} else if(type === 'int64') {
+			return new Int64Array(len);
+		} else if(type === 'uint32') {
+			return new Uint32Array(len);
+		} else if(type === 'uint64') {
+			return new BigUint64Array(len);
 		} else if(type === 'uint8c') {
 			return new Uint8ClampedArray(len);
 		}
