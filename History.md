@@ -1,3 +1,14 @@
+## V 5.4.3
+- NEW: added blend mode support for shapes in svg renderer
+- NEW: removed random ids in favour of incremental ids
+- NEW: added new players
+- NEW: updated build process. Removed vulnerable dependencies.
+- FIX: canvas repeater fix
+- FIX: Replaced typekit with Adobe Fonts support
+- FIX: subtracting offsetTime for valueAtTime calculation on shapes
+- FIX: expressions targetting keys fix
+- FIX: multidimensional easing using first dimension value when set to 0
+
 ## V 5.4.2
 - FIX: added enabled property on effect interfaces for expression
 - FIX: font measuring fix for white spaces

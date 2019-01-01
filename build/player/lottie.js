@@ -111,15 +111,12 @@ function BMDestroyEvent(n,t){
     this.target = t;
 }
 
-function randomString(length, chars){
-    if(chars === undefined){
-        chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+var createElementID = (function(){
+    var _count = 0;
+    return function createID() {
+        return '__lottie_element_' + ++_count
     }
-    var i;
-    var result = '';
-    for (i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
-    return result;
-}
+}())
 
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;
@@ -329,6 +326,30 @@ DynamicPropertyContainer.prototype = {
 	    this._isAnimated = false;
 	}
 }
+var getBlendMode = (function() {
+
+	var blendModeEnums = {
+        1:'multiply',
+        2:'screen',
+        3:'overlay',
+        4:'darken',
+        5:'lighten',
+        6:'color-dodge',
+        7:'color-burn',
+        8:'hard-light',
+        9:'soft-light',
+        10:'difference',
+        11:'exclusion',
+        12:'hue',
+        13:'saturation',
+        14:'color',
+        15:'luminosity'
+    }
+
+	return function(mode) {
+		return blendModeEnums[mode] || '';
+	}
+}())
 /*!
  Transformation Matrix v2.0
  (c) Epistemex 2014-2015
@@ -5944,7 +5965,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
     rect.setAttribute('y',0);
-    var maskId = 'animationMask_'+randomString(10);
+    var maskId = createElementID();
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
     this.layerElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
@@ -6717,7 +6738,7 @@ function MaskElement(data,element,globalData) {
     var count = 0;
     var currentMasks = [];
     var j, jLen;
-    var layerId = randomString(10);
+    var layerId = createElementID();
     var rect, expansor, feMorph,x;
     var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
@@ -6759,7 +6780,7 @@ function MaskElement(data,element,globalData) {
             maskType = 'mask';
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.element);
-            filterID = 'fi_'+randomString(10);
+            filterID = createElementID();
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
             feMorph = createNS('feMorphology');
@@ -7344,7 +7365,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
 
 SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
 
-    var gradientId = 'gr_'+randomString(10);
+    var gradientId = createElementID();
     var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
     gfill.setAttribute('id',gradientId);
     gfill.setAttribute('spreadMethod','pad');
@@ -7369,8 +7390,8 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         var mask = createNS("mask");
         var maskElement = createNS( 'path');
         mask.appendChild(maskElement);
-        var opacityId = 'op_'+randomString(10);
-        var maskId = 'mk_'+randomString(10);
+        var opacityId = createElementID();
+        var maskId = createElementID();
         mask.setAttribute('id',maskId);
         var opFill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
         opFill.setAttribute('id',opacityId);
@@ -7735,28 +7756,8 @@ BaseElement.prototype = {
             this.layerInterface.text = this.layerInterface.textInterface;
         }
     },
-    blendModeEnums: {
-        1:'multiply',
-        2:'screen',
-        3:'overlay',
-        4:'darken',
-        5:'lighten',
-        6:'color-dodge',
-        7:'color-burn',
-        8:'hard-light',
-        9:'soft-light',
-        10:'difference',
-        11:'exclusion',
-        12:'hue',
-        13:'saturation',
-        14:'color',
-        15:'luminosity'
-    },
-    getBlendMode: function(){
-        return this.blendModeEnums[this.data.bm] || '';
-    },
     setBlendMode: function(){
-        var blendModeValue = this.getBlendMode();
+        var blendModeValue = getBlendMode(this.data.bm);
         var elem = this.baseElement || this.layerElement;
 
         elem.style['mix-blend-mode'] = blendModeValue;
@@ -7765,7 +7766,7 @@ BaseElement.prototype = {
         this.globalData = globalData;
         this.comp = comp;
         this.data = data;
-        this.layerId = 'ly_'+randomString(10);
+        this.layerId = createElementID();
         
         //Stretch factor for old animations missing this property.
         if(!this.data.sr){
@@ -7835,7 +7836,7 @@ SVGBaseElement.prototype = {
                 // This is only for IE and Edge when mask if of type alpha
                 if (!featureSupport.maskType && this.data.td == 1) {
                     masker.setAttribute('mask-type', 'luminance');
-                    filId = randomString(10);
+                    filId = createElementID();
                     fil = filtersFactory.createFilter(filId);
                     this.globalData.defs.appendChild(fil);
                     fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
@@ -7851,7 +7852,7 @@ SVGBaseElement.prototype = {
                 maskGroup.setAttribute('mask-type','alpha');
                 var maskGrouper = createNS('g');
                 maskGroup.appendChild(maskGrouper);
-                filId = randomString(10);
+                filId = createElementID();
                 fil = filtersFactory.createFilter(filId);
                 ////
 
@@ -7910,7 +7911,7 @@ SVGBaseElement.prototype = {
             var cp = createNS( 'clipPath');
             var pt = createNS('path');
             pt.setAttribute('d','M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
-            var clipId = 'cp_'+randomString(8);
+            var clipId = createElementID();
             cp.setAttribute('id',clipId);
             cp.appendChild(pt);
             this.globalData.defs.appendChild(cp);
@@ -8574,6 +8575,9 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
     if(data.cl){
         pathElement.setAttribute('class',data.cl);
     }
+    if(data.bm){
+        pathElement.style['mix-blend-mode'] = getBlendMode(data.bm);
+    }
     this.stylesList.push(styleOb);
     this.addToAnimatedContents(data, elementData);
     return elementData;
@@ -8586,6 +8590,9 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     }
     if(data.cl){
         elementData.gr.setAttribute('class',data.cl);
+    }
+    if(data.bm){
+        elementData.gr.style['mix-blend-mode'] = getBlendMode(data.bm);
     }
     return elementData;
 };
@@ -8855,7 +8862,7 @@ SVGStrokeEffect.prototype.initialize = function(){
     }
     if(this.filterManager.effectElements[10].p.v === 3){
         var mask = createNS('mask');
-        var id = 'stms_' + randomString(10);
+        var id = createElementID();
         mask.setAttribute('id',id);
         mask.setAttribute('mask-type','alpha');
         mask.appendChild(groupPath);
@@ -9157,7 +9164,6 @@ SVGDropShadowEffect.prototype.renderFrame = function(forceRender){
     }
 };
 var _svgMatteSymbols = [];
-var _svgMatteMaskCounter = 0;
 
 function SVGMatte3Effect(filterElem, filterManager, elem){
     this.initialized = false;
@@ -9209,7 +9215,7 @@ SVGMatte3Effect.prototype.replaceInParent = function(mask, symbolId) {
 
 SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
     if(!this.findSymbol(mask)) {
-        var symbolId = 'matte_' + randomString(5) + '_' + _svgMatteMaskCounter++;
+        var symbolId = createElementID();
         var masker = createNS('mask');
         masker.setAttribute('id', mask.layerId);
         masker.setAttribute('mask-type', 'alpha');
@@ -9250,7 +9256,7 @@ SVGMatte3Effect.prototype.renderFrame = function() {
 };
 function SVGEffects(elem){
     var i, len = elem.data.ef ? elem.data.ef.length : 0;
-    var filId = randomString(10);
+    var filId = createElementID();
     var fil = filtersFactory.createFilter(filId);
     var count = 0;
     this.filters = [];
@@ -9342,7 +9348,7 @@ CVBaseElement.prototype = {
         var globalData = this.globalData;
         if(globalData.blendMode !== this.data.bm) {
             globalData.blendMode = this.data.bm;
-            var blendModeValue = this.getBlendMode();
+            var blendModeValue = getBlendMode(this.data.bm);
             globalData.canvasContext.globalCompositeOperation = blendModeValue;
         }
     },
@@ -11203,7 +11209,7 @@ var AnimationItem = function () {
     this.autoplay = false;
     this.loop = true;
     this.renderer = null;
-    this.animationID = randomString(10);
+    this.animationID = createElementID();
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
@@ -12744,10 +12750,12 @@ var ExpressionManager = (function(){
                 lastTime: initialDefaultFrame
             };
         }
+        
+        frameNum *= this.elem.globalData.frameRate;
+        frameNum -= this.offsetTime;
         if(frameNum !== this._cachingAtTime.lastTime) {
             this._cachingAtTime.lastIndex = this._cachingAtTime.lastTime < frameNum ? this._caching.lastIndex : 0;
             this._cachingAtTime.lastTime = frameNum;
-            frameNum *= this.elem.globalData.frameRate;
             this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, this._cachingAtTime);
         }
         return this._cachingAtTime.shapeValue;
@@ -14225,7 +14233,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.4.2';
+    lottiejs.version = '5.4.3';
 
     function checkReady() {
         if (document.readyState === "complete") {
