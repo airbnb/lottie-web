@@ -7565,6 +7565,7 @@ ICompElement.prototype.destroy = function(){
 function IImageElement(data,globalData,comp){
     this.assetData = globalData.getAssetData(data.refId);
     this.initElement(data,globalData,comp);
+    this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
@@ -7582,6 +7583,9 @@ IImageElement.prototype.createContent = function(){
     this.layerElement.appendChild(this.innerElem);
 };
 
+IImageElement.prototype.sourceRectAtTime = function() {
+	return this.sourceRect;
+}
 function ISolidElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
