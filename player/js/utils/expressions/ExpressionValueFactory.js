@@ -93,4 +93,4 @@ var ExpressionPropertyInterface = (function() {
             return MultidimensionalPropertyInterface(property);
         }
     }
-}())
+}());

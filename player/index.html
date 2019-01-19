@@ -130,6 +130,7 @@
     <!-- Expressions -->
     <script src="js/utils/expressions/Expressions.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/utils/expressions/ExpressionManager.js" data-builds="full,svg,canvas,html"></script>
+    <script src="js/utils/expressions/expressionHelpers.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/utils/expressions/ShapeInterface.js" data-builds="full,svg,canvas,html"></script>
@@ -141,6 +142,7 @@
     <script src="js/utils/expressions/EffectInterface.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/utils/expressions/MaskInterface.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/utils/expressions/ExpressionValueFactory.js" data-builds="full,svg,canvas,html"></script>
+    <script src="js/utils/expressions/TextSelectorPropertyDecorator.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/effects/SliderEffect.js" data-builds="full,svg,canvas,html"></script>
     <script src="js/effects/EffectsManagerPlaceholder.js" ></script>
     <script src="js/EffectsManager.js" data-builds="full,svg,canvas,html"></script>
@@ -161,8 +163,8 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'html',
-        loop: false,
+        renderer: 'svg',
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
