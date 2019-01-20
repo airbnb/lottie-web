@@ -5,7 +5,7 @@
         function getValueProxy(index,total){
             this.textIndex = index+1;
             this.textTotal = total;
-            this.getValue();
+            this.v = this.getValue() * this.mult;
             return this.v;
         }
 
@@ -18,7 +18,9 @@
             this.textTotal = data.totalChars;
             this.selectorValue = 100;
             this.lastValue = [1,1,1];
-            expressionHelpers.searchExpressions.bind(this)(elem,data,this);
+            this.k = true;
+            this.x = true;
+            this.getValue = ExpressionManager.initiateExpression.bind(this)(elem,data,this);
             this.getMult = getValueProxy;
             this.getVelocityAtTime = expressionHelpers.getVelocityAtTime;
             if(this.kf){
