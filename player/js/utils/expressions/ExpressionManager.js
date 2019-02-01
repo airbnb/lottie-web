@@ -515,7 +515,8 @@ var ExpressionManager = (function(){
             }
             ind -= 1;
             ob = {
-                time: data.k[ind].t/elem.comp.globalData.frameRate
+                time: data.k[ind].t/elem.comp.globalData.frameRate,
+                value: []
             };
             var arr;
             if(ind === data.k.length - 1 && !data.k[ind].h){
@@ -526,6 +527,7 @@ var ExpressionManager = (function(){
             len = arr.length;
             for(i=0;i<len;i+=1){
                 ob[i] = arr[i];
+                ob.value[i] = arr[i]
             }
             return ob;
         }
