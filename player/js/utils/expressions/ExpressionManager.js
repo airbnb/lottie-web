@@ -170,6 +170,11 @@ var ExpressionManager = (function(){
         }
         return a % b;
     }
+    var $bm_sum = sum;
+    var $bm_sub = sub;
+    var $bm_mul = mul;
+    var $bm_div = div;
+    var $bm_mod = mod;
 
     function clamp(num, min, max) {
         if(min > max){
