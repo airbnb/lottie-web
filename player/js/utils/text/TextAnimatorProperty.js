@@ -66,32 +66,26 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 segments: []
             };
             len = paths._length - 1;
-            var pathData;
+            var bezierData;
             totalLength = 0;
             for (i = 0; i < len; i += 1) {
-                pathData = {
-                    s: paths.v[i],
-                    e: paths.v[i + 1],
-                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                    ti: [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]
-                };
-                bez.buildBezierData(pathData);
-                pathInfo.tLength += pathData.bezierData.segmentLength;
-                pathInfo.segments.push(pathData);
-                totalLength += pathData.bezierData.segmentLength;
+                bezierData = bez.buildBezierData(paths.v[i]
+                    , paths.v[i + 1]
+                    , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
+                    , [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]);
+                pathInfo.tLength += bezierData.segmentLength;
+                pathInfo.segments.push(bezierData);
+                totalLength += bezierData.segmentLength;
             }
             i = len;
             if (mask.v.c) {
-                pathData = {
-                    s: paths.v[i],
-                    e: paths.v[0],
-                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                    ti: [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]
-                };
-                bez.buildBezierData(pathData);
-                pathInfo.tLength += pathData.bezierData.segmentLength;
-                pathInfo.segments.push(pathData);
-                totalLength += pathData.bezierData.segmentLength;
+                bezierData = bez.buildBezierData(paths.v[i]
+                    , paths.v[0]
+                    , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
+                    , [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]);
+                pathInfo.tLength += bezierData.segmentLength;
+                pathInfo.segments.push(bezierData);
+                totalLength += bezierData.segmentLength;
             }
             this._pathData.pi = pathInfo;
         }
@@ -108,20 +102,20 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
             segmentInd = segments.length - 1;
-            points = segments[segmentInd].bezierData.points;
+            points = segments[segmentInd].points;
             pointInd = points.length - 1;
             while (currentLength < 0) {
                 currentLength += points[pointInd].partialLength;
                 pointInd -= 1;
                 if (pointInd < 0) {
                     segmentInd -= 1;
-                    points = segments[segmentInd].bezierData.points;
+                    points = segments[segmentInd].points;
                     pointInd = points.length - 1;
                 }
             }
 
         }
-        points = segments[segmentInd].bezierData.points;
+        points = segments[segmentInd].points;
         prevPoint = points[pointInd - 1];
         currentPoint = points[pointInd];
         partialLength = currentPoint.partialLength;
@@ -209,7 +203,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             if(this._hasMaskedPath) {
                 segmentInd = initSegmentInd;
                 pointInd = initPointInd;
-                points = segments[segmentInd].bezierData.points;
+                points = segments[segmentInd].points;
                 prevPoint = points[pointInd - 1];
                 currentPoint = points[pointInd];
                 partialLength = currentPoint.partialLength;
@@ -280,13 +274,13 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                                 if (mask.v.c) {
                                     pointInd = 0;
                                     segmentInd = 0;
-                                    points = segments[segmentInd].bezierData.points;
+                                    points = segments[segmentInd].points;
                                 } else {
                                     segmentLength -= currentPoint.partialLength;
                                     points = null;
                                 }
                             } else {
-                                points = segments[segmentInd].bezierData.points;
+                                points = segments[segmentInd].points;
                             }
                         }
                         if (points) {

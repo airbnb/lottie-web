@@ -11,11 +11,12 @@ var ShapePropertyFactory = (function(){
             isHold = true;
             iterationIndex = 0;
         }else if(frameNum >= kf[kf.length - 1].t-this.offsetTime){
-            if(kf[kf.length - 2].h === 1){
+            keyPropS = kf[kf.length - 1].s ? kf[kf.length - 1].s[0] : kf[kf.length - 2].e[0];
+            /*if(kf[kf.length - 1].s){
                 keyPropS = kf[kf.length - 1].s[0];
             }else{
                 keyPropS = kf[kf.length - 2].e[0];
-            }
+            }*/
             isHold = true;
         }else{
             var i = iterationIndex;
@@ -49,7 +50,7 @@ var ShapePropertyFactory = (function(){
                     }
                     perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                 }
-                keyPropE = keyData.e[0];
+                keyPropE = nextKeyData.s ? nextKeyData.s[0] : keyData.e[0];
             }
             keyPropS = keyData.s[0];
         }
