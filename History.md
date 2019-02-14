@@ -1,3 +1,18 @@
+## V 5.4.4
+- FIX: viewport meta tag on android with mask fix
+- FIX: fixed enterFrame direction property
+- FIX: explicitly iterating math methods
+- FIX: added missing expression properties
+- FIX: setting class attribute via setAttribute
+- FIX: added value property in key method expression
+- FIX: text animator expression fix
+- FIX: added smooth expression support
+- FIX: hcamera expression fix
+- FIX: fix animated dash property canvas
+- NEW: sourceRectAtTime for images fix
+- NEW: Advanced option in Bodymovin extension to skip expression properties
+- NEW: removed some unused json properties
+
 ## V 5.4.3
 - NEW: added blend mode support for shapes in svg renderer
 - NEW: removed random ids in favour of incremental ids

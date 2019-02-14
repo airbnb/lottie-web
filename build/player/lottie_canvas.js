@@ -33,7 +33,7 @@ var blitter = 10;
 
 var BMMath = {};
 (function(){
-    var propertyNames = Object.getOwnPropertyNames(Math);
+    var propertyNames = ["abs", "acos", "acosh", "asin", "asinh", "atan", "atanh", "atan2", "ceil", "cbrt", "expm1", "clz32", "cos", "cosh", "exp", "floor", "fround", "hypot", "imul", "log", "log1p", "log2", "log10", "max", "min", "pow", "random", "round", "sign", "sin", "sinh", "sqrt", "tan", "tanh", "trunc", "E", "LN10", "LN2", "LOG10E", "LOG2E", "PI", "SQRT1_2", "SQRT2"];
     var i, len = propertyNames.length;
     for(i=0;i<len;i+=1){
         BMMath[propertyNames[i]] = Math[propertyNames[i]];
@@ -1865,7 +1865,7 @@ var FontManager = (function(){
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
-            tHelper.className = fontData.fClass;
+            tHelper.setAttribute('class', fontData.fClass);
         } else {
             tHelper.style.fontFamily = fontData.fFamily;
         }
@@ -7141,6 +7141,7 @@ BaseElement.prototype = {
     getType: function(){
         return this.type;
     }
+    ,sourceRectAtTime: function(){}
 }
 function NullElement(data,globalData,comp){
     this.initFrame();
@@ -7218,20 +7219,21 @@ SVGBaseElement.prototype = {
                 fil = filtersFactory.createFilter(filId);
                 ////
 
-                var feColorMatrix = createNS('feColorMatrix');
+                // This solution doesn't work on Android when meta tag with viewport attribute is set
+                /*var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type', 'matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
                 feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
-                fil.appendChild(feColorMatrix);
-
+                fil.appendChild(feColorMatrix);*/
                 ////
-                /*var feCTr = createNS('feComponentTransfer');
+                var feCTr = createNS('feComponentTransfer');
                 feCTr.setAttribute('in','SourceGraphic');
                 fil.appendChild(feCTr);
                 var feFunc = createNS('feFuncA');
                 feFunc.setAttribute('type','table');
                 feFunc.setAttribute('tableValues','1.0 0.0');
-                feCTr.appendChild(feFunc);*/
+                feCTr.appendChild(feFunc);
+                ////
                 this.globalData.defs.appendChild(fil);
                 var alphaRect = createNS('rect');
                 alphaRect.setAttribute('width',  this.comp.data.w);
@@ -9586,7 +9588,7 @@ AnimationItem.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
             case 'enterFrame':
-                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
+                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameModifier));
                 break;
             case 'loopComplete':
                 this.triggerEvent(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
@@ -9839,6 +9841,11 @@ var ExpressionManager = (function(){
         }
         return a % b;
     }
+    var $bm_sum = sum;
+    var $bm_sub = sub;
+    var $bm_mul = mul;
+    var $bm_div = div;
+    var $bm_mod = mod;
 
     function clamp(num, min, max) {
         if(min > max){
@@ -10017,7 +10024,7 @@ var ExpressionManager = (function(){
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
         var name = elem.data.nm;
-        var loopIn, loop_in, loopOut, loop_out;
+        var loopIn, loop_in, loopOut, loop_out, smooth;
         var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
@@ -10072,6 +10079,10 @@ var ExpressionManager = (function(){
         if(thisProperty.loopOut) {
             loopOut = thisProperty.loopOut.bind(thisProperty);
             loop_out = loopOut;
+        }
+
+        if(thisProperty.smooth) {
+            smooth = thisProperty.smooth.bind(thisProperty);
         }
 
         function loopInDuration(type,duration){
@@ -10180,7 +10191,8 @@ var ExpressionManager = (function(){
             }
             ind -= 1;
             ob = {
-                time: data.k[ind].t/elem.comp.globalData.frameRate
+                time: data.k[ind].t/elem.comp.globalData.frameRate,
+                value: []
             };
             var arr;
             if(ind === data.k.length - 1 && !data.k[ind].h){
@@ -10191,6 +10203,7 @@ var ExpressionManager = (function(){
             len = arr.length;
             for(i=0;i<len;i+=1){
                 ob[i] = arr[i];
+                ob.value[i] = arr[i]
             }
             return ob;
         }
@@ -10313,11 +10326,88 @@ var ExpressionManager = (function(){
     ob.initiateExpression = initiateExpression;
     return ob;
 }());
-(function addPropertyDecorator() {
+var expressionHelpers = (function(){
+
+    function searchExpressions(elem,data,prop){
+        if(data.x){
+            prop.k = true;
+            prop.x = true;
+            prop.initiateExpression = ExpressionManager.initiateExpression;
+            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
+        }
+    }
+
+    function getValueAtTime(frameNum) {
+        frameNum *= this.elem.globalData.frameRate;
+        frameNum -= this.offsetTime;
+        if(frameNum !== this._cachingAtTime.lastFrame) {
+            this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
+            this._cachingAtTime.value = this.interpolateValue(frameNum, this._cachingAtTime);
+            this._cachingAtTime.lastFrame = frameNum;
+        }
+        return this._cachingAtTime.value;
+
+    }
+
+    function getSpeedAtTime(frameNum) {
+        var delta = -0.01;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var speed = 0;
+        if(v1.length){
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                speed += Math.pow(v2[i] - v1[i], 2);
+            }
+            speed = Math.sqrt(speed) * 100;
+        } else {
+            speed = 0;
+        }
+        return speed;
+    }
+
+    function getVelocityAtTime(frameNum) {
+        if(this.vel !== undefined){
+            return this.vel;
+        }
+        var delta = -0.001;
+        //frameNum += this.elem.data.st;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var velocity;
+        if(v1.length){
+            velocity = createTypedArray('float32', v1.length);
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                //removing frameRate
+                //if needed, don't add it here
+                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                velocity[i] = (v2[i] - v1[i])/delta;
+            }
+        } else {
+            velocity = (v2 - v1)/delta;
+        }
+        return velocity;
+    }
 
     function getStaticValueAtTime() {
         return this.pv;
     }
+
+    function setGroupProperty(propertyGroup){
+        this.propertyGroup = propertyGroup;
+    }
+
+	return {
+		searchExpressions: searchExpressions,
+		getSpeedAtTime: getSpeedAtTime,
+		getVelocityAtTime: getVelocityAtTime,
+		getValueAtTime: getValueAtTime,
+		getStaticValueAtTime: getStaticValueAtTime,
+		setGroupProperty: setGroupProperty,
+	}
+}());
+(function addPropertyDecorator() {
 
     function loopOut(type,duration,durationFlag){
         if(!this.k || !this.keyframes){
@@ -10445,6 +10535,48 @@ var ExpressionManager = (function(){
         }
     }
 
+    function smooth(width, samples) {
+        if (!this.k){
+            return this.pv;
+        }
+        width = (width || 0.4) * 0.5;
+        samples = Math.floor(samples || 5);
+        if (samples <= 1) {
+            return this.pv;
+        }
+        var currentTime = this.comp.renderedFrame / this.comp.globalData.frameRate;
+        var initFrame = currentTime - width;
+        var endFrame = currentTime + width;
+        var sampleFrequency = samples > 1 ? (endFrame - initFrame) / (samples - 1) : 1;
+        var i = 0, j = 0;
+        var value;
+        if (this.pv.length) {
+            value = createTypedArray('float32', this.pv.length);
+        } else {
+            value = 0;
+        }
+        var sampleValue;
+        while (i < samples) {
+            sampleValue = this.getValueAtTime(initFrame + i * sampleFrequency);
+            if(this.pv.length) {
+                for (j = 0; j < this.pv.length; j += 1) {
+                    value[j] += sampleValue[j];
+                }
+            } else {
+                value += sampleValue;
+            }
+            i += 1;
+        }
+        if(this.pv.length) {
+            for (j = 0; j < this.pv.length; j += 1) {
+                value[j] /= samples;
+            }
+        } else {
+            value /= samples;
+        }
+        return value;
+    }
+
     function getValueAtTime(frameNum) {
         frameNum *= this.elem.globalData.frameRate;
         frameNum -= this.offsetTime;
@@ -10457,60 +10589,6 @@ var ExpressionManager = (function(){
 
     }
 
-    function getSpeedAtTime(frameNum) {
-        var delta = -0.01;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var speed = 0;
-        if(v1.length){
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                speed += Math.pow(v2[i] - v1[i], 2);
-            }
-            speed = Math.sqrt(speed) * 100;
-        } else {
-            speed = 0;
-        }
-        return speed;
-    }
-
-    function getVelocityAtTime(frameNum) {
-        if(this.vel !== undefined){
-            return this.vel;
-        }
-        var delta = -0.001;
-        //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var velocity;
-        if(v1.length){
-            velocity = createTypedArray('float32', v1.length);
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                //removing frameRate
-                //if needed, don't add it here
-                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
-                velocity[i] = (v2[i] - v1[i])/delta;
-            }
-        } else {
-            velocity = (v2 - v1)/delta;
-        }
-        return velocity;
-    }
-
-    function setGroupProperty(propertyGroup){
-        this.propertyGroup = propertyGroup;
-    }
-
-    function searchExpressions(elem,data,prop){
-        if(data.x){
-            prop.k = true;
-            prop.x = true;
-            prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
-        }
-    }
-
     function getTransformValueAtTime(time) {
         console.warn('Transform at time not supported');
     }
@@ -10518,36 +10596,6 @@ var ExpressionManager = (function(){
     function getTransformStaticValueAtTime(time) {
 
     }
-
-    var TextExpressionSelectorProp = (function(){
-
-        function getValueProxy(index,total){
-            this.textIndex = index+1;
-            this.textTotal = total;
-            this.getValue();
-            return this.v;
-        }
-
-        return function TextExpressionSelectorProp(elem,data){
-            this.pv = 1;
-            this.comp = elem.comp;
-            this.elem = elem;
-            this.mult = 0.01;
-            this.propType = 'textSelector';
-            this.textTotal = data.totalChars;
-            this.selectorValue = 100;
-            this.lastValue = [1,1,1];
-            searchExpressions.bind(this)(elem,data,this);
-            this.getMult = getValueProxy;
-            this.getVelocityAtTime = getVelocityAtTime;
-            if(this.kf){
-                this.getValueAtTime = getValueAtTime.bind(this);
-            } else {
-                this.getValueAtTime = getStaticValueAtTime.bind(this);
-            }
-            this.setGroupProperty = setGroupProperty;
-        };
-    }());
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
     TransformPropertyFactory.getTransformProperty = function(elem, data, container) {
@@ -10557,7 +10605,7 @@ var ExpressionManager = (function(){
         } else {
             prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
         }
-        prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = expressionHelpers.setGroupProperty;
         return prop;
     };
 
@@ -10568,15 +10616,16 @@ var ExpressionManager = (function(){
         //prop.loopOut = loopOut;
         //prop.loopIn = loopIn;
         if(prop.kf){
-            prop.getValueAtTime = getValueAtTime.bind(prop);
+            prop.getValueAtTime = expressionHelpers.getValueAtTime.bind(prop);
         } else {
-            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
+            prop.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(prop);
         }
-        prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = expressionHelpers.setGroupProperty;
         prop.loopOut = loopOut;
         prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime.bind(prop);
-        prop.getSpeedAtTime = getSpeedAtTime.bind(prop);
+        prop.smooth = smooth;
+        prop.getVelocityAtTime = expressionHelpers.getVelocityAtTime.bind(prop);
+        prop.getSpeedAtTime = expressionHelpers.getSpeedAtTime.bind(prop);
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         prop.propertyIndex = data.ix;
         var value = 0;
@@ -10588,7 +10637,7 @@ var ExpressionManager = (function(){
             lastIndex: 0,
             value: value
         };
-        searchExpressions(elem,data,prop);
+        expressionHelpers.searchExpressions(elem,data,prop);
         if(prop.k){
             container.addDynamicProperty(prop);
         }
@@ -10704,8 +10753,8 @@ var ExpressionManager = (function(){
         normalOnPath: function(perc, time){
             return this.vectorOnPath(perc, time, 'normal');
         },
-        setGroupProperty: setGroupProperty,
-        getValueAtTime: getStaticValueAtTime
+        setGroupProperty: expressionHelpers.setGroupProperty,
+        getValueAtTime: expressionHelpers.getStaticValueAtTime
     };
     extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
     extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);
@@ -10718,23 +10767,14 @@ var ExpressionManager = (function(){
         prop.propertyIndex = data.ix;
         prop.lock = false;
         if(type === 3){
-            searchExpressions(elem,data.pt,prop);
+            expressionHelpers.searchExpressions(elem,data.pt,prop);
         } else if(type === 4){
-            searchExpressions(elem,data.ks,prop);
+            expressionHelpers.searchExpressions(elem,data.ks,prop);
         }
         if(prop.k){
             elem.addDynamicProperty(prop);
         }
         return prop;
-    };
-
-    var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
-        if(data.t === 1){
-            return new TextExpressionSelectorProp(elem, data,arr);
-        } else {
-            return propertyGetTextProp(elem,data,arr);
-        }
     };
 }());
 (function addDecorator() {
@@ -10981,6 +11021,7 @@ var ShapeExpressionInterface = (function(){
             }
         }
         interfaceFunction.propertyIndex = shape.ix;
+        interfaceFunction.propertyGroup = propertyGroup;
 
         Object.defineProperties(interfaceFunction, {
             'start': {
@@ -11067,6 +11108,7 @@ var ShapeExpressionInterface = (function(){
         });
         interfaceFunction.ty = 'tr';
         interfaceFunction.mn = shape.mn;
+        interfaceFunction.propertyGroup = propertyGroup;
         return interfaceFunction;
     }
 
@@ -11338,6 +11380,7 @@ var ShapeExpressionInterface = (function(){
         }
         _interfaceFunction.propertyGroup = propertyGroup;
         interfaces = iterateElements(shapes, view, _interfaceFunction);
+        _interfaceFunction.numProperties = interfaces.length;
         return _interfaceFunction;
     };
 }());
@@ -11904,8 +11947,51 @@ var ExpressionPropertyInterface = (function() {
             return MultidimensionalPropertyInterface(property);
         }
     }
-}())
+}());
 
+(function(){
+
+    var TextExpressionSelectorProp = (function(){
+
+        function getValueProxy(index,total){
+            this.textIndex = index+1;
+            this.textTotal = total;
+            this.v = this.getValue() * this.mult;
+            return this.v;
+        }
+
+        return function TextExpressionSelectorProp(elem,data){
+            this.pv = 1;
+            this.comp = elem.comp;
+            this.elem = elem;
+            this.mult = 0.01;
+            this.propType = 'textSelector';
+            this.textTotal = data.totalChars;
+            this.selectorValue = 100;
+            this.lastValue = [1,1,1];
+            this.k = true;
+            this.x = true;
+            this.getValue = ExpressionManager.initiateExpression.bind(this)(elem,data,this);
+            this.getMult = getValueProxy;
+            this.getVelocityAtTime = expressionHelpers.getVelocityAtTime;
+            if(this.kf){
+                this.getValueAtTime = expressionHelpers.getValueAtTime.bind(this);
+            } else {
+                this.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(this);
+            }
+            this.setGroupProperty = expressionHelpers.setGroupProperty;
+        };
+    }());
+
+	var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
+	TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
+	    if(data.t === 1){
+	        return new TextExpressionSelectorProp(elem, data,arr);
+	    } else {
+	        return propertyGetTextProp(elem,data,arr);
+	    }
+	};
+}());
 function SliderEffect(data,elem, container){
     this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
@@ -12088,7 +12174,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.4.3';
+    lottiejs.version = '5.4.4';
 
     function checkReady() {
         if (document.readyState === "complete") {
