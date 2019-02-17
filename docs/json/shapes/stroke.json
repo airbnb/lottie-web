@@ -14,8 +14,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Shape content type. Value: st",
-      "type": "string"
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "st"
     },
     "lc": {
       "title": "Line Cap",

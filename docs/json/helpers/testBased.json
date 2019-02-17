@@ -1,22 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
+  "type": "number",
   "oneOf": [
     {
       "standsFor": "Characters",
-      "value": 1
+      "const": 1
     },
     {
       "standsFor": "Character Excluding Spaces",
-      "value": 2
+      "const": 2
     },
     {
       "standsFor": "Words",
-      "value": 3
+      "const": 3
     },
     {
       "standsFor": "Lines",
-      "value": 4
+      "const": 4
     }
-  ]
+  ],
+  "default": 1
 }

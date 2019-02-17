@@ -22,6 +22,12 @@
       "description": "Composition Width",
       "type": "number"
     },
+    "ddd": {
+      "title": "3-D",
+      "description": "Composition has 3-D layers",
+      "enum": [0, 1],
+      "type": "number"
+    },
     "h": {
       "title": "Height",
       "description": "Composition Height",
@@ -30,6 +36,11 @@
     "v": {
       "title": "Version",
       "description": "Bodymovin Version",
+      "type": "string"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "Composition name",
       "type": "string"
     },
     "layers": {

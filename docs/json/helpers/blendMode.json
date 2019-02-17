@@ -1,70 +1,71 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
+  "type": "number",
   "oneOf": [
     {
       "standsFor": "normal",
-      "value": 0
+      "const": 0
     },
     {
       "standsFor": "multiply",
-      "value": 1
+      "const": 1
     },
     {
       "standsFor": "screen",
-      "value": 2
+      "const": 2
     },
     {
       "standsFor": "overlay",
-      "value": 3
+      "const": 3
     },
     {
       "standsFor": "darken",
-      "value": 4
+      "const": 4
     },
     {
       "standsFor": "lighten",
-      "value": 5
+      "const": 5
     },
     {
       "standsFor": "colorDodge",
-      "value": 6
+      "const": 6
     },
     {
       "standsFor": "colorBurn",
-      "value": 7
+      "const": 7
     },
     {
       "standsFor": "hardLight",
-      "value": 8
+      "const": 8
     },
     {
       "standsFor": "softLight",
-      "value": 9
+      "const": 9
     },
     {
       "standsFor": "difference",
-      "value": 10
+      "const": 10
     },
     {
       "standsFor": "exclusion",
-      "value": 11
+      "const": 11
     },
     {
       "standsFor": "hue",
-      "value": 12
+      "const": 12
     },
     {
       "standsFor": "saturation",
-      "value": 13
+      "const": 13
     },
     {
       "standsFor": "color",
-      "value": 14
+      "const": 14
     },
     {
       "standsFor": "luminosity",
-      "value": 15
+      "const": 15
     }
-  ]
+  ],
+  "default": 0
 }
