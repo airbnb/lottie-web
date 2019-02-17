@@ -4,8 +4,9 @@
   "properties": {
     "ty": {
       "title": "Type",
-      "description": "Type of layer: Precomp. Value 0.",
-      "type": "number"
+      "description": "Type of layer: Precomp.",
+      "type": "number",
+      "const": 0
     },
     "ks": {
       "title": "Transform",
@@ -35,7 +36,8 @@
         {
           "$ref": "#/helpers/blendMode"
         }
-      ]
+      ],
+      "default": 0
     },
     "ddd": {
       "title": "3d Layer",
@@ -45,7 +47,8 @@
         {
           "$ref": "#/helpers/boolean"
         }
-      ]
+      ],
+      "default": 0
     },
     "ind": {
       "title": "Index",
@@ -116,7 +119,8 @@
     "sr": {
       "title": "Stretch",
       "description": "Layer Time Stretching",
-      "type": "number"
+      "type": "number",
+      "default": 1
     },
     "parent": {
       "title": "Parent",

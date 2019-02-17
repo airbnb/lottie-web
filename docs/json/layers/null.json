@@ -4,8 +4,9 @@
   "properties": {
     "ty": {
       "title": "Type",
-      "description": "Type of layer: Null. Value 3.",
-      "type": "number"
+      "description": "Type of layer: Null.",
+      "type": "number",
+      "const": 3
     },
     "ks": {
       "title": "Transform",
@@ -25,7 +26,8 @@
         {
           "$ref": "#/helpers/boolean"
         }
-      ]
+      ],
+      "default": 0
     },
     "ddd": {
       "title": "3d Layer",
@@ -35,7 +37,8 @@
         {
           "$ref": "#/helpers/boolean"
         }
-      ]
+      ],
+      "default": 0
     },
     "ind": {
       "title": "Index",
@@ -88,7 +91,8 @@
     "sr": {
       "title": "Stretch",
       "description": "Layer Time Stretching",
-      "type": "number"
+      "type": "number",
+      "default": 1
     },
     "parent": {
       "title": "Parent",

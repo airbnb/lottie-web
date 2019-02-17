@@ -16,11 +16,11 @@
       "title": "Type",
       "description": "Shape content type.",
       "type": "string",
-      "const": "tm"
+      "const": "rp"
     },
-    "s": {
-      "title": "Start",
-      "description": "Trim Start.",
+    "c": {
+      "title": "Copies",
+      "description": "Number of Copies",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
@@ -29,30 +29,40 @@
           "$ref": "#/properties/valueKeyframed"
         }
       ],
-      "type": "object"
-    },
-    "e": {
-      "title": "End",
-      "description": "Trim End.",
-      "oneOf": [
-        {
-          "$ref": "#/properties/Value"
-        },
-        {
-          "$ref": "#/properties/valueKeyframed"
-        }
-      ],
-      "type": "object"
+      "type": "object",
+      "default": {"a": 0, "k": 1}
     },
     "o": {
       "title": "Offset",
-      "description": "Trim Offset.",
+      "description": "Offset of Copies",
       "oneOf": [
         {
           "$ref": "#/properties/Value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object",
+      "default": {"a": 0, "k": 0}
+    },
+    "m": {
+      "title": "Composite",
+      "description": "Composite of copies",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/composite"
+        }
+      ],
+      "type": "number",
+      "default": 1
+    },
+    "tr": {
+      "title": "Transform",
+      "description": "Transform values for each repeater copy",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/transform"
         }
       ],
       "type": "object"
