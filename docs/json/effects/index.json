@@ -3,64 +3,49 @@
   "type": "object",
   "oneOf": [
     {
-      "$ref": "#/effects/slider",
-      "value": 0
+      "$ref": "#/effects/slider"
     },
     {
-      "$ref": "#/effects/angle",
-      "value": 1
+      "$ref": "#/effects/angle"
     },
     {
-      "$ref": "#/effects/color",
-      "value": 2
+      "$ref": "#/effects/color"
     },
     {
-      "$ref": "#/effects/point",
-      "value": 3
+      "$ref": "#/effects/point"
     },
     {
-      "$ref": "#/effects/checkbox",
-      "value": 4
+      "$ref": "#/effects/checkbox"
     },
     {
-      "$ref": "#/effects/group",
-      "value": 5
+      "$ref": "#/effects/group"
     },
     {
-      "$ref": "#/effects/noValue",
-      "value": 6
+      "$ref": "#/effects/noValue"
     },
     {
-      "$ref": "#/effects/dropDown",
-      "value": 7
+      "$ref": "#/effects/dropDown"
     },
     {
-      "$ref": "#/effects/customValue",
-      "value": 9
+      "$ref": "#/effects/customValue"
     },
     {
-      "$ref": "#/effects/layerIndex",
-      "value": 10
+      "$ref": "#/effects/layerIndex"
     },
     {
-      "$ref": "#/effects/tint",
-      "value": 20
+      "$ref": "#/effects/tint"
     },
     {
-      "$ref": "#/effects/fill",
-      "value": 21
+      "$ref": "#/effects/fill"
     },
     {
-      "$ref": "#/effects/stroke",
-      "value": 22
+      "$ref": "#/effects/stroke"
     },
     {
-      "$ref": "#/effects/tritone",
-      "value": 23
+      "$ref": "#/effects/tritone"
     },
     {
-      "$ref": "#/effects/proLevels",
-      "value": 24
+      "$ref": "#/effects/proLevels"
     }
   ]
 }

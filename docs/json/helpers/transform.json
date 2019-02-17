@@ -11,8 +11,9 @@
         },
         {
           "$ref": "#/properties/multiDimensionalKeyframed"
-        }
+        },
       ],
+      "default": {"a":0, "k":[0, 0, 0]},
       "type": "object"
     },
     "p": {
@@ -26,6 +27,7 @@
           "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
+      "default": {"a":0, "k":[0, 0, 0]},
       "type": "object"
     },
     "s": {
@@ -39,6 +41,7 @@
           "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
+      "default": {"a":0, "k":[100, 100, 100]},
       "type": "object"
     },
     "r": {
@@ -52,6 +55,7 @@
           "$ref": "#/properties/valueKeyframed"
         }
       ],
+      "default": {"a":0, "k":0},
       "type": "object"
     },
     "o": {
@@ -65,6 +69,7 @@
           "$ref": "#/properties/valueKeyframed"
         }
       ],
+      "default": {"a":0, "k":100},
       "type": "object"
     },
     "px": {
@@ -78,6 +83,7 @@
           "$ref": "#/properties/valueKeyframed"
         }
       ],
+      "default": {"a":0, "k":0},
       "type": "object"
     },
     "py": {
@@ -91,6 +97,49 @@
           "$ref": "#/properties/valueKeyframed"
         }
       ],
+      "default": {"a":0, "k":0},
+      "type": "object"
+    },
+    "pz": {
+      "title": "Position Z",
+      "description": "Transform Position Z",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "default": {"a":0, "k":0},
+      "type": "object"
+    },
+    "sk": {
+      "title": "Skew",
+      "description": "Transform Skew",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "default": {"a":0, "k":0},
+      "type": "object"
+    },
+    "sa": {
+      "title": "Skew Axis",
+      "description": "Transform Skew Axis",
+      "oneOf": [
+        {
+          "$ref": "#/properties/value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "default": {"a":0, "k":0},
       "type": "object"
     }
   }

@@ -19,8 +19,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Shape content type. Value: sh",
-      "type": "string"
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "sh"
     },
     "ks": {
       "title": "Vertices",

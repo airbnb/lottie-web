@@ -19,8 +19,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Shape content type. Value: sr",
-      "type": "string"
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "sr"
     },
     "p": {
       "title": "Position",

@@ -19,8 +19,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Effect type. Value:7.",
-      "type": "number"
+      "description": "Effect type.",
+      "type": "number",
+      "const": 7
     },
     "v": {
       "title": "Value",

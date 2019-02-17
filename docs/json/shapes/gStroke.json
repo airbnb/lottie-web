@@ -14,8 +14,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Shape content type. Value: gs",
-      "type": "string"
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "gs"
     },
     "o": {
       "title": "Opacity",

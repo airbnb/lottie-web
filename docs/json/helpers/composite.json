@@ -3,17 +3,13 @@
   "type": "number",
   "oneOf": [
     {
-      "standsFor": "butt",
+      "standsFor": "Above",
       "const": 1
     },
     {
-      "standsFor": "round",
+      "standsFor": "Below",
       "const": 2
-    },
-    {
-      "standsFor": "square",
-      "const": 3
     }
   ],
-  "default": 2
+  "default": 1
 }

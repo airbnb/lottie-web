@@ -5,7 +5,8 @@
     "inv": {
       "title": "Inverted",
       "description": "Inverted Mask flag",
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "nm": {
       "title": "Name",
@@ -34,12 +35,13 @@
       "type": "object",
       "oneOf": [
         {
-          "$ref": "#/properties/value"
+          "$ref": "#/properties/const"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/constKeyframed"
         }
-      ]
+      ],
+      "default": {"a":0, "k":100}
     },
     "mode": {
       "title": "Mode",
@@ -48,33 +50,34 @@
       "oneOf": [
         {
           "standsFor": "None",
-          "value": "n"
+          "const": "n"
         },
         {
           "standsFor": "Additive",
-          "value": "a"
+          "const": "a"
         },
         {
           "standsFor": "Subtract",
-          "value": "s"
+          "const": "s"
         },
         {
           "standsFor": "Intersect",
-          "value": "i"
+          "const": "i"
         },
         {
           "standsFor": "Lighten",
-          "value": "l"
+          "const": "l"
         },
         {
           "standsFor": "Darken",
-          "value": "d"
+          "const": "d"
         },
         {
           "standsFor": "Difference",
-          "value": "f"
+          "const": "f"
         }
-      ]
+      ],
+      "default": "a",
     }
   }
 }

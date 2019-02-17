@@ -14,8 +14,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Shape content type. Value: gr",
-      "type": "string"
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "gr"
     },
     "np": {
       "title": "Number of Properties",
