@@ -26,6 +26,9 @@ var ExpressionManager = (function(){
             }
             return retArr;
         }
+        if (a.propType) {
+            return a.v;
+        }
     }
 
     var easeInBez = BezierFactory.getBezierEasing(0.333,0,.833,.833, 'easeIn').get;
@@ -346,6 +349,11 @@ var ExpressionManager = (function(){
         var transform,$bm_transform,content,effect;
         var thisProperty = property;
         thisProperty.valueAtTime = thisProperty.getValueAtTime;
+        Object.defineProperty(thisProperty, 'value', {
+            get: function() {
+                return thisProperty.v
+            }
+        })
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         elem.comp.displayStartTime = 0;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
