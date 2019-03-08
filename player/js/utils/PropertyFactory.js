@@ -50,7 +50,7 @@ var PropertyFactory = (function(){
                 for (k = 0; k < kLen; k += 1) {
                     newValue[k] = bezierData.points[ind].point[k];
                 }
-                // caching._lastBezierData = null;
+                // caching._lastKeyframeIndex = -1;
             } else {
                 if (keyData.__fnct) {
                     fnc = keyData.__fnct;
@@ -62,8 +62,8 @@ var PropertyFactory = (function(){
                 var distanceInLine = bezierData.segmentLength*perc;
 
                 var segmentPerc;
-                var addedLength =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastAddedLength : 0;
-                j =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastPoint : 0;
+                var addedLength =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
+                j =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastPoint : 0;
                 flag = true;
                 jLen = bezierData.points.length;
                 while (flag) {
@@ -90,7 +90,7 @@ var PropertyFactory = (function(){
                 }
                 caching._lastPoint = j;
                 caching._lastAddedLength = addedLength - bezierData.points[j].partialLength;
-                caching._lastBezierData = bezierData;
+                caching._lastKeyframeIndex = i;
             }
         } else {
             var outX, outY, inX, inY, keyValue;
@@ -234,7 +234,7 @@ var PropertyFactory = (function(){
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             if(this._caching.lastFrame >= frameNum) {
-                this._caching._lastBezierData = null;
+                this._caching._lastKeyframeIndex = -1;
                 this._caching.lastIndex = 0;
             }
 
@@ -345,7 +345,7 @@ var PropertyFactory = (function(){
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.frameId = -1;
-        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastBezierData: null};
+        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastKeyframeIndex: -1};
         this.k = true;
         this.kf = true;
         this.data = data;
