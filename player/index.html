@@ -164,7 +164,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
@@ -177,16 +177,13 @@
     setTimeout(()=>{
         anim = lottie.loadAnimation(animData);
         anim.setSubframe(false);
+        // anim.setSpeed(0.1);
 
         anim.addEventListener('DOMLoaded', function() {
-
+            setTimeout(()=>{
+                
+            },0)
         })
-
-        setTimeout(()=>{
-
-            
-        },0)
-        
     },0)
 
 </script>
