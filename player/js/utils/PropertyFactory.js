@@ -124,11 +124,10 @@ var PropertyFactory = (function(){
                                     keyData.__fnct = [];
                                 }
                                 if (!keyData.__fnct[i]) {
-                                    outX = (typeof keyData.o.x[i] === undefined) ? keyData.o.x[0] : keyData.o.x[i];
-                                    outY = (typeof keyData.o.y[i] === undefined) ? keyData.o.y[0] : keyData.o.y[i];
-                                    inX = (typeof keyData.i.x[i] === undefined) ? keyData.i.x[0] : keyData.i.x[i];
-                                    inY = (typeof keyData.i.y[i] === undefined) ? keyData.i.y[0] : keyData.i.y[i];
- 
+                                    outX = (typeof keyData.o.x[i] === 'undefined') ? keyData.o.x[0] : keyData.o.x[i];
+                                    outY = (typeof keyData.o.y[i] === 'undefined') ? keyData.o.y[0] : keyData.o.y[i];
+                                    inX = (typeof keyData.i.x[i] === 'undefined') ? keyData.i.x[0] : keyData.i.x[i];
+                                    inY = (typeof keyData.i.y[i] === 'undefined') ? keyData.i.y[0] : keyData.i.y[i];
                                     fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
                                     keyData.__fnct[i] = fnc;
                                 } else {
