@@ -436,7 +436,7 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
     } else {
         this.segments.push(arr);
     }
-    if (this.segments.length) {
+    if (!this.segments.length) {
         this.adjustSegment(this.segments.shift(), 0);
     }
     if (this.isPaused) {
