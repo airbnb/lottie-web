@@ -30,11 +30,6 @@
       "description": "Out Spatial Tangent. Only for spatial properties. Array of numbers.",
       "extended_name": "Out Tangent",
       "type": "array"
-    },
-    "a": {
-      "description": "Defines if property is animated",
-      "extended_name": "Animated",
-      "type": "number"
     }
   }
 }

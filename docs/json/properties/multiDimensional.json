@@ -16,11 +16,6 @@
       "description": "Property Index. Used for expressions.",
       "extended_name": "Property Index",
       "type": "string"
-    },
-    "a": {
-      "description": "Defines if property is animated",
-      "extended_name": "Animated",
-      "type": "number"
     }
   }
 }
