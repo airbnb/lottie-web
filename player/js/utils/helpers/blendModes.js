@@ -1,6 +1,7 @@
 var getBlendMode = (function() {
 
 	var blendModeEnums = {
+        0:'source-over',
         1:'multiply',
         2:'screen',
         3:'overlay',

@@ -163,8 +163,8 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
-        loop: true,
+        renderer: 'canvas',
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
@@ -176,7 +176,7 @@
     // lottie.setQuality('low');
     setTimeout(()=>{
         anim = lottie.loadAnimation(animData);
-        // anim.setSubframe(true);
+        anim.setSubframe(false);
 
         anim.addEventListener('DOMLoaded', function() {
 
