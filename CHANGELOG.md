@@ -1,3 +1,12 @@
+## V 5.5.0
+- IMPROVEMENT: JSON filesize reduction. Around 25 to 33% filesize reduction with this new version.
+- FEATURE: Bodymovin panel with new advanced settings to reduce filesize.
+- FIX: honor `forceFlag` when calling `playSegments` (thanks @mrmos)
+- FIX: added source-over as default blending mode for canvas renderer resetting
+- FIX: fixed bezier easing property validation
+- FIX: fixed property caching by index instead of bezier data
+- FIX: added thisProperty expression value
+
 ## V 5.4.4
 - FIX: viewport meta tag on android with mask fix
 - FIX: fixed enterFrame direction property

@@ -329,6 +329,7 @@ DynamicPropertyContainer.prototype = {
 var getBlendMode = (function() {
 
 	var blendModeEnums = {
+        0:'source-over',
         1:'multiply',
         2:'screen',
         3:'overlay',
@@ -1282,45 +1283,39 @@ function bezFunction(){
 
         var storedData = {};
 
-        return function (keyData){
-            var pt1 = keyData.s;
-            var pt2 = keyData.e;
-            var pt3 = keyData.to;
-            var pt4 = keyData.ti;
+        return function (pt1, pt2, pt3, pt4){
             var bezierName = (pt1[0]+'_'+pt1[1]+'_'+pt2[0]+'_'+pt2[1]+'_'+pt3[0]+'_'+pt3[1]+'_'+pt4[0]+'_'+pt4[1]).replace(/\./g, 'p');
-            if(storedData[bezierName]){
-                keyData.bezierData = storedData[bezierName];
-                return;
-            }
-            var curveSegments = defaultCurveSegments;
-            var k, i, len;
-            var ptCoord,perc,addedLength = 0;
-            var ptDistance;
-            var point,lastPoint = null;
-            if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
-                curveSegments = 2;
-            }
-            var bezierData = new BezierData(curveSegments);
-            len = pt3.length;
-            for (k = 0; k < curveSegments; k += 1) {
-                point = createSizedArray(len);
-                perc = k / (curveSegments - 1);
-                ptDistance = 0;
-                for (i = 0; i < len; i += 1){
-                    ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
-                    point[i] = ptCoord;
-                    if(lastPoint !== null){
-                        ptDistance += bm_pow(point[i] - lastPoint[i],2);
-                    }
+            if(!storedData[bezierName]){
+                var curveSegments = defaultCurveSegments;
+                var k, i, len;
+                var ptCoord,perc,addedLength = 0;
+                var ptDistance;
+                var point,lastPoint = null;
+                if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+                    curveSegments = 2;
                 }
-                ptDistance = bm_sqrt(ptDistance);
-                addedLength += ptDistance;
-                bezierData.points[k] = new PointData(ptDistance, point);
-                lastPoint = point;
+                var bezierData = new BezierData(curveSegments);
+                len = pt3.length;
+                for (k = 0; k < curveSegments; k += 1) {
+                    point = createSizedArray(len);
+                    perc = k / (curveSegments - 1);
+                    ptDistance = 0;
+                    for (i = 0; i < len; i += 1){
+                        ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
+                        point[i] = ptCoord;
+                        if(lastPoint !== null){
+                            ptDistance += bm_pow(point[i] - lastPoint[i],2);
+                        }
+                    }
+                    ptDistance = bm_sqrt(ptDistance);
+                    addedLength += ptDistance;
+                    bezierData.points[k] = new PointData(ptDistance, point);
+                    lastPoint = point;
+                }
+                bezierData.segmentLength = addedLength;
+                storedData[bezierName] = bezierData;
             }
-            bezierData.segmentLength = addedLength;
-            keyData.bezierData = bezierData;
-            storedData[bezierName] = bezierData;
+            return storedData[bezierName];
         };
     }());
 
@@ -2115,9 +2110,10 @@ var PropertyFactory = (function(){
         var k, kLen, perc, jLen, j, fnc;
         var nextKeyTime = nextKeyData.t - offsetTime;
         var keyTime = keyData.t - offsetTime;
+        var endValue;
         if (keyData.to) {
             if (!keyData.bezierData) {
-                bez.buildBezierData(keyData);
+                keyData.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
             }
             var bezierData = keyData.bezierData;
             if (frameNum >= nextKeyTime || frameNum < keyTime) {
@@ -2126,7 +2122,7 @@ var PropertyFactory = (function(){
                 for (k = 0; k < kLen; k += 1) {
                     newValue[k] = bezierData.points[ind].point[k];
                 }
-                // caching._lastBezierData = null;
+                // caching._lastKeyframeIndex = -1;
             } else {
                 if (keyData.__fnct) {
                     fnc = keyData.__fnct;
@@ -2138,8 +2134,8 @@ var PropertyFactory = (function(){
                 var distanceInLine = bezierData.segmentLength*perc;
 
                 var segmentPerc;
-                var addedLength =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastAddedLength : 0;
-                j =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastPoint : 0;
+                var addedLength =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
+                j =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastPoint : 0;
                 flag = true;
                 jLen = bezierData.points.length;
                 while (flag) {
@@ -2166,23 +2162,24 @@ var PropertyFactory = (function(){
                 }
                 caching._lastPoint = j;
                 caching._lastAddedLength = addedLength - bezierData.points[j].partialLength;
-                caching._lastBezierData = bezierData;
+                caching._lastKeyframeIndex = i;
             }
         } else {
             var outX, outY, inX, inY, keyValue;
             len = keyData.s.length;
+            endValue = nextKeyData.s || keyData.e;
             if (this.sh && keyData.h !== 1) {
                 if (frameNum >= nextKeyTime) {
-                    newValue[0] = keyData.e[0];
-                    newValue[1] = keyData.e[1];
-                    newValue[2] = keyData.e[2];
+                    newValue[0] = endValue[0];
+                    newValue[1] = endValue[1];
+                    newValue[2] = endValue[2];
                 } else if (frameNum <= keyTime) {
                     newValue[0] = keyData.s[0];
                     newValue[1] = keyData.s[1];
                     newValue[2] = keyData.s[2];
                 } else {
                     var quatStart = createQuaternion(keyData.s);
-                    var quatEnd = createQuaternion(keyData.e);
+                    var quatEnd = createQuaternion(endValue);
                     var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
                     quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
                 }
@@ -2200,11 +2197,10 @@ var PropertyFactory = (function(){
                                     keyData.__fnct = [];
                                 }
                                 if (!keyData.__fnct[i]) {
-                                    outX = (typeof keyData.o.x[i] === undefined) ? keyData.o.x[0] : keyData.o.x[i];
-                                    outY = (typeof keyData.o.y[i] === undefined) ? keyData.o.y[0] : keyData.o.y[i];
-                                    inX = (typeof keyData.i.x[i] === undefined) ? keyData.i.x[0] : keyData.i.x[i];
-                                    inY = (typeof keyData.i.y[i] === undefined) ? keyData.i.y[0] : keyData.i.y[i];
- 
+                                    outX = (typeof keyData.o.x[i] === 'undefined') ? keyData.o.x[0] : keyData.o.x[i];
+                                    outY = (typeof keyData.o.y[i] === 'undefined') ? keyData.o.y[0] : keyData.o.y[i];
+                                    inX = (typeof keyData.i.x[i] === 'undefined') ? keyData.i.x[0] : keyData.i.x[i];
+                                    inY = (typeof keyData.i.y[i] === 'undefined') ? keyData.i.y[0] : keyData.i.y[i];
                                     fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
                                     keyData.__fnct[i] = fnc;
                                 } else {
@@ -2226,7 +2222,8 @@ var PropertyFactory = (function(){
                         }
                     }
 
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (keyData.e[i] - keyData.s[i]) * perc;
+                    endValue = nextKeyData.s || keyData.e;
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
 
                     if (len === 1) {
                         newValue = keyValue;
@@ -2310,7 +2307,7 @@ var PropertyFactory = (function(){
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             if(this._caching.lastFrame >= frameNum) {
-                this._caching._lastBezierData = null;
+                this._caching._lastKeyframeIndex = -1;
                 this._caching.lastIndex = 0;
             }
 
@@ -2421,7 +2418,7 @@ var PropertyFactory = (function(){
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.frameId = -1;
-        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastBezierData: null};
+        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastKeyframeIndex: -1};
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -2488,19 +2485,7 @@ var PropertyFactory = (function(){
 
     function getProp(elem,data,type, mult, container) {
         var p;
-        if(data.a === 0){
-            if(type === 0) {
-                p = new ValueProperty(elem,data,mult, container);
-            } else {
-                p = new MultiDimensionalProperty(elem,data, mult, container);
-            }
-        } else if(data.a === 1){
-            if(type === 0) {
-                p = new KeyframedValueProperty(elem,data,mult, container);
-            } else {
-                p = new KeyframedMultidimensionalProperty(elem,data, mult, container);
-            }
-        } else if(!data.k.length){
+        if(!data.k.length){
             p = new ValueProperty(elem,data, mult, container);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult, container);
@@ -2617,7 +2602,7 @@ var TransformPropertyFactory = (function() {
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
-            if(this.data.p.s){
+            if(this.data.p && this.data.p.s){
                 if(this.data.p.z) {
                     this.v.translate(this.px.v, this.py.v, -this.pz.v);
                 } else {
@@ -2685,18 +2670,16 @@ var TransformPropertyFactory = (function() {
         this.pre = new Matrix();
         this.appliedTransformations = 0;
         this.initDynamicPropertyContainer(container || elem);
-        if(data.p.s){
+        if(data.p && data.p.s){
             this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
             this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
             if(data.p.z){
                 this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this);
             }
         }else{
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
+            this.p = PropertyFactory.getProp(elem,data.p || {k:[0,0,0]},1,0,this);
         }
-        if(data.r) {
-            this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this);
-        } else if(data.rx) {
+        if(data.rx) {
             this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this);
             this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this);
             this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this);
@@ -2709,17 +2692,15 @@ var TransformPropertyFactory = (function() {
             this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this);
             //sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;
+        } else {
+            this.r = PropertyFactory.getProp(elem, data.r || {k: 0}, 0, degToRads, this);
         }
         if(data.sk){
             this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this);
             this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this);
         }
-        if(data.a) {
-            this.a = PropertyFactory.getProp(elem,data.a,1,0,this);
-        }
-        if(data.s) {
-            this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this);
-        }
+        this.a = PropertyFactory.getProp(elem,data.a || {k:[0,0,0]},1,0,this);
+        this.s = PropertyFactory.getProp(elem,data.s || {k:[100,100,100]},1,0.01,this);
         // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
         if(data.o){
             this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
@@ -2849,11 +2830,12 @@ var ShapePropertyFactory = (function(){
             isHold = true;
             iterationIndex = 0;
         }else if(frameNum >= kf[kf.length - 1].t-this.offsetTime){
-            if(kf[kf.length - 2].h === 1){
+            keyPropS = kf[kf.length - 1].s ? kf[kf.length - 1].s[0] : kf[kf.length - 2].e[0];
+            /*if(kf[kf.length - 1].s){
                 keyPropS = kf[kf.length - 1].s[0];
             }else{
                 keyPropS = kf[kf.length - 2].e[0];
-            }
+            }*/
             isHold = true;
         }else{
             var i = iterationIndex;
@@ -2887,7 +2869,7 @@ var ShapePropertyFactory = (function(){
                     }
                     perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                 }
-                keyPropE = keyData.e[0];
+                keyPropE = nextKeyData.s ? nextKeyData.s[0] : keyData.e[0];
             }
             keyPropS = keyData.s[0];
         }
@@ -3309,7 +3291,7 @@ var ShapePropertyFactory = (function(){
         if(type === 3 || type === 4){
             var dataProp = type === 3 ? data.pt : data.ks;
             var keys = dataProp.k;
-            if(dataProp.a === 1 || keys.length){
+            if(keys.length){
                 prop = new KeyframedShapeProperty(elem, data, type);
             }else{
                 prop = new ShapeProperty(elem, data, type);
@@ -4429,32 +4411,26 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 segments: []
             };
             len = paths._length - 1;
-            var pathData;
+            var bezierData;
             totalLength = 0;
             for (i = 0; i < len; i += 1) {
-                pathData = {
-                    s: paths.v[i],
-                    e: paths.v[i + 1],
-                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                    ti: [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]
-                };
-                bez.buildBezierData(pathData);
-                pathInfo.tLength += pathData.bezierData.segmentLength;
-                pathInfo.segments.push(pathData);
-                totalLength += pathData.bezierData.segmentLength;
+                bezierData = bez.buildBezierData(paths.v[i]
+                    , paths.v[i + 1]
+                    , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
+                    , [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]);
+                pathInfo.tLength += bezierData.segmentLength;
+                pathInfo.segments.push(bezierData);
+                totalLength += bezierData.segmentLength;
             }
             i = len;
             if (mask.v.c) {
-                pathData = {
-                    s: paths.v[i],
-                    e: paths.v[0],
-                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                    ti: [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]
-                };
-                bez.buildBezierData(pathData);
-                pathInfo.tLength += pathData.bezierData.segmentLength;
-                pathInfo.segments.push(pathData);
-                totalLength += pathData.bezierData.segmentLength;
+                bezierData = bez.buildBezierData(paths.v[i]
+                    , paths.v[0]
+                    , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
+                    , [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]);
+                pathInfo.tLength += bezierData.segmentLength;
+                pathInfo.segments.push(bezierData);
+                totalLength += bezierData.segmentLength;
             }
             this._pathData.pi = pathInfo;
         }
@@ -4471,20 +4447,20 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
             segmentInd = segments.length - 1;
-            points = segments[segmentInd].bezierData.points;
+            points = segments[segmentInd].points;
             pointInd = points.length - 1;
             while (currentLength < 0) {
                 currentLength += points[pointInd].partialLength;
                 pointInd -= 1;
                 if (pointInd < 0) {
                     segmentInd -= 1;
-                    points = segments[segmentInd].bezierData.points;
+                    points = segments[segmentInd].points;
                     pointInd = points.length - 1;
                 }
             }
 
         }
-        points = segments[segmentInd].bezierData.points;
+        points = segments[segmentInd].points;
         prevPoint = points[pointInd - 1];
         currentPoint = points[pointInd];
         partialLength = currentPoint.partialLength;
@@ -4572,7 +4548,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             if(this._hasMaskedPath) {
                 segmentInd = initSegmentInd;
                 pointInd = initPointInd;
-                points = segments[segmentInd].bezierData.points;
+                points = segments[segmentInd].points;
                 prevPoint = points[pointInd - 1];
                 currentPoint = points[pointInd];
                 partialLength = currentPoint.partialLength;
@@ -4643,13 +4619,13 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                                 if (mask.v.c) {
                                     pointInd = 0;
                                     segmentInd = 0;
-                                    points = segments[segmentInd].bezierData.points;
+                                    points = segments[segmentInd].points;
                                 } else {
                                     segmentLength -= currentPoint.partialLength;
                                     points = null;
                                 }
                             } else {
-                                points = segments[segmentInd].bezierData.points;
+                                points = segments[segmentInd].points;
                             }
                         }
                         if (points) {
@@ -10392,7 +10368,7 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
     } else {
         this.segments.push(arr);
     }
-    if (this.segments.length) {
+    if (this.segments.length && forceFlag) {
         this.adjustSegment(this.segments.shift(), 0);
     }
     if (this.isPaused) {
@@ -10625,7 +10601,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.4.4';
+    lottiejs.version = '5.5.0';
 
     function checkReady() {
         if (document.readyState === "complete") {
