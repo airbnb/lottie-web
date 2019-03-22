@@ -39,9 +39,10 @@ var PropertyFactory = (function(){
         var k, kLen, perc, jLen, j, fnc;
         var nextKeyTime = nextKeyData.t - offsetTime;
         var keyTime = keyData.t - offsetTime;
+        var endValue;
         if (keyData.to) {
             if (!keyData.bezierData) {
-                bez.buildBezierData(keyData);
+                keyData.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
             }
             var bezierData = keyData.bezierData;
             if (frameNum >= nextKeyTime || frameNum < keyTime) {
@@ -95,18 +96,19 @@ var PropertyFactory = (function(){
         } else {
             var outX, outY, inX, inY, keyValue;
             len = keyData.s.length;
+            endValue = nextKeyData.s || keyData.e;
             if (this.sh && keyData.h !== 1) {
                 if (frameNum >= nextKeyTime) {
-                    newValue[0] = keyData.e[0];
-                    newValue[1] = keyData.e[1];
-                    newValue[2] = keyData.e[2];
+                    newValue[0] = endValue[0];
+                    newValue[1] = endValue[1];
+                    newValue[2] = endValue[2];
                 } else if (frameNum <= keyTime) {
                     newValue[0] = keyData.s[0];
                     newValue[1] = keyData.s[1];
                     newValue[2] = keyData.s[2];
                 } else {
                     var quatStart = createQuaternion(keyData.s);
-                    var quatEnd = createQuaternion(keyData.e);
+                    var quatEnd = createQuaternion(endValue);
                     var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
                     quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
                 }
@@ -149,7 +151,8 @@ var PropertyFactory = (function(){
                         }
                     }
 
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (keyData.e[i] - keyData.s[i]) * perc;
+                    endValue = nextKeyData.s || keyData.e;
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
 
                     if (len === 1) {
                         newValue = keyValue;
@@ -411,19 +414,7 @@ var PropertyFactory = (function(){
 
     function getProp(elem,data,type, mult, container) {
         var p;
-        if(data.a === 0){
-            if(type === 0) {
-                p = new ValueProperty(elem,data,mult, container);
-            } else {
-                p = new MultiDimensionalProperty(elem,data, mult, container);
-            }
-        } else if(data.a === 1){
-            if(type === 0) {
-                p = new KeyframedValueProperty(elem,data,mult, container);
-            } else {
-                p = new KeyframedMultidimensionalProperty(elem,data, mult, container);
-            }
-        } else if(!data.k.length){
+        if(!data.k.length){
             p = new ValueProperty(elem,data, mult, container);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult, container);

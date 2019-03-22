@@ -174,17 +174,7 @@
         path: 'exports/render/data.json'
     };
     // lottie.setQuality('low');
-    setTimeout(()=>{
-        anim = lottie.loadAnimation(animData);
-        anim.setSubframe(false);
-        // anim.setSpeed(0.1);
-
-        anim.addEventListener('DOMLoaded', function() {
-            setTimeout(()=>{
-                
-            },0)
-        })
-    },0)
+    anim = lottie.loadAnimation(animData);
 
 </script>
 </body>

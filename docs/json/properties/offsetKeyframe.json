@@ -2,14 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "e": {
-      "description": "End value of keyframe segment.",
-      "extended_name": "End",
-      "items": {
-        "type": "number"
-      },
-      "type": "array"
-    },
     "s": {
       "description": "Start value of keyframe segment.",
       "extended_name": "Start",
@@ -56,11 +48,6 @@
         }
       },
       "type": "object"
-    },
-    "nm": {
-      "description": "Bezier curve name. Used for caching.",
-      "extended_name": "Name",
-      "type": "number"
     }
   }
 }

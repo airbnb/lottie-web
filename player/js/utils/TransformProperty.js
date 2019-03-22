@@ -90,7 +90,7 @@ var TransformPropertyFactory = (function() {
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
-            if(this.data.p.s){
+            if(this.data.p && this.data.p.s){
                 if(this.data.p.z) {
                     this.v.translate(this.px.v, this.py.v, -this.pz.v);
                 } else {
@@ -158,18 +158,16 @@ var TransformPropertyFactory = (function() {
         this.pre = new Matrix();
         this.appliedTransformations = 0;
         this.initDynamicPropertyContainer(container || elem);
-        if(data.p.s){
+        if(data.p && data.p.s){
             this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
             this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
             if(data.p.z){
                 this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this);
             }
         }else{
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
+            this.p = PropertyFactory.getProp(elem,data.p || {k:[0,0,0]},1,0,this);
         }
-        if(data.r) {
-            this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this);
-        } else if(data.rx) {
+        if(data.rx) {
             this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this);
             this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this);
             this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this);
@@ -182,17 +180,15 @@ var TransformPropertyFactory = (function() {
             this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this);
             //sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;
+        } else {
+            this.r = PropertyFactory.getProp(elem, data.r || {k: 0}, 0, degToRads, this);
         }
         if(data.sk){
             this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this);
             this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this);
         }
-        if(data.a) {
-            this.a = PropertyFactory.getProp(elem,data.a,1,0,this);
-        }
-        if(data.s) {
-            this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this);
-        }
+        this.a = PropertyFactory.getProp(elem,data.a || {k:[0,0,0]},1,0,this);
+        this.s = PropertyFactory.getProp(elem,data.s || {k:[100,100,100]},1,0.01,this);
         // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
         if(data.o){
             this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
