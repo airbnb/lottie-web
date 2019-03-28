@@ -533,7 +533,7 @@ var ExpressionManager = (function(){
             };
             var arr;
             if(ind === data.k.length - 1 && !data.k[ind].h){
-                arr = data.k[ind-1].e;
+                arr = (data.k[ind].s || data.k[ind].s === 0) ? data.k[ind-1].s : data.k[ind].e;
             }else{
                 arr = data.k[ind].s;
             }
