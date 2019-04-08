@@ -5847,6 +5847,26 @@ function SVGRenderer(animationItem, config){
     this.layers = null;
     this.renderedFrame = -1;
     this.svgElement = createNS('svg');
+    var ariaLabel = '';
+    if (config && config.title) {
+        var titleElement = createNS('title');
+        var titleId = createElementID();
+        titleElement.setAttribute('id', titleId);
+        titleElement.textContent = config.title;
+        this.svgElement.appendChild(titleElement);
+        ariaLabel += titleId;
+    }
+    if (config && config.description) {
+        var descElement = createNS('desc');
+        var descId = createElementID();
+        descElement.setAttribute('id', descId);
+        descElement.textContent = config.description;
+        this.svgElement.appendChild(descElement);
+        ariaLabel += ' ' + descId;
+    }
+    if (ariaLabel) {
+        this.svgElement.setAttribute('aria-labelledby', ariaLabel)
+    }
     var defs = createNS( 'defs');
     this.svgElement.appendChild(defs);
     var maskElement = createNS('g');
@@ -5861,6 +5881,7 @@ function SVGRenderer(animationItem, config){
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || ''
     };
+
     this.globalData = {
         _mdf: false,
         frameNum: -1,
@@ -6311,6 +6332,8 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
     this.canvasContext.closePath();
     this.canvasContext.clip();
+
+    this.renderFrame(this.renderedFrame, true);
 };
 
 CanvasRenderer.prototype.destroy = function () {
@@ -6329,14 +6352,14 @@ CanvasRenderer.prototype.destroy = function () {
     this.destroyed = true;
 };
 
-CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === -1){
+CanvasRenderer.prototype.renderFrame = function(num, forceRender){
+    if((this.renderedFrame === num && this.renderConfig.clearCanvas === true && !forceRender) || this.destroyed || num === -1){
         return;
     }
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
-    this.globalData._mdf = !this.renderConfig.clearCanvas;
+    this.globalData._mdf = !this.renderConfig.clearCanvas || forceRender;
     this.globalData.projectInterface.currentFrame = num;
 
      // console.log('--------');
@@ -10180,7 +10203,7 @@ var ExpressionManager = (function(){
             };
             var arr;
             if(ind === data.k.length - 1 && !data.k[ind].h){
-                arr = data.k[ind-1].e;
+                arr = (data.k[ind].s || data.k[ind].s === 0) ? data.k[ind-1].s : data.k[ind].e;
             }else{
                 arr = data.k[ind].s;
             }
@@ -12158,7 +12181,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.0';
+    lottiejs.version = '5.5.1';
 
     function checkReady() {
         if (document.readyState === "complete") {

@@ -1,3 +1,8 @@
+## V 5.5.1
+- FIX: key expression for new json format
+- IMPROVEMENT: forcing a rerender when resize is called in canvas
+- ACCESSIBILITY: added title, description and aria label for text layers for svg renderer
+
 ## V 5.5.0
 - IMPROVEMENT: JSON filesize reduction. Around 25 to 33% filesize reduction with this new version.
 - FEATURE: Bodymovin panel with new advanced settings to reduce filesize.

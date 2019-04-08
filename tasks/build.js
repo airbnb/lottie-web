@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.5.0';
+const bm_version = '5.5.1';
 
 function loadIndex() {
 	return new Promise((resolve, reject)=>{
