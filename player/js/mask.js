@@ -61,7 +61,7 @@ function MaskElement(data,element,globalData) {
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
             feMorph = createNS('feMorphology');
-            feMorph.setAttribute('operator','dilate');
+            feMorph.setAttribute('operator','erode');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
             expansor.appendChild(feMorph);
