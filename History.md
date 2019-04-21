@@ -1,3 +1,8 @@
+## V 5.5.2
+- FIX: Fix loader issue on pre-kitkat Android webview
+- FIX: eroded masks in svg renderer
+- FIX: text alognment in text boxes
+
 ## V 5.5.1
 - FIX: key expression for new json format
 - IMPROVEMENT: forcing a rerender when resize is called in canvas

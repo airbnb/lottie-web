@@ -4318,7 +4318,10 @@ var assetLoader = (function(){
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', path, true);
 		// set responseType after calling open or IE will break.
-		xhr.responseType = "json";
+		try {
+		    // This crashes on Android WebView prior to KitKat
+		    xhr.responseType = "json";
+		} catch (err) {}
 	    xhr.send();
 	    xhr.onreadystatechange = function () {
 	        if (xhr.readyState == 4) {
@@ -6158,7 +6161,7 @@ function MaskElement(data,element,globalData) {
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
             feMorph = createNS('feMorphology');
-            feMorph.setAttribute('operator','dilate');
+            feMorph.setAttribute('operator','erode');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
             expansor.appendChild(feMorph);
@@ -9548,7 +9551,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.1';
+    lottiejs.version = '5.5.2';
 
     function checkReady() {
         if (document.readyState === "complete") {
