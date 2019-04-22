@@ -48,7 +48,7 @@ export type HTMLRendererConfig = BaseRendererConfig & {
 };
 
 export type AnimationConfig = {
-    container: HTMLElement;
+    container: Element;
     renderer?: 'svg' | 'canvas' | 'html';
     loop?: boolean | number;
     autoplay?: boolean;
@@ -72,7 +72,7 @@ type LottiePlayer = {
     searchAnimations(animationData?: any, standalone?: boolean, renderer?: string);
     loadAnimation(params: AnimationConfigWithPath | AnimationConfigWithData): AnimationItem;
     destroy(name?: string);
-    registerAnimation(element: HTMLElement, animationData?: any);
+    registerAnimation(element: Element, animationData?: any);
     setQuality(quality: string | number);
 }
 
