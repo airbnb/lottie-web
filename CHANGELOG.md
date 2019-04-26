@@ -1,7 +1,7 @@
 ## V 5.5.2
 - FIX: Fix loader issue on pre-kitkat Android webview
 - FIX: eroded masks in svg renderer
-- FIX: text alognment in text boxes
+- FIX: text alignment in text boxes
 
 ## V 5.5.1
 - FIX: key expression for new json format
@@ -40,7 +40,7 @@
 - FIX: canvas repeater fix
 - FIX: Replaced typekit with Adobe Fonts support
 - FIX: subtracting offsetTime for valueAtTime calculation on shapes
-- FIX: expressions targetting keys fix
+- FIX: expressions targeting keys fix
 - FIX: multidimensional easing using first dimension value when set to 0
 
 ## V 5.4.2
