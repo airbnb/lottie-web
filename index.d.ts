@@ -36,7 +36,7 @@ export type SVGRendererConfig = BaseRendererConfig & {
     viewBoxSize?: string;
 };
 
-export type CanavasRendererConfig = BaseRendererConfig & {
+export type CanvasRendererConfig = BaseRendererConfig & {
     clearCanvas?: boolean;
     context?: CanvasRenderingContext2D;
     progressiveLoad?: boolean;
@@ -53,7 +53,7 @@ export type AnimationConfig = {
     loop?: boolean | number;
     autoplay?: boolean;
     name?: string;
-    rendererSettings?: SVGRendererConfig | CanavasRendererConfig | HTMLRendererConfig;
+    rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
 }
 
 export type AnimationConfigWithPath = AnimationConfig & {
