@@ -16,18 +16,15 @@
     "pt": {
       "title": "Points",
       "description": "Mask vertices",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "oneOf": [
-          {
-            "$ref": "#/properties/shape"
-          },
-          {
-            "$ref": "#/properties/shapeKeyframed"
-          }
-        ]
-      }
+      "oneOf": [
+        {
+          "$ref": "#/properties/shape"
+        },
+        {
+          "$ref": "#/properties/shapeKeyframed"
+        }
+      ],
+      "type": "object"
     },
     "o": {
       "title": "Opacity",
