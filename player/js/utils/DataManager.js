@@ -353,6 +353,10 @@ function dataFunctionManager(){
 
     var moduleOb = {};
     moduleOb.completeData = completeData;
+    moduleOb.checkColors = checkColors;
+    moduleOb.checkChars = checkChars;
+    moduleOb.checkShapes = checkShapes;
+    moduleOb.completeLayers = completeLayers;
 
     return moduleOb;
 }

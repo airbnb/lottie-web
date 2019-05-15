@@ -33,7 +33,7 @@ function parseHTML(html) {
 function getScripts($) {
 	return new Promise((resolve, reject)=> {
 		try {
-			const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light']
+			const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
 			const scriptNodes = []
 			let shouldAddToScripts = false;
 			$("head").contents().each((index, node) => {
@@ -80,11 +80,12 @@ function concatScripts(scripts, build) {
 	});
 }
 
-function wrapScriptWithModule(code) {
+function wrapScriptWithModule(code, build) {
 	return new Promise((resolve, reject)=>{
 		try {
 			// Wrapping with module
-			let wrappedCode = fs.readFileSync(`${rootFolder}js/module.js`, "utf8");
+			let moduleFileName = (build =='canvas_light') ? 'module_worker' : 'module';
+			let wrappedCode = fs.readFileSync(`${rootFolder}js/${moduleFileName}.js`, "utf8");
 			wrappedCode = wrappedCode.replace('/*<%= contents %>*/',code);
 			wrappedCode = wrappedCode.replace('[[BM_VERSION]]',bm_version);
 			resolve(wrappedCode);
@@ -111,7 +112,7 @@ function uglifyCode(code) {
 
 async function buildVersion(scripts, version) {
 	const code = await concatScripts(scripts, version.build)
-	const wrappedCode = await wrapScriptWithModule(code)
+	const wrappedCode = await wrapScriptWithModule(code, version.build)
 	const processedCode = await version.process(wrappedCode)
 	const saved = await save(processedCode, version.fileName)
 	return true
@@ -185,6 +186,11 @@ function buildVersions(scripts) {
 			fileName: 'lottie_canvas.min.js',
 			build: 'canvas',
 			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_canvas_worker.js',
+			build: 'canvas_worker',
+			process: noop
 		},
 		{
 			fileName: 'lottie_html.js',

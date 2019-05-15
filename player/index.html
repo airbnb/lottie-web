@@ -38,7 +38,9 @@
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
     <script src="js/utils/DataManager.js"></script>
+    <script src="js/utils/DataManagerWorkerOverrides.js" data-builds="canvas_worker"></script>
     <script src="js/utils/FontManager.js"></script>
+    <script src="js/utils/FontManagerWorkerOverride.js" data-builds="canvas_worker"></script>
     <script src="js/utils/PropertyFactory.js"></script>
     <script src="js/utils/TransformProperty.js"></script>
     <script src="js/utils/shapes/ShapePath.js"></script>
@@ -51,10 +53,12 @@
     <script src="js/utils/shapes/DashProperty.js"></script>
     <script src="js/utils/shapes/GradientProperty.js"></script>
     <script src="js/utils/shapes/shapePathBuilder.js"></script>
-    <script src="js/utils/imagePreloader.js"></script>
+    <script src="js/utils/imagePreloader.js" data-builds="full,canvas,canvas_light,html,html_light,svg,svg_light"></script>
+    <script src="js/utils/imagePreloaderWorkerOverride.js" data-builds="canvas_worker"></script>
     <script src="js/utils/featureSupport.js"></script>
     <script src="js/utils/filters.js"></script>
     <script src="js/utils/asset_loader.js"></script>
+    <script src="js/utils/asset_loader_worker_override.js" data-builds="canvas_worker"></script>
     <script src="js/utils/text/TextAnimatorProperty.js"></script>
     <script src="js/utils/text/TextAnimatorDataProperty.js"></script>
     <script src="js/utils/text/LetterProps.js"></script>
@@ -69,7 +73,8 @@
     <script src="js/utils/pooling/bezier_length_pool.js"></script>
     <script src="js/renderers/BaseRenderer.js"></script>
     <script src="js/renderers/SVGRenderer.js"></script>
-    <script src="js/renderers/CanvasRenderer.js" data-builds="full,canvas,canvas_light"></script>
+    <script src="js/renderers/CanvasRenderer.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/renderers/CanvasRendererWorkerOverride.js" data-builds="canvas_worker"></script>
     <script src="js/renderers/HybridRenderer.js" data-builds="full,html,html_light"></script>
     <script src="js/mask.js"></script>
     <script src="js/elements/helpers/HierarchyElement.js"></script>
@@ -88,7 +93,7 @@
     <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
     <script src="js/elements/helpers/shapes/SVGElementsRenderer.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/helpers/shapes/ShapeTransformManager.js"></script>
-    <script src="js/elements/helpers/shapes/CVShapeData.js" data-builds="full,canvas,canvas_light"></script>
+    <script src="js/elements/helpers/shapes/CVShapeData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/NullElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
@@ -109,15 +114,15 @@
     <script src="js/elements/svgElements/effects/SVGDropShadowEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/effects/SVGMatte3Effect.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGEffects.js" data-builds="full,svg,svg_light,html,html_light"></script>
-    <script src="js/elements/canvasElements/CVContextData.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVBaseElement.js" data-builds="full,canvas,canvas_light"></script>
+    <script src="js/elements/canvasElements/CVContextData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVBaseElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <script src="js/elements/canvasElements/CVImageElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVCompElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVMaskElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVShapeElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVSolidElement.js" data-builds="full,canvas,canvas_light"></script>
+    <script src="js/elements/canvasElements/CVCompElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVMaskElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVShapeElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVSolidElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <script src="js/elements/canvasElements/CVTextElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVEffects.js" data-builds="full,canvas,canvas_light,html,html_light"></script>
+    <script src="js/elements/canvasElements/CVEffects.js" data-builds="full,canvas,canvas_light,html,html_light,canvas_worker"></script>
     <script src="js/elements/htmlElements/HBaseElement.js" data-builds="full,html,html_light"></script>
     <script src="js/elements/htmlElements/HSolidElement.js" data-builds="full,html,html_light"></script>
     <script src="js/elements/htmlElements/HCompElement.js" data-builds="full,html,html_light"></script>
@@ -127,26 +132,28 @@
     <script src="js/elements/htmlElements/HCameraElement.js" data-builds="full,html,html_light"></script>
     <script src="js/elements/htmlElements/HEffects.js" data-builds="full,html,html_light"></script>
     <script src="js/animation/AnimationManager.js"></script>
+    <script src="js/animation/AnimationManagerWorkerOverride.js" data-builds="canvas_worker"></script>
     <script src="js/animation/AnimationItem.js"></script>
+    <script src="js/animation/AnimationItemWorkerOverride.js" data-builds="canvas_worker"></script>
     <!-- Expressions -->
-    <script src="js/utils/expressions/Expressions.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/ExpressionManager.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/expressionHelpers.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/ShapeInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/TextInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/LayerInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/CompInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/TransformInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/ProjectInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/EffectInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/MaskInterface.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/ExpressionValueFactory.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/utils/expressions/TextSelectorPropertyDecorator.js" data-builds="full,svg,canvas,html"></script>
-    <script src="js/effects/SliderEffect.js" data-builds="full,svg,canvas,html"></script>
+    <script src="js/utils/expressions/Expressions.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionManager.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/expressionHelpers.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ShapeInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/TextInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/LayerInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/CompInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/TransformInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ProjectInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/EffectInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/MaskInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionValueFactory.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/TextSelectorPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/effects/SliderEffect.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/effects/EffectsManagerPlaceholder.js" ></script>
-    <script src="js/EffectsManager.js" data-builds="full,svg,canvas,html"></script>
+    <script src="js/EffectsManager.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <!-- end Expressions -->
     <!-- endbuild -->
     <script src="js/module.js" ></script>
