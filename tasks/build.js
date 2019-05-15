@@ -84,7 +84,7 @@ function wrapScriptWithModule(code, build) {
 	return new Promise((resolve, reject)=>{
 		try {
 			// Wrapping with module
-			let moduleFileName = (build =='canvas_light') ? 'module_worker' : 'module';
+			let moduleFileName = (build =='canvas_worker') ? 'module_worker' : 'module';
 			let wrappedCode = fs.readFileSync(`${rootFolder}js/${moduleFileName}.js`, "utf8");
 			wrappedCode = wrappedCode.replace('/*<%= contents %>*/',code);
 			wrappedCode = wrappedCode.replace('[[BM_VERSION]]',bm_version);
@@ -191,6 +191,11 @@ function buildVersions(scripts) {
 			fileName: 'lottie_canvas_worker.js',
 			build: 'canvas_worker',
 			process: noop
+		},
+		{
+			fileName: 'lottie_canvas_worker.min.js',
+			build: 'canvas_worker',
+			process: uglifyCode
 		},
 		{
 			fileName: 'lottie_html.js',

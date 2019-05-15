@@ -47,7 +47,6 @@ var lottiejs = (function(window) {
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-    lottiejs.__getFactory = getFactory;
     lottiejs.version = '[[BM_VERSION]]';
 
     var renderer = '';
