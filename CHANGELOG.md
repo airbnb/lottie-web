@@ -1,3 +1,13 @@
+## V 5.5.3
+- FEATURE: Add SVG support for Gaussian Blur effects (thanks fmalita)
+- FEATURE: Add TypeScript type definitions (thanks D34THWINGS)
+- FIX: removed warning of text when created by text formatted
+- FIX: fixed merged characters in fonts
+- FEATURE: added mutiple settings functionality to extension
+- FEATURE: added support for mask opacity in expressions
+- FIX: fixes #1552 html renderer wrong font measurement
+- FIX: Fix masksProperties key name in JSON docs (thanks john-preston)
+
 ## V 5.5.2
 - FIX: Fix loader issue on pre-kitkat Android webview
 - FIX: eroded masks in svg renderer
