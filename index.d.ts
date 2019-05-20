@@ -4,21 +4,21 @@ export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | '
 export type AnimationEventCallback<T = any> = (args: T) => void;
 
 export type AnimationItem = {
-    play();
-    stop();
-    pause();
-    setLocationHref(href: string);
-    setSpeed(speed: number);
-    goToAndPlay(value: number, isFrame?: boolean);
-    goToAndStop(value: number, isFrame?: boolean);
-    setDirection(direction: AnimationDirection);
-    playSegments(segments: AnimationSegment | AnimationSegment[], forceFlag?: boolean);
-    setSubframe(useSubFrames: boolean);
-    destroy();
+    play(): void;
+    stop(): void;
+    pause(): void;
+    setLocationHref(href: string): void;
+    setSpeed(speed: number): void;
+    goToAndPlay(value: number, isFrame?: boolean): void;
+    goToAndStop(value: number, isFrame?: boolean): void;
+    setDirection(direction: AnimationDirection): void;
+    playSegments(segments: AnimationSegment | AnimationSegment[], forceFlag?: boolean): void;
+    setSubframe(useSubFrames: boolean): void;
+    destroy(): void;
     getDuration(inFrames?: boolean): number;
-    triggerEvent<T = any>(name: AnimationEventName, args: T);
-    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>);
-    removeEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>);
+    triggerEvent<T = any>(name: AnimationEventName, args: T): void;
+    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
+    removeEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
 }
 
 export type BaseRendererConfig = {
@@ -65,17 +65,17 @@ export type AnimationConfigWithData = AnimationConfig & {
 }
 
 type LottiePlayer = {
-    play(name?: string);
-    stop(name?: string);
-    setSpeed(speed: number, name?: string);
-    setDirection(direction: AnimationDirection, name?: string);
-    searchAnimations(animationData?: any, standalone?: boolean, renderer?: string);
+    play(name?: string): void;
+    stop(name?: string): void;
+    setSpeed(speed: number, name?: string): void;
+    setDirection(direction: AnimationDirection, name?: string): void;
+    searchAnimations(animationData?: any, standalone?: boolean, renderer?: string): void;
     loadAnimation(params: AnimationConfigWithPath | AnimationConfigWithData): AnimationItem;
-    destroy(name?: string);
-    registerAnimation(element: Element, animationData?: any);
-    setQuality(quality: string | number);
-}
+    destroy(name?: string): void;
+    registerAnimation(element: Element, animationData?: any): void;
+    setQuality(quality: string | number): void;
+};
 
-const Lottie: LottiePlayer;
+declare const Lottie: LottiePlayer;
 
 export default Lottie;
