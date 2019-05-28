@@ -20,7 +20,8 @@
   ],
   "devDependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "uglify-js": "^3.4.9"
+    "uglify-js": "^3.4.9",
+    "watch": "^1.0.2"
   },
   "types": "./index.d.ts",
   "license": "MIT"

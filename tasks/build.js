@@ -4,6 +4,7 @@ const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
 const bm_version = '5.5.3';
+const buildReducedVersion = process.argv[2] === 'reduced'
 
 function loadIndex() {
 	return new Promise((resolve, reject)=>{
@@ -135,7 +136,7 @@ function noop(code) {
 
 function buildVersions(scripts) {
 	return new Promise((resolve, reject) => {
-		const versions = [
+		let versions = [
 		{
 			fileName: 'lottie.js',
 			build: 'full',
@@ -206,6 +207,10 @@ function buildVersions(scripts) {
 			build: 'html_light',
 			process: uglifyCode
 		}];
+
+		if (buildReducedVersion) {
+			versions = versions.splice(0,1);
+		}
 
 		const buildProcesses = versions.map((version)=>{
 			return buildVersion(scripts, version)
