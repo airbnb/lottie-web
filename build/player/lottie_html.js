@@ -11703,6 +11703,9 @@ var expressionHelpers = (function(){
             var xLength = pt2[0] - pt1[0];
             var yLength = pt2[1] - pt1[1];
             var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
+            if (magnitude === 0) {
+                return [0,0];
+            }
             var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
             return unitVector;
         },
@@ -13141,7 +13144,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.3';
+    lottiejs.version = '5.5.4';
 
     function checkReady() {
         if (document.readyState === "complete") {

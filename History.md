@@ -1,3 +1,7 @@
+## V 5.5.4
+- FIX: Updates to TypeScript definitions
+- FEATURE: support for new expressions
+
 ## V 5.5.3
 - FEATURE: Add SVG support for Gaussian Blur effects (thanks fmalita)
 - FEATURE: Add TypeScript type definitions (thanks D34THWINGS)
