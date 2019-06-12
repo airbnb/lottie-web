@@ -1,3 +1,7 @@
+## V 5.5.5
+- changed failed image bg to transparent
+- FIX: fix for old json expressions in key function
+
 ## V 5.5.4
 - FIX: Updates to TypeScript definitions
 - FEATURE: support for new expressions

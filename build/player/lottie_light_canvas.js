@@ -4159,7 +4159,7 @@ var ImagePreloader = (function(){
         canvas.width = 1;
         canvas.height = 1;
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#FF0000';
+        ctx.fillStyle = 'rgba(0,0,0,0)';
         ctx.fillRect(0, 0, 1, 1);
         return canvas;
     }())
@@ -8027,7 +8027,6 @@ CVBaseElement.prototype.hide = CVBaseElement.prototype.hideElement;
 CVBaseElement.prototype.show = CVBaseElement.prototype.showElement;
 
 function CVImageElement(data, globalData, comp){
-    this.failed = false;
     this.assetData = globalData.getAssetData(data.refId);
     this.img = globalData.imageLoader.getImage(this.assetData);
     this.initElement(data,globalData,comp);
@@ -8065,9 +8064,6 @@ CVImageElement.prototype.createContent = function(){
 };
 
 CVImageElement.prototype.renderInnerContent = function(parentMatrix){
-    if (this.failed) {
-        return;
-    }
     this.canvasContext.drawImage(this.img, 0, 0);
 };
 
@@ -9720,7 +9716,7 @@ function EffectsManager(){}
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.4';
+    lottiejs.version = '5.5.5';
 
     function checkReady() {
         if (document.readyState === "complete") {

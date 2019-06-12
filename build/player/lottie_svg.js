@@ -4163,7 +4163,7 @@ var ImagePreloader = (function(){
         canvas.width = 1;
         canvas.height = 1;
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#FF0000';
+        ctx.fillStyle = 'rgba(0,0,0,0)';
         ctx.fillRect(0, 0, 1, 1);
         return canvas;
     }())
@@ -10077,12 +10077,8 @@ var ExpressionManager = (function(){
                 time: data.k[ind].t/elem.comp.globalData.frameRate,
                 value: []
             };
-            var arr;
-            if(ind === data.k.length - 1 && !data.k[ind].h){
-                arr = (data.k[ind].s || data.k[ind].s === 0) ? data.k[ind-1].s : data.k[ind].e;
-            }else{
-                arr = data.k[ind].s;
-            }
+            var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
+
             len = arr.length;
             for(i=0;i<len;i+=1){
                 ob[i] = arr[i];
@@ -12068,7 +12064,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.4';
+    lottiejs.version = '5.5.5';
 
     function checkReady() {
         if (document.readyState === "complete") {
