@@ -8,7 +8,8 @@
     "url": "https://github.com/airbnb/lottie-web.git"
   },
   "scripts": {
-    "build": "node tasks/build.js"
+    "build": "node tasks/build.js",
+    "doc": "jsonschema2md -d docs/json -o docs/md -e json -v 04"
   },
   "keywords": [
     "animation",
@@ -19,6 +20,7 @@
     "export"
   ],
   "devDependencies": {
+    "@adobe/jsonschema2md": "^2.1.1",
     "cheerio": "^1.0.0-rc.2",
     "uglify-js": "^3.4.9",
     "watch": "^1.0.2"
