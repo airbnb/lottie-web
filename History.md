@@ -1,3 +1,7 @@
+## V 5.5.6
+- FIX: surrogate pairs character support in animated text
+- FIX: new expressions supported
+
 ## V 5.5.5
 - changed failed image bg to transparent
 - FIX: fix for old json expressions in key function

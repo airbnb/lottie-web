@@ -142,7 +142,7 @@ TextProperty.prototype.buildFinalText = function(text) {
     var i = 0, len = text.length;
     var charCode;
     while (i < len) {
-        charCode = text.charCodeAt(i)
+        charCode = text.charCodeAt(i);
         if (combinedCharacters.indexOf(charCode) !== -1) {
             charactersArray[charactersArray.length - 1] += text.charAt(i);
         } else {
