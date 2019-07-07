@@ -6,7 +6,11 @@
       "description": "Property Value",
       "extended_name": "Value",
       "type": "object",
-      "$ref": "#/properties/shapeProp"
+      "oneOf": [
+        {
+          "$ref": "#/properties/shapeProp"
+        }
+      ]
     },
     "x": {
       "description": "Property Expression. An AE expression that modifies the value.",
