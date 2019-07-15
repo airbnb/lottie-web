@@ -78,8 +78,8 @@ brew cask install lottie
 ```
 
 ### After installing
-- **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
-- **Mac:** Go to Adobe After Effects > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
+- **Windows:** Go to Edit > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
+- **Mac:** Go to Adobe After Effects > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
 
 # HTML player installation
 ```bash
