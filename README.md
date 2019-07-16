@@ -233,7 +233,7 @@ lottie.loadAnimation({
   animationData: animationData, // the animation data
   rendererSettings: {
     context: canvasContext, // the canvas context
-    scaleMode: 'noScale',
+    preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
     clearCanvas: false,
     progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
     hideOnTransparent: true, //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
