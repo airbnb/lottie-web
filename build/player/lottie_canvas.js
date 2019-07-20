@@ -2934,10 +2934,13 @@ var ShapePropertyFactory = (function(){
     }
 
     function processEffectsSequence() {
-        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+        if (this.elem.globalData.frameId === this.frameId) {
+            return;
+        } else if (!this.effectsSequence.length) {
+            this._mdf = false;
             return;
         }
-        if(this.lock) {
+        if (this.lock) {
             this.setVValue(this.pv);
             return;
         }
@@ -3343,11 +3346,13 @@ function ShapeModifier(){}
 ShapeModifier.prototype.initModifierProperties = function(){};
 ShapeModifier.prototype.addShapeToModifier = function(){};
 ShapeModifier.prototype.addShape = function(data){
-    if(!this.closed){
+    if (!this.closed) {
+        // Adding shape to dynamic properties. It covers the case where a shape has no effects applied, to reset it's _mdf state on every tick.
+        data.sh.container.addDynamicProperty(data.sh);
         var shapeData = {shape:data.sh, data: data, localShapeCollection:shapeCollection_pool.newShapeCollection()};
         this.shapes.push(shapeData);
         this.addShapeToModifier(shapeData);
-        if(this._isAnimated) {
+        if (this._isAnimated) {
             data.setAsAnimated();
         }
     }
@@ -11375,6 +11380,7 @@ var ShapeExpressionInterface = (function(){
             },
             '_name': { value: shape.nm },
             'ix': { value: shape.ix },
+            'propertyIndex': { value: shape.ix },
             'mn': { value: shape.mn }
         });
         return interfaceFunction;
@@ -12199,7 +12205,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.6';
+    lottiejs.version = '5.5.7';
 
     function checkReady() {
         if (document.readyState === "complete") {

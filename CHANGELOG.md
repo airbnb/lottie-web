@@ -1,3 +1,8 @@
+## V 5.5.7
+- EXPRESSIONS: added support for propertyIndex on shapes
+- PERFORMANCE: big performance improvement on trim paths (and other modifiers) for paths that don't change over time
+- NEW: improved support for astral plane characters (like emojis)
+
 ## V 5.5.6
 - FIX: surrogate pairs character support in animated text
 - FIX: new expressions supported
