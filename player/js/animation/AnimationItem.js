@@ -203,12 +203,12 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(!animData.assets){
         animData.assets = [];
     }
-    this.renderer.searchExtraCompositions(animData.assets);
 
     this.assets = this.animationData.assets;
     this.frameRate = this.animationData.fr;
     this.firstFrame = Math.round(this.animationData.ip);
     this.frameMult = this.animationData.fr / 1000;
+    this.renderer.searchExtraCompositions(animData.assets);
     this.trigger('config_ready');
     this.preloadImages();
     this.loadSegments();
