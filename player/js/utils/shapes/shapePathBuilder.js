@@ -32,9 +32,9 @@ var buildShapeString = function(pathNodes, length, closed, mat) {
             c = [c.x, c.y];
             prevP = [prevP.x, prevP.y];
 
-            lineType = isOnLine(a, prevP, c) && isOnLine(b, prevP, c) ? " L" : " C";
-
-            shapeString += lineType + a[0] + "," + a[1] + " " + b[0] + "," + b[1] + " " + c[0] + "," + c[1];
+            shapeString += isOnLine(a, prevP, c) && isOnLine(b, prevP, c)
+                ? " L" + c[0] + "," + c[1]
+                : " C" + a[0] + "," + a[1] + " " + b[0] + "," + b[1] + " " + c[0] + "," + c[1];
         }
         if (closed && length) {
             prevP = mat.applyToPoint(_v[i - 1][0], _v[i - 1][1], 0);
@@ -47,8 +47,9 @@ var buildShapeString = function(pathNodes, length, closed, mat) {
             b = [b.x, b.y];
             c = [c.x, c.y];
 
-            lineType = isOnLine(a, prevP, c) && isOnLine(b, prevP, c) ? " L" : " C";
-            shapeString += lineType + a[0] + "," + a[1] + " " + b[0] + "," + b[1] + " " + c[0] + "," + c[1];
+            shapeString += isOnLine(a, prevP, c) && isOnLine(b, prevP, c)
+                ? " L" + c[0] + "," + c[1]
+                : " C" + a[0] + "," + a[1] + " " + b[0] + "," + b[1] + " " + c[0] + "," + c[1];
             shapeString += 'z';
         }
         return shapeString;
