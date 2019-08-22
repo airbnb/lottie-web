@@ -1,6 +1,6 @@
 export type AnimationDirection = 1 | -1;
 export type AnimationSegment = [number, number];
-export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'DOMLoaded';
+export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded';
 export type AnimationEventCallback<T = any> = (args: T) => void;
 
 export type AnimationItem = {
