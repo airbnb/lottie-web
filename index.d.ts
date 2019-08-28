@@ -34,6 +34,7 @@ export type SVGRendererConfig = BaseRendererConfig & {
     hideOnTransparent?: boolean;
     viewBoxOnly?: boolean;
     viewBoxSize?: string;
+    focusable?: boolean;
 };
 
 export type CanvasRendererConfig = BaseRendererConfig & {
