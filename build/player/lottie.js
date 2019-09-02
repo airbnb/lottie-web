@@ -81,34 +81,51 @@ function styleDiv(element){
     element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
-function BMEnterFrameEvent(n,c,t,d){
-    this.type = n;
-    this.currentTime = c;
-    this.totalTime = t;
-    this.direction = d < 0 ? -1:1;
+function BMEnterFrameEvent(type, currentTime, totalTime, frameMultiplier){
+    this.type = type;
+    this.currentTime = currentTime;
+    this.totalTime = totalTime;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteEvent(n,d){
-    this.type = n;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteEvent(type, frameMultiplier){
+    this.type = type;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteLoopEvent(n,c,t,d){
-    this.type = n;
-    this.currentLoop = t;
-    this.totalLoops = c;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteLoopEvent(type, totalLoops, currentLoop, frameMultiplier){
+    this.type = type;
+    this.currentLoop = currentLoop;
+    this.totalLoops = totalLoops;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMSegmentStartEvent(n,f,t){
-    this.type = n;
-    this.firstFrame = f;
-    this.totalFrames = t;
+function BMSegmentStartEvent(type, firstFrame, totalFrames){
+    this.type = type;
+    this.firstFrame = firstFrame;
+    this.totalFrames = totalFrames;
 }
 
-function BMDestroyEvent(n,t){
-    this.type = n;
-    this.target = t;
+function BMDestroyEvent(type, target){
+    this.type = type;
+    this.target = target;
+}
+
+function BMRenderFrameErrorEvent(nativeError, currentTime) {
+    this.type = 'renderFrameError';
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
+}
+
+function BMConfigErrorEvent(nativeError) {
+    this.type = 'configError';
+    this.nativeError = nativeError;
+}
+
+function BMAnimationConfigErrorEvent(type, nativeError) {
+    this.type = type;
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
 }
 
 var createElementID = (function(){
@@ -2226,10 +2243,10 @@ var PropertyFactory = (function(){
                     endValue = nextKeyData.s || keyData.e;
                     keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
 
-                    if (len === 1) {
-                        newValue = keyValue;
-                    } else {
+                    if (this.propType === 'multidimensional') {
                         newValue[i] = keyValue;
+                    } else {
+                        newValue = keyValue;
                     }
                 }
             }
@@ -2341,9 +2358,9 @@ var PropertyFactory = (function(){
     }
 
     function processEffectsSequence() {
-        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+        if (this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
             return;
-        }        
+        }
         if(this.lock) {
             this.setVValue(this.pv);
             return;
@@ -5904,7 +5921,8 @@ function SVGRenderer(animationItem, config){
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        focusable: config && config.focusable
     };
 
     this.globalData = {
@@ -5965,6 +5983,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
     }
     if(this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);
+    }
+    if(this.renderConfig.focusable !== undefined) {
+        this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
@@ -10973,10 +10994,6 @@ HCameraElement.prototype.renderFrame = function(){
             var mat;
             len = this.hierarchy.length - 1;
             for (i = len; i >= 0; i -= 1) {
-                /*mat = this.hierarchy[i].finalTransform.mProp.v.props;
-                console.log(mat)
-                this.mat.transform(-mat[0],-mat[1],-mat[2],-mat[3],-mat[4],-mat[5],-mat[6],-mat[7],-mat[8],-mat[9],-mat[10],-mat[11],-mat[12],-mat[13],-mat[14],mat[15]);
-                console.log(this.mat.props)*/
                 var mTransf = this.hierarchy[i].finalTransform.mProp;
                 this.mat.translate(-mTransf.p.v[0],-mTransf.p.v[1],mTransf.p.v[2]);
                 this.mat.rotateX(-mTransf.or.v[0]).rotateY(-mTransf.or.v[1]).rotateZ(mTransf.or.v[2]);
@@ -10985,14 +11002,18 @@ HCameraElement.prototype.renderFrame = function(){
                 this.mat.translate(mTransf.a.v[0],mTransf.a.v[1],mTransf.a.v[2]);
             }
         }
-
-        if(this.p){
+        if (this.p) {
             this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
-        }else{
+        } else {
             this.mat.translate(-this.px.v,-this.py.v,this.pz.v);
         }
-        if(this.a){
-            var diffVector = [this.p.v[0]-this.a.v[0],this.p.v[1]-this.a.v[1],this.p.v[2]-this.a.v[2]];
+        if (this.a) {
+            var diffVector
+            if (this.p) {
+                diffVector = [this.p.v[0] - this.a.v[0], this.p.v[1] - this.a.v[1], this.p.v[2] - this.a.v[2]];
+            } else {
+                diffVector = [this.px.v - this.a.v[0], this.py.v - this.a.v[1], this.pz.v - this.a.v[2]];
+            }
             var mag = Math.sqrt(Math.pow(diffVector[0],2)+Math.pow(diffVector[1],2)+Math.pow(diffVector[2],2));
             //var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
             var lookDir = [diffVector[0]/mag,diffVector[1]/mag,diffVector[2]/mag];
@@ -11327,19 +11348,13 @@ AnimationItem.prototype.setParams = function(params) {
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
-    if(params.animationData){
+    if (params.animationData) {
         this.configAnimation(params.animationData);
-    }else if(params.path){
-        if(params.path.substr(-4) != 'json'){
-            if (params.path.substr(-1, 1) != '/') {
-                params.path += '/';
-            }
-            params.path += 'data.json';
-        }
+    } else if(params.path){
 
-        if(params.path.lastIndexOf('\\') != -1){
+        if( params.path.lastIndexOf('\\') !== -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
-        }else{
+        } else {
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
@@ -11459,23 +11474,27 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(!this.renderer){
         return;
     }
-    this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-    this.renderer.configAnimation(animData);
-    if(!animData.assets){
-        animData.assets = [];
-    }
-    this.renderer.searchExtraCompositions(animData.assets);
+    try {
+        this.animationData = animData;
+        this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+        this.renderer.configAnimation(animData);
+        if(!animData.assets){
+            animData.assets = [];
+        }
 
-    this.assets = this.animationData.assets;
-    this.frameRate = this.animationData.fr;
-    this.firstFrame = Math.round(this.animationData.ip);
-    this.frameMult = this.animationData.fr / 1000;
-    this.trigger('config_ready');
-    this.preloadImages();
-    this.loadSegments();
-    this.updaFrameModifier();
-    this.waitForFontsLoaded();
+        this.assets = this.animationData.assets;
+        this.frameRate = this.animationData.fr;
+        this.firstFrame = Math.round(this.animationData.ip);
+        this.frameMult = this.animationData.fr / 1000;
+        this.renderer.searchExtraCompositions(animData.assets);
+        this.trigger('config_ready');
+        this.preloadImages();
+        this.loadSegments();
+        this.updaFrameModifier();
+        this.waitForFontsLoaded();
+    } catch(error) {
+        this.triggerConfigError(error);
+    }
 };
 
 AnimationItem.prototype.waitForFontsLoaded = function(){
@@ -11529,7 +11548,11 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    try {
+        this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    } catch(error) {
+        this.triggerRenderFrameError(error);
+    }
 };
 
 AnimationItem.prototype.play = function (name) {
@@ -11836,6 +11859,25 @@ AnimationItem.prototype.trigger = function(name){
     }
 };
 
+AnimationItem.prototype.triggerRenderFrameError = function(nativeError) {
+
+    var error = new BMRenderFrameErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
+
+AnimationItem.prototype.triggerConfigError = function(nativeError) {
+
+    var error = new BMConfigErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
 var Expressions = (function(){
     var ob = {};
     ob.initExpressions = initExpressions;
@@ -14403,7 +14445,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.7';
+    lottiejs.version = '5.5.8';
 
     function checkReady() {
         if (document.readyState === "complete") {

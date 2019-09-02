@@ -165,7 +165,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
@@ -174,11 +174,18 @@
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
         },
-        path: 'exports/bm/data.json'
+        path: 'exports/render/data.json'
     };
     // lottie.setQuality('low');
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false)
+    anim.setSubframe(false);
+    anim.onError = function(errorType, nativeError, errorProps) {
+        console.log(errorType)
+    }
+
+    anim.addEventListener('error', function(error) {
+        console.log(error)
+    })
 
 </script>
 </body>

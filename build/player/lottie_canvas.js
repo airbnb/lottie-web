@@ -81,34 +81,51 @@ function styleDiv(element){
     element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
-function BMEnterFrameEvent(n,c,t,d){
-    this.type = n;
-    this.currentTime = c;
-    this.totalTime = t;
-    this.direction = d < 0 ? -1:1;
+function BMEnterFrameEvent(type, currentTime, totalTime, frameMultiplier){
+    this.type = type;
+    this.currentTime = currentTime;
+    this.totalTime = totalTime;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteEvent(n,d){
-    this.type = n;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteEvent(type, frameMultiplier){
+    this.type = type;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteLoopEvent(n,c,t,d){
-    this.type = n;
-    this.currentLoop = t;
-    this.totalLoops = c;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteLoopEvent(type, totalLoops, currentLoop, frameMultiplier){
+    this.type = type;
+    this.currentLoop = currentLoop;
+    this.totalLoops = totalLoops;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMSegmentStartEvent(n,f,t){
-    this.type = n;
-    this.firstFrame = f;
-    this.totalFrames = t;
+function BMSegmentStartEvent(type, firstFrame, totalFrames){
+    this.type = type;
+    this.firstFrame = firstFrame;
+    this.totalFrames = totalFrames;
 }
 
-function BMDestroyEvent(n,t){
-    this.type = n;
-    this.target = t;
+function BMDestroyEvent(type, target){
+    this.type = type;
+    this.target = target;
+}
+
+function BMRenderFrameErrorEvent(nativeError, currentTime) {
+    this.type = 'renderFrameError';
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
+}
+
+function BMConfigErrorEvent(nativeError) {
+    this.type = 'configError';
+    this.nativeError = nativeError;
+}
+
+function BMAnimationConfigErrorEvent(type, nativeError) {
+    this.type = type;
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
 }
 
 var createElementID = (function(){
@@ -2222,10 +2239,10 @@ var PropertyFactory = (function(){
                     endValue = nextKeyData.s || keyData.e;
                     keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
 
-                    if (len === 1) {
-                        newValue = keyValue;
-                    } else {
+                    if (this.propType === 'multidimensional') {
                         newValue[i] = keyValue;
+                    } else {
+                        newValue = keyValue;
                     }
                 }
             }
@@ -2337,9 +2354,9 @@ var PropertyFactory = (function(){
     }
 
     function processEffectsSequence() {
-        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+        if (this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
             return;
-        }        
+        }
         if(this.lock) {
             this.setVValue(this.pv);
             return;
@@ -5900,7 +5917,8 @@ function SVGRenderer(animationItem, config){
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        focusable: config && config.focusable
     };
 
     this.globalData = {
@@ -5961,6 +5979,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
     }
     if(this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);
+    }
+    if(this.renderConfig.focusable !== undefined) {
+        this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
@@ -9129,19 +9150,13 @@ AnimationItem.prototype.setParams = function(params) {
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
-    if(params.animationData){
+    if (params.animationData) {
         this.configAnimation(params.animationData);
-    }else if(params.path){
-        if(params.path.substr(-4) != 'json'){
-            if (params.path.substr(-1, 1) != '/') {
-                params.path += '/';
-            }
-            params.path += 'data.json';
-        }
+    } else if(params.path){
 
-        if(params.path.lastIndexOf('\\') != -1){
+        if( params.path.lastIndexOf('\\') !== -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
-        }else{
+        } else {
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
@@ -9261,23 +9276,27 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(!this.renderer){
         return;
     }
-    this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-    this.renderer.configAnimation(animData);
-    if(!animData.assets){
-        animData.assets = [];
-    }
-    this.renderer.searchExtraCompositions(animData.assets);
+    try {
+        this.animationData = animData;
+        this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+        this.renderer.configAnimation(animData);
+        if(!animData.assets){
+            animData.assets = [];
+        }
 
-    this.assets = this.animationData.assets;
-    this.frameRate = this.animationData.fr;
-    this.firstFrame = Math.round(this.animationData.ip);
-    this.frameMult = this.animationData.fr / 1000;
-    this.trigger('config_ready');
-    this.preloadImages();
-    this.loadSegments();
-    this.updaFrameModifier();
-    this.waitForFontsLoaded();
+        this.assets = this.animationData.assets;
+        this.frameRate = this.animationData.fr;
+        this.firstFrame = Math.round(this.animationData.ip);
+        this.frameMult = this.animationData.fr / 1000;
+        this.renderer.searchExtraCompositions(animData.assets);
+        this.trigger('config_ready');
+        this.preloadImages();
+        this.loadSegments();
+        this.updaFrameModifier();
+        this.waitForFontsLoaded();
+    } catch(error) {
+        this.triggerConfigError(error);
+    }
 };
 
 AnimationItem.prototype.waitForFontsLoaded = function(){
@@ -9331,7 +9350,11 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    try {
+        this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    } catch(error) {
+        this.triggerRenderFrameError(error);
+    }
 };
 
 AnimationItem.prototype.play = function (name) {
@@ -9638,6 +9661,25 @@ AnimationItem.prototype.trigger = function(name){
     }
 };
 
+AnimationItem.prototype.triggerRenderFrameError = function(nativeError) {
+
+    var error = new BMRenderFrameErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
+
+AnimationItem.prototype.triggerConfigError = function(nativeError) {
+
+    var error = new BMConfigErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
 var Expressions = (function(){
     var ob = {};
     ob.initExpressions = initExpressions;
@@ -12205,7 +12247,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.7';
+    lottiejs.version = '5.5.8';
 
     function checkReady() {
         if (document.readyState === "complete") {

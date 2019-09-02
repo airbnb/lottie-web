@@ -1,3 +1,11 @@
+## V 5.5.8
+- FIX: Setting assets data before loading extra compositions
+- FIX: Removed appending json at end of url
+- FIX: Camera separate position properties
+- Typing: Added animation event name to Lottie definitions
+- Feature: Add focusable renderer setting for SVGs
+- Feature: Added error handling for config and frame rendering
+
 ## V 5.5.7
 - EXPRESSIONS: added support for propertyIndex on shapes
 - PERFORMANCE: big performance improvement on trim paths (and other modifiers) for paths that don't change over time
