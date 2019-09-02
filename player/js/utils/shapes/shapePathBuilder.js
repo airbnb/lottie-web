@@ -1,16 +1,13 @@
-var sq = function (a) {
-    return a * a;
-};
 function isOnLine(p, v, w) {
-    var distance = ((Math.abs((w[1] - v[1]) * p[0] -
-        (w[0] - v[0]) * p[1] +
-        w[0] * v[1] -
-        w[1] * v[0])) /
-        (Math.sqrt(sq(w[1] - v[1]) +
-            sq(w[0] - v[0]))));
-    return distance < 0.001; // fp errors
-}
+    if (v[0] == w[0] && p[0] == v[0]
+     || v[1] == w[1] && p[1] == w[1]
+     || v[0] == w[0] && v[1] == w[1]) return true;
+    var yDiff = Math.abs(p[1] - v[1] - (w[1] - v[1]) * ((p[0] - v[0]) / (w[0] - v[0])));
+    var xDiff = Math.abs(p[0] - v[0] - (w[0] - v[0]) * ((p[1] - v[1]) / (w[1] - v[1])));
 
+    var distance = yDiff < xDiff ? yDiff : xDiff; // off by a factor of at most ~0.707 = 1 / sqrt(2)
+    return distance < 0.0017; // fp errors
+}
 
 var buildShapeString = function(pathNodes, length, closed, mat) {
         if(length === 0) {
