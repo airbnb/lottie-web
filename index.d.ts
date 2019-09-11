@@ -7,6 +7,7 @@ export type AnimationItem = {
     play(): void;
     stop(): void;
     pause(): void;
+    resize(): void;
     setLocationHref(href: string): void;
     setSpeed(speed: number): void;
     goToAndPlay(value: number, isFrame?: boolean): void;
