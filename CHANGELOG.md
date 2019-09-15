@@ -1,3 +1,9 @@
+## V 5.5.9
+- Typing: added resize to type definitions
+- Feature: added image sequence support
+- FIX: clipping compositions in canvas renderer
+- FIX: added precision to auto orient
+
 ## V 5.5.8
 - FIX: Setting assets data before loading extra compositions
 - FIX: Removed appending json at end of url

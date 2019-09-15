@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.5.8';
+const bm_version = '5.5.9';
 const buildReducedVersion = process.argv[2] === 'reduced'
 
 function loadIndex() {
