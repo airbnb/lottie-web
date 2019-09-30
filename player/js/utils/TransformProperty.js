@@ -1,5 +1,7 @@
 var TransformPropertyFactory = (function() {
 
+    var defaultVector = [0,0]
+
     function applyToMatrix(mat) {
         var _mdf = this._mdf;
         this.iterateDynamicProperties();
@@ -87,6 +89,8 @@ var TransformPropertyFactory = (function() {
                         v2[0] = px.getValueAtTime((px._caching.lastFrame+px.offsetTime - 0.01) / frameRate,px.offsetTime);
                         v2[1] = py.getValueAtTime((py._caching.lastFrame+py.offsetTime - 0.01) / frameRate,py.offsetTime);
                     }
+                } else {
+                    v1 = v2 = defaultVector
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
