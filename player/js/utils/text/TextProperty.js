@@ -140,11 +140,23 @@ TextProperty.prototype.buildFinalText = function(text) {
     var combinedCharacters = FontManager.getCombinedCharacterCodes();
     var charactersArray = [];
     var i = 0, len = text.length;
+    var charCode;
     while (i < len) {
-        if (combinedCharacters.indexOf(text.charCodeAt(i)) !== -1) {
+        charCode = text.charCodeAt(i);
+        if (combinedCharacters.indexOf(charCode) !== -1) {
             charactersArray[charactersArray.length - 1] += text.charAt(i);
         } else {
-            charactersArray.push(text.charAt(i));
+            if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+                charCode = text.charCodeAt(i + 1);
+                if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+                    charactersArray.push(text.substr(i, 2));
+                    ++i;
+                } else {
+                    charactersArray.push(text.charAt(i));
+                }
+            } else {
+                charactersArray.push(text.charAt(i));
+            }
         }
         i += 1;
     }
@@ -197,9 +209,9 @@ TextProperty.prototype.completeTextData = function(documentData) {
     }
     documentData.fWeight = fontData.fWeight || fWeight;
     documentData.fStyle = fStyle;
-    len = documentData.t.length;
     documentData.finalSize = documentData.s;
     documentData.finalText = this.buildFinalText(documentData.t);
+    len = documentData.finalText.length;
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     var charCode;

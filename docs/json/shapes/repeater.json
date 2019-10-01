@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "mn": {
+      "title": "Match Name",
+      "description": "After Effect's Match Name. Used for expressions.",
+      "type": "string"
+    },
+    "nm": {
+      "title": "Name",
+      "description": "After Effect's Name. Used for expressions.",
+      "type": "string"
+    },
+    "ty": {
+      "title": "Type",
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "rp"
+    },
+    "c": {
+      "title": "Copies",
+      "description": "Number of Copies",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object",
+      "default": {"a": 0, "k": 1}
+    },
+    "o": {
+      "title": "Offset",
+      "description": "Offset of Copies",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object",
+      "default": {"a": 0, "k": 0}
+    },
+    "m": {
+      "title": "Composite",
+      "description": "Composite of copies",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/composite"
+        }
+      ],
+      "type": "number",
+      "default": 1
+    },
+    "tr": {
+      "title": "Transform",
+      "description": "Transform values for each repeater copy",
+      "oneOf": [
+        {
+          "$ref": "#/helpers/transform"
+        }
+      ],
+      "type": "object"
+    }
+  }
+}

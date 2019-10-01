@@ -56,7 +56,7 @@ CVShapeElement.prototype.createStyleElement = function(data, transforms) {
             styleElem.wi = elementData.w.v;
         }
         if(data.d){
-            var d = new DashProperty(this,data.d,'canvas');
+            var d = new DashProperty(this,data.d,'canvas', this);
             elementData.d = d;
             if(!elementData.d.k){
                 styleElem.da = elementData.d.dashArray;

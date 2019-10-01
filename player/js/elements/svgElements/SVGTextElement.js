@@ -53,6 +53,7 @@ SVGTextElement.prototype.buildNewText = function(){
         this.layerElement.setAttribute('font-style', fStyle);
         this.layerElement.setAttribute('font-weight', fWeight);
     }
+    this.layerElement.setAttribute('aria-label', documentData.t);
 
     var letters = documentData.l || [];
     var usesGlyphs = !!this.globalData.fontManager.chars;

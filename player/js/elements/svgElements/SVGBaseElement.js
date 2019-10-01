@@ -44,20 +44,21 @@ SVGBaseElement.prototype = {
                 fil = filtersFactory.createFilter(filId);
                 ////
 
-                var feColorMatrix = createNS('feColorMatrix');
+                // This solution doesn't work on Android when meta tag with viewport attribute is set
+                /*var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type', 'matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
                 feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
-                fil.appendChild(feColorMatrix);
-
+                fil.appendChild(feColorMatrix);*/
                 ////
-                /*var feCTr = createNS('feComponentTransfer');
+                var feCTr = createNS('feComponentTransfer');
                 feCTr.setAttribute('in','SourceGraphic');
                 fil.appendChild(feCTr);
                 var feFunc = createNS('feFuncA');
                 feFunc.setAttribute('type','table');
                 feFunc.setAttribute('tableValues','1.0 0.0');
-                feCTr.appendChild(feFunc);*/
+                feCTr.appendChild(feFunc);
+                ////
                 this.globalData.defs.appendChild(fil);
                 var alphaRect = createNS('rect');
                 alphaRect.setAttribute('width',  this.comp.data.w);

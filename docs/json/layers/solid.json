@@ -4,8 +4,9 @@
   "properties": {
     "ty": {
       "title": "Type",
-      "description": "Type of layer: Solid. Value 1.",
-      "type": "number"
+      "description": "Type of layer: Solid.",
+      "type": "number",
+      "value": 1
     },
     "ks": {
       "title": "Transform",
@@ -25,7 +26,8 @@
         {
           "$ref": "#/helpers/boolean"
         }
-      ]
+      ],
+      "default": 0
     },
     "bm": {
       "title": "Blend Mode",
@@ -35,7 +37,8 @@
           "$ref": "#/helpers/blendMode"
         }
       ],
-      "type": "number"
+      "type": "number",
+      "default": 0
     },
     "ddd": {
       "title": "3d Layer",
@@ -45,7 +48,8 @@
         {
           "$ref": "#/helpers/boolean"
         }
-      ]
+      ],
+      "default": 0
     },
     "ind": {
       "title": "Index",
@@ -84,11 +88,11 @@
     },
     "hasMask": {
       "title": "Has Masks",
-      "description": "Boolean when layer has a mask. Will be deprecated in favor of checking maskProperties.",
+      "description": "Boolean when layer has a mask. Will be deprecated in favor of checking masksProperties.",
       "type": "number"
     },
-    "maskProperties": {
-      "title": "Mask Properties",
+    "masksProperties": {
+      "title": "Masks Properties",
       "description": "List of Masks",
       "items": {
         "oneOf": [
@@ -113,7 +117,8 @@
     "sr": {
       "title": "Stretch",
       "description": "Layer Time Stretching",
-      "type": "number"
+      "type": "number",
+      "default": 1
     },
     "parent": {
       "title": "Parent",

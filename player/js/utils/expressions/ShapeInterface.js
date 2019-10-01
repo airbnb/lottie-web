@@ -209,6 +209,7 @@ var ShapeExpressionInterface = (function(){
             }
         }
         interfaceFunction.propertyIndex = shape.ix;
+        interfaceFunction.propertyGroup = propertyGroup;
 
         Object.defineProperties(interfaceFunction, {
             'start': {
@@ -295,6 +296,7 @@ var ShapeExpressionInterface = (function(){
         });
         interfaceFunction.ty = 'tr';
         interfaceFunction.mn = shape.mn;
+        interfaceFunction.propertyGroup = propertyGroup;
         return interfaceFunction;
     }
 
@@ -544,6 +546,7 @@ var ShapeExpressionInterface = (function(){
             },
             '_name': { value: shape.nm },
             'ix': { value: shape.ix },
+            'propertyIndex': { value: shape.ix },
             'mn': { value: shape.mn }
         });
         return interfaceFunction;
@@ -566,6 +569,7 @@ var ShapeExpressionInterface = (function(){
         }
         _interfaceFunction.propertyGroup = propertyGroup;
         interfaces = iterateElements(shapes, view, _interfaceFunction);
+        _interfaceFunction.numProperties = interfaces.length;
         return _interfaceFunction;
     };
 }());

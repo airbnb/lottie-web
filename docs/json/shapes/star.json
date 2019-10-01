@@ -19,8 +19,9 @@
     },
     "ty": {
       "title": "Type",
-      "description": "Shape content type. Value: sr",
-      "type": "string"
+      "description": "Shape content type.",
+      "type": "string",
+      "const": "sr"
     },
     "p": {
       "title": "Position",
@@ -36,6 +37,32 @@
       "type": "object"
     },
     "ir": {
+      "title": "Inner Radius",
+      "description": "Star's inner radius. (Star only)",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "is": {
+      "title": "Inner Roundness",
+      "description": "Star's inner roundness. (Star only)",
+      "oneOf": [
+        {
+          "$ref": "#/properties/Value"
+        },
+        {
+          "$ref": "#/properties/valueKeyframed"
+        }
+      ],
+      "type": "object"
+    },
+    "or": {
       "title": "Outer Radius",
       "description": "Star's outer radius.",
       "oneOf": [
@@ -48,7 +75,7 @@
       ],
       "type": "object"
     },
-    "is": {
+    "os": {
       "title": "Outer Roundness",
       "description": "Star's outer roundness.",
       "oneOf": [

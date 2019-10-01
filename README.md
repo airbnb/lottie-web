@@ -1,4 +1,4 @@
-# Lottie for Web, [Android](https://github.com/airbnb/lottie-android), [iOS](https://github.com/airbnb/lottie-ios), and [React Native](https://github.com/airbnb/lottie-react-native)
+# Lottie for Web, [Android](https://github.com/airbnb/lottie-android), [iOS](https://github.com/airbnb/lottie-ios), [React Native](https://github.com/airbnb/lottie-react-native), and [Windows](https://aka.ms/lottie)
 
 Lottie is a mobile library for Web,  and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile!
 
@@ -78,6 +78,10 @@ brew cask install lottie
 ```
 
 ### After installing
+- **Windows:** Go to Edit > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
+- **Mac:** Go to Adobe After Effects > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
+
+**Old Versions**
 - **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 - **Mac:** Go to Adobe After Effects > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 
@@ -233,7 +237,7 @@ lottie.loadAnimation({
   animationData: animationData, // the animation data
   rendererSettings: {
     context: canvasContext, // the canvas context
-    scaleMode: 'noScale',
+    preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
     clearCanvas: false,
     progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
     hideOnTransparent: true, //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)

@@ -39,11 +39,12 @@ CVBaseElement.prototype = {
         this.renderTransform();
         this.renderRenderable();
         this.setBlendMode();
-        this.globalData.renderer.save();
+        var forceRealStack = this.data.ty === 0;
+        this.globalData.renderer.save(forceRealStack);
         this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
         this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
         this.renderInnerContent();
-        this.globalData.renderer.restore();
+        this.globalData.renderer.restore(forceRealStack);
         if(this.maskManager.hasMasks) {
             this.globalData.renderer.restore(true);
         }

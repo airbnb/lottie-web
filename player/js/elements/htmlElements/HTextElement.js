@@ -81,6 +81,7 @@ HTextElement.prototype.buildNewText = function(){
                 } else {
 
                     tParent = createTag('div');
+                    tParent.style.lineHeight = 0;
                     tCont = createNS('svg');
                     tCont.appendChild(tSpan);
                     styleDiv(tParent);

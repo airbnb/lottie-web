@@ -14,7 +14,7 @@ var blitter = 10;
 
 var BMMath = {};
 (function(){
-    var propertyNames = Object.getOwnPropertyNames(Math);
+    var propertyNames = ["abs", "acos", "acosh", "asin", "asinh", "atan", "atanh", "atan2", "ceil", "cbrt", "expm1", "clz32", "cos", "cosh", "exp", "floor", "fround", "hypot", "imul", "log", "log1p", "log2", "log10", "max", "min", "pow", "random", "round", "sign", "sin", "sinh", "sqrt", "tan", "tanh", "trunc", "E", "LN10", "LN2", "LOG10E", "LOG2E", "PI", "SQRT1_2", "SQRT2"];
     var i, len = propertyNames.length;
     for(i=0;i<len;i+=1){
         BMMath[propertyNames[i]] = Math[propertyNames[i]];
@@ -62,34 +62,51 @@ function styleDiv(element){
     element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
-function BMEnterFrameEvent(n,c,t,d){
-    this.type = n;
-    this.currentTime = c;
-    this.totalTime = t;
-    this.direction = d < 0 ? -1:1;
+function BMEnterFrameEvent(type, currentTime, totalTime, frameMultiplier){
+    this.type = type;
+    this.currentTime = currentTime;
+    this.totalTime = totalTime;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteEvent(n,d){
-    this.type = n;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteEvent(type, frameMultiplier){
+    this.type = type;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteLoopEvent(n,c,t,d){
-    this.type = n;
-    this.currentLoop = t;
-    this.totalLoops = c;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteLoopEvent(type, totalLoops, currentLoop, frameMultiplier){
+    this.type = type;
+    this.currentLoop = currentLoop;
+    this.totalLoops = totalLoops;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMSegmentStartEvent(n,f,t){
-    this.type = n;
-    this.firstFrame = f;
-    this.totalFrames = t;
+function BMSegmentStartEvent(type, firstFrame, totalFrames){
+    this.type = type;
+    this.firstFrame = firstFrame;
+    this.totalFrames = totalFrames;
 }
 
-function BMDestroyEvent(n,t){
-    this.type = n;
-    this.target = t;
+function BMDestroyEvent(type, target){
+    this.type = type;
+    this.target = target;
+}
+
+function BMRenderFrameErrorEvent(nativeError, currentTime) {
+    this.type = 'renderFrameError';
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
+}
+
+function BMConfigErrorEvent(nativeError) {
+    this.type = 'configError';
+    this.nativeError = nativeError;
+}
+
+function BMAnimationConfigErrorEvent(type, nativeError) {
+    this.type = type;
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
 }
 
 var createElementID = (function(){

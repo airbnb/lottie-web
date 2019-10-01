@@ -68,19 +68,13 @@ AnimationItem.prototype.setParams = function(params) {
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
-    if(params.animationData){
+    if (params.animationData) {
         this.configAnimation(params.animationData);
-    }else if(params.path){
-        if(params.path.substr(-4) != 'json'){
-            if (params.path.substr(-1, 1) != '/') {
-                params.path += '/';
-            }
-            params.path += 'data.json';
-        }
+    } else if(params.path){
 
-        if(params.path.lastIndexOf('\\') != -1){
+        if( params.path.lastIndexOf('\\') !== -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
-        }else{
+        } else {
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
@@ -200,23 +194,27 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(!this.renderer){
         return;
     }
-    this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-    this.renderer.configAnimation(animData);
-    if(!animData.assets){
-        animData.assets = [];
-    }
-    this.renderer.searchExtraCompositions(animData.assets);
+    try {
+        this.animationData = animData;
+        this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+        this.renderer.configAnimation(animData);
+        if(!animData.assets){
+            animData.assets = [];
+        }
 
-    this.assets = this.animationData.assets;
-    this.frameRate = this.animationData.fr;
-    this.firstFrame = Math.round(this.animationData.ip);
-    this.frameMult = this.animationData.fr / 1000;
-    this.trigger('config_ready');
-    this.preloadImages();
-    this.loadSegments();
-    this.updaFrameModifier();
-    this.waitForFontsLoaded();
+        this.assets = this.animationData.assets;
+        this.frameRate = this.animationData.fr;
+        this.firstFrame = Math.round(this.animationData.ip);
+        this.frameMult = this.animationData.fr / 1000;
+        this.renderer.searchExtraCompositions(animData.assets);
+        this.trigger('config_ready');
+        this.preloadImages();
+        this.loadSegments();
+        this.updaFrameModifier();
+        this.waitForFontsLoaded();
+    } catch(error) {
+        this.triggerConfigError(error);
+    }
 };
 
 AnimationItem.prototype.waitForFontsLoaded = function(){
@@ -270,7 +268,11 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    try {
+        this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    } catch(error) {
+        this.triggerRenderFrameError(error);
+    }
 };
 
 AnimationItem.prototype.play = function (name) {
@@ -439,7 +441,7 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
     } else {
         this.segments.push(arr);
     }
-    if (this.segments.length) {
+    if (this.segments.length && forceFlag) {
         this.adjustSegment(this.segments.shift(), 0);
     }
     if (this.isPaused) {
@@ -542,7 +544,7 @@ AnimationItem.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
             case 'enterFrame':
-                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
+                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameModifier));
                 break;
             case 'loopComplete':
                 this.triggerEvent(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
@@ -576,3 +578,23 @@ AnimationItem.prototype.trigger = function(name){
         this.onDestroy.call(this,new BMDestroyEvent(name,this));
     }
 };
+
+AnimationItem.prototype.triggerRenderFrameError = function(nativeError) {
+
+    var error = new BMRenderFrameErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
+
+AnimationItem.prototype.triggerConfigError = function(nativeError) {
+
+    var error = new BMConfigErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "number",
+  "oneOf": [
+    {
+      "standsFor": "Above",
+      "const": 1
+    },
+    {
+      "standsFor": "Below",
+      "const": 2
+    }
+  ],
+  "default": 1
+}

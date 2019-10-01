@@ -244,6 +244,8 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
     this.canvasContext.closePath();
     this.canvasContext.clip();
+
+    this.renderFrame(this.renderedFrame, true);
 };
 
 CanvasRenderer.prototype.destroy = function () {
@@ -262,14 +264,14 @@ CanvasRenderer.prototype.destroy = function () {
     this.destroyed = true;
 };
 
-CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === -1){
+CanvasRenderer.prototype.renderFrame = function(num, forceRender){
+    if((this.renderedFrame === num && this.renderConfig.clearCanvas === true && !forceRender) || this.destroyed || num === -1){
         return;
     }
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
-    this.globalData._mdf = !this.renderConfig.clearCanvas;
+    this.globalData._mdf = !this.renderConfig.clearCanvas || forceRender;
     this.globalData.projectInterface.currentFrame = num;
 
      // console.log('--------');

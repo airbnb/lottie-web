@@ -88,7 +88,7 @@ var FontManager = (function(){
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
-            tHelper.className = fontData.fClass;
+            tHelper.setAttribute('class', fontData.fClass);
         } else {
             tHelper.style.fontFamily = fontData.fFamily;
         }
@@ -220,11 +220,12 @@ var FontManager = (function(){
         var i = 0, len = this.chars.length;
         while( i < len) {
             if(this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font){
+
                 return this.chars[i];
             }
             i+= 1;
         }
-        if(console && console.warn) {
+        if((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char) && console && console.warn) {
             console.warn('Missing character from exported characters list: ', char, style, font);
         }
         return emptyChar;

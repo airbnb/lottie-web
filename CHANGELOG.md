@@ -1,3 +1,89 @@
+## V 5.5.9
+- Typing: added resize to type definitions
+- Feature: added image sequence support
+- FIX: clipping compositions in canvas renderer
+- FIX: added precision to auto orient
+
+## V 5.5.8
+- FIX: Setting assets data before loading extra compositions
+- FIX: Removed appending json at end of url
+- FIX: Camera separate position properties
+- Typing: Added animation event name to Lottie definitions
+- Feature: Add focusable renderer setting for SVGs
+- Feature: Added error handling for config and frame rendering
+
+## V 5.5.7
+- EXPRESSIONS: added support for propertyIndex on shapes
+- PERFORMANCE: big performance improvement on trim paths (and other modifiers) for paths that don't change over time
+- NEW: improved support for astral plane characters (like emojis)
+
+## V 5.5.6
+- FIX: surrogate pairs character support in animated text
+- FIX: new expressions supported
+
+## V 5.5.5
+- changed failed image bg to transparent
+- FIX: fix for old json expressions in key function
+
+## V 5.5.4
+- FIX: Updates to TypeScript definitions
+- FEATURE: support for new expressions
+
+## V 5.5.3
+- FEATURE: Add SVG support for Gaussian Blur effects (thanks fmalita)
+- FEATURE: Add TypeScript type definitions (thanks D34THWINGS)
+- FIX: removed warning of text when created by text formatted
+- FIX: fixed merged characters in fonts
+- FEATURE: added mutiple settings functionality to extension
+- FEATURE: added support for mask opacity in expressions
+- FIX: fixes #1552 html renderer wrong font measurement
+- FIX: Fix masksProperties key name in JSON docs (thanks john-preston)
+
+## V 5.5.2
+- FIX: Fix loader issue on pre-kitkat Android webview
+- FIX: eroded masks in svg renderer
+- FIX: text alignment in text boxes
+
+## V 5.5.1
+- FIX: key expression for new json format
+- IMPROVEMENT: forcing a rerender when resize is called in canvas
+- ACCESSIBILITY: added title, description and aria label for text layers for svg renderer
+
+## V 5.5.0
+- IMPROVEMENT: JSON filesize reduction. Around 25 to 33% filesize reduction with this new version.
+- FEATURE: Bodymovin panel with new advanced settings to reduce filesize.
+- FIX: honor `forceFlag` when calling `playSegments` (thanks @mrmos)
+- FIX: added source-over as default blending mode for canvas renderer resetting
+- FIX: fixed bezier easing property validation
+- FIX: fixed property caching by index instead of bezier data
+- FIX: added thisProperty expression value
+
+## V 5.4.4
+- FIX: viewport meta tag on android with mask fix
+- FIX: fixed enterFrame direction property
+- FIX: explicitly iterating math methods
+- FIX: added missing expression properties
+- FIX: setting class attribute via setAttribute
+- FIX: added value property in key method expression
+- FIX: text animator expression fix
+- FIX: added smooth expression support
+- FIX: hcamera expression fix
+- FIX: fix animated dash property canvas
+- NEW: sourceRectAtTime for images fix
+- NEW: Advanced option in Bodymovin extension to skip expression properties
+- NEW: removed some unused json properties
+
+## V 5.4.3
+- NEW: added blend mode support for shapes in svg renderer
+- NEW: removed random ids in favour of incremental ids
+- NEW: added new players
+- NEW: updated build process. Removed vulnerable dependencies.
+- FIX: canvas repeater fix
+- FIX: Replaced typekit with Adobe Fonts support
+- FIX: subtracting offsetTime for valueAtTime calculation on shapes
+- FIX: expressions targeting keys fix
+- FIX: multidimensional easing using first dimension value when set to 0
+
 ## V 5.4.2
 - FIX: added enabled property on effect interfaces for expression
 - FIX: font measuring fix for white spaces

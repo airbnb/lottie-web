@@ -39,9 +39,10 @@ var PropertyFactory = (function(){
         var k, kLen, perc, jLen, j, fnc;
         var nextKeyTime = nextKeyData.t - offsetTime;
         var keyTime = keyData.t - offsetTime;
+        var endValue;
         if (keyData.to) {
             if (!keyData.bezierData) {
-                bez.buildBezierData(keyData);
+                keyData.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
             }
             var bezierData = keyData.bezierData;
             if (frameNum >= nextKeyTime || frameNum < keyTime) {
@@ -50,7 +51,7 @@ var PropertyFactory = (function(){
                 for (k = 0; k < kLen; k += 1) {
                     newValue[k] = bezierData.points[ind].point[k];
                 }
-                // caching._lastBezierData = null;
+                // caching._lastKeyframeIndex = -1;
             } else {
                 if (keyData.__fnct) {
                     fnc = keyData.__fnct;
@@ -62,8 +63,8 @@ var PropertyFactory = (function(){
                 var distanceInLine = bezierData.segmentLength*perc;
 
                 var segmentPerc;
-                var addedLength =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastAddedLength : 0;
-                j =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastPoint : 0;
+                var addedLength =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
+                j =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastPoint : 0;
                 flag = true;
                 jLen = bezierData.points.length;
                 while (flag) {
@@ -90,23 +91,24 @@ var PropertyFactory = (function(){
                 }
                 caching._lastPoint = j;
                 caching._lastAddedLength = addedLength - bezierData.points[j].partialLength;
-                caching._lastBezierData = bezierData;
+                caching._lastKeyframeIndex = i;
             }
         } else {
             var outX, outY, inX, inY, keyValue;
             len = keyData.s.length;
+            endValue = nextKeyData.s || keyData.e;
             if (this.sh && keyData.h !== 1) {
                 if (frameNum >= nextKeyTime) {
-                    newValue[0] = keyData.e[0];
-                    newValue[1] = keyData.e[1];
-                    newValue[2] = keyData.e[2];
+                    newValue[0] = endValue[0];
+                    newValue[1] = endValue[1];
+                    newValue[2] = endValue[2];
                 } else if (frameNum <= keyTime) {
                     newValue[0] = keyData.s[0];
                     newValue[1] = keyData.s[1];
                     newValue[2] = keyData.s[2];
                 } else {
                     var quatStart = createQuaternion(keyData.s);
-                    var quatEnd = createQuaternion(keyData.e);
+                    var quatEnd = createQuaternion(endValue);
                     var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
                     quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
                 }
@@ -124,11 +126,10 @@ var PropertyFactory = (function(){
                                     keyData.__fnct = [];
                                 }
                                 if (!keyData.__fnct[i]) {
-                                    outX = (typeof keyData.o.x[i] === undefined) ? keyData.o.x[0] : keyData.o.x[i];
-                                    outY = (typeof keyData.o.y[i] === undefined) ? keyData.o.y[0] : keyData.o.y[i];
-                                    inX = (typeof keyData.i.x[i] === undefined) ? keyData.i.x[0] : keyData.i.x[i];
-                                    inY = (typeof keyData.i.y[i] === undefined) ? keyData.i.y[0] : keyData.i.y[i];
- 
+                                    outX = (typeof keyData.o.x[i] === 'undefined') ? keyData.o.x[0] : keyData.o.x[i];
+                                    outY = (typeof keyData.o.y[i] === 'undefined') ? keyData.o.y[0] : keyData.o.y[i];
+                                    inX = (typeof keyData.i.x[i] === 'undefined') ? keyData.i.x[0] : keyData.i.x[i];
+                                    inY = (typeof keyData.i.y[i] === 'undefined') ? keyData.i.y[0] : keyData.i.y[i];
                                     fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
                                     keyData.__fnct[i] = fnc;
                                 } else {
@@ -150,12 +151,13 @@ var PropertyFactory = (function(){
                         }
                     }
 
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (keyData.e[i] - keyData.s[i]) * perc;
+                    endValue = nextKeyData.s || keyData.e;
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
 
-                    if (len === 1) {
-                        newValue = keyValue;
-                    } else {
+                    if (this.propType === 'multidimensional') {
                         newValue[i] = keyValue;
+                    } else {
+                        newValue = keyValue;
                     }
                 }
             }
@@ -234,7 +236,7 @@ var PropertyFactory = (function(){
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             if(this._caching.lastFrame >= frameNum) {
-                this._caching._lastBezierData = null;
+                this._caching._lastKeyframeIndex = -1;
                 this._caching.lastIndex = 0;
             }
 
@@ -267,9 +269,9 @@ var PropertyFactory = (function(){
     }
 
     function processEffectsSequence() {
-        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+        if (this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
             return;
-        }        
+        }
         if(this.lock) {
             this.setVValue(this.pv);
             return;
@@ -345,7 +347,7 @@ var PropertyFactory = (function(){
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.frameId = -1;
-        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastBezierData: null};
+        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastKeyframeIndex: -1};
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -412,19 +414,7 @@ var PropertyFactory = (function(){
 
     function getProp(elem,data,type, mult, container) {
         var p;
-        if(data.a === 0){
-            if(type === 0) {
-                p = new ValueProperty(elem,data,mult, container);
-            } else {
-                p = new MultiDimensionalProperty(elem,data, mult, container);
-            }
-        } else if(data.a === 1){
-            if(type === 0) {
-                p = new KeyframedValueProperty(elem,data,mult, container);
-            } else {
-                p = new KeyframedMultidimensionalProperty(elem,data, mult, container);
-            }
-        } else if(!data.k.length){
+        if(!data.k.length){
             p = new ValueProperty(elem,data, mult, container);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult, container);

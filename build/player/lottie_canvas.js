@@ -33,7 +33,7 @@ var blitter = 10;
 
 var BMMath = {};
 (function(){
-    var propertyNames = Object.getOwnPropertyNames(Math);
+    var propertyNames = ["abs", "acos", "acosh", "asin", "asinh", "atan", "atanh", "atan2", "ceil", "cbrt", "expm1", "clz32", "cos", "cosh", "exp", "floor", "fround", "hypot", "imul", "log", "log1p", "log2", "log10", "max", "min", "pow", "random", "round", "sign", "sin", "sinh", "sqrt", "tan", "tanh", "trunc", "E", "LN10", "LN2", "LOG10E", "LOG2E", "PI", "SQRT1_2", "SQRT2"];
     var i, len = propertyNames.length;
     for(i=0;i<len;i+=1){
         BMMath[propertyNames[i]] = Math[propertyNames[i]];
@@ -81,45 +81,59 @@ function styleDiv(element){
     element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = "preserve-3d";
 }
 
-function BMEnterFrameEvent(n,c,t,d){
-    this.type = n;
-    this.currentTime = c;
-    this.totalTime = t;
-    this.direction = d < 0 ? -1:1;
+function BMEnterFrameEvent(type, currentTime, totalTime, frameMultiplier){
+    this.type = type;
+    this.currentTime = currentTime;
+    this.totalTime = totalTime;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteEvent(n,d){
-    this.type = n;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteEvent(type, frameMultiplier){
+    this.type = type;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMCompleteLoopEvent(n,c,t,d){
-    this.type = n;
-    this.currentLoop = t;
-    this.totalLoops = c;
-    this.direction = d < 0 ? -1:1;
+function BMCompleteLoopEvent(type, totalLoops, currentLoop, frameMultiplier){
+    this.type = type;
+    this.currentLoop = currentLoop;
+    this.totalLoops = totalLoops;
+    this.direction = frameMultiplier < 0 ? -1 : 1;
 }
 
-function BMSegmentStartEvent(n,f,t){
-    this.type = n;
-    this.firstFrame = f;
-    this.totalFrames = t;
+function BMSegmentStartEvent(type, firstFrame, totalFrames){
+    this.type = type;
+    this.firstFrame = firstFrame;
+    this.totalFrames = totalFrames;
 }
 
-function BMDestroyEvent(n,t){
-    this.type = n;
-    this.target = t;
+function BMDestroyEvent(type, target){
+    this.type = type;
+    this.target = target;
 }
 
-function randomString(length, chars){
-    if(chars === undefined){
-        chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+function BMRenderFrameErrorEvent(nativeError, currentTime) {
+    this.type = 'renderFrameError';
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
+}
+
+function BMConfigErrorEvent(nativeError) {
+    this.type = 'configError';
+    this.nativeError = nativeError;
+}
+
+function BMAnimationConfigErrorEvent(type, nativeError) {
+    this.type = type;
+    this.nativeError = nativeError;
+    this.currentTime = currentTime;
+}
+
+var createElementID = (function(){
+    var _count = 0;
+    return function createID() {
+        return '__lottie_element_' + ++_count
     }
-    var i;
-    var result = '';
-    for (i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
-    return result;
-}
+}())
 
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;
@@ -325,6 +339,31 @@ DynamicPropertyContainer.prototype = {
 	    this._isAnimated = false;
 	}
 }
+var getBlendMode = (function() {
+
+	var blendModeEnums = {
+        0:'source-over',
+        1:'multiply',
+        2:'screen',
+        3:'overlay',
+        4:'darken',
+        5:'lighten',
+        6:'color-dodge',
+        7:'color-burn',
+        8:'hard-light',
+        9:'soft-light',
+        10:'difference',
+        11:'exclusion',
+        12:'hue',
+        13:'saturation',
+        14:'color',
+        15:'luminosity'
+    }
+
+	return function(mode) {
+		return blendModeEnums[mode] || '';
+	}
+}())
 /*!
  Transformation Matrix v2.0
  (c) Epistemex 2014-2015
@@ -1257,45 +1296,39 @@ function bezFunction(){
 
         var storedData = {};
 
-        return function (keyData){
-            var pt1 = keyData.s;
-            var pt2 = keyData.e;
-            var pt3 = keyData.to;
-            var pt4 = keyData.ti;
+        return function (pt1, pt2, pt3, pt4){
             var bezierName = (pt1[0]+'_'+pt1[1]+'_'+pt2[0]+'_'+pt2[1]+'_'+pt3[0]+'_'+pt3[1]+'_'+pt4[0]+'_'+pt4[1]).replace(/\./g, 'p');
-            if(storedData[bezierName]){
-                keyData.bezierData = storedData[bezierName];
-                return;
-            }
-            var curveSegments = defaultCurveSegments;
-            var k, i, len;
-            var ptCoord,perc,addedLength = 0;
-            var ptDistance;
-            var point,lastPoint = null;
-            if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
-                curveSegments = 2;
-            }
-            var bezierData = new BezierData(curveSegments);
-            len = pt3.length;
-            for (k = 0; k < curveSegments; k += 1) {
-                point = createSizedArray(len);
-                perc = k / (curveSegments - 1);
-                ptDistance = 0;
-                for (i = 0; i < len; i += 1){
-                    ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
-                    point[i] = ptCoord;
-                    if(lastPoint !== null){
-                        ptDistance += bm_pow(point[i] - lastPoint[i],2);
-                    }
+            if(!storedData[bezierName]){
+                var curveSegments = defaultCurveSegments;
+                var k, i, len;
+                var ptCoord,perc,addedLength = 0;
+                var ptDistance;
+                var point,lastPoint = null;
+                if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt1[0]+pt3[0],pt1[1]+pt3[1]) && pointOnLine2D(pt1[0],pt1[1],pt2[0],pt2[1],pt2[0]+pt4[0],pt2[1]+pt4[1])){
+                    curveSegments = 2;
                 }
-                ptDistance = bm_sqrt(ptDistance);
-                addedLength += ptDistance;
-                bezierData.points[k] = new PointData(ptDistance, point);
-                lastPoint = point;
+                var bezierData = new BezierData(curveSegments);
+                len = pt3.length;
+                for (k = 0; k < curveSegments; k += 1) {
+                    point = createSizedArray(len);
+                    perc = k / (curveSegments - 1);
+                    ptDistance = 0;
+                    for (i = 0; i < len; i += 1){
+                        ptCoord = bm_pow(1-perc,3)*pt1[i]+3*bm_pow(1-perc,2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc,2)*(pt2[i] + pt4[i])+bm_pow(perc,3)*pt2[i];
+                        point[i] = ptCoord;
+                        if(lastPoint !== null){
+                            ptDistance += bm_pow(point[i] - lastPoint[i],2);
+                        }
+                    }
+                    ptDistance = bm_sqrt(ptDistance);
+                    addedLength += ptDistance;
+                    bezierData.points[k] = new PointData(ptDistance, point);
+                    lastPoint = point;
+                }
+                bezierData.segmentLength = addedLength;
+                storedData[bezierName] = bezierData;
             }
-            bezierData.segmentLength = addedLength;
-            keyData.bezierData = bezierData;
-            storedData[bezierName] = bezierData;
+            return storedData[bezierName];
         };
     }());
 
@@ -1844,7 +1877,7 @@ var FontManager = (function(){
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
-            tHelper.className = fontData.fClass;
+            tHelper.setAttribute('class', fontData.fClass);
         } else {
             tHelper.style.fontFamily = fontData.fFamily;
         }
@@ -1976,11 +2009,12 @@ var FontManager = (function(){
         var i = 0, len = this.chars.length;
         while( i < len) {
             if(this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font){
+
                 return this.chars[i];
             }
             i+= 1;
         }
-        if(console && console.warn) {
+        if((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char) && console && console.warn) {
             console.warn('Missing character from exported characters list: ', char, style, font);
         }
         return emptyChar;
@@ -2090,9 +2124,10 @@ var PropertyFactory = (function(){
         var k, kLen, perc, jLen, j, fnc;
         var nextKeyTime = nextKeyData.t - offsetTime;
         var keyTime = keyData.t - offsetTime;
+        var endValue;
         if (keyData.to) {
             if (!keyData.bezierData) {
-                bez.buildBezierData(keyData);
+                keyData.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
             }
             var bezierData = keyData.bezierData;
             if (frameNum >= nextKeyTime || frameNum < keyTime) {
@@ -2101,7 +2136,7 @@ var PropertyFactory = (function(){
                 for (k = 0; k < kLen; k += 1) {
                     newValue[k] = bezierData.points[ind].point[k];
                 }
-                // caching._lastBezierData = null;
+                // caching._lastKeyframeIndex = -1;
             } else {
                 if (keyData.__fnct) {
                     fnc = keyData.__fnct;
@@ -2113,8 +2148,8 @@ var PropertyFactory = (function(){
                 var distanceInLine = bezierData.segmentLength*perc;
 
                 var segmentPerc;
-                var addedLength =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastAddedLength : 0;
-                j =  (caching.lastFrame < frameNum && caching._lastBezierData === bezierData) ? caching._lastPoint : 0;
+                var addedLength =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
+                j =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastPoint : 0;
                 flag = true;
                 jLen = bezierData.points.length;
                 while (flag) {
@@ -2141,23 +2176,24 @@ var PropertyFactory = (function(){
                 }
                 caching._lastPoint = j;
                 caching._lastAddedLength = addedLength - bezierData.points[j].partialLength;
-                caching._lastBezierData = bezierData;
+                caching._lastKeyframeIndex = i;
             }
         } else {
             var outX, outY, inX, inY, keyValue;
             len = keyData.s.length;
+            endValue = nextKeyData.s || keyData.e;
             if (this.sh && keyData.h !== 1) {
                 if (frameNum >= nextKeyTime) {
-                    newValue[0] = keyData.e[0];
-                    newValue[1] = keyData.e[1];
-                    newValue[2] = keyData.e[2];
+                    newValue[0] = endValue[0];
+                    newValue[1] = endValue[1];
+                    newValue[2] = endValue[2];
                 } else if (frameNum <= keyTime) {
                     newValue[0] = keyData.s[0];
                     newValue[1] = keyData.s[1];
                     newValue[2] = keyData.s[2];
                 } else {
                     var quatStart = createQuaternion(keyData.s);
-                    var quatEnd = createQuaternion(keyData.e);
+                    var quatEnd = createQuaternion(endValue);
                     var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
                     quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
                 }
@@ -2175,11 +2211,10 @@ var PropertyFactory = (function(){
                                     keyData.__fnct = [];
                                 }
                                 if (!keyData.__fnct[i]) {
-                                    outX = (typeof keyData.o.x[i] === undefined) ? keyData.o.x[0] : keyData.o.x[i];
-                                    outY = (typeof keyData.o.y[i] === undefined) ? keyData.o.y[0] : keyData.o.y[i];
-                                    inX = (typeof keyData.i.x[i] === undefined) ? keyData.i.x[0] : keyData.i.x[i];
-                                    inY = (typeof keyData.i.y[i] === undefined) ? keyData.i.y[0] : keyData.i.y[i];
- 
+                                    outX = (typeof keyData.o.x[i] === 'undefined') ? keyData.o.x[0] : keyData.o.x[i];
+                                    outY = (typeof keyData.o.y[i] === 'undefined') ? keyData.o.y[0] : keyData.o.y[i];
+                                    inX = (typeof keyData.i.x[i] === 'undefined') ? keyData.i.x[0] : keyData.i.x[i];
+                                    inY = (typeof keyData.i.y[i] === 'undefined') ? keyData.i.y[0] : keyData.i.y[i];
                                     fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
                                     keyData.__fnct[i] = fnc;
                                 } else {
@@ -2201,12 +2236,13 @@ var PropertyFactory = (function(){
                         }
                     }
 
-                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (keyData.e[i] - keyData.s[i]) * perc;
+                    endValue = nextKeyData.s || keyData.e;
+                    keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
 
-                    if (len === 1) {
-                        newValue = keyValue;
-                    } else {
+                    if (this.propType === 'multidimensional') {
                         newValue[i] = keyValue;
+                    } else {
+                        newValue = keyValue;
                     }
                 }
             }
@@ -2285,7 +2321,7 @@ var PropertyFactory = (function(){
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
         if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
             if(this._caching.lastFrame >= frameNum) {
-                this._caching._lastBezierData = null;
+                this._caching._lastKeyframeIndex = -1;
                 this._caching.lastIndex = 0;
             }
 
@@ -2318,9 +2354,9 @@ var PropertyFactory = (function(){
     }
 
     function processEffectsSequence() {
-        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+        if (this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
             return;
-        }        
+        }
         if(this.lock) {
             this.setVValue(this.pv);
             return;
@@ -2396,7 +2432,7 @@ var PropertyFactory = (function(){
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.frameId = -1;
-        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastBezierData: null};
+        this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastKeyframeIndex: -1};
         this.k = true;
         this.kf = true;
         this.data = data;
@@ -2463,19 +2499,7 @@ var PropertyFactory = (function(){
 
     function getProp(elem,data,type, mult, container) {
         var p;
-        if(data.a === 0){
-            if(type === 0) {
-                p = new ValueProperty(elem,data,mult, container);
-            } else {
-                p = new MultiDimensionalProperty(elem,data, mult, container);
-            }
-        } else if(data.a === 1){
-            if(type === 0) {
-                p = new KeyframedValueProperty(elem,data,mult, container);
-            } else {
-                p = new KeyframedMultidimensionalProperty(elem,data, mult, container);
-            }
-        } else if(!data.k.length){
+        if(!data.k.length){
             p = new ValueProperty(elem,data, mult, container);
         }else if(typeof(data.k[0]) === 'number'){
             p = new MultiDimensionalProperty(elem,data, mult, container);
@@ -2565,7 +2589,7 @@ var TransformPropertyFactory = (function() {
                         v2 = this.p.getValueAtTime(this.p.keyframes[0].t / frameRate, 0);
                     } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
                         v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / frameRate), 0);
-                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.01) / frameRate, 0);
+                        v2 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.05) / frameRate, 0);
                     } else {
                         v1 = this.p.pv;
                         v2 = this.p.getValueAtTime((this.p._caching.lastFrame+this.p.offsetTime - 0.01) / frameRate, this.p.offsetTime);
@@ -2592,7 +2616,7 @@ var TransformPropertyFactory = (function() {
                 }
                 this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
             }
-            if(this.data.p.s){
+            if(this.data.p && this.data.p.s){
                 if(this.data.p.z) {
                     this.v.translate(this.px.v, this.py.v, -this.pz.v);
                 } else {
@@ -2660,18 +2684,16 @@ var TransformPropertyFactory = (function() {
         this.pre = new Matrix();
         this.appliedTransformations = 0;
         this.initDynamicPropertyContainer(container || elem);
-        if(data.p.s){
+        if(data.p && data.p.s){
             this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
             this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
             if(data.p.z){
                 this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this);
             }
         }else{
-            this.p = PropertyFactory.getProp(elem,data.p,1,0,this);
+            this.p = PropertyFactory.getProp(elem,data.p || {k:[0,0,0]},1,0,this);
         }
-        if(data.r) {
-            this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this);
-        } else if(data.rx) {
+        if(data.rx) {
             this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this);
             this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this);
             this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this);
@@ -2684,17 +2706,15 @@ var TransformPropertyFactory = (function() {
             this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this);
             //sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;
+        } else {
+            this.r = PropertyFactory.getProp(elem, data.r || {k: 0}, 0, degToRads, this);
         }
         if(data.sk){
             this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this);
             this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this);
         }
-        if(data.a) {
-            this.a = PropertyFactory.getProp(elem,data.a,1,0,this);
-        }
-        if(data.s) {
-            this.s = PropertyFactory.getProp(elem,data.s,1,0.01,this);
-        }
+        this.a = PropertyFactory.getProp(elem,data.a || {k:[0,0,0]},1,0,this);
+        this.s = PropertyFactory.getProp(elem,data.s || {k:[100,100,100]},1,0.01,this);
         // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
         if(data.o){
             this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
@@ -2824,11 +2844,12 @@ var ShapePropertyFactory = (function(){
             isHold = true;
             iterationIndex = 0;
         }else if(frameNum >= kf[kf.length - 1].t-this.offsetTime){
-            if(kf[kf.length - 2].h === 1){
+            keyPropS = kf[kf.length - 1].s ? kf[kf.length - 1].s[0] : kf[kf.length - 2].e[0];
+            /*if(kf[kf.length - 1].s){
                 keyPropS = kf[kf.length - 1].s[0];
             }else{
                 keyPropS = kf[kf.length - 2].e[0];
-            }
+            }*/
             isHold = true;
         }else{
             var i = iterationIndex;
@@ -2862,7 +2883,7 @@ var ShapePropertyFactory = (function(){
                     }
                     perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
                 }
-                keyPropE = keyData.e[0];
+                keyPropE = nextKeyData.s ? nextKeyData.s[0] : keyData.e[0];
             }
             keyPropS = keyData.s[0];
         }
@@ -2930,10 +2951,13 @@ var ShapePropertyFactory = (function(){
     }
 
     function processEffectsSequence() {
-        if(this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
+        if (this.elem.globalData.frameId === this.frameId) {
+            return;
+        } else if (!this.effectsSequence.length) {
+            this._mdf = false;
             return;
         }
-        if(this.lock) {
+        if (this.lock) {
             this.setVValue(this.pv);
             return;
         }
@@ -3284,7 +3308,7 @@ var ShapePropertyFactory = (function(){
         if(type === 3 || type === 4){
             var dataProp = type === 3 ? data.pt : data.ks;
             var keys = dataProp.k;
-            if(dataProp.a === 1 || keys.length){
+            if(keys.length){
                 prop = new KeyframedShapeProperty(elem, data, type);
             }else{
                 prop = new ShapeProperty(elem, data, type);
@@ -3339,11 +3363,13 @@ function ShapeModifier(){}
 ShapeModifier.prototype.initModifierProperties = function(){};
 ShapeModifier.prototype.addShapeToModifier = function(){};
 ShapeModifier.prototype.addShape = function(data){
-    if(!this.closed){
+    if (!this.closed) {
+        // Adding shape to dynamic properties. It covers the case where a shape has no effects applied, to reset it's _mdf state on every tick.
+        data.sh.container.addDynamicProperty(data.sh);
         var shapeData = {shape:data.sh, data: data, localShapeCollection:shapeCollection_pool.newShapeCollection()};
         this.shapes.push(shapeData);
         this.addShapeToModifier(shapeData);
-        if(this._isAnimated) {
+        if (this._isAnimated) {
             data.setAsAnimated();
         }
     }
@@ -4155,7 +4181,7 @@ var ImagePreloader = (function(){
         canvas.width = 1;
         canvas.height = 1;
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#FF0000';
+        ctx.fillStyle = 'rgba(0,0,0,0)';
         ctx.fillRect(0, 0, 1, 1);
         return canvas;
     }())
@@ -4311,7 +4337,10 @@ var assetLoader = (function(){
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', path, true);
 		// set responseType after calling open or IE will break.
-		xhr.responseType = "json";
+		try {
+		    // This crashes on Android WebView prior to KitKat
+		    xhr.responseType = "json";
+		} catch (err) {}
 	    xhr.send();
 	    xhr.onreadystatechange = function () {
 	        if (xhr.readyState == 4) {
@@ -4404,32 +4433,26 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 segments: []
             };
             len = paths._length - 1;
-            var pathData;
+            var bezierData;
             totalLength = 0;
             for (i = 0; i < len; i += 1) {
-                pathData = {
-                    s: paths.v[i],
-                    e: paths.v[i + 1],
-                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                    ti: [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]
-                };
-                bez.buildBezierData(pathData);
-                pathInfo.tLength += pathData.bezierData.segmentLength;
-                pathInfo.segments.push(pathData);
-                totalLength += pathData.bezierData.segmentLength;
+                bezierData = bez.buildBezierData(paths.v[i]
+                    , paths.v[i + 1]
+                    , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
+                    , [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]);
+                pathInfo.tLength += bezierData.segmentLength;
+                pathInfo.segments.push(bezierData);
+                totalLength += bezierData.segmentLength;
             }
             i = len;
             if (mask.v.c) {
-                pathData = {
-                    s: paths.v[i],
-                    e: paths.v[0],
-                    to: [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
-                    ti: [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]
-                };
-                bez.buildBezierData(pathData);
-                pathInfo.tLength += pathData.bezierData.segmentLength;
-                pathInfo.segments.push(pathData);
-                totalLength += pathData.bezierData.segmentLength;
+                bezierData = bez.buildBezierData(paths.v[i]
+                    , paths.v[0]
+                    , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
+                    , [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]);
+                pathInfo.tLength += bezierData.segmentLength;
+                pathInfo.segments.push(bezierData);
+                totalLength += bezierData.segmentLength;
             }
             this._pathData.pi = pathInfo;
         }
@@ -4446,20 +4469,20 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 currentLength = -Math.abs(currentLength) % pathInfo.tLength;
             }
             segmentInd = segments.length - 1;
-            points = segments[segmentInd].bezierData.points;
+            points = segments[segmentInd].points;
             pointInd = points.length - 1;
             while (currentLength < 0) {
                 currentLength += points[pointInd].partialLength;
                 pointInd -= 1;
                 if (pointInd < 0) {
                     segmentInd -= 1;
-                    points = segments[segmentInd].bezierData.points;
+                    points = segments[segmentInd].points;
                     pointInd = points.length - 1;
                 }
             }
 
         }
-        points = segments[segmentInd].bezierData.points;
+        points = segments[segmentInd].points;
         prevPoint = points[pointInd - 1];
         currentPoint = points[pointInd];
         partialLength = currentPoint.partialLength;
@@ -4547,7 +4570,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             if(this._hasMaskedPath) {
                 segmentInd = initSegmentInd;
                 pointInd = initPointInd;
-                points = segments[segmentInd].bezierData.points;
+                points = segments[segmentInd].points;
                 prevPoint = points[pointInd - 1];
                 currentPoint = points[pointInd];
                 partialLength = currentPoint.partialLength;
@@ -4618,13 +4641,13 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                                 if (mask.v.c) {
                                     pointInd = 0;
                                     segmentInd = 0;
-                                    points = segments[segmentInd].bezierData.points;
+                                    points = segments[segmentInd].points;
                                 } else {
                                     segmentLength -= currentPoint.partialLength;
                                     points = null;
                                 }
                             } else {
-                                points = segments[segmentInd].bezierData.points;
+                                points = segments[segmentInd].points;
                             }
                         }
                         if (points) {
@@ -5127,11 +5150,23 @@ TextProperty.prototype.buildFinalText = function(text) {
     var combinedCharacters = FontManager.getCombinedCharacterCodes();
     var charactersArray = [];
     var i = 0, len = text.length;
+    var charCode;
     while (i < len) {
-        if (combinedCharacters.indexOf(text.charCodeAt(i)) !== -1) {
+        charCode = text.charCodeAt(i);
+        if (combinedCharacters.indexOf(charCode) !== -1) {
             charactersArray[charactersArray.length - 1] += text.charAt(i);
         } else {
-            charactersArray.push(text.charAt(i));
+            if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+                charCode = text.charCodeAt(i + 1);
+                if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+                    charactersArray.push(text.substr(i, 2));
+                    ++i;
+                } else {
+                    charactersArray.push(text.charAt(i));
+                }
+            } else {
+                charactersArray.push(text.charAt(i));
+            }
         }
         i += 1;
     }
@@ -5184,9 +5219,9 @@ TextProperty.prototype.completeTextData = function(documentData) {
     }
     documentData.fWeight = fontData.fWeight || fWeight;
     documentData.fStyle = fStyle;
-    len = documentData.t.length;
     documentData.finalSize = documentData.s;
     documentData.finalText = this.buildFinalText(documentData.t);
+    len = documentData.finalText.length;
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     var charCode;
@@ -5850,6 +5885,26 @@ function SVGRenderer(animationItem, config){
     this.layers = null;
     this.renderedFrame = -1;
     this.svgElement = createNS('svg');
+    var ariaLabel = '';
+    if (config && config.title) {
+        var titleElement = createNS('title');
+        var titleId = createElementID();
+        titleElement.setAttribute('id', titleId);
+        titleElement.textContent = config.title;
+        this.svgElement.appendChild(titleElement);
+        ariaLabel += titleId;
+    }
+    if (config && config.description) {
+        var descElement = createNS('desc');
+        var descId = createElementID();
+        descElement.setAttribute('id', descId);
+        descElement.textContent = config.description;
+        this.svgElement.appendChild(descElement);
+        ariaLabel += ' ' + descId;
+    }
+    if (ariaLabel) {
+        this.svgElement.setAttribute('aria-labelledby', ariaLabel)
+    }
     var defs = createNS( 'defs');
     this.svgElement.appendChild(defs);
     var maskElement = createNS('g');
@@ -5862,8 +5917,10 @@ function SVGRenderer(animationItem, config){
         hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        focusable: config && config.focusable
     };
+
     this.globalData = {
         _mdf: false,
         frameNum: -1,
@@ -5923,6 +5980,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
     if(this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);
     }
+    if(this.renderConfig.focusable !== undefined) {
+        this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
+    }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
     //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
@@ -5940,7 +6000,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     rect.setAttribute('height',animData.h);
     rect.setAttribute('x',0);
     rect.setAttribute('y',0);
-    var maskId = 'animationMask_'+randomString(10);
+    var maskId = createElementID();
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
     this.layerElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
@@ -6314,6 +6374,8 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
     this.canvasContext.closePath();
     this.canvasContext.clip();
+
+    this.renderFrame(this.renderedFrame, true);
 };
 
 CanvasRenderer.prototype.destroy = function () {
@@ -6332,14 +6394,14 @@ CanvasRenderer.prototype.destroy = function () {
     this.destroyed = true;
 };
 
-CanvasRenderer.prototype.renderFrame = function(num){
-    if((this.renderedFrame == num && this.renderConfig.clearCanvas === true) || this.destroyed || num === -1){
+CanvasRenderer.prototype.renderFrame = function(num, forceRender){
+    if((this.renderedFrame === num && this.renderConfig.clearCanvas === true && !forceRender) || this.destroyed || num === -1){
         return;
     }
     this.renderedFrame = num;
     this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
-    this.globalData._mdf = !this.renderConfig.clearCanvas;
+    this.globalData._mdf = !this.renderConfig.clearCanvas || forceRender;
     this.globalData.projectInterface.currentFrame = num;
 
      // console.log('--------');
@@ -6416,12 +6478,11 @@ function MaskElement(data,element,globalData) {
     var count = 0;
     var currentMasks = [];
     var j, jLen;
-    var layerId = randomString(10);
+    var layerId = createElementID();
     var rect, expansor, feMorph,x;
     var maskType = 'clipPath', maskRef = 'clip-path';
     for (i = 0; i < len; i++) {
-
-        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv || properties[i].o.k !== 100){
+        if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv || properties[i].o.k !== 100 || properties[i].o.x){
             maskType = 'mask';
             maskRef = 'mask';
         }
@@ -6458,11 +6519,11 @@ function MaskElement(data,element,globalData) {
             maskType = 'mask';
             maskRef = 'mask';
             x = PropertyFactory.getProp(this.element,properties[i].x,0,null,this.element);
-            filterID = 'fi_'+randomString(10);
+            filterID = createElementID();
             expansor = createNS('filter');
             expansor.setAttribute('id',filterID);
             feMorph = createNS('feMorphology');
-            feMorph.setAttribute('operator','dilate');
+            feMorph.setAttribute('operator','erode');
             feMorph.setAttribute('in','SourceGraphic');
             feMorph.setAttribute('radius','0');
             expansor.appendChild(feMorph);
@@ -7097,28 +7158,8 @@ BaseElement.prototype = {
             this.layerInterface.text = this.layerInterface.textInterface;
         }
     },
-    blendModeEnums: {
-        1:'multiply',
-        2:'screen',
-        3:'overlay',
-        4:'darken',
-        5:'lighten',
-        6:'color-dodge',
-        7:'color-burn',
-        8:'hard-light',
-        9:'soft-light',
-        10:'difference',
-        11:'exclusion',
-        12:'hue',
-        13:'saturation',
-        14:'color',
-        15:'luminosity'
-    },
-    getBlendMode: function(){
-        return this.blendModeEnums[this.data.bm] || '';
-    },
     setBlendMode: function(){
-        var blendModeValue = this.getBlendMode();
+        var blendModeValue = getBlendMode(this.data.bm);
         var elem = this.baseElement || this.layerElement;
 
         elem.style['mix-blend-mode'] = blendModeValue;
@@ -7127,7 +7168,7 @@ BaseElement.prototype = {
         this.globalData = globalData;
         this.comp = comp;
         this.data = data;
-        this.layerId = 'ly_'+randomString(10);
+        this.layerId = createElementID();
         
         //Stretch factor for old animations missing this property.
         if(!this.data.sr){
@@ -7140,6 +7181,7 @@ BaseElement.prototype = {
     getType: function(){
         return this.type;
     }
+    ,sourceRectAtTime: function(){}
 }
 function NullElement(data,globalData,comp){
     this.initFrame();
@@ -7197,7 +7239,7 @@ SVGBaseElement.prototype = {
                 // This is only for IE and Edge when mask if of type alpha
                 if (!featureSupport.maskType && this.data.td == 1) {
                     masker.setAttribute('mask-type', 'luminance');
-                    filId = randomString(10);
+                    filId = createElementID();
                     fil = filtersFactory.createFilter(filId);
                     this.globalData.defs.appendChild(fil);
                     fil.appendChild(filtersFactory.createAlphaToLuminanceFilter());
@@ -7213,24 +7255,25 @@ SVGBaseElement.prototype = {
                 maskGroup.setAttribute('mask-type','alpha');
                 var maskGrouper = createNS('g');
                 maskGroup.appendChild(maskGrouper);
-                filId = randomString(10);
+                filId = createElementID();
                 fil = filtersFactory.createFilter(filId);
                 ////
 
-                var feColorMatrix = createNS('feColorMatrix');
+                // This solution doesn't work on Android when meta tag with viewport attribute is set
+                /*var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type', 'matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
                 feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
-                fil.appendChild(feColorMatrix);
-
+                fil.appendChild(feColorMatrix);*/
                 ////
-                /*var feCTr = createNS('feComponentTransfer');
+                var feCTr = createNS('feComponentTransfer');
                 feCTr.setAttribute('in','SourceGraphic');
                 fil.appendChild(feCTr);
                 var feFunc = createNS('feFuncA');
                 feFunc.setAttribute('type','table');
                 feFunc.setAttribute('tableValues','1.0 0.0');
-                feCTr.appendChild(feFunc);*/
+                feCTr.appendChild(feFunc);
+                ////
                 this.globalData.defs.appendChild(fil);
                 var alphaRect = createNS('rect');
                 alphaRect.setAttribute('width',  this.comp.data.w);
@@ -7272,7 +7315,7 @@ SVGBaseElement.prototype = {
             var cp = createNS( 'clipPath');
             var pt = createNS('path');
             pt.setAttribute('d','M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
-            var clipId = 'cp_'+randomString(8);
+            var clipId = createElementID();
             cp.setAttribute('id',clipId);
             cp.appendChild(pt);
             this.globalData.defs.appendChild(cp);
@@ -7575,6 +7618,7 @@ ICompElement.prototype.destroy = function(){
 function IImageElement(data,globalData,comp){
     this.assetData = globalData.getAssetData(data.refId);
     this.initElement(data,globalData,comp);
+    this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
@@ -7592,6 +7636,9 @@ IImageElement.prototype.createContent = function(){
     this.layerElement.appendChild(this.innerElem);
 };
 
+IImageElement.prototype.sourceRectAtTime = function() {
+	return this.sourceRect;
+}
 function ISolidElement(data,globalData,comp){
     this.initElement(data,globalData,comp);
 }
@@ -7717,6 +7764,9 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
     if(data.cl){
         pathElement.setAttribute('class',data.cl);
     }
+    if(data.bm){
+        pathElement.style['mix-blend-mode'] = getBlendMode(data.bm);
+    }
     this.stylesList.push(styleOb);
     this.addToAnimatedContents(data, elementData);
     return elementData;
@@ -7729,6 +7779,9 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     }
     if(data.cl){
         elementData.gr.setAttribute('class',data.cl);
+    }
+    if(data.bm){
+        elementData.gr.style['mix-blend-mode'] = getBlendMode(data.bm);
     }
     return elementData;
 };
@@ -7962,7 +8015,7 @@ CVBaseElement.prototype = {
         var globalData = this.globalData;
         if(globalData.blendMode !== this.data.bm) {
             globalData.blendMode = this.data.bm;
-            var blendModeValue = this.getBlendMode();
+            var blendModeValue = getBlendMode(this.data.bm);
             globalData.canvasContext.globalCompositeOperation = blendModeValue;
         }
     },
@@ -7988,11 +8041,12 @@ CVBaseElement.prototype = {
         this.renderTransform();
         this.renderRenderable();
         this.setBlendMode();
-        this.globalData.renderer.save();
+        var forceRealStack = this.data.ty === 0;
+        this.globalData.renderer.save(forceRealStack);
         this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
         this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
         this.renderInnerContent();
-        this.globalData.renderer.restore();
+        this.globalData.renderer.restore(forceRealStack);
         if(this.maskManager.hasMasks) {
             this.globalData.renderer.restore(true);
         }
@@ -8012,7 +8066,6 @@ CVBaseElement.prototype.hide = CVBaseElement.prototype.hideElement;
 CVBaseElement.prototype.show = CVBaseElement.prototype.showElement;
 
 function CVImageElement(data, globalData, comp){
-    this.failed = false;
     this.assetData = globalData.getAssetData(data.refId);
     this.img = globalData.imageLoader.getImage(this.assetData);
     this.initElement(data,globalData,comp);
@@ -8050,9 +8103,6 @@ CVImageElement.prototype.createContent = function(){
 };
 
 CVImageElement.prototype.renderInnerContent = function(parentMatrix){
-    if (this.failed) {
-        return;
-    }
     this.canvasContext.drawImage(this.img, 0, 0);
 };
 
@@ -8071,6 +8121,14 @@ function CVCompElement(data, globalData, comp) {
 extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
 
 CVCompElement.prototype.renderInnerContent = function() {
+    var ctx = this.canvasContext;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(this.data.w, 0);
+    ctx.lineTo(this.data.w, this.data.h);
+    ctx.lineTo(0, this.data.h);
+    ctx.lineTo(0, 0);
+    ctx.clip();
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ){
         if(this.completeLayers || this.elements[i]){
@@ -8205,7 +8263,7 @@ CVShapeElement.prototype.createStyleElement = function(data, transforms) {
             styleElem.wi = elementData.w.v;
         }
         if(data.d){
-            var d = new DashProperty(this,data.d,'canvas');
+            var d = new DashProperty(this,data.d,'canvas', this);
             elementData.d = d;
             if(!elementData.d.k){
                 styleElem.da = elementData.d.dashArray;
@@ -9053,7 +9111,7 @@ var AnimationItem = function () {
     this.autoplay = false;
     this.loop = true;
     this.renderer = null;
-    this.animationID = randomString(10);
+    this.animationID = createElementID();
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
@@ -9101,19 +9159,13 @@ AnimationItem.prototype.setParams = function(params) {
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
-    if(params.animationData){
+    if (params.animationData) {
         this.configAnimation(params.animationData);
-    }else if(params.path){
-        if(params.path.substr(-4) != 'json'){
-            if (params.path.substr(-1, 1) != '/') {
-                params.path += '/';
-            }
-            params.path += 'data.json';
-        }
+    } else if(params.path){
 
-        if(params.path.lastIndexOf('\\') != -1){
+        if( params.path.lastIndexOf('\\') !== -1){
             this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
-        }else{
+        } else {
             this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
@@ -9233,23 +9285,27 @@ AnimationItem.prototype.configAnimation = function (animData) {
     if(!this.renderer){
         return;
     }
-    this.animationData = animData;
-    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-    this.renderer.configAnimation(animData);
-    if(!animData.assets){
-        animData.assets = [];
-    }
-    this.renderer.searchExtraCompositions(animData.assets);
+    try {
+        this.animationData = animData;
+        this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+        this.renderer.configAnimation(animData);
+        if(!animData.assets){
+            animData.assets = [];
+        }
 
-    this.assets = this.animationData.assets;
-    this.frameRate = this.animationData.fr;
-    this.firstFrame = Math.round(this.animationData.ip);
-    this.frameMult = this.animationData.fr / 1000;
-    this.trigger('config_ready');
-    this.preloadImages();
-    this.loadSegments();
-    this.updaFrameModifier();
-    this.waitForFontsLoaded();
+        this.assets = this.animationData.assets;
+        this.frameRate = this.animationData.fr;
+        this.firstFrame = Math.round(this.animationData.ip);
+        this.frameMult = this.animationData.fr / 1000;
+        this.renderer.searchExtraCompositions(animData.assets);
+        this.trigger('config_ready');
+        this.preloadImages();
+        this.loadSegments();
+        this.updaFrameModifier();
+        this.waitForFontsLoaded();
+    } catch(error) {
+        this.triggerConfigError(error);
+    }
 };
 
 AnimationItem.prototype.waitForFontsLoaded = function(){
@@ -9303,7 +9359,11 @@ AnimationItem.prototype.renderFrame = function () {
     if(this.isLoaded === false){
         return;
     }
-    this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    try {
+        this.renderer.renderFrame(this.currentFrame + this.firstFrame);
+    } catch(error) {
+        this.triggerRenderFrameError(error);
+    }
 };
 
 AnimationItem.prototype.play = function (name) {
@@ -9472,7 +9532,7 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
     } else {
         this.segments.push(arr);
     }
-    if (this.segments.length) {
+    if (this.segments.length && forceFlag) {
         this.adjustSegment(this.segments.shift(), 0);
     }
     if (this.isPaused) {
@@ -9575,7 +9635,7 @@ AnimationItem.prototype.trigger = function(name){
     if(this._cbs && this._cbs[name]){
         switch(name){
             case 'enterFrame':
-                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
+                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameModifier));
                 break;
             case 'loopComplete':
                 this.triggerEvent(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
@@ -9610,6 +9670,25 @@ AnimationItem.prototype.trigger = function(name){
     }
 };
 
+AnimationItem.prototype.triggerRenderFrameError = function(nativeError) {
+
+    var error = new BMRenderFrameErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
+
+AnimationItem.prototype.triggerConfigError = function(nativeError) {
+
+    var error = new BMConfigErrorEvent(nativeError, this.currentFrame);
+    this.triggerEvent('error', error);
+
+    if (this.onError) {
+        this.onError.call(this, error);
+    }
+}
 var Expressions = (function(){
     var ob = {};
     ob.initExpressions = initExpressions;
@@ -9683,6 +9762,9 @@ var ExpressionManager = (function(){
                 retArr[i] = -a[i];
             }
             return retArr;
+        }
+        if (a.propType) {
+            return a.v;
         }
     }
 
@@ -9828,6 +9910,11 @@ var ExpressionManager = (function(){
         }
         return a % b;
     }
+    var $bm_sum = sum;
+    var $bm_sub = sub;
+    var $bm_mul = mul;
+    var $bm_div = div;
+    var $bm_mod = mod;
 
     function clamp(num, min, max) {
         if(min > max){
@@ -9999,6 +10086,11 @@ var ExpressionManager = (function(){
         var transform,$bm_transform,content,effect;
         var thisProperty = property;
         thisProperty.valueAtTime = thisProperty.getValueAtTime;
+        Object.defineProperty(thisProperty, 'value', {
+            get: function() {
+                return thisProperty.v
+            }
+        })
         elem.comp.frameDuration = 1/elem.comp.globalData.frameRate;
         elem.comp.displayStartTime = 0;
         var inPoint = elem.data.ip/elem.comp.globalData.frameRate;
@@ -10006,8 +10098,8 @@ var ExpressionManager = (function(){
         var width = elem.data.sw ? elem.data.sw : 0;
         var height = elem.data.sh ? elem.data.sh : 0;
         var name = elem.data.nm;
-        var loopIn, loop_in, loopOut, loop_out;
-        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer,thisComp,mask,valueAtTime,velocityAtTime;
+        var loopIn, loop_in, loopOut, loop_out, smooth;
+        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer, thisComp,mask,valueAtTime,velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -10061,6 +10153,10 @@ var ExpressionManager = (function(){
         if(thisProperty.loopOut) {
             loopOut = thisProperty.loopOut.bind(thisProperty);
             loop_out = loopOut;
+        }
+
+        if(thisProperty.smooth) {
+            smooth = thisProperty.smooth.bind(thisProperty);
         }
 
         function loopInDuration(type,duration){
@@ -10169,17 +10265,15 @@ var ExpressionManager = (function(){
             }
             ind -= 1;
             ob = {
-                time: data.k[ind].t/elem.comp.globalData.frameRate
+                time: data.k[ind].t/elem.comp.globalData.frameRate,
+                value: []
             };
-            var arr;
-            if(ind === data.k.length - 1 && !data.k[ind].h){
-                arr = data.k[ind-1].e;
-            }else{
-                arr = data.k[ind].s;
-            }
+            var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
+
             len = arr.length;
             for(i=0;i<len;i+=1){
                 ob[i] = arr[i];
+                ob.value[i] = arr[i]
             }
             return ob;
         }
@@ -10302,11 +10396,88 @@ var ExpressionManager = (function(){
     ob.initiateExpression = initiateExpression;
     return ob;
 }());
-(function addPropertyDecorator() {
+var expressionHelpers = (function(){
+
+    function searchExpressions(elem,data,prop){
+        if(data.x){
+            prop.k = true;
+            prop.x = true;
+            prop.initiateExpression = ExpressionManager.initiateExpression;
+            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
+        }
+    }
+
+    function getValueAtTime(frameNum) {
+        frameNum *= this.elem.globalData.frameRate;
+        frameNum -= this.offsetTime;
+        if(frameNum !== this._cachingAtTime.lastFrame) {
+            this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
+            this._cachingAtTime.value = this.interpolateValue(frameNum, this._cachingAtTime);
+            this._cachingAtTime.lastFrame = frameNum;
+        }
+        return this._cachingAtTime.value;
+
+    }
+
+    function getSpeedAtTime(frameNum) {
+        var delta = -0.01;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var speed = 0;
+        if(v1.length){
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                speed += Math.pow(v2[i] - v1[i], 2);
+            }
+            speed = Math.sqrt(speed) * 100;
+        } else {
+            speed = 0;
+        }
+        return speed;
+    }
+
+    function getVelocityAtTime(frameNum) {
+        if(this.vel !== undefined){
+            return this.vel;
+        }
+        var delta = -0.001;
+        //frameNum += this.elem.data.st;
+        var v1 = this.getValueAtTime(frameNum);
+        var v2 = this.getValueAtTime(frameNum + delta);
+        var velocity;
+        if(v1.length){
+            velocity = createTypedArray('float32', v1.length);
+            var i;
+            for(i=0;i<v1.length;i+=1){
+                //removing frameRate
+                //if needed, don't add it here
+                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                velocity[i] = (v2[i] - v1[i])/delta;
+            }
+        } else {
+            velocity = (v2 - v1)/delta;
+        }
+        return velocity;
+    }
 
     function getStaticValueAtTime() {
         return this.pv;
     }
+
+    function setGroupProperty(propertyGroup){
+        this.propertyGroup = propertyGroup;
+    }
+
+	return {
+		searchExpressions: searchExpressions,
+		getSpeedAtTime: getSpeedAtTime,
+		getVelocityAtTime: getVelocityAtTime,
+		getValueAtTime: getValueAtTime,
+		getStaticValueAtTime: getStaticValueAtTime,
+		setGroupProperty: setGroupProperty,
+	}
+}());
+(function addPropertyDecorator() {
 
     function loopOut(type,duration,durationFlag){
         if(!this.k || !this.keyframes){
@@ -10434,6 +10605,48 @@ var ExpressionManager = (function(){
         }
     }
 
+    function smooth(width, samples) {
+        if (!this.k){
+            return this.pv;
+        }
+        width = (width || 0.4) * 0.5;
+        samples = Math.floor(samples || 5);
+        if (samples <= 1) {
+            return this.pv;
+        }
+        var currentTime = this.comp.renderedFrame / this.comp.globalData.frameRate;
+        var initFrame = currentTime - width;
+        var endFrame = currentTime + width;
+        var sampleFrequency = samples > 1 ? (endFrame - initFrame) / (samples - 1) : 1;
+        var i = 0, j = 0;
+        var value;
+        if (this.pv.length) {
+            value = createTypedArray('float32', this.pv.length);
+        } else {
+            value = 0;
+        }
+        var sampleValue;
+        while (i < samples) {
+            sampleValue = this.getValueAtTime(initFrame + i * sampleFrequency);
+            if(this.pv.length) {
+                for (j = 0; j < this.pv.length; j += 1) {
+                    value[j] += sampleValue[j];
+                }
+            } else {
+                value += sampleValue;
+            }
+            i += 1;
+        }
+        if(this.pv.length) {
+            for (j = 0; j < this.pv.length; j += 1) {
+                value[j] /= samples;
+            }
+        } else {
+            value /= samples;
+        }
+        return value;
+    }
+
     function getValueAtTime(frameNum) {
         frameNum *= this.elem.globalData.frameRate;
         frameNum -= this.offsetTime;
@@ -10446,60 +10659,6 @@ var ExpressionManager = (function(){
 
     }
 
-    function getSpeedAtTime(frameNum) {
-        var delta = -0.01;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var speed = 0;
-        if(v1.length){
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                speed += Math.pow(v2[i] - v1[i], 2);
-            }
-            speed = Math.sqrt(speed) * 100;
-        } else {
-            speed = 0;
-        }
-        return speed;
-    }
-
-    function getVelocityAtTime(frameNum) {
-        if(this.vel !== undefined){
-            return this.vel;
-        }
-        var delta = -0.001;
-        //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var velocity;
-        if(v1.length){
-            velocity = createTypedArray('float32', v1.length);
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                //removing frameRate
-                //if needed, don't add it here
-                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
-                velocity[i] = (v2[i] - v1[i])/delta;
-            }
-        } else {
-            velocity = (v2 - v1)/delta;
-        }
-        return velocity;
-    }
-
-    function setGroupProperty(propertyGroup){
-        this.propertyGroup = propertyGroup;
-    }
-
-    function searchExpressions(elem,data,prop){
-        if(data.x){
-            prop.k = true;
-            prop.x = true;
-            prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
-        }
-    }
-
     function getTransformValueAtTime(time) {
         console.warn('Transform at time not supported');
     }
@@ -10507,36 +10666,6 @@ var ExpressionManager = (function(){
     function getTransformStaticValueAtTime(time) {
 
     }
-
-    var TextExpressionSelectorProp = (function(){
-
-        function getValueProxy(index,total){
-            this.textIndex = index+1;
-            this.textTotal = total;
-            this.getValue();
-            return this.v;
-        }
-
-        return function TextExpressionSelectorProp(elem,data){
-            this.pv = 1;
-            this.comp = elem.comp;
-            this.elem = elem;
-            this.mult = 0.01;
-            this.propType = 'textSelector';
-            this.textTotal = data.totalChars;
-            this.selectorValue = 100;
-            this.lastValue = [1,1,1];
-            searchExpressions.bind(this)(elem,data,this);
-            this.getMult = getValueProxy;
-            this.getVelocityAtTime = getVelocityAtTime;
-            if(this.kf){
-                this.getValueAtTime = getValueAtTime.bind(this);
-            } else {
-                this.getValueAtTime = getStaticValueAtTime.bind(this);
-            }
-            this.setGroupProperty = setGroupProperty;
-        };
-    }());
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
     TransformPropertyFactory.getTransformProperty = function(elem, data, container) {
@@ -10546,7 +10675,7 @@ var ExpressionManager = (function(){
         } else {
             prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
         }
-        prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = expressionHelpers.setGroupProperty;
         return prop;
     };
 
@@ -10557,15 +10686,16 @@ var ExpressionManager = (function(){
         //prop.loopOut = loopOut;
         //prop.loopIn = loopIn;
         if(prop.kf){
-            prop.getValueAtTime = getValueAtTime.bind(prop);
+            prop.getValueAtTime = expressionHelpers.getValueAtTime.bind(prop);
         } else {
-            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
+            prop.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(prop);
         }
-        prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = expressionHelpers.setGroupProperty;
         prop.loopOut = loopOut;
         prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime.bind(prop);
-        prop.getSpeedAtTime = getSpeedAtTime.bind(prop);
+        prop.smooth = smooth;
+        prop.getVelocityAtTime = expressionHelpers.getVelocityAtTime.bind(prop);
+        prop.getSpeedAtTime = expressionHelpers.getSpeedAtTime.bind(prop);
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         prop.propertyIndex = data.ix;
         var value = 0;
@@ -10577,7 +10707,7 @@ var ExpressionManager = (function(){
             lastIndex: 0,
             value: value
         };
-        searchExpressions(elem,data,prop);
+        expressionHelpers.searchExpressions(elem,data,prop);
         if(prop.k){
             container.addDynamicProperty(prop);
         }
@@ -10594,10 +10724,12 @@ var ExpressionManager = (function(){
                 lastTime: initialDefaultFrame
             };
         }
+        
+        frameNum *= this.elem.globalData.frameRate;
+        frameNum -= this.offsetTime;
         if(frameNum !== this._cachingAtTime.lastTime) {
             this._cachingAtTime.lastIndex = this._cachingAtTime.lastTime < frameNum ? this._caching.lastIndex : 0;
             this._cachingAtTime.lastTime = frameNum;
-            frameNum *= this.elem.globalData.frameRate;
             this.interpolateShape(frameNum, this._cachingAtTime.shapeValue, this._cachingAtTime);
         }
         return this._cachingAtTime.shapeValue;
@@ -10682,6 +10814,9 @@ var ExpressionManager = (function(){
             var xLength = pt2[0] - pt1[0];
             var yLength = pt2[1] - pt1[1];
             var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
+            if (magnitude === 0) {
+                return [0,0];
+            }
             var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
             return unitVector;
         },
@@ -10691,8 +10826,8 @@ var ExpressionManager = (function(){
         normalOnPath: function(perc, time){
             return this.vectorOnPath(perc, time, 'normal');
         },
-        setGroupProperty: setGroupProperty,
-        getValueAtTime: getStaticValueAtTime
+        setGroupProperty: expressionHelpers.setGroupProperty,
+        getValueAtTime: expressionHelpers.getStaticValueAtTime
     };
     extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
     extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);
@@ -10705,23 +10840,14 @@ var ExpressionManager = (function(){
         prop.propertyIndex = data.ix;
         prop.lock = false;
         if(type === 3){
-            searchExpressions(elem,data.pt,prop);
+            expressionHelpers.searchExpressions(elem,data.pt,prop);
         } else if(type === 4){
-            searchExpressions(elem,data.ks,prop);
+            expressionHelpers.searchExpressions(elem,data.ks,prop);
         }
         if(prop.k){
             elem.addDynamicProperty(prop);
         }
         return prop;
-    };
-
-    var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
-        if(data.t === 1){
-            return new TextExpressionSelectorProp(elem, data,arr);
-        } else {
-            return propertyGetTextProp(elem,data,arr);
-        }
     };
 }());
 (function addDecorator() {
@@ -10968,6 +11094,7 @@ var ShapeExpressionInterface = (function(){
             }
         }
         interfaceFunction.propertyIndex = shape.ix;
+        interfaceFunction.propertyGroup = propertyGroup;
 
         Object.defineProperties(interfaceFunction, {
             'start': {
@@ -11054,6 +11181,7 @@ var ShapeExpressionInterface = (function(){
         });
         interfaceFunction.ty = 'tr';
         interfaceFunction.mn = shape.mn;
+        interfaceFunction.propertyGroup = propertyGroup;
         return interfaceFunction;
     }
 
@@ -11303,6 +11431,7 @@ var ShapeExpressionInterface = (function(){
             },
             '_name': { value: shape.nm },
             'ix': { value: shape.ix },
+            'propertyIndex': { value: shape.ix },
             'mn': { value: shape.mn }
         });
         return interfaceFunction;
@@ -11325,6 +11454,7 @@ var ShapeExpressionInterface = (function(){
         }
         _interfaceFunction.propertyGroup = propertyGroup;
         interfaces = iterateElements(shapes, view, _interfaceFunction);
+        _interfaceFunction.numProperties = interfaces.length;
         return _interfaceFunction;
     };
 }());
@@ -11495,12 +11625,12 @@ var LayerExpressionInterface = (function (){
     };
 }());
 
-var CompExpressionInterface = (function (){
-    return function(comp){
-        function _thisLayerFunction(name){
-            var i=0, len = comp.layers.length;
-            while(i<len){
-                if(comp.layers[i].nm === name || comp.layers[i].ind === name){
+var CompExpressionInterface = (function () {
+    return function(comp) {
+        function _thisLayerFunction(name) {
+            var i = 0, len = comp.layers.length;
+            while ( i < len) {
+                if (comp.layers[i].nm === name || comp.layers[i].ind === name) {
                     return comp.elements[i].layerInterface;
                 }
                 i += 1;
@@ -11508,13 +11638,13 @@ var CompExpressionInterface = (function (){
             return null;
             //return {active:false};
         }
-        Object.defineProperty(_thisLayerFunction, "_name", { value:comp.data.nm });
+        Object.defineProperty(_thisLayerFunction, "_name", { value: comp.data.nm });
         _thisLayerFunction.layer = _thisLayerFunction;
         _thisLayerFunction.pixelAspect = 1;
         _thisLayerFunction.height = comp.data.h || comp.globalData.compSize.h;
         _thisLayerFunction.width = comp.data.w || comp.globalData.compSize.w;
         _thisLayerFunction.pixelAspect = 1;
-        _thisLayerFunction.frameDuration = 1/comp.globalData.frameRate;
+        _thisLayerFunction.frameDuration = 1 / comp.globalData.frameRate;
         _thisLayerFunction.displayStartTime = 0;
         _thisLayerFunction.numLayers = comp.layers.length;
         return _thisLayerFunction;
@@ -11766,12 +11896,20 @@ var MaskManagerInterface = (function(){
 	}
 	Object.defineProperty(MaskInterface.prototype, 'maskPath', {
         get: function(){
-                if(this._mask.prop.k){
-                    this._mask.prop.getValue();
-                }
-                return this._mask.prop;
+            if(this._mask.prop.k){
+                this._mask.prop.getValue();
             }
-        });
+            return this._mask.prop;
+        }
+    });
+	Object.defineProperty(MaskInterface.prototype, 'maskOpacity', {
+        get: function(){
+            if(this._mask.op.k){
+                this._mask.op.getValue();
+            }
+            return this._mask.op.v * 100;
+        }
+    });
 
 	var MaskManager = function(maskManager, elem){
 		var _maskManager = maskManager;
@@ -11891,8 +12029,51 @@ var ExpressionPropertyInterface = (function() {
             return MultidimensionalPropertyInterface(property);
         }
     }
-}())
+}());
 
+(function(){
+
+    var TextExpressionSelectorProp = (function(){
+
+        function getValueProxy(index,total){
+            this.textIndex = index+1;
+            this.textTotal = total;
+            this.v = this.getValue() * this.mult;
+            return this.v;
+        }
+
+        return function TextExpressionSelectorProp(elem,data){
+            this.pv = 1;
+            this.comp = elem.comp;
+            this.elem = elem;
+            this.mult = 0.01;
+            this.propType = 'textSelector';
+            this.textTotal = data.totalChars;
+            this.selectorValue = 100;
+            this.lastValue = [1,1,1];
+            this.k = true;
+            this.x = true;
+            this.getValue = ExpressionManager.initiateExpression.bind(this)(elem,data,this);
+            this.getMult = getValueProxy;
+            this.getVelocityAtTime = expressionHelpers.getVelocityAtTime;
+            if(this.kf){
+                this.getValueAtTime = expressionHelpers.getValueAtTime.bind(this);
+            } else {
+                this.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(this);
+            }
+            this.setGroupProperty = expressionHelpers.setGroupProperty;
+        };
+    }());
+
+	var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
+	TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
+	    if(data.t === 1){
+	        return new TextExpressionSelectorProp(elem, data,arr);
+	    } else {
+	        return propertyGetTextProp(elem,data,arr);
+	    }
+	};
+}());
 function SliderEffect(data,elem, container){
     this.p = PropertyFactory.getProp(elem,data.v,0,0,container);
 }
@@ -12075,7 +12256,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.4.2';
+    lottiejs.version = '5.5.9';
 
     function checkReady() {
         if (document.readyState === "complete") {

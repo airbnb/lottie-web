@@ -1,18 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
+  "type": "number",
   "oneOf": [
     {
       "standsFor": "miter",
-      "value": 1
+      "const": 1
     },
     {
       "standsFor": "round",
-      "value": 2
+      "const": 2
     },
     {
       "standsFor": "bevel",
-      "value": 3
+      "const": 3
     }
-  ]
+  ],
+  "default": 2
 }

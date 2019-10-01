@@ -1,9 +1,5 @@
 (function addPropertyDecorator() {
 
-    function getStaticValueAtTime() {
-        return this.pv;
-    }
-
     function loopOut(type,duration,durationFlag){
         if(!this.k || !this.keyframes){
             return this.pv;
@@ -130,6 +126,48 @@
         }
     }
 
+    function smooth(width, samples) {
+        if (!this.k){
+            return this.pv;
+        }
+        width = (width || 0.4) * 0.5;
+        samples = Math.floor(samples || 5);
+        if (samples <= 1) {
+            return this.pv;
+        }
+        var currentTime = this.comp.renderedFrame / this.comp.globalData.frameRate;
+        var initFrame = currentTime - width;
+        var endFrame = currentTime + width;
+        var sampleFrequency = samples > 1 ? (endFrame - initFrame) / (samples - 1) : 1;
+        var i = 0, j = 0;
+        var value;
+        if (this.pv.length) {
+            value = createTypedArray('float32', this.pv.length);
+        } else {
+            value = 0;
+        }
+        var sampleValue;
+        while (i < samples) {
+            sampleValue = this.getValueAtTime(initFrame + i * sampleFrequency);
+            if(this.pv.length) {
+                for (j = 0; j < this.pv.length; j += 1) {
+                    value[j] += sampleValue[j];
+                }
+            } else {
+                value += sampleValue;
+            }
+            i += 1;
+        }
+        if(this.pv.length) {
+            for (j = 0; j < this.pv.length; j += 1) {
+                value[j] /= samples;
+            }
+        } else {
+            value /= samples;
+        }
+        return value;
+    }
+
     function getValueAtTime(frameNum) {
         frameNum *= this.elem.globalData.frameRate;
         frameNum -= this.offsetTime;
@@ -142,60 +180,6 @@
 
     }
 
-    function getSpeedAtTime(frameNum) {
-        var delta = -0.01;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var speed = 0;
-        if(v1.length){
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                speed += Math.pow(v2[i] - v1[i], 2);
-            }
-            speed = Math.sqrt(speed) * 100;
-        } else {
-            speed = 0;
-        }
-        return speed;
-    }
-
-    function getVelocityAtTime(frameNum) {
-        if(this.vel !== undefined){
-            return this.vel;
-        }
-        var delta = -0.001;
-        //frameNum += this.elem.data.st;
-        var v1 = this.getValueAtTime(frameNum);
-        var v2 = this.getValueAtTime(frameNum + delta);
-        var velocity;
-        if(v1.length){
-            velocity = createTypedArray('float32', v1.length);
-            var i;
-            for(i=0;i<v1.length;i+=1){
-                //removing frameRate
-                //if needed, don't add it here
-                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
-                velocity[i] = (v2[i] - v1[i])/delta;
-            }
-        } else {
-            velocity = (v2 - v1)/delta;
-        }
-        return velocity;
-    }
-
-    function setGroupProperty(propertyGroup){
-        this.propertyGroup = propertyGroup;
-    }
-
-    function searchExpressions(elem,data,prop){
-        if(data.x){
-            prop.k = true;
-            prop.x = true;
-            prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
-        }
-    }
-
     function getTransformValueAtTime(time) {
         console.warn('Transform at time not supported');
     }
@@ -203,36 +187,6 @@
     function getTransformStaticValueAtTime(time) {
 
     }
-
-    var TextExpressionSelectorProp = (function(){
-
-        function getValueProxy(index,total){
-            this.textIndex = index+1;
-            this.textTotal = total;
-            this.getValue();
-            return this.v;
-        }
-
-        return function TextExpressionSelectorProp(elem,data){
-            this.pv = 1;
-            this.comp = elem.comp;
-            this.elem = elem;
-            this.mult = 0.01;
-            this.propType = 'textSelector';
-            this.textTotal = data.totalChars;
-            this.selectorValue = 100;
-            this.lastValue = [1,1,1];
-            searchExpressions.bind(this)(elem,data,this);
-            this.getMult = getValueProxy;
-            this.getVelocityAtTime = getVelocityAtTime;
-            if(this.kf){
-                this.getValueAtTime = getValueAtTime.bind(this);
-            } else {
-                this.getValueAtTime = getStaticValueAtTime.bind(this);
-            }
-            this.setGroupProperty = setGroupProperty;
-        };
-    }());
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
     TransformPropertyFactory.getTransformProperty = function(elem, data, container) {
@@ -242,7 +196,7 @@
         } else {
             prop.getValueAtTime = getTransformStaticValueAtTime.bind(prop);
         }
-        prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = expressionHelpers.setGroupProperty;
         return prop;
     };
 
@@ -253,15 +207,16 @@
         //prop.loopOut = loopOut;
         //prop.loopIn = loopIn;
         if(prop.kf){
-            prop.getValueAtTime = getValueAtTime.bind(prop);
+            prop.getValueAtTime = expressionHelpers.getValueAtTime.bind(prop);
         } else {
-            prop.getValueAtTime = getStaticValueAtTime.bind(prop);
+            prop.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(prop);
         }
-        prop.setGroupProperty = setGroupProperty;
+        prop.setGroupProperty = expressionHelpers.setGroupProperty;
         prop.loopOut = loopOut;
         prop.loopIn = loopIn;
-        prop.getVelocityAtTime = getVelocityAtTime.bind(prop);
-        prop.getSpeedAtTime = getSpeedAtTime.bind(prop);
+        prop.smooth = smooth;
+        prop.getVelocityAtTime = expressionHelpers.getVelocityAtTime.bind(prop);
+        prop.getSpeedAtTime = expressionHelpers.getSpeedAtTime.bind(prop);
         prop.numKeys = data.a === 1 ? data.k.length : 0;
         prop.propertyIndex = data.ix;
         var value = 0;
@@ -273,7 +228,7 @@
             lastIndex: 0,
             value: value
         };
-        searchExpressions(elem,data,prop);
+        expressionHelpers.searchExpressions(elem,data,prop);
         if(prop.k){
             container.addDynamicProperty(prop);
         }
@@ -380,6 +335,9 @@
             var xLength = pt2[0] - pt1[0];
             var yLength = pt2[1] - pt1[1];
             var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
+            if (magnitude === 0) {
+                return [0,0];
+            }
             var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
             return unitVector;
         },
@@ -389,8 +347,8 @@
         normalOnPath: function(perc, time){
             return this.vectorOnPath(perc, time, 'normal');
         },
-        setGroupProperty: setGroupProperty,
-        getValueAtTime: getStaticValueAtTime
+        setGroupProperty: expressionHelpers.setGroupProperty,
+        getValueAtTime: expressionHelpers.getStaticValueAtTime
     };
     extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
     extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);
@@ -403,22 +361,13 @@
         prop.propertyIndex = data.ix;
         prop.lock = false;
         if(type === 3){
-            searchExpressions(elem,data.pt,prop);
+            expressionHelpers.searchExpressions(elem,data.pt,prop);
         } else if(type === 4){
-            searchExpressions(elem,data.ks,prop);
+            expressionHelpers.searchExpressions(elem,data.ks,prop);
         }
         if(prop.k){
             elem.addDynamicProperty(prop);
         }
         return prop;
-    };
-
-    var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
-        if(data.t === 1){
-            return new TextExpressionSelectorProp(elem, data,arr);
-        } else {
-            return propertyGetTextProp(elem,data,arr);
-        }
     };
 }());

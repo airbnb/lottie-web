@@ -1,5 +1,4 @@
 function CVImageElement(data, globalData, comp){
-    this.failed = false;
     this.assetData = globalData.getAssetData(data.refId);
     this.img = globalData.imageLoader.getImage(this.assetData);
     this.initElement(data,globalData,comp);
@@ -37,9 +36,6 @@ CVImageElement.prototype.createContent = function(){
 };
 
 CVImageElement.prototype.renderInnerContent = function(parentMatrix){
-    if (this.failed) {
-        return;
-    }
     this.canvasContext.drawImage(this.img, 0, 0);
 };
 
