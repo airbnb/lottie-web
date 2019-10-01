@@ -5,6 +5,530 @@ const UglifyJS = require("uglify-js");
 const rootFolder = 'player/';
 const bm_version = '5.5.9';
 const buildReducedVersion = process.argv[2] === 'reduced'
+const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
+
+const scripts = [
+	{
+		src: 'js/main.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/common.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/BaseEvent.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/helpers/arrays.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/helpers/svg_elements.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/utils/helpers/html_elements.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/helpers/dynamicProperties.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/helpers/blendModes.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/3rd_party/transformation-matrix.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/3rd_party/seedrandom.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/3rd_party/BezierEaser.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/animationFramePolyFill.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/functionExtensions.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/bez.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/DataManager.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/DataManagerWorkerOverrides.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/utils/FontManager.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/FontManagerWorkerOverride.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/utils/PropertyFactory.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/TransformProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/ShapePath.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/ShapeProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/ShapeModifiers.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/TrimModifier.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/RoundCornersModifier.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/RepeaterModifier.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/ShapeCollection.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/DashProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/GradientProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/shapes/shapePathBuilder.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/imagePreloader.js',
+		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light']
+	},
+	{
+		src: 'js/utils/imagePreloaderWorkerOverride.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/utils/featureSupport.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/filters.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/asset_loader.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/asset_loader_worker_override.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/utils/text/TextAnimatorProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/text/TextAnimatorDataProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/text/LetterProps.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/text/TextProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/text/TextSelectorProperty.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/pool_factory.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/pooling.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/point_pool.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/shape_pool.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/shapeCollection_pool.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/segments_length_pool.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/pooling/bezier_length_pool.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/renderers/BaseRenderer.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/renderers/SVGRenderer.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/renderers/CanvasRenderer.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/renderers/CanvasRendererWorkerOverride.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/renderers/HybridRenderer.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/mask.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/HierarchyElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/FrameElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/TransformElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/RenderableElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/RenderableDOMElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/shapes/ProcessedElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGStyleData.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGShapeData.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGTransformData.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGStrokeStyleData.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGFillStyleData.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGGradientFillStyleData.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGGradientStrokeStyleData.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/ShapeGroupData.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/shapes/SVGElementsRenderer.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/helpers/shapes/ShapeTransformManager.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/helpers/shapes/CVShapeData.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/BaseElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/NullElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/svgElements/SVGBaseElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/ShapeElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/TextElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/CompElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/ImageElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/SolidElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/svgElements/SVGCompElement.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/SVGTextElement.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/SVGShapeElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGTintEffect.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGFillFilter.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGGaussianBlurEffect.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGStrokeEffect.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGTritoneFilter.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGProLevelsFilter.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGDropShadowEffect.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/effects/SVGMatte3Effect.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/svgElements/SVGEffects.js',
+		builds: ['full','svg','svg_light','html','html_light']
+	},
+	{
+		src: 'js/elements/canvasElements/CVContextData.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/canvasElements/CVBaseElement.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/canvasElements/CVImageElement.js',
+		builds: ['full','canvas','canvas_light']
+	},
+	{
+		src: 'js/elements/canvasElements/CVCompElement.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/canvasElements/CVMaskElement.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/canvasElements/CVShapeElement.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/canvasElements/CVSolidElement.js',
+		builds: ['full','canvas','canvas_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/canvasElements/CVTextElement.js',
+		builds: ['full','canvas','canvas_light']
+	},
+	{
+		src: 'js/elements/canvasElements/CVEffects.js',
+		builds: ['full','canvas','canvas_light','html','html_light','canvas_worker']
+	},
+	{
+		src: 'js/elements/htmlElements/HBaseElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HSolidElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HCompElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HShapeElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HTextElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HImageElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HCameraElement.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/elements/htmlElements/HEffects.js',
+		builds: ['full','html','html_light']
+	},
+	{
+		src: 'js/animation/AnimationManager.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/animation/AnimationManagerWorkerOverride.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/animation/AnimationItem.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/animation/AnimationItemWorkerOverride.js',
+		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/Expressions.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/ExpressionManager.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/expressionHelpers.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/ExpressionPropertyDecorator.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/ExpressionTextPropertyDecorator.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/ShapeInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/TextInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/LayerInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/CompInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/TransformInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/ProjectInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/EffectInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/MaskInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/ExpressionValueFactory.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/TextSelectorPropertyDecorator.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/effects/SliderEffect.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/effects/EffectsManagerPlaceholder.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/EffectsManager.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	}
+]
 
 function loadIndex() {
 	return new Promise((resolve, reject)=>{
@@ -34,7 +558,6 @@ function parseHTML(html) {
 function getScripts($) {
 	return new Promise((resolve, reject)=> {
 		try {
-			const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
 			const scriptNodes = []
 			let shouldAddToScripts = false;
 			$("head").contents().each((index, node) => {
@@ -42,6 +565,7 @@ function getScripts($) {
 					shouldAddToScripts = true;
 				} else if(shouldAddToScripts) {
 					if(node.type === 'script') {
+
 						scriptNodes.push(node)
 					} else if(node.nodeType === 8 && node.data.indexOf('endbuild') !== -1) {
 						shouldAddToScripts = false;
@@ -52,7 +576,7 @@ function getScripts($) {
 				const builds = node.attribs['data-builds'] ? node.attribs['data-builds'].split(',') : defaultBuilds
 				return {
 					src: node.attribs.src,
-					builds: builds
+					builds: builds,
 				}
 			})
 			resolve(scripts);
@@ -244,7 +768,7 @@ async function build() {
 	try {
 		const htmlData = await loadIndex();
 		const parsedData = await parseHTML(htmlData);
-		const scripts = await getScripts(parsedData);
+		// const scripts = await getScripts(parsedData);
 		const result = await buildVersions(scripts);
 		console.log(result);
 
