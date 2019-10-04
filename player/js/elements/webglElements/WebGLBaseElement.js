@@ -5,11 +5,12 @@ WebGLBaseElement.prototype = {
     createElements: function(){},
     initRendererElement: function(){
         this.localTransform = new Matrix();
+        this.framebuffersData = [];
     },
     createContainerElements: function(){
         this.renderableEffectsManager = new WEffects(this);
         if(this.renderableEffectsManager.filters.length) {
-            this.createFramebuffers(this.gl);
+            this.createFramebuffers(this.glContext);
         }
     },
     createContent: function(){
@@ -19,7 +20,7 @@ WebGLBaseElement.prototype = {
         if(globalData.blendMode !== this.data.bm) {
             globalData.blendMode = this.data.bm;
             var blendModeValue = getBlendMode(this.data.bm);
-            globalData.canvasContext.globalCompositeOperation = blendModeValue;
+            globalData.glContext.globalCompositeOperation = blendModeValue;
         }
     },
     hideElement: function(){
@@ -49,26 +50,26 @@ WebGLBaseElement.prototype = {
     },
 
     renderEffects: function() {
-        var gl = this.gl;
+        var glContext = this.glContext;
         //rendering effects
         var filters = this.renderableEffectsManager.filters;
         if(filters.length) {
             var size = this.getSize();
             var i, len = filters.length;
-            gl.viewport(0, 0, size.w, size.h);
+            glContext.viewport(0, 0, size.w, size.h);
             this._finalTexture = this.texture;
             for (i = 0; i < len; i++) {
                 // Setup to draw into one of the framebuffers.
-                gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffersData.framebuffers[i % 2]);
-                this.currentBuffer = this.framebuffersData.framebuffers[i % 2];
-                gl.clearColor(0, 0, 0, 0);
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                glContext.bindFramebuffer(glContext.FRAMEBUFFER, this.framebuffersData[i % 2].framebuffer);
+                this.currentBuffer = this.framebuffersData[i % 2].framebuffer;
+                glContext.clearColor(0, 0, 0, 0);
+                glContext.clear(glContext.COLOR_BUFFER_BIT | glContext.DEPTH_BUFFER_BIT);
                 filters[i].renderFrame();
              
                 // for the next draw, use the texture we just rendered to.
-                //gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, this.framebuffersData.textures[i % 2]);
-                this._finalTexture = this.framebuffersData.textures[i % 2];
+                //glContext.activeTexture(glContext.TEXTURE0);
+                glContext.bindTexture(glContext.TEXTURE_2D, this.framebuffersData[i % 2].texture);
+                this._finalTexture = this.framebuffersData[i % 2].texture;
             }
             //TODO: if filters didn't change, skip processing them and bind directly the last binded texture in previous iteration.
         }
@@ -89,63 +90,59 @@ WebGLBaseElement.prototype = {
             var p = tr.props;
             newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
             //TODO: only update the uniform if needed. This is costly.
-            this.gl.uniformMatrix4fv(this.mat4UniformLoc, false, this.localTransform.props);
+            this.glContext.uniformMatrix4fv(this.mat4UniformLoc, false, this.localTransform.props);
         }
     },
 
     renderLayer: function() {
-        // copy to own frame buffer
+        // copy to comp's frame buffer
+        // TODO: check if needed since WebGLCompElement is also changing buffers
+        console.log('switchBuffer', this.data)
         this.comp.switchBuffer();
 
-        var gl = this.gl;
-        gl.useProgram(this.program);
+        var glContext = this.glContext;
+        glContext.useProgram(this.program);
 
         this.calculateTransform();
-        gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-        gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        // glContext.vertexAttribPointer(this.positionAttributeLocation, 2, glContext.FLOAT, false, 0, 0);
+        // glContext.vertexAttribPointer(this.texcoordLocation, 2, glContext.FLOAT, false, 0, 0);
+        glContext.drawArrays(glContext.TRIANGLES, 0, 6);
     },
 
     destroy: function(){
-        this.canvasContext = null;
+        this.glContext = null;
         this.data = null;
         this.globalData = null;
         this.maskManager.destroy();
     },
-    createFramebuffers: function(gl){
-        if(this.framebuffersData) {
+    
+    createFramebuffers: function(glContext){
+        if(this.framebuffersData.length) {
             return;
         }
         var layerSize = this.getSize();
         // Frame buffer objects fof effects
-        var textures = [];
-        var framebuffers = [];
         for (var ii = 0; ii < 2; ++ii) {
-            var bufferWithTexture = this.createFrameBufferWithTexture(gl, layerSize.w, layerSize.h);
-            textures.push(bufferWithTexture.texture);
-            framebuffers.push(bufferWithTexture.framebuffer);
-        }
-        this.framebuffersData = {
-            textures: textures,
-            framebuffers: framebuffers
+            var bufferWithTexture = this.createFrameBufferWithTexture(glContext, layerSize.w, layerSize.h);
+            this.framebuffersData.push(bufferWithTexture)
         }
     },
-    createFrameBufferWithTexture: function(gl, width, height) {
+    createFrameBufferWithTexture: function(glContext, width, height) {
 
         // Create a framebuffer
-        var framebuffer = gl.createFramebuffer();
-        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        var framebuffer = glContext.createFramebuffer();
+        glContext.bindFramebuffer(glContext.FRAMEBUFFER, framebuffer);
 
         // Attach a texture to it.
-        var texture = textureFactory(gl);
+        var texture = textureFactory(glContext);
 
         // make the texture the same size as the image
-        gl.texImage2D(
-            gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0,
-            gl.RGBA, gl.UNSIGNED_BYTE, null);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+        glContext.texImage2D(
+            glContext.TEXTURE_2D, 0, glContext.RGBA, width, height, 0,
+            glContext.RGBA, glContext.UNSIGNED_BYTE, null);
+        glContext.framebufferTexture2D(glContext.FRAMEBUFFER, glContext.COLOR_ATTACHMENT0, glContext.TEXTURE_2D, texture, 0);
         
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        glContext.bindFramebuffer(glContext.FRAMEBUFFER, null);
         
         return {
             texture: texture,
@@ -155,7 +152,7 @@ WebGLBaseElement.prototype = {
     createRenderableComponents: function() {
         this.maskManager = new WMaskElement(this.data, this);
         if(this.maskManager.hasMasks || this.data.tt) {
-            this.createFramebuffers(this.gl);
+            this.createFramebuffers(this.glContext);
         }
     },
 

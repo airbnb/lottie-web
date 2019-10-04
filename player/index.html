@@ -17,8 +17,8 @@
             height:100%;
             /*width:1000px;
             height:500px;*/
-            width:1200px;
-            height:600px;
+            width:550px;
+            height:400px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -213,11 +213,11 @@
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);
     anim.onError = function(errorType, nativeError, errorProps) {
-        console.log(errorType)
+        // console.log(errorType)
     }
 
     anim.addEventListener('error', function(error) {
-        console.log(error)
+        console.log(error.nativeError)
     })
 
 </script>

@@ -23,29 +23,29 @@ function WMaskElement(data,element){
         this.canvas.style.zIndex = '1000';
         this.canvas.style.top = '500px';*/
 
-        var gl = this.element.globalData.canvasContext;
-        this.texture = textureFactory(gl);
+        var glContext = this.element.globalData.glContext;
+        this.texture = textureFactory(glContext);
 
         this.element.renderableEffectsManager.spliceEffect(0, this);
 
         var vsh = get_shader('mask_shader_vert');
         var fsh = get_shader('mask_shader_frag');
 
-        var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
-        var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
-        this.program = WebGLProgramFactory.createProgram(gl, vertexShader, fragmentShader);
-        gl.useProgram(this.program);
-        this.positionAttributeLocation = gl.getAttribLocation(this.program, "a_position");
-        gl.enableVertexAttribArray(this.positionAttributeLocation);
-        gl.vertexAttribPointer(this.positionAttributeLocation, 2,gl.FLOAT, false, 0, 0);
-        this.texcoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
-        gl.enableVertexAttribArray(this.texcoordLocation);
-        gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+        var vertexShader = WebGLProgramFactory.createShader(glContext, glContext.VERTEX_SHADER, vsh);
+        var fragmentShader = WebGLProgramFactory.createShader(glContext, glContext.FRAGMENT_SHADER, fsh);
+        this.program = WebGLProgramFactory.createProgram(glContext, vertexShader, fragmentShader);
+        glContext.useProgram(this.program);
+        this.positionAttributeLocation = glContext.getAttribLocation(this.program, "a_position");
+        glContext.enableVertexAttribArray(this.positionAttributeLocation);
+        glContext.vertexAttribPointer(this.positionAttributeLocation, 2,glContext.FLOAT, false, 0, 0);
+        this.texcoordLocation = glContext.getAttribLocation(this.program, "a_texCoord");
+        glContext.enableVertexAttribArray(this.texcoordLocation);
+        glContext.vertexAttribPointer(this.texcoordLocation, 2, glContext.FLOAT, false, 0, 0);
         //
-        var origin_image = gl.getUniformLocation(this.program, "origin_image");
-        var mask_image = gl.getUniformLocation(this.program, "mask_image");
-        gl.uniform1i(origin_image, 0);  // texture unit 0
-        gl.uniform1i(mask_image, 1);  // texture unit 1
+        var origin_image = glContext.getUniformLocation(this.program, "origin_image");
+        var mask_image = glContext.getUniformLocation(this.program, "mask_image");
+        glContext.uniform1i(origin_image, 0);  // texture unit 0
+        glContext.uniform1i(mask_image, 1);  // texture unit 1
     }
 }
 
@@ -69,14 +69,14 @@ WMaskElement.prototype.renderFrame = function () {
         }
     }
     ctx.fill();
-    var gl = this.element.globalData.canvasContext;
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.canvas);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.element._finalTexture);
-    gl.useProgram(this.program);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    var glContext = this.element.globalData.glContext;
+    glContext.activeTexture(glContext.TEXTURE1);
+    glContext.bindTexture(glContext.TEXTURE_2D, this.texture);
+    glContext.texImage2D(glContext.TEXTURE_2D, 0, glContext.RGBA, glContext.RGBA, glContext.UNSIGNED_BYTE, this.canvas);
+    glContext.activeTexture(glContext.TEXTURE0);
+    glContext.bindTexture(glContext.TEXTURE_2D, this.element._finalTexture);
+    glContext.useProgram(this.program);
+    glContext.drawArrays(glContext.TRIANGLES, 0, 6);
 };
 
 WMaskElement.prototype.getMaskProperty = MaskElement.prototype.getMaskProperty;

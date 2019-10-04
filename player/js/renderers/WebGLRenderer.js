@@ -29,6 +29,7 @@ function WebGLRenderer(animationItem, config){
 }
 extendPrototype([BaseRenderer],WebGLRenderer);
 
+
 WebGLRenderer.prototype.configAnimation = function(animData){
     if(this.animationItem.wrapper){
         this.animationItem.container = createTag('canvas');
@@ -38,16 +39,45 @@ WebGLRenderer.prototype.configAnimation = function(animData){
         //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = "0px 0px 0px";
         this.animationItem.wrapper.appendChild(this.animationItem.container);
-        this.canvasContext = this.animationItem.container.getContext('webgl');
+        var glc = this.animationItem.container.getContext('webgl');
+
+        // ////
+        this.glContext = new Proxy(glc, {
+
+            get(target, propKey, receiver) {
+                if (typeof target[propKey] === 'function') {
+                    const origMethod = target[propKey];
+                    return function (...args) {
+                        const result = origMethod.apply(target, args);
+                        // console.log('==========')
+                        // console.log(propKey)
+                        // args.forEach(arg => {
+                        //     console.log(arg)
+                        // })
+                        // console.log('==========')
+                        // console.log(propKey + JSON.stringify(args)
+                        //     + ' -> ' + JSON.stringify(result));
+                        return result;
+                    };
+                } else {
+                    // console.log('GETTING: ', propKey)
+                    return target[propKey]
+                }
+            }
+          })
+
+        // this.glContext = glc
+        ////
+
         // Enabled blend and sets blend func to handle opacity.
         //TODO: rename to glContext
-        this.canvasContext.enable(this.canvasContext.BLEND);
-        this.canvasContext.blendFunc(this.canvasContext.SRC_ALPHA, this.canvasContext.ONE_MINUS_SRC_ALPHA);
+        this.glContext.enable(this.glContext.BLEND);
+        this.glContext.blendFunc(this.glContext.SRC_ALPHA, this.glContext.ONE_MINUS_SRC_ALPHA);
         if(this.renderConfig.className) {
             this.animationItem.container.setAttribute('class', this.renderConfig.className);
         }
     }else{
-        this.canvasContext = this.renderConfig.context;
+        this.glContext = this.renderConfig.context;
     }
     this.transformCanvas = {
         w: animData.w,
@@ -60,14 +90,14 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.data = animData;
     this.layers = animData.layers;
     this.setupGlobalData(animData, document.body);
-    this.globalData.canvasContext = this.canvasContext;
+    this.globalData.glContext = this.glContext;
     
     // Position buffer data
-    var gl = this.canvasContext;
+    var glContext = this.glContext;
 
     //General Array Buffer. Position buffer. Will be used by all layers.
-    this.positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+    this.positionBuffer = glContext.createBuffer();
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, this.positionBuffer);
 
     var positions = [
       0, 0,
@@ -77,7 +107,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
       1, 0,
       1, 1,
     ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(positions), glContext.STATIC_DRAW);
     //
     this.globalData.positionBuffer = this.positionBuffer;
     this.globalData.renderer = this;
@@ -122,8 +152,8 @@ WebGLRenderer.prototype.updateContainerSize = function() {
 	this.calculateTransformSize();
 	var scaleX = 1, scaleY = 1;
     var elementWidth,elementHeight, elementRel;
-    elementWidth = this.canvasContext.canvas.width;
-    elementHeight = this.canvasContext.canvas.height;
+    elementWidth = this.glContext.canvas.width;
+    elementHeight = this.glContext.canvas.height;
     elementRel = elementWidth / elementHeight;
     var animationRel = this.transformCanvas.w / this.transformCanvas.h;
     if(animationRel > elementRel) {
@@ -145,17 +175,17 @@ WebGLRenderer.prototype.updateContainerSize = function() {
 
 WebGLRenderer.prototype.switchBuffer = function() {
     if(this._root) {
-        this.canvasContext.bindFramebuffer(this.canvasContext.FRAMEBUFFER, null);
+        this.glContext.bindFramebuffer(this.glContext.FRAMEBUFFER, null);
         this.resetViewport();
     } else {
-        var gl = this.gl;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.bufferData.framebuffer);
-        gl.viewport(0, 0, this.data.w, this.data.h);
+        var glContext = this.glContext;
+        glContext.bindFramebuffer(glContext.FRAMEBUFFER, this.bufferData.framebuffer);
+        glContext.viewport(0, 0, this.data.w, this.data.h);
     }
 }
 
 WebGLRenderer.prototype.resetViewport = function (data) {
-    this.canvasContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
+    this.glContext.viewport(0, 0, this.animationItem.container.width, this.animationItem.container.height);
 };
 
 WebGLRenderer.prototype.createImage = function (data) {
@@ -211,8 +241,8 @@ WebGLRenderer.prototype.renderFrame = function(num){
         }
     }
     if(this.globalData._mdf) {
-		this.canvasContext.clearColor(0, 0, 0, 0);
-		this.canvasContext.clear(this.canvasContext.COLOR_BUFFER_BIT | this.canvasContext.DEPTH_BUFFER_BIT);
+		this.glContext.clearColor(0, 0, 0, 0);
+		this.glContext.clear(this.glContext.COLOR_BUFFER_BIT | this.glContext.DEPTH_BUFFER_BIT);
 
         // TODO: Look into rendering track mattes first
         for (i = len - 1; i >= 0; i-=1) {
