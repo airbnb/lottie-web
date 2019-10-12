@@ -55,6 +55,7 @@ export type AnimationConfig = {
     loop?: boolean | number;
     autoplay?: boolean;
     name?: string;
+    assetsPath?: string;
     rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
 }
 
