@@ -42,6 +42,7 @@ WebGLRenderer.prototype.configAnimation = function(animData){
         var glc = this.animationItem.container.getContext('webgl');
 
         // ////
+        var _debug = false;
         this.glContext = new Proxy(glc, {
 
             get(target, propKey, receiver) {
@@ -49,8 +50,10 @@ WebGLRenderer.prototype.configAnimation = function(animData){
                     const origMethod = target[propKey];
                     return function (...args) {
                         const result = origMethod.apply(target, args);
-                        // console.log('==========')
-                        // console.log(propKey)
+                        if (_debug) {
+                            console.log('==========')
+                            console.log(propKey)
+                        }
                         // args.forEach(arg => {
                         //     console.log(arg)
                         // })
@@ -60,7 +63,9 @@ WebGLRenderer.prototype.configAnimation = function(animData){
                         return result;
                     };
                 } else {
-                    // console.log('GETTING: ', propKey)
+                    if (_debug) {
+                        console.log('GETTING: ', propKey)
+                    }
                     return target[propKey]
                 }
             }
@@ -174,11 +179,12 @@ WebGLRenderer.prototype.updateContainerSize = function() {
 };
 
 WebGLRenderer.prototype.switchBuffer = function() {
-    if(this._root) {
-        this.glContext.bindFramebuffer(this.glContext.FRAMEBUFFER, null);
+    // TODO: validate current buffer before switching to avoid unnecessary calls.
+    var glContext = this.glContext;
+    if (this._root) {
+        this.glContext.bindFramebuffer(glContext.FRAMEBUFFER, null);
         this.resetViewport();
     } else {
-        var glContext = this.glContext;
         glContext.bindFramebuffer(glContext.FRAMEBUFFER, this.bufferData.framebuffer);
         glContext.viewport(0, 0, this.data.w, this.data.h);
     }

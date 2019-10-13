@@ -210,6 +210,7 @@
         path: 'exports/render/data.json'
     };
     // lottie.setQuality('low');
+    lottie.registerEffect('ADBE Twirl', WTwirlEffect)
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);
     anim.onError = function(errorType, nativeError, errorProps) {

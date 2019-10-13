@@ -1,9 +1,10 @@
 function WImageElement(data, globalData, comp) {
     this.assetData = globalData.getAssetData(data.refId);
+    this.glContext = globalData.glContext;
     this.gl = globalData.canvasContext;
-    var gl = this.gl;
-    this.texture = textureFactory(gl);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    var glContext = this.glContext;
+    this.texture = textureFactory(glContext);
+    glContext.texImage2D(glContext.TEXTURE_2D, 0, glContext.RGBA, 1, 1, 0, glContext.RGBA, glContext.UNSIGNED_BYTE,
               new Uint8Array([0, 0, 0, 0]));
 
     this.initElement(data,globalData,comp);
@@ -12,22 +13,22 @@ function WImageElement(data, globalData, comp) {
 
     var fsh = get_shader('image_layer_shader_frag');
 
-    var vertexShader = WebGLProgramFactory.createShader(gl, gl.VERTEX_SHADER, vsh);
-    var fragmentShader = WebGLProgramFactory.createShader(gl, gl.FRAGMENT_SHADER, fsh);
-    this.program = WebGLProgramFactory.createProgram(gl, vertexShader, fragmentShader);
-    this.positionAttributeLocation = gl.getAttribLocation(this.program, "a_position");
-    gl.enableVertexAttribArray(this.positionAttributeLocation);
-    this.mat4UniformLoc = gl.getUniformLocation(this.program, "uMatrix");
-    this.localmat4UniformLoc = gl.getUniformLocation(this.program, "localMatrix");
-    this.texcoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
-    gl.enableVertexAttribArray(this.texcoordLocation);
-    gl.vertexAttribPointer(this.texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+    var vertexShader = WebGLProgramFactory.createShader(glContext, glContext.VERTEX_SHADER, vsh);
+    var fragmentShader = WebGLProgramFactory.createShader(glContext, glContext.FRAGMENT_SHADER, fsh);
+    this.program = WebGLProgramFactory.createProgram(glContext, vertexShader, fragmentShader);
+    this.positionAttributeLocation = glContext.getAttribLocation(this.program, "a_position");
+    glContext.enableVertexAttribArray(this.positionAttributeLocation);
+    this.mat4UniformLoc = glContext.getUniformLocation(this.program, "uMatrix");
+    this.localmat4UniformLoc = glContext.getUniformLocation(this.program, "localMatrix");
+    this.texcoordLocation = glContext.getAttribLocation(this.program, "a_texCoord");
+    glContext.enableVertexAttribArray(this.texcoordLocation);
+    glContext.vertexAttribPointer(this.texcoordLocation, 2, glContext.FLOAT, false, 0, 0);
 
     var localMatrix = new Matrix();
     localMatrix.scale(this.assetData.w, this.assetData.h);
-    gl.useProgram(this.program);
-    gl.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
-    gl.vertexAttribPointer(this.positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+    glContext.useProgram(this.program);
+    glContext.uniformMatrix4fv(this.localmat4UniformLoc, false, localMatrix.props);
+    glContext.vertexAttribPointer(this.positionAttributeLocation, 2, glContext.FLOAT, false, 0, 0);
 
     this._finalTexture = this.texture;
     
@@ -41,16 +42,16 @@ WImageElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 WImageElement.prototype.imageLoaded = function() {
 
-	var gl = this.gl;
+	var glContext = this.glContext;
 	var image = this.img;
 
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    glContext.bindTexture(glContext.TEXTURE_2D, this.texture);
     // Upload the image into the texture.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    glContext.texImage2D(glContext.TEXTURE_2D, 0, glContext.RGBA, glContext.RGBA, glContext.UNSIGNED_BYTE, image);
     // Turn on the teccord attribute
 
 
-    this.globalData.elementLoaded();
+    // this.globalData.elementLoaded();
 };
 
 WImageElement.prototype.imageFailed = function() {
@@ -70,14 +71,14 @@ WImageElement.prototype.createContent = function(){
         var assetPath = this.globalData.getAssetsPath(this.assetData);
         this.img.src = assetPath;
     }
-        this.globalData.addPendingElement();
+        // this.globalData.addPendingElement();
     
 };
 
 WImageElement.prototype.renderInnerContent = function() {
 
-    var gl = this.gl;
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    var glContext = this.glContext;
+    glContext.bindTexture(glContext.TEXTURE_2D, this.texture);
     this.renderEffects();
     //
 };

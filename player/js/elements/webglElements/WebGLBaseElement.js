@@ -36,6 +36,7 @@ WebGLBaseElement.prototype = {
         }
     },
     renderFrame: function() {
+        console.log('RENDER FRAME')
         if (this.hidden || this.data.hd) {
             return;
         }
@@ -97,7 +98,6 @@ WebGLBaseElement.prototype = {
     renderLayer: function() {
         // copy to comp's frame buffer
         // TODO: check if needed since WebGLCompElement is also changing buffers
-        console.log('switchBuffer', this.data)
         this.comp.switchBuffer();
 
         var glContext = this.glContext;
@@ -141,8 +141,7 @@ WebGLBaseElement.prototype = {
             glContext.TEXTURE_2D, 0, glContext.RGBA, width, height, 0,
             glContext.RGBA, glContext.UNSIGNED_BYTE, null);
         glContext.framebufferTexture2D(glContext.FRAMEBUFFER, glContext.COLOR_ATTACHMENT0, glContext.TEXTURE_2D, texture, 0);
-        
-        glContext.bindFramebuffer(glContext.FRAMEBUFFER, null);
+        this.comp.switchBuffer();
         
         return {
             texture: texture,
