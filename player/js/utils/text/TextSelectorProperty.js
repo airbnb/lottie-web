@@ -33,7 +33,24 @@ var TextSelectorProp = (function(){
                 this.getValue();
             }
             //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
-            var easer = BezierFactory.getBezierEasing(this.ne.v/100,0,1-this.xe.v/100,1).get;
+            var x1 = 0;
+            var y1 = 0;
+            var x2 = 1;
+            var y2 = 1;
+            if(this.ne.v > 0) {
+                x1 = this.ne.v / 100.0;
+            }
+            else {
+                y1 = -this.ne.v / 100.0;
+            }
+            if(this.xe.v > 0) {
+                x2 = 1.0 - this.xe.v / 100.0;
+            }
+            else {
+                y2 = 1.0 + this.xe.v / 100.0;
+            }
+            var easer = BezierFactory.getBezierEasing(x1, y1, x2, y2).get;
+
             var mult = 0;
             var s = this.finalS;
             var e = this.finalE;
