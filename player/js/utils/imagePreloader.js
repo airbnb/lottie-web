@@ -1,6 +1,6 @@
 var ImagePreloader = (function(){
 
-    var proxyImage = (function(){
+    function createProxyImage() {
         var canvas = createTag('canvas');
         canvas.width = 1;
         canvas.height = 1;
@@ -8,7 +8,7 @@ var ImagePreloader = (function(){
         ctx.fillStyle = 'rgba(0,0,0,0)';
         ctx.fillRect(0, 0, 1, 1);
         return canvas;
-    }())
+    }
 
     function imageLoaded(){
         this.loadedAssets += 1;
@@ -43,7 +43,7 @@ var ImagePreloader = (function(){
         img.crossOrigin = 'anonymous';
         img.addEventListener('load', this._imageLoaded.bind(this), false);
         img.addEventListener('error', function() {
-            ob.img = proxyImage;
+            ob.img = createProxyImage();
             this._imageLoaded();
         }.bind(this), false);
         img.src = path;
