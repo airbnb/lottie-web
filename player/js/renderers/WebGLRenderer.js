@@ -43,35 +43,36 @@ WebGLRenderer.prototype.configAnimation = function(animData){
 
         // ////
         var _debug = false;
-        this.glContext = new Proxy(glc, {
+        if (_debug) {
 
-            get(target, propKey, receiver) {
-                if (typeof target[propKey] === 'function') {
-                    const origMethod = target[propKey];
-                    return function (...args) {
-                        const result = origMethod.apply(target, args);
-                        if (_debug) {
+            this.glContext = new Proxy(glc, {
+
+                get(target, propKey, receiver) {
+                    if (typeof target[propKey] === 'function') {
+                        const origMethod = target[propKey];
+                        return function (...args) {
+                            const result = origMethod.apply(target, args);
                             console.log('==========')
                             console.log(propKey)
-                        }
-                        // args.forEach(arg => {
-                        //     console.log(arg)
-                        // })
-                        // console.log('==========')
-                        // console.log(propKey + JSON.stringify(args)
-                        //     + ' -> ' + JSON.stringify(result));
-                        return result;
-                    };
-                } else {
-                    if (_debug) {
+                            // args.forEach(arg => {
+                            //     console.log(arg)
+                            // })
+                            // console.log('==========')
+                            // console.log(propKey + JSON.stringify(args)
+                            //     + ' -> ' + JSON.stringify(result));
+                            return result;
+                        };
+                    } else {
                         console.log('GETTING: ', propKey)
+                        return target[propKey]
                     }
-                    return target[propKey]
                 }
-            }
-          })
+            })
+        } else {
+            this.glContext = glc
+        }
 
-        // this.glContext = glc
+        // 
         ////
 
         // Enabled blend and sets blend func to handle opacity.
@@ -96,6 +97,10 @@ WebGLRenderer.prototype.configAnimation = function(animData){
     this.layers = animData.layers;
     this.setupGlobalData(animData, document.body);
     this.globalData.glContext = this.glContext;
+    if (!this.camera) {
+        console.log('PASO 1')
+        this.camera = new WebGLCamera(null, this.globalData, this);
+    }
     
     // Position buffer data
     var glContext = this.glContext;
@@ -167,14 +172,17 @@ WebGLRenderer.prototype.updateContainerSize = function() {
     	scaleX = (this.transformCanvas.w * this.transformCanvas.sx) / elementWidth;
     }
 
+    this.scaleX = scaleX;
+    this.scaleY = scaleY;
 
-    this.transformMat.reset();
-	this.transformMat.scale(scaleX, scaleY);
-	this.transformMat.scale(1 / this.data.w, 1 / this.data.h);
-	this.transformMat.scale(2, 2);
-	this.transformMat.translate(-1, -1);
-	this.transformMat.translate(1 - scaleX, 1 - scaleY);
-	this.transformMat.scale(1, -1);
+
+ //    this.transformMat.reset();
+	// this.transformMat.scale(scaleX, scaleY);
+	// this.transformMat.scale(1 / this.data.w, 1 / this.data.h, 1 / 1666);
+	// this.transformMat.scale(2, 2);
+	// this.transformMat.translate(-1, -1);
+	// this.transformMat.translate(1 - scaleX, 1 - scaleY);
+	// this.transformMat.scale(1, -1);
     this.resetViewport();
 };
 
@@ -213,6 +221,11 @@ WebGLRenderer.prototype.createShape = function (data) {
     return new WShapeElement(data,this.globalData,this);
 };
 
+WebGLRenderer.prototype.createCamera = function (data) {
+    this.camera = new WebGLCamera(data, this.globalData, this);
+    return this.camera;
+};
+
 WebGLRenderer.prototype.checkPendingElements  = function(){
     while(this.pendingElements.length){
         var element = this.pendingElements.pop();
@@ -222,6 +235,28 @@ WebGLRenderer.prototype.checkPendingElements  = function(){
 
 WebGLRenderer.prototype.getSize = function(){
     return this.transformCanvas;
+}
+
+WebGLRenderer.prototype.applyCameraTransformation = function(){
+    this.transformMat.reset();
+    this.transformMat.scale(this.scaleX, this.scaleY);
+    var p = this.camera.mat.props;
+    console.log(p)
+    this.transformMat.transform(p[0], p[1], p[2], p[3]
+        ,p[4], p[5], p[6], p[7]
+        ,p[8], p[9], p[10], p[11]
+        ,p[12], p[13], p[14], p[15]);
+
+    // convert values to range [0, 1]
+    this.transformMat.scale(1 / this.data.w, 1 / this.data.h, 1);
+    // convert values to range [0, 2]
+    this.transformMat.scale(2, 2);
+    // convert values to range [-1, 1]
+    this.transformMat.translate(-1, -1);
+    // convert values to fit inside actual canvas
+    this.transformMat.translate(1 - this.scaleX, 1 - this.scaleY);
+    // invert Y axis
+    this.transformMat.scale(1, -1);
 }
 
 WebGLRenderer.prototype.renderFrame = function(num){
@@ -241,6 +276,7 @@ WebGLRenderer.prototype.renderFrame = function(num){
         this.checkLayers(num);
     }
 
+    this.camera.prepareFrame(num);
     for (i = 0; i < len; i++) {
         if(this.completeLayers || this.elements[i]){
             this.elements[i].prepareFrame(num - this.layers[i].st);
@@ -249,6 +285,9 @@ WebGLRenderer.prototype.renderFrame = function(num){
     if(this.globalData._mdf) {
 		this.glContext.clearColor(0, 0, 0, 0);
 		this.glContext.clear(this.glContext.COLOR_BUFFER_BIT | this.glContext.DEPTH_BUFFER_BIT);
+
+        this.camera.renderFrame();
+        this.applyCameraTransformation();
 
         // TODO: Look into rendering track mattes first
         for (i = len - 1; i >= 0; i-=1) {

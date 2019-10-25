@@ -21,7 +21,6 @@ function WTwirlEffect(filterManager, elem, WebGLProgramFactory){
 }
 
 WTwirlEffect.prototype.renderFrame = function(forceRender, buffer){
-    console.log('TWI')
     var effectElements = this.filterManager.effectElements;
     this.glContext.useProgram(this.program);
     this.glContext.uniform1f(this.angleLocation, effectElements[0].p.v);

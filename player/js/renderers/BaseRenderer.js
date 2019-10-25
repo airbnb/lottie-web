@@ -36,7 +36,7 @@ BaseRenderer.prototype.createItem = function(layer){
 };
 
 BaseRenderer.prototype.createCamera = function(){
-    throw new Error('You\'re using a 3d camera. Try the html renderer.');
+    throw new Error('You\'re using a 3d camera. Try the html or webgl renderer.');
 };
 
 BaseRenderer.prototype.buildAllItems = function(){

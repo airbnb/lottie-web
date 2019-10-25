@@ -36,7 +36,7 @@ WebGLBaseElement.prototype = {
         }
     },
     renderFrame: function() {
-        console.log('RENDER FRAME')
+        // console.log('RENDER FRAME')
         if (this.hidden || this.data.hd) {
             return;
         }
@@ -91,6 +91,7 @@ WebGLBaseElement.prototype = {
             var p = tr.props;
             newTransform.transform(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9],p[10],p[11],p[12],p[13],p[14],p[15]);
             //TODO: only update the uniform if needed. This is costly.
+            // console.log(this.localTransform.props)
             this.glContext.uniformMatrix4fv(this.mat4UniformLoc, false, this.localTransform.props);
         }
     },

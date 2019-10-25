@@ -5,6 +5,7 @@ function WEffects(elem){
     for(i=0;i<len;i+=1){
         filterManager = null;
         var effect = effectsRegisterer.getEffect(elem.data.ef[i].mn) || effectsRegisterer.getEffect(elem.data.ef[i].nm);
+
         if(effect) {
             filterManager = new effect(elem.effectsManager.effectElements[i], elem, WebGLProgramFactory);
             this.filters.push(filterManager);

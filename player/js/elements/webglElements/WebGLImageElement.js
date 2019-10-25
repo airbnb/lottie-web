@@ -20,9 +20,6 @@ function WImageElement(data, globalData, comp) {
     glContext.enableVertexAttribArray(this.positionAttributeLocation);
     this.mat4UniformLoc = glContext.getUniformLocation(this.program, "uMatrix");
     this.localmat4UniformLoc = glContext.getUniformLocation(this.program, "localMatrix");
-    this.texcoordLocation = glContext.getAttribLocation(this.program, "a_texCoord");
-    glContext.enableVertexAttribArray(this.texcoordLocation);
-    glContext.vertexAttribPointer(this.texcoordLocation, 2, glContext.FLOAT, false, 0, 0);
 
     var localMatrix = new Matrix();
     localMatrix.scale(this.assetData.w, this.assetData.h);

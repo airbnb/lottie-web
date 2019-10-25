@@ -17,8 +17,8 @@
             height:100%;
             /*width:1000px;
             height:500px;*/
-            width:550px;
-            height:400px;
+            width:1200px;
+            height:600px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
@@ -147,6 +147,7 @@
     <script src="js/elements/webglElements/WebGLCompElement.js" data-builds="webgl,webgl_light"></script>
     <script src="js/elements/webglElements/WebGLShapeElement.js" data-builds="webgl,webgl_light"></script>
     <script src="js/elements/webglElements/WebGLMaskElement.js" data-builds="webgl,webgl_light"></script>
+    <script src="js/elements/webglElements/WebGLCamera.js" data-builds="webgl,webgl_light"></script>
     <script src="js/elements/webglElements/WebGLTrackMatte.js" data-builds="webgl,webgl_light"></script>
     <script src="js/elements/webglElements/WebGLEffects.js" data-builds="webgl,webgl_light"></script>
     <script src="js/elements/webglElements/effects/WebGLTintEffect.js" data-builds="webgl,webgl_light"></script>
@@ -211,6 +212,7 @@
     };
     // lottie.setQuality('low');
     lottie.registerEffect('ADBE Twirl', WTwirlEffect)
+    lottie.registerEffect('ADBE Tint', WTintFilter)
     anim = lottie.loadAnimation(animData);
     anim.setSubframe(false);
     anim.onError = function(errorType, nativeError, errorProps) {
