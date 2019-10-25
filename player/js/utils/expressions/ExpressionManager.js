@@ -586,6 +586,11 @@ var ExpressionManager = (function(){
             return '';
         }
 
+        function posterizeTime(framesPerSecond) {
+            time = framesPerSecond === 0 ? 0 : Math.floor(time * framesPerSecond) / framesPerSecond
+            value = valueAtTime(time)
+        }
+
         var time, velocity, value, text, textIndex, textTotal, selectorValue;
         var index = elem.data.ind;
         var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
