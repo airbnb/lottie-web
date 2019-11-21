@@ -1,3 +1,11 @@
+## V 5.5.10
+- Improvement: validating if transform is linear to remove spatial interpolation
+- Fix: subtract mask transformed fix
+- Expressions: added posterize time support
+- Fix: incorrect easing function calculation in TextSelectorProperty
+- Fix: auto oriented properties with not keyframes
+- New: Implement a new Canvas renderer that can run on worker threads
+
 ## V 5.5.9
 - Typing: added resize to type definitions
 - Feature: added image sequence support
