@@ -157,10 +157,6 @@ Animation instances have these main methods:
 ### pause
 
 ***
-### setLocationHref(href)
-- `href`: usually pass as `location.href`. Its useful when you experience mask issue in safari where your url does not have `#` symbol.
-
-***
 ### setSpeed(speed)
 - `speed`: 1 is normal speed.
 
@@ -197,16 +193,23 @@ Animation instances have these main methods:
 [More Info](https://github.com/airbnb/lottie-web/wiki/TextLayer.updateDocumentData)
 ***
 
-### Lottie has 8 global methods that will affect all animations:
+### Lottie has several global methods that will affect all animations:
 **lottie.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
 **lottie.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
+**lottie.goToAndStop(value, isFrame, name)** -- Moves an animation with the specified name playback to the defined time. If name is omitted, moves all animation instances.<br />
 **lottie.setSpeed()** -- first argument speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
 **lottie.setDirection()** -- first argument direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
 **lottie.searchAnimations()** -- looks for elements with class "lottie" or "bodymovin" <br/>
 **lottie.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**lottie.destroy()** -- To destroy and release resources. The DOM element will be emptied.<br />
+**lottie.destroy(name)** -- Destroys an animation with the specified name. If name is omitted, destroys all animation instances. The DOM element will be emptied.<br />
 **lottie.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
+**lottie.getRegisteredAnimations()** -- returns all animations instances<br />
 **lottie.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
+**lottie.setLocationHref()** -- Sets the relative location from where svg elements with ids are referenced. It's useful when you experience mask issues in Safari.<br />
+**lottie.freeze()** -- Freezes all playing animations or animations that will be loaded<br />
+**lottie.unfreeze()** -- Unfreezes all animations<br />
+**lottie.inBrowser()** -- true if the library is being run in a browser<br />
+**lottie.resize()** -- Resizes all animation instances<br />
 
 ## Events
 - onComplete
@@ -309,4 +312,4 @@ my email is **hernantorrisi@gmail.com**
 - gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
 
 ## Issues
-- For missing mask in Safari browser, please anim.setLocationHref(locationHref) before animation is generated. It usually caused by usage of base tag in html. (see above for description of setLocationHref)
+- For missing mask in Safari browser, please call lottie.setLocationHref(locationHref) before animation is generated. It usually caused by usage of base tag in html. (see above for description of setLocationHref)
