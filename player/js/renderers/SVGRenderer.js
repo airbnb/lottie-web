@@ -36,8 +36,10 @@ function SVGRenderer(animationItem, config){
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || '',
-        focusable: config && config.focusable
+        focusable: config && config.focusable,
+        shouldMount: !(config && config.mount === false)
     };
+
 
     this.globalData = {
         _mdf: false,
@@ -102,9 +104,13 @@ SVGRenderer.prototype.configAnimation = function(animData){
         this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
+
+    if(this.globalData.shouldMount) {
+        this.mount()
+    }
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
     //this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
-    this.animationItem.wrapper.appendChild(this.svgElement);
+    
     //Mask animation
     var defs = this.globalData.defs;
 
@@ -250,3 +256,7 @@ SVGRenderer.prototype.hide = function(){
 SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
+
+SVGRenderer.prototype.mount = function() {
+    this.animationItem.wrapper.appendChild(this.svgElement.convert());
+}

@@ -175,24 +175,36 @@
         loop: false,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true,
+            progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet',
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
+            mount: false,
         },
         path: 'exports/render/data.json'
     };
-    // lottie.setQuality('low');
-    anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
-    anim.onError = function(errorType, nativeError, errorProps) {
-        console.log(errorType)
-    }
 
-    anim.addEventListener('error', function(error) {
-        console.log(error)
-    })
+    function load() {
+        // lottie.setQuality('low');
+        anim = lottie.loadAnimation(animData);
+        // elem.style.width = '300px'
+        anim.setSubframe(false);
+        anim.onError = function(errorType, nativeError, errorProps) {
+            console.log(errorType)
+        }
+
+        anim.addEventListener('error', function(error) {
+            console.log(error)
+        })
+
+        setTimeout(() => {
+            anim.renderer.mount()
+        }, 100)
+    }
+        
+    setTimeout(load, 0)
+    
 
 </script>
 </body>

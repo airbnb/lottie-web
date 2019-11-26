@@ -104,6 +104,8 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
     var pathsData, pathData, totalShapeLength, totalModifierLength = 0;
 
     if (e === s) {
+        // TODO this is updating path values more than needed. It would be good to try to avoid.
+        // But since it is an edge case it's not that bad.
         for (i = 0; i < len; i += 1) {
             this.shapes[i].localShapeCollection.releaseShapes();
             this.shapes[i].shape._mdf = true;
