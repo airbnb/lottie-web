@@ -17,7 +17,7 @@
     var _isFrozen = false;
 
     function setLocationHref (href) {
-        locationHref = href;
+        locationHref = href.replace(/(?<!\\)\(/g, '\\(').replace(/(?<!\\)\)/g, '\\)');
     }
 
     function searchAnimations() {
