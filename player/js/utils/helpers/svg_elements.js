@@ -18,7 +18,7 @@ var createNS = (function() {
 			if (!this.DOMElement) {
 				this.children.push(element);
 			} else {
-				this.DOMElement.appendChild(element);
+				this.DOMElement.appendChild(element.convert());
 			}
 		},
 
@@ -33,7 +33,7 @@ var createNS = (function() {
 					i += 1
 				}
 			} else {
-				this.DOMElement.insertBefore(element, child);
+				this.DOMElement.insertBefore(element.convert(), child.convert());
 			}
 			
 		},
@@ -44,13 +44,6 @@ var createNS = (function() {
 				if (this.DOMElement) {
 					this.DOMElement.setAttribute(key, value);
 				}
-			} else {
-				if(key === 'd') {
-					console.log(value)
-				}
-				// window.conter = window.conter || []
-				// window.conter.push(key)
-				// console.log(key, value)
 			}
 		},
 
@@ -72,8 +65,8 @@ var createNS = (function() {
 					DOMElement.appendChild(this.children[i].convert());
 				}
 
-				// this.setAttribute = DOMElement.setAttribute.bind(DOMElement)
-				// this.style = DOMElement.style
+				this.setAttribute = DOMElement.setAttribute.bind(DOMElement)
+				this.style = DOMElement.style
 				// this.appendChild = DOMElement.appendChild.bind(DOMElement)
 				// this.insertBefore = DOMElement.insertBefore.bind(DOMElement)
 

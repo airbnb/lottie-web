@@ -172,17 +172,17 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:false,
+            progressiveLoad: true,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet',
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
             mount: false,
         },
-        path: 'exports/render/data.json'
+        path: 'exports/bm/data.json'
     };
 
     function load() {
@@ -200,7 +200,7 @@
 
         setTimeout(() => {
             anim.renderer.mount()
-        }, 100)
+        }, 2100)
     }
         
     setTimeout(load, 0)

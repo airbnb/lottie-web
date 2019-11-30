@@ -6,7 +6,8 @@ function CanvasRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false,
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
         imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        id: (config && config.id) || '',
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {
@@ -147,6 +148,9 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.canvasContext = this.animationItem.container.getContext('2d');
         if(this.renderConfig.className) {
             this.animationItem.container.setAttribute('class', this.renderConfig.className);
+        }
+        if(this.renderConfig.id) {
+            this.animationItem.container.setAttribute('id', this.renderConfig.id);
         }
     }else{
         this.canvasContext = this.renderConfig.context;

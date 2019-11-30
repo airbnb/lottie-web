@@ -36,6 +36,7 @@ function SVGRenderer(animationItem, config){
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || '',
+        id: (config && config.id) || '',
         focusable: config && config.focusable,
         shouldMount: !(config && config.mount === false)
     };
@@ -97,15 +98,18 @@ SVGRenderer.prototype.configAnimation = function(animData){
         this.svgElement.style.height = '100%';
         this.svgElement.style.transform = 'translate3d(0,0,0)';
     }
-    if(this.renderConfig.className) {
+    if (this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);
     }
-    if(this.renderConfig.focusable !== undefined) {
+    if (this.renderConfig.id) {
+        this.svgElement.setAttribute('id', this.renderConfig.id);
+    }
+    if (this.renderConfig.focusable !== undefined) {
         this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
 
-    if(this.globalData.shouldMount) {
+    if(this.renderConfig.shouldMount) {
         this.mount()
     }
     //this.layerElement.style.transform = 'translate3d(0,0,0)';
