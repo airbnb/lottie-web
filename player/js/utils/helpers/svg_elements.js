@@ -10,7 +10,9 @@ var createNS = (function() {
 		this.type = type
 		this.children = []
 		this.attributes = {}
+		this.attributesNS = {}
 		this.styleData = {}
+		this.style = {}
 	}
 
 	var virtualElementPrototype = {
@@ -47,6 +49,15 @@ var createNS = (function() {
 			}
 		},
 
+		setAttributeNS: function(namespace, key, value) {
+			if(value != this.attributes[key]) {
+				this.attributesNS[namespace + '---' + key] = value;
+				if (this.DOMElement) {
+					this.DOMElement.attributesNS(namespace, key, value);
+				}
+			}
+		},
+
 		convert: function() { 
 			if (!this.DOMElement) {
 				var DOMElement = createDOMElement(this.type)
@@ -56,8 +67,13 @@ var createNS = (function() {
 					DOMElement.setAttribute(attr, this.attributes[attr]);
 				}
 
-				for (var styleKey in this.styleData) {
-					DOMElement.style[styleKey] = this.styleData[styleKey]
+				for (var attr in this.attributesNS) {
+					var nsValue = attr.split('---');
+					DOMElement.setAttributeNS(nsValue[0], nsValue[1], this.attributesNS[attr]);
+				}
+
+				for (var styleKey in this.style) {
+					DOMElement.style[styleKey] = this.style[styleKey]
 				}
 
 				var i, len = this.children.length;
@@ -66,6 +82,7 @@ var createNS = (function() {
 				}
 
 				this.setAttribute = DOMElement.setAttribute.bind(DOMElement)
+				this.setAttributeNS = DOMElement.setAttributeNS.bind(DOMElement)
 				this.style = DOMElement.style
 				// this.appendChild = DOMElement.appendChild.bind(DOMElement)
 				// this.insertBefore = DOMElement.insertBefore.bind(DOMElement)
@@ -75,7 +92,7 @@ var createNS = (function() {
 		}
 	}
 
-	Object.defineProperty(virtualElementPrototype, 'style', {
+	/*Object.defineProperty(virtualElementPrototype, 'style', {
         get: function() {
             if (!this.DOMElement) {
             	return this.styleData;
@@ -83,7 +100,7 @@ var createNS = (function() {
             	return this.DOMElement.style;
             }
         }
-    });
+    });*/
 
 	VirtualElement.prototype = virtualElementPrototype;
 
