@@ -105,7 +105,11 @@ var TextSelectorProp = (function(){
                 mult = easer(mult);
             } else {
                 if (ind >= floor(s)) {
-                    mult = max(0, min(e - s - ind, 1));
+                    if (ind - s < 0) {
+                        mult = max(0, min(min(e, 1) - (s - ind), 1));
+                    } else {
+                        mult = max(0, min(e - ind, 1));
+                    }
                 }
                 mult = easer(mult);
             }
@@ -127,8 +131,8 @@ var TextSelectorProp = (function(){
                 s = e;
                 e = _s;
             }
-            this.finalS = max(0, min(s, this.data.totalChars));
-            this.finalE = max(0, min(e, this.data.totalChars));
+            this.finalS = s;
+            this.finalE = e;
         }
     }
     extendPrototype([DynamicPropertyContainer], TextSelectorProp);
