@@ -140,7 +140,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
 
 
 SVGRenderer.prototype.destroy = function () {
-    this.animationItem.wrapper.innerHTML = '';
+    if (this.animationItem.wrapper) {
+        this.animationItem.wrapper.innerHTML = '';
+    }
     this.layerElement = null;
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
@@ -261,6 +263,7 @@ SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
 
-SVGRenderer.prototype.mount = function() {
+SVGRenderer.prototype.mount = function(wrapper) {
+    this.animationItem.wrapper = wrapper || this.animationItem.wrapper;
     this.animationItem.wrapper.appendChild(this.svgElement.convert());
 }

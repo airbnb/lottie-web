@@ -180,7 +180,7 @@
             imagePreserveAspectRatio: 'xMidYMid meet',
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
-            mount: true,
+            mount: false,
         },
         path: 'exports/bm/data.json'
     };
@@ -198,9 +198,9 @@
             console.log(error)
         })
 
-        /*setTimeout(() => {
-            anim.renderer.mount()
-        }, 2100)*/
+        setTimeout(() => {
+            anim.renderer.mount(elem)
+        }, 2100)
     }
         
     setTimeout(load, 0)
