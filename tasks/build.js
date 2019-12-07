@@ -635,11 +635,30 @@ function uglifyCode(code) {
 	})
 }
 
+async function modularizeCode(code) {
+	return `(typeof navigator !== "undefined") && (function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(function() {
+            return factory(root);
+        });
+    } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(root);
+    } else {
+        root.lottie = factory(root);
+        root.bodymovin = root.lottie;
+    }
+}((window || {}), function(window) {
+	${code}
+return lottie;
+}));`
+}
+
 async function buildVersion(scripts, version) {
 	const code = await concatScripts(scripts, version.build)
 	const wrappedCode = await wrapScriptWithModule(code, version.build)
 	const processedCode = await version.process(wrappedCode)
-	const saved = await save(processedCode, version.fileName)
+	const modularizedCode = await modularizeCode(processedCode)
+	const saved = await save(modularizedCode, version.fileName)
 	return true
 }
 
