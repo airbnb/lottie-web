@@ -1,3 +1,14 @@
+## V 5.6.0
+- Support new export mode: Rive
+- Support new export mode: Banner
+- Improved existing export modes
+- Improved image compression solution (now PNGs get well compressed as jpegs)
+- Support for importing Lottie Animations!
+- fixed build to prevent polluting global scope
+- text animator multiplier fix
+- fixes #1883 text offset
+- fixes #1878 supports id attribute for container
+
 ## V 5.5.10
 - Improvement: validating if transform is linear to remove spatial interpolation
 - Fix: subtract mask transformed fix

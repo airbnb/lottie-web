@@ -171,7 +171,7 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'html',
         loop: false,
         autoplay: true,
         rendererSettings: {
@@ -181,7 +181,7 @@
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
         },
-        path: 'exports/bm/data.json'
+        path: 'exports/render/data.json'
     };
     // lottie.setQuality('low');
     anim = lottie.loadAnimation(animData);

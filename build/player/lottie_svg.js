@@ -10,8 +10,8 @@
         root.bodymovin = root.lottie;
     }
 }((window || {}), function(window) {
-    "use strict";
-    var svgNS = "http://www.w3.org/2000/svg";
+	"use strict";
+var svgNS = "http://www.w3.org/2000/svg";
 
 var locationHref = '';
 
@@ -5533,64 +5533,60 @@ var TextSelectorProp = (function(){
             var s = this.finalS;
             var e = this.finalE;
             var type = this.data.sh;
-            if(type == 2){
-                if(e === s){
+            if (type === 2){
+                if (e === s) {
                     mult = ind >= e ? 1 : 0;
-                }else{
-                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                } else {
+                    mult = max(0, min(0.5 / (e - s) + (ind - s) / (e - s), 1));
                 }
                 mult = easer(mult);
-            }else if(type == 3){
-                if(e === s){
+            } else if(type === 3) {
+                if (e === s) {
                     mult = ind >= e ? 0 : 1;
                 }else{
-                    mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                    mult = 1 - max(0, min(0.5 / (e - s) + (ind - s) / (e - s),1));
                 }
 
                 mult = easer(mult);
-            }else if(type == 4){
-                if(e === s){
+            } else if (type === 4) {
+                if (e === s) {
                     mult = 0;
-                }else{
-                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                    if(mult<0.5){
+                } else {
+                    mult = max(0, min(0.5 / (e - s) + (ind - s) / (e - s), 1));
+                    if (mult < 0.5) {
                         mult *= 2;
-                    }else{
-                        mult = 1 - 2*(mult-0.5);
+                    } else {
+                        mult = 1 - 2 * (mult - 0.5);
                     }
                 }
                 mult = easer(mult);
-            }else if(type == 5){
-                if(e === s){
+            } else if (type === 5) {
+                if (e === s){
                     mult = 0;
-                }else{
+                } else {
                     var tot = e - s;
                     /*ind += 0.5;
                     mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
-                    ind = min(max(0,ind+0.5-s),e-s);
+                    ind = min(max(0, ind + 0.5 - s), e - s);
                     var x = -tot/2+ind;
                     var a = tot/2;
-                    mult = Math.sqrt(1 - (x*x)/(a*a));
+                    mult = Math.sqrt(1 - (x * x) / (a * a));
                 }
                 mult = easer(mult);
-            }else if(type == 6){
-                if(e === s){
+            } else if (type === 6) {
+                if (e === s){
                     mult = 0;
-                }else{
-                    ind = min(max(0,ind+0.5-s),e-s);
-                    mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
-                    /*
-                     ind = Math.min(Math.max(s,ind),e-1);
-                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
-                     mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
+                } else {
+                    ind = min(max(0, ind + 0.5 - s), e - s);
+                    mult = (1 + (Math.cos((Math.PI + Math.PI * 2 * (ind) / (e - s))))) / 2;
                 }
                 mult = easer(mult);
-            }else {
-                if(ind >= floor(s)){
-                    if(ind-s < 0){
-                        mult = 1 - (s - ind);
-                    }else{
-                        mult = max(0,min(e-ind,1));
+            } else {
+                if (ind >= floor(s)) {
+                    if (ind - s < 0) {
+                        mult = max(0, min(min(e, 1) - (s - ind), 1));
+                    } else {
+                        mult = max(0, min(e - ind, 1));
                     }
                 }
                 mult = easer(mult);
@@ -5961,6 +5957,7 @@ function SVGRenderer(animationItem, config){
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || '',
+        id: (config && config.id) || '',
         focusable: config && config.focusable
     };
 
@@ -6020,10 +6017,13 @@ SVGRenderer.prototype.configAnimation = function(animData){
         this.svgElement.style.height = '100%';
         this.svgElement.style.transform = 'translate3d(0,0,0)';
     }
-    if(this.renderConfig.className) {
+    if (this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);
     }
-    if(this.renderConfig.focusable !== undefined) {
+    if (this.renderConfig.id) {
+        this.svgElement.setAttribute('id', this.renderConfig.id);
+    }
+    if (this.renderConfig.focusable !== undefined) {
         this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
@@ -12075,129 +12075,130 @@ GroupEffect.prototype.init = function(data,element){
     }
 };
 
-    var lottiejs = {};
+var lottie = {};
 
-    var _isFrozen = false;
+var _isFrozen = false;
 
-    function setLocationHref (href) {
-        locationHref = href;
+function setLocationHref (href) {
+    locationHref = href;
+}
+
+function searchAnimations() {
+    if (standalone === true) {
+        animationManager.searchAnimations(animationData, standalone, renderer);
+    } else {
+        animationManager.searchAnimations();
     }
+}
 
-    function searchAnimations() {
-        if (standalone === true) {
-            animationManager.searchAnimations(animationData, standalone, renderer);
-        } else {
-            animationManager.searchAnimations();
+function setSubframeRendering(flag) {
+    subframeEnabled = flag;
+}
+
+function loadAnimation(params) {
+    if (standalone === true) {
+        params.animationData = JSON.parse(animationData);
+    }
+    return animationManager.loadAnimation(params);
+}
+
+function setQuality(value) {
+    if (typeof value === 'string') {
+        switch (value) {
+            case 'high':
+                defaultCurveSegments = 200;
+                break;
+            case 'medium':
+                defaultCurveSegments = 50;
+                break;
+            case 'low':
+                defaultCurveSegments = 10;
+                break;
+        }
+    } else if (!isNaN(value) && value > 1) {
+        defaultCurveSegments = value;
+    }
+    if (defaultCurveSegments >= 50) {
+        roundValues(false);
+    } else {
+        roundValues(true);
+    }
+}
+
+function inBrowser() {
+    return typeof navigator !== 'undefined';
+}
+
+function installPlugin(type, plugin) {
+    if (type === 'expressions') {
+        expressionsPlugin = plugin;
+    }
+}
+
+function getFactory(name) {
+    switch (name) {
+        case "propertyFactory":
+            return PropertyFactory;
+        case "shapePropertyFactory":
+            return ShapePropertyFactory;
+        case "matrix":
+            return Matrix;
+    }
+}
+
+lottie.play = animationManager.play;
+lottie.pause = animationManager.pause;
+lottie.setLocationHref = setLocationHref;
+lottie.togglePause = animationManager.togglePause;
+lottie.setSpeed = animationManager.setSpeed;
+lottie.setDirection = animationManager.setDirection;
+lottie.stop = animationManager.stop;
+lottie.searchAnimations = searchAnimations;
+lottie.registerAnimation = animationManager.registerAnimation;
+lottie.loadAnimation = loadAnimation;
+lottie.setSubframeRendering = setSubframeRendering;
+lottie.resize = animationManager.resize;
+//lottie.start = start;
+lottie.goToAndStop = animationManager.goToAndStop;
+lottie.destroy = animationManager.destroy;
+lottie.setQuality = setQuality;
+lottie.inBrowser = inBrowser;
+lottie.installPlugin = installPlugin;
+lottie.freeze = animationManager.freeze;
+lottie.unfreeze = animationManager.unfreeze;
+lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+lottie.__getFactory = getFactory;
+lottie.version = '5.6.0';
+
+function checkReady() {
+    if (document.readyState === "complete") {
+        clearInterval(readyStateCheckInterval);
+        searchAnimations();
+    }
+}
+
+function getQueryVariable(variable) {
+    var vars = queryString.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1]);
         }
     }
+}
+var standalone = '__[STANDALONE]__';
+var animationData = '__[ANIMATIONDATA]__';
+var renderer = '';
+if (standalone) {
+    var scripts = document.getElementsByTagName('script');
+    var index = scripts.length - 1;
+    var myScript = scripts[index] || {
+        src: ''
+    };
+    var queryString = myScript.src.replace(/^[^\?]+\??/, '');
+    renderer = getQueryVariable('renderer');
+}
+var readyStateCheckInterval = setInterval(checkReady, 100);
 
-    function setSubframeRendering(flag) {
-        subframeEnabled = flag;
-    }
-
-    function loadAnimation(params) {
-        if (standalone === true) {
-            params.animationData = JSON.parse(animationData);
-        }
-        return animationManager.loadAnimation(params);
-    }
-
-    function setQuality(value) {
-        if (typeof value === 'string') {
-            switch (value) {
-                case 'high':
-                    defaultCurveSegments = 200;
-                    break;
-                case 'medium':
-                    defaultCurveSegments = 50;
-                    break;
-                case 'low':
-                    defaultCurveSegments = 10;
-                    break;
-            }
-        } else if (!isNaN(value) && value > 1) {
-            defaultCurveSegments = value;
-        }
-        if (defaultCurveSegments >= 50) {
-            roundValues(false);
-        } else {
-            roundValues(true);
-        }
-    }
-
-    function inBrowser() {
-        return typeof navigator !== 'undefined';
-    }
-
-    function installPlugin(type, plugin) {
-        if (type === 'expressions') {
-            expressionsPlugin = plugin;
-        }
-    }
-
-    function getFactory(name) {
-        switch (name) {
-            case "propertyFactory":
-                return PropertyFactory;
-            case "shapePropertyFactory":
-                return ShapePropertyFactory;
-            case "matrix":
-                return Matrix;
-        }
-    }
-
-    lottiejs.play = animationManager.play;
-    lottiejs.pause = animationManager.pause;
-    lottiejs.setLocationHref = setLocationHref;
-    lottiejs.togglePause = animationManager.togglePause;
-    lottiejs.setSpeed = animationManager.setSpeed;
-    lottiejs.setDirection = animationManager.setDirection;
-    lottiejs.stop = animationManager.stop;
-    lottiejs.searchAnimations = searchAnimations;
-    lottiejs.registerAnimation = animationManager.registerAnimation;
-    lottiejs.loadAnimation = loadAnimation;
-    lottiejs.setSubframeRendering = setSubframeRendering;
-    lottiejs.resize = animationManager.resize;
-    //lottiejs.start = start;
-    lottiejs.goToAndStop = animationManager.goToAndStop;
-    lottiejs.destroy = animationManager.destroy;
-    lottiejs.setQuality = setQuality;
-    lottiejs.inBrowser = inBrowser;
-    lottiejs.installPlugin = installPlugin;
-    lottiejs.freeze = animationManager.freeze;
-    lottiejs.unfreeze = animationManager.unfreeze;
-    lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-    lottiejs.__getFactory = getFactory;
-    lottiejs.version = '5.5.10';
-
-    function checkReady() {
-        if (document.readyState === "complete") {
-            clearInterval(readyStateCheckInterval);
-            searchAnimations();
-        }
-    }
-
-    function getQueryVariable(variable) {
-        var vars = queryString.split('&');
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split('=');
-            if (decodeURIComponent(pair[0]) == variable) {
-                return decodeURIComponent(pair[1]);
-            }
-        }
-    }
-    var standalone = '__[STANDALONE]__';
-    var animationData = '__[ANIMATIONDATA]__';
-    var renderer = '';
-    if (standalone) {
-        var scripts = document.getElementsByTagName('script');
-        var index = scripts.length - 1;
-        var myScript = scripts[index] || {
-            src: ''
-        };
-        var queryString = myScript.src.replace(/^[^\?]+\??/, '');
-        renderer = getQueryVariable('renderer');
-    }
-    var readyStateCheckInterval = setInterval(checkReady, 100);
-    return lottiejs;
+return lottie;
 }));

@@ -1,4 +1,16 @@
-var lottiejs = (function(window) {
+(typeof navigator !== "undefined") && (function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(function() {
+            return factory(root);
+        });
+    } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(root);
+    } else {
+        root.lottie = factory(root);
+        root.bodymovin = root.lottie;
+    }
+}((window || {}), function(window) {
+	var lottiejs = (function(window) {
     "use strict";
     var svgNS = "http://www.w3.org/2000/svg";
 
@@ -5433,64 +5445,60 @@ var TextSelectorProp = (function(){
             var s = this.finalS;
             var e = this.finalE;
             var type = this.data.sh;
-            if(type == 2){
-                if(e === s){
+            if (type === 2){
+                if (e === s) {
                     mult = ind >= e ? 1 : 0;
-                }else{
-                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                } else {
+                    mult = max(0, min(0.5 / (e - s) + (ind - s) / (e - s), 1));
                 }
                 mult = easer(mult);
-            }else if(type == 3){
-                if(e === s){
+            } else if(type === 3) {
+                if (e === s) {
                     mult = ind >= e ? 0 : 1;
                 }else{
-                    mult = 1 - max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
+                    mult = 1 - max(0, min(0.5 / (e - s) + (ind - s) / (e - s),1));
                 }
 
                 mult = easer(mult);
-            }else if(type == 4){
-                if(e === s){
+            } else if (type === 4) {
+                if (e === s) {
                     mult = 0;
-                }else{
-                    mult = max(0,min(0.5/(e-s) + (ind-s)/(e-s),1));
-                    if(mult<0.5){
+                } else {
+                    mult = max(0, min(0.5 / (e - s) + (ind - s) / (e - s), 1));
+                    if (mult < 0.5) {
                         mult *= 2;
-                    }else{
-                        mult = 1 - 2*(mult-0.5);
+                    } else {
+                        mult = 1 - 2 * (mult - 0.5);
                     }
                 }
                 mult = easer(mult);
-            }else if(type == 5){
-                if(e === s){
+            } else if (type === 5) {
+                if (e === s){
                     mult = 0;
-                }else{
+                } else {
                     var tot = e - s;
                     /*ind += 0.5;
                     mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
-                    ind = min(max(0,ind+0.5-s),e-s);
+                    ind = min(max(0, ind + 0.5 - s), e - s);
                     var x = -tot/2+ind;
                     var a = tot/2;
-                    mult = Math.sqrt(1 - (x*x)/(a*a));
+                    mult = Math.sqrt(1 - (x * x) / (a * a));
                 }
                 mult = easer(mult);
-            }else if(type == 6){
-                if(e === s){
+            } else if (type === 6) {
+                if (e === s){
                     mult = 0;
-                }else{
-                    ind = min(max(0,ind+0.5-s),e-s);
-                    mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind)/(e-s)))))/2;
-                    /*
-                     ind = Math.min(Math.max(s,ind),e-1);
-                     mult = (1+(Math.cos((Math.PI+Math.PI*2*(ind-s)/(e-1-s)))))/2;
-                     mult = Math.max(mult,(1/(e-1-s))/(e-1-s));*/
+                } else {
+                    ind = min(max(0, ind + 0.5 - s), e - s);
+                    mult = (1 + (Math.cos((Math.PI + Math.PI * 2 * (ind) / (e - s))))) / 2;
                 }
                 mult = easer(mult);
-            }else {
-                if(ind >= floor(s)){
-                    if(ind-s < 0){
-                        mult = 1 - (s - ind);
-                    }else{
-                        mult = max(0,min(e-ind,1));
+            } else {
+                if (ind >= floor(s)) {
+                    if (ind - s < 0) {
+                        mult = max(0, min(min(e, 1) - (s - ind), 1));
+                    } else {
+                        mult = max(0, min(e - ind, 1));
                     }
                 }
                 mult = easer(mult);
@@ -5861,6 +5869,7 @@ function SVGRenderer(animationItem, config){
         viewBoxOnly: (config && config.viewBoxOnly) || false,
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || '',
+        id: (config && config.id) || '',
         focusable: config && config.focusable
     };
 
@@ -5920,10 +5929,13 @@ SVGRenderer.prototype.configAnimation = function(animData){
         this.svgElement.style.height = '100%';
         this.svgElement.style.transform = 'translate3d(0,0,0)';
     }
-    if(this.renderConfig.className) {
+    if (this.renderConfig.className) {
         this.svgElement.setAttribute('class', this.renderConfig.className);
     }
-    if(this.renderConfig.focusable !== undefined) {
+    if (this.renderConfig.id) {
+        this.svgElement.setAttribute('id', this.renderConfig.id);
+    }
+    if (this.renderConfig.focusable !== undefined) {
         this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
     this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
@@ -6084,7 +6096,8 @@ function CanvasRenderer(animationItem, config){
         progressiveLoad: (config && config.progressiveLoad) || false,
         preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
         imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
-        className: (config && config.className) || ''
+        className: (config && config.className) || '',
+        id: (config && config.id) || '',
     };
     this.renderConfig.dpr = (config && config.dpr) || 1;
     if (this.animationItem.wrapper) {
@@ -6225,6 +6238,9 @@ CanvasRenderer.prototype.configAnimation = function(animData){
         this.canvasContext = this.animationItem.container.getContext('2d');
         if(this.renderConfig.className) {
             this.animationItem.container.setAttribute('class', this.renderConfig.className);
+        }
+        if(this.renderConfig.id) {
+            this.animationItem.container.setAttribute('id', this.renderConfig.id);
         }
     }else{
         this.canvasContext = this.renderConfig.context;
@@ -12297,7 +12313,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-    lottiejs.version = '5.5.10';
+    lottiejs.version = '5.6.0';
 
     var renderer = '';
     return lottiejs;
@@ -12324,3 +12340,6 @@ var onmessage = function(evt) {
     animation.play();
 };
 
+
+return lottie;
+}));
