@@ -8,7 +8,6 @@ export type AnimationItem = {
     stop(): void;
     pause(): void;
     resize(): void;
-    setLocationHref(href: string): void;
     setSpeed(speed: number): void;
     goToAndPlay(value: number, isFrame?: boolean): void;
     goToAndStop(value: number, isFrame?: boolean): void;
@@ -76,6 +75,7 @@ type LottiePlayer = {
     destroy(name?: string): void;
     registerAnimation(element: Element, animationData?: any): void;
     setQuality(quality: string | number): void;
+    setLocationHref(href: string): void;
 };
 
 declare const Lottie: LottiePlayer;
