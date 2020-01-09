@@ -1,3 +1,6 @@
+## V 5.6.1
+- Fix on the exporter for older AE versions when a new project didn't have a saved destination yet
+
 ## V 5.6.0
 - Support new export mode: Rive
 - Support new export mode: Banner
