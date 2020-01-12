@@ -13,28 +13,39 @@ var FontManager = (function(){
     , 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
     function setUpNode(font, family){
-        var parentNode = createTag('span');
-        parentNode.style.fontFamily    = family;
-        var node = createTag('span');
-        // Characters that vary significantly among different fonts
-        node.innerHTML = 'giItT1WQy@!-/#';
-        // Visible - so we can measure it - but not on the screen
-        parentNode.style.position      = 'absolute';
-        parentNode.style.left          = '-10000px';
-        parentNode.style.top           = '-10000px';
-        // Large font size makes even subtle changes obvious
-        parentNode.style.fontSize      = '300px';
-        // Reset any font properties
-        parentNode.style.fontVariant   = 'normal';
-        parentNode.style.fontStyle     = 'normal';
-        parentNode.style.fontWeight    = 'normal';
-        parentNode.style.letterSpacing = '0';
-        parentNode.appendChild(node);
-        document.body.appendChild(parentNode);
+        var appendedParentNode = document.querySelector('[data-lottie-font=' + font +']');
+        var node, parentNode;
 
-        // Remember width with no applied web font
+        if (!appendedParentNode) {
+            parentNode = createTag('span');
+            parentNode.style.fontFamily    = family;
+            parentNode.setAttribute('data-lottie-font', font);
+            node = createTag('span');
+            // Characters that vary significantly among different fonts
+            node.innerHTML = 'giItT1WQy@!-/#';
+            // Visible - so we can measure it - but not on the screen
+            parentNode.style.position      = 'absolute';
+            parentNode.style.left          = '-10000px';
+            parentNode.style.top           = '-10000px';
+            // Large font size makes even subtle changes obvious
+            parentNode.style.fontSize      = '300px';
+            // Reset any font properties
+            parentNode.style.fontVariant   = 'normal';
+            parentNode.style.fontStyle     = 'normal';
+            parentNode.style.fontWeight    = 'normal';
+            parentNode.style.letterSpacing = '0';
+            parentNode.appendChild(node);
+            document.body.appendChild(parentNode);
+    
+            // Remember width with no applied web font
+            node.style.fontFamily = font + ', '+family;
+        } else {
+            parentNode = appendedParentNode;
+            node = appendedParentNode.children[0];
+        }
+
         var width = node.offsetWidth;
-        node.style.fontFamily = font + ', '+family;
+
         return {node:node, w:width, parent:parentNode};
     }
 
