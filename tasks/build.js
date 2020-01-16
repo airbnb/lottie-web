@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.6.1';
+const bm_version = '5.6.2';
 const buildReducedVersion = process.argv[2] === 'reduced'
 const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
 
@@ -623,7 +623,16 @@ function wrapScriptWithModule(code, build) {
 function uglifyCode(code) {
 	return new Promise((resolve, reject)=>{
 		try {
-			const result = UglifyJS.minify(code, {output: {ascii_only:true},toplevel:true});
+			const result = UglifyJS.minify(code, {
+				output: 
+					{
+						ascii_only:true
+					},
+					toplevel:true,
+					mangle: {
+						reserved: ['lottie']
+					}
+				});
 			if (result.error) {
 				reject(result.error)
 			} else {

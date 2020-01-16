@@ -1,3 +1,10 @@
+## V 5.6.2
+- Fix lottie importer gradient data without keyframes
+- Added hidden layers and hidden properties support for importer
+- Improved error messaging
+- Added assetsPath configuration for typescript
+- fixed mangled lottie declaration
+
 ## V 5.6.1
 - Fix on the exporter for older AE versions when a new project didn't have a saved destination yet
 
