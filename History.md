@@ -1,3 +1,7 @@
+## V 5.6.3
+- Fix saving json files with special characters
+- Improved lottie import
+
 ## V 5.6.2
 - Fix lottie importer gradient data without keyframes
 - Added hidden layers and hidden properties support for importer
