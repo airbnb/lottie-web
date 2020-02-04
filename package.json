@@ -5,7 +5,7 @@
   "main": "./build/player/lottie_svg.min.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/airbnb/lottie-web.git"
+    "url": "https://github.com/velusgautam/lottie-web"
   },
   "scripts": {
     "build": "node tasks/build.js"
