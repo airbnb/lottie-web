@@ -1,8 +1,8 @@
 {
-  "name": "lottie-web",
-  "version": "6.0.0",
+  "name": "lottie-web-light",
+  "version": "1.0.0",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
-  "main": "./build/player/lottie.js",
+  "main": "./build/player/lottie_svg.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/airbnb/lottie-web.git"

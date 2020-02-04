@@ -88,7 +88,7 @@ brew cask install lottie
 # HTML player installation
 ```bash
 # with npm
-npm install lottie-web
+npm install lottie-web-light
 
 # with bower
 bower install bodymovin
