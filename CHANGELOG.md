@@ -1,3 +1,8 @@
+## V 5.6.4
+- added support for using original images as assets
+- Improved log error fix
+- Fixed missing assets during export
+
 ## V 5.6.3
 - Fix saving json files with special characters
 - Improved lottie import
