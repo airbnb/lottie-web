@@ -1,3 +1,9 @@
+## V 5.6.5
+- added initialSegment property
+- fix for zip file without root folder
+- support for including json in banner html template
+- Export 'blur' text animator property
+
 ## V 5.6.4
 - added support for using original images as assets
 - Improved log error fix
