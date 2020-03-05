@@ -1,3 +1,12 @@
+## V 5.6.6
+- reading file extension correctly when copying original assets
+- fixed inlined json objects with carriage returns
+- added loop support for banners
+- exporting adjustment layers as null layers
+- added checkbox to select comp names as default
+- added filter size configuration and defaulting to 100%
+- Add missing animation event name definitions
+
 ## V 5.6.5
 - added initialSegment property
 - fix for zip file without root folder

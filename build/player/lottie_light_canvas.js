@@ -5954,7 +5954,13 @@ function SVGRenderer(animationItem, config){
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || '',
         id: (config && config.id) || '',
-        focusable: config && config.focusable
+        focusable: config && config.focusable,
+        filterSize: {
+            width: config && config.filterSize && config.filterSize.width || '100%',
+            height: config && config.filterSize && config.filterSize.height || '100%',
+            x: config && config.filterSize && config.filterSize.x || '0%',
+            y: config && config.filterSize && config.filterSize.y || '0%',
+        }
     };
 
     this.globalData = {
@@ -9835,7 +9841,7 @@ lottie.freeze = animationManager.freeze;
 lottie.unfreeze = animationManager.unfreeze;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.6.5';
+lottie.version = '5.6.6';
 
 function checkReady() {
     if (document.readyState === "complete") {
