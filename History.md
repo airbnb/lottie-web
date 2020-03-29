@@ -1,3 +1,9 @@
+## V 5.6.7
+- use original comp name as export name
+- added default filter values for banner template
+- added option to load local file as lottie player
+- initialSegment set before animation configuration
+
 ## V 5.6.6
 - reading file extension correctly when copying original assets
 - fixed inlined json objects with carriage returns

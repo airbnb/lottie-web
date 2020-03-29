@@ -11413,6 +11413,7 @@ AnimationItem.prototype.setParams = function(params) {
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
+    this.initialSegment = params.initialSegment;
     if (params.animationData) {
         this.configAnimation(params.animationData);
     } else if(params.path){
@@ -11430,7 +11431,6 @@ AnimationItem.prototype.setParams = function(params) {
         }.bind(this));
     }
 
-    this.initialSegment = params.initialSegment;
 };
 
 AnimationItem.prototype.setData = function (wrapper, animationData) {
@@ -14523,7 +14523,7 @@ lottie.freeze = animationManager.freeze;
 lottie.unfreeze = animationManager.unfreeze;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.6.6';
+lottie.version = '5.6.7';
 
 function checkReady() {
     if (document.readyState === "complete") {

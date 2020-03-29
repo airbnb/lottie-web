@@ -9130,6 +9130,7 @@ AnimationItem.prototype.setParams = function(params) {
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
+    this.initialSegment = params.initialSegment;
     if (params.animationData) {
         this.configAnimation(params.animationData);
     } else if(params.path){
@@ -9147,7 +9148,6 @@ AnimationItem.prototype.setParams = function(params) {
         }.bind(this));
     }
 
-    this.initialSegment = params.initialSegment;
 };
 
 AnimationItem.prototype.setData = function (wrapper, animationData) {
@@ -12328,7 +12328,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-    lottiejs.version = '5.6.6';
+    lottiejs.version = '5.6.7';
 
     var renderer = '';
     return lottiejs;

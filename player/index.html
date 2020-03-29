@@ -172,8 +172,8 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
-        autoplay: false,
+        loop: true,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
             preserveAspectRatio: 'xMidYMid meet',
@@ -181,13 +181,13 @@
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
             filterSize: {
-                width: '800%',
-                height: '800%',
+                width: '300%',
+                height: '300%',
                 x: '-100%',
                 y: '-100%',
             }
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/data.json',
     };
     // lottie.setQuality('low');
     anim = lottie.loadAnimation(animData);
