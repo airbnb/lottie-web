@@ -1,0 +1,45 @@
+@font-face {
+    font-family: Roboto;
+    src: url('./assets/fonts/Roboto-Regular.ttf');
+}
+
+@font-face {
+    font-family: Roboto-Black;
+    src: url('./assets/fonts/Roboto-Black.ttf');
+}
+
+@font-face {
+    font-family: Roboto-Bold;
+    src: url('./assets/fonts/Roboto-Bold.ttf');
+}
+
+*::-webkit-scrollbar {
+  width: 15px;
+}
+ 
+*::-webkit-scrollbar-track {
+  background: #5c5c5c;
+}
+ 
+*::-webkit-scrollbar-thumb {
+  background: #484848;
+  border: 1px solid #404040;
+}
+
+*::-webkit-scrollbar-button:vertical:decrement{
+	background-image:url('assets/svg/up_arrow.svg');
+	background-size: fit;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #5c5c5c;
+	cursor: pointer;
+}
+
+*::-webkit-scrollbar-button:vertical:increment{
+	background-image:url('assets/svg/down_arrow.svg');
+	background-size: fit;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #5c5c5c;
+	cursor: pointer;
+}
