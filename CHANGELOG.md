@@ -1,3 +1,8 @@
+## V 5.6.8
+- not using non breaking spaces for text spaces
+- added support for exporting video layers (only export, players don't support them)
+- fix for path properties open without nodes
+
 ## V 5.6.7
 - use original comp name as export name
 - added default filter values for banner template
