@@ -128,17 +128,17 @@
     "t": {
       "title": "Text Data",
       "description": "Text Data",
-      "properties": [
-        {
+      "properties": {
+        "an_": {
           "title": "Animators",
           "description": "Text animators",
           "items": {
-            "properties": [
-              {
+            "properties": {
+              "ap_": {
                 "title": "Animated Properties",
                 "description": "Text animator animated properties",
-                "properties": [
-                  {
+                "properties": { 
+                  "p_": {
                     "title": "Position",
                     "description": "Text animator Position",
                     "oneOf": [
@@ -151,7 +151,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "a_": {
                     "title": "Anchor Point",
                     "description": "Text animator Anchor Point",
                     "oneOf": [
@@ -164,7 +164,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "sc": {
                     "title": "Scale",
                     "description": "Text animator Scale",
                     "oneOf": [
@@ -177,7 +177,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "sk_": {
                     "title": "Skew",
                     "description": "Text animator Skew",
                     "oneOf": [
@@ -190,7 +190,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "ska_": {
                     "title": "Skew Axis",
                     "description": "Text animator Skew Axis",
                     "oneOf": [
@@ -203,7 +203,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "r_": {
                     "title": "Rotation",
                     "description": "Text animator Rotation",
                     "oneOf": [
@@ -216,7 +216,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "o_": {
                     "title": "Opacity",
                     "description": "Text animator Opacity",
                     "oneOf": [
@@ -229,7 +229,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "stw_" : {
                     "title": "Stroke Width",
                     "description": "Text animator Stroke Width",
                     "oneOf": [
@@ -242,7 +242,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "stc_": {
                     "title": "Stroke Color",
                     "description": "Text animator Stroke Color",
                     "oneOf": [
@@ -255,7 +255,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "fc_": {
                     "title": "Fill Color",
                     "description": "Text animator Fill Color",
                     "oneOf": [
@@ -268,7 +268,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "flh_": {
                     "title": "Fill Hue",
                     "description": "Text animator Fill Hue",
                     "oneOf": [
@@ -281,7 +281,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "fls_": {
                     "title": "Fill Saturation",
                     "description": "Text animator Fill Saturation",
                     "oneOf": [
@@ -294,7 +294,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "flb_": {
                     "title": "Fill Brightness",
                     "description": "Text animator Fill Brightness",
                     "oneOf": [
@@ -307,7 +307,7 @@
                     ],
                     "type": "object"
                   },
-                  {
+                  "tr_": {
                     "title": "Tracking",
                     "description": "Text animator Tracking",
                     "oneOf": [
@@ -320,19 +320,19 @@
                     ],
                     "type": "object"
                   }
-                ],
+                },
                 "type": "object"
               },
-              {
+              "rs_": {
                 "title": "Range Selecton",
                 "description": "Animators Range Selecton",
-                "properties": [
-                  {
+                "properties": {
+                  "t_": {
                     "title": "Type",
                     "description": "Selector Type. Expressible, or Normal.",
                     "type": "number"
                   },
-                  {
+                  "ma_": {
                     "title": "Max Amount",
                     "description": "Selector Max Amount",
                     "oneOf": [
@@ -345,7 +345,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "mine_": {
                     "title": "Min Ease",
                     "description": "Levels Min Ease",
                     "oneOf": [
@@ -358,7 +358,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "maxe_": {
                     "title": "Max Ease",
                     "description": "Levels Max Ease",
                     "oneOf": [
@@ -371,7 +371,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "rand_": {
                     "title": "Randomize",
                     "description": "Selector Randomize Order",
                     "oneOf": [
@@ -381,7 +381,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "sh_": {
                     "title": "Shape",
                     "description": "Selector Shape",
                     "oneOf": [
@@ -391,7 +391,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "bo_": {
                     "title": "Based On",
                     "description": "Selector Based On",
                     "oneOf": [
@@ -401,12 +401,12 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "ru_": {
                     "title": "Range Units",
                     "description": "Selector Range Units. Percentage or Index.",
                     "type": "number"
                   },
-                  {
+                  "st_": {
                     "title": "Start",
                     "description": "Selector Start",
                     "oneOf": [
@@ -419,7 +419,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "e_": {
                     "title": "End",
                     "description": "Selector End",
                     "oneOf": [
@@ -432,7 +432,7 @@
                     ],
                     "type": "number"
                   },
-                  {
+                  "of_": {
                     "title": "Offset",
                     "description": "Selector Offset",
                     "oneOf": [
@@ -445,19 +445,19 @@
                     ],
                     "type": "number"
                   }
-                ],
+                },
                 "type": "object"
               }
-            ],
+            },
             "type": "object"
           },
           "type": "array"
         },
-        {
+        "mo_": {
           "title": "More Options",
           "description": "Text More Options",
-          "properties": [
-            {
+          "properties": {
+            "apg_": {
               "title": "Anchor Point Grouping",
               "description": "Text Anchor Point Grouping",
               "oneOf": [
@@ -467,7 +467,7 @@
               ],
               "type": "number"
             },
-            {
+            "ga_": {
               "title": "Grouping Alignment",
               "description": "Text Grouping Alignment",
               "oneOf": [
@@ -480,83 +480,83 @@
               ],
               "type": "number"
             }
-          ],
+          },
           "type": "object"
         },
-        {
+        "tp_": {
           "title": "Text Path",
           "description": "Text Path",
           "type": "number"
         },
-        {
+        "doc_": {
           "title": "Document",
           "description": "Text Document Data",
-          "properties": [
-            {
+          "properties": {
+            "kf_": {
               "title": "Keyframes",
               "description": "Text Document Data Keyframes",
               "items": {
                 "oneOf": [
                   {
-                    "properties": [
-                      {
+                    "properties": {
+                      "t_": {
                         "title": "Time",
                         "description": "Keyframe Time",
                         "type": "number"
                       },
-                      {
+                      "tp_": {
                         "title": "Text Properties",
                         "description": "Text Properties",
                         "type": "object",
-                        "properties": [
-                          {
+                        "properties": {
+                          "f_": {
                             "title": "Font",
                             "description": "Text Font",
                             "type": "string"
                           },
-                          {
+                          "fc_": {
                             "title": "Font Color",
                             "description": "Text Font Color",
                             "type": "array"
                           },
-                          {
+                          "j_": {
                             "title": "Justificaiton",
                             "description": "Text Justification",
                             "type": "string"
                           },
-                          {
+                          "lh_": {
                             "title": "Line Height",
                             "description": "Text Line Height",
                             "type": "number"
                           },
-                          {
+                          "s_": {
                             "title": "Size",
                             "description": "Text Font Size",
                             "type": "number"
                           },
-                          {
+                          "t_": {
                             "title": "Text",
                             "description": "Text String Value",
                             "type": "string"
                           },
-                          {
+                          "tr_": {
                             "title": "Tracking",
                             "description": "Text Tracking",
                             "type": "number"
                           }
-                        ]
+                        }
                       }
-                    ]
+                    }
                   }
                 ],
                 "type": "object"
               },
               "type": "array"
             }
-          ],
+          },
           "type": "object"
         }
-      ],
+      },
       "type": "object"
     }
   }

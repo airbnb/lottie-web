@@ -30,17 +30,17 @@
     "data": {
       "title": "Character Data",
       "description": "Character Data",
-      "properties": [
-        {
+      "properties": {
+        "cs_": {
           "title": "Character Shapes",
           "description": "Character Composing Shapes",
           "items": {
-            "properties": [
-              {
+            "properties": {
+              "i_": {
                 "title": "Items",
                 "description": "Character Items",
-                "properties": [
-                  {
+                "properties": {
+                  "k_": {
                     "title": "keys",
                     "description": "Character Items Keys",
                     "oneOf": [
@@ -50,15 +50,15 @@
                     ],
                     "type": "object"
                   }
-                ],
+                },
                 "type": "object"
               }
-            ],
+            },
             "type": "object"
           },
           "type": "array"
         }
-      ],
+      },
       "type": "object"
     }
   }
