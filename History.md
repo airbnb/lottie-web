@@ -1,3 +1,7 @@
+## V 5.6.9
+- fix compression options
+- initialization improvement
+
 ## V 5.6.8
 - not using non breaking spaces for text spaces
 - added support for exporting video layers (only export, players don't support them)

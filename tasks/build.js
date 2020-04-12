@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.6.8';
+const bm_version = '5.6.9';
 const buildReducedVersion = process.argv[2] === 'reduced'
 const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
 
