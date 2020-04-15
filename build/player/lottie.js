@@ -9396,55 +9396,145 @@ SVGMatte3Effect.prototype.renderFrame = function() {
 		this.initialize();
 	}
 };
-function SVGEffects(elem){
+/*global anime, createElementID*/
+function rgbaDataToString ([r, g, b, a]) {
+    return `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
+}
+
+function SVGCCPageTurnEffect(_, filterManager, elem) {
+    this.options = filterManager.data.ef;
+    this.defs = elem.globalData.defs;
+
+    const filter = this.createPaperBackFilter();
+    const { id, mask } = this.createMask();
+
+    const el = elem.getBaseElement();
+    el.setAttribute('mask', `url(#${id})`);
+
+    const back = createNS('g');
+    back.setAttribute('filter', `url(#${filter.id})`);
+
+    let initialized = false;
+
+    function initialize () {
+        for (const child of el.children) {
+            child.setAttribute('id', createElementID());
+            const backContent = createNS('use');
+            backContent.setAttribute('href', `#${child.id}`);
+            back.appendChild(backContent);
+        }
+        el.appendChild(back);
+        initialized = true;
+    }
+
+    const effectElements = filterManager.effectElements;
+    const { w, h } = elem.globalData.compSize;
+    const scale = `scale(${w + h})`;
+
+    this.renderFrame = function () {
+        if (!initialized) initialize();
+        const [x, y] = effectElements[1].p.v;
+        const xc = (x + w) / 2;
+        const yc = y / 2;
+
+        const rotate = Math.atan((x-w)/(-y));
+        mask.style.transform = `translate(${xc}px,${yc}px) ${scale} rotate(${rotate}rad)`;
+        back.style.transformOrigin = `${xc}px ${yc}px`;
+        back.style.transform = `scaleY(-1) rotate(-${2 * rotate}rad)`;
+    };
+}
+
+SVGCCPageTurnEffect.prototype.createPaperBackFilter = function () {
+    const filter = createNS('filter');
+    filter.setAttribute('id', createElementID());
+
+    const feFlood = createNS('feFlood');
+    const paperColor = rgbaDataToString(this.options[8].v.k);
+    const paperOpcaity = this.options[7].v.k / 100;
+    feFlood.setAttribute('flood-color', paperColor);
+    feFlood.setAttribute('flood-opacity', paperOpcaity);
+    feFlood.setAttribute('result', 'flood');
+    filter.appendChild(feFlood);
+
+    const feComposite = createNS('feComposite');
+    feComposite.setAttribute('in', 'flood');
+    feComposite.setAttribute('in2', 'SourceGraphic');
+    feComposite.setAttribute('operator', 'in');
+    feComposite.setAttribute('result', 'back');
+    filter.appendChild(feComposite);
+
+    const feBlend = createNS('feBlend');
+    feBlend.setAttribute('in', 'back');
+    feBlend.setAttribute('in2', 'SourceGraphic');
+    filter.appendChild(feBlend);
+
+    this.defs.appendChild(filter);
+    return filter;
+};
+
+SVGCCPageTurnEffect.prototype.createMask = function () {
+    const maskContainer = createNS('mask');
+    maskContainer.setAttribute('id', createElementID());
+    const mask = createNS('polygon');
+    mask.setAttribute('fill', 'white');
+    mask.setAttribute('points', '-1,0 1,0 1,1 -1,1');
+    maskContainer.appendChild(mask);
+
+    this.defs.appendChild(maskContainer);
+    return { id: maskContainer.id, mask };
+};
+
+SVGCCPageTurnEffect.prototype.renderFrame = function () {};
+function SVGEffects(elem) {
     var i, len = elem.data.ef ? elem.data.ef.length : 0;
     var filId = createElementID();
     var fil = filtersFactory.createFilter(filId);
     var count = 0;
     this.filters = [];
     var filterManager;
-    for(i=0;i<len;i+=1){
+    for (i = 0; i < len; i += 1) {
         filterManager = null;
-        if(elem.data.ef[i].ty === 20){
+        if (elem.data.ef[i].ty === 20) {
             count += 1;
             filterManager = new SVGTintFilter(fil, elem.effectsManager.effectElements[i]);
-        }else if(elem.data.ef[i].ty === 21){
+        } else if (elem.data.ef[i].ty === 21) {
             count += 1;
             filterManager = new SVGFillFilter(fil, elem.effectsManager.effectElements[i]);
-        }else if(elem.data.ef[i].ty === 22){
+        } else if (elem.data.ef[i].ty === 22) {
             filterManager = new SVGStrokeEffect(elem, elem.effectsManager.effectElements[i]);
-        }else if(elem.data.ef[i].ty === 23){
+        } else if (elem.data.ef[i].ty === 23) {
             count += 1;
             filterManager = new SVGTritoneFilter(fil, elem.effectsManager.effectElements[i]);
-        }else if(elem.data.ef[i].ty === 24){
+        } else if (elem.data.ef[i].ty === 24) {
             count += 1;
             filterManager = new SVGProLevelsFilter(fil, elem.effectsManager.effectElements[i]);
-        }else if(elem.data.ef[i].ty === 25){
+        } else if (elem.data.ef[i].ty === 25) {
             count += 1;
             filterManager = new SVGDropShadowEffect(fil, elem.effectsManager.effectElements[i]);
-        }else if(elem.data.ef[i].ty === 28){
+        } else if (elem.data.ef[i].ty === 28) {
             //count += 1;
             filterManager = new SVGMatte3Effect(fil, elem.effectsManager.effectElements[i], elem);
-        }else if(elem.data.ef[i].ty === 29){
+        } else if (elem.data.ef[i].ty === 29) {
             count += 1;
             filterManager = new SVGGaussianBlurEffect(fil, elem.effectsManager.effectElements[i]);
-        }
-        if(filterManager) {
+        } else if (elem.data.ef[i].ty === 100) {
+            filterManager = new SVGCCPageTurnEffect(fil, elem.effectsManager.effectElements[i], elem);
+        } if (filterManager) {
             this.filters.push(filterManager);
         }
     }
-    if(count){
+    if (count) {
         elem.globalData.defs.appendChild(fil);
-        elem.layerElement.setAttribute('filter','url(' + locationHref + '#'+filId+')');
+        elem.layerElement.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
     }
     if (this.filters.length) {
         elem.addRenderableComponent(this);
     }
 }
 
-SVGEffects.prototype.renderFrame = function(_isFirstFrame){
+SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
     var i, len = this.filters.length;
-    for(i=0;i<len;i+=1){
+    for (i = 0; i < len; i += 1) {
         this.filters[i].renderFrame(_isFirstFrame);
     }
 };
