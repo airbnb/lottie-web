@@ -53,13 +53,15 @@ AnimationItem.prototype.setParams = function(params) {
     }
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
-
-    if(params.loop === '' || params.loop === null){
-    }else if(params.loop === false){
-        this.loop = false;
-    }else if(params.loop === true){
+    if (params.loop === ''
+        || params.loop === null
+        || params.loop === undefined
+        || params.loop === true)
+    {
         this.loop = true;
-    }else{
+    } else if (params.loop === false) {
+        this.loop = false;
+    } else {
         this.loop = parseInt(params.loop);
     }
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
