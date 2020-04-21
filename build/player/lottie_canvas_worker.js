@@ -5228,9 +5228,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         newLineFlag = false;
         currentChar = documentData.finalText[i];
         charCode = currentChar.charCodeAt(0);
-        if (currentChar === ' '){
-            val = '\u00A0';
-        } else if (charCode === 13 || charCode === 3) {
+        if (charCode === 13 || charCode === 3) {
             uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
@@ -5239,7 +5237,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             newLineFlag = true;
             currentLine += 1;
         }else{
-            val = documentData.finalText[i];
+            val = currentChar;
         }
         if(fontManager.chars){
             charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
@@ -5260,8 +5258,8 @@ TextProperty.prototype.completeTextData = function(documentData) {
         letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
         if(anchorGrouping == 2){
             currentSize += cLength;
-            if(val === '' || val === '\u00A0' || i === len - 1){
-                if(val === '' || val === '\u00A0'){
+            if(val === '' || val === ' ' || i === len - 1){
+                if(val === '' || val === ' '){
                     currentSize -= cLength;
                 }
                 while(currentPos<=i){
@@ -5334,7 +5332,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         for(i=0;i<len;i+=1){
             letterData = letters[i];
             letterData.anIndexes[j] = ind;
-            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== '\u00A0') || (based == 3 && (letterData.n || letterData.val == '\u00A0' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
+            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
                 if(animatorData.s.rn === 1){
                     indexes.push(ind);
                 }
@@ -12328,7 +12326,7 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-    lottiejs.version = '5.6.7';
+    lottiejs.version = '5.6.9';
 
     var renderer = '';
     return lottiejs;

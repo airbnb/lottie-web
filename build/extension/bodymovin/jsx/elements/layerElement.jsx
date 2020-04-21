@@ -21,11 +21,15 @@ $.__bodymovin.bm_layerElement = (function () {
 
     var ob = {};
     
-    function prepareLayer(layerInfo, ind) {
+    function prepareLayer(layerInfo, shouldIncludeAVAssets) {
         var layerData = {};
         var layerType = getLayerType(layerInfo);
 
-        if (layerType === layerTypes.audio || layerType === layerTypes.light || layerType === layerTypes.pholderStill || layerType === layerTypes.pholderVideo) {
+        if (layerType === layerTypes.audio
+            || layerType === layerTypes.light
+            || layerType === layerTypes.pholderStill
+            || layerType === layerTypes.pholderVideo)
+        {
             layerData.isValid = false;
             layerData.render = false;
         }
@@ -120,6 +124,8 @@ $.__bodymovin.bm_layerElement = (function () {
                 layerData.refId = sourceId;
                 layerData.compId = sourceId;
             }
+        } else if (layerType === layerTypes.video) {
+            layerData.refId = bm_sourceHelper.checkVideoSource(layerInfo);
         }
     }
     

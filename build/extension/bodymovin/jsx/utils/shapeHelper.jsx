@@ -152,7 +152,7 @@ $.__bodymovin.bm_shapeHelper = (function () {
         }
 
         //If keyframe doesn't have any nodes
-        if(interpolatableSides === 0) {
+        if(interpolatableSides <= 0) {
             for(i = 0; i < missingVertices; i += 1) {
                 newV[i] = [0,0];
                 newI[i] = [0,0];

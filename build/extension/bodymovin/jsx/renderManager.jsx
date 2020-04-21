@@ -14,7 +14,7 @@ $.__bodymovin.bm_renderManager = (function () {
     
     var ob = {}, pendingLayers = [], pendingComps = [], destinationPath, fsDestinationPath, currentCompID, totalLayers, currentLayer, currentCompSettings, hasExpressionsFlag;
     var currentExportedComps = [];
-    var version_number = '5.6.7';
+    var version_number = '5.6.9';
 
     function getParentData(layers, id) {
         var i = 0, len = layers.length;
@@ -76,7 +76,7 @@ $.__bodymovin.bm_renderManager = (function () {
         var i, len = comp.layers.length, layerInfo, layerData, prevLayerData;
         for (i = 0; i < len; i += 1) {
             layerInfo = comp.layers[i + 1];
-            layerData = bm_layerElement.prepareLayer(layerInfo);
+            layerData = bm_layerElement.prepareLayer(layerInfo, currentCompSettings.should_include_av_assets);
             ob.renderData.exportData.ddd = layerData.ddd === 1 ? 1 : ob.renderData.exportData.ddd;
             if(currentCompSettings.hiddens && layerData.enabled === false){
                 layerData.render = true;

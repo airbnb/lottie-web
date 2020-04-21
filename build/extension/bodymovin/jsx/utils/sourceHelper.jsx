@@ -5,9 +5,9 @@ $.__bodymovin.bm_sourceHelper = (function () {
     var bm_compsManager = $.__bodymovin.bm_compsManager;
     var bm_renderManager = $.__bodymovin.bm_renderManager;
     var bm_fileManager = $.__bodymovin.bm_fileManager;
-    var compSources = [], imageSources = [], fonts = []
+    var compSources = [], imageSources = [], videoSources = [], fonts = []
     , currentExportingImage, assetsArray, folder, currentCompID
-    , originalNamesFlag, originalAssetsFlag, imageCount = 0, imageNameIndex = 0;
+    , originalNamesFlag, originalAssetsFlag, imageCount = 0, videoCount = 0, imageNameIndex = 0;
     var currentSavingAsset;
     var queue, playSound, autoSave, canEditPrefs = true;
     var _lastSecond = -1;
@@ -30,6 +30,26 @@ $.__bodymovin.bm_sourceHelper = (function () {
             source: item.source
         });
         return false;
+    }
+
+    function checkVideoSource(item) {
+        var i = 0, len = videoSources.length;
+        while (i < len) {
+            if (videoSources[i].source === item.source) {
+                return videoSources[i].id;
+            }
+            i += 1;
+        }
+        videoSources.push({
+            source: item.source,
+            width: item.source.width,
+            height: item.source.height,
+            source_name: item.source.name,
+            name: item.name,
+            id: 'video_' + videoCount,
+        });
+        videoCount += 1;
+        return videoSources[videoSources.length - 1].id;
     }
     
     function checkImageSource(item) {
@@ -115,7 +135,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
         return sanitizedName + extension;
     }
 
-    function getImageName(originalName, generatedName) {
+    function getImageName(originalName, generatedName, extension) {
         
         var imageName;
 
@@ -124,9 +144,9 @@ $.__bodymovin.bm_sourceHelper = (function () {
         } else {
             imageName = generatedName;
             if (originalAssetsFlag) {
-                imageName += originalName.substr(originalName.lastIndexOf('.')) || '.png'
+                imageName += originalName.substr(originalName.lastIndexOf('.')) || '.' + extension
             } else {
-                imageName += '.png';
+                imageName += '.' + extension;
             }
         }
 
@@ -166,6 +186,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
 
     var sequenceSources = [], sequenceSourcesStills = []
     var currentExportingImageSequenceIndex = 0;
+    var currentExportingVideoIndex = 0;
     var sequenceSourcesStillsCount = 0;
     var currentStillIndex = 0;
     var currentSequenceTotalFrames = 0;
@@ -284,7 +305,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
             }
         );
 
-        var imageName = getImageName(currentSourceData.source_name, 'seq_' + currentExportingImageSequenceIndex + '_' + currentStillIndex);
+        var imageName = getImageName(currentSourceData.source_name, 'seq_' + currentExportingImageSequenceIndex + '_' + currentStillIndex, 'png');
 
         var renderFileData = bm_fileManager.createFile(imageName, ['raw','images']);
         var file = renderFileData.file;
@@ -428,9 +449,41 @@ $.__bodymovin.bm_sourceHelper = (function () {
 
     }
 
+    function saveVideo() {
+
+        var currentSourceData = videoSources[currentExportingVideoIndex];
+        var sourceExtension = currentSourceData.source_name.substr(currentSourceData.source_name.lastIndexOf('.') + 1) || 'mp4';
+        var imageName = getImageName(currentSourceData.source_name, 'vid_' + currentExportingVideoIndex, sourceExtension);
+        var renderFileData = bm_fileManager.createFile(imageName, ['raw','images']);
+        var file = renderFileData.file;
+        var currentSourceFile = currentSourceData.source.file;
+        currentSourceFile.copy(file.fsName);
+        assetsArray.push({
+            id: currentSourceData.id,
+            w: currentSourceData.width,
+            h: currentSourceData.height,
+            u: 'images/',
+            p: imageName,
+            e: 0,
+            fileId: renderFileData.id
+        });
+
+        currentExportingVideoIndex += 1;
+        app.scheduleTask('$.__bodymovin.bm_sourceHelper.saveNextVideo();', 20, false);
+        
+    }
+
+    function saveNextVideo() {
+        if (currentExportingVideoIndex === videoSources.length) {
+            finishImageSave();
+        } else {
+            saveVideo();
+        }
+    }
+
     function saveNextImageSequence() {
         if (currentExportingImageSequenceIndex === sequenceSourcesStills.length) {
-            finishImageSave();
+            saveNextVideo();
         } else {
             saveSequence();
         }
@@ -461,7 +514,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
         var currentSourceData = imageSources[currentExportingImage];
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Exporting image: ' + currentSourceData.name, compId: currentCompID, progress: currentExportingImage / imageSources.length});
         var currentSource = currentSourceData.source;
-        var imageName = getImageName(currentSourceData.source_name, 'img_' + currentExportingImage);
+        var imageName = getImageName(currentSourceData.source_name, 'img_' + currentExportingImage, 'png');
         
         var renderFileData = bm_fileManager.createFile(imageName, ['raw','images']);
         var file = renderFileData.file;
@@ -597,7 +650,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
     }
 
     function exportImages(path, assets, compId, _originalNamesFlag, _originalAssetsFlag) {
-        if ((imageSources.length === 0 && sequenceSourcesStills.length === 0) || bm_renderManager.shouldSkipImages()) {
+        if ((imageSources.length === 0 && sequenceSourcesStills.length === 0 && videoSources.length === 0) || bm_renderManager.shouldSkipImages()) {
             bm_renderManager.imagesReady();
             return;
         }
@@ -611,6 +664,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
         bm_eventDispatcher.sendEvent('bm:render:update', {type: 'update', message: 'Exporting images', compId: currentCompID, progress: 0});
         currentExportingImage = 0;
         currentExportingImageSequenceIndex = 0;
+        currentExportingVideoIndex = 0;
         var file = new File(path);
         folder = file.parent;
         folder.changePath('images/');
@@ -652,10 +706,12 @@ $.__bodymovin.bm_sourceHelper = (function () {
     function reset() {
         compSources.length = 0;
         imageSources.length = 0;
+        videoSources.length = 0;
         sequenceSources.length = 0;
         sequenceSourcesStills.length = 0;
         fonts.length = 0;
         imageCount = 0;
+        videoCount = 0;
         sequenceCount = 0;
         sequenceSourcesStillsCount = 0;
         imageNameIndex = 0;
@@ -665,6 +721,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
         imageProcessed: imageProcessed,
         checkCompSource: checkCompSource,
         checkImageSource: checkImageSource,
+        checkVideoSource: checkVideoSource,
         searchSequenceSource: searchSequenceSource,
         addSequenceSource: addSequenceSource,
         addImageSequenceStills: addImageSequenceStills,
@@ -676,6 +733,7 @@ $.__bodymovin.bm_sourceHelper = (function () {
         reset: reset,
         scheduleNextSaveStilInSequence: scheduleNextSaveStilInSequence,
         scheduleNextSaveImage: scheduleNextSaveImage,
+        saveNextVideo: saveNextVideo,
     };
     
 }());
