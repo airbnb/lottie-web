@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+   <!--  CHANGE THE RESOLUTION  -->  
+    
+
+<head>
+    
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="ad.size" content="width=__CONTENT_WIDTH__,height=__CONTENT_HEIGHT__">
+<script src="__LOTTIE_SOURCE__"></script>
+<script type="text/javascript">var clickTag = "__CLICK_TAG__";</script>
+<style type="text/css">
+	@charset "UTF-8";
+    
+/* CSS Document */
+
+/* Default style, feel free to remove if not needed. */
+body, body * {vertical-align: baseline; border: 0; outline: 0; padding: 0; margin: 0; cursor: pointer;}
+
+/* Div layer for the entire banner. */
+#content_dc{width: __CONTENT_WIDTH__px; height: __CONTENT_HEIGHT__px;}
+
+/* Invisible button for background clickthrough. */
+#background_exit_dc {position: absolute; width: 100%; height: 100%; top: 0px; left: 0px; cursor: pointer; opacity: 0; z-index: 400;}
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+</style>
+    
+</head>
+
+<body>
+<div id="container_dc">
+        <div id="content_dc"></div>       
+        <div id="myborder"></div> 
+        <button id="background_exit_dc" onclick="window.open(window.clickTag)"></button>   
+    </div>  
+        
+    <script>
+      lottie.loadAnimation({
+        container: document.getElementById('content_dc'),
+        autoplay: true,
+        loop: __LOOP__,
+        renderer: '__LOTTIE_RENDERER__',
+        __DATA_LOAD__,
+        rendererSettings: {
+          filterSize: {
+              width: '300%',
+              height: '300%',
+              x: '-100%',
+              y: '-100%',
+          }
+        }
+      })
+      .setSubframe(false)
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "bodymovin_extension_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^2.4.6",
+    "imagemin": "^7.0.1",
+    "imagemin-jpegoptim": "^6.0.0",
+    "imagemin-jpegtran": "^6.0.0",
+    "imagemin-pngquant": "^8.0.0",
+    "jszip": "^3.2.2",
+    "png-to-jpeg": "^1.0.1",
+    "pngjs": "^3.4.0"
+  }
+}
