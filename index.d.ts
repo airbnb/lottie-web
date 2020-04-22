@@ -14,7 +14,7 @@ export type AnimationItem = {
     frameRate: number;
     frameMult: number;
     playSpeed: number;
-    playDirection: 1;
+    playDirection: number;
     playCount: number;
     isPaused: boolean;
     autoplay: boolean;
@@ -22,8 +22,8 @@ export type AnimationItem = {
     renderer: any;
     animationID: string;
     assetsPath: string;
-    timeCompleted: 0;
-    segmentPos: 0;
+    timeCompleted: number;
+    segmentPos: number;
     subframeEnabled, boolean;
     segments: AnimationSegment | AnimationSegment[];
     _idle: boolean;
