@@ -647,7 +647,13 @@ var ExpressionManager = (function(){
             if (needsVelocity) {
                 velocity = velocityAtTime(time);
             }
-            expression_function();
+
+            try {
+              expression_function();
+            } catch(e) {
+              return null;
+            }
+
             this.frameExpressionId = elem.globalData.frameId;
 
 
