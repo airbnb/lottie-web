@@ -1,3 +1,9 @@
+## V 5.6.10
+- FIX: default loop to true
+- FIX: removing sans-serif and monospace from font preloader to calculate correctly when font is loaded
+- FIX: improved image caching when preloading svg image tags
+- updated definitions
+
 ## V 5.6.9
 - fix compression options
 - initialization improvement
