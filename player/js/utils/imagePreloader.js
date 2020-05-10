@@ -39,9 +39,25 @@ var ImagePreloader = (function(){
 
     function createImageData(assetData) {
         var path = getAssetsPath(assetData, this.assetsPath, this.path);
+        var img = createNS('image');
+        img.addEventListener('load', this._imageLoaded, false);
+        img.addEventListener('error', function() {
+            ob.img = proxyImage;
+            this._imageLoaded();
+        }.bind(this), false);
+        img.setAttributeNS('http://www.w3.org/1999/xlink','href', path);
+        var ob = {
+            img: img,
+            assetData: assetData
+        }
+        return ob;
+    }
+
+    function createImgData(assetData) {
+        var path = getAssetsPath(assetData, this.assetsPath, this.path);
         var img = createTag('img');
         img.crossOrigin = 'anonymous';
-        img.addEventListener('load', this._imageLoaded.bind(this), false);
+        img.addEventListener('load', this._imageLoaded, false);
         img.addEventListener('error', function() {
             ob.img = proxyImage;
             this._imageLoaded();
@@ -92,15 +108,16 @@ var ImagePreloader = (function(){
         return this.totalImages === this.loadedAssets;
     }
 
-    return function ImagePreloader(){
-        this.loadAssets = loadAssets;
-        this.setAssetsPath = setAssetsPath;
-        this.setPath = setPath;
-        this.loaded = loaded;
-        this.destroy = destroy;
-        this.getImage = getImage;
-        this._createImageData = createImageData;
-        this._imageLoaded = imageLoaded;
+    function setCacheType(type) {
+        if (type === 'svg') {
+            this._createImageData = this.createImageData.bind(this);
+        } else {
+            this._createImageData = this.createImgData.bind(this);
+        }
+    }
+
+    function ImagePreloader(type){
+        this._imageLoaded = imageLoaded.bind(this);
         this.assetsPath = '';
         this.path = '';
         this.totalImages = 0;
@@ -108,4 +125,19 @@ var ImagePreloader = (function(){
         this.imagesLoadedCb = null;
         this.images = [];
     };
+
+    ImagePreloader.prototype = {
+        loadAssets: loadAssets,
+        setAssetsPath: setAssetsPath,
+        setPath: setPath,
+        loaded: loaded,
+        destroy: destroy,
+        getImage: getImage,
+        createImgData: createImgData,
+        createImageData: createImageData,
+        imageLoaded: imageLoaded,
+        setCacheType: setCacheType,
+    }
+
+    return ImagePreloader;
 }());
