@@ -229,7 +229,7 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded()){
+    if(this.renderer.globalData.fontManager.isLoaded){
         this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
@@ -237,7 +237,10 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
 }
 
 AnimationItem.prototype.checkLoaded = function () {
-    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+    if (!this.isLoaded 
+        && this.renderer.globalData.fontManager.isLoaded
+        && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')
+    ) {
         this.isLoaded = true;
         dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
