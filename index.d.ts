@@ -53,6 +53,13 @@ export type BaseRendererConfig = {
     className?: string;
 };
 
+export type FilterSize = {
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+};
+
 export type SVGRendererConfig = BaseRendererConfig & {
     title?: string;
     description?: string;
@@ -62,6 +69,7 @@ export type SVGRendererConfig = BaseRendererConfig & {
     viewBoxOnly?: boolean;
     viewBoxSize?: string;
     focusable?: boolean;
+    filterSize?: FilterSize;
 };
 
 export type CanvasRendererConfig = BaseRendererConfig & {
