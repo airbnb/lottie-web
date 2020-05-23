@@ -91,6 +91,7 @@ export type AnimationConfig = {
     autoplay?: boolean;
     name?: string;
     assetsPath?: string;
+    initialSegment: AnimationSegment;
     rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
 }
 
