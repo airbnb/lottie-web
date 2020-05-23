@@ -172,10 +172,10 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
+        loop: 3,
         autoplay: true,
         rendererSettings: {
-            progressiveLoad:true,
+            progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet',
             title: 'TEST TITLE',
@@ -190,8 +190,9 @@
         path: 'exports/render/data.json',
     };
     // lottie.setQuality('low');
+    // anim.setSpeed(0.5)
     anim = lottie.loadAnimation(animData);
-    // anim.setSubframe(false);
+    anim.setSubframe(false);
     anim.onError = function(errorType, nativeError, errorProps) {
         console.log(errorType)
     }
