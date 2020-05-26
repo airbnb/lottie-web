@@ -4,7 +4,6 @@ export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | '
 export type AnimationEventCallback<T = any> = (args: T) => void;
 
 export type AnimationItem = {
-
     name: string;
     isLoaded: boolean;
     currentFrame: number;
@@ -81,6 +80,7 @@ export type AnimationConfig = {
     renderer?: 'svg' | 'canvas' | 'html';
     loop?: boolean | number;
     autoplay?: boolean;
+    initialSegment?: AnimationSegment;        
     name?: string;
     assetsPath?: string;
     rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
