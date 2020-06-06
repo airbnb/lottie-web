@@ -91,7 +91,6 @@ export type AnimationConfig = {
     initialSegment?: AnimationSegment;        
     name?: string;
     assetsPath?: string;
-    initialSegment: AnimationSegment;
     rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
 }
 
@@ -105,6 +104,7 @@ export type AnimationConfigWithData = AnimationConfig & {
 
 type LottiePlayer = {
     play(name?: string): void;
+    pause(name?: string): void;
     stop(name?: string): void;
     setSpeed(speed: number, name?: string): void;
     setDirection(direction: AnimationDirection, name?: string): void;
