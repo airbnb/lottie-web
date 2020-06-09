@@ -62,6 +62,7 @@ export type SVGRendererConfig = BaseRendererConfig & {
     viewBoxOnly?: boolean;
     viewBoxSize?: string;
     focusable?: boolean;
+    filterSize?: FilterSizeConfig;
 };
 
 export type CanvasRendererConfig = BaseRendererConfig & {
@@ -93,6 +94,13 @@ export type AnimationConfigWithPath = AnimationConfig & {
 export type AnimationConfigWithData = AnimationConfig & {
     animationData?: any;
 }
+
+export type FilterSizeConfig = {
+    width: string;
+    height: string;
+    x: string;
+    y: string;
+};
 
 type LottiePlayer = {
     play(name?: string): void;
