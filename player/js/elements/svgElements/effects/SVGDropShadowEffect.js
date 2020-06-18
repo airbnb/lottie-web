@@ -1,8 +1,9 @@
-function SVGDropShadowEffect(filter, filterManager){
-    filter.setAttribute('x','-100%');
-    filter.setAttribute('y','-100%');
-    filter.setAttribute('width','400%');
-    filter.setAttribute('height','400%');
+function SVGDropShadowEffect(filter, filterManager) {
+    var filterSize = filterManager.container.globalData.renderConfig.filterSize
+    filter.setAttribute('x', filterSize.x);
+    filter.setAttribute('y', filterSize.y);
+    filter.setAttribute('width', filterSize.width);
+    filter.setAttribute('height', filterSize.height);
     this.filterManager = filterManager;
 
     var feGaussianBlur = createNS('feGaussianBlur');

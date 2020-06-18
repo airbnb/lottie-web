@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         body, html{
-            background-color:#fff;
+            background-color:#ff0;
             margin: 0px;
             height: 100%;
             overflow-x: hidden;
@@ -172,7 +172,7 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
+        loop: true,
         autoplay: true,
         rendererSettings: {
             progressiveLoad:true,
@@ -180,12 +180,18 @@
             imagePreserveAspectRatio: 'xMidYMid meet',
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
+            filterSize: {
+                width: '300%',
+                height: '300%',
+                x: '-100%',
+                y: '-100%',
+            }
         },
-        path: 'exports/render/data.json'
+        path: 'exports/render/data.json',
     };
     // lottie.setQuality('low');
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
+    // anim.setSubframe(false);
     anim.onError = function(errorType, nativeError, errorProps) {
         console.log(errorType)
     }
@@ -195,5 +201,6 @@
     })
 
 </script>
+
 </body>
 </html>

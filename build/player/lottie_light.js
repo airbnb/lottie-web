@@ -1823,6 +1823,18 @@ var FontManager = (function(){
     , 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379
     , 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
+    function trimFontOptions(font) {
+        var familyArray = font.split(',');
+        var i, len = familyArray.length;
+        var enabledFamilies = [];
+        for (i = 0; i < len; i += 1) {
+            if (familyArray[i] !== 'sans-serif' && familyArray[i] !== 'monospace') {
+                enabledFamilies.push(familyArray[i]);
+            }
+        }
+        return enabledFamilies.join(',');
+    }
+
     function setUpNode(font, family){
         var parentNode = createTag('span');
         parentNode.style.fontFamily    = family;
@@ -1845,7 +1857,7 @@ var FontManager = (function(){
 
         // Remember width with no applied web font
         var width = node.offsetWidth;
-        node.style.fontFamily = font + ', '+family;
+        node.style.fontFamily = trimFontOptions(font) + ', ' + family;
         return {node:node, w:width, parent:parentNode};
     }
 
@@ -1882,9 +1894,9 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            setTimeout(this.checkLoadedFonts.bind(this),20);
+            setTimeout(this.checkLoadedFontsBinded, 20);
         }else{
-            setTimeout(function(){this.isLoaded = true;}.bind(this),0);
+            setTimeout(this.setIsLoadedBinded, 10);
 
         }
     }
@@ -2080,8 +2092,8 @@ var FontManager = (function(){
         return combinedCharacters;
     }
 
-    function loaded() {
-        return this.isLoaded;
+    function setIsLoaded() {
+        this.isLoaded = true
     }
 
     var Font = function(){
@@ -2090,17 +2102,23 @@ var FontManager = (function(){
         this.typekitLoaded = 0;
         this.isLoaded = false;
         this.initTime = Date.now();
+        this.setIsLoadedBinded = this.setIsLoaded.bind(this)
+        this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)
     };
     //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
     Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
 
-    Font.prototype.addChars = addChars;
-    Font.prototype.addFonts = addFonts;
-    Font.prototype.getCharData = getCharData;
-    Font.prototype.getFontByName = getFontByName;
-    Font.prototype.measureText = measureText;
-    Font.prototype.checkLoadedFonts = checkLoadedFonts;
-    Font.prototype.loaded = loaded;
+    var fontPrototype = {
+        addChars: addChars,
+        addFonts: addFonts,
+        getCharData: getCharData,
+        getFontByName: getFontByName,
+        measureText: measureText,
+        checkLoadedFonts: checkLoadedFonts,
+        setIsLoaded: setIsLoaded,
+    }
+
+    Font.prototype = fontPrototype;
 
     return Font;
 
@@ -4241,9 +4259,25 @@ var ImagePreloader = (function(){
 
     function createImageData(assetData) {
         var path = getAssetsPath(assetData, this.assetsPath, this.path);
+        var img = createNS('image');
+        img.addEventListener('load', this._imageLoaded, false);
+        img.addEventListener('error', function() {
+            ob.img = proxyImage;
+            this._imageLoaded();
+        }.bind(this), false);
+        img.setAttributeNS('http://www.w3.org/1999/xlink','href', path);
+        var ob = {
+            img: img,
+            assetData: assetData
+        }
+        return ob;
+    }
+
+    function createImgData(assetData) {
+        var path = getAssetsPath(assetData, this.assetsPath, this.path);
         var img = createTag('img');
         img.crossOrigin = 'anonymous';
-        img.addEventListener('load', this._imageLoaded.bind(this), false);
+        img.addEventListener('load', this._imageLoaded, false);
         img.addEventListener('error', function() {
             ob.img = proxyImage;
             this._imageLoaded();
@@ -4294,15 +4328,16 @@ var ImagePreloader = (function(){
         return this.totalImages === this.loadedAssets;
     }
 
-    return function ImagePreloader(){
-        this.loadAssets = loadAssets;
-        this.setAssetsPath = setAssetsPath;
-        this.setPath = setPath;
-        this.loaded = loaded;
-        this.destroy = destroy;
-        this.getImage = getImage;
-        this._createImageData = createImageData;
-        this._imageLoaded = imageLoaded;
+    function setCacheType(type) {
+        if (type === 'svg') {
+            this._createImageData = this.createImageData.bind(this);
+        } else {
+            this._createImageData = this.createImgData.bind(this);
+        }
+    }
+
+    function ImagePreloader(type){
+        this._imageLoaded = imageLoaded.bind(this);
         this.assetsPath = '';
         this.path = '';
         this.totalImages = 0;
@@ -4310,6 +4345,21 @@ var ImagePreloader = (function(){
         this.imagesLoadedCb = null;
         this.images = [];
     };
+
+    ImagePreloader.prototype = {
+        loadAssets: loadAssets,
+        setAssetsPath: setAssetsPath,
+        setPath: setPath,
+        loaded: loaded,
+        destroy: destroy,
+        getImage: getImage,
+        createImgData: createImgData,
+        createImageData: createImageData,
+        imageLoaded: imageLoaded,
+        setCacheType: setCacheType,
+    }
+
+    return ImagePreloader;
 }());
 var featureSupport = (function(){
 	var ob = {
@@ -5316,9 +5366,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         newLineFlag = false;
         currentChar = documentData.finalText[i];
         charCode = currentChar.charCodeAt(0);
-        if (currentChar === ' '){
-            val = '\u00A0';
-        } else if (charCode === 13 || charCode === 3) {
+        if (charCode === 13 || charCode === 3) {
             uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
@@ -5327,7 +5375,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             newLineFlag = true;
             currentLine += 1;
         }else{
-            val = documentData.finalText[i];
+            val = currentChar;
         }
         if(fontManager.chars){
             charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
@@ -5348,8 +5396,8 @@ TextProperty.prototype.completeTextData = function(documentData) {
         letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
         if(anchorGrouping == 2){
             currentSize += cLength;
-            if(val === '' || val === '\u00A0' || i === len - 1){
-                if(val === '' || val === '\u00A0'){
+            if(val === '' || val === ' ' || i === len - 1){
+                if(val === '' || val === ' '){
                     currentSize -= cLength;
                 }
                 while(currentPos<=i){
@@ -5422,7 +5470,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         for(i=0;i<len;i+=1){
             letterData = letters[i];
             letterData.anIndexes[j] = ind;
-            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== '\u00A0') || (based == 3 && (letterData.n || letterData.val == '\u00A0' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
+            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
                 if(animatorData.s.rn === 1){
                     indexes.push(ind);
                 }
@@ -5958,7 +6006,13 @@ function SVGRenderer(animationItem, config){
         viewBoxSize: (config && config.viewBoxSize) || false,
         className: (config && config.className) || '',
         id: (config && config.id) || '',
-        focusable: config && config.focusable
+        focusable: config && config.focusable,
+        filterSize: {
+            width: config && config.filterSize && config.filterSize.width || '100%',
+            height: config && config.filterSize && config.filterSize.height || '100%',
+            x: config && config.filterSize && config.filterSize.x || '0%',
+            y: config && config.filterSize && config.filterSize.y || '0%',
+        }
     };
 
     this.globalData = {
@@ -8557,11 +8611,12 @@ SVGProLevelsFilter.prototype.renderFrame = function(forceRender){
         
     }
 };
-function SVGDropShadowEffect(filter, filterManager){
-    filter.setAttribute('x','-100%');
-    filter.setAttribute('y','-100%');
-    filter.setAttribute('width','400%');
-    filter.setAttribute('height','400%');
+function SVGDropShadowEffect(filter, filterManager) {
+    var filterSize = filterManager.container.globalData.renderConfig.filterSize
+    filter.setAttribute('x', filterSize.x);
+    filter.setAttribute('y', filterSize.y);
+    filter.setAttribute('width', filterSize.width);
+    filter.setAttribute('height', filterSize.height);
     this.filterManager = filterManager;
 
     var feGaussianBlur = createNS('feGaussianBlur');
@@ -9006,6 +9061,7 @@ var AnimationItem = function () {
     this.isLoaded = false;
     this.currentFrame = 0;
     this.currentRawFrame = 0;
+    this.firstFrame = 0;
     this.totalFrames = 0;
     this.frameRate = 0;
     this.frameMult = 0;
@@ -9022,7 +9078,7 @@ var AnimationItem = function () {
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
-    this.subframeEnabled = subframeEnabled;
+    this.isSubframeEnabled = subframeEnabled;
     this.segments = [];
     this._idle = true;
     this._completedLoop = false;
@@ -9051,21 +9107,25 @@ AnimationItem.prototype.setParams = function(params) {
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;
     }
+    this.imagePreloader.setCacheType(animType);
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
-
-    if(params.loop === '' || params.loop === null){
-    }else if(params.loop === false){
-        this.loop = false;
-    }else if(params.loop === true){
+    if (params.loop === ''
+        || params.loop === null
+        || params.loop === undefined
+        || params.loop === true)
+    {
         this.loop = true;
-    }else{
+    } else if (params.loop === false) {
+        this.loop = false;
+    } else {
         this.loop = parseInt(params.loop);
     }
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
+    this.initialSegment = params.initialSegment;
     if (params.animationData) {
         this.configAnimation(params.animationData);
     } else if(params.path){
@@ -9082,6 +9142,7 @@ AnimationItem.prototype.setParams = function(params) {
             this.trigger('data_failed');
         }.bind(this));
     }
+
 };
 
 AnimationItem.prototype.setData = function (wrapper, animationData) {
@@ -9194,7 +9255,14 @@ AnimationItem.prototype.configAnimation = function (animData) {
     }
     try {
         this.animationData = animData;
-        this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+
+        if (this.initialSegment) {
+            this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
+            this.firstFrame = Math.round(this.initialSegment[0]);
+        } else {
+            this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+            this.firstFrame = Math.round(this.animationData.ip);
+        }
         this.renderer.configAnimation(animData);
         if(!animData.assets){
             animData.assets = [];
@@ -9202,7 +9270,6 @@ AnimationItem.prototype.configAnimation = function (animData) {
 
         this.assets = this.animationData.assets;
         this.frameRate = this.animationData.fr;
-        this.firstFrame = Math.round(this.animationData.ip);
         this.frameMult = this.animationData.fr / 1000;
         this.renderer.searchExtraCompositions(animData.assets);
         this.trigger('config_ready');
@@ -9219,7 +9286,7 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded()){
+    if(this.renderer.globalData.fontManager.isLoaded){
         this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
@@ -9227,7 +9294,10 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
 }
 
 AnimationItem.prototype.checkLoaded = function () {
-    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+    if (!this.isLoaded 
+        && this.renderer.globalData.fontManager.isLoaded
+        && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')
+    ) {
         this.isLoaded = true;
         dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
@@ -9249,11 +9319,11 @@ AnimationItem.prototype.resize = function () {
 };
 
 AnimationItem.prototype.setSubframe = function(flag){
-    this.subframeEnabled = flag ? true : false;
+    this.isSubframeEnabled = !!flag;
 };
 
 AnimationItem.prototype.gotoFrame = function () {
-    this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
+    this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
 
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
@@ -9691,7 +9761,7 @@ lottie.freeze = animationManager.freeze;
 lottie.unfreeze = animationManager.unfreeze;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.6.3';
+lottie.version = '5.6.10';
 
 function checkReady() {
     if (document.readyState === "complete") {

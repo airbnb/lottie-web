@@ -1,3 +1,44 @@
+## V 5.6.10
+- FIX: default loop to true
+- FIX: removing sans-serif and monospace from font preloader to calculate correctly when font is loaded
+- FIX: improved image caching when preloading svg image tags
+- updated definitions
+
+## V 5.6.9
+- fix compression options
+- initialization improvement
+
+## V 5.6.8
+- not using non breaking spaces for text spaces
+- added support for exporting video layers (only export, players don't support them)
+- fix for path properties open without nodes
+
+## V 5.6.7
+- use original comp name as export name
+- added default filter values for banner template
+- added option to load local file as lottie player
+- initialSegment set before animation configuration
+
+## V 5.6.6
+- reading file extension correctly when copying original assets
+- fixed inlined json objects with carriage returns
+- added loop support for banners
+- exporting adjustment layers as null layers
+- added checkbox to select comp names as default
+- added filter size configuration and defaulting to 100%
+- Add missing animation event name definitions
+
+## V 5.6.5
+- added initialSegment property
+- fix for zip file without root folder
+- support for including json in banner html template
+- Export 'blur' text animator property
+
+## V 5.6.4
+- added support for using original images as assets
+- Improved log error fix
+- Fixed missing assets during export
+
 ## V 5.6.3
 - Fix saving json files with special characters
 - Improved lottie import
