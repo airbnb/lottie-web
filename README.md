@@ -162,12 +162,12 @@ Animation instances have these main methods:
 
 ***
 ### goToAndStop(value, isFrame)
-- `value`: numeric value.
+- `value`: numeric value relative to the start of the current segment.
 - `isFrame`: defines if first argument is seconds-based or frame-based (default false).
 
 ***
 ### goToAndPlay(value, isFrame)
-- `value`: numeric value.
+- `value`: numeric value relative to the start of the current segment.
 - `isFrame`: defines if first argument is seconds-based or frame-based (default false).
 
 ***
