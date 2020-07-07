@@ -123,7 +123,7 @@ You can call lottie.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data.
 - path: the relative path to the animation object. (animationData and path are mutually exclusive)
-- loop: true / false / number
+- loop: true / false / number how to loop the last segment played
 - autoplay: true / false it will start playing as soon as it is ready
 - name: animation name for future reference
 - renderer: 'svg' / 'canvas' / 'html' to set the renderer
