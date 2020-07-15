@@ -118,7 +118,7 @@ SVGBaseElement.prototype = {
             } else {
                 this.layerElement.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
             }
-            
+
         }
         if (this.data.bm !== 0) {
             this.setBlendMode();
@@ -146,6 +146,7 @@ SVGBaseElement.prototype = {
     },
     createRenderableComponents: function() {
         this.maskManager = new MaskElement(this.data, this, this.globalData);
+        if (Object.keys(this.effectsManager).length === 0) return;
         this.renderableEffectsManager = new SVGEffects(this);
     },
     setMatte: function(id) {
