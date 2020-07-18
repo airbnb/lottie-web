@@ -481,6 +481,10 @@ const scripts = [
 		builds: ['full','svg','canvas','html','canvas_worker']
 	},
 	{
+		src: 'js/utils/expressions/PropertyGroupFactory.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
 		src: 'js/utils/expressions/PropertyInterface.js',
 		builds: ['full','svg','canvas','html','canvas_worker']
 	},

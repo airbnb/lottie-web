@@ -33,26 +33,8 @@ var EffectsExpressionInterface = (function (){
     }
 
     function createGroupInterface(data,elements, propertyGroup, elem){
-        var effectElements = [];
-        var i, len = data.ef.length;
-        for(i=0;i<len;i+=1){
-            if(data.ef[i].ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
-            } else {
-                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
-            }
-        }
 
-        function _propertyGroup(val) {
-            val = val === undefined ? 1 : val
-            if(val <= 0){
-               return groupInterface;
-            } else{
-               return propertyGroup(val-1);
-            }
-        }
-
-        var groupInterface = function(name){
+        function groupInterface(name){
             var effects = data.ef, i = 0, len = effects.length;
             while(i<len) {
                 if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
@@ -66,8 +48,17 @@ var EffectsExpressionInterface = (function (){
             }
             return effectElements[0]();
         };
+        var _propertyGroup = propertyGroupFactory(groupInterface, propertyGroup);
 
-        groupInterface.propertyGroup = _propertyGroup;
+        var effectElements = [];
+        var i, len = data.ef.length;
+        for(i=0;i<len;i+=1){
+            if(data.ef[i].ty === 5){
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
+            } else {
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
+            }
+        }
 
         if(data.mn === 'ADBE Color Control'){
             Object.defineProperty(groupInterface, 'color', {
@@ -77,12 +68,13 @@ var EffectsExpressionInterface = (function (){
             });
         }
         Object.defineProperties(groupInterface, {
-            'numProperties': {
+            numProperties: {
                 get: function(){
                     return data.np;
                 }
             },
-            '_name': { value: data.nm }
+            _name: { value: data.nm },
+            propertyGroup: {value: _propertyGroup},
         });
         groupInterface.active = groupInterface.enabled = data.en !== 0;
         return groupInterface;

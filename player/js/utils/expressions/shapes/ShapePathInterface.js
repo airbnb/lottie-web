@@ -4,21 +4,15 @@ var ShapePathInterface = (
 
 		return function pathInterfaceFactory(shape,view,propertyGroup){
 		    var prop = view.sh;
-		    function _propertyGroup(val){
-		        val = val === undefined ? 1 : val
-		        if(val <= 0){
-		            return interfaceFunction;
-		        } else {
-		            return propertyGroup(--val);
-		        }
-		    }
-		    prop.setGroupProperty(PropertyInterface('Path', _propertyGroup));
 
 		    function interfaceFunction(val){
 		        if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
 		            return interfaceFunction.path;
 		        }
 		    }
+
+		    var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+		    prop.setGroupProperty(PropertyInterface('Path', _propertyGroup));
 		    Object.defineProperties(interfaceFunction, {
 		        'path': {
 		            get: function(){

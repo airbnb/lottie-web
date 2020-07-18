@@ -141,6 +141,7 @@
     <script src="js/utils/expressions/expressionHelpers.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/PropertyGroupFactory.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/PropertyInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ShapeInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/shapes/ShapePathInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
@@ -175,7 +176,7 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
