@@ -477,6 +477,14 @@ const scripts = [
 		builds: ['full','svg','canvas','html','canvas_worker']
 	},
 	{
+		src: 'js/utils/expressions/shapes/ShapePathInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/PropertyInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
 		src: 'js/utils/expressions/ShapeInterface.js',
 		builds: ['full','svg','canvas','html','canvas_worker']
 	},

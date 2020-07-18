@@ -13,8 +13,9 @@ var EffectsExpressionInterface = (function (){
                 effectElements.push(createGroupInterface(effectsData[i],elem.effectsManager.effectElements[i],propertyGroup,elem));
             }
 
-            return function(name){
-                var effects = elem.data.ef || [], i = 0, len = effects.length;
+            var effects = elem.data.ef || [];
+            var groupInterface = function(name){
+                i = 0, len = effects.length;
                 while(i<len) {
                     if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                         return effectElements[i];
@@ -22,6 +23,12 @@ var EffectsExpressionInterface = (function (){
                     i += 1;
                 }
             };
+            Object.defineProperty(groupInterface, 'numProperties', {
+                get: function(){
+                    return effects.length;
+                }
+            });
+            return groupInterface
         }
     }
 
@@ -37,7 +44,8 @@ var EffectsExpressionInterface = (function (){
         }
 
         function _propertyGroup(val) {
-            if(val === 1){
+            val = val === undefined ? 1 : val
+            if(val <= 0){
                return groupInterface;
             } else{
                return propertyGroup(val-1);
@@ -68,10 +76,13 @@ var EffectsExpressionInterface = (function (){
                 }
             });
         }
-        Object.defineProperty(groupInterface, 'numProperties', {
-            get: function(){
-                return data.np;
-            }
+        Object.defineProperties(groupInterface, {
+            'numProperties': {
+                get: function(){
+                    return data.np;
+                }
+            },
+            '_name': { value: data.nm }
         });
         groupInterface.active = groupInterface.enabled = data.en !== 0;
         return groupInterface;
@@ -87,7 +98,7 @@ var EffectsExpressionInterface = (function (){
         }
 
         if(element.p.setGroupProperty) {
-            element.p.setGroupProperty(propertyGroup);
+            element.p.setGroupProperty(PropertyInterface('', propertyGroup));
         }
 
         return interfaceFunction;
