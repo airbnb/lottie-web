@@ -109,6 +109,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/utils/shapes/PuckerAndBloatModifier.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/utils/shapes/RepeaterModifier.js',
 		builds: defaultBuilds
 	},

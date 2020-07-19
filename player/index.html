@@ -48,6 +48,7 @@
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
+    <script src="js/utils/shapes/PuckerAndBloatModifier.js"></script>
     <script src="js/utils/shapes/RepeaterModifier.js"></script>
     <script src="js/utils/shapes/ShapeCollection.js"></script>
     <script src="js/utils/shapes/DashProperty.js"></script>
@@ -176,7 +177,7 @@
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
