@@ -1,3 +1,9 @@
+## V 5.7.1
+- REPORT: Improved animation report
+- FIX: Expressions separate dimensions
+- FIX: propertyGroup for expressions (Duik bones are supported)
+- FEATURE: supported Pucked and Bloat
+
 ## V 5.7.0
 - FEATURE: Extension: reports for not supported features
 - FEATURE: Extension: baking keyframes for unsupported expressions

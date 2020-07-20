@@ -3855,6 +3855,68 @@ RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
 };
 
 ShapeModifiers.registerModifier('rd',RoundCornersModifier);
+function PuckerAndBloatModifier(){}
+extendPrototype([ShapeModifier],PuckerAndBloatModifier);
+PuckerAndBloatModifier.prototype.initModifierProperties = function(elem,data){
+    this.getValue = this.processKeys;
+    this.amount = PropertyFactory.getProp(elem,data.a,0,null,this);
+    this._isAnimated = !!this.amount.effectsSequence.length;
+};
+
+PuckerAndBloatModifier.prototype.processPath = function(path, amount){
+    var percent = amount / 100;
+    var centerPoint = [0, 0];
+    var pathLength = path._length, i = 0;
+    for (i = 0; i < pathLength; i += 1) {
+        centerPoint[0] += path.v[i][0];
+        centerPoint[1] += path.v[i][1];
+    }
+    centerPoint[0] /= pathLength;
+    centerPoint[1] /= pathLength;
+    var cloned_path = shape_pool.newElement();
+    cloned_path.c = path.c;
+    var vX, vY, oX, oY, iX, iY;
+    for(i = 0; i < pathLength; i += 1) {
+        vX = path.v[i][0] + (centerPoint[0] - path.v[i][0]) * percent;
+        vY = path.v[i][1] + (centerPoint[1] - path.v[i][1]) * percent;
+        oX = path.o[i][0] + (centerPoint[0] - path.o[i][0]) * -percent;
+        oY = path.o[i][1] + (centerPoint[1] - path.o[i][1]) * -percent;
+        iX = path.i[i][0] + (centerPoint[0] - path.i[i][0]) * -percent;
+        iY = path.i[i][1] + (centerPoint[1] - path.i[i][1]) * -percent;
+        cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, i);
+    }
+    return cloned_path;
+};
+
+PuckerAndBloatModifier.prototype.processShapes = function(_isFirstFrame){
+    var shapePaths;
+    var i, len = this.shapes.length;
+    var j, jLen;
+    var amount = this.amount.v;
+
+    if(amount !== 0){
+        var shapeData, newPaths, localShapeCollection;
+        for(i=0;i<len;i+=1){
+            shapeData = this.shapes[i];
+            newPaths = shapeData.shape.paths;
+            localShapeCollection = shapeData.localShapeCollection;
+            if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)){
+                localShapeCollection.releaseShapes();
+                shapeData.shape._mdf = true;
+                shapePaths = shapeData.shape.paths.shapes;
+                jLen = shapeData.shape.paths._length;
+                for(j=0;j<jLen;j+=1){
+                    localShapeCollection.addShape(this.processPath(shapePaths[j], amount));
+                }
+            }
+            shapeData.shape.paths = shapeData.localShapeCollection;
+        }
+    }
+    if(!this.dynamicProperties.length){
+        this._mdf = false;
+    }
+};
+ShapeModifiers.registerModifier('pb',PuckerAndBloatModifier);
 function RepeaterModifier(){}
 extendPrototype([ShapeModifier], RepeaterModifier);
 
@@ -8200,7 +8262,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
             }
             this.setElementStyles(itemsData[i]);
 
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'pb'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i]);
@@ -10364,7 +10426,6 @@ var ExpressionManager = (function(){
             expression_function();
             this.frameExpressionId = elem.globalData.frameId;
 
-
             //TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === "shape") {
                 scoped_bm_rt = scoped_bm_rt.v;
@@ -10865,6 +10926,79 @@ var expressionHelpers = (function(){
     TextProperty.prototype.searchExpressions = searchExpressions;
     
 }());
+var ShapePathInterface = (
+
+	function() {
+
+		return function pathInterfaceFactory(shape,view,propertyGroup){
+		    var prop = view.sh;
+
+		    function interfaceFunction(val){
+		        if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
+		            return interfaceFunction.path;
+		        }
+		    }
+
+		    var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+		    prop.setGroupProperty(PropertyInterface('Path', _propertyGroup));
+		    Object.defineProperties(interfaceFunction, {
+		        'path': {
+		            get: function(){
+		                if(prop.k){
+		                    prop.getValue();
+		                }
+		                return prop;
+		            }
+		        },
+		        'shape': {
+		            get: function(){
+		                if(prop.k){
+		                    prop.getValue();
+		                }
+		                return prop;
+		            }
+		        },
+		        '_name': { value: shape.nm },
+		        'ix': { value: shape.ix },
+		        'propertyIndex': { value: shape.ix },
+		        'mn': { value: shape.mn },
+		        'propertyGroup': {value: propertyGroup},
+		    });
+		    return interfaceFunction;
+		}
+	}()
+)
+var propertyGroupFactory = (function() {
+	return function(interfaceFunction, parentPropertyGroup) {
+		return function(val) {
+			val = val === undefined ? 1 : val
+			if(val <= 0){
+			    return interfaceFunction;
+			} else{
+			    return parentPropertyGroup(val-1);
+			}
+		}
+	}
+}())
+var PropertyInterface = (function() {
+	return function(propertyName, propertyGroup) {
+
+		var interfaceFunction = {
+			_name: propertyName
+		}
+
+		function _propertyGroup(val){
+		    val = val === undefined ? 1 : val
+		    if(val <= 0){
+		        return interfaceFunction;
+		    } else {
+		        return propertyGroup(--val);
+		    }
+		}
+
+		return _propertyGroup;
+	}
+}())
 var ShapeExpressionInterface = (function(){
 
     function iterateElements(shapes,view, propertyGroup){
@@ -10886,7 +11020,7 @@ var ShapeExpressionInterface = (function(){
             }else if(shapes[i].ty == 'sr'){
                 arr.push(starInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'sh'){
-                arr.push(pathInterfaceFactory(shapes[i],view[i],propertyGroup));
+                arr.push(ShapePathInterface(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rc'){
                 arr.push(rectInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rd'){
@@ -10912,15 +11046,12 @@ var ShapeExpressionInterface = (function(){
                return interfaces[value-1];
             }
        };
-       interfaceFunction.propertyGroup = function(val){
-           if(val === 1){
-               return interfaceFunction;
-           } else{
-               return propertyGroup(val-1);
-           }
-       };
+
+       interfaceFunction.propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
        interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
        interfaceFunction.numProperties = interfaces.length;
+       var transformInterface = transformInterfaceFactory(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
+       interfaceFunction.transform = transformInterface;
        interfaceFunction.propertyIndex = shape.cix;
        interfaceFunction._name = shape.nm;
 
@@ -10941,13 +11072,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.transform;
             }
         };
-        interfaceFunction.propertyGroup = function(val){
-            if(val === 1){
-                return interfaceFunction;
-            } else{
-                return propertyGroup(val-1);
-            }
-        };
+        interfaceFunction.propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
         var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
         var transformInterface = transformInterfaceFactory(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
         interfaceFunction.content = content;
@@ -10984,26 +11109,14 @@ var ShapeExpressionInterface = (function(){
             'mn': { value: shape.mn }
         });
 
-        view.c.setGroupProperty(propertyGroup);
-        view.o.setGroupProperty(propertyGroup);
+        view.c.setGroupProperty(PropertyInterface('Color', propertyGroup));
+        view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
         return interfaceFunction;
     }
 
     function strokeInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val === 1){
-                return ob;
-            } else{
-                return propertyGroup(val-1);
-            }
-        }
-        function _dashPropertyGroup(val){
-            if(val === 1){
-                return dashOb;
-            } else{
-                return _propertyGroup(val-1);
-            }
-        }
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var _dashPropertyGroup = propertyGroupFactory(dashOb, _propertyGroup);
         function addPropertyToDashOb(i) {
             Object.defineProperty(dashOb, shape.d[i].nm, {
                 get: ExpressionPropertyInterface(view.d.dataProps[i].p)
@@ -11044,25 +11157,13 @@ var ShapeExpressionInterface = (function(){
             'mn': { value: shape.mn }
         });
 
-        view.c.setGroupProperty(_propertyGroup);
-        view.o.setGroupProperty(_propertyGroup);
-        view.w.setGroupProperty(_propertyGroup);
+        view.c.setGroupProperty(PropertyInterface('Color', _propertyGroup));
+        view.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
+        view.w.setGroupProperty(PropertyInterface('Stroke Width', _propertyGroup));
         return interfaceFunction;
     }
 
     function trimInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-
-        view.s.setGroupProperty(_propertyGroup);
-        view.e.setGroupProperty(_propertyGroup);
-        view.o.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(val){
             if(val === shape.e.ix || val === 'End' || val === 'end'){
@@ -11075,6 +11176,13 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.offset;
             }
         }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        interfaceFunction.propertyIndex = shape.ix;
+
+        view.s.setGroupProperty(PropertyInterface('Start', _propertyGroup));
+        view.e.setGroupProperty(PropertyInterface('End', _propertyGroup));
+        view.o.setGroupProperty(PropertyInterface('Offset', _propertyGroup));
         interfaceFunction.propertyIndex = shape.ix;
         interfaceFunction.propertyGroup = propertyGroup;
 
@@ -11095,23 +11203,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function transformInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        view.transform.mProps.o.setGroupProperty(_propertyGroup);
-        view.transform.mProps.p.setGroupProperty(_propertyGroup);
-        view.transform.mProps.a.setGroupProperty(_propertyGroup);
-        view.transform.mProps.s.setGroupProperty(_propertyGroup);
-        view.transform.mProps.r.setGroupProperty(_propertyGroup);
-        if(view.transform.mProps.sk){
-            view.transform.mProps.sk.setGroupProperty(_propertyGroup);
-            view.transform.mProps.sa.setGroupProperty(_propertyGroup);
-        }
-        view.transform.op.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(value){
             if(shape.a.ix === value || value === 'Anchor Point'){
@@ -11135,8 +11226,19 @@ var ShapeExpressionInterface = (function(){
             if(shape.sa && shape.sa.ix === value || value === 'Skew Axis'){
                 return interfaceFunction.skewAxis;
             }
-
         }
+        
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        view.transform.mProps.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
+        view.transform.mProps.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
+        view.transform.mProps.a.setGroupProperty(PropertyInterface('Anchor Point', _propertyGroup));
+        view.transform.mProps.s.setGroupProperty(PropertyInterface('Scale', _propertyGroup));
+        view.transform.mProps.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
+        if(view.transform.mProps.sk){
+            view.transform.mProps.sk.setGroupProperty(PropertyInterface('Skew', _propertyGroup));
+            view.transform.mProps.sa.setGroupProperty(PropertyInterface('Skew Angle', _propertyGroup));
+        }
+        view.transform.op.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
         Object.defineProperties(interfaceFunction, {
             'opacity': {
                 get: ExpressionPropertyInterface(view.transform.mProps.o)
@@ -11168,17 +11270,7 @@ var ShapeExpressionInterface = (function(){
     }
 
     function ellipseInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        prop.s.setGroupProperty(_propertyGroup);
-        prop.p.setGroupProperty(_propertyGroup);
+
         function interfaceFunction(value){
             if(shape.p.ix === value){
                 return interfaceFunction.position;
@@ -11187,6 +11279,11 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.size;
             }
         }
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        interfaceFunction.propertyIndex = shape.ix;
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        prop.s.setGroupProperty(PropertyInterface('Size', _propertyGroup));
+        prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
 
         Object.defineProperties(interfaceFunction, {
             'size': {
@@ -11202,24 +11299,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function starInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.or.setGroupProperty(_propertyGroup);
-        prop.os.setGroupProperty(_propertyGroup);
-        prop.pt.setGroupProperty(_propertyGroup);
-        prop.p.setGroupProperty(_propertyGroup);
-        prop.r.setGroupProperty(_propertyGroup);
-        if(shape.ir){
-            prop.ir.setGroupProperty(_propertyGroup);
-            prop.is.setGroupProperty(_propertyGroup);
-        }
 
         function interfaceFunction(value){
             if(shape.p.ix === value){
@@ -11244,6 +11323,19 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.innerRoundness;
             }
 
+        }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.or.setGroupProperty(PropertyInterface('Outer Radius', _propertyGroup));
+        prop.os.setGroupProperty(PropertyInterface('Outer Roundness', _propertyGroup));
+        prop.pt.setGroupProperty(PropertyInterface('Points', _propertyGroup));
+        prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
+        prop.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
+        if(shape.ir){
+            prop.ir.setGroupProperty(PropertyInterface('Inner Radius', _propertyGroup));
+            prop.is.setGroupProperty(PropertyInterface('Inner Roundness', _propertyGroup));
         }
 
         Object.defineProperties(interfaceFunction, {
@@ -11275,18 +11367,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function rectInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.p.setGroupProperty(_propertyGroup);
-        prop.s.setGroupProperty(_propertyGroup);
-        prop.r.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(value){
             if(shape.p.ix === value){
@@ -11300,6 +11380,14 @@ var ShapeExpressionInterface = (function(){
             }
 
         }
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
+        prop.s.setGroupProperty(PropertyInterface('Size', _propertyGroup));
+        prop.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
+
         Object.defineProperties(interfaceFunction, {
             'position': {
                 get: ExpressionPropertyInterface(prop.p)
@@ -11317,23 +11405,18 @@ var ShapeExpressionInterface = (function(){
     }
 
     function roundedInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.rd.setGroupProperty(_propertyGroup);
-
+       
         function interfaceFunction(value){
             if(shape.r.ix === value || 'Round Corners 1' === value){
                 return interfaceFunction.radius;
             }
-
         }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var prop = view;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.rd.setGroupProperty(PropertyInterface('Radius', _propertyGroup));
+
         Object.defineProperties(interfaceFunction, {
             'radius': {
                 get: ExpressionPropertyInterface(prop.rd)
@@ -11345,17 +11428,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function repeaterInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.c.setGroupProperty(_propertyGroup);
-        prop.o.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(value){
             if(shape.c.ix === value || 'Copies' === value){
@@ -11363,8 +11435,13 @@ var ShapeExpressionInterface = (function(){
             } else if(shape.o.ix === value || 'Offset' === value){
                 return interfaceFunction.offset;
             }
-
         }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var prop = view;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.c.setGroupProperty(PropertyInterface('Copies', _propertyGroup));
+        prop.o.setGroupProperty(PropertyInterface('Offset', _propertyGroup));
         Object.defineProperties(interfaceFunction, {
             'copies': {
                 get: ExpressionPropertyInterface(prop.c)
@@ -11378,52 +11455,16 @@ var ShapeExpressionInterface = (function(){
         return interfaceFunction;
     }
 
-    function pathInterfaceFactory(shape,view,propertyGroup){
-        var prop = view.sh;
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        prop.setGroupProperty(_propertyGroup);
-
-        function interfaceFunction(val){
-            if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
-                return interfaceFunction.path;
-            }
-        }
-        Object.defineProperties(interfaceFunction, {
-            'path': {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                }
-            },
-            'shape': {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                }
-            },
-            '_name': { value: shape.nm },
-            'ix': { value: shape.ix },
-            'propertyIndex': { value: shape.ix },
-            'mn': { value: shape.mn }
-        });
-        return interfaceFunction;
-    }
-
     return function(shapes,view,propertyGroup) {
         var interfaces;
         function _interfaceFunction(value){
             if(typeof value === 'number'){
-                return interfaces[value-1];
+                value = value === undefined ? 1 : value
+                if (value === 0) {
+                    return propertyGroup
+                } else {
+                    return interfaces[value-1];
+                }
             } else {
                 var i = 0, len = interfaces.length;
                 while(i<len){
@@ -11696,13 +11737,23 @@ var TransformExpressionInterface = (function (){
 
         if(transform.p) {
             var _transformFactory = ExpressionPropertyInterface(transform.p);
+        } else {
+            var _px = ExpressionPropertyInterface(transform.px);
+            var _py = ExpressionPropertyInterface(transform.py);
+            var _pz;
+            if (transform.pz) {
+                _pz = ExpressionPropertyInterface(transform.pz);
+            }
         }
         Object.defineProperty(_thisFunction, "position", {
             get: function () {
                 if(transform.p) {
                     return _transformFactory();
                 } else {
-                    return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
+                    return [
+                        _px(),
+                        _py(),
+                        _pz ? _pz() : 0];
                 }
             }
         });
@@ -11787,8 +11838,9 @@ var EffectsExpressionInterface = (function (){
                 effectElements.push(createGroupInterface(effectsData[i],elem.effectsManager.effectElements[i],propertyGroup,elem));
             }
 
-            return function(name){
-                var effects = elem.data.ef || [], i = 0, len = effects.length;
+            var effects = elem.data.ef || [];
+            var groupInterface = function(name){
+                i = 0, len = effects.length;
                 while(i<len) {
                     if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                         return effectElements[i];
@@ -11796,29 +11848,18 @@ var EffectsExpressionInterface = (function (){
                     i += 1;
                 }
             };
+            Object.defineProperty(groupInterface, 'numProperties', {
+                get: function(){
+                    return effects.length;
+                }
+            });
+            return groupInterface
         }
     }
 
     function createGroupInterface(data,elements, propertyGroup, elem){
-        var effectElements = [];
-        var i, len = data.ef.length;
-        for(i=0;i<len;i+=1){
-            if(data.ef[i].ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
-            } else {
-                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
-            }
-        }
 
-        function _propertyGroup(val) {
-            if(val === 1){
-               return groupInterface;
-            } else{
-               return propertyGroup(val-1);
-            }
-        }
-
-        var groupInterface = function(name){
+        function groupInterface(name){
             var effects = data.ef, i = 0, len = effects.length;
             while(i<len) {
                 if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
@@ -11832,8 +11873,17 @@ var EffectsExpressionInterface = (function (){
             }
             return effectElements[0]();
         };
+        var _propertyGroup = propertyGroupFactory(groupInterface, propertyGroup);
 
-        groupInterface.propertyGroup = _propertyGroup;
+        var effectElements = [];
+        var i, len = data.ef.length;
+        for(i=0;i<len;i+=1){
+            if(data.ef[i].ty === 5){
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
+            } else {
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
+            }
+        }
 
         if(data.mn === 'ADBE Color Control'){
             Object.defineProperty(groupInterface, 'color', {
@@ -11842,10 +11892,14 @@ var EffectsExpressionInterface = (function (){
                 }
             });
         }
-        Object.defineProperty(groupInterface, 'numProperties', {
-            get: function(){
-                return data.np;
-            }
+        Object.defineProperties(groupInterface, {
+            numProperties: {
+                get: function(){
+                    return data.np;
+                }
+            },
+            _name: { value: data.nm },
+            propertyGroup: {value: _propertyGroup},
         });
         groupInterface.active = groupInterface.enabled = data.en !== 0;
         return groupInterface;
@@ -11861,7 +11915,7 @@ var EffectsExpressionInterface = (function (){
         }
 
         if(element.p.setGroupProperty) {
-            element.p.setGroupProperty(propertyGroup);
+            element.p.setGroupProperty(PropertyInterface('', propertyGroup));
         }
 
         return interfaceFunction;
@@ -12238,7 +12292,7 @@ lottie.freeze = animationManager.freeze;
 lottie.unfreeze = animationManager.unfreeze;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.0';
+lottie.version = '5.7.1';
 
 function checkReady() {
     if (document.readyState === "complete") {
