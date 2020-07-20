@@ -62,13 +62,23 @@ var TransformExpressionInterface = (function (){
 
         if(transform.p) {
             var _transformFactory = ExpressionPropertyInterface(transform.p);
+        } else {
+            var _px = ExpressionPropertyInterface(transform.px);
+            var _py = ExpressionPropertyInterface(transform.py);
+            var _pz;
+            if (transform.pz) {
+                _pz = ExpressionPropertyInterface(transform.pz);
+            }
         }
         Object.defineProperty(_thisFunction, "position", {
             get: function () {
                 if(transform.p) {
                     return _transformFactory();
                 } else {
-                    return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
+                    return [
+                        _px(),
+                        _py(),
+                        _pz ? _pz() : 0];
                 }
             }
         });
