@@ -133,6 +133,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/utils/audio/AudioController.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/utils/imagePreloader.js',
 		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light']
 	},
@@ -326,6 +330,10 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/SolidElement.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/elements/AudioElement.js',
 		builds: defaultBuilds
 	},
 	{

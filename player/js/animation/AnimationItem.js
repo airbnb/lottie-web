@@ -28,6 +28,7 @@ var AnimationItem = function () {
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
     this.imagePreloader = new ImagePreloader();
+    this.audioController = audioControllerFactory();
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -218,6 +219,9 @@ AnimationItem.prototype.configAnimation = function (animData) {
         this.loadSegments();
         this.updaFrameModifier();
         this.waitForFontsLoaded();
+        if (this.isPaused) {
+            this.audioController.pause();
+        }
     } catch(error) {
         this.triggerConfigError(error);
     }
@@ -288,8 +292,9 @@ AnimationItem.prototype.play = function (name) {
     if(name && this.name != name){
         return;
     }
-    if(this.isPaused === true){
+    if (this.isPaused === true) {
         this.isPaused = false;
+        this.audioController.resume();
         if(this._idle){
             this._idle = false;
             this.trigger('_active');
@@ -305,6 +310,7 @@ AnimationItem.prototype.pause = function (name) {
         this.isPaused = true;
         this._idle = true;
         this.trigger('_idle');
+        this.audioController.pause();
     }
 };
 
@@ -503,6 +509,7 @@ AnimationItem.prototype.setDirection = function (val) {
 
 AnimationItem.prototype.updaFrameModifier = function () {
     this.frameModifier = this.frameMult * this.playSpeed * this.playDirection;
+    this.audioController.setRate(this.playSpeed * this.playDirection)
 };
 
 AnimationItem.prototype.getPath = function () {

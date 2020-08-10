@@ -34,6 +34,7 @@
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
+    <script src="js/3rd_party/howler.js"></script>
     <script src="js/utils/animationFramePolyFill.js"></script>
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
@@ -54,6 +55,7 @@
     <script src="js/utils/shapes/DashProperty.js"></script>
     <script src="js/utils/shapes/GradientProperty.js"></script>
     <script src="js/utils/shapes/shapePathBuilder.js"></script>
+    <script src="js/utils/audio/AudioController.js"></script>
     <script src="js/utils/imagePreloader.js" data-builds="full,canvas,canvas_light,html,html_light,svg,svg_light"></script>
     <!-- <script src="js/utils/imagePreloaderWorkerOverride.js" data-builds="canvas_worker"></script> -->
     <script src="js/utils/featureSupport.js"></script>
@@ -103,6 +105,7 @@
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
+    <script src="js/elements/AudioElement.js"></script>
     <script src="js/elements/svgElements/SVGCompElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGTextElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGShapeElement.js"></script>
@@ -175,9 +178,9 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'canvas',
+        renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
