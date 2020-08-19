@@ -163,7 +163,7 @@ var animationManager = (function(){
                 renderer = 'svg';
             }
             var body = document.getElementsByTagName('body')[0];
-            body.innerHTML = '';
+            body.innerText = '';
             var div = createTag('div');
             div.style.width = '100%';
             div.style.height = '100%';

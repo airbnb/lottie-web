@@ -233,7 +233,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
 };
 
 HybridRenderer.prototype.destroy = function () {
-    this.animationItem.wrapper.innerHTML = '';
+    this.animationItem.wrapper.innerText = '';
     this.animationItem.container = null;
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;

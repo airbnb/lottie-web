@@ -29,7 +29,7 @@ var FontManager = (function(){
         parentNode.style.fontFamily    = family;
         var node = createTag('span');
         // Characters that vary significantly among different fonts
-        node.innerHTML = 'giItT1WQy@!-/#';
+        node.innerText = 'giItT1WQy@!-/#';
         // Visible - so we can measure it - but not on the screen
         parentNode.style.position      = 'absolute';
         parentNode.style.left          = '-10000px';
@@ -149,7 +149,7 @@ var FontManager = (function(){
                     s.setAttribute('f-origin', fontArr[i].origin);
                     s.setAttribute('f-family', fontArr[i].fFamily);
                     s.type = "text/css";
-                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                    s.innerText = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                     defs.appendChild(s);
                 }
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){

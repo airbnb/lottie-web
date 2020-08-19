@@ -45,7 +45,7 @@ export type AnimationItem = {
     getDuration(inFrames?: boolean): number;
     triggerEvent<T = any>(name: AnimationEventName, args: T): void;
     addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
-    removeEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
+    removeEventListener<T = any>(name: AnimationEventName, callback?: AnimationEventCallback<T>): void;
 }
 
 export type BaseRendererConfig = {
@@ -81,7 +81,7 @@ export type AnimationConfig = {
     renderer?: 'svg' | 'canvas' | 'html';
     loop?: boolean | number;
     autoplay?: boolean;
-    initialSegment?: AnimationSegment;        
+    initialSegment?: AnimationSegment;
     name?: string;
     assetsPath?: string;
     rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
