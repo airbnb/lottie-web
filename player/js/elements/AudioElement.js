@@ -6,9 +6,7 @@ function AudioElement(data,globalData,comp){
 	this._isPlaying = false;
 	this._canPlay = false;
 	var assetPath = this.globalData.getAssetsPath(this.assetData);
-	this.audio = new Howl({
-      src: [assetPath]
-    })
+    this.audio = this.globalData.audioController.createAudio(assetPath)
     this._currentTime = 0;
     this.globalData.audioController.addAudio(this);
     this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate,this) : {_placeholder:true};
@@ -29,9 +27,9 @@ extendPrototype([RenderableElement,BaseElement,FrameElement], AudioElement);
 
 AudioElement.prototype.renderFrame = function() {
 	if (this.isInRange && this._canPlay) {
-		if ((!this._isPlaying)) {
-			this.audio.play()
-			this.audio.seek(this._currentTime / this.globalData.frameRate)
+		if (!this._isPlaying) {
+			this.audio.play();
+			this.audio.seek(this._currentTime / this.globalData.frameRate);
 			this._isPlaying = true;
 		} else if (!this.audio.playing()
 			|| Math.abs(this._currentTime / this.globalData.frameRate - this.audio.seek()) > 0.1

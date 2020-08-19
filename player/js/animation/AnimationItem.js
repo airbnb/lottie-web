@@ -68,6 +68,9 @@ AnimationItem.prototype.setParams = function(params) {
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
     this.initialSegment = params.initialSegment;
+    if (params.audioFactory) {
+        this.audioController.setAudioFactory(params.audioFactory);
+    }
     if (params.animationData) {
         this.configAnimation(params.animationData);
     } else if(params.path){

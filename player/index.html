@@ -195,6 +195,7 @@
             }
         },
         path: 'exports/render/data.json',
+        audioFactory: createAudio,
     };
     // lottie.setQuality('low');
     // anim.setSpeed(0.5)
@@ -207,6 +208,12 @@
     anim.addEventListener('error', function(error) {
         console.log(error)
     })
+
+    function createAudio(assetPath) {
+        return new Howl({
+            src: [assetPath]
+        })
+    }
 
 </script>
 
