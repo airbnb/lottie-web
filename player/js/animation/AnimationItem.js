@@ -510,6 +510,31 @@ AnimationItem.prototype.setDirection = function (val) {
     this.updaFrameModifier();
 };
 
+AnimationItem.prototype.setVolume = function (val, name) {
+    if (name && this.name !== name) {
+        return;
+    }
+    this.audioController.setVolume(val);
+};
+
+AnimationItem.prototype.getVolume = function () {
+    return this.audioController.getVolume();
+};
+
+AnimationItem.prototype.mute = function (name) {
+    if (name && this.name !== name) {
+        return;
+    }
+    this.audioController.mute();
+};
+
+AnimationItem.prototype.unmute = function (name) {
+    if(name && this.name !== name){
+        return;
+    }
+    this.audioController.unmute();
+};
+
 AnimationItem.prototype.updaFrameModifier = function () {
     this.frameModifier = this.frameMult * this.playSpeed * this.playDirection;
     this.audioController.setRate(this.playSpeed * this.playDirection)

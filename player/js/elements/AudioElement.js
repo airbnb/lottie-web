@@ -6,7 +6,7 @@ function AudioElement(data,globalData,comp){
 	this._isPlaying = false;
 	this._canPlay = false;
 	var assetPath = this.globalData.getAssetsPath(this.assetData);
-    this.audio = this.globalData.audioController.createAudio(assetPath)
+    this.audio = this.globalData.audioController.createAudio(assetPath);
     this._currentTime = 0;
     this.globalData.audioController.addAudio(this);
     this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate,this) : {_placeholder:true};
@@ -60,6 +60,10 @@ AudioElement.prototype.resume = function() {
 
 AudioElement.prototype.setRate = function(rateValue) {
 	this.audio.rate(rateValue);
+};
+
+AudioElement.prototype.volume = function(volumeValue) {
+	this.audio.volume(volumeValue);
 };
 
 AudioElement.prototype.getBaseElement = function() {

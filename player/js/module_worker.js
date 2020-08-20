@@ -46,6 +46,9 @@ var lottiejs = (function(window) {
     lottiejs.setQuality = setQuality;
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
+    lottie.setVolume = animationManager.setVolume;
+    lottie.mute = animationManager.mute;
+    lottie.unmute = animationManager.unmute;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.version = '[[BM_VERSION]]';
 
