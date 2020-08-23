@@ -1,3 +1,8 @@
+## V 5.7.2
+- FIX: Trusted Types compliance by removing calls to .innerHTML
+- FIX: make callback parameter of removeEventListener optional
+- FEATURE: Audio Support
+
 ## V 5.7.1
 - REPORT: Improved animation report
 - FIX: Expressions separate dimensions
