@@ -1,3 +1,6 @@
+## V 5.7.3
+- EXPRESSIONS: Added more expressions support
+
 ## V 5.7.2
 - FIX: Trusted Types compliance by removing calls to .innerHTML
 - FIX: make callback parameter of removeEventListener optional
