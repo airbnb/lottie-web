@@ -3,14 +3,12 @@ var LayerExpressionInterface = (function (){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
         var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
+        if (time !== undefined) {
+            toWorldMat = this._elem.finalTransform.mProp.getValueAtTime(time);
         } else {
             transformMat = this._elem.finalTransform.mProp;
+            transformMat.applyToMatrix(toWorldMat);
         }
-        transformMat.applyToMatrix(toWorldMat);
         if(this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
@@ -24,15 +22,13 @@ var LayerExpressionInterface = (function (){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
         var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
+        if (time !== undefined) {
+            toWorldMat = this._elem.finalTransform.mProp.getValueAtTime(time);
         } else {
             transformMat = this._elem.finalTransform.mProp;
+            transformMat.applyToMatrix(toWorldMat);
         }
-        transformMat.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
+        if (this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
@@ -88,6 +84,8 @@ var LayerExpressionInterface = (function (){
                 case "effects":
                 case "Effects":
                     return _thisLayerFunction.effect;
+                case "ADBE Text Properties":
+                    return _thisLayerFunction.textInterface;
             }
         }
         _thisLayerFunction.toWorld = toWorld;

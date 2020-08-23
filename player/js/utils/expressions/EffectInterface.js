@@ -46,7 +46,7 @@ var EffectsExpressionInterface = (function (){
                 }
                 i += 1;
             }
-            return effectElements[0]();
+            throw new Error();
         };
         var _propertyGroup = propertyGroupFactory(groupInterface, propertyGroup);
 

@@ -319,7 +319,11 @@ var Matrix = (function(){
         if(this.isIdentity()) {
             arr = [x,y,z];
         } else {
-            arr = [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
+            arr = [
+                x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],
+                x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
+                x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]
+            ];
         }
         return arr;
     }

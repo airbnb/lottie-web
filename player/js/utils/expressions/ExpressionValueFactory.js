@@ -24,6 +24,7 @@ var ExpressionPropertyInterface = (function() {
                 }
                 var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value);
                 valueProp.time = property.keyframes[pos-1].t / property.elem.comp.globalData.frameRate;
+                valueProp.value = type === 'unidimensional' ? value[0] : value;
                 return valueProp;
             }
         };
