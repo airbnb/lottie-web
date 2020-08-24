@@ -44,7 +44,7 @@ export type AnimationItem = {
     setSubframe(useSubFrames: boolean): void;
     getDuration(inFrames?: boolean): number;
     triggerEvent<T = any>(name: AnimationEventName, args: T): void;
-    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
+    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): () => void;
     removeEventListener<T = any>(name: AnimationEventName, callback?: AnimationEventCallback<T>): void;
 }
 
