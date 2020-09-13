@@ -237,7 +237,12 @@ var FontManager = (function(){
             }
             i+= 1;
         }
-        if((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char) && console && console.warn) {
+        if ((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char)
+            && console
+            && console.warn
+            && !this._warned
+           ) {
+            this._warned = true
             console.warn('Missing character from exported characters list: ', char, style, font);
         }
         return emptyChar;
@@ -290,6 +295,7 @@ var FontManager = (function(){
         this.chars = null;
         this.typekitLoaded = 0;
         this.isLoaded = false;
+        this._warned = false;
         this.initTime = Date.now();
         this.setIsLoadedBinded = this.setIsLoaded.bind(this)
         this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)

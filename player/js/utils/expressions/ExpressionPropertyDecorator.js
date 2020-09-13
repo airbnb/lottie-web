@@ -191,51 +191,67 @@
         matrix.cloneFromProps(this.pre.props);
         if (this.appliedTransformations < 1) {
             var anchor = this.a.getValueAtTime(time);
-            matrix.translate(-anchor[0], -anchor[1], anchor[2]);
+            matrix.translate(
+                -anchor[0] * this.a.mult,
+                -anchor[1] * this.a.mult,
+                anchor[2] * this.a.mult
+            );
         }
         if (this.appliedTransformations < 2) {
             var scale = this.s.getValueAtTime(time);
-            matrix.scale(scale[0], scale[1], scale[2]);
+            matrix.scale(
+                scale[0] * this.s.mult,
+                scale[1] * this.s.mult,
+                scale[2] * this.s.mult
+            );
         }
         if (this.sk && this.appliedTransformations < 3) {
             var skew = this.sk.getValueAtTime(time);
             var skewAxis = this.sa.getValueAtTime(time);
-            matrix.skewFromAxis(-skew, skewAxis);
+            matrix.skewFromAxis(-skew * this.sk.mult, skewAxis * this.sa.mult);
         }
         if (this.r && this.appliedTransformations < 4) {
             var rotation = this.r.getValueAtTime(time);
-            matrix.rotate(-rotation);
+            matrix.rotate(-rotation * this.r.mult);
         } else if (!this.r && this.appliedTransformations < 4){
             var rotationZ = this.rz.getValueAtTime(time);
             var rotationY = this.ry.getValueAtTime(time);
             var rotationX = this.rx.getValueAtTime(time);
             var orientation = this.or.getValueAtTime(time);
-            matrix.rotateZ(-rotationZ.v)
-            .rotateY(rotationY.v)
-            .rotateX(rotationX.v)
-            .rotateZ(-orientation[2])
-            .rotateY(orientation[1])
-            .rotateX(orientation[0]);
+            matrix.rotateZ(-rotationZ * this.rz.mult)
+            .rotateY(rotationY * this.ry.mult)
+            .rotateX(rotationX * this.rx.mult)
+            .rotateZ(-orientation[2] * this.or.mult)
+            .rotateY(orientation[1] * this.or.mult)
+            .rotateX(orientation[0] * this.or.mult);
         }
         if (this.data.p && this.data.p.s) {
             var positionX = this.px.getValueAtTime(time);
             var positionY = this.py.getValueAtTime(time);
             if (this.data.p.z) {
                 var positionZ = this.pz.getValueAtTime(time);
-                matrix.translate(positionX, positionY, -positionZ);
+                matrix.translate(
+                    positionX * this.px.mult,
+                    positionY * this.py.mult,
+                    -positionZ * this.pz.mult
+                );
             } else {
-                matrix.translate(positionX, positionY, 0);
+                matrix.translate(positionX * this.px.mult, positionY * this.py.mult, 0);
             }
         } else {
             var position = this.p.getValueAtTime(time);
-            matrix.translate(position[0], position[1], -position[2]);
+            matrix.translate(
+                position[0] * this.p.mult,
+                position[1] * this.p.mult,
+                -position[2] * this.p.mult
+            );
         }
         return matrix;
         ////
     }
 
     function getTransformStaticValueAtTime(time) {
-
+        return this.v.clone(new Matrix());
     }
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;

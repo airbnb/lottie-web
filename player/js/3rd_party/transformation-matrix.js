@@ -231,6 +231,7 @@ var Matrix = (function(){
         for(i=0;i<16;i+=1){
             matr.props[i] = this.props[i];
         }
+        return matr;
     }
 
     function cloneFromProps(props){

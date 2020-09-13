@@ -40,7 +40,6 @@ var TransformExpressionInterface = (function (){
                     return _thisFunction.opacity;
             }
         }
-
         Object.defineProperty(_thisFunction, "rotation", {
             get: ExpressionPropertyInterface(transform.r || transform.rz)
         });

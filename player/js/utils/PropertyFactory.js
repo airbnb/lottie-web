@@ -388,6 +388,7 @@ var PropertyFactory = (function(){
             }
         }
         this.effectsSequence = [getValueAtCurrentTime.bind(this)];
+        this.data = data;
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
