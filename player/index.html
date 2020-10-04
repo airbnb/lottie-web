@@ -179,8 +179,8 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: false,
-        autoplay: false,
+        loop: true,
+        autoplay: true,
         rendererSettings: {
             progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
@@ -209,7 +209,7 @@
         console.log(error)
     })
 
-    setTimeout(()=>anim.goToAndStop(10, true), 250);
+    // setTimeout(()=>anim.goToAndStop(10, true), 250);
 
     function createAudio(assetPath) {
         return new Howl({

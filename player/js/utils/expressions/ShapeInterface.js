@@ -474,9 +474,13 @@ var ShapeExpressionInterface = (function(){
                 }
             }
         }
-        _interfaceFunction.propertyGroup = propertyGroup;
-        interfaces = iterateElements(shapes, view, _interfaceFunction);
+        function parentGroupWrapper() {
+            return propertyGroup
+        }
+        _interfaceFunction.propertyGroup = propertyGroupFactory(_interfaceFunction, parentGroupWrapper);
+        interfaces = iterateElements(shapes, view, _interfaceFunction.propertyGroup);
         _interfaceFunction.numProperties = interfaces.length;
+        _interfaceFunction._name = 'Contents';
         return _interfaceFunction;
     };
 }());
