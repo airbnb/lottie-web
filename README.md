@@ -239,7 +239,7 @@ lottie.loadAnimation({
   autoplay: true,
   animationData: animationData, // the animation data
   rendererSettings: {
-    context: canvasContext, // the canvas context
+    context: canvasContext, // the canvas context, only support "2d" context
     preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
     clearCanvas: false,
     progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
