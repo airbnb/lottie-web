@@ -213,7 +213,7 @@ Animation instances have these main methods:
 
 ### Other ways of manipulating the instance
 
-**lottie.loop = false** -- will change loop attribute to false on a looping animation after it has been created, and affect the animation in real time.  See the lottie object to see the other attributes that can be altered after instance creation. 
+**instance.loop = false** -- will change loop attribute to false on a looping animation after it has been created, and affect the animation in real time. Please refer [to the AnimationItem](https://github.com/airbnb/lottie-web/blob/master/index.d.ts) to see the other attributes that can be altered after the instance creation.
 
 ## Events
 - onComplete
