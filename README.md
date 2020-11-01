@@ -239,7 +239,7 @@ lottie.loadAnimation({
   autoplay: true,
   animationData: animationData, // the animation data
   rendererSettings: {
-    context: canvasContext, // the canvas context
+    context: canvasContext, // the canvas context, only support "2d" context
     preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
     clearCanvas: false,
     progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
@@ -314,3 +314,33 @@ my email is **hernantorrisi@gmail.com**
 
 ## Issues
 - For missing mask in Safari browser, please call lottie.setLocationHref(locationHref) before animation is generated. It usually caused by usage of base tag in html. (see above for description of setLocationHref)
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/airbnb/lottie-web/graphs/contributors"><img src="https://opencollective.com/lottie-web/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/lottie-web/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/lottie-web"><img src="https://opencollective.com/lottie-web/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/lottie-web/contribute)]
+
+<a href="https://opencollective.com/lottie-web/organization/0/website"><img src="https://opencollective.com/lottie-web/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/1/website"><img src="https://opencollective.com/lottie-web/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/2/website"><img src="https://opencollective.com/lottie-web/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/3/website"><img src="https://opencollective.com/lottie-web/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/4/website"><img src="https://opencollective.com/lottie-web/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/5/website"><img src="https://opencollective.com/lottie-web/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/6/website"><img src="https://opencollective.com/lottie-web/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/7/website"><img src="https://opencollective.com/lottie-web/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/8/website"><img src="https://opencollective.com/lottie-web/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/lottie-web/organization/9/website"><img src="https://opencollective.com/lottie-web/organization/9/avatar.svg"></a>

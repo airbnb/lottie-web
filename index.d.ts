@@ -4,8 +4,8 @@ export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | '
 export type AnimationEventCallback<T = any> = (args: T) => void;
 
 export type AnimationItem = {
-
     name: string;
+    isLoaded: boolean;
     currentFrame: number;
     currentRawFrame: number;
     firstFrame: number;
@@ -44,8 +44,8 @@ export type AnimationItem = {
     setSubframe(useSubFrames: boolean): void;
     getDuration(inFrames?: boolean): number;
     triggerEvent<T = any>(name: AnimationEventName, args: T): void;
-    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
-    removeEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): void;
+    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): () => void;
+    removeEventListener<T = any>(name: AnimationEventName, callback?: AnimationEventCallback<T>): void;
 }
 
 export type BaseRendererConfig = {
@@ -62,6 +62,7 @@ export type SVGRendererConfig = BaseRendererConfig & {
     viewBoxOnly?: boolean;
     viewBoxSize?: string;
     focusable?: boolean;
+    filterSize?: FilterSizeConfig;
 };
 
 export type CanvasRendererConfig = BaseRendererConfig & {
@@ -80,6 +81,7 @@ export type AnimationConfig = {
     renderer?: 'svg' | 'canvas' | 'html';
     loop?: boolean | number;
     autoplay?: boolean;
+    initialSegment?: AnimationSegment;
     name?: string;
     assetsPath?: string;
     rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
@@ -93,8 +95,16 @@ export type AnimationConfigWithData = AnimationConfig & {
     animationData?: any;
 }
 
+export type FilterSizeConfig = {
+    width: string;
+    height: string;
+    x: string;
+    y: string;
+};
+
 export type LottiePlayer = {
     play(name?: string): void;
+    pause(name?: string): void;
     stop(name?: string): void;
     setSpeed(speed: number, name?: string): void;
     setDirection(direction: AnimationDirection, name?: string): void;

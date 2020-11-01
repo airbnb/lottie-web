@@ -685,7 +685,11 @@ var Matrix = (function(){
         if(this.isIdentity()) {
             arr = [x,y,z];
         } else {
-            arr = [x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]];
+            arr = [
+                x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],
+                x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
+                x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]
+            ];
         }
         return arr;
     }
@@ -1836,7 +1840,7 @@ var FontManager = (function(){
         parentNode.style.fontFamily    = family;
         var node = createTag('span');
         // Characters that vary significantly among different fonts
-        node.innerHTML = 'giItT1WQy@!-/#';
+        node.innerText = 'giItT1WQy@!-/#';
         // Visible - so we can measure it - but not on the screen
         parentNode.style.position      = 'absolute';
         parentNode.style.left          = '-10000px';
@@ -1956,7 +1960,7 @@ var FontManager = (function(){
                     s.setAttribute('f-origin', fontArr[i].origin);
                     s.setAttribute('f-family', fontArr[i].fFamily);
                     s.type = "text/css";
-                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                    s.innerText = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                     defs.appendChild(s);
                 }
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
@@ -2119,6 +2123,7 @@ var FontManager = (function(){
     return Font;
 
 }());
+
 var PropertyFactory = (function(){
 
     var initFrame = initialDefaultFrame;
@@ -3547,6 +3552,9 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
             this.shapes[i].localShapeCollection.releaseShapes();
             this.shapes[i].shape._mdf = true;
             this.shapes[i].shape.paths = this.shapes[i].localShapeCollection;
+            if (this._mdf) {
+                this.shapes[i].pathsData.length = 0;
+            }
         }
     } else if (!((e === 1 && s === 0) || (e===0 && s === 1))){
         var segments = [], shapeData, localShapeCollection;
@@ -3848,6 +3856,68 @@ RoundCornersModifier.prototype.processShapes = function(_isFirstFrame){
 };
 
 ShapeModifiers.registerModifier('rd',RoundCornersModifier);
+function PuckerAndBloatModifier(){}
+extendPrototype([ShapeModifier],PuckerAndBloatModifier);
+PuckerAndBloatModifier.prototype.initModifierProperties = function(elem,data){
+    this.getValue = this.processKeys;
+    this.amount = PropertyFactory.getProp(elem,data.a,0,null,this);
+    this._isAnimated = !!this.amount.effectsSequence.length;
+};
+
+PuckerAndBloatModifier.prototype.processPath = function(path, amount){
+    var percent = amount / 100;
+    var centerPoint = [0, 0];
+    var pathLength = path._length, i = 0;
+    for (i = 0; i < pathLength; i += 1) {
+        centerPoint[0] += path.v[i][0];
+        centerPoint[1] += path.v[i][1];
+    }
+    centerPoint[0] /= pathLength;
+    centerPoint[1] /= pathLength;
+    var cloned_path = shape_pool.newElement();
+    cloned_path.c = path.c;
+    var vX, vY, oX, oY, iX, iY;
+    for(i = 0; i < pathLength; i += 1) {
+        vX = path.v[i][0] + (centerPoint[0] - path.v[i][0]) * percent;
+        vY = path.v[i][1] + (centerPoint[1] - path.v[i][1]) * percent;
+        oX = path.o[i][0] + (centerPoint[0] - path.o[i][0]) * -percent;
+        oY = path.o[i][1] + (centerPoint[1] - path.o[i][1]) * -percent;
+        iX = path.i[i][0] + (centerPoint[0] - path.i[i][0]) * -percent;
+        iY = path.i[i][1] + (centerPoint[1] - path.i[i][1]) * -percent;
+        cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, i);
+    }
+    return cloned_path;
+};
+
+PuckerAndBloatModifier.prototype.processShapes = function(_isFirstFrame){
+    var shapePaths;
+    var i, len = this.shapes.length;
+    var j, jLen;
+    var amount = this.amount.v;
+
+    if(amount !== 0){
+        var shapeData, newPaths, localShapeCollection;
+        for(i=0;i<len;i+=1){
+            shapeData = this.shapes[i];
+            newPaths = shapeData.shape.paths;
+            localShapeCollection = shapeData.localShapeCollection;
+            if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)){
+                localShapeCollection.releaseShapes();
+                shapeData.shape._mdf = true;
+                shapePaths = shapeData.shape.paths.shapes;
+                jLen = shapeData.shape.paths._length;
+                for(j=0;j<jLen;j+=1){
+                    localShapeCollection.addShape(this.processPath(shapePaths[j], amount));
+                }
+            }
+            shapeData.shape.paths = shapeData.localShapeCollection;
+        }
+    }
+    if(!this.dynamicProperties.length){
+        this._mdf = false;
+    }
+};
+ShapeModifiers.registerModifier('pb',PuckerAndBloatModifier);
 function RepeaterModifier(){}
 extendPrototype([ShapeModifier], RepeaterModifier);
 
@@ -4214,6 +4284,86 @@ var buildShapeString = function(pathNodes, length, closed, mat) {
         }
         return shapeString;
 }
+var audioControllerFactory = (function() {
+
+	function AudioController(audioFactory) {
+		this.audios = [];
+		this.audioFactory = audioFactory;
+		this._volume = 1;
+		this._isMuted = false;
+	}
+
+	AudioController.prototype = {
+		addAudio: function(audio) {
+			this.audios.push(audio);
+		},
+		pause: function() {
+			var i, len = this.audios.length;
+			for(i = 0; i < len; i += 1) {
+				this.audios[i].pause()
+			}
+		},
+		resume: function() {
+			var i, len = this.audios.length;
+			for(i = 0; i < len; i += 1) {
+				this.audios[i].resume()
+			}
+		},
+		setRate: function(rateValue) {
+			var i, len = this.audios.length;
+			for(i = 0; i < len; i += 1) {
+				this.audios[i].setRate(rateValue)
+			}
+		},
+		createAudio: function(assetPath) {
+			if (this.audioFactory) {
+				return this.audioFactory(assetPath);
+			} else if (Howl) {
+				return new Howl({
+					src: [assetPath]
+				})
+			} else {
+				return {
+					isPlaying: false,
+					play: function(){this.isPlaying = true},
+					seek: function(){this.isPlaying = false},
+					playing: function(){},
+					rate: function(){},
+					setVolume: function(){},
+				}
+			}
+		},
+		setAudioFactory: function(audioFactory) {
+			this.audioFactory = audioFactory;
+		},
+		setVolume: function(value) {
+			this._volume = value;
+			this._updateVolume();
+		},
+		mute: function() {
+			this._isMuted = true;
+			this._updateVolume();
+		},
+		unmute: function() {
+			this._isMuted = false;
+			this._updateVolume();
+		},
+		getVolume: function(value) {
+			return this._volume;
+		},
+		_updateVolume: function() {
+			var i, len = this.audios.length;
+			for(i = 0; i < len; i += 1) {
+				this.audios[i].volume(this._volume * (this._isMuted ? 0 : 1))
+			}
+		}
+	}
+
+	return function() {
+		return new AudioController()
+	}
+
+}())
 var ImagePreloader = (function(){
 
     var proxyImage = (function(){
@@ -5867,6 +6017,8 @@ BaseRenderer.prototype.createItem = function(layer){
             return this.createShape(layer);
         case 5:
             return this.createText(layer);
+        case 6:
+            return this.createAudio(layer);
         case 13:
             return this.createCamera(layer);
     }
@@ -5875,6 +6027,10 @@ BaseRenderer.prototype.createItem = function(layer){
 
 BaseRenderer.prototype.createCamera = function(){
     throw new Error('You\'re using a 3d camera. Try the html renderer.');
+};
+
+BaseRenderer.prototype.createAudio = function(data){
+    return new AudioElement(data, this.globalData, this);
 };
 
 BaseRenderer.prototype.buildAllItems = function(){
@@ -5955,6 +6111,7 @@ BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.imageLoader = this.animationItem.imagePreloader;
+    this.globalData.audioController = this.animationItem.audioController;
     this.globalData.frameId = 0;
     this.globalData.frameRate = animData.fr;
     this.globalData.nm = animData.nm;
@@ -6105,7 +6262,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
 
 
 SVGRenderer.prototype.destroy = function () {
-    this.animationItem.wrapper.innerHTML = '';
+    this.animationItem.wrapper.innerText = '';
     this.layerElement = null;
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
@@ -6477,7 +6634,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
 
 CanvasRenderer.prototype.destroy = function () {
     if(this.renderConfig.clearCanvas) {
-        this.animationItem.wrapper.innerHTML = '';
+        this.animationItem.wrapper.innerText = '';
     }
     var i, len = this.layers ? this.layers.length : 0;
     for (i = len - 1; i >= 0; i-=1) {
@@ -7751,6 +7908,88 @@ ISolidElement.prototype.createContent = function(){
     rect.setAttribute('fill',this.data.sc);
     this.layerElement.appendChild(rect);
 };
+function AudioElement(data,globalData,comp){
+    this.initFrame();
+    this.initRenderable();
+    this.assetData = globalData.getAssetData(data.refId);
+	this.initBaseData(data, globalData, comp);
+	this._isPlaying = false;
+	this._canPlay = false;
+	var assetPath = this.globalData.getAssetsPath(this.assetData);
+    this.audio = this.globalData.audioController.createAudio(assetPath);
+    this._currentTime = 0;
+    this.globalData.audioController.addAudio(this);
+    this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate,this) : {_placeholder:true};
+}
+
+AudioElement.prototype.prepareFrame = function(num) {
+    this.prepareRenderableFrame(num, true);
+    this.prepareProperties(num, true);
+    if (!this.tm._placeholder) {
+        var timeRemapped = this.tm.v;
+        this._currentTime = timeRemapped;
+    } else {
+        this._currentTime = num / this.data.sr;
+    }
+};
+
+extendPrototype([RenderableElement,BaseElement,FrameElement], AudioElement);
+
+AudioElement.prototype.renderFrame = function() {
+	if (this.isInRange && this._canPlay) {
+		if (!this._isPlaying) {
+			this.audio.play();
+			this.audio.seek(this._currentTime / this.globalData.frameRate);
+			this._isPlaying = true;
+		} else if (!this.audio.playing()
+			|| Math.abs(this._currentTime / this.globalData.frameRate - this.audio.seek()) > 0.1
+		) {
+			this.audio.seek(this._currentTime / this.globalData.frameRate)
+		}
+	}
+};
+
+AudioElement.prototype.show = function() {
+	// this.audio.play()
+};
+
+AudioElement.prototype.hide = function() {
+	this.audio.pause();
+	this._isPlaying = false;
+};
+
+AudioElement.prototype.pause = function() {
+	this.audio.pause();
+	this._isPlaying = false;
+	this._canPlay = false;
+};
+
+AudioElement.prototype.resume = function() {
+	this._canPlay = true;
+};
+
+AudioElement.prototype.setRate = function(rateValue) {
+	this.audio.rate(rateValue);
+};
+
+AudioElement.prototype.volume = function(volumeValue) {
+	this.audio.volume(volumeValue);
+};
+
+AudioElement.prototype.getBaseElement = function() {
+	return null;
+};
+
+AudioElement.prototype.destroy = function() {
+};
+
+AudioElement.prototype.sourceRectAtTime = function() {
+};
+
+AudioElement.prototype.initExpressions = function() {
+};
+
+
 function SVGShapeElement(data,globalData,comp){
     //List of drawable elements
     this.shapes = [];
@@ -7993,7 +8232,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
             }
             this.setElementStyles(itemsData[i]);
 
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'pb'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i]);
@@ -8485,7 +8724,7 @@ CVShapeElement.prototype.searchShapes = function(arr,itemsData, prevViewData, sh
                 itemsData[i] = this.createShapeElement(arr[i]);
             }
             
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd'){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'pb'){
             if(!processedPos){
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i]);
@@ -9134,7 +9373,7 @@ var animationManager = (function(){
                 renderer = 'svg';
             }
             var body = document.getElementsByTagName('body')[0];
-            body.innerHTML = '';
+            body.innerText = '';
             var div = createTag('div');
             div.style.width = '100%';
             div.style.height = '100%';
@@ -9169,6 +9408,27 @@ var animationManager = (function(){
         activate();
     }
 
+    function setVolume(val,animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.setVolume(val, animation);
+        }
+    }
+
+    function mute(animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.mute(animation);
+        }
+    }
+
+    function unmute(animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.unmute(animation);
+        }
+    }
+
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
     moduleOb.setSpeed = setSpeed;
@@ -9184,6 +9444,9 @@ var animationManager = (function(){
     moduleOb.destroy = destroy;
     moduleOb.freeze = freeze;
     moduleOb.unfreeze = unfreeze;
+    moduleOb.setVolume = setVolume;
+    moduleOb.mute = mute;
+    moduleOb.unmute = unmute;
     moduleOb.getRegisteredAnimations = getRegisteredAnimations;
     return moduleOb;
 }());
@@ -9218,14 +9481,12 @@ var AnimationItem = function () {
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
     this.imagePreloader = new ImagePreloader();
+    this.audioController = audioControllerFactory();
 };
 
 extendPrototype([BaseEvent], AnimationItem);
 
 AnimationItem.prototype.setParams = function(params) {
-    if(params.context){
-        this.context = params.context;
-    }
     if(params.wrapper || params.container){
         this.wrapper = params.wrapper || params.container;
     }
@@ -9260,6 +9521,9 @@ AnimationItem.prototype.setParams = function(params) {
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
     this.initialSegment = params.initialSegment;
+    if (params.audioFactory) {
+        this.audioController.setAudioFactory(params.audioFactory);
+    }
     if (params.animationData) {
         this.configAnimation(params.animationData);
     } else if(params.path){
@@ -9411,6 +9675,9 @@ AnimationItem.prototype.configAnimation = function (animData) {
         this.loadSegments();
         this.updaFrameModifier();
         this.waitForFontsLoaded();
+        if (this.isPaused) {
+            this.audioController.pause();
+        }
     } catch(error) {
         this.triggerConfigError(error);
     }
@@ -9481,8 +9748,9 @@ AnimationItem.prototype.play = function (name) {
     if(name && this.name != name){
         return;
     }
-    if(this.isPaused === true){
+    if (this.isPaused === true) {
         this.isPaused = false;
+        this.audioController.resume();
         if(this._idle){
             this._idle = false;
             this.trigger('_active');
@@ -9498,6 +9766,7 @@ AnimationItem.prototype.pause = function (name) {
         this.isPaused = true;
         this._idle = true;
         this.trigger('_idle');
+        this.audioController.pause();
     }
 };
 
@@ -9694,8 +9963,34 @@ AnimationItem.prototype.setDirection = function (val) {
     this.updaFrameModifier();
 };
 
+AnimationItem.prototype.setVolume = function (val, name) {
+    if (name && this.name !== name) {
+        return;
+    }
+    this.audioController.setVolume(val);
+};
+
+AnimationItem.prototype.getVolume = function () {
+    return this.audioController.getVolume();
+};
+
+AnimationItem.prototype.mute = function (name) {
+    if (name && this.name !== name) {
+        return;
+    }
+    this.audioController.mute();
+};
+
+AnimationItem.prototype.unmute = function (name) {
+    if(name && this.name !== name){
+        return;
+    }
+    this.audioController.unmute();
+};
+
 AnimationItem.prototype.updaFrameModifier = function () {
     this.frameModifier = this.frameMult * this.playSpeed * this.playDirection;
+    this.audioController.setRate(this.playSpeed * this.playDirection)
 };
 
 AnimationItem.prototype.getPath = function () {
@@ -10498,7 +10793,6 @@ var ExpressionManager = (function(){
             expression_function();
             this.frameExpressionId = elem.globalData.frameId;
 
-
             //TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === "shape") {
                 scoped_bm_rt = scoped_bm_rt.v;
@@ -10776,7 +11070,57 @@ var expressionHelpers = (function(){
     }
 
     function getTransformValueAtTime(time) {
-        console.warn('Transform at time not supported');
+        if (!this._transformCachingAtTime) {
+            this._transformCachingAtTime = {
+                v: new Matrix(),
+            };
+        }
+        ////
+        var matrix = this._transformCachingAtTime.v;
+        matrix.cloneFromProps(this.pre.props);
+        if (this.appliedTransformations < 1) {
+            var anchor = this.a.getValueAtTime(time);
+            matrix.translate(-anchor[0], -anchor[1], anchor[2]);
+        }
+        if (this.appliedTransformations < 2) {
+            var scale = this.s.getValueAtTime(time);
+            matrix.scale(scale[0], scale[1], scale[2]);
+        }
+        if (this.sk && this.appliedTransformations < 3) {
+            var skew = this.sk.getValueAtTime(time);
+            var skewAxis = this.sa.getValueAtTime(time);
+            matrix.skewFromAxis(-skew, skewAxis);
+        }
+        if (this.r && this.appliedTransformations < 4) {
+            var rotation = this.r.getValueAtTime(time);
+            matrix.rotate(-rotation);
+        } else if (!this.r && this.appliedTransformations < 4){
+            var rotationZ = this.rz.getValueAtTime(time);
+            var rotationY = this.ry.getValueAtTime(time);
+            var rotationX = this.rx.getValueAtTime(time);
+            var orientation = this.or.getValueAtTime(time);
+            matrix.rotateZ(-rotationZ.v)
+            .rotateY(rotationY.v)
+            .rotateX(rotationX.v)
+            .rotateZ(-orientation[2])
+            .rotateY(orientation[1])
+            .rotateX(orientation[0]);
+        }
+        if (this.data.p && this.data.p.s) {
+            var positionX = this.px.getValueAtTime(time);
+            var positionY = this.py.getValueAtTime(time);
+            if (this.data.p.z) {
+                var positionZ = this.pz.getValueAtTime(time);
+                matrix.translate(positionX, positionY, -positionZ);
+            } else {
+                matrix.translate(positionX, positionY, 0);
+            }
+        } else {
+            var position = this.p.getValueAtTime(time);
+            matrix.translate(position[0], position[1], -position[2]);
+        }
+        return matrix;
+        ////
     }
 
     function getTransformStaticValueAtTime(time) {
@@ -10999,6 +11343,79 @@ var expressionHelpers = (function(){
     TextProperty.prototype.searchExpressions = searchExpressions;
     
 }());
+var ShapePathInterface = (
+
+	function() {
+
+		return function pathInterfaceFactory(shape,view,propertyGroup){
+		    var prop = view.sh;
+
+		    function interfaceFunction(val){
+		        if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
+		            return interfaceFunction.path;
+		        }
+		    }
+
+		    var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+		    prop.setGroupProperty(PropertyInterface('Path', _propertyGroup));
+		    Object.defineProperties(interfaceFunction, {
+		        'path': {
+		            get: function(){
+		                if(prop.k){
+		                    prop.getValue();
+		                }
+		                return prop;
+		            }
+		        },
+		        'shape': {
+		            get: function(){
+		                if(prop.k){
+		                    prop.getValue();
+		                }
+		                return prop;
+		            }
+		        },
+		        '_name': { value: shape.nm },
+		        'ix': { value: shape.ix },
+		        'propertyIndex': { value: shape.ix },
+		        'mn': { value: shape.mn },
+		        'propertyGroup': {value: propertyGroup},
+		    });
+		    return interfaceFunction;
+		}
+	}()
+)
+var propertyGroupFactory = (function() {
+	return function(interfaceFunction, parentPropertyGroup) {
+		return function(val) {
+			val = val === undefined ? 1 : val
+			if(val <= 0){
+			    return interfaceFunction;
+			} else{
+			    return parentPropertyGroup(val-1);
+			}
+		}
+	}
+}())
+var PropertyInterface = (function() {
+	return function(propertyName, propertyGroup) {
+
+		var interfaceFunction = {
+			_name: propertyName
+		}
+
+		function _propertyGroup(val){
+		    val = val === undefined ? 1 : val
+		    if(val <= 0){
+		        return interfaceFunction;
+		    } else {
+		        return propertyGroup(--val);
+		    }
+		}
+
+		return _propertyGroup;
+	}
+}())
 var ShapeExpressionInterface = (function(){
 
     function iterateElements(shapes,view, propertyGroup){
@@ -11020,7 +11437,7 @@ var ShapeExpressionInterface = (function(){
             }else if(shapes[i].ty == 'sr'){
                 arr.push(starInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'sh'){
-                arr.push(pathInterfaceFactory(shapes[i],view[i],propertyGroup));
+                arr.push(ShapePathInterface(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rc'){
                 arr.push(rectInterfaceFactory(shapes[i],view[i],propertyGroup));
             } else if(shapes[i].ty == 'rd'){
@@ -11046,15 +11463,12 @@ var ShapeExpressionInterface = (function(){
                return interfaces[value-1];
             }
        };
-       interfaceFunction.propertyGroup = function(val){
-           if(val === 1){
-               return interfaceFunction;
-           } else{
-               return propertyGroup(val-1);
-           }
-       };
+
+       interfaceFunction.propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
        interfaces = iterateElements(shape.it, view.it, interfaceFunction.propertyGroup);
        interfaceFunction.numProperties = interfaces.length;
+       var transformInterface = transformInterfaceFactory(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
+       interfaceFunction.transform = transformInterface;
        interfaceFunction.propertyIndex = shape.cix;
        interfaceFunction._name = shape.nm;
 
@@ -11075,13 +11489,7 @@ var ShapeExpressionInterface = (function(){
                     return interfaceFunction.transform;
             }
         };
-        interfaceFunction.propertyGroup = function(val){
-            if(val === 1){
-                return interfaceFunction;
-            } else{
-                return propertyGroup(val-1);
-            }
-        };
+        interfaceFunction.propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
         var content = contentsInterfaceFactory(shape,view,interfaceFunction.propertyGroup);
         var transformInterface = transformInterfaceFactory(shape.it[shape.it.length - 1],view.it[view.it.length - 1],interfaceFunction.propertyGroup);
         interfaceFunction.content = content;
@@ -11118,26 +11526,14 @@ var ShapeExpressionInterface = (function(){
             'mn': { value: shape.mn }
         });
 
-        view.c.setGroupProperty(propertyGroup);
-        view.o.setGroupProperty(propertyGroup);
+        view.c.setGroupProperty(PropertyInterface('Color', propertyGroup));
+        view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
         return interfaceFunction;
     }
 
     function strokeInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val === 1){
-                return ob;
-            } else{
-                return propertyGroup(val-1);
-            }
-        }
-        function _dashPropertyGroup(val){
-            if(val === 1){
-                return dashOb;
-            } else{
-                return _propertyGroup(val-1);
-            }
-        }
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var _dashPropertyGroup = propertyGroupFactory(dashOb, _propertyGroup);
         function addPropertyToDashOb(i) {
             Object.defineProperty(dashOb, shape.d[i].nm, {
                 get: ExpressionPropertyInterface(view.d.dataProps[i].p)
@@ -11178,25 +11574,13 @@ var ShapeExpressionInterface = (function(){
             'mn': { value: shape.mn }
         });
 
-        view.c.setGroupProperty(_propertyGroup);
-        view.o.setGroupProperty(_propertyGroup);
-        view.w.setGroupProperty(_propertyGroup);
+        view.c.setGroupProperty(PropertyInterface('Color', _propertyGroup));
+        view.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
+        view.w.setGroupProperty(PropertyInterface('Stroke Width', _propertyGroup));
         return interfaceFunction;
     }
 
     function trimInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-
-        view.s.setGroupProperty(_propertyGroup);
-        view.e.setGroupProperty(_propertyGroup);
-        view.o.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(val){
             if(val === shape.e.ix || val === 'End' || val === 'end'){
@@ -11209,6 +11593,13 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.offset;
             }
         }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        interfaceFunction.propertyIndex = shape.ix;
+
+        view.s.setGroupProperty(PropertyInterface('Start', _propertyGroup));
+        view.e.setGroupProperty(PropertyInterface('End', _propertyGroup));
+        view.o.setGroupProperty(PropertyInterface('Offset', _propertyGroup));
         interfaceFunction.propertyIndex = shape.ix;
         interfaceFunction.propertyGroup = propertyGroup;
 
@@ -11229,23 +11620,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function transformInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        view.transform.mProps.o.setGroupProperty(_propertyGroup);
-        view.transform.mProps.p.setGroupProperty(_propertyGroup);
-        view.transform.mProps.a.setGroupProperty(_propertyGroup);
-        view.transform.mProps.s.setGroupProperty(_propertyGroup);
-        view.transform.mProps.r.setGroupProperty(_propertyGroup);
-        if(view.transform.mProps.sk){
-            view.transform.mProps.sk.setGroupProperty(_propertyGroup);
-            view.transform.mProps.sa.setGroupProperty(_propertyGroup);
-        }
-        view.transform.op.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(value){
             if(shape.a.ix === value || value === 'Anchor Point'){
@@ -11269,8 +11643,19 @@ var ShapeExpressionInterface = (function(){
             if(shape.sa && shape.sa.ix === value || value === 'Skew Axis'){
                 return interfaceFunction.skewAxis;
             }
-
         }
+        
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        view.transform.mProps.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
+        view.transform.mProps.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
+        view.transform.mProps.a.setGroupProperty(PropertyInterface('Anchor Point', _propertyGroup));
+        view.transform.mProps.s.setGroupProperty(PropertyInterface('Scale', _propertyGroup));
+        view.transform.mProps.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
+        if(view.transform.mProps.sk){
+            view.transform.mProps.sk.setGroupProperty(PropertyInterface('Skew', _propertyGroup));
+            view.transform.mProps.sa.setGroupProperty(PropertyInterface('Skew Angle', _propertyGroup));
+        }
+        view.transform.op.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
         Object.defineProperties(interfaceFunction, {
             'opacity': {
                 get: ExpressionPropertyInterface(view.transform.mProps.o)
@@ -11302,17 +11687,7 @@ var ShapeExpressionInterface = (function(){
     }
 
     function ellipseInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        interfaceFunction.propertyIndex = shape.ix;
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        prop.s.setGroupProperty(_propertyGroup);
-        prop.p.setGroupProperty(_propertyGroup);
+
         function interfaceFunction(value){
             if(shape.p.ix === value){
                 return interfaceFunction.position;
@@ -11321,6 +11696,11 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.size;
             }
         }
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        interfaceFunction.propertyIndex = shape.ix;
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        prop.s.setGroupProperty(PropertyInterface('Size', _propertyGroup));
+        prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
 
         Object.defineProperties(interfaceFunction, {
             'size': {
@@ -11336,24 +11716,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function starInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.or.setGroupProperty(_propertyGroup);
-        prop.os.setGroupProperty(_propertyGroup);
-        prop.pt.setGroupProperty(_propertyGroup);
-        prop.p.setGroupProperty(_propertyGroup);
-        prop.r.setGroupProperty(_propertyGroup);
-        if(shape.ir){
-            prop.ir.setGroupProperty(_propertyGroup);
-            prop.is.setGroupProperty(_propertyGroup);
-        }
 
         function interfaceFunction(value){
             if(shape.p.ix === value){
@@ -11378,6 +11740,19 @@ var ShapeExpressionInterface = (function(){
                 return interfaceFunction.innerRoundness;
             }
 
+        }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.or.setGroupProperty(PropertyInterface('Outer Radius', _propertyGroup));
+        prop.os.setGroupProperty(PropertyInterface('Outer Roundness', _propertyGroup));
+        prop.pt.setGroupProperty(PropertyInterface('Points', _propertyGroup));
+        prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
+        prop.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
+        if(shape.ir){
+            prop.ir.setGroupProperty(PropertyInterface('Inner Radius', _propertyGroup));
+            prop.is.setGroupProperty(PropertyInterface('Inner Roundness', _propertyGroup));
         }
 
         Object.defineProperties(interfaceFunction, {
@@ -11409,18 +11784,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function rectInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.p.setGroupProperty(_propertyGroup);
-        prop.s.setGroupProperty(_propertyGroup);
-        prop.r.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(value){
             if(shape.p.ix === value){
@@ -11434,6 +11797,14 @@ var ShapeExpressionInterface = (function(){
             }
 
         }
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+
+        var prop = view.sh.ty === 'tm' ? view.sh.prop : view.sh;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
+        prop.s.setGroupProperty(PropertyInterface('Size', _propertyGroup));
+        prop.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
+
         Object.defineProperties(interfaceFunction, {
             'position': {
                 get: ExpressionPropertyInterface(prop.p)
@@ -11451,23 +11822,18 @@ var ShapeExpressionInterface = (function(){
     }
 
     function roundedInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.rd.setGroupProperty(_propertyGroup);
-
+       
         function interfaceFunction(value){
             if(shape.r.ix === value || 'Round Corners 1' === value){
                 return interfaceFunction.radius;
             }
-
         }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var prop = view;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.rd.setGroupProperty(PropertyInterface('Radius', _propertyGroup));
+
         Object.defineProperties(interfaceFunction, {
             'radius': {
                 get: ExpressionPropertyInterface(prop.rd)
@@ -11479,17 +11845,6 @@ var ShapeExpressionInterface = (function(){
     }
 
     function repeaterInterfaceFactory(shape,view,propertyGroup){
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        var prop = view;
-        interfaceFunction.propertyIndex = shape.ix;
-        prop.c.setGroupProperty(_propertyGroup);
-        prop.o.setGroupProperty(_propertyGroup);
 
         function interfaceFunction(value){
             if(shape.c.ix === value || 'Copies' === value){
@@ -11497,8 +11852,13 @@ var ShapeExpressionInterface = (function(){
             } else if(shape.o.ix === value || 'Offset' === value){
                 return interfaceFunction.offset;
             }
-
         }
+
+        var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
+        var prop = view;
+        interfaceFunction.propertyIndex = shape.ix;
+        prop.c.setGroupProperty(PropertyInterface('Copies', _propertyGroup));
+        prop.o.setGroupProperty(PropertyInterface('Offset', _propertyGroup));
         Object.defineProperties(interfaceFunction, {
             'copies': {
                 get: ExpressionPropertyInterface(prop.c)
@@ -11512,52 +11872,16 @@ var ShapeExpressionInterface = (function(){
         return interfaceFunction;
     }
 
-    function pathInterfaceFactory(shape,view,propertyGroup){
-        var prop = view.sh;
-        function _propertyGroup(val){
-            if(val == 1){
-                return interfaceFunction;
-            } else {
-                return propertyGroup(--val);
-            }
-        }
-        prop.setGroupProperty(_propertyGroup);
-
-        function interfaceFunction(val){
-            if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2){
-                return interfaceFunction.path;
-            }
-        }
-        Object.defineProperties(interfaceFunction, {
-            'path': {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                }
-            },
-            'shape': {
-                get: function(){
-                    if(prop.k){
-                        prop.getValue();
-                    }
-                    return prop;
-                }
-            },
-            '_name': { value: shape.nm },
-            'ix': { value: shape.ix },
-            'propertyIndex': { value: shape.ix },
-            'mn': { value: shape.mn }
-        });
-        return interfaceFunction;
-    }
-
     return function(shapes,view,propertyGroup) {
         var interfaces;
         function _interfaceFunction(value){
             if(typeof value === 'number'){
-                return interfaces[value-1];
+                value = value === undefined ? 1 : value
+                if (value === 0) {
+                    return propertyGroup
+                } else {
+                    return interfaces[value-1];
+                }
             } else {
                 var i = 0, len = interfaces.length;
                 while(i<len){
@@ -11578,7 +11902,11 @@ var ShapeExpressionInterface = (function(){
 var TextExpressionInterface = (function(){
 	return function(elem){
         var _prevValue, _sourceText;
-        function _thisLayerFunction(){
+        function _thisLayerFunction(name){
+            switch(name){
+                case "ADBE Text Document":
+                    return _thisLayerFunction.sourceText;
+            }
         }
         Object.defineProperty(_thisLayerFunction, "sourceText", {
             get: function(){
@@ -11601,14 +11929,12 @@ var LayerExpressionInterface = (function (){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
         var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
+        if (time !== undefined) {
+            toWorldMat = this._elem.finalTransform.mProp.getValueAtTime(time);
         } else {
             transformMat = this._elem.finalTransform.mProp;
+            transformMat.applyToMatrix(toWorldMat);
         }
-        transformMat.applyToMatrix(toWorldMat);
         if(this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
@@ -11622,15 +11948,13 @@ var LayerExpressionInterface = (function (){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
         var transformMat;
-        if(time) {
-            //Todo implement value at time on transform properties
-            //transformMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-            transformMat = this._elem.finalTransform.mProp;
+        if (time !== undefined) {
+            toWorldMat = this._elem.finalTransform.mProp.getValueAtTime(time);
         } else {
             transformMat = this._elem.finalTransform.mProp;
+            transformMat.applyToMatrix(toWorldMat);
         }
-        transformMat.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
+        if (this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
@@ -11686,6 +12010,8 @@ var LayerExpressionInterface = (function (){
                 case "effects":
                 case "Effects":
                     return _thisLayerFunction.effect;
+                case "ADBE Text Properties":
+                    return _thisLayerFunction.textInterface;
             }
         }
         _thisLayerFunction.toWorld = toWorld;
@@ -11830,13 +12156,23 @@ var TransformExpressionInterface = (function (){
 
         if(transform.p) {
             var _transformFactory = ExpressionPropertyInterface(transform.p);
+        } else {
+            var _px = ExpressionPropertyInterface(transform.px);
+            var _py = ExpressionPropertyInterface(transform.py);
+            var _pz;
+            if (transform.pz) {
+                _pz = ExpressionPropertyInterface(transform.pz);
+            }
         }
         Object.defineProperty(_thisFunction, "position", {
             get: function () {
                 if(transform.p) {
                     return _transformFactory();
                 } else {
-                    return [transform.px.v, transform.py.v, transform.pz ? transform.pz.v : 0];
+                    return [
+                        _px(),
+                        _py(),
+                        _pz ? _pz() : 0];
                 }
             }
         });
@@ -11921,8 +12257,9 @@ var EffectsExpressionInterface = (function (){
                 effectElements.push(createGroupInterface(effectsData[i],elem.effectsManager.effectElements[i],propertyGroup,elem));
             }
 
-            return function(name){
-                var effects = elem.data.ef || [], i = 0, len = effects.length;
+            var effects = elem.data.ef || [];
+            var groupInterface = function(name){
+                i = 0, len = effects.length;
                 while(i<len) {
                     if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
                         return effectElements[i];
@@ -11930,29 +12267,18 @@ var EffectsExpressionInterface = (function (){
                     i += 1;
                 }
             };
+            Object.defineProperty(groupInterface, 'numProperties', {
+                get: function(){
+                    return effects.length;
+                }
+            });
+            return groupInterface
         }
     }
 
     function createGroupInterface(data,elements, propertyGroup, elem){
-        var effectElements = [];
-        var i, len = data.ef.length;
-        for(i=0;i<len;i+=1){
-            if(data.ef[i].ty === 5){
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
-            } else {
-                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
-            }
-        }
 
-        function _propertyGroup(val) {
-            if(val === 1){
-               return groupInterface;
-            } else{
-               return propertyGroup(val-1);
-            }
-        }
-
-        var groupInterface = function(name){
+        function groupInterface(name){
             var effects = data.ef, i = 0, len = effects.length;
             while(i<len) {
                 if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix){
@@ -11964,10 +12290,19 @@ var EffectsExpressionInterface = (function (){
                 }
                 i += 1;
             }
-            return effectElements[0]();
+            throw new Error();
         };
+        var _propertyGroup = propertyGroupFactory(groupInterface, propertyGroup);
 
-        groupInterface.propertyGroup = _propertyGroup;
+        var effectElements = [];
+        var i, len = data.ef.length;
+        for(i=0;i<len;i+=1){
+            if(data.ef[i].ty === 5){
+                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
+            } else {
+                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
+            }
+        }
 
         if(data.mn === 'ADBE Color Control'){
             Object.defineProperty(groupInterface, 'color', {
@@ -11976,10 +12311,14 @@ var EffectsExpressionInterface = (function (){
                 }
             });
         }
-        Object.defineProperty(groupInterface, 'numProperties', {
-            get: function(){
-                return data.np;
-            }
+        Object.defineProperties(groupInterface, {
+            numProperties: {
+                get: function(){
+                    return data.np;
+                }
+            },
+            _name: { value: data.nm },
+            propertyGroup: {value: _propertyGroup},
         });
         groupInterface.active = groupInterface.enabled = data.en !== 0;
         return groupInterface;
@@ -11995,7 +12334,7 @@ var EffectsExpressionInterface = (function (){
         }
 
         if(element.p.setGroupProperty) {
-            element.p.setGroupProperty(propertyGroup);
+            element.p.setGroupProperty(PropertyInterface('', propertyGroup));
         }
 
         return interfaceFunction;
@@ -12076,6 +12415,7 @@ var ExpressionPropertyInterface = (function() {
                 }
                 var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value);
                 valueProp.time = property.keyframes[pos-1].t / property.elem.comp.globalData.frameRate;
+                valueProp.value = type === 'unidimensional' ? value[0] : value;
                 return valueProp;
             }
         };
@@ -12370,9 +12710,12 @@ lottie.inBrowser = inBrowser;
 lottie.installPlugin = installPlugin;
 lottie.freeze = animationManager.freeze;
 lottie.unfreeze = animationManager.unfreeze;
+lottie.setVolume = animationManager.setVolume;
+lottie.mute = animationManager.mute;
+lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.6.10';
+lottie.version = '5.7.3';
 
 function checkReady() {
     if (document.readyState === "complete") {

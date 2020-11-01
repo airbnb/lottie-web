@@ -163,7 +163,7 @@ var animationManager = (function(){
                 renderer = 'svg';
             }
             var body = document.getElementsByTagName('body')[0];
-            body.innerHTML = '';
+            body.innerText = '';
             var div = createTag('div');
             div.style.width = '100%';
             div.style.height = '100%';
@@ -198,6 +198,27 @@ var animationManager = (function(){
         activate();
     }
 
+    function setVolume(val,animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.setVolume(val, animation);
+        }
+    }
+
+    function mute(animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.mute(animation);
+        }
+    }
+
+    function unmute(animation) {
+        var i;
+        for(i=0;i<len;i+=1){
+            registeredAnimations[i].animation.unmute(animation);
+        }
+    }
+
     moduleOb.registerAnimation = registerAnimation;
     moduleOb.loadAnimation = loadAnimation;
     moduleOb.setSpeed = setSpeed;
@@ -213,6 +234,9 @@ var animationManager = (function(){
     moduleOb.destroy = destroy;
     moduleOb.freeze = freeze;
     moduleOb.unfreeze = unfreeze;
+    moduleOb.setVolume = setVolume;
+    moduleOb.mute = mute;
+    moduleOb.unmute = unmute;
     moduleOb.getRegisteredAnimations = getRegisteredAnimations;
     return moduleOb;
 }());

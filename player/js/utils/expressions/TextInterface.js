@@ -1,7 +1,11 @@
 var TextExpressionInterface = (function(){
 	return function(elem){
         var _prevValue, _sourceText;
-        function _thisLayerFunction(){
+        function _thisLayerFunction(name){
+            switch(name){
+                case "ADBE Text Document":
+                    return _thisLayerFunction.sourceText;
+            }
         }
         Object.defineProperty(_thisLayerFunction, "sourceText", {
             get: function(){

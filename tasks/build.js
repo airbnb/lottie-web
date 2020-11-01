@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.6.10';
+const bm_version = '5.7.3';
 const buildReducedVersion = process.argv[2] === 'reduced'
 const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
 
@@ -109,6 +109,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/utils/shapes/PuckerAndBloatModifier.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/utils/shapes/RepeaterModifier.js',
 		builds: defaultBuilds
 	},
@@ -126,6 +130,10 @@ const scripts = [
 	},
 	{
 		src: 'js/utils/shapes/shapePathBuilder.js',
+		builds: defaultBuilds
+	},
+	{
+		src: 'js/utils/audio/AudioController.js',
 		builds: defaultBuilds
 	},
 	{
@@ -325,6 +333,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/elements/AudioElement.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/elements/svgElements/SVGCompElement.js',
 		builds: ['full','svg','svg_light','html','html_light']
 	},
@@ -474,6 +486,18 @@ const scripts = [
 	},
 	{
 		src: 'js/utils/expressions/ExpressionTextPropertyDecorator.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/shapes/ShapePathInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/PropertyGroupFactory.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/PropertyInterface.js',
 		builds: ['full','svg','canvas','html','canvas_worker']
 	},
 	{

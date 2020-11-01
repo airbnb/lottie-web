@@ -248,8 +248,8 @@ CanvasRenderer.prototype.updateContainerSize = function () {
 };
 
 CanvasRenderer.prototype.destroy = function () {
-    if(this.renderConfig.clearCanvas) {
-        this.animationItem.wrapper.innerHTML = '';
+    if(this.renderConfig.clearCanvas && this.animationItem.wrapper) {
+        this.animationItem.wrapper.innerText = '';
     }
     var i, len = this.layers ? this.layers.length : 0;
     for (i = len - 1; i >= 0; i-=1) {

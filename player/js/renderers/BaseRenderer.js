@@ -29,6 +29,8 @@ BaseRenderer.prototype.createItem = function(layer){
             return this.createShape(layer);
         case 5:
             return this.createText(layer);
+        case 6:
+            return this.createAudio(layer);
         case 13:
             return this.createCamera(layer);
     }
@@ -37,6 +39,10 @@ BaseRenderer.prototype.createItem = function(layer){
 
 BaseRenderer.prototype.createCamera = function(){
     throw new Error('You\'re using a 3d camera. Try the html renderer.');
+};
+
+BaseRenderer.prototype.createAudio = function(data){
+    return new AudioElement(data, this.globalData, this);
 };
 
 BaseRenderer.prototype.buildAllItems = function(){
@@ -117,6 +123,7 @@ BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.imageLoader = this.animationItem.imagePreloader;
+    this.globalData.audioController = this.animationItem.audioController;
     this.globalData.frameId = 0;
     this.globalData.frameRate = animData.fr;
     this.globalData.nm = animData.nm;

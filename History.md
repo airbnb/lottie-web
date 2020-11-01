@@ -1,3 +1,22 @@
+## V 5.7.3
+- EXPRESSIONS: Added more expressions support
+
+## V 5.7.2
+- FIX: Trusted Types compliance by removing calls to .innerHTML
+- FIX: make callback parameter of removeEventListener optional
+- FEATURE: Audio Support
+
+## V 5.7.1
+- REPORT: Improved animation report
+- FIX: Expressions separate dimensions
+- FIX: propertyGroup for expressions (Duik bones are supported)
+- FEATURE: supported Pucked and Bloat
+
+## V 5.7.0
+- FEATURE: Extension: reports for not supported features
+- FEATURE: Extension: baking keyframes for unsupported expressions
+- FEATURE: Extension: improved preview and added Skottie preview
+
 ## V 5.6.10
 - FIX: default loop to true
 - FIX: removing sans-serif and monospace from font preloader to calculate correctly when font is loaded

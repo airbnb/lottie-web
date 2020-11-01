@@ -34,6 +34,7 @@
     <script src="js/3rd_party/transformation-matrix.js"></script>
     <script src="js/3rd_party/seedrandom.js"></script>
     <script src="js/3rd_party/BezierEaser.js"></script>
+    <script src="js/3rd_party/howler.js"></script>
     <script src="js/utils/animationFramePolyFill.js"></script>
     <script src="js/utils/functionExtensions.js"></script>
     <script src="js/utils/bez.js"></script>
@@ -48,11 +49,13 @@
     <script src="js/utils/shapes/ShapeModifiers.js"></script>
     <script src="js/utils/shapes/TrimModifier.js"></script>
     <script src="js/utils/shapes/RoundCornersModifier.js"></script>
+    <script src="js/utils/shapes/PuckerAndBloatModifier.js"></script>
     <script src="js/utils/shapes/RepeaterModifier.js"></script>
     <script src="js/utils/shapes/ShapeCollection.js"></script>
     <script src="js/utils/shapes/DashProperty.js"></script>
     <script src="js/utils/shapes/GradientProperty.js"></script>
     <script src="js/utils/shapes/shapePathBuilder.js"></script>
+    <script src="js/utils/audio/AudioController.js"></script>
     <script src="js/utils/imagePreloader.js" data-builds="full,canvas,canvas_light,html,html_light,svg,svg_light"></script>
     <!-- <script src="js/utils/imagePreloaderWorkerOverride.js" data-builds="canvas_worker"></script> -->
     <script src="js/utils/featureSupport.js"></script>
@@ -102,6 +105,7 @@
     <script src="js/elements/CompElement.js"></script>
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
+    <script src="js/elements/AudioElement.js"></script>
     <script src="js/elements/svgElements/SVGCompElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGTextElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGShapeElement.js"></script>
@@ -141,7 +145,10 @@
     <script src="js/utils/expressions/expressionHelpers.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/PropertyGroupFactory.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/PropertyInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ShapeInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/shapes/ShapePathInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/TextInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/LayerInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/CompInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
@@ -172,26 +179,28 @@
     var animData = {
         container: elem,
         renderer: 'svg',
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
         rendererSettings: {
-            progressiveLoad:true,
+            progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet',
             title: 'TEST TITLE',
             description: 'TEST DESCRIPTION',
             filterSize: {
-                width: '300%',
-                height: '300%',
-                x: '-100%',
-                y: '-100%',
+                width: '500%',
+                height: '500%',
+                x: '-200%',
+                y: '-200%',
             }
         },
         path: 'exports/render/data.json',
+        audioFactory: createAudio,
     };
     // lottie.setQuality('low');
+    // anim.setSpeed(0.5)
     anim = lottie.loadAnimation(animData);
-    // anim.setSubframe(false);
+    anim.setSubframe(false);
     anim.onError = function(errorType, nativeError, errorProps) {
         console.log(errorType)
     }
@@ -199,6 +208,14 @@
     anim.addEventListener('error', function(error) {
         console.log(error)
     })
+
+    setTimeout(()=>anim.goToAndStop(10, true), 250);
+
+    function createAudio(assetPath) {
+        return new Howl({
+            src: [assetPath]
+        })
+    }
 
 </script>
 
