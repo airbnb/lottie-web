@@ -102,7 +102,7 @@ export type FilterSizeConfig = {
     y: string;
 };
 
-type LottiePlayer = {
+export type LottiePlayer = {
     play(name?: string): void;
     pause(name?: string): void;
     stop(name?: string): void;
