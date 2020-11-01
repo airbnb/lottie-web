@@ -382,7 +382,11 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/svgElements/SVGEffects.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','html']
+	},
+	{
+		src: 'js/elements/svgElements/SVGEffectsPlaceholder.js',
+		builds: ['svg_light','html_light']
 	},
 	{
 		src: 'js/elements/canvasElements/CVContextData.js',
@@ -546,7 +550,7 @@ const scripts = [
 	},
 	{
 		src: 'js/effects/EffectsManagerPlaceholder.js',
-		builds: defaultBuilds
+		builds: ['svg_light','html_light']
 	},
 	{
 		src: 'js/EffectsManager.js',

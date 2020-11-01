@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         body, html{
-            background-color:#ff0;
+            background-color:#ccc;
             margin: 0px;
             height: 100%;
             overflow-x: hidden;
@@ -117,7 +117,8 @@
     <script src="js/elements/svgElements/effects/SVGProLevelsFilter.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/effects/SVGDropShadowEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/effects/SVGMatte3Effect.js" data-builds="full,svg,svg_light,html,html_light"></script>
-    <script src="js/elements/svgElements/SVGEffects.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/SVGEffectsPlaceholder.js" data-builds="svg_light,html_light"></script>
+    <script src="js/elements/svgElements/SVGEffects.js" data-builds="full,svg,html"></script>
     <script src="js/elements/canvasElements/CVContextData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <script src="js/elements/canvasElements/CVBaseElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <script src="js/elements/canvasElements/CVImageElement.js" data-builds="full,canvas,canvas_light"></script>
@@ -159,8 +160,8 @@
     <script src="js/utils/expressions/ExpressionValueFactory.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/TextSelectorPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/effects/SliderEffect.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
-    <script src="js/effects/EffectsManagerPlaceholder.js" ></script>
-    <script src="js/EffectsManager.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/effects/EffectsManagerPlaceholder.js"  data-builds="svg_light,canvas,html_light,canvas_worker" ></script>
+    <script src="js/EffectsManager.js" data-builds="full,svg,html"></script>
     <!-- end Expressions -->
     <!-- endbuild -->
     <script src="js/module.js" ></script>
@@ -209,7 +210,7 @@
         console.log(error)
     })
 
-    // setTimeout(()=>anim.goToAndStop(10, true), 250);
+    // setTimeout(()=>anim.destroy(), 1000);
 
     function createAudio(assetPath) {
         return new Howl({
