@@ -597,6 +597,7 @@ var Matrix = (function(){
         for(i=0;i<16;i+=1){
             matr.props[i] = this.props[i];
         }
+        return matr;
     }
 
     function cloneFromProps(props){
@@ -2048,7 +2049,12 @@ var FontManager = (function(){
             }
             i+= 1;
         }
-        if((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char) && console && console.warn) {
+        if ((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char)
+            && console
+            && console.warn
+            && !this._warned
+           ) {
+            this._warned = true
             console.warn('Missing character from exported characters list: ', char, style, font);
         }
         return emptyChar;
@@ -2101,6 +2107,7 @@ var FontManager = (function(){
         this.chars = null;
         this.typekitLoaded = 0;
         this.isLoaded = false;
+        this._warned = false;
         this.initTime = Date.now();
         this.setIsLoadedBinded = this.setIsLoaded.bind(this)
         this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)
@@ -2514,6 +2521,7 @@ var PropertyFactory = (function(){
             }
         }
         this.effectsSequence = [getValueAtCurrentTime.bind(this)];
+        this.data = data;
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
@@ -6262,7 +6270,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
 
 
 SVGRenderer.prototype.destroy = function () {
-    this.animationItem.wrapper.innerText = '';
+    if (this.animationItem.wrapper) {
+        this.animationItem.wrapper.innerText = '';
+    }
     this.layerElement = null;
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
@@ -6633,7 +6643,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
 };
 
 CanvasRenderer.prototype.destroy = function () {
-    if(this.renderConfig.clearCanvas) {
+    if(this.renderConfig.clearCanvas && this.animationItem.wrapper) {
         this.animationItem.wrapper.innerText = '';
     }
     var i, len = this.layers ? this.layers.length : 0;
@@ -10095,7 +10105,6 @@ AnimationItem.prototype.triggerConfigError = function(nativeError) {
         this.onError.call(this, error);
     }
 }
-function EffectsManager(){}
 
 var lottie = {};
 
@@ -10193,7 +10202,7 @@ lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.3';
+lottie.version = '5.7.4';
 
 function checkReady() {
     if (document.readyState === "complete") {

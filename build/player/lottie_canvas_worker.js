@@ -598,6 +598,7 @@ var Matrix = (function(){
         for(i=0;i<16;i+=1){
             matr.props[i] = this.props[i];
         }
+        return matr;
     }
 
     function cloneFromProps(props){
@@ -2060,7 +2061,12 @@ var FontManager = (function(){
             }
             i+= 1;
         }
-        if((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char) && console && console.warn) {
+        if ((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char)
+            && console
+            && console.warn
+            && !this._warned
+           ) {
+            this._warned = true
             console.warn('Missing character from exported characters list: ', char, style, font);
         }
         return emptyChar;
@@ -2113,6 +2119,7 @@ var FontManager = (function(){
         this.chars = null;
         this.typekitLoaded = 0;
         this.isLoaded = false;
+        this._warned = false;
         this.initTime = Date.now();
         this.setIsLoadedBinded = this.setIsLoaded.bind(this)
         this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)
@@ -2537,6 +2544,7 @@ var PropertyFactory = (function(){
             }
         }
         this.effectsSequence = [getValueAtCurrentTime.bind(this)];
+        this.data = data;
         this.keyframes = data.k;
         this.offsetTime = elem.data.st;
         this.k = true;
@@ -6146,7 +6154,9 @@ SVGRenderer.prototype.configAnimation = function(animData){
 
 
 SVGRenderer.prototype.destroy = function () {
-    this.animationItem.wrapper.innerText = '';
+    if (this.animationItem.wrapper) {
+        this.animationItem.wrapper.innerText = '';
+    }
     this.layerElement = null;
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
@@ -6517,7 +6527,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
 };
 
 CanvasRenderer.prototype.destroy = function () {
-    if(this.renderConfig.clearCanvas) {
+    if(this.renderConfig.clearCanvas && this.animationItem.wrapper) {
         this.animationItem.wrapper.innerText = '';
     }
     var i, len = this.layers ? this.layers.length : 0;
@@ -11105,51 +11115,67 @@ var expressionHelpers = (function(){
         matrix.cloneFromProps(this.pre.props);
         if (this.appliedTransformations < 1) {
             var anchor = this.a.getValueAtTime(time);
-            matrix.translate(-anchor[0], -anchor[1], anchor[2]);
+            matrix.translate(
+                -anchor[0] * this.a.mult,
+                -anchor[1] * this.a.mult,
+                anchor[2] * this.a.mult
+            );
         }
         if (this.appliedTransformations < 2) {
             var scale = this.s.getValueAtTime(time);
-            matrix.scale(scale[0], scale[1], scale[2]);
+            matrix.scale(
+                scale[0] * this.s.mult,
+                scale[1] * this.s.mult,
+                scale[2] * this.s.mult
+            );
         }
         if (this.sk && this.appliedTransformations < 3) {
             var skew = this.sk.getValueAtTime(time);
             var skewAxis = this.sa.getValueAtTime(time);
-            matrix.skewFromAxis(-skew, skewAxis);
+            matrix.skewFromAxis(-skew * this.sk.mult, skewAxis * this.sa.mult);
         }
         if (this.r && this.appliedTransformations < 4) {
             var rotation = this.r.getValueAtTime(time);
-            matrix.rotate(-rotation);
+            matrix.rotate(-rotation * this.r.mult);
         } else if (!this.r && this.appliedTransformations < 4){
             var rotationZ = this.rz.getValueAtTime(time);
             var rotationY = this.ry.getValueAtTime(time);
             var rotationX = this.rx.getValueAtTime(time);
             var orientation = this.or.getValueAtTime(time);
-            matrix.rotateZ(-rotationZ.v)
-            .rotateY(rotationY.v)
-            .rotateX(rotationX.v)
-            .rotateZ(-orientation[2])
-            .rotateY(orientation[1])
-            .rotateX(orientation[0]);
+            matrix.rotateZ(-rotationZ * this.rz.mult)
+            .rotateY(rotationY * this.ry.mult)
+            .rotateX(rotationX * this.rx.mult)
+            .rotateZ(-orientation[2] * this.or.mult)
+            .rotateY(orientation[1] * this.or.mult)
+            .rotateX(orientation[0] * this.or.mult);
         }
         if (this.data.p && this.data.p.s) {
             var positionX = this.px.getValueAtTime(time);
             var positionY = this.py.getValueAtTime(time);
             if (this.data.p.z) {
                 var positionZ = this.pz.getValueAtTime(time);
-                matrix.translate(positionX, positionY, -positionZ);
+                matrix.translate(
+                    positionX * this.px.mult,
+                    positionY * this.py.mult,
+                    -positionZ * this.pz.mult
+                );
             } else {
-                matrix.translate(positionX, positionY, 0);
+                matrix.translate(positionX * this.px.mult, positionY * this.py.mult, 0);
             }
         } else {
             var position = this.p.getValueAtTime(time);
-            matrix.translate(position[0], position[1], -position[2]);
+            matrix.translate(
+                position[0] * this.p.mult,
+                position[1] * this.p.mult,
+                -position[2] * this.p.mult
+            );
         }
         return matrix;
         ////
     }
 
     function getTransformStaticValueAtTime(time) {
-
+        return this.v.clone(new Matrix());
     }
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
@@ -11917,9 +11943,13 @@ var ShapeExpressionInterface = (function(){
                 }
             }
         }
-        _interfaceFunction.propertyGroup = propertyGroup;
-        interfaces = iterateElements(shapes, view, _interfaceFunction);
+        function parentGroupWrapper() {
+            return propertyGroup
+        }
+        _interfaceFunction.propertyGroup = propertyGroupFactory(_interfaceFunction, parentGroupWrapper);
+        interfaces = iterateElements(shapes, view, _interfaceFunction.propertyGroup);
         _interfaceFunction.numProperties = interfaces.length;
+        _interfaceFunction._name = 'Contents';
         return _interfaceFunction;
     };
 }());
@@ -11950,44 +11980,61 @@ var TextExpressionInterface = (function(){
     };
 }());
 var LayerExpressionInterface = (function (){
-    function toWorld(arr, time){
+
+    function getMatrix(time) {
         var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        var transformMat;
         if (time !== undefined) {
-            toWorldMat = this._elem.finalTransform.mProp.getValueAtTime(time);
+            var propMatrix = this._elem.finalTransform.mProp.getValueAtTime(time);
+            propMatrix.clone(toWorldMat);
         } else {
-            transformMat = this._elem.finalTransform.mProp;
+            var transformMat = this._elem.finalTransform.mProp;
             transformMat.applyToMatrix(toWorldMat);
         }
+        return toWorldMat;
+    }
+
+    function toWorldVec(arr, time){
+        var toWorldMat = this.getMatrix(time);
+        toWorldMat.props[12] = toWorldMat.props[13] = toWorldMat.props[14] = 0;
+        return this.applyPoint(toWorldMat, arr);
+    }
+
+    function toWorld(arr, time){
+        var toWorldMat = this.getMatrix(time);
+        return this.applyPoint(toWorldMat, arr);
+    }
+
+    function fromWorldVec(arr, time){
+        var toWorldMat = this.getMatrix(time);
+        toWorldMat.props[12] = toWorldMat.props[13] = toWorldMat.props[14] = 0;
+        return this.invertPoint(toWorldMat, arr);
+    }
+
+    function fromWorld(arr, time){
+        var toWorldMat = this.getMatrix(time);
+        return this.invertPoint(toWorldMat, arr);
+    }
+
+    function applyPoint(matrix, arr) {
         if(this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
             }
-            return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
         }
-        return toWorldMat.applyToPointArray(arr[0],arr[1],arr[2]||0);
+        return matrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
     }
-    function fromWorld(arr, time){
-        var toWorldMat = new Matrix();
-        toWorldMat.reset();
-        var transformMat;
-        if (time !== undefined) {
-            toWorldMat = this._elem.finalTransform.mProp.getValueAtTime(time);
-        } else {
-            transformMat = this._elem.finalTransform.mProp;
-            transformMat.applyToMatrix(toWorldMat);
-        }
+
+    function invertPoint(matrix, arr) {
         if (this._elem.hierarchy && this._elem.hierarchy.length){
             var i, len = this._elem.hierarchy.length;
             for(i=0;i<len;i+=1){
-                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
+                this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
             }
-            return toWorldMat.inversePoint(arr);
         }
-        return toWorldMat.inversePoint(arr);
+        return matrix.inversePoint(arr);
     }
+
     function fromComp(arr){
         var toWorldMat = new Matrix();
         toWorldMat.reset();
@@ -12039,8 +12086,13 @@ var LayerExpressionInterface = (function (){
                     return _thisLayerFunction.textInterface;
             }
         }
+        _thisLayerFunction.getMatrix = getMatrix;
+        _thisLayerFunction.invertPoint = invertPoint;
+        _thisLayerFunction.applyPoint = applyPoint;
         _thisLayerFunction.toWorld = toWorld;
+        _thisLayerFunction.toWorldVec = toWorldVec;
         _thisLayerFunction.fromWorld = fromWorld;
+        _thisLayerFunction.fromWorldVec = fromWorldVec;
         _thisLayerFunction.toComp = toWorld;
         _thisLayerFunction.fromComp = fromComp;
         _thisLayerFunction.sampleImage = sampleImage;
@@ -12159,7 +12211,6 @@ var TransformExpressionInterface = (function (){
                     return _thisFunction.opacity;
             }
         }
-
         Object.defineProperty(_thisFunction, "rotation", {
             get: ExpressionPropertyInterface(transform.r || transform.rz)
         });
@@ -12479,7 +12530,7 @@ var ExpressionPropertyInterface = (function() {
             property = defaultMultidimensionalValue;
         }
         var mult = 1 / property.mult;
-        var len = property.pv.length;
+        var len = (property.data && property.data.l) || property.pv.length;
         var expressionValue = createTypedArray('float32', len);
         var arrValue = createTypedArray('float32', len);
         expressionValue.value = arrValue;
@@ -12579,7 +12630,6 @@ function CheckboxEffect(data,elem, container){
 function NoValueEffect(){
     this.p = {};
 }
-function EffectsManager(){}
 function EffectsManager(data,element){
     var effects = data.ef || [];
     this.effectElements = [];
@@ -12693,7 +12743,7 @@ GroupEffect.prototype.init = function(data,element){
     lottie.mute = animationManager.mute;
     lottie.unmute = animationManager.unmute;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-    lottiejs.version = '5.7.3';
+    lottiejs.version = '5.7.4';
 
     var renderer = '';
     return lottiejs;
