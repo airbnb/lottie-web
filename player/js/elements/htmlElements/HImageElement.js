@@ -21,6 +21,7 @@ HImageElement.prototype.createContent = function(){
     } else {
         this.layerElement.appendChild(img);
     }
+    img.crossOrigin = 'anonymous';
     img.src = assetPath;
     if(this.data.ln){
         this.baseElement.setAttribute('id',this.data.ln);
