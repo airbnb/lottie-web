@@ -1,3 +1,9 @@
+## V 5.7.5
+- FIX: Enable HImageElement to use preloaded images thanks @dbettini
+- FIX: lottie-light effects breaking on destroy
+- FIX: loaded_images event fired in safari
+- FIX: original asset names for audios
+
 ## V 5.7.4
 - FIX: `addEventListener` method returns function except `void`
 - EXPRESSIONS:  added support for toWorldVec, fromWorldVec and getValueAtTime for transforms

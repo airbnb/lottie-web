@@ -4415,15 +4415,32 @@ var ImagePreloader = (function(){
         return path;
     }
 
+    function testImageLoaded(img) {
+        var _count = 0;
+        var intervalId = setInterval(function() {
+            var box = img.getBBox();
+            if (box.width || _count > 500) {
+                this._imageLoaded();
+                clearInterval(intervalId);
+            }
+            _count += 1;
+        }.bind(this), 50)
+    }
+
     function createImageData(assetData) {
         var path = getAssetsPath(assetData, this.assetsPath, this.path);
         var img = createNS('image');
-        img.addEventListener('load', this._imageLoaded, false);
+        if (isSafari) {
+            this.testImageLoaded(img)
+        } else {
+            img.addEventListener('load', this._imageLoaded, false);
+        }
         img.addEventListener('error', function() {
             ob.img = proxyImage;
             this._imageLoaded();
         }.bind(this), false);
         img.setAttributeNS('http://www.w3.org/1999/xlink','href', path);
+        this._elementHelper.append(img);
         var ob = {
             img: img,
             assetData: assetData
@@ -4486,8 +4503,9 @@ var ImagePreloader = (function(){
         return this.totalImages === this.loadedAssets;
     }
 
-    function setCacheType(type) {
+    function setCacheType(type, elementHelper) {
         if (type === 'svg') {
+            this._elementHelper = elementHelper;
             this._createImageData = this.createImageData.bind(this);
         } else {
             this._createImageData = this.createImgData.bind(this);
@@ -4496,6 +4514,7 @@ var ImagePreloader = (function(){
 
     function ImagePreloader(type){
         this._imageLoaded = imageLoaded.bind(this);
+        this.testImageLoaded = testImageLoaded.bind(this);
         this.assetsPath = '';
         this.path = '';
         this.totalImages = 0;
@@ -9970,6 +9989,7 @@ HImageElement.prototype.createContent = function(){
     } else {
         this.layerElement.appendChild(img);
     }
+    img.crossOrigin = 'anonymous';
     img.src = assetPath;
     if(this.data.ln){
         this.baseElement.setAttribute('id',this.data.ln);
@@ -10411,7 +10431,7 @@ AnimationItem.prototype.setParams = function(params) {
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;
     }
-    this.imagePreloader.setCacheType(animType);
+    this.imagePreloader.setCacheType(animType, this.renderer.globalData.defs);
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
     if (params.loop === ''
@@ -11004,7 +11024,9 @@ AnimationItem.prototype.triggerConfigError = function(nativeError) {
         this.onError.call(this, error);
     }
 }
-function EffectsManager(){}
+function EffectsManager(){
+    this.effectElements = [];
+}
 
 var lottie = {};
 
@@ -11102,7 +11124,7 @@ lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.4';
+lottie.version = '5.7.5';
 
 function checkReady() {
     if (document.readyState === "complete") {
