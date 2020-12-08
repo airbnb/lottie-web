@@ -1,1 +1,3 @@
-function EffectsManager(){}
+function EffectsManager(){
+    this.effectElements = [];
+}
