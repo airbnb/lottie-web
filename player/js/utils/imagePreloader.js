@@ -37,15 +37,32 @@ var ImagePreloader = (function(){
         return path;
     }
 
+    function testImageLoaded(img) {
+        var _count = 0;
+        var intervalId = setInterval(function() {
+            var box = img.getBBox();
+            if (box.width || _count > 500) {
+                this._imageLoaded();
+                clearInterval(intervalId);
+            }
+            _count += 1;
+        }.bind(this), 50)
+    }
+
     function createImageData(assetData) {
         var path = getAssetsPath(assetData, this.assetsPath, this.path);
         var img = createNS('image');
-        img.addEventListener('load', this._imageLoaded, false);
+        if (isSafari) {
+            this.testImageLoaded(img)
+        } else {
+            img.addEventListener('load', this._imageLoaded, false);
+        }
         img.addEventListener('error', function() {
             ob.img = proxyImage;
             this._imageLoaded();
         }.bind(this), false);
         img.setAttributeNS('http://www.w3.org/1999/xlink','href', path);
+        this._elementHelper.append(img);
         var ob = {
             img: img,
             assetData: assetData
@@ -108,8 +125,9 @@ var ImagePreloader = (function(){
         return this.totalImages === this.loadedAssets;
     }
 
-    function setCacheType(type) {
+    function setCacheType(type, elementHelper) {
         if (type === 'svg') {
+            this._elementHelper = elementHelper;
             this._createImageData = this.createImageData.bind(this);
         } else {
             this._createImageData = this.createImgData.bind(this);
@@ -118,6 +136,7 @@ var ImagePreloader = (function(){
 
     function ImagePreloader(type){
         this._imageLoaded = imageLoaded.bind(this);
+        this.testImageLoaded = testImageLoaded.bind(this);
         this.assetsPath = '';
         this.path = '';
         this.totalImages = 0;

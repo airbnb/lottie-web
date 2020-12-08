@@ -49,7 +49,7 @@ AnimationItem.prototype.setParams = function(params) {
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;
     }
-    this.imagePreloader.setCacheType(animType);
+    this.imagePreloader.setCacheType(animType, this.renderer.globalData.defs);
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
     if (params.loop === ''
