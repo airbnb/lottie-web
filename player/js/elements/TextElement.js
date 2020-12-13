@@ -42,14 +42,17 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
 
 ITextElement.prototype.updateDocumentData = function(newData, index) {
     this.textProperty.updateDocumentData(newData, index);
+    this.textAnimator.searchProperties();
 };
 
 ITextElement.prototype.canResizeFont = function(_canResize) {
     this.textProperty.canResizeFont(_canResize);
+    this.textAnimator.searchProperties();
 };
 
 ITextElement.prototype.setMinimumFontSize = function(_fontSize) {
     this.textProperty.setMinimumFontSize(_fontSize);
+    this.textAnimator.searchProperties();
 };
 
 ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
