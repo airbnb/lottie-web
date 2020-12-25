@@ -15,7 +15,7 @@ function LetterProps(o, sw, sc, fc, m, p) {
     };
 }
 
-LetterProps.prototype.update = function(o, sw, sc, fc, m, p) {
+LetterProps.prototype.update = function (o, sw, sc, fc, m, p) {
     this._mdf.o = false;
     this._mdf.sw = false;
     this._mdf.sc = false;

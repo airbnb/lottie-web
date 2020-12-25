@@ -1,16 +1,16 @@
-var ExpressionPropertyInterface = (function() {
+var ExpressionPropertyInterface = (function () {
 
     var defaultUnidimensionalValue = {pv:0, v:0, mult: 1}
     var defaultMultidimensionalValue = {pv:[0,0,0], v:[0,0,0], mult: 1}
 
     function completeProperty(expressionValue, property, type) {
         Object.defineProperty(expressionValue, 'velocity', {
-            get: function() {
+            get: function () {
                 return property.getVelocityAtTime(property.comp.currentFrame);
             }
         });
         expressionValue.numKeys = property.keyframes ? property.keyframes.length : 0;
-        expressionValue.key = function(pos) {
+        expressionValue.key = function (pos) {
             if (!expressionValue.numKeys) {
                 return 0;
             } else {
@@ -44,7 +44,7 @@ var ExpressionPropertyInterface = (function() {
         expressionValue.value = val;
         completeProperty(expressionValue, property, 'unidimensional');
 
-        return function() {
+        return function () {
             if (property.k) {
                 property.getValue();
             }
@@ -69,7 +69,7 @@ var ExpressionPropertyInterface = (function() {
         expressionValue.value = arrValue;
         completeProperty(expressionValue, property, 'multidimensional');
 
-        return function() {
+        return function () {
             if (property.k) {
                 property.getValue();
             }
@@ -85,7 +85,7 @@ var ExpressionPropertyInterface = (function() {
         return defaultUnidimensionalValue;
     }
     
-    return function(property) {
+    return function (property) {
         if(!property) {
             return defaultGetter;
         } else if (property.propType === 'unidimensional') {

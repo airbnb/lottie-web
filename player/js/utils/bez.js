@@ -30,9 +30,9 @@ function bezFunction() {
         return diffDist > -0.0001 && diffDist < 0.0001;
     }
 
-    var getBezierLength = (function() {
+    var getBezierLength = (function () {
 
-        return function(pt1,pt2,pt3,pt4) {
+        return function (pt1,pt2,pt3,pt4) {
             var curveSegments = defaultCurveSegments;
             var k;
             var i, len;
@@ -95,7 +95,7 @@ function bezFunction() {
         this.point = point;
     }
 
-    var buildBezierData = (function() {
+    var buildBezierData = (function () {
 
         var storedData = {};
 

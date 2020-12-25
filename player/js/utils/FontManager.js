@@ -1,4 +1,4 @@
-var FontManager = (function() {
+var FontManager = (function () {
 
     var maxWaitingTime = 5000;
     var emptyChar = {
@@ -290,7 +290,7 @@ var FontManager = (function() {
         this.isLoaded = true
     }
 
-    var Font = function() {
+    var Font = function () {
         this.fonts = [];
         this.chars = null;
         this.typekitLoaded = 0;

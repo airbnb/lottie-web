@@ -44,7 +44,7 @@ function SVGEffects(elem) {
     }
 }
 
-SVGEffects.prototype.renderFrame = function(_isFirstFrame) {
+SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
     var i, len = this.filters.length;
     for(i=0;i<len;i+=1) {
         this.filters[i].renderFrame(_isFirstFrame);

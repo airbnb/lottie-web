@@ -133,7 +133,7 @@ function MaskElement(data,element,globalData) {
 
 }
 
-MaskElement.prototype.getMaskProperty = function(pos) {
+MaskElement.prototype.getMaskProperty = function (pos) {
     return this.viewData[pos].prop;
 };
 
@@ -176,7 +176,7 @@ MaskElement.prototype.getMaskelement = function () {
     return this.maskElement;
 };
 
-MaskElement.prototype.createLayerSolidPath = function() {
+MaskElement.prototype.createLayerSolidPath = function () {
     var path = 'M0,0 ';
     path += ' h' + this.globalData.compSize.w ;
     path += ' v' + this.globalData.compSize.h ;
@@ -185,7 +185,7 @@ MaskElement.prototype.createLayerSolidPath = function() {
     return path;
 };
 
-MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData) {
+MaskElement.prototype.drawPath = function (pathData,pathNodes,viewData) {
     var pathString = ' M'+pathNodes.v[0][0]+','+pathNodes.v[0][1];
     var i, len;
     len = pathNodes._length;
@@ -211,7 +211,7 @@ MaskElement.prototype.drawPath = function(pathData,pathNodes,viewData) {
     }
 };
 
-MaskElement.prototype.destroy = function() {
+MaskElement.prototype.destroy = function () {
     this.element = null;
     this.globalData = null;
     this.maskElement = null;

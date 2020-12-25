@@ -6,14 +6,14 @@ function SVGTextElement(data,globalData,comp) {
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], SVGTextElement);
 
-SVGTextElement.prototype.createContent = function() {
+SVGTextElement.prototype.createContent = function () {
 
     if (this.data.singleShape && !this.globalData.fontManager.chars) {
         this.textContainer = createNS('text');
     }
 };
 
-SVGTextElement.prototype.buildTextContents = function(textArray) {
+SVGTextElement.prototype.buildTextContents = function (textArray) {
     var i = 0, len = textArray.length;
     var textContents = [], currentTextContent = '';
     while (i < len) {
@@ -29,7 +29,7 @@ SVGTextElement.prototype.buildTextContents = function(textArray) {
     return textContents;
 }
 
-SVGTextElement.prototype.buildNewText = function() {
+SVGTextElement.prototype.buildNewText = function () {
     var i, len;
 
     var documentData = this.textProperty.currentData;
@@ -152,7 +152,7 @@ SVGTextElement.prototype.buildNewText = function() {
     this._sizeChanged = true;
 };
 
-SVGTextElement.prototype.sourceRectAtTime = function(time) {
+SVGTextElement.prototype.sourceRectAtTime = function (time) {
     this.prepareFrame(this.comp.renderedFrame - this.data.st);
     this.renderInnerContent();
     if(this._sizeChanged) {
@@ -168,7 +168,7 @@ SVGTextElement.prototype.sourceRectAtTime = function(time) {
     return this.bbox;
 };
 
-SVGTextElement.prototype.renderInnerContent = function() {
+SVGTextElement.prototype.renderInnerContent = function () {
 
     if(!this.data.singleShape) {
         this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);

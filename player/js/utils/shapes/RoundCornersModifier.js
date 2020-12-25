@@ -1,12 +1,12 @@
 function RoundCornersModifier() {}
 extendPrototype([ShapeModifier],RoundCornersModifier);
-RoundCornersModifier.prototype.initModifierProperties = function(elem,data) {
+RoundCornersModifier.prototype.initModifierProperties = function (elem,data) {
     this.getValue = this.processKeys;
     this.rd = PropertyFactory.getProp(elem,data.r,0,null,this);
     this._isAnimated = !!this.rd.effectsSequence.length;
 };
 
-RoundCornersModifier.prototype.processPath = function(path, round) {
+RoundCornersModifier.prototype.processPath = function (path, round) {
     var cloned_path = shape_pool.newElement();
     cloned_path.c = path.c;
     var i, len = path._length;
@@ -60,7 +60,7 @@ RoundCornersModifier.prototype.processPath = function(path, round) {
     return cloned_path;
 };
 
-RoundCornersModifier.prototype.processShapes = function(_isFirstFrame) {
+RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;

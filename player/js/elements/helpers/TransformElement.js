@@ -1,7 +1,7 @@
 function TransformElement() {}
 
 TransformElement.prototype = {
-    initTransform: function() {
+    initTransform: function () {
         this.finalTransform = {
             mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this) : {o:0},
             _matMdf: false,
@@ -17,7 +17,7 @@ TransformElement.prototype = {
             //this.createElements();
         }
     },
-    renderTransform: function() {
+    renderTransform: function () {
 
         this.finalTransform._opMdf = this.finalTransform.mProp.o._mdf || this._isFirstFrame;
         this.finalTransform._matMdf = this.finalTransform.mProp._mdf || this._isFirstFrame;
@@ -47,7 +47,7 @@ TransformElement.prototype = {
             }
         }
     },
-    globalToLocal: function(pt) {
+    globalToLocal: function (pt) {
         var transforms = [];
         transforms.push(this.finalTransform);
         var flag = true;

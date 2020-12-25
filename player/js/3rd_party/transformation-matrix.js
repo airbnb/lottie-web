@@ -27,7 +27,7 @@
  * @constructor
  */
 
-var Matrix = (function() {
+var Matrix = (function () {
 
     var _cos = Math.cos;
     var _sin = Math.sin;
@@ -377,7 +377,7 @@ var Matrix = (function() {
         return 'matrix(' + _a + ',' + _b + ',' + _c + ',' + _d + ',' + _e + ',' + _f + ')';
     }
 
-    return function() {
+    return function () {
         this.reset = reset;
         this.rotate = rotate;
         this.rotateX = rotateX;

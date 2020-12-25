@@ -73,7 +73,7 @@ var LayerExpressionInterface = (function () {
     }
 
 
-    return function(elem) {
+    return function (elem) {
 
         var transformInterface;
 
@@ -121,12 +121,12 @@ var LayerExpressionInterface = (function () {
         var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
         Object.defineProperties(_thisLayerFunction,{
             hasParent: {
-                get: function() {
+                get: function () {
                     return elem.hierarchy.length;
                 }
             },
             parent: {
-                get: function() {
+                get: function () {
                     return elem.hierarchy[0].layerInterface;
                 }
             },
@@ -142,7 +142,7 @@ var LayerExpressionInterface = (function () {
                 }
             },
             active: {
-                get: function() {
+                get: function () {
                     return elem.isInRange;
                 }
             }

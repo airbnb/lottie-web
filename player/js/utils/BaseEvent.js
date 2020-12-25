@@ -14,7 +14,7 @@ BaseEvent.prototype = {
         }
         this._cbs[eventName].push(callback);
 
-        return function() {
+        return function () {
             this.removeEventListener(eventName, callback);
         }.bind(this);
     },

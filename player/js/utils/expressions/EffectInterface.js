@@ -14,7 +14,7 @@ var EffectsExpressionInterface = (function () {
             }
 
             var effects = elem.data.ef || [];
-            var groupInterface = function(name) {
+            var groupInterface = function (name) {
                 i = 0, len = effects.length;
                 while(i<len) {
                     if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix) {
@@ -24,7 +24,7 @@ var EffectsExpressionInterface = (function () {
                 }
             };
             Object.defineProperty(groupInterface, 'numProperties', {
-                get: function() {
+                get: function () {
                     return effects.length;
                 }
             });
@@ -62,14 +62,14 @@ var EffectsExpressionInterface = (function () {
 
         if(data.mn === 'ADBE Color Control') {
             Object.defineProperty(groupInterface, 'color', {
-                get: function() {
+                get: function () {
                     return effectElements[0]();
                 }
             });
         }
         Object.defineProperties(groupInterface, {
             numProperties: {
-                get: function() {
+                get: function () {
                     return data.np;
                 }
             },

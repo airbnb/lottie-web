@@ -1,4 +1,4 @@
-var shapeCollection_pool = (function() {
+var shapeCollection_pool = (function () {
 	var ob = {
 		newShapeCollection: newShapeCollection,
 		release: release

@@ -51,7 +51,7 @@ CanvasRenderer.prototype.createSolid = function (data) {
 
 CanvasRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
-CanvasRenderer.prototype.ctxTransform = function(props) {
+CanvasRenderer.prototype.ctxTransform = function (props) {
     if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0) {
         return;
     }
@@ -68,7 +68,7 @@ CanvasRenderer.prototype.ctxTransform = function(props) {
     this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
 };
 
-CanvasRenderer.prototype.ctxOpacity = function(op) {
+CanvasRenderer.prototype.ctxOpacity = function (op) {
     /*if(op === 1){
         return;
     }*/
@@ -84,7 +84,7 @@ CanvasRenderer.prototype.ctxOpacity = function(op) {
     }
 };
 
-CanvasRenderer.prototype.reset = function() {
+CanvasRenderer.prototype.reset = function () {
     if(!this.renderConfig.clearCanvas) {
         this.canvasContext.restore();
         return;
@@ -92,7 +92,7 @@ CanvasRenderer.prototype.reset = function() {
     this.contextData.reset();
 };
 
-CanvasRenderer.prototype.save = function(actionFlag) {
+CanvasRenderer.prototype.save = function (actionFlag) {
     if(!this.renderConfig.clearCanvas) {
         this.canvasContext.save();
         return;
@@ -112,7 +112,7 @@ CanvasRenderer.prototype.save = function(actionFlag) {
     this.contextData.cArrPos += 1;
 };
 
-CanvasRenderer.prototype.restore = function(actionFlag) {
+CanvasRenderer.prototype.restore = function (actionFlag) {
     if(!this.renderConfig.clearCanvas) {
         this.canvasContext.restore();
         return;
@@ -136,7 +136,7 @@ CanvasRenderer.prototype.restore = function(actionFlag) {
     }
 };
 
-CanvasRenderer.prototype.configAnimation = function(animData) {
+CanvasRenderer.prototype.configAnimation = function (animData) {
     if(this.animationItem.wrapper) {
         this.animationItem.container = createTag('canvas');
         this.animationItem.container.style.width = '100%';
@@ -263,7 +263,7 @@ CanvasRenderer.prototype.destroy = function () {
     this.destroyed = true;
 };
 
-CanvasRenderer.prototype.renderFrame = function(num, forceRender) {
+CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
     if((this.renderedFrame === num && this.renderConfig.clearCanvas === true && !forceRender) || this.destroyed || num === -1) {
         return;
     }
@@ -302,7 +302,7 @@ CanvasRenderer.prototype.renderFrame = function(num, forceRender) {
     }
 };
 
-CanvasRenderer.prototype.buildItem = function(pos) {
+CanvasRenderer.prototype.buildItem = function (pos) {
     var elements = this.elements;
     if(elements[pos] || this.layers[pos].ty == 99) {
         return;
@@ -315,17 +315,17 @@ CanvasRenderer.prototype.buildItem = function(pos) {
     }*/
 };
 
-CanvasRenderer.prototype.checkPendingElements  = function() {
+CanvasRenderer.prototype.checkPendingElements  = function () {
     while(this.pendingElements.length) {
         var element = this.pendingElements.pop();
         element.checkParenting();
     }
 };
 
-CanvasRenderer.prototype.hide = function() {
+CanvasRenderer.prototype.hide = function () {
     this.animationItem.container.style.display = 'none';
 };
 
-CanvasRenderer.prototype.show = function() {
+CanvasRenderer.prototype.show = function () {
     this.animationItem.container.style.display = 'block';
 };

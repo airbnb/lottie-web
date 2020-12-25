@@ -20,7 +20,7 @@ function DashProperty(elem, data, renderer, container) {
     this._isAnimated = this.k;
 }
 
-DashProperty.prototype.getValue = function(forceRender) {
+DashProperty.prototype.getValue = function (forceRender) {
     if(this.elem.globalData.frameId === this.frameId && !forceRender) {
         return;
     }

@@ -4,7 +4,7 @@ var ProjectInterface = (function () {
         this.compositions.push(comp);
     }
 
-    return function() {
+    return function () {
         function _thisProjectFunction(name) {
             var i = 0, len = this.compositions.length;
             while(i<len) {

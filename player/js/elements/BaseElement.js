@@ -2,7 +2,7 @@ function BaseElement() {
 }
 
 BaseElement.prototype = {
-    checkMasks: function() {
+    checkMasks: function () {
         if(!this.data.hasMask) {
             return false;
         }
@@ -15,7 +15,7 @@ BaseElement.prototype = {
         }
         return false;
     },
-    initExpressions: function() {
+    initExpressions: function () {
         this.layerInterface = LayerExpressionInterface(this);
         if(this.data.hasMask && this.maskManager) {
             this.layerInterface.registerMaskInterface(this.maskManager);
@@ -33,13 +33,13 @@ BaseElement.prototype = {
             this.layerInterface.text = this.layerInterface.textInterface;
         }
     },
-    setBlendMode: function() {
+    setBlendMode: function () {
         var blendModeValue = getBlendMode(this.data.bm);
         var elem = this.baseElement || this.layerElement;
 
         elem.style['mix-blend-mode'] = blendModeValue;
     },
-    initBaseData: function(data, globalData, comp) {
+    initBaseData: function (data, globalData, comp) {
         this.globalData = globalData;
         this.comp = comp;
         this.data = data;
@@ -53,8 +53,8 @@ BaseElement.prototype = {
         this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
         
     },
-    getType: function() {
+    getType: function () {
         return this.type;
     }
-    ,sourceRectAtTime: function() {}
+    ,sourceRectAtTime: function () {}
 }

@@ -13,7 +13,7 @@ var bm_min = Math.min;
 var blitter = 10;
 
 var BMMath = {};
-(function() {
+(function () {
     var propertyNames = ['abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'atan2', 'ceil', 'cbrt', 'expm1', 'clz32', 'cos', 'cosh', 'exp', 'floor', 'fround', 'hypot', 'imul', 'log', 'log1p', 'log2', 'log10', 'max', 'min', 'pow', 'random', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc', 'E', 'LN10', 'LN2', 'LOG10E', 'LOG2E', 'PI', 'SQRT1_2', 'SQRT2'];
     var i, len = propertyNames.length;
     for(i=0;i<len;i+=1) {
@@ -24,7 +24,7 @@ var BMMath = {};
 function ProjectInterface() { return {}; }
 
 BMMath.random = Math.random;
-BMMath.abs = function(val) {
+BMMath.abs = function (val) {
     var tOfVal = typeof val;
     if(tOfVal === 'object' && val.length) {
         var absArr = createSizedArray(val.length);
@@ -45,7 +45,7 @@ function roundValues(flag) {
     if(flag) {
         bm_rnd = Math.round;
     }else{
-        bm_rnd = function(val) {
+        bm_rnd = function (val) {
             return val;
         };
     }
@@ -109,7 +109,7 @@ function BMAnimationConfigErrorEvent(type, nativeError) {
     this.currentTime = currentTime;
 }
 
-var createElementID = (function() {
+var createElementID = (function () {
     var _count = 0;
     return function createID() {
         return '__lottie_element_' + ++_count
@@ -193,7 +193,7 @@ function addHueToRGB(color,offset) {
     return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 }
 
-var rgbToHex = (function() {
+var rgbToHex = (function () {
     var colorMap = [];
     var i;
     var hex;
@@ -202,7 +202,7 @@ var rgbToHex = (function() {
         colorMap[i] = hex.length == 1 ? '0' + hex : hex;
     }
 
-    return function(r, g, b) {
+    return function (r, g, b) {
         if(r<0) {
             r = 0;
         }

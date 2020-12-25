@@ -6,7 +6,7 @@ function IImageElement(data,globalData,comp) {
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
-IImageElement.prototype.createContent = function() {
+IImageElement.prototype.createContent = function () {
 
     var assetPath = this.globalData.getAssetsPath(this.assetData);
 
@@ -19,6 +19,6 @@ IImageElement.prototype.createContent = function() {
     this.layerElement.appendChild(this.innerElem);
 };
 
-IImageElement.prototype.sourceRectAtTime = function() {
+IImageElement.prototype.sourceRectAtTime = function () {
 	return this.sourceRect;
 }

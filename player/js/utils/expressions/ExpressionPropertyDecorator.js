@@ -255,7 +255,7 @@
     }
 
     var getTransformProperty = TransformPropertyFactory.getTransformProperty;
-    TransformPropertyFactory.getTransformProperty = function(elem, data, container) {
+    TransformPropertyFactory.getTransformProperty = function (elem, data, container) {
         var prop = getTransformProperty(elem, data, container);
         if(prop.dynamicProperties.length) {
             prop.getValueAtTime = getTransformValueAtTime.bind(prop);
@@ -267,7 +267,7 @@
     };
 
     var propertyGetProp = PropertyFactory.getProp;
-    PropertyFactory.getProp = function(elem,data,type, mult, container) {
+    PropertyFactory.getProp = function (elem,data,type, mult, container) {
         var prop = propertyGetProp(elem,data,type, mult, container);
         //prop.getVelocityAtTime = getVelocityAtTime;
         //prop.loopOut = loopOut;
@@ -327,7 +327,7 @@
 
     function ShapeExpressions() {}
     ShapeExpressions.prototype = {
-        vertices: function(prop, time) {
+        vertices: function (prop, time) {
             if (this.k) {
                 this.getValue();
             }
@@ -349,19 +349,19 @@
             }
             return arr;
         },
-        points: function(time) {
+        points: function (time) {
             return this.vertices('v', time);
         },
-        inTangents: function(time) {
+        inTangents: function (time) {
             return this.vertices('i', time);
         },
-        outTangents: function(time) {
+        outTangents: function (time) {
             return this.vertices('o', time);
         },
-        isClosed: function() {
+        isClosed: function () {
             return this.v.c;
         },
-        pointOnPath: function(perc, time) {
+        pointOnPath: function (perc, time) {
             var shapePath = this.v;
             if(time !== undefined) {
                 shapePath = this.getValueAtTime(time, 0);
@@ -393,7 +393,7 @@
             }
             return pt;
         },
-        vectorOnPath: function(perc, time, vectorType) {
+        vectorOnPath: function (perc, time, vectorType) {
             //perc doesn't use triple equality because it can be a Number object as well as a primitive.
             perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
             var pt1 = this.pointOnPath(perc, time);
@@ -407,10 +407,10 @@
             var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
             return unitVector;
         },
-        tangentOnPath: function(perc, time) {
+        tangentOnPath: function (perc, time) {
             return this.vectorOnPath(perc, time, 'tangent');
         },
-        normalOnPath: function(perc, time) {
+        normalOnPath: function (perc, time) {
             return this.vectorOnPath(perc, time, 'normal');
         },
         setGroupProperty: expressionHelpers.setGroupProperty,
@@ -422,7 +422,7 @@
     KeyframedShapePropertyConstructorFunction.prototype.initiateExpression = ExpressionManager.initiateExpression;
 
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
-    ShapePropertyFactory.getShapeProp = function(elem,data,type, arr, trims) {
+    ShapePropertyFactory.getShapeProp = function (elem,data,type, arr, trims) {
         var prop = propertyGetShapeProp(elem,data,type, arr, trims);
         prop.propertyIndex = data.ix;
         prop.lock = false;

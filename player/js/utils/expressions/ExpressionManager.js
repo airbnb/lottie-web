@@ -1,4 +1,4 @@
-var ExpressionManager = (function() {
+var ExpressionManager = (function () {
     'use strict';
     var ob = {};
     var Math = BMMath;
@@ -350,7 +350,7 @@ var ExpressionManager = (function() {
         var thisProperty = property;
         thisProperty.valueAtTime = thisProperty.getValueAtTime;
         Object.defineProperty(thisProperty, 'value', {
-            get: function() {
+            get: function () {
                 return thisProperty.v
             }
         })

@@ -31,7 +31,7 @@ function ExpressionValue(elementProp, mult, type) {
     }
     
     expressionValue.numKeys = elementProp.keyframes ? elementProp.keyframes.length : 0;
-    expressionValue.key = function(pos) {
+    expressionValue.key = function (pos) {
         if (!expressionValue.numKeys) {
             return 0;
         } else {
@@ -43,7 +43,7 @@ function ExpressionValue(elementProp, mult, type) {
     expressionValue.velocityAtTime = elementProp.getVelocityAtTime;
     expressionValue.propertyGroup = elementProp.propertyGroup;
     Object.defineProperty(expressionValue, 'velocity', {
-        get: function() {
+        get: function () {
             return elementProp.getVelocityAtTime(elementProp.comp.currentFrame);
         }
     });

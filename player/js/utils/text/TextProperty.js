@@ -52,7 +52,7 @@ function TextProperty(elem, data) {
 
 TextProperty.prototype.defaultBoxWidth = [0,0];
 
-TextProperty.prototype.copyData = function(obj, data) {
+TextProperty.prototype.copyData = function (obj, data) {
     for(var s in data) {
         if(data.hasOwnProperty(s)) {
             obj[s] = data[s];
@@ -61,7 +61,7 @@ TextProperty.prototype.copyData = function(obj, data) {
     return obj;
 }
 
-TextProperty.prototype.setCurrentData = function(data) {
+TextProperty.prototype.setCurrentData = function (data) {
     if(!data.__complete) {
         this.completeTextData(data);
     }
@@ -70,11 +70,11 @@ TextProperty.prototype.setCurrentData = function(data) {
     this._mdf = true;
 };
 
-TextProperty.prototype.searchProperty = function() {
+TextProperty.prototype.searchProperty = function () {
     return this.searchKeyframes();
 };
 
-TextProperty.prototype.searchKeyframes = function() {
+TextProperty.prototype.searchKeyframes = function () {
     this.kf = this.data.d.k.length > 1;
     if(this.kf) {
         this.addEffect(this.getKeyframeValue.bind(this));
@@ -82,12 +82,12 @@ TextProperty.prototype.searchKeyframes = function() {
     return this.kf;
 }
 
-TextProperty.prototype.addEffect = function(effectFunction) {
+TextProperty.prototype.addEffect = function (effectFunction) {
 	this.effectsSequence.push(effectFunction);
     this.elem.addDynamicProperty(this);
 };
 
-TextProperty.prototype.getValue = function(_finalValue) {
+TextProperty.prototype.getValue = function (_finalValue) {
     if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
         return;
     }
@@ -119,7 +119,7 @@ TextProperty.prototype.getValue = function(_finalValue) {
     this.frameId = this.elem.globalData.frameId;
 }
 
-TextProperty.prototype.getKeyframeValue = function() {
+TextProperty.prototype.getKeyframeValue = function () {
     var textKeys = this.data.d.k, textDocumentData;
     var frameNum = this.elem.comp.renderedFrame;
     var i = 0, len = textKeys.length;
@@ -136,7 +136,7 @@ TextProperty.prototype.getKeyframeValue = function() {
     return this.data.d.k[this.keysIndex].s;
 };
 
-TextProperty.prototype.buildFinalText = function(text) {
+TextProperty.prototype.buildFinalText = function (text) {
     var combinedCharacters = FontManager.getCombinedCharacterCodes();
     var charactersArray = [];
     var i = 0, len = text.length;
@@ -163,7 +163,7 @@ TextProperty.prototype.buildFinalText = function(text) {
     return charactersArray;
 }
 
-TextProperty.prototype.completeTextData = function(documentData) {
+TextProperty.prototype.completeTextData = function (documentData) {
     documentData.__complete = true;
     var fontManager = this.elem.globalData.fontManager;
     var data = this.data;
@@ -409,7 +409,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.ascent = fontData.ascent*documentData.finalSize/100;
 };
 
-TextProperty.prototype.updateDocumentData = function(newData, index) {
+TextProperty.prototype.updateDocumentData = function (newData, index) {
 	index = index === undefined ? this.keysIndex : index;
     var dData = this.copyData({}, this.data.d.k[index].s);
     dData = this.copyData(dData, newData);
@@ -418,7 +418,7 @@ TextProperty.prototype.updateDocumentData = function(newData, index) {
     this.elem.addDynamicProperty(this);
 };
 
-TextProperty.prototype.recalculate = function(index) {
+TextProperty.prototype.recalculate = function (index) {
     var dData = this.data.d.k[index].s;
     dData.__complete = false;
     this.keysIndex = 0;
@@ -426,13 +426,13 @@ TextProperty.prototype.recalculate = function(index) {
     this.getValue(dData);
 }
 
-TextProperty.prototype.canResizeFont = function(_canResize) {
+TextProperty.prototype.canResizeFont = function (_canResize) {
     this.canResize = _canResize;
     this.recalculate(this.keysIndex);
     this.elem.addDynamicProperty(this);
 };
 
-TextProperty.prototype.setMinimumFontSize = function(_fontValue) {
+TextProperty.prototype.setMinimumFontSize = function (_fontValue) {
     this.minimumFontSize = Math.floor(_fontValue) || 1;
     this.recalculate(this.keysIndex);
     this.elem.addDynamicProperty(this);

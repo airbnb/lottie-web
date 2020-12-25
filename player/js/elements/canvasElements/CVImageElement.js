@@ -8,7 +8,7 @@ extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement,
 CVImageElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 CVImageElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
-CVImageElement.prototype.createContent = function() {
+CVImageElement.prototype.createContent = function () {
 
     if (this.img.width && (this.assetData.w !== this.img.width || this.assetData.h !== this.img.height)) {
         var canvas = createTag('canvas');
@@ -35,10 +35,10 @@ CVImageElement.prototype.createContent = function() {
 
 };
 
-CVImageElement.prototype.renderInnerContent = function(parentMatrix) {
+CVImageElement.prototype.renderInnerContent = function (parentMatrix) {
     this.canvasContext.drawImage(this.img, 0, 0);
 };
 
-CVImageElement.prototype.destroy = function() {
+CVImageElement.prototype.destroy = function () {
     this.img = null;
 };

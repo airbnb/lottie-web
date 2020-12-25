@@ -48,7 +48,7 @@ function SVGDropShadowEffect(filter, filterManager) {
     feMerge.appendChild(feMergeNode);
 }
 
-SVGDropShadowEffect.prototype.renderFrame = function(forceRender) {
+SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
     if(forceRender || this.filterManager._mdf) {
         if(forceRender || this.filterManager.effectElements[4].p._mdf) {
             this.feGaussianBlur.setAttribute('stdDeviation', this.filterManager.effectElements[4].p.v / 4);

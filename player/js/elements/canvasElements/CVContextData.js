@@ -11,7 +11,7 @@ function CVContextData() {
     this._length = len;
 }
 
-CVContextData.prototype.duplicate = function() {
+CVContextData.prototype.duplicate = function () {
 	var newLength = this._length * 2;
 	var currentSavedOp = this.savedOp;
     this.savedOp = createTypedArray('float32', newLength);
@@ -23,7 +23,7 @@ CVContextData.prototype.duplicate = function() {
     this._length = newLength;
 };
 
-CVContextData.prototype.reset = function() {
+CVContextData.prototype.reset = function () {
 	this.cArrPos = 0;
 	this.cTr.reset();
     this.cO = 1;

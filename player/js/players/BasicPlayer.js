@@ -1,28 +1,28 @@
 function BasicPlayer() {}
 
-BasicPlayer.prototype.setAnimationItem = function(item) {
+BasicPlayer.prototype.setAnimationItem = function (item) {
 };
 
-BasicPlayer.prototype.playStarted = function() {
+BasicPlayer.prototype.playStarted = function () {
     this.playButton.style.display = 'none';
     this.pauseButton.style.display = 'block';
     this.pauseAnimation.goToAndStop(0);
     this.pauseAnimation.play();
 };
 
-BasicPlayer.prototype.pauseStarted = function() {
+BasicPlayer.prototype.pauseStarted = function () {
     this.playButton.style.display = 'block';
     this.pauseButton.style.display = 'none';
     this.playAnimation.goToAndStop(0);
     this.playAnimation.play();
 };
 
-BasicPlayer.prototype.buildControls = function(item, wrapper) {
+BasicPlayer.prototype.buildControls = function (item, wrapper) {
 
     var self = this;
     this.animationItem = item;
-    wrapper.addEventListener('bmPlay',function() { self.playStarted(); });
-    wrapper.addEventListener('bmPause',function() { self.pauseStarted(); });
+    wrapper.addEventListener('bmPlay',function () { self.playStarted(); });
+    wrapper.addEventListener('bmPause',function () { self.pauseStarted(); });
 
     this.controls = createTag('div');
     this.controls.style.width = '100%';
@@ -94,7 +94,7 @@ BasicPlayer.prototype.buildControls = function(item, wrapper) {
     this.pauseButton.setAttribute('data-anim-name','pause');
     this.pauseButton.setAttribute('data-anim-repeat','0');
     this.pauseAnimation = animationManager.registerAnimation(this.pauseButton);
-    this.pauseAnimation.wrapper.addEventListener('bmLoaded',function() { self.pauseAnimation.goToAndStop(self.pauseAnimation.totalFrames - 1); });
+    this.pauseAnimation.wrapper.addEventListener('bmLoaded',function () { self.pauseAnimation.goToAndStop(self.pauseAnimation.totalFrames - 1); });
     this.pauseAnimation.loop = false;
     this.controls.appendChild(this.pauseButton);
     this.pauseButton.addEventListener('click', function () {
@@ -102,7 +102,7 @@ BasicPlayer.prototype.buildControls = function(item, wrapper) {
     });
 };
 
-BasicPlayer.prototype.setProgress = function(val) {
+BasicPlayer.prototype.setProgress = function (val) {
     this.progress = val;
     this.scrollBarThumb.style.left = (this.progress) * 100 + '%';
 };
@@ -112,7 +112,7 @@ BasicPlayer.prototype.scrollAnimation = function (perc) {
     this.boundingRect = this.scrollBar.getBoundingClientRect();
     this.scrollBarWidth = this.scrollBar.clientWidth;
     var self = this;
-    var mouseMoveFunc = function(ev) {
+    var mouseMoveFunc = function (ev) {
         var mousePos = ev.pageX - self.boundingRect.left;
         if(mousePos < 0) {
             mousePos = 0;
@@ -121,7 +121,7 @@ BasicPlayer.prototype.scrollAnimation = function (perc) {
         }
         self.animationItem.updateAnimation(mousePos / self.scrollBarWidth);
     };
-    var mouseUpFunc = function() {
+    var mouseUpFunc = function () {
         window.removeEventListener('mousemove', mouseMoveFunc);
         window.removeEventListener('mouseup', mouseUpFunc);
         self.animationItem.isScrolling = false;

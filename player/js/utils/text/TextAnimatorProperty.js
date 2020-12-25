@@ -16,7 +16,7 @@ function TextAnimatorProperty(textData, renderType, elem) {
 
 }
 
-TextAnimatorProperty.prototype.searchProperties = function() {
+TextAnimatorProperty.prototype.searchProperties = function () {
     var i, len = this._textData.a.length, animatorProps;
     var getProp = PropertyFactory.getProp;
     for(i=0;i<len;i+=1) {
@@ -37,7 +37,7 @@ TextAnimatorProperty.prototype.searchProperties = function() {
     this._moreOptions.alignment = getProp(this._elem,this._textData.m.a,1,0,this);
 };
 
-TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag) {
+TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChangedFlag) {
     this.lettersChangedFlag = lettersChangedFlag;
     if(!this._mdf && !this._isFirstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m._mdf)) {
         return;
@@ -546,7 +546,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     }
 };
 
-TextAnimatorProperty.prototype.getValue = function() {
+TextAnimatorProperty.prototype.getValue = function () {
 	if(this._elem.globalData.frameId === this._frameId) {
         return;
     }

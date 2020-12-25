@@ -1,4 +1,4 @@
-var getBlendMode = (function() {
+var getBlendMode = (function () {
 
 	var blendModeEnums = {
         0:'source-over',
@@ -19,7 +19,7 @@ var getBlendMode = (function() {
         15:'luminosity'
     }
 
-	return function(mode) {
+	return function (mode) {
 		return blendModeEnums[mode] || '';
 	}
 }())

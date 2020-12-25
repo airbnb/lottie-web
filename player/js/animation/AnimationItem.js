@@ -33,7 +33,7 @@ var AnimationItem = function () {
 
 extendPrototype([BaseEvent], AnimationItem);
 
-AnimationItem.prototype.setParams = function(params) {
+AnimationItem.prototype.setParams = function (params) {
     if(params.wrapper || params.container) {
         this.wrapper = params.wrapper || params.container;
     }
@@ -83,7 +83,7 @@ AnimationItem.prototype.setParams = function(params) {
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
         this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
 
-        assetLoader.load(params.path, this.configAnimation.bind(this), function() {
+        assetLoader.load(params.path, this.configAnimation.bind(this), function () {
             this.trigger('data_failed');
         }.bind(this));
     }
@@ -121,7 +121,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
     this.setParams(params);
 };
 
-AnimationItem.prototype.includeLayers = function(data) {
+AnimationItem.prototype.includeLayers = function (data) {
     if(data.op > this.animationData.op) {
         this.animationData.op = data.op;
         this.totalFrames = Math.floor(data.op - this.animationData.ip);
@@ -159,7 +159,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     this.loadNextSegment();
 };
 
-AnimationItem.prototype.loadNextSegment = function() {
+AnimationItem.prototype.loadNextSegment = function () {
     var segments = this.animationData.segments;
     if(!segments || segments.length === 0 || !this.autoloadSegments) {
         this.trigger('data_ready');
@@ -170,12 +170,12 @@ AnimationItem.prototype.loadNextSegment = function() {
     this.timeCompleted = segment.time * this.frameRate;
     var segmentPath = this.path+this.fileName+'_' + this.segmentPos + '.json';
     this.segmentPos += 1;
-    assetLoader.load(segmentPath, this.includeLayers.bind(this), function() {
+    assetLoader.load(segmentPath, this.includeLayers.bind(this), function () {
         this.trigger('data_failed');
     }.bind(this));
 };
 
-AnimationItem.prototype.loadSegments = function() {
+AnimationItem.prototype.loadSegments = function () {
     var segments = this.animationData.segments;
     if(!segments) {
         this.timeCompleted = this.totalFrames;
@@ -183,12 +183,12 @@ AnimationItem.prototype.loadSegments = function() {
     this.loadNextSegment();
 };
 
-AnimationItem.prototype.imagesLoaded = function() {
+AnimationItem.prototype.imagesLoaded = function () {
     this.trigger('loaded_images');
     this.checkLoaded()
 }
 
-AnimationItem.prototype.preloadImages = function() {
+AnimationItem.prototype.preloadImages = function () {
     this.imagePreloader.setAssetsPath(this.assetsPath);
     this.imagePreloader.setPath(this.path);
     this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
@@ -230,7 +230,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     }
 };
 
-AnimationItem.prototype.waitForFontsLoaded = function() {
+AnimationItem.prototype.waitForFontsLoaded = function () {
     if(!this.renderer) {
         return;
     }
@@ -252,7 +252,7 @@ AnimationItem.prototype.checkLoaded = function () {
             expressionsPlugin.initExpressions(this);
         }
         this.renderer.initItems();
-        setTimeout(function() {
+        setTimeout(function () {
             this.trigger('DOMLoaded');
         }.bind(this), 0);
         this.gotoFrame();
@@ -266,7 +266,7 @@ AnimationItem.prototype.resize = function () {
     this.renderer.updateContainerSize();
 };
 
-AnimationItem.prototype.setSubframe = function(flag) {
+AnimationItem.prototype.setSubframe = function (flag) {
     this.isSubframeEnabled = !!flag;
 };
 
@@ -403,7 +403,7 @@ AnimationItem.prototype.advanceTime = function (value) {
     }
 };
 
-AnimationItem.prototype.adjustSegment = function(arr, offset) {
+AnimationItem.prototype.adjustSegment = function (arr, offset) {
     this.playCount = 0;
     if(arr[1] < arr[0]) {
         if(this.frameModifier > 0) {
@@ -475,7 +475,7 @@ AnimationItem.prototype.resetSegments = function (forceFlag) {
         this.checkSegments(0);
     }
 };
-AnimationItem.prototype.checkSegments = function(offset) {
+AnimationItem.prototype.checkSegments = function (offset) {
     if (this.segments.length) {
         this.adjustSegment(this.segments.shift(), offset);
         return true;
@@ -497,7 +497,7 @@ AnimationItem.prototype.destroy = function (name) {
     this.projectInterface = null;
 };
 
-AnimationItem.prototype.setCurrentRawFrameValue = function(value) {
+AnimationItem.prototype.setCurrentRawFrameValue = function (value) {
     this.currentRawFrame = value;
     this.gotoFrame();
 };
@@ -586,7 +586,7 @@ AnimationItem.prototype.getDuration = function (isFrame) {
     return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
 };
 
-AnimationItem.prototype.trigger = function(name) {
+AnimationItem.prototype.trigger = function (name) {
     if(this._cbs && this._cbs[name]) {
         switch(name) {
             case 'enterFrame':
@@ -625,7 +625,7 @@ AnimationItem.prototype.trigger = function(name) {
     }
 };
 
-AnimationItem.prototype.triggerRenderFrameError = function(nativeError) {
+AnimationItem.prototype.triggerRenderFrameError = function (nativeError) {
 
     var error = new BMRenderFrameErrorEvent(nativeError, this.currentFrame);
     this.triggerEvent('error', error);
@@ -635,7 +635,7 @@ AnimationItem.prototype.triggerRenderFrameError = function(nativeError) {
     }
 }
 
-AnimationItem.prototype.triggerConfigError = function(nativeError) {
+AnimationItem.prototype.triggerConfigError = function (nativeError) {
 
     var error = new BMConfigErrorEvent(nativeError, this.currentFrame);
     this.triggerEvent('error', error);

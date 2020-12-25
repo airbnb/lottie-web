@@ -56,7 +56,7 @@
 
         // This function returns a random double in [0, 1) that contains
         // randomness in every bit of the mantissa of the IEEE 754 value.
-        var prng = function() {
+        var prng = function () {
             var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
                 d = startdenom,                 //   and denominator d = 2 ^ 48.
                 x = 0;                          //   and no 'extra last byte'.
@@ -73,8 +73,8 @@
             return (n + x) / d;                 // Form the number within [0, 1).
         };
 
-        prng.int32 = function() { return arc4.g(4) | 0; };
-        prng.quick = function() { return arc4.g(4) / 0x100000000; };
+        prng.int32 = function () { return arc4.g(4) | 0; };
+        prng.quick = function () { return arc4.g(4) / 0x100000000; };
         prng.double = prng;
 
         // Mix the randomness into accumulated entropy.
@@ -82,12 +82,12 @@
 
         // Calling convention: what to return as a function of prng, seed, is_math.
         return (options.pass || callback
-        || function(prng, seed, is_math_call, state) {
+        || function (prng, seed, is_math_call, state) {
             if (state) {
                 // Load the arc4 state from the given state if it has an S array.
                 if (state.S) { copy(state, arc4); }
                 // Only provide the .state method if requested via options.state.
-                prng.state = function() { return copy(arc4, {}); };
+                prng.state = function () { return copy(arc4, {}); };
             }
 
             // If called as a method of Math (Math.seedrandom()), mutate
@@ -133,7 +133,7 @@
         }
 
         // The "g" method returns the next (count) outputs as one number.
-        me.g = function(count) {
+        me.g = function (count) {
             // Using instance members instead of closure state nearly doubles speed.
             var t, r = 0,
                 i = me.i, j = me.j, s = me.S;

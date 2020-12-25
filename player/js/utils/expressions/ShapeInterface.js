@@ -1,4 +1,4 @@
-var ShapeExpressionInterface = (function() {
+var ShapeExpressionInterface = (function () {
 
     function iterateElements(shapes,view, propertyGroup) {
         var arr = [];
@@ -77,7 +77,7 @@ var ShapeExpressionInterface = (function() {
         interfaceFunction.content = content;
         interfaceFunction.transform = transformInterface;
         Object.defineProperty(interfaceFunction, '_name', {
-            get: function() {
+            get: function () {
                 return shape.nm;
             }
         });
@@ -148,7 +148,7 @@ var ShapeExpressionInterface = (function() {
                 get: ExpressionPropertyInterface(view.w)
             },
             'dash': {
-                get: function() {
+                get: function () {
                     return dashOb;
                 }
             },
@@ -454,7 +454,7 @@ var ShapeExpressionInterface = (function() {
         return interfaceFunction;
     }
 
-    return function(shapes,view,propertyGroup) {
+    return function (shapes,view,propertyGroup) {
         var interfaces;
         function _interfaceFunction(value) {
             if(typeof value === 'number') {

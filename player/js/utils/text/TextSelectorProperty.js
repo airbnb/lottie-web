@@ -1,4 +1,4 @@
-var TextSelectorProp = (function() {
+var TextSelectorProp = (function () {
     var max = Math.max;
     var min = Math.min;
     var floor = Math.floor;
@@ -28,7 +28,7 @@ var TextSelectorProp = (function() {
     }
 
     TextSelectorProp.prototype = {
-        getMult: function(ind) {
+        getMult: function (ind) {
             if(this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
                 this.getValue();
             }
@@ -115,7 +115,7 @@ var TextSelectorProp = (function() {
             }
             return mult*this.a.v;
         },
-        getValue: function(newCharsFlag) {
+        getValue: function (newCharsFlag) {
             this.iterateDynamicProperties();
             this._mdf = newCharsFlag || this._mdf;
             this._currentTextLength = this.elem.textProperty.currentData.l.length || 0;

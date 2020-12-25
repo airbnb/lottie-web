@@ -8,7 +8,7 @@
         }
     }
 
-    TextProperty.prototype.getExpressionValue = function(currentValue, text) {
+    TextProperty.prototype.getExpressionValue = function (currentValue, text) {
         var newValue = this.calculateExpression(text);
         if(currentValue.t !== newValue) {
             var newData = {};
@@ -20,7 +20,7 @@
         return currentValue;
     }
 
-    TextProperty.prototype.searchProperty = function() {
+    TextProperty.prototype.searchProperty = function () {
 
         var isKeyframed = this.searchKeyframes();
         var hasExpressions = this.searchExpressions();

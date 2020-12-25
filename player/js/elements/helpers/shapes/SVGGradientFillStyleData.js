@@ -4,7 +4,7 @@ function SVGGradientFillStyleData(elem, data, styleOb) {
     this.initGradientData(elem, data, styleOb);
 }
 
-SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, styleOb) {
+SVGGradientFillStyleData.prototype.initGradientData = function (elem, data, styleOb) {
     this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this);
     this.s = PropertyFactory.getProp(elem,data.s,1,null,this);
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
@@ -19,7 +19,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
 
 };
 
-SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data) {
+SVGGradientFillStyleData.prototype.setGradientData = function (pathElement,data) {
 
     var gradientId = createElementID();
     var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
@@ -40,7 +40,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data) 
     this.cst = stops;
 };
 
-SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb) {
+SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb) {
     if(this.g._hasOpacity && !this.g._collapsable) {
         var stop, j, jLen;
         var mask = createNS('mask');

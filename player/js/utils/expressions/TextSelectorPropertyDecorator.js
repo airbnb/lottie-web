@@ -1,6 +1,6 @@
-(function() {
+(function () {
 
-    var TextExpressionSelectorProp = (function() {
+    var TextExpressionSelectorProp = (function () {
 
         function getValueProxy(index,total) {
             this.textIndex = index+1;
@@ -33,7 +33,7 @@
     }());
 
     var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-    TextSelectorProp.getTextSelectorProp = function(elem, data,arr) {
+    TextSelectorProp.getTextSelectorProp = function (elem, data,arr) {
         if(data.t === 1) {
             return new TextExpressionSelectorProp(elem, data,arr);
         } else {

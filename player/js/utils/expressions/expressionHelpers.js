@@ -1,4 +1,4 @@
-var expressionHelpers = (function() {
+var expressionHelpers = (function () {
 
     function searchExpressions(elem,data,prop) {
         if(data.x) {

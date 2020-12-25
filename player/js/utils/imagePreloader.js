@@ -1,6 +1,6 @@
-var ImagePreloader = (function() {
+var ImagePreloader = (function () {
 
-    var proxyImage = (function() {
+    var proxyImage = (function () {
         var canvas = createTag('canvas');
         canvas.width = 1;
         canvas.height = 1;
@@ -39,7 +39,7 @@ var ImagePreloader = (function() {
 
     function testImageLoaded(img) {
         var _count = 0;
-        var intervalId = setInterval(function() {
+        var intervalId = setInterval(function () {
             var box = img.getBBox();
             if (box.width || _count > 500) {
                 this._imageLoaded();
@@ -57,7 +57,7 @@ var ImagePreloader = (function() {
         } else {
             img.addEventListener('load', this._imageLoaded, false);
         }
-        img.addEventListener('error', function() {
+        img.addEventListener('error', function () {
             ob.img = proxyImage;
             this._imageLoaded();
         }.bind(this), false);
@@ -75,7 +75,7 @@ var ImagePreloader = (function() {
         var img = createTag('img');
         img.crossOrigin = 'anonymous';
         img.addEventListener('load', this._imageLoaded, false);
-        img.addEventListener('error', function() {
+        img.addEventListener('error', function () {
             ob.img = proxyImage;
             this._imageLoaded();
         }.bind(this), false);

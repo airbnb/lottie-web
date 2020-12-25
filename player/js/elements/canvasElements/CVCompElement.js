@@ -9,7 +9,7 @@ function CVCompElement(data, globalData, comp) {
 
 extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
 
-CVCompElement.prototype.renderInnerContent = function() {
+CVCompElement.prototype.renderInnerContent = function () {
     var ctx = this.canvasContext;
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -26,7 +26,7 @@ CVCompElement.prototype.renderInnerContent = function() {
     }
 };
 
-CVCompElement.prototype.destroy = function() {
+CVCompElement.prototype.destroy = function () {
     var i,len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ) {
         if(this.elements[i]) {

@@ -87,7 +87,7 @@ SVGRenderer.prototype.createSolid = function (data) {
     return new ISolidElement(data,this.globalData,this);
 };
 
-SVGRenderer.prototype.configAnimation = function(animData) {
+SVGRenderer.prototype.configAnimation = function (animData) {
     this.svgElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     if(this.renderConfig.viewBoxSize) {
         this.svgElement.setAttribute('viewBox',this.renderConfig.viewBoxSize);
@@ -159,7 +159,7 @@ SVGRenderer.prototype.destroy = function () {
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.buildItem  = function(pos) {
+SVGRenderer.prototype.buildItem  = function (pos) {
     var elements = this.elements;
     if(elements[pos] || this.layers[pos].ty == 99) {
         return;
@@ -185,7 +185,7 @@ SVGRenderer.prototype.buildItem  = function(pos) {
     }
 };
 
-SVGRenderer.prototype.checkPendingElements  = function() {
+SVGRenderer.prototype.checkPendingElements  = function () {
     while(this.pendingElements.length) {
         var element = this.pendingElements.pop();
         element.checkParenting();
@@ -202,7 +202,7 @@ SVGRenderer.prototype.checkPendingElements  = function() {
     }
 };
 
-SVGRenderer.prototype.renderFrame = function(num) {
+SVGRenderer.prototype.renderFrame = function (num) {
     if(this.renderedFrame === num || this.destroyed) {
         return;
     }
@@ -235,7 +235,7 @@ SVGRenderer.prototype.renderFrame = function(num) {
     }
 };
 
-SVGRenderer.prototype.appendElementInPos = function(element, pos) {
+SVGRenderer.prototype.appendElementInPos = function (element, pos) {
     var newElement = element.getBaseElement();
     if(!newElement) {
         return;
@@ -255,10 +255,10 @@ SVGRenderer.prototype.appendElementInPos = function(element, pos) {
     }
 };
 
-SVGRenderer.prototype.hide = function() {
+SVGRenderer.prototype.hide = function () {
     this.layerElement.style.display = 'none';
 };
 
-SVGRenderer.prototype.show = function() {
+SVGRenderer.prototype.show = function () {
     this.layerElement.style.display = 'block';
 };

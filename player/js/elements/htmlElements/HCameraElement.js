@@ -37,7 +37,7 @@ function HCameraElement(data,globalData,comp) {
 }
 extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 
-HCameraElement.prototype.setup = function() {
+HCameraElement.prototype.setup = function () {
     var i, len = this.comp.threeDElements.length, comp;
     for(i=0;i<len;i+=1) {
         //[perspectiveElem,container]
@@ -50,13 +50,13 @@ HCameraElement.prototype.setup = function() {
     }
 };
 
-HCameraElement.prototype.createElements = function() {
+HCameraElement.prototype.createElements = function () {
 };
 
-HCameraElement.prototype.hide = function() {
+HCameraElement.prototype.hide = function () {
 };
 
-HCameraElement.prototype.renderFrame = function() {
+HCameraElement.prototype.renderFrame = function () {
     var _mdf = this._isFirstFrame;
     var i, len;
     if(this.hierarchy) {
@@ -130,10 +130,10 @@ HCameraElement.prototype.renderFrame = function() {
     this._isFirstFrame = false;
 };
 
-HCameraElement.prototype.prepareFrame = function(num) {
+HCameraElement.prototype.prepareFrame = function (num) {
     this.prepareProperties(num, true);
 };
 
-HCameraElement.prototype.destroy = function() {
+HCameraElement.prototype.destroy = function () {
 };
-HCameraElement.prototype.getBaseElement = function() { return null; };
+HCameraElement.prototype.getBaseElement = function () { return null; };

@@ -11,7 +11,7 @@ function SVGGaussianBlurEffect(filter, filterManager) {
     this.feGaussianBlur = feGaussianBlur;
 }
 
-SVGGaussianBlurEffect.prototype.renderFrame = function(forceRender) {
+SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
     if(forceRender || this.filterManager._mdf) {
         // Empirical value, matching AE's blur appearance.
         var kBlurrinessToSigma = 0.3;

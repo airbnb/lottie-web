@@ -12,7 +12,7 @@ HierarchyElement.prototype = {
      * Initializes hierarchy properties
      *
      */
-    initHierarchy: function() {
+    initHierarchy: function () {
         //element's parent list
         this.hierarchy = [];
         //if element is parent of another layer _isParent will be true
@@ -26,7 +26,7 @@ HierarchyElement.prototype = {
      * layer's parent list
      *
      */ 
-    setHierarchy: function(hierarchy) {
+    setHierarchy: function (hierarchy) {
         this.hierarchy = hierarchy;
     },
     /**
@@ -34,7 +34,7 @@ HierarchyElement.prototype = {
      * Sets layer as parent.
      *
      */ 
-    setAsParent: function() {
+    setAsParent: function () {
         this._isParent = true;
     },
     /**
@@ -42,7 +42,7 @@ HierarchyElement.prototype = {
      * Searches layer's parenting chain
      *
      */ 
-    checkParenting: function() {
+    checkParenting: function () {
         if (this.data.parent !== undefined) {
             this.comp.buildElementParenting(this, this.data.parent, []);
         }

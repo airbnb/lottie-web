@@ -11,7 +11,7 @@ function HCompElement(data,globalData,comp) {
 extendPrototype([HybridRenderer, ICompElement, HBaseElement], HCompElement);
 HCompElement.prototype._createBaseContainerElements = HCompElement.prototype.createContainerElements;
 
-HCompElement.prototype.createContainerElements = function() {
+HCompElement.prototype.createContainerElements = function () {
     this._createBaseContainerElements();
     //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask) {
@@ -23,7 +23,7 @@ HCompElement.prototype.createContainerElements = function() {
     }
 };
 
-HCompElement.prototype.addTo3dContainer = function(elem,pos) {
+HCompElement.prototype.addTo3dContainer = function (elem,pos) {
     var j = 0;
     var nextElement;
     while(j<pos) {

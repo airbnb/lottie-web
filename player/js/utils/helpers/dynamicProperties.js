@@ -1,13 +1,13 @@
 function DynamicPropertyContainer() {};
 DynamicPropertyContainer.prototype = {
-    addDynamicProperty: function(prop) {
+    addDynamicProperty: function (prop) {
         if(this.dynamicProperties.indexOf(prop) === -1) {
             this.dynamicProperties.push(prop);
             this.container.addDynamicProperty(this);
             this._isAnimated = true;
         }
     },
-    iterateDynamicProperties: function() {
+    iterateDynamicProperties: function () {
         this._mdf = false;
         var i, len = this.dynamicProperties.length;
         for(i=0;i<len;i+=1) {
@@ -17,7 +17,7 @@ DynamicPropertyContainer.prototype = {
             }
         }
     },
-    initDynamicPropertyContainer: function(container) {
+    initDynamicPropertyContainer: function (container) {
         this.container = container;
         this.dynamicProperties = [];
         this._mdf = false;

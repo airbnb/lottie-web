@@ -1,7 +1,7 @@
 function HBaseElement(data,globalData,comp) {}
 HBaseElement.prototype = {
-    checkBlendMode: function() {},
-    initRendererElement: function() {
+    checkBlendMode: function () {},
+    initRendererElement: function () {
         this.baseElement = createTag(this.data.tg || 'div');
         if(this.data.hasMask) {
             this.svgElement = createNS('svg');
@@ -14,7 +14,7 @@ HBaseElement.prototype = {
         }
         styleDiv(this.baseElement);
     },
-    createContainerElements: function() {
+    createContainerElements: function () {
         this.renderableEffectsManager = new CVEffects(this);
         this.transformedElement = this.baseElement;
         this.maskedElement = this.layerElement;
@@ -28,7 +28,7 @@ HBaseElement.prototype = {
             this.setBlendMode();
         }
     },
-    renderElement: function() {
+    renderElement: function () {
         if(this.finalTransform._matMdf) {
             this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
         }
@@ -36,7 +36,7 @@ HBaseElement.prototype = {
             this.transformedElement.style.opacity = this.finalTransform.mProp.o.v;
         }
     },
-    renderFrame: function() {
+    renderFrame: function () {
         //If it is exported as hidden (data.hd === true) no need to render
         //If it is not visible no need to render
         if (this.data.hd || this.hidden) {
@@ -50,7 +50,7 @@ HBaseElement.prototype = {
             this._isFirstFrame = false;
         }
     },
-    destroy: function() {
+    destroy: function () {
         this.layerElement = null;
         this.transformedElement = null;
         if(this.matteElement) {
@@ -61,12 +61,12 @@ HBaseElement.prototype = {
             this.maskManager = null;
         }
     },
-    createRenderableComponents: function() {
+    createRenderableComponents: function () {
         this.maskManager = new MaskElement(this.data, this, this.globalData);
     },
-    addEffects: function() {
+    addEffects: function () {
     },
-    setMatte: function() {}
+    setMatte: function () {}
 };
 HBaseElement.prototype.getBaseElement = SVGBaseElement.prototype.getBaseElement;
 HBaseElement.prototype.destroyBaseElement = HBaseElement.prototype.destroy;

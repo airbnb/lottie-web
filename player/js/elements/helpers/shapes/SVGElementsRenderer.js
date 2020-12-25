@@ -1,4 +1,4 @@
-var SVGElementsRenderer = (function() {
+var SVGElementsRenderer = (function () {
     var _identityMatrix = new Matrix();
     var _matrixHelper = new Matrix();
 
@@ -83,7 +83,7 @@ var SVGElementsRenderer = (function() {
         }
     }
 
-    function renderFill (styleData,itemData, isFirstFrame) {
+    function renderFill(styleData,itemData, isFirstFrame) {
         var styleElem = itemData.style;
 
         if(itemData.c._mdf || isFirstFrame) {
@@ -94,7 +94,7 @@ var SVGElementsRenderer = (function() {
         }
     };
 
-    function renderGradientStroke (styleData, itemData, isFirstFrame) {
+    function renderGradientStroke(styleData, itemData, isFirstFrame) {
         renderGradient(styleData, itemData, isFirstFrame);
         renderStroke(styleData, itemData, isFirstFrame);
     }

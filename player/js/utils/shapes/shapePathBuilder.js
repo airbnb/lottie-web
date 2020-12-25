@@ -1,4 +1,4 @@
-var buildShapeString = function(pathNodes, length, closed, mat) {
+var buildShapeString = function (pathNodes, length, closed, mat) {
 	if(length === 0) {
             return '';
         }

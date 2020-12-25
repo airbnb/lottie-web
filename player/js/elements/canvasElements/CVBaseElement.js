@@ -2,14 +2,14 @@ function CVBaseElement() {
 }
 
 CVBaseElement.prototype = {
-    createElements: function() {},
-    initRendererElement: function() {},
-    createContainerElements: function() {
+    createElements: function () {},
+    initRendererElement: function () {},
+    createContainerElements: function () {
         this.canvasContext = this.globalData.canvasContext;
         this.renderableEffectsManager = new CVEffects(this);
     },
-    createContent: function() {},
-    setBlendMode: function() {
+    createContent: function () {},
+    setBlendMode: function () {
         var globalData = this.globalData;
         if(globalData.blendMode !== this.data.bm) {
             globalData.blendMode = this.data.bm;
@@ -17,22 +17,22 @@ CVBaseElement.prototype = {
             globalData.canvasContext.globalCompositeOperation = blendModeValue;
         }
     },
-    createRenderableComponents: function() {
+    createRenderableComponents: function () {
         this.maskManager = new CVMaskElement(this.data, this);
     },
-    hideElement: function() {
+    hideElement: function () {
         if (!this.hidden && (!this.isInRange || this.isTransparent)) {
             this.hidden = true;
         }
     },
-    showElement: function() {
+    showElement: function () {
         if (this.isInRange && !this.isTransparent) {
             this.hidden = false;
             this._isFirstFrame = true;
             this.maskManager._isFirstFrame = true;
         }
     },
-    renderFrame: function() {
+    renderFrame: function () {
         if (this.hidden || this.data.hd) {
             return;
         }
@@ -52,7 +52,7 @@ CVBaseElement.prototype = {
             this._isFirstFrame = false;
         }
     },
-    destroy: function() {
+    destroy: function () {
         this.canvasContext = null;
         this.data = null;
         this.globalData = null;

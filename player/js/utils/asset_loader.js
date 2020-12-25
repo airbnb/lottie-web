@@ -1,4 +1,4 @@
-var assetLoader = (function() {
+var assetLoader = (function () {
 
     function formatResponse(xhr) {
         if(xhr.response && typeof xhr.response === 'object') {

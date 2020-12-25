@@ -2,10 +2,10 @@ function SVGBaseElement() {
 }
 
 SVGBaseElement.prototype = {
-    initRendererElement: function() {
+    initRendererElement: function () {
         this.layerElement = createNS('g');
     },
-    createContainerElements: function() {
+    createContainerElements: function () {
         this.matteElement = createNS('g');
         this.transformedElement = this.layerElement;
         this.maskedElement = this.layerElement;
@@ -125,7 +125,7 @@ SVGBaseElement.prototype = {
         }
 
     },
-    renderElement: function() {
+    renderElement: function () {
         if (this.finalTransform._matMdf) {
             this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
         }
@@ -133,22 +133,22 @@ SVGBaseElement.prototype = {
             this.transformedElement.setAttribute('opacity', this.finalTransform.mProp.o.v);
         }
     },
-    destroyBaseElement: function() {
+    destroyBaseElement: function () {
         this.layerElement = null;
         this.matteElement = null;
         this.maskManager.destroy();
     },
-    getBaseElement: function() {
+    getBaseElement: function () {
         if (this.data.hd) {
             return null;
         }
         return this.baseElement;
     },
-    createRenderableComponents: function() {
+    createRenderableComponents: function () {
         this.maskManager = new MaskElement(this.data, this, this.globalData);
         this.renderableEffectsManager = new SVGEffects(this);
     },
-    setMatte: function(id) {
+    setMatte: function (id) {
         if (!this.matteElement) {
             return;
         }

@@ -1,5 +1,5 @@
 var CompExpressionInterface = (function () {
-    return function(comp) {
+    return function (comp) {
         function _thisLayerFunction(name) {
             var i = 0, len = comp.layers.length;
             while ( i < len) {

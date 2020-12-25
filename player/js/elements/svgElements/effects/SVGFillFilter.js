@@ -7,7 +7,7 @@ function SVGFillFilter(filter, filterManager) {
     filter.appendChild(feColorMatrix);
     this.matrixFilter = feColorMatrix;
 }
-SVGFillFilter.prototype.renderFrame = function(forceRender) {
+SVGFillFilter.prototype.renderFrame = function (forceRender) {
     if(forceRender || this.filterManager._mdf) {
         var color = this.filterManager.effectElements[2].p.v;
         var opacity = this.filterManager.effectElements[6].p.v;

@@ -5,7 +5,7 @@ function SVGStrokeEffect(elem, filterManager) {
     this.paths = [];
 }
 
-SVGStrokeEffect.prototype.initialize = function() {
+SVGStrokeEffect.prototype.initialize = function () {
 
     var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
     var path,groupPath, i, len;
@@ -55,7 +55,7 @@ SVGStrokeEffect.prototype.initialize = function() {
     this.pathMasker = groupPath;
 };
 
-SVGStrokeEffect.prototype.renderFrame = function(forceRender) {
+SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
     if(!this.initialized) {
         this.initialize();
     }

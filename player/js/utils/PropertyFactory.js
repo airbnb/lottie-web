@@ -1,4 +1,4 @@
-var PropertyFactory = (function() {
+var PropertyFactory = (function () {
 
     var initFrame = initialDefaultFrame;
     var math_abs = Math.abs;

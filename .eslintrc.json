@@ -16,7 +16,6 @@
         "prefer-template": "off",
         "no-undef": "off",
         "indent": "off",
-        "space-before-function-paren": "off",
         "func-names": "off",
         "no-param-reassign": "off",
         "comma-spacing": "off",

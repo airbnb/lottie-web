@@ -22,14 +22,14 @@ function SVGShapeElement(data,globalData,comp) {
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,IShapeElement,HierarchyElement,FrameElement,RenderableDOMElement], SVGShapeElement);
 
-SVGShapeElement.prototype.initSecondaryElement = function() {
+SVGShapeElement.prototype.initSecondaryElement = function () {
 };
 
 SVGShapeElement.prototype.identityMatrix = new Matrix();
 
-SVGShapeElement.prototype.buildExpressionInterface = function() {};
+SVGShapeElement.prototype.buildExpressionInterface = function () {};
 
-SVGShapeElement.prototype.createContent = function() {
+SVGShapeElement.prototype.createContent = function () {
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
     this.filterUniqueShapes();
 };
@@ -37,7 +37,7 @@ SVGShapeElement.prototype.createContent = function() {
 /*
 This method searches for multiple shapes that affect a single element and one of them is animated
 */
-SVGShapeElement.prototype.filterUniqueShapes = function() {
+SVGShapeElement.prototype.filterUniqueShapes = function () {
     var i, len = this.shapes.length, shape;
     var j, jLen = this.stylesList.length;
     var style, count = 0;
@@ -60,14 +60,14 @@ SVGShapeElement.prototype.filterUniqueShapes = function() {
     }
 }
 
-SVGShapeElement.prototype.setShapesAsAnimated = function(shapes) {
+SVGShapeElement.prototype.setShapesAsAnimated = function (shapes) {
     var i, len = shapes.length;
     for(i = 0; i < len; i += 1) {
         shapes[i].setAsAnimated();
     }
 }
 
-SVGShapeElement.prototype.createStyleElement = function(data, level) {
+SVGShapeElement.prototype.createStyleElement = function (data, level) {
     //TODO: prevent drawing of hidden styles
     var elementData;
     var styleOb = new SVGStyleData(data, level);
@@ -115,7 +115,7 @@ SVGShapeElement.prototype.createStyleElement = function(data, level) {
     return elementData;
 };
 
-SVGShapeElement.prototype.createGroupElement = function(data) {
+SVGShapeElement.prototype.createGroupElement = function (data) {
     var elementData = new ShapeGroupData();
     if(data.ln) {
         elementData.gr.setAttribute('id',data.ln);
@@ -129,14 +129,14 @@ SVGShapeElement.prototype.createGroupElement = function(data) {
     return elementData;
 };
 
-SVGShapeElement.prototype.createTransformElement = function(data, container) {
+SVGShapeElement.prototype.createTransformElement = function (data, container) {
     var transformProperty = TransformPropertyFactory.getTransformProperty(this,data,this);
     var elementData = new SVGTransformData(transformProperty, transformProperty.o, container);
     this.addToAnimatedContents(data, elementData);
     return elementData;
 };
 
-SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
+SVGShapeElement.prototype.createShapeElement = function (data, ownTransformers, level) {
     var ty = 4;
     if(data.ty === 'rc') {
         ty = 5;
@@ -153,7 +153,7 @@ SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, l
     return elementData;
 };
 
-SVGShapeElement.prototype.addToAnimatedContents = function(data, element) {
+SVGShapeElement.prototype.addToAnimatedContents = function (data, element) {
     var i = 0, len = this.animatedContents.length;
     while(i < len) {
         if(this.animatedContents[i].element === element) {
@@ -168,7 +168,7 @@ SVGShapeElement.prototype.addToAnimatedContents = function(data, element) {
     });
 };
 
-SVGShapeElement.prototype.setElementStyles = function(elementData) {
+SVGShapeElement.prototype.setElementStyles = function (elementData) {
     var arr = elementData.styles;
     var j, jLen = this.stylesList.length;
     for (j = 0; j < jLen; j += 1) {
@@ -178,7 +178,7 @@ SVGShapeElement.prototype.setElementStyles = function(elementData) {
     }
 };
 
-SVGShapeElement.prototype.reloadShapes = function() {
+SVGShapeElement.prototype.reloadShapes = function () {
     this._isFirstFrame = true;
     var i, len = this.itemsData.length;
     for( i = 0; i < len; i += 1) {
@@ -193,7 +193,7 @@ SVGShapeElement.prototype.reloadShapes = function() {
     this.renderModifiers();
 };
 
-SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container, level, transformers, render) {
+SVGShapeElement.prototype.searchShapes = function (arr,itemsData,prevViewData,container, level, transformers, render) {
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
@@ -276,7 +276,7 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
     }
 };
 
-SVGShapeElement.prototype.renderInnerContent = function() {
+SVGShapeElement.prototype.renderInnerContent = function () {
     this.renderModifiers();
     var i, len = this.stylesList.length;
     for(i=0;i<len;i+=1) {
@@ -296,7 +296,7 @@ SVGShapeElement.prototype.renderInnerContent = function() {
     }
 };
 
-SVGShapeElement.prototype.renderShape = function() {
+SVGShapeElement.prototype.renderShape = function () {
     var i, len = this.animatedContents.length;
     var animatedContent;
     for(i = 0; i < len; i += 1) {
@@ -307,7 +307,7 @@ SVGShapeElement.prototype.renderShape = function() {
     }
 }
 
-SVGShapeElement.prototype.destroy = function() {
+SVGShapeElement.prototype.destroy = function () {
     this.destroyBaseElement();
     this.shapesData = null;
     this.itemsData = null;

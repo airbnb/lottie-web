@@ -53,6 +53,6 @@ CVMaskElement.prototype.renderFrame = function () {
 
 CVMaskElement.prototype.getMaskProperty = MaskElement.prototype.getMaskProperty;
 
-CVMaskElement.prototype.destroy = function() {
+CVMaskElement.prototype.destroy = function () {
     this.element = null;
 };

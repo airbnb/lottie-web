@@ -1,4 +1,4 @@
-AnimationItem.prototype.setParams = function(params) {
+AnimationItem.prototype.setParams = function (params) {
     if(params.context) {
         this.context = params.context;
     }
@@ -37,7 +37,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
     throw new Error('Cannot set data on wrapper for canvas worker renderer');
 };
 
-AnimationItem.prototype.includeLayers = function(data) {
+AnimationItem.prototype.includeLayers = function (data) {
     if(data.op > this.animationData.op) {
         this.animationData.op = data.op;
         this.totalFrames = Math.floor(data.op - this.animationData.ip);
@@ -65,7 +65,7 @@ AnimationItem.prototype.includeLayers = function(data) {
     this.loadNextSegment();
 };
 
-AnimationItem.prototype.loadNextSegment = function() {
+AnimationItem.prototype.loadNextSegment = function () {
     var segments = this.animationData.segments;
     if(!segments || segments.length === 0 || !this.autoloadSegments) {
         this.timeCompleted = this.totalFrames;
@@ -74,7 +74,7 @@ AnimationItem.prototype.loadNextSegment = function() {
     throw new Error('Cannot load multiple segments in worker.');
 };
 
-AnimationItem.prototype.loadSegments = function() {
+AnimationItem.prototype.loadSegments = function () {
     var segments = this.animationData.segments;
     if(!segments) {
         this.timeCompleted = this.totalFrames;

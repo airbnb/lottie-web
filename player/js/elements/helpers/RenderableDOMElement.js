@@ -1,8 +1,8 @@
 function RenderableDOMElement() {}
 
-(function() {
+(function () {
     var _prototype = {
-        initElement: function(data,globalData,comp) {
+        initElement: function (data,globalData,comp) {
             this.initFrame();
             this.initBaseData(data, globalData, comp);
             this.initTransform(data, globalData, comp);
@@ -14,14 +14,14 @@ function RenderableDOMElement() {}
             this.createContent();
             this.hide();
         },
-        hide: function() {
+        hide: function () {
             if (!this.hidden && (!this.isInRange || this.isTransparent)) {
                 var elem = this.baseElement || this.layerElement;
                 elem.style.display = 'none';
                 this.hidden = true;
             }
         },
-        show: function() {
+        show: function () {
             if (this.isInRange && !this.isTransparent) {
                 if (!this.data.hd) {
                     var elem = this.baseElement || this.layerElement;
@@ -31,7 +31,7 @@ function RenderableDOMElement() {}
                 this._isFirstFrame = true;
             }
         },
-        renderFrame: function() {
+        renderFrame: function () {
             //If it is exported as hidden (data.hd === true) no need to render
             //If it is not visible no need to render
             if (this.data.hd || this.hidden) {
@@ -45,14 +45,14 @@ function RenderableDOMElement() {}
                 this._isFirstFrame = false;
             }
         },
-        renderInnerContent: function() {},
-        prepareFrame: function(num) {
+        renderInnerContent: function () {},
+        prepareFrame: function (num) {
             this._mdf = false;
             this.prepareRenderableFrame(num);
             this.prepareProperties(num, this.isInRange);
             this.checkTransparency();
         },
-        destroy: function() {
+        destroy: function () {
             this.innerElem =  null;
             this.destroyBaseElement();
         }

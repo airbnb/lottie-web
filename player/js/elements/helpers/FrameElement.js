@@ -13,7 +13,7 @@ FrameElement.prototype = {
      * Initializes frame related properties.
      *
      */
-    initFrame: function() {
+    initFrame: function () {
         //set to true when inpoint is rendered
         this._isFirstFrame = false;
         //list of animated properties
@@ -31,7 +31,7 @@ FrameElement.prototype = {
      * if layers is currently in range
      * 
      */
-    prepareProperties: function(num, isVisible) {
+    prepareProperties: function (num, isVisible) {
         var i, len = this.dynamicProperties.length;
         for (i = 0;i < len; i += 1) {
             if (isVisible || (this._isParent && this.dynamicProperties[i].propType === 'transform')) {
@@ -43,7 +43,7 @@ FrameElement.prototype = {
             }
         }
     },
-    addDynamicProperty: function(prop) {
+    addDynamicProperty: function (prop) {
         if(this.dynamicProperties.indexOf(prop) === -1) {
             this.dynamicProperties.push(prop);
         }

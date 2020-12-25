@@ -12,7 +12,7 @@ function AudioElement(data,globalData,comp) {
     this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate,this) : {_placeholder:true};
 }
 
-AudioElement.prototype.prepareFrame = function(num) {
+AudioElement.prototype.prepareFrame = function (num) {
     this.prepareRenderableFrame(num, true);
     this.prepareProperties(num, true);
     if (!this.tm._placeholder) {
@@ -25,7 +25,7 @@ AudioElement.prototype.prepareFrame = function(num) {
 
 extendPrototype([RenderableElement,BaseElement,FrameElement], AudioElement);
 
-AudioElement.prototype.renderFrame = function() {
+AudioElement.prototype.renderFrame = function () {
 	if (this.isInRange && this._canPlay) {
 		if (!this._isPlaying) {
 			this.audio.play();
@@ -39,43 +39,43 @@ AudioElement.prototype.renderFrame = function() {
 	}
 };
 
-AudioElement.prototype.show = function() {
+AudioElement.prototype.show = function () {
 	// this.audio.play()
 };
 
-AudioElement.prototype.hide = function() {
+AudioElement.prototype.hide = function () {
 	this.audio.pause();
 	this._isPlaying = false;
 };
 
-AudioElement.prototype.pause = function() {
+AudioElement.prototype.pause = function () {
 	this.audio.pause();
 	this._isPlaying = false;
 	this._canPlay = false;
 };
 
-AudioElement.prototype.resume = function() {
+AudioElement.prototype.resume = function () {
 	this._canPlay = true;
 };
 
-AudioElement.prototype.setRate = function(rateValue) {
+AudioElement.prototype.setRate = function (rateValue) {
 	this.audio.rate(rateValue);
 };
 
-AudioElement.prototype.volume = function(volumeValue) {
+AudioElement.prototype.volume = function (volumeValue) {
 	this.audio.volume(volumeValue);
 };
 
-AudioElement.prototype.getBaseElement = function() {
+AudioElement.prototype.getBaseElement = function () {
 	return null;
 };
 
-AudioElement.prototype.destroy = function() {
+AudioElement.prototype.destroy = function () {
 };
 
-AudioElement.prototype.sourceRectAtTime = function() {
+AudioElement.prototype.sourceRectAtTime = function () {
 };
 
-AudioElement.prototype.initExpressions = function() {
+AudioElement.prototype.initExpressions = function () {
 };
 

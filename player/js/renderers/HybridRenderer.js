@@ -32,14 +32,14 @@ extendPrototype([BaseRenderer],HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 
-HybridRenderer.prototype.checkPendingElements  = function() {
+HybridRenderer.prototype.checkPendingElements  = function () {
     while(this.pendingElements.length) {
         var element = this.pendingElements.pop();
         element.checkParenting();
     }
 };
 
-HybridRenderer.prototype.appendElementInPos = function(element, pos) {
+HybridRenderer.prototype.appendElementInPos = function (element, pos) {
     var newDOMElement = element.getBaseElement();
     if(!newDOMElement) {
         return;
@@ -118,7 +118,7 @@ HybridRenderer.prototype.createSolid = function (data) {
 
 HybridRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
-HybridRenderer.prototype.getThreeDContainerByPos = function(pos) {
+HybridRenderer.prototype.getThreeDContainerByPos = function (pos) {
     var i = 0, len = this.threeDElements.length;
     while(i<len) {
         if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
@@ -128,7 +128,7 @@ HybridRenderer.prototype.getThreeDContainerByPos = function(pos) {
     }
 };
 
-HybridRenderer.prototype.createThreeDContainer = function(pos, type) {
+HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
     var perspectiveElem = createTag('div');
     styleDiv(perspectiveElem);
     var container = createTag('div');
@@ -153,7 +153,7 @@ HybridRenderer.prototype.createThreeDContainer = function(pos, type) {
     return threeDContainerData;
 };
 
-HybridRenderer.prototype.build3dContainers = function() {
+HybridRenderer.prototype.build3dContainers = function () {
     var i, len = this.layers.length;
     var lastThreeDContainerData;
     var currentContainer = '';
@@ -178,7 +178,7 @@ HybridRenderer.prototype.build3dContainers = function() {
     }
 };
 
-HybridRenderer.prototype.addTo3dContainer = function(elem,pos) {
+HybridRenderer.prototype.addTo3dContainer = function (elem,pos) {
     var i = 0, len = this.threeDElements.length;
     while(i<len) {
         if(pos <= this.threeDElements[i].endPos) {
@@ -201,7 +201,7 @@ HybridRenderer.prototype.addTo3dContainer = function(elem,pos) {
     }
 };
 
-HybridRenderer.prototype.configAnimation = function(animData) {
+HybridRenderer.prototype.configAnimation = function (animData) {
     var resizerElem = createTag('div');
     var wrapper = this.animationItem.wrapper;
     resizerElem.style.width = animData.w+'px';
@@ -269,15 +269,15 @@ HybridRenderer.prototype.updateContainerSize = function () {
 
 HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
 
-HybridRenderer.prototype.hide = function() {
+HybridRenderer.prototype.hide = function () {
     this.resizerElem.style.display = 'none';
 };
 
-HybridRenderer.prototype.show = function() {
+HybridRenderer.prototype.show = function () {
     this.resizerElem.style.display = 'block';
 };
 
-HybridRenderer.prototype.initItems = function() {
+HybridRenderer.prototype.initItems = function () {
     this.buildAllItems();
     if(this.camera) {
         this.camera.setup();
@@ -291,7 +291,7 @@ HybridRenderer.prototype.initItems = function() {
     }
 };
 
-HybridRenderer.prototype.searchExtraCompositions = function(assets) {
+HybridRenderer.prototype.searchExtraCompositions = function (assets) {
     var i, len = assets.length;
     var floatingContainer = createTag('div');
     for(i=0;i<len;i+=1) {

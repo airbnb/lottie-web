@@ -21,7 +21,7 @@ extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,Fra
 
 CVTextElement.prototype.tHelper = createTag('canvas').getContext('2d');
 
-CVTextElement.prototype.buildNewText = function() {
+CVTextElement.prototype.buildNewText = function () {
     var documentData = this.textProperty.currentData;
     this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
 
@@ -95,7 +95,7 @@ CVTextElement.prototype.buildNewText = function() {
     }
 };
 
-CVTextElement.prototype.renderInnerContent = function() {
+CVTextElement.prototype.renderInnerContent = function () {
     var ctx = this.canvasContext;
     var finalMat = this.finalTransform.mat.props;
     ctx.font = this.values.fValue;

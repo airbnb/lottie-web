@@ -1,4 +1,4 @@
-var Expressions = (function() {
+var Expressions = (function () {
     var ob = {};
     ob.initExpressions = initExpressions;
 

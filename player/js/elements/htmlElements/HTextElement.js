@@ -14,7 +14,7 @@ function HTextElement(data,globalData,comp) {
 }
 extendPrototype([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], HTextElement);
 
-HTextElement.prototype.createContent = function() {
+HTextElement.prototype.createContent = function () {
     this.isMasked = this.checkMasks();
     if(this.isMasked) {
         this.renderType = 'svg';
@@ -34,7 +34,7 @@ HTextElement.prototype.createContent = function() {
 
 };
 
-HTextElement.prototype.buildNewText = function() {
+HTextElement.prototype.buildNewText = function () {
     var documentData = this.textProperty.currentData;
     this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
     var innerElemStyle = this.innerElem.style;
@@ -168,7 +168,7 @@ HTextElement.prototype.buildNewText = function() {
     }
 };
 
-HTextElement.prototype.renderInnerContent = function() {
+HTextElement.prototype.renderInnerContent = function () {
 
     if(this.data.singleShape) {
         if(!this._isFirstFrame && !this.lettersChangedFlag) {

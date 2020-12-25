@@ -1,12 +1,12 @@
 function PuckerAndBloatModifier() {}
 extendPrototype([ShapeModifier],PuckerAndBloatModifier);
-PuckerAndBloatModifier.prototype.initModifierProperties = function(elem,data) {
+PuckerAndBloatModifier.prototype.initModifierProperties = function (elem,data) {
     this.getValue = this.processKeys;
     this.amount = PropertyFactory.getProp(elem,data.a,0,null,this);
     this._isAnimated = !!this.amount.effectsSequence.length;
 };
 
-PuckerAndBloatModifier.prototype.processPath = function(path, amount) {
+PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
     var percent = amount / 100;
     var centerPoint = [0, 0];
     var pathLength = path._length, i = 0;
@@ -31,7 +31,7 @@ PuckerAndBloatModifier.prototype.processPath = function(path, amount) {
     return cloned_path;
 };
 
-PuckerAndBloatModifier.prototype.processShapes = function(_isFirstFrame) {
+PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;

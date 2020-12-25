@@ -1,6 +1,6 @@
 function MouseModifier() {}
 extendPrototype([ShapeModifier],MouseModifier);
-MouseModifier.prototype.processKeys = function(forceRender) {
+MouseModifier.prototype.processKeys = function (forceRender) {
     if(this.elem.globalData.frameId === this.frameId && !forceRender) {
         return;
     }
@@ -8,11 +8,11 @@ MouseModifier.prototype.processKeys = function(forceRender) {
 
 };
 
-MouseModifier.prototype.addShapeToModifier = function() {
+MouseModifier.prototype.addShapeToModifier = function () {
     this.positions.push([]);
 };
 
-MouseModifier.prototype.processPath = function(path, mouseCoords, positions) {
+MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     var i, len = path.v.length;
     var vValues = [],oValues = [],iValues = [];
     var dist;
@@ -176,7 +176,7 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions) {
     };
 }
 
-MouseModifier.prototype.processShapes = function() {
+MouseModifier.prototype.processShapes = function () {
     var mouseX = this.elem.globalData.mouseX;
     var mouseY = this.elem.globalData.mouseY;
     var shapePaths;
@@ -217,7 +217,7 @@ MouseModifier.prototype.processShapes = function() {
 
 }
 
-MouseModifier.prototype.initModifierProperties = function(elem,data) {
+MouseModifier.prototype.initModifierProperties = function (elem,data) {
     this.getValue = this.processKeys;
     this.data = data;
     this.positions = [];

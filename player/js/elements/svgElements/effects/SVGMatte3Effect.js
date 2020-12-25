@@ -11,7 +11,7 @@ function SVGMatte3Effect(filterElem, filterManager, elem) {
     elem.baseElement = elem.matteElement;
 }
 
-SVGMatte3Effect.prototype.findSymbol = function(mask) {
+SVGMatte3Effect.prototype.findSymbol = function (mask) {
     var i = 0, len = _svgMatteSymbols.length;
     while(i < len) {
         if(_svgMatteSymbols[i] === mask) {
@@ -22,7 +22,7 @@ SVGMatte3Effect.prototype.findSymbol = function(mask) {
     return null;
 };
 
-SVGMatte3Effect.prototype.replaceInParent = function(mask, symbolId) {
+SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
     var parentNode = mask.layerElement.parentNode;
     if(!parentNode) {
         return;
@@ -48,7 +48,7 @@ SVGMatte3Effect.prototype.replaceInParent = function(mask, symbolId) {
     }
 };
 
-SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
+SVGMatte3Effect.prototype.setElementAsMask = function (elem, mask) {
     if(!this.findSymbol(mask)) {
         var symbolId = createElementID();
         var masker = createNS('mask');
@@ -71,7 +71,7 @@ SVGMatte3Effect.prototype.setElementAsMask = function(elem, mask) {
     elem.setMatte(mask.layerId);
 };
 
-SVGMatte3Effect.prototype.initialize = function() {
+SVGMatte3Effect.prototype.initialize = function () {
     var ind = this.filterManager.effectElements[0].p.v;
     var elements = this.elem.comp.elements;
     var i = 0, len = elements.length;
@@ -84,7 +84,7 @@ SVGMatte3Effect.prototype.initialize = function() {
     this.initialized = true;
 };
 
-SVGMatte3Effect.prototype.renderFrame = function() {
+SVGMatte3Effect.prototype.renderFrame = function () {
     if(!this.initialized) {
         this.initialize();
     }

@@ -1,4 +1,4 @@
-var featureSupport = (function() {
+var featureSupport = (function () {
     var ob = {
         maskType: true
     };

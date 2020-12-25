@@ -1,4 +1,4 @@
-dataManager.completeData = function(animationData, fontManager) {
+dataManager.completeData = function (animationData, fontManager) {
     if(animationData.__complete) {
             return;
         }

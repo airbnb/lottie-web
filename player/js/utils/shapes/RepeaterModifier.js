@@ -1,7 +1,7 @@
 function RepeaterModifier() {}
 extendPrototype([ShapeModifier], RepeaterModifier);
 
-RepeaterModifier.prototype.initModifierProperties = function(elem,data) {
+RepeaterModifier.prototype.initModifierProperties = function (elem,data) {
     this.getValue = this.processKeys;
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this);
@@ -20,7 +20,7 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data) {
     this.matrix = new Matrix();
 };
 
-RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix, transform, perc, inv) {
+RepeaterModifier.prototype.applyTransforms = function (pMatrix, rMatrix, sMatrix, transform, perc, inv) {
     var dir = inv ? -1 : 1;
     var scaleX = transform.s.v[0] + (1 - transform.s.v[0]) * (1 - perc);
     var scaleY = transform.s.v[1] + (1 - transform.s.v[1]) * (1 - perc);
@@ -33,7 +33,7 @@ RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix,
     sMatrix.translate(transform.a.v[0], transform.a.v[1], transform.a.v[2]);
 };
 
-RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData) {
+RepeaterModifier.prototype.init = function (elem, arr, pos, elemsData) {
     this.elem = elem;
     this.arr = arr;
     this.pos = pos;
@@ -58,7 +58,7 @@ RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData) {
     }
 };
 
-RepeaterModifier.prototype.resetElements = function(elements) {
+RepeaterModifier.prototype.resetElements = function (elements) {
     var i, len = elements.length;
     for(i = 0; i < len; i += 1) {
         elements[i]._processed = false;
@@ -68,14 +68,14 @@ RepeaterModifier.prototype.resetElements = function(elements) {
     }
 };
 
-RepeaterModifier.prototype.cloneElements = function(elements) {
+RepeaterModifier.prototype.cloneElements = function (elements) {
     var i, len = elements.length;
     var newElements = JSON.parse(JSON.stringify(elements));
     this.resetElements(newElements);
     return newElements;
 };
 
-RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
+RepeaterModifier.prototype.changeGroupRender = function (elements, renderFlag) {
     var i, len = elements.length;
     for(i = 0; i < len; i += 1) {
         elements[i]._render = renderFlag;
@@ -85,7 +85,7 @@ RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
     }
 };
 
-RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
+RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
     var items, itemsTransform, i, dir, cont;
     if(this._mdf || _isFirstFrame) {
         var copies = Math.ceil(this.c.v);
@@ -197,6 +197,6 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
     }
 };
 
-RepeaterModifier.prototype.addShape = function() {};
+RepeaterModifier.prototype.addShape = function () {};
 
 ShapeModifiers.registerModifier('rp',RepeaterModifier);

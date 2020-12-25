@@ -1,7 +1,7 @@
 function TrimModifier() {
 }
 extendPrototype([ShapeModifier], TrimModifier);
-TrimModifier.prototype.initModifierProperties = function(elem, data) {
+TrimModifier.prototype.initModifierProperties = function (elem, data) {
     this.s = PropertyFactory.getProp(elem, data.s, 0, 0.01, this);
     this.e = PropertyFactory.getProp(elem, data.e, 0, 0.01, this);
     this.o = PropertyFactory.getProp(elem, data.o, 0, 0, this);
@@ -12,11 +12,11 @@ TrimModifier.prototype.initModifierProperties = function(elem, data) {
     this._isAnimated = !!this.s.effectsSequence.length || !!this.e.effectsSequence.length || !!this.o.effectsSequence.length;
 };
 
-TrimModifier.prototype.addShapeToModifier = function(shapeData) {
+TrimModifier.prototype.addShapeToModifier = function (shapeData) {
     shapeData.pathsData = [];
 };
 
-TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLength, totalModifierLength) {
+TrimModifier.prototype.calculateShapeEdges = function (s, e, shapeLength, addedLength, totalModifierLength) {
     var segments = [];
     if (e <= 1) {
         segments.push({
@@ -65,7 +65,7 @@ TrimModifier.prototype.calculateShapeEdges = function(s, e, shapeLength, addedLe
     return shapeSegments;
 };
 
-TrimModifier.prototype.releasePathsData = function(pathsData) {
+TrimModifier.prototype.releasePathsData = function (pathsData) {
     var i, len = pathsData.length;
     for (i = 0; i < len; i += 1) {
         segments_length_pool.release(pathsData[i]);
@@ -74,7 +74,7 @@ TrimModifier.prototype.releasePathsData = function(pathsData) {
     return pathsData;
 };
 
-TrimModifier.prototype.processShapes = function(_isFirstFrame) {
+TrimModifier.prototype.processShapes = function (_isFirstFrame) {
     var s, e;
     if (this._mdf || _isFirstFrame) {
         var o = (this.o.v % 360) / 360;
@@ -208,14 +208,14 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
     }
 };
 
-TrimModifier.prototype.addPaths = function(newPaths, localShapeCollection) {
+TrimModifier.prototype.addPaths = function (newPaths, localShapeCollection) {
     var i, len = newPaths.length;
     for (i = 0; i < len; i += 1) {
         localShapeCollection.addShape(newPaths[i]);
     }
 };
 
-TrimModifier.prototype.addSegment = function(pt1, pt2, pt3, pt4, shapePath, pos, newShape) {
+TrimModifier.prototype.addSegment = function (pt1, pt2, pt3, pt4, shapePath, pos, newShape) {
     shapePath.setXYAt(pt2[0], pt2[1], 'o', pos);
     shapePath.setXYAt(pt3[0], pt3[1], 'i', pos + 1);
     if(newShape) {
@@ -224,7 +224,7 @@ TrimModifier.prototype.addSegment = function(pt1, pt2, pt3, pt4, shapePath, pos,
     shapePath.setXYAt(pt4[0], pt4[1], 'v', pos + 1);
 };
 
-TrimModifier.prototype.addSegmentFromArray = function(points, shapePath, pos, newShape) {
+TrimModifier.prototype.addSegmentFromArray = function (points, shapePath, pos, newShape) {
     shapePath.setXYAt(points[1], points[5], 'o', pos);
     shapePath.setXYAt(points[2], points[6], 'i', pos + 1);
     if(newShape) {
@@ -233,7 +233,7 @@ TrimModifier.prototype.addSegmentFromArray = function(points, shapePath, pos, ne
     shapePath.setXYAt(points[3], points[7], 'v', pos + 1);
 };
 
-TrimModifier.prototype.addShapes = function(shapeData, shapeSegment, shapePath) {
+TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath) {
     var pathsData = shapeData.pathsData;
     var shapePaths = shapeData.shape.paths.shapes;
     var i, len = shapeData.shape.paths._length, j, jLen;

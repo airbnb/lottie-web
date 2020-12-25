@@ -1,4 +1,4 @@
-var animationManager = (function() {
+var animationManager = (function () {
     var moduleOb = {};
     var registeredAnimations = [];
     var initTime = 0;

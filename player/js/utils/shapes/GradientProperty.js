@@ -13,7 +13,7 @@ function GradientProperty(elem,data,container) {
     this.getValue(true);
 }
 
-GradientProperty.prototype.comparePoints = function(values, points) {
+GradientProperty.prototype.comparePoints = function (values, points) {
     var i = 0, len = this.o.length/2, diff;
     while(i < len) {
         diff = Math.abs(values[i*4] - values[points*4 + i*2]);
@@ -25,7 +25,7 @@ GradientProperty.prototype.comparePoints = function(values, points) {
     return true;
 };
 
-GradientProperty.prototype.checkCollapsable = function() {
+GradientProperty.prototype.checkCollapsable = function () {
     if (this.o.length/2 !== this.c.length/4) {
         return false;
     }
@@ -43,7 +43,7 @@ GradientProperty.prototype.checkCollapsable = function() {
     return true;
 };
 
-GradientProperty.prototype.getValue = function(forceRender) {
+GradientProperty.prototype.getValue = function (forceRender) {
     this.prop.getValue();
     this._mdf = false;
     this._cmdf = false;

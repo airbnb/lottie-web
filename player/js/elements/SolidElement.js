@@ -3,7 +3,7 @@ function ISolidElement(data,globalData,comp) {
 }
 extendPrototype([IImageElement], ISolidElement);
 
-ISolidElement.prototype.createContent = function() {
+ISolidElement.prototype.createContent = function () {
 
     var rect = createNS('rect');
     ////rect.style.width = this.data.sw;

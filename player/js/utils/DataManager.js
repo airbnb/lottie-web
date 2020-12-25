@@ -129,7 +129,7 @@ function dataFunctionManager() {
         }
     }
 
-    var checkText = (function() {
+    var checkText = (function () {
         var minimumVersion = [4,4,14];
 
         function updateTextLayer(textLayer) {
@@ -169,7 +169,7 @@ function dataFunctionManager() {
         };
     }());
 
-    var checkChars = (function() {
+    var checkChars = (function () {
         var minimumVersion = [4,7,99];
         return function (animationData) {
             if(animationData.chars && !checkVersion(minimumVersion,animationData.v)) {
@@ -193,7 +193,7 @@ function dataFunctionManager() {
         };
     }());
 
-    var checkColors = (function() {
+    var checkColors = (function () {
         var minimumVersion = [4,1,9];
 
         function iterateShapes(shapes) {
@@ -254,7 +254,7 @@ function dataFunctionManager() {
         };
     }());
 
-    var checkShapes = (function() {
+    var checkShapes = (function () {
         var minimumVersion = [4,4,18];
 
 

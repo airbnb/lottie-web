@@ -1,4 +1,4 @@
-var filtersFactory = (function() {
+var filtersFactory = (function () {
     var ob = {};
     ob.createFilter = createFilter;
     ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;

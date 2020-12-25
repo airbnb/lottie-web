@@ -1,4 +1,4 @@
-var TransformPropertyFactory = (function() {
+var TransformPropertyFactory = (function () {
 
     var defaultVector = [0,0]
 

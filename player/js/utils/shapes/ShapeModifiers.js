@@ -1,4 +1,4 @@
-var ShapeModifiers = (function() {
+var ShapeModifiers = (function () {
     var ob = {};
     var modifiers = {};
     ob.registerModifier = registerModifier;
@@ -18,9 +18,9 @@ var ShapeModifiers = (function() {
 }());
 
 function ShapeModifier() {}
-ShapeModifier.prototype.initModifierProperties = function() {};
-ShapeModifier.prototype.addShapeToModifier = function() {};
-ShapeModifier.prototype.addShape = function(data) {
+ShapeModifier.prototype.initModifierProperties = function () {};
+ShapeModifier.prototype.addShapeToModifier = function () {};
+ShapeModifier.prototype.addShape = function (data) {
     if (!this.closed) {
         // Adding shape to dynamic properties. It covers the case where a shape has no effects applied, to reset it's _mdf state on every tick.
         data.sh.container.addDynamicProperty(data.sh);
@@ -32,7 +32,7 @@ ShapeModifier.prototype.addShape = function(data) {
         }
     }
 };
-ShapeModifier.prototype.init = function(elem,data) {
+ShapeModifier.prototype.init = function (elem,data) {
     this.shapes = [];
     this.elem = elem;
     this.initDynamicPropertyContainer(elem);
@@ -46,7 +46,7 @@ ShapeModifier.prototype.init = function(elem,data) {
         this.getValue(true);
     }
 };
-ShapeModifier.prototype.processKeys = function() {
+ShapeModifier.prototype.processKeys = function () {
     if(this.elem.globalData.frameId === this.frameId) {
         return;
     }

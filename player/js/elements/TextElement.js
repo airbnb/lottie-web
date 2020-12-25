@@ -1,7 +1,7 @@
 function ITextElement() {
 }
 
-ITextElement.prototype.initElement = function(data,globalData,comp) {
+ITextElement.prototype.initElement = function (data,globalData,comp) {
     this.lettersChangedFlag = true;
     this.initFrame();
     this.initBaseData(data, globalData, comp);
@@ -18,7 +18,7 @@ ITextElement.prototype.initElement = function(data,globalData,comp) {
     this.textAnimator.searchProperties(this.dynamicProperties);
 };
 
-ITextElement.prototype.prepareFrame = function(num) {
+ITextElement.prototype.prepareFrame = function (num) {
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
@@ -29,7 +29,7 @@ ITextElement.prototype.prepareFrame = function(num) {
     }
 };
 
-ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
+ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
     var j,jLen = shapes.length;
     var k, kLen, pathNodes;
     var shapeStr = '';
@@ -40,19 +40,19 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
     return shapeStr;
 };
 
-ITextElement.prototype.updateDocumentData = function(newData, index) {
+ITextElement.prototype.updateDocumentData = function (newData, index) {
     this.textProperty.updateDocumentData(newData, index);
 };
 
-ITextElement.prototype.canResizeFont = function(_canResize) {
+ITextElement.prototype.canResizeFont = function (_canResize) {
     this.textProperty.canResizeFont(_canResize);
 };
 
-ITextElement.prototype.setMinimumFontSize = function(_fontSize) {
+ITextElement.prototype.setMinimumFontSize = function (_fontSize) {
     this.textProperty.setMinimumFontSize(_fontSize);
 };
 
-ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
+ITextElement.prototype.applyTextPropertiesToMatrix = function (documentData, matrixHelper, lineNumber, xPos, yPos) {
     if(documentData.ps) {
         matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
     }
@@ -69,12 +69,12 @@ ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matr
 };
 
 
-ITextElement.prototype.buildColor = function(colorData) {
+ITextElement.prototype.buildColor = function (colorData) {
     return 'rgb(' + Math.round(colorData[0]*255) + ',' + Math.round(colorData[1]*255) + ',' + Math.round(colorData[2]*255) + ')';
 };
 
 ITextElement.prototype.emptyProp = new LetterProps();
 
-ITextElement.prototype.destroy = function() {
+ITextElement.prototype.destroy = function () {
     
 };

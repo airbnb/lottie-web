@@ -1,4 +1,4 @@
-var createTypedArray = (function() {
+var createTypedArray = (function () {
 	function createRegularArray(type, len) {
 		var i = 0, arr = [], value;
 		switch(type) {

@@ -1,4 +1,4 @@
-var ShapePropertyFactory = (function() {
+var ShapePropertyFactory = (function () {
 
     var initFrame = -999999;
 
@@ -196,7 +196,7 @@ var ShapePropertyFactory = (function() {
     KeyframedShapeProperty.prototype.setVValue = setVValue;
     KeyframedShapeProperty.prototype.addEffect = addEffect;
 
-    var EllShapeProperty = (function() {
+    var EllShapeProperty = (function () {
 
         var cPoint = roundCorner;
 
@@ -240,7 +240,7 @@ var ShapePropertyFactory = (function() {
                     this.convertEllToPath();
                 }
             },
-            convertEllToPath: function() {
+            convertEllToPath: function () {
                 var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
                 var _cw = this.d !== 3;
                 var _v = this.v;
@@ -276,7 +276,7 @@ var ShapePropertyFactory = (function() {
         return EllShapeProperty;
     }());
 
-    var StarShapeProperty = (function() {
+    var StarShapeProperty = (function () {
 
         function StarShapeProperty(elem,data) {
             this.v = shape_pool.newElement();
@@ -312,7 +312,7 @@ var ShapePropertyFactory = (function() {
 
         StarShapeProperty.prototype = {
             reset: resetShape,
-            getValue: function() {
+            getValue: function () {
                 if(this.elem.globalData.frameId === this.frameId) {
                     return;
                 }
@@ -322,7 +322,7 @@ var ShapePropertyFactory = (function() {
                     this.convertToPath();
                 }
             },
-            convertStarToPath: function() {
+            convertStarToPath: function () {
                 var numPts = Math.floor(this.pt.v)*2;
                 var angle = Math.PI*2/numPts;
                 /*this.v.v.length = numPts;
@@ -359,7 +359,7 @@ var ShapePropertyFactory = (function() {
                     currentAng += angle*dir;
                 }
             },
-            convertPolygonToPath: function() {
+            convertPolygonToPath: function () {
                 var numPts = Math.floor(this.pt.v);
                 var angle = Math.PI*2/numPts;
                 var rad = this.or.v;
@@ -389,7 +389,7 @@ var ShapePropertyFactory = (function() {
         return StarShapeProperty;
     }());
 
-    var RectShapeProperty = (function() {
+    var RectShapeProperty = (function () {
 
          function RectShapeProperty(elem,data) {
             this.v = shape_pool.newElement();
@@ -452,7 +452,7 @@ var ShapePropertyFactory = (function() {
                     }
                 }
             },
-            getValue: function(frameNum) {
+            getValue: function (frameNum) {
                 if(this.elem.globalData.frameId === this.frameId) {
                     return;
                 }

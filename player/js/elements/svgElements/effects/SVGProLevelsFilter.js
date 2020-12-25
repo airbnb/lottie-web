@@ -33,14 +33,14 @@ function SVGProLevelsFilter(filter, filterManager) {
     }
 }
 
-SVGProLevelsFilter.prototype.createFeFunc = function(type, feComponentTransfer) {
+SVGProLevelsFilter.prototype.createFeFunc = function (type, feComponentTransfer) {
     var feFunc = createNS(type);
     feFunc.setAttribute('type','table');
     feComponentTransfer.appendChild(feFunc);
     return feFunc;
 };
 
-SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
+SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
     var cnt = 0;
     var segments = 256;
     var perc;
@@ -66,7 +66,7 @@ SVGProLevelsFilter.prototype.getTableValue = function(inputBlack, inputWhite, ga
     return table.join(' ');
 };
 
-SVGProLevelsFilter.prototype.renderFrame = function(forceRender) {
+SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
     if(forceRender || this.filterManager._mdf) {
         var val, cnt, perc, bezier;
         var effectElements = this.filterManager.effectElements;

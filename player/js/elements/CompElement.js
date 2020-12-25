@@ -2,7 +2,7 @@ function ICompElement() {}
 
 extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
 
-ICompElement.prototype.initElement = function(data,globalData,comp) {
+ICompElement.prototype.initElement = function (data,globalData,comp) {
     this.initFrame();
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
@@ -29,7 +29,7 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     }
 };*/
 
-ICompElement.prototype.prepareFrame = function(num) {
+ICompElement.prototype.prepareFrame = function (num) {
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
@@ -61,7 +61,7 @@ ICompElement.prototype.prepareFrame = function(num) {
     }
 };
 
-ICompElement.prototype.renderInnerContent = function() {
+ICompElement.prototype.renderInnerContent = function () {
     var i,len = this.layers.length;
     for( i = 0; i < len; i += 1 ) {
         if(this.completeLayers || this.elements[i]) {
@@ -70,15 +70,15 @@ ICompElement.prototype.renderInnerContent = function() {
     }
 };
 
-ICompElement.prototype.setElements = function(elems) {
+ICompElement.prototype.setElements = function (elems) {
     this.elements = elems;
 };
 
-ICompElement.prototype.getElements = function() {
+ICompElement.prototype.getElements = function () {
     return this.elements;
 };
 
-ICompElement.prototype.destroyElements = function() {
+ICompElement.prototype.destroyElements = function () {
     var i,len = this.layers.length;
     for( i = 0; i < len; i+=1 ) {
         if(this.elements[i]) {
@@ -87,7 +87,7 @@ ICompElement.prototype.destroyElements = function() {
     }
 };
 
-ICompElement.prototype.destroy = function() {
+ICompElement.prototype.destroy = function () {
     this.destroyElements();
     this.destroyBaseElement();
 };

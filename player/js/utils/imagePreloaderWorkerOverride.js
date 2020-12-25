@@ -1,1 +1,1 @@
-var ImagePreloader = function() {};
+var ImagePreloader = function () {};

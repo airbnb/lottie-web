@@ -4,7 +4,7 @@ var lottie = {};
 
 var _isFrozen = false;
 
-function setLocationHref (href) {
+function setLocationHref(href) {
     locationHref = href;
 }
 

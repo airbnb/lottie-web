@@ -1,4 +1,4 @@
-var segments_length_pool = (function() {
+var segments_length_pool = (function () {
 
 	function create() {
 		return {

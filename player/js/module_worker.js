@@ -1,4 +1,4 @@
-var lottiejs = (function(window) {
+var lottiejs = (function (window) {
     'use strict';
     /*<%= contents %>*/
     var lottiejs = {};
@@ -58,7 +58,7 @@ var lottiejs = (function(window) {
 
 var animations = [];
 
-var onmessage = function(evt) {
+var onmessage = function (evt) {
     var canvas = evt.data.canvas;
     var params = evt.data.params;
     var ctx = canvas.getContext('2d');

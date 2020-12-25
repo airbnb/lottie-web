@@ -9,7 +9,7 @@ function SVGStyleData(data, level) {
 	this.msElem = null;
 }
 
-SVGStyleData.prototype.reset = function() {
+SVGStyleData.prototype.reset = function () {
 	this.d = '';
 	this._mdf = false;
 };

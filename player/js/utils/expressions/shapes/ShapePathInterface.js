@@ -1,6 +1,6 @@
 var ShapePathInterface = (
 
-    function() {
+    function () {
 
         return function pathInterfaceFactory(shape,view,propertyGroup) {
             var prop = view.sh;
@@ -15,7 +15,7 @@ var ShapePathInterface = (
             prop.setGroupProperty(PropertyInterface('Path', _propertyGroup));
             Object.defineProperties(interfaceFunction, {
                 'path': {
-                    get: function() {
+                    get: function () {
                         if(prop.k) {
                             prop.getValue();
                         }
@@ -23,7 +23,7 @@ var ShapePathInterface = (
                     }
                 },
                 'shape': {
-                    get: function() {
+                    get: function () {
                         if(prop.k) {
                             prop.getValue();
                         }

@@ -1,5 +1,5 @@
 var TransformExpressionInterface = (function () {
-    return function(transform) {
+    return function (transform) {
         function _thisFunction(name) {
             switch(name) {
                 case 'scale':
