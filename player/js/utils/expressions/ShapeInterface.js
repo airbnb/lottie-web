@@ -309,13 +309,13 @@ var ShapeExpressionInterface = (function () {
       if(shape.pt.ix === value) {
         return interfaceFunction.points;
       }
-      if(shape.or.ix === value || 'ADBE Vector Star Outer Radius' === value) {
+      if(shape.or.ix === value || value === 'ADBE Vector Star Outer Radius') {
         return interfaceFunction.outerRadius;
       }
       if(shape.os.ix === value) {
         return interfaceFunction.outerRoundness;
       }
-      if(shape.ir && (shape.ir.ix === value || 'ADBE Vector Star Inner Radius' === value)) {
+      if(shape.ir && (shape.ir.ix === value || value === 'ADBE Vector Star Inner Radius')) {
         return interfaceFunction.innerRadius;
       }
       if(shape.is && shape.is.ix === value) {
@@ -406,7 +406,7 @@ var ShapeExpressionInterface = (function () {
   function roundedInterfaceFactory(shape, view, propertyGroup) {
        
     function interfaceFunction(value) {
-      if(shape.r.ix === value || 'Round Corners 1' === value) {
+      if(shape.r.ix === value || value === 'Round Corners 1') {
         return interfaceFunction.radius;
       }
     }
@@ -429,9 +429,9 @@ var ShapeExpressionInterface = (function () {
   function repeaterInterfaceFactory(shape, view, propertyGroup) {
 
     function interfaceFunction(value) {
-      if(shape.c.ix === value || 'Copies' === value) {
+      if(shape.c.ix === value || value === 'Copies') {
         return interfaceFunction.copies;
-      } else if(shape.o.ix === value || 'Offset' === value) {
+      } else if(shape.o.ix === value || value === 'Offset') {
         return interfaceFunction.offset;
       }
     }

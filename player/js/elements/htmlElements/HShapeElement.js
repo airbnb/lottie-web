@@ -126,7 +126,7 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
 
       t = -c / b;
 
-      if (0 < t && t < 1) {
+      if (t > 0 && t < 1) {
         bounds[i].push(this.calculateF(t, p0, p1, p2, p3, i));
       }
       continue;
@@ -139,10 +139,10 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
     }
 
     t1 = (-b + bm_sqrt(b2ac)) / (2 * a);
-    if (0 < t1 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
+    if (t1 > 0 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
 
     t2 = (-b - bm_sqrt(b2ac)) / (2 * a);
-    if (0 < t2 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
+    if (t2 > 0 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
 
   }
 
