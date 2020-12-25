@@ -51,8 +51,8 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
     } else {
       var i = 0;
       var nextDOMElement, nextLayer, tmpDOMElement;
-      while(i<pos) {
-        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement) {
+      while(i < pos) {
+        if(this.elements[i] && this.elements[i] !== true && this.elements[i].getBaseElement) {
           nextLayer = this.elements[i];
           tmpDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
           nextDOMElement = tmpDOMElement || nextDOMElement;
@@ -120,7 +120,7 @@ HybridRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
 HybridRenderer.prototype.getThreeDContainerByPos = function (pos) {
   var i = 0, len = this.threeDElements.length;
-  while(i<len) {
+  while(i < len) {
     if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
       return this.threeDElements[i].perspectiveElem;
     }
@@ -134,8 +134,8 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
   var container = createTag('div');
   styleDiv(container);
   if(type === '3d') {
-    perspectiveElem.style.width = this.globalData.compSize.w+'px';
-    perspectiveElem.style.height = this.globalData.compSize.h+'px';
+    perspectiveElem.style.width = this.globalData.compSize.w + 'px';
+    perspectiveElem.style.height = this.globalData.compSize.h + 'px';
     perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = '50% 50%';
     container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
   }
@@ -157,7 +157,7 @@ HybridRenderer.prototype.build3dContainers = function () {
   var i, len = this.layers.length;
   var lastThreeDContainerData;
   var currentContainer = '';
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     if(this.layers[i].ddd && this.layers[i].ty !== 3) {
       if(currentContainer !== '3d') {
         currentContainer = '3d';
@@ -180,11 +180,11 @@ HybridRenderer.prototype.build3dContainers = function () {
 
 HybridRenderer.prototype.addTo3dContainer = function (elem, pos) {
   var i = 0, len = this.threeDElements.length;
-  while(i<len) {
+  while(i < len) {
     if(pos <= this.threeDElements[i].endPos) {
       var j = this.threeDElements[i].startPos;
       var nextElement;
-      while(j<pos) {
+      while(j < pos) {
         if(this.elements[j] && this.elements[j].getBaseElement) {
           nextElement = this.elements[j].getBaseElement();
         }
@@ -204,8 +204,8 @@ HybridRenderer.prototype.addTo3dContainer = function (elem, pos) {
 HybridRenderer.prototype.configAnimation = function (animData) {
   var resizerElem = createTag('div');
   var wrapper = this.animationItem.wrapper;
-  resizerElem.style.width = animData.w+'px';
-  resizerElem.style.height = animData.h+'px';
+  resizerElem.style.width = animData.w + 'px';
+  resizerElem.style.height = animData.h + 'px';
   this.resizerElem = resizerElem;
   styleDiv(resizerElem);
   resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = 'flat';
@@ -250,21 +250,21 @@ HybridRenderer.prototype.destroy = function () {
 HybridRenderer.prototype.updateContainerSize = function () {
   var elementWidth = this.animationItem.wrapper.offsetWidth;
   var elementHeight = this.animationItem.wrapper.offsetHeight;
-  var elementRel = elementWidth/elementHeight;
-  var animationRel = this.globalData.compSize.w/this.globalData.compSize.h;
+  var elementRel = elementWidth / elementHeight;
+  var animationRel = this.globalData.compSize.w / this.globalData.compSize.h;
   var sx, sy, tx, ty;
-  if(animationRel>elementRel) {
-    sx = elementWidth/(this.globalData.compSize.w);
-    sy = elementWidth/(this.globalData.compSize.w);
+  if(animationRel > elementRel) {
+    sx = elementWidth / (this.globalData.compSize.w);
+    sy = elementWidth / (this.globalData.compSize.w);
     tx = 0;
-    ty = ((elementHeight-this.globalData.compSize.h*(elementWidth/this.globalData.compSize.w))/2);
+    ty = ((elementHeight - this.globalData.compSize.h * (elementWidth / this.globalData.compSize.w)) / 2);
   }else{
-    sx = elementHeight/(this.globalData.compSize.h);
-    sy = elementHeight/(this.globalData.compSize.h);
-    tx = (elementWidth-this.globalData.compSize.w*(elementHeight/this.globalData.compSize.h))/2;
+    sx = elementHeight / (this.globalData.compSize.h);
+    sy = elementHeight / (this.globalData.compSize.h);
+    tx = (elementWidth - this.globalData.compSize.w * (elementHeight / this.globalData.compSize.h)) / 2;
     ty = 0;
   }
-  this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,'+sy+',0,0,0,0,1,0,'+tx+','+ty+',0,1)';
+  this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,' + sy + ',0,0,0,0,1,0,' + tx + ',' + ty + ',0,1)';
 };
 
 HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
@@ -285,7 +285,7 @@ HybridRenderer.prototype.initItems = function () {
     var cWidth = this.globalData.compSize.w;
     var cHeight = this.globalData.compSize.h;
     var i, len = this.threeDElements.length;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth, 2) + Math.pow(cHeight, 2)) + 'px';
     }
   }
@@ -294,7 +294,7 @@ HybridRenderer.prototype.initItems = function () {
 HybridRenderer.prototype.searchExtraCompositions = function (assets) {
   var i, len = assets.length;
   var floatingContainer = createTag('div');
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     if(assets[i].xt) {
       var comp = this.createComp(assets[i], floatingContainer, this.globalData.comp, null);
       comp.initExpressions();

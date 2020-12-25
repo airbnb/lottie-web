@@ -67,7 +67,7 @@ SVGBaseElement.prototype = {
         alphaRect.setAttribute('y', '0');
         alphaRect.setAttribute('fill', '#ffffff');
         alphaRect.setAttribute('opacity', '0');
-        maskGrouper.setAttribute('filter', 'url(' + locationHref + '#'+filId+')');
+        maskGrouper.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
         maskGrouper.appendChild(alphaRect);
         maskGrouper.appendChild(this.layerElement);
         layerElementParent = maskGrouper;
@@ -107,7 +107,7 @@ SVGBaseElement.prototype = {
 
       if (this.checkMasks()) {
         var cpGroup = createNS('g');
-        cpGroup.setAttribute('clip-path', 'url(' + locationHref + '#'+clipId + ')');
+        cpGroup.setAttribute('clip-path', 'url(' + locationHref + '#' + clipId + ')');
         cpGroup.appendChild(this.layerElement);
         this.transformedElement = cpGroup;
         if (layerElementParent) {
@@ -116,7 +116,7 @@ SVGBaseElement.prototype = {
           this.baseElement = this.transformedElement;
         }
       } else {
-        this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#'+clipId+')');
+        this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#' + clipId + ')');
       }
             
     }

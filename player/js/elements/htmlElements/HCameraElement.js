@@ -16,7 +16,7 @@ function HCameraElement(data, globalData, comp) {
   }
   if(data.ks.or.k.length && data.ks.or.k[0].to) {
     var i, len = data.ks.or.k.length;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       data.ks.or.k[i].to = null;
       data.ks.or.k[i].ti = null;
     }
@@ -39,11 +39,11 @@ extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 
 HCameraElement.prototype.setup = function () {
   var i, len = this.comp.threeDElements.length, comp;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     // [perspectiveElem,container]
     comp = this.comp.threeDElements[i];
     if(comp.type === '3d') {
-      comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
+      comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v + 'px';
       comp.container.style.transformOrigin = comp.container.style.mozTransformOrigin = comp.container.style.webkitTransformOrigin = '0px 0px 0px';
       comp.perspectiveElem.style.transform = comp.perspectiveElem.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     }
@@ -61,7 +61,7 @@ HCameraElement.prototype.renderFrame = function () {
   var i, len;
   if(this.hierarchy) {
     len = this.hierarchy.length;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       _mdf = this.hierarchy[i].finalTransform.mProp._mdf || _mdf;
     }
   }
@@ -76,7 +76,7 @@ HCameraElement.prototype.renderFrame = function () {
         this.mat.translate(-mTransf.p.v[0], -mTransf.p.v[1], mTransf.p.v[2]);
         this.mat.rotateX(-mTransf.or.v[0]).rotateY(-mTransf.or.v[1]).rotateZ(mTransf.or.v[2]);
         this.mat.rotateX(-mTransf.rx.v).rotateY(-mTransf.ry.v).rotateZ(mTransf.rz.v);
-        this.mat.scale(1/mTransf.s.v[0], 1/mTransf.s.v[1], 1/mTransf.s.v[2]);
+        this.mat.scale(1 / mTransf.s.v[0], 1 / mTransf.s.v[1], 1 / mTransf.s.v[2]);
         this.mat.translate(mTransf.a.v[0], mTransf.a.v[1], mTransf.a.v[2]);
       }
     }
@@ -92,10 +92,10 @@ HCameraElement.prototype.renderFrame = function () {
       } else {
         diffVector = [this.px.v - this.a.v[0], this.py.v - this.a.v[1], this.pz.v - this.a.v[2]];
       }
-      var mag = Math.sqrt(Math.pow(diffVector[0], 2)+Math.pow(diffVector[1], 2)+Math.pow(diffVector[2], 2));
+      var mag = Math.sqrt(Math.pow(diffVector[0], 2) + Math.pow(diffVector[1], 2) + Math.pow(diffVector[2], 2));
       // var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
-      var lookDir = [diffVector[0]/mag, diffVector[1]/mag, diffVector[2]/mag];
-      var lookLengthOnXZ = Math.sqrt( lookDir[2]*lookDir[2] + lookDir[0]*lookDir[0] );
+      var lookDir = [diffVector[0] / mag, diffVector[1] / mag, diffVector[2] / mag];
+      var lookLengthOnXZ = Math.sqrt( lookDir[2] * lookDir[2] + lookDir[0] * lookDir[0] );
       var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));
       var m_rotationY = (Math.atan2( lookDir[0], -lookDir[2]));
       this.mat.rotateY(m_rotationY).rotateX(-m_rotationX);
@@ -103,7 +103,7 @@ HCameraElement.prototype.renderFrame = function () {
     }
     this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
     this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
-    this.mat.translate(this.globalData.compSize.w/2, this.globalData.compSize.h/2, 0);
+    this.mat.translate(this.globalData.compSize.w / 2, this.globalData.compSize.h / 2, 0);
     this.mat.translate(0, 0, this.pe.v);
 
 
@@ -113,14 +113,14 @@ HCameraElement.prototype.renderFrame = function () {
     if((hasMatrixChanged || this.pe._mdf) && this.comp.threeDElements) {
       len = this.comp.threeDElements.length;
       var comp;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         comp = this.comp.threeDElements[i];
         if(comp.type === '3d') {
           if(hasMatrixChanged) {
             comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
           }
           if(this.pe._mdf) {
-            comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
+            comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v + 'px';
           }
         }
       }

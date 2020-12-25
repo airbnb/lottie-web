@@ -16,7 +16,7 @@ var BMMath = {};
 (function () {
   var propertyNames = ['abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'atan2', 'ceil', 'cbrt', 'expm1', 'clz32', 'cos', 'cosh', 'exp', 'floor', 'fround', 'hypot', 'imul', 'log', 'log1p', 'log2', 'log10', 'max', 'min', 'pow', 'random', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc', 'E', 'LN10', 'LN2', 'LOG10E', 'LOG2E', 'PI', 'SQRT1_2', 'SQRT2'];
   var i, len = propertyNames.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     BMMath[propertyNames[i]] = Math[propertyNames[i]];
   }
 }());
@@ -29,7 +29,7 @@ BMMath.abs = function (val) {
   if(tOfVal === 'object' && val.length) {
     var absArr = createSizedArray(val.length);
     var i, len = val.length;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       absArr[i] = Math.abs(val[i]);
     }
     return absArr;
@@ -38,7 +38,7 @@ BMMath.abs = function (val) {
 
 };
 var defaultCurveSegments = 150;
-var degToRads = Math.PI/180;
+var degToRads = Math.PI / 180;
 var roundCorner = 0.5519;
 
 function roundValues(flag) {
@@ -145,7 +145,7 @@ function RGBtoHSV(r, g, b) {
 
   switch (max) {
     case min: h = 0; break;
-    case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+    case r: h = (g - b) + d * (g < b ? 6 : 0); h /= 6 * d; break;
     case g: h = (b - r) + d * 2; h /= 6 * d; break;
     case b: h = (r - g) + d * 4; h /= 6 * d; break;
   }
@@ -158,7 +158,7 @@ function RGBtoHSV(r, g, b) {
 }
 
 function addSaturationToRGB(color, offset) {
-  var hsv = RGBtoHSV(color[0]*255, color[1]*255, color[2]*255);
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
   hsv[1] += offset;
   if (hsv[1] > 1) {
     hsv[1] = 1;
@@ -170,7 +170,7 @@ function addSaturationToRGB(color, offset) {
 }
 
 function addBrightnessToRGB(color, offset) {
-  var hsv = RGBtoHSV(color[0]*255, color[1]*255, color[2]*255);
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
   hsv[2] += offset;
   if (hsv[2] > 1) {
     hsv[2] = 1;
@@ -182,8 +182,8 @@ function addBrightnessToRGB(color, offset) {
 }
 
 function addHueToRGB(color, offset) {
-  var hsv = RGBtoHSV(color[0]*255, color[1]*255, color[2]*255);
-  hsv[0] += offset/360;
+  var hsv = RGBtoHSV(color[0] * 255, color[1] * 255, color[2] * 255);
+  hsv[0] += offset / 360;
   if (hsv[0] > 1) {
     hsv[0] -= 1;
   }
@@ -197,19 +197,19 @@ var rgbToHex = (function () {
   var colorMap = [];
   var i;
   var hex;
-  for(i=0;i<256;i+=1) {
+  for(i = 0;i < 256;i += 1) {
     hex = i.toString(16);
     colorMap[i] = hex.length == 1 ? '0' + hex : hex;
   }
 
   return function (r, g, b) {
-    if(r<0) {
+    if(r < 0) {
       r = 0;
     }
-    if(g<0) {
+    if(g < 0) {
       g = 0;
     }
-    if(b<0) {
+    if(b < 0) {
       b = 0;
     }
     return '#' + colorMap[r] + colorMap[g] + colorMap[b];

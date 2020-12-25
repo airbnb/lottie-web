@@ -8,8 +8,8 @@ SVGGradientFillStyleData.prototype.initGradientData = function (elem, data, styl
   this.o = PropertyFactory.getProp(elem, data.o, 0, 0.01, this);
   this.s = PropertyFactory.getProp(elem, data.s, 1, null, this);
   this.e = PropertyFactory.getProp(elem, data.e, 1, null, this);
-  this.h = PropertyFactory.getProp(elem, data.h||{k:0}, 0, 0.01, this);
-  this.a = PropertyFactory.getProp(elem, data.a||{k:0}, 0, degToRads, this);
+  this.h = PropertyFactory.getProp(elem, data.h || {k:0}, 0, 0.01, this);
+  this.a = PropertyFactory.getProp(elem, data.a || {k:0}, 0, degToRads, this);
   this.g = new GradientProperty(elem, data.g, this);
   this.style = styleOb;
   this.stops = [];
@@ -28,13 +28,13 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
   gfill.setAttribute('gradientUnits', 'userSpaceOnUse');
   var stops = [];
   var stop, j, jLen;
-  jLen = data.g.p*4;
-  for(j=0;j<jLen;j+=4) {
+  jLen = data.g.p * 4;
+  for(j = 0;j < jLen;j += 4) {
     stop = createNS('stop');
     gfill.appendChild(stop);
     stops.push(stop);
   }
-  pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke', 'url(' + locationHref + '#'+gradientId+')');
+  pathElement.setAttribute( data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
     
   this.gf = gfill;
   this.cst = stops;
@@ -55,13 +55,13 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
     opFill.setAttribute('gradientUnits', 'userSpaceOnUse');
     jLen = data.g.k.k[0].s ? data.g.k.k[0].s.length : data.g.k.k.length;
     var stops = this.stops;
-    for(j=data.g.p*4;j<jLen;j+=2) {
+    for(j = data.g.p * 4;j < jLen;j += 2) {
       stop = createNS('stop');
       stop.setAttribute('stop-color', 'rgb(255,255,255)');
       opFill.appendChild(stop);
       stops.push(stop);
     }
-    maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke', 'url(' + locationHref + '#'+opacityId+')');
+    maskElement.setAttribute( data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + opacityId + ')');
     this.of = opFill;
     this.ms = mask;
     this.ost = stops;

@@ -5,7 +5,7 @@ var propertyGroupFactory = (function () {
       if(val <= 0) {
         return interfaceFunction;
       } else{
-        return parentPropertyGroup(val-1);
+        return parentPropertyGroup(val - 1);
       }
     }
   }

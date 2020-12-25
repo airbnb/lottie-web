@@ -41,12 +41,12 @@ HTextElement.prototype.buildNewText = function () {
   innerElemStyle.color = innerElemStyle.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
   if(documentData.sc) {
     innerElemStyle.stroke = this.buildColor(documentData.sc);
-    innerElemStyle.strokeWidth = documentData.sw+'px';
+    innerElemStyle.strokeWidth = documentData.sw + 'px';
   }
   var fontData = this.globalData.fontManager.getFontByName(documentData.f);
   if(!this.globalData.fontManager.chars) {
-    innerElemStyle.fontSize = documentData.finalSize+'px';
-    innerElemStyle.lineHeight = documentData.finalSize+'px';
+    innerElemStyle.fontSize = documentData.finalSize + 'px';
+    innerElemStyle.lineHeight = documentData.finalSize + 'px';
     if(fontData.fClass) {
       this.innerElem.className = fontData.fClass;
     } else {
@@ -115,7 +115,7 @@ HTextElement.prototype.buildNewText = function () {
       matrixHelper.reset();
       if(shapeData && shapeData.shapes) {
         shapes = shapeData.shapes[0].it;
-        matrixHelper.scale(documentData.finalSize/100, documentData.finalSize/100);
+        matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
         shapeStr = this.createPathShape(matrixHelper, shapes);
         tSpan.setAttribute('d', shapeStr);
       }
@@ -128,10 +128,10 @@ HTextElement.prototype.buildNewText = function () {
           var boundingBox = tCont.getBBox();
           tCont.setAttribute('width', boundingBox.width + 2);
           tCont.setAttribute('height', boundingBox.height + 2);
-          tCont.setAttribute('viewBox', (boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
-          tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
+          tCont.setAttribute('viewBox', (boundingBox.x - 1) + ' ' + (boundingBox.y - 1) + ' ' + (boundingBox.width + 2) + ' ' + (boundingBox.height + 2));
+          tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x - 1) + 'px,' + (boundingBox.y - 1) + 'px)';
 
-          letters[i].yOffset = boundingBox.y-1;
+          letters[i].yOffset = boundingBox.y - 1;
 
         } else{
           tCont.setAttribute('width', 1);
@@ -147,7 +147,7 @@ HTextElement.prototype.buildNewText = function () {
       if(!this.isMasked) {
         this.innerElem.appendChild(tParent);
         //
-        tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,'+ -documentData.finalSize/1.2+'px,0)';
+        tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,' + -documentData.finalSize / 1.2 + 'px,0)';
       } else {
         this.innerElem.appendChild(tSpan);
       }
@@ -176,7 +176,7 @@ HTextElement.prototype.renderInnerContent = function () {
     } else {
       // Todo Benchmark if using this is better than getBBox
       if(this.isMasked && this.finalTransform._matMdf) {
-        this.svgElement.setAttribute('viewBox', -this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
+        this.svgElement.setAttribute('viewBox', -this.finalTransform.mProp.p.v[0] + ' ' + -this.finalTransform.mProp.p.v[1] + ' ' + this.compW + ' ' + this.compH);
         this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
       }
     }
@@ -193,7 +193,7 @@ HTextElement.prototype.renderInnerContent = function () {
 
   len = letters.length;
   var renderedLetter, textSpan, textPath;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     if(letters[i].n) {
       count += 1;
       continue;
@@ -236,13 +236,13 @@ HTextElement.prototype.renderInnerContent = function () {
     }
 
     var margin = 1;
-    if(this.currentBBox.w !== (boundingBox.width + margin*2) || this.currentBBox.h !== (boundingBox.height + margin*2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)) {
-      this.currentBBox.w = boundingBox.width + margin*2;
-      this.currentBBox.h = boundingBox.height + margin*2;
+    if(this.currentBBox.w !== (boundingBox.width + margin * 2) || this.currentBBox.h !== (boundingBox.height + margin * 2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)) {
+      this.currentBBox.w = boundingBox.width + margin * 2;
+      this.currentBBox.h = boundingBox.height + margin * 2;
       this.currentBBox.x = boundingBox.x - margin;
       this.currentBBox.y = boundingBox.y - margin;
 
-      this.svgElement.setAttribute('viewBox', this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+      this.svgElement.setAttribute('viewBox', this.currentBBox.x + ' ' + this.currentBBox.y + ' ' + this.currentBBox.w + ' ' + this.currentBBox.h);
       this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
     }
   }

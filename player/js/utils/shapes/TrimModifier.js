@@ -112,7 +112,7 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
         this.shapes[i].pathsData.length = 0;
       }
     }
-  } else if (!((e === 1 && s === 0) || (e===0 && s === 1))) {
+  } else if (!((e === 1 && s === 0) || (e === 0 && s === 1))) {
     var segments = [], shapeData, localShapeCollection;
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
@@ -257,8 +257,8 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
     lengths = pathsData[i].lengths;
     shapePath.c = shapePaths[i].c;
     jLen = shapePaths[i].c ? lengths.length : lengths.length + 1;
-    for (j = 1; j < jLen; j +=1) {
-      currentLengthData = lengths[j-1];
+    for (j = 1; j < jLen; j += 1) {
+      currentLengthData = lengths[j - 1];
       if (addedLength + currentLengthData.addedLength < shapeSegment.s) {
         addedLength += currentLengthData.addedLength;
         shapePath.c = false;
@@ -270,7 +270,7 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
           this.addSegment(shapePaths[i].v[j - 1], shapePaths[i].o[j - 1], shapePaths[i].i[j], shapePaths[i].v[j], shapePath, segmentCount, newShape);
           newShape = false;
         } else {
-          segment = bez.getNewSegment(shapePaths[i].v[j - 1], shapePaths[i].v[j], shapePaths[i].o[j - 1], shapePaths[i].i[j], (shapeSegment.s - addedLength)/currentLengthData.addedLength, (shapeSegment.e - addedLength)/currentLengthData.addedLength, lengths[j-1]);
+          segment = bez.getNewSegment(shapePaths[i].v[j - 1], shapePaths[i].v[j], shapePaths[i].o[j - 1], shapePaths[i].i[j], (shapeSegment.s - addedLength) / currentLengthData.addedLength, (shapeSegment.e - addedLength) / currentLengthData.addedLength, lengths[j - 1]);
           this.addSegmentFromArray(segment, shapePath, segmentCount, newShape);
           // this.addSegment(segment.pt1, segment.pt3, segment.pt4, segment.pt2, shapePath, segmentCount, newShape);
           newShape = false;

@@ -52,7 +52,7 @@ SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, g
   var outputDelta = outputWhite - outputBlack; 
   var inputDelta = inputWhite - inputBlack; 
   while(cnt <= 256) {
-    perc = cnt/256;
+    perc = cnt / 256;
     if(perc <= min) {
       colorValue = inputDelta < 0 ? outputWhite : outputBlack;
     } else if(perc >= max) {
@@ -61,7 +61,7 @@ SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, g
       colorValue = (outputBlack + outputDelta * Math.pow((perc - inputBlack) / inputDelta, 1 / gamma));
     }
     table[pos++] = colorValue;
-    cnt += 256/(segments-1);
+    cnt += 256 / (segments - 1);
   }
   return table.join(' ');
 };

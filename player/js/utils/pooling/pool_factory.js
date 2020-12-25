@@ -24,7 +24,7 @@ var pool_factory = (function () {
     function release(element) {
       if(_length === _maxLength) {
         pool = pooling.double(pool);
-        _maxLength = _maxLength*2;
+        _maxLength = _maxLength * 2;
       }
       if (_release) {
         _release(element);

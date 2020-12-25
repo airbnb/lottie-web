@@ -124,7 +124,7 @@ CanvasRenderer.prototype.restore = function (actionFlag) {
   this.contextData.cArrPos -= 1;
   var popped = this.contextData.saved[this.contextData.cArrPos];
   var i, arr = this.contextData.cTr.props;
-  for(i=0;i<16;i+=1) {
+  for(i = 0;i < 16;i += 1) {
     arr[i] = popped[i];
   }
   this.canvasContext.setTransform(popped[0], popped[1], popped[4], popped[5], popped[12], popped[13]);
@@ -195,34 +195,34 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     var pos = par[0] || 'xMidYMid';
     var xPos = pos.substr(0, 4);
     var yPos = pos.substr(4);
-    elementRel = elementWidth/elementHeight;
-    animationRel = this.transformCanvas.w/this.transformCanvas.h;
-    if(animationRel>elementRel && fillType === 'meet' || animationRel<elementRel && fillType === 'slice') {
-      this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-      this.transformCanvas.sy = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
+    elementRel = elementWidth / elementHeight;
+    animationRel = this.transformCanvas.w / this.transformCanvas.h;
+    if(animationRel > elementRel && fillType === 'meet' || animationRel < elementRel && fillType === 'slice') {
+      this.transformCanvas.sx = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
+      this.transformCanvas.sy = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
     }else{
-      this.transformCanvas.sx = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
-      this.transformCanvas.sy = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
+      this.transformCanvas.sx = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
+      this.transformCanvas.sy = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
     }
 
-    if(xPos === 'xMid' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))) {
-      this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
-    } else if(xPos === 'xMax' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))) {
-      this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))*this.renderConfig.dpr;
+    if(xPos === 'xMid' && ((animationRel < elementRel && fillType === 'meet') || (animationRel > elementRel && fillType === 'slice'))) {
+      this.transformCanvas.tx = (elementWidth - this.transformCanvas.w * (elementHeight / this.transformCanvas.h)) / 2 * this.renderConfig.dpr;
+    } else if(xPos === 'xMax' && ((animationRel < elementRel && fillType === 'meet') || (animationRel > elementRel && fillType === 'slice'))) {
+      this.transformCanvas.tx = (elementWidth - this.transformCanvas.w * (elementHeight / this.transformCanvas.h)) * this.renderConfig.dpr;
     } else {
       this.transformCanvas.tx = 0;
     }
-    if(yPos === 'YMid' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))) {
-      this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2)*this.renderConfig.dpr;
-    } else if(yPos === 'YMax' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))) {
-      this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w)))*this.renderConfig.dpr;
+    if(yPos === 'YMid' && ((animationRel > elementRel && fillType === 'meet') || (animationRel < elementRel && fillType === 'slice'))) {
+      this.transformCanvas.ty = ((elementHeight - this.transformCanvas.h * (elementWidth / this.transformCanvas.w)) / 2) * this.renderConfig.dpr;
+    } else if(yPos === 'YMax' && ((animationRel > elementRel && fillType === 'meet') || (animationRel < elementRel && fillType === 'slice'))) {
+      this.transformCanvas.ty = ((elementHeight - this.transformCanvas.h * (elementWidth / this.transformCanvas.w))) * this.renderConfig.dpr;
     } else {
       this.transformCanvas.ty = 0;
     }
 
   }else if(this.renderConfig.preserveAspectRatio == 'none') {
-    this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
-    this.transformCanvas.sy = elementHeight/(this.transformCanvas.h/this.renderConfig.dpr);
+    this.transformCanvas.sx = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
+    this.transformCanvas.sy = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
     this.transformCanvas.tx = 0;
     this.transformCanvas.ty = 0;
   }else{
@@ -252,7 +252,7 @@ CanvasRenderer.prototype.destroy = function () {
     this.animationItem.wrapper.innerText = '';
   }
   var i, len = this.layers ? this.layers.length : 0;
-  for (i = len - 1; i >= 0; i-=1) {
+  for (i = len - 1; i >= 0; i -= 1) {
     if(this.elements[i]) {
       this.elements[i].destroy();
     }
@@ -291,7 +291,7 @@ CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
     }else{
       this.save();
     }
-    for (i = len - 1; i >= 0; i-=1) {
+    for (i = len - 1; i >= 0; i -= 1) {
       if(this.completeLayers || this.elements[i]) {
         this.elements[i].renderFrame();
       }

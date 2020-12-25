@@ -35,13 +35,13 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   if(data.ty == 'fl' || data.ty == 'st') {
     elementData.c = PropertyFactory.getProp(this, data.c, 1, 255, this);
     if(!elementData.c.k) {
-      styleElem.co = 'rgb('+bm_floor(elementData.c.v[0])+','+bm_floor(elementData.c.v[1])+','+bm_floor(elementData.c.v[2])+')';
+      styleElem.co = 'rgb(' + bm_floor(elementData.c.v[0]) + ',' + bm_floor(elementData.c.v[1]) + ',' + bm_floor(elementData.c.v[2]) + ')';
     }
   } else if (data.ty === 'gf' || data.ty === 'gs') {
     elementData.s = PropertyFactory.getProp(this, data.s, 1, null, this);
     elementData.e = PropertyFactory.getProp(this, data.e, 1, null, this);
-    elementData.h = PropertyFactory.getProp(this, data.h||{k:0}, 0, 0.01, this);
-    elementData.a = PropertyFactory.getProp(this, data.a||{k:0}, 0, degToRads, this);
+    elementData.h = PropertyFactory.getProp(this, data.h || {k:0}, 0, 0.01, this);
+    elementData.a = PropertyFactory.getProp(this, data.a || {k:0}, 0, degToRads, this);
     elementData.g = new GradientProperty(this, data.g, this);
   }
   elementData.o = PropertyFactory.getProp(this, data.o, 0, 0.01, this);
@@ -145,14 +145,14 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
   var j, jLen;
   var ownStyles = [], ownModifiers = [], processedPos, modifier, currentTransform;
   var ownTransforms = [].concat(transforms);
-  for(i=len;i>=0;i-=1) {
+  for(i = len;i >= 0;i -= 1) {
     processedPos = this.searchProcessedElement(arr[i]);
     if(!processedPos) {
       arr[i]._shouldRender = shouldRender;
     } else {
       itemsData[i] = prevViewData[processedPos - 1];
     }
-    if(arr[i].ty == 'fl' || arr[i].ty == 'st'|| arr[i].ty == 'gf'|| arr[i].ty == 'gs') {
+    if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs') {
       if(!processedPos) {
         itemsData[i] = this.createStyleElement(arr[i], ownTransforms);
       } else {
@@ -165,7 +165,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
         itemsData[i] = this.createGroupElement(arr[i]);
       } else {
         jLen = itemsData[i].it.length;
-        for(j=0;j<jLen;j+=1) {
+        for(j = 0;j < jLen;j += 1) {
           itemsData[i].prevViewData[j] = itemsData[i].it[j];
         }
       }
@@ -211,7 +211,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
   this.removeTransformFromStyleList();
   this.closeStyles(ownStyles);
   len = ownModifiers.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     ownModifiers[i].closed = true;
   }
 };
@@ -236,7 +236,7 @@ CVShapeElement.prototype.renderShapeTransform = function (parentTransform, group
 CVShapeElement.prototype.drawLayer = function () {
   var i, len = this.stylesList.length;
   var j, jLen, k, kLen, elems, nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type, currentStyle;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     currentStyle = this.stylesList[i];
     type = currentStyle.type;
 
@@ -265,7 +265,7 @@ CVShapeElement.prototype.drawLayer = function () {
     }
     renderer.ctxTransform(currentStyle.preTransforms.finalTransform.props);
     jLen = elems.length;
-    for(j=0;j<jLen;j+=1) {
+    for(j = 0;j < jLen;j += 1) {
       if(type === 'st' || type === 'gs') {
         ctx.beginPath();
         if(currentStyle.da) {
@@ -276,7 +276,7 @@ CVShapeElement.prototype.drawLayer = function () {
       nodes = elems[j].trNodes;
       kLen = nodes.length;
 
-      for(k=0;k<kLen;k+=1) {
+      for(k = 0;k < kLen;k += 1) {
         if(nodes[k].t == 'm') {
           ctx.moveTo(nodes[k].p[0], nodes[k].p[1]);
         }else if(nodes[k].t == 'c') {
@@ -303,7 +303,7 @@ CVShapeElement.prototype.renderShape = function (parentTransform, items, data, i
   var i, len = items.length - 1;
   var groupTransform;
   groupTransform = parentTransform;
-  for(i=len;i>=0;i-=1) {
+  for(i = len;i >= 0;i -= 1) {
     if(items[i].ty == 'tr') {
       groupTransform = data[i].transform;
       this.renderShapeTransform(parentTransform, groupTransform);
@@ -406,7 +406,7 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
       var rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
       var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
 
-      var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
+      var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99 : itemData.h.v;
       var dist = rad * percent;
       var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
       var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
@@ -419,13 +419,13 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
 
     for (i = 0; i < len; i += 1) {
       if(itemData.g._hasOpacity && itemData.g._collapsable) {
-        opacity = itemData.g.o[i*2 + 1];
+        opacity = itemData.g.o[i * 2 + 1];
       }
-      grd.addColorStop(cValues[i * 4] / 100, 'rgba('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ',' + opacity + ')');
+      grd.addColorStop(cValues[i * 4] / 100, 'rgba(' + cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ',' + cValues[i * 4 + 3] + ',' + opacity + ')');
     }
     styleElem.grd = grd;
   }
-  styleElem.coOp = itemData.o.v*groupTransform.opacity;
+  styleElem.coOp = itemData.o.v * groupTransform.opacity;
     
 };
 
@@ -437,10 +437,10 @@ CVShapeElement.prototype.renderStroke = function (styleData, itemData, groupTran
     styleElem.do = d.dashoffset[0];
   }
   if(itemData.c._mdf || this._isFirstFrame) {
-    styleElem.co = 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')';
+    styleElem.co = 'rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')';
   }
   if(itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame) {
-    styleElem.coOp = itemData.o.v*groupTransform.opacity;
+    styleElem.coOp = itemData.o.v * groupTransform.opacity;
   }
   if(itemData.w._mdf || this._isFirstFrame) {
     styleElem.wi = itemData.w.v;

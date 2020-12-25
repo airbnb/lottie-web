@@ -76,11 +76,11 @@ AnimationItem.prototype.setParams = function (params) {
   } else if(params.path) {
 
     if( params.path.lastIndexOf('\\') !== -1) {
-      this.path = params.path.substr(0, params.path.lastIndexOf('\\')+1);
+      this.path = params.path.substr(0, params.path.lastIndexOf('\\') + 1);
     } else {
-      this.path = params.path.substr(0, params.path.lastIndexOf('/')+1);
+      this.path = params.path.substr(0, params.path.lastIndexOf('/') + 1);
     }
-    this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
+    this.fileName = params.path.substr(params.path.lastIndexOf('/') + 1);
     this.fileName = this.fileName.substr(0, this.fileName.lastIndexOf('.json'));
 
     assetLoader.load(params.path, this.configAnimation.bind(this), function () {
@@ -130,9 +130,9 @@ AnimationItem.prototype.includeLayers = function (data) {
   var i, len = layers.length;
   var newLayers = data.layers;
   var j, jLen = newLayers.length;
-  for(j=0;j<jLen;j+=1) {
+  for(j = 0;j < jLen;j += 1) {
     i = 0;
-    while(i<len) {
+    while(i < len) {
       if(layers[i].id == newLayers[j].id) {
         layers[i] = newLayers[j];
         break;
@@ -168,7 +168,7 @@ AnimationItem.prototype.loadNextSegment = function () {
   }
   var segment = segments.shift();
   this.timeCompleted = segment.time * this.frameRate;
-  var segmentPath = this.path+this.fileName+'_' + this.segmentPos + '.json';
+  var segmentPath = this.path + this.fileName + '_' + this.segmentPos + '.json';
   this.segmentPos += 1;
   assetLoader.load(segmentPath, this.includeLayers.bind(this), function () {
     this.trigger('data_failed');

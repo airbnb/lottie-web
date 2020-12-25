@@ -125,7 +125,7 @@ TextProperty.prototype.getKeyframeValue = function () {
   var i = 0, len = textKeys.length;
   while(i <= len - 1) {
     textDocumentData = textKeys[i].s;
-    if(i === len - 1 || textKeys[i+1].t > frameNum) {
+    if(i === len - 1 || textKeys[i + 1].t > frameNum) {
       break;
     }
     i += 1;
@@ -182,7 +182,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   var fWeight = 'normal', fStyle = 'normal';
   len = styles.length;
   var styleName;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     styleName = styles[i].toLowerCase();
     switch(styleName) {
       case 'italic':
@@ -213,7 +213,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   documentData.finalText = this.buildFinalText(documentData.t);
   len = documentData.finalText.length;
   documentData.finalLineHeight = documentData.lh;
-  var trackingOffset = documentData.tr/1000*documentData.finalSize;
+  var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
   var charCode;
   if(documentData.sz) {
     var flag = true;
@@ -225,9 +225,9 @@ TextProperty.prototype.completeTextData = function (documentData) {
       currentHeight = 0;
       lineWidth = 0;
       len = finalText.length;
-      trackingOffset = documentData.tr/1000*documentData.finalSize;
+      trackingOffset = documentData.tr / 1000 * documentData.finalSize;
       var lastSpaceIndex = -1;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         charCode = finalText[i].charCodeAt(0);
         newLineFlag = false;
         if(finalText[i] === ' ') {
@@ -235,11 +235,11 @@ TextProperty.prototype.completeTextData = function (documentData) {
         }else if(charCode === 13 || charCode === 3) {
           lineWidth = 0;
           newLineFlag = true;
-          currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
+          currentHeight += documentData.finalLineHeight || documentData.finalSize * 1.2;
         }
         if(fontManager.chars) {
           charData = fontManager.getCharData(finalText[i], fontData.fStyle, fontData.fFamily);
-          cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
+          cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
         }else{
           // tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
           cLength = fontManager.measureText(finalText[i], documentData.f, documentData.finalSize);
@@ -250,7 +250,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
           } else {
             i = lastSpaceIndex;
           }
-          currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
+          currentHeight += documentData.finalLineHeight || documentData.finalSize * 1.2;
           finalText.splice(i, lastSpaceIndex === i ? 1 : 0, '\r');
           // finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
           lastSpaceIndex = -1;
@@ -260,7 +260,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
           lineWidth += trackingOffset;
         }
       }
-      currentHeight += fontData.ascent*documentData.finalSize/100;
+      currentHeight += fontData.ascent * documentData.finalSize / 100;
       if(this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < currentHeight) {
         documentData.finalSize -= 1;
         documentData.finalLineHeight = documentData.finalSize * documentData.lh / documentData.s;
@@ -293,7 +293,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
     if(fontManager.chars) {
       charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
-      cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
+      cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
     }else{
       // var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
       // tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
@@ -314,7 +314,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
         if(val === '' || val === ' ') {
           currentSize -= cLength;
         }
-        while(currentPos<=i) {
+        while(currentPos <= i) {
           letters[currentPos].an = currentSize;
           letters[currentPos].ind = index;
           letters[currentPos].extra = cLength;
@@ -329,7 +329,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
         if(val === '') {
           currentSize -= cLength;
         }
-        while(currentPos<=i) {
+        while(currentPos <= i) {
           letters[currentPos].an = currentSize;
           letters[currentPos].ind = index;
           letters[currentPos].extra = cLength;
@@ -357,7 +357,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
         documentData.justifyOffset = - documentData.boxWidth;
         break;
       case 2:
-        documentData.justifyOffset = - documentData.boxWidth/2;
+        documentData.justifyOffset = - documentData.boxWidth / 2;
         break;
       default:
         documentData.justifyOffset = 0;
@@ -368,7 +368,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   var animators = data.a, animatorData, letterData;
   jLen = animators.length;
   var based, ind, indexes = [];
-  for(j=0;j<jLen;j+=1) {
+  for(j = 0;j < jLen;j += 1) {
     animatorData = animators[j];
     if(animatorData.a.sc) {
       documentData.strokeColorAnim = true;
@@ -381,7 +381,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
     ind = 0;
     based = animatorData.s.b;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       letterData = letters[i];
       letterData.anIndexes[j] = ind;
       if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) {
@@ -398,15 +398,15 @@ TextProperty.prototype.completeTextData = function (documentData) {
         letterData = letters[i];
         if(currentInd != letterData.anIndexes[j]) {
           currentInd = letterData.anIndexes[j];
-          newInd = indexes.splice(Math.floor(Math.random()*indexes.length), 1)[0];
+          newInd = indexes.splice(Math.floor(Math.random() * indexes.length), 1)[0];
         }
         letterData.anIndexes[j] = newInd;
       }
     }
   }
-  documentData.yOffset = documentData.finalLineHeight || documentData.finalSize*1.2;
+  documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
-  documentData.ascent = fontData.ascent*documentData.finalSize/100;
+  documentData.ascent = fontData.ascent * documentData.finalSize / 100;
 };
 
 TextProperty.prototype.updateDocumentData = function (newData, index) {

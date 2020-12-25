@@ -35,7 +35,7 @@ function ExpressionValue(elementProp, mult, type) {
     if (!expressionValue.numKeys) {
       return 0;
     } else {
-      return elementProp.keyframes[pos-1].t;
+      return elementProp.keyframes[pos - 1].t;
     }
   };
   expressionValue.valueAtTime = elementProp.getValueAtTime;

@@ -19,7 +19,7 @@ function MaskElement(data, element, globalData) {
   var rect, expansor, feMorph, x;
   var maskType = 'clipPath', maskRef = 'clip-path';
   for (i = 0; i < len; i++) {
-    if((properties[i].mode !== 'a' && properties[i].mode !== 'n')|| properties[i].inv || properties[i].o.k !== 100 || properties[i].o.x) {
+    if((properties[i].mode !== 'a' && properties[i].mode !== 'n') || properties[i].inv || properties[i].o.k !== 100 || properties[i].o.x) {
       maskType = 'mask';
       maskRef = 'mask';
     }
@@ -48,7 +48,7 @@ function MaskElement(data, element, globalData) {
     }
     count += 1;
 
-    path.setAttribute('fill', properties[i].mode === 's' ? '#000000':'#ffffff');
+    path.setAttribute('fill', properties[i].mode === 's' ? '#000000' : '#ffffff');
     path.setAttribute('clip-rule', 'nonzero');
     var filterID;
 
@@ -65,7 +65,7 @@ function MaskElement(data, element, globalData) {
       feMorph.setAttribute('radius', '0');
       expansor.appendChild(feMorph);
       defs.appendChild(expansor);
-      path.setAttribute('stroke', properties[i].mode === 's' ? '#000000':'#ffffff');
+      path.setAttribute('stroke', properties[i].mode === 's' ? '#000000' : '#ffffff');
     } else {
       feMorph = null;
       x = null;
@@ -84,15 +84,15 @@ function MaskElement(data, element, globalData) {
     if(properties[i].mode == 'i') {
       jLen = currentMasks.length;
       var g = createNS('g');
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         g.appendChild(currentMasks[j]);
       }
       var mask = createNS('mask');
       mask.setAttribute('mask-type', 'alpha');
-      mask.setAttribute('id', layerId+'_'+count);
+      mask.setAttribute('id', layerId + '_' + count);
       mask.appendChild(path);
       defs.appendChild(mask);
-      g.setAttribute('mask', 'url(' + locationHref + '#'+layerId+'_'+count+')');
+      g.setAttribute('mask', 'url(' + locationHref + '#' + layerId + '_' + count + ')');
 
       currentMasks.length = 0;
       currentMasks.push(g);
@@ -118,7 +118,7 @@ function MaskElement(data, element, globalData) {
   this.maskElement = createNS( maskType);
 
   len = currentMasks.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     this.maskElement.appendChild(currentMasks[i]);
   }
 
@@ -156,7 +156,7 @@ MaskElement.prototype.renderFrame = function (isFirstFrame) {
         if(this.storedData[i].x.v < 0) {
           if(this.storedData[i].lastOperator !== 'erode') {
             this.storedData[i].lastOperator = 'erode';
-            this.storedData[i].elem.setAttribute('filter', 'url(' + locationHref + '#'+this.storedData[i].filterId+')');
+            this.storedData[i].elem.setAttribute('filter', 'url(' + locationHref + '#' + this.storedData[i].filterId + ')');
           }
           feMorph.setAttribute('radius', -this.storedData[i].x.v);
         }else{
@@ -164,7 +164,7 @@ MaskElement.prototype.renderFrame = function (isFirstFrame) {
             this.storedData[i].lastOperator = 'dilate';
             this.storedData[i].elem.setAttribute('filter', null);
           }
-          this.storedData[i].elem.setAttribute('stroke-width', this.storedData[i].x.v*2);
+          this.storedData[i].elem.setAttribute('stroke-width', this.storedData[i].x.v * 2);
 
         }
       }
@@ -186,16 +186,16 @@ MaskElement.prototype.createLayerSolidPath = function () {
 };
 
 MaskElement.prototype.drawPath = function (pathData, pathNodes, viewData) {
-  var pathString = ' M'+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+  var pathString = ' M' + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
   var i, len;
   len = pathNodes._length;
-  for(i=1;i<len;i+=1) {
+  for(i = 1;i < len;i += 1) {
     // pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
-    pathString += ' C'+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + ' '+pathNodes.i[i][0]+','+pathNodes.i[i][1] + ' '+pathNodes.v[i][0]+','+pathNodes.v[i][1];
+    pathString += ' C' + pathNodes.o[i - 1][0] + ',' + pathNodes.o[i - 1][1] + ' ' + pathNodes.i[i][0] + ',' + pathNodes.i[i][1] + ' ' + pathNodes.v[i][0] + ',' + pathNodes.v[i][1];
   }
   // pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[0][0]+','+pathNodes.i[0][1] + " "+pathNodes.v[0][0]+','+pathNodes.v[0][1];
   if(pathNodes.c && len > 1) {
-    pathString += ' C'+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + ' '+pathNodes.i[0][0]+','+pathNodes.i[0][1] + ' '+pathNodes.v[0][0]+','+pathNodes.v[0][1];
+    pathString += ' C' + pathNodes.o[i - 1][0] + ',' + pathNodes.o[i - 1][1] + ' ' + pathNodes.i[0][0] + ',' + pathNodes.i[0][1] + ' ' + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
   }
   // pathNodes.__renderedString = pathString;
 

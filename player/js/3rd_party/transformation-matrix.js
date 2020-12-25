@@ -221,14 +221,14 @@ var Matrix = (function () {
       if(matr.props[i] !== this.props[i]) {
         return false;
       }
-      i+=1;
+      i += 1;
     }
     return true;
   }
 
   function clone(matr) {
     var i;
-    for(i=0;i<16;i+=1) {
+    for(i = 0;i < 16;i += 1) {
       matr.props[i] = this.props[i];
     }
     return matr;
@@ -236,7 +236,7 @@ var Matrix = (function () {
 
   function cloneFromProps(props) {
     var i;
-    for(i=0;i<16;i+=1) {
+    for(i = 0;i < 16;i += 1) {
       this.props[i] = props[i];
     }
   }
@@ -265,12 +265,12 @@ var Matrix = (function () {
 
   function getInverseMatrix() {
     var determinant = this.props[0] * this.props[5] - this.props[1] * this.props[4];
-    var a = this.props[5]/determinant;
-    var b = - this.props[1]/determinant;
-    var c = - this.props[4]/determinant;
-    var d = this.props[0]/determinant;
-    var e = (this.props[4] * this.props[13] - this.props[5] * this.props[12])/determinant;
-    var f = - (this.props[0] * this.props[13] - this.props[1] * this.props[12])/determinant;
+    var a = this.props[5] / determinant;
+    var b = - this.props[1] / determinant;
+    var c = - this.props[4] / determinant;
+    var d = this.props[0] / determinant;
+    var e = (this.props[4] * this.props[13] - this.props[5] * this.props[12]) / determinant;
+    var f = - (this.props[0] * this.props[13] - this.props[1] * this.props[12]) / determinant;
     var inverseMatrix = new Matrix();
     inverseMatrix.props[0] = a;
     inverseMatrix.props[1] = b;
@@ -288,7 +288,7 @@ var Matrix = (function () {
 
   function inversePoints(pts) {
     var i, len = pts.length, retPts = [];
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       retPts[i] = inversePoint(pts[i]);
     }
     return retPts;
@@ -334,7 +334,7 @@ var Matrix = (function () {
       return x + ',' + y;
     }
     var _p = this.props;
-    return Math.round((x * _p[0] + y * _p[4] + _p[12]) * 100) / 100+','+ Math.round((x * _p[1] + y * _p[5] + _p[13]) * 100) / 100;
+    return Math.round((x * _p[0] + y * _p[4] + _p[12]) * 100) / 100 + ',' + Math.round((x * _p[1] + y * _p[5] + _p[13]) * 100) / 100;
   }
 
   function toCSS() {
@@ -346,9 +346,9 @@ var Matrix = (function () {
     var props = this.props;
     var cssValue = 'matrix3d(';
     var v = 10000;
-    while(i<16) {
-      cssValue += _rnd(props[i]*v)/v;
-      cssValue += i === 15 ? ')':',';
+    while(i < 16) {
+      cssValue += _rnd(props[i] * v) / v;
+      cssValue += i === 15 ? ')' : ',';
       i += 1;
     }
     return cssValue;

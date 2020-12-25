@@ -26,7 +26,7 @@ HCompElement.prototype.createContainerElements = function () {
 HCompElement.prototype.addTo3dContainer = function (elem, pos) {
   var j = 0;
   var nextElement;
-  while(j<pos) {
+  while(j < pos) {
     if(this.elements[j] && this.elements[j].getBaseElement) {
       nextElement = this.elements[j].getBaseElement();
     }

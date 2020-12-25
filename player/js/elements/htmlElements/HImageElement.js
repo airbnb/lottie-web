@@ -12,8 +12,8 @@ HImageElement.prototype.createContent = function () {
 
   if(this.data.hasMask) {
     this.imageElem = createNS('image');
-    this.imageElem.setAttribute('width', this.assetData.w+'px');
-    this.imageElem.setAttribute('height', this.assetData.h+'px');
+    this.imageElem.setAttribute('width', this.assetData.w + 'px');
+    this.imageElem.setAttribute('height', this.assetData.h + 'px');
     this.imageElem.setAttributeNS('http://www.w3.org/1999/xlink', 'href', assetPath);
     this.layerElement.appendChild(this.imageElem);
     this.baseElement.setAttribute('width', this.assetData.w);

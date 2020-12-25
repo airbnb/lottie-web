@@ -15,15 +15,15 @@ var ExpressionPropertyInterface = (function () {
         return 0;
       } else {
         var value = '';
-        if ('s' in property.keyframes[pos-1]) {
-          value = property.keyframes[pos-1].s;
-        } else if ('e' in property.keyframes[pos-2]) {
-          value = property.keyframes[pos-2].e;
+        if ('s' in property.keyframes[pos - 1]) {
+          value = property.keyframes[pos - 1].s;
+        } else if ('e' in property.keyframes[pos - 2]) {
+          value = property.keyframes[pos - 2].e;
         } else {
-          value = property.keyframes[pos-2].s;
+          value = property.keyframes[pos - 2].s;
         }
         var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value);
-        valueProp.time = property.keyframes[pos-1].t / property.elem.comp.globalData.frameRate;
+        valueProp.time = property.keyframes[pos - 1].t / property.elem.comp.globalData.frameRate;
         valueProp.value = type === 'unidimensional' ? value[0] : value;
         return valueProp;
       }

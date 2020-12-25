@@ -9,14 +9,14 @@ var EffectsExpressionInterface = (function () {
       var effectElements = [];
       var effectsData = elem.data.ef;
       var i, len = elem.effectsManager.effectElements.length;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         effectElements.push(createGroupInterface(effectsData[i], elem.effectsManager.effectElements[i], propertyGroup, elem));
       }
 
       var effects = elem.data.ef || [];
       var groupInterface = function (name) {
         i = 0, len = effects.length;
-        while(i<len) {
+        while(i < len) {
           if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix) {
             return effectElements[i];
           }
@@ -36,7 +36,7 @@ var EffectsExpressionInterface = (function () {
 
     function groupInterface(name) {
       var effects = data.ef, i = 0, len = effects.length;
-      while(i<len) {
+      while(i < len) {
         if(name === effects[i].nm || name === effects[i].mn || name === effects[i].ix) {
           if(effects[i].ty === 5) {
             return effectElements[i];
@@ -52,7 +52,7 @@ var EffectsExpressionInterface = (function () {
 
     var effectElements = [];
     var i, len = data.ef.length;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       if(data.ef[i].ty === 5) {
         effectElements.push(createGroupInterface(data.ef[i], elements.effectElements[i], elements.effectElements[i].propertyGroup, elem));
       } else {

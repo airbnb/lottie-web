@@ -19,7 +19,6 @@
         "no-param-reassign": "off",
         "keyword-spacing": "off",
         "max-len": "off",
-        "space-infix-ops": "off",
         "semi-spacing": "off",
         "one-var-declaration-per-line": "off",
         "one-var": "off",

@@ -117,7 +117,7 @@ BasicPlayer.prototype.scrollAnimation = function (perc) {
     if(mousePos < 0) {
       mousePos = 0;
     }else if(mousePos >= self.scrollBarWidth) {
-      mousePos = self.scrollBarWidth-1;
+      mousePos = self.scrollBarWidth - 1;
     }
     self.animationItem.updateAnimation(mousePos / self.scrollBarWidth);
   };

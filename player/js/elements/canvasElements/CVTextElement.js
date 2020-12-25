@@ -44,11 +44,11 @@ CVTextElement.prototype.buildNewText = function () {
   var letters = documentData.l;
   var matrixHelper = this.mHelper;
   this.stroke = hasStroke;
-  this.values.fValue = documentData.finalSize + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
+  this.values.fValue = documentData.finalSize + 'px ' + this.globalData.fontManager.getFontByName(documentData.f).fFamily;
   len = documentData.finalText.length;
   // this.tHelper.font = this.values.fValue;
   var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
-  var trackingOffset = documentData.tr/1000*documentData.finalSize;
+  var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
   var xPos = 0, yPos = 0, firstLine = true;
   var cnt = 0;
   for (i = 0; i < len; i += 1) {
@@ -64,22 +64,22 @@ CVTextElement.prototype.buildNewText = function () {
 
     shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
     jLen = shapes.length;
-    matrixHelper.scale(documentData.finalSize/100, documentData.finalSize/100);
+    matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
     if(singleShape) {
       this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
     }
     commands = createSizedArray(jLen);
-    for(j=0;j<jLen;j+=1) {
+    for(j = 0;j < jLen;j += 1) {
       kLen = shapes[j].ks.k.i.length;
       pathNodes = shapes[j].ks.k;
       pathArr = [];
-      for(k=1;k<kLen;k+=1) {
-        if(k==1) {
+      for(k = 1;k < kLen;k += 1) {
+        if(k == 1) {
           pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
         }
-        pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToY(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToX(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToY(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToX(pathNodes.v[k][0], pathNodes.v[k][1], 0), matrixHelper.applyToY(pathNodes.v[k][0], pathNodes.v[k][1], 0));
+        pathArr.push(matrixHelper.applyToX(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToY(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToX(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToY(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToX(pathNodes.v[k][0], pathNodes.v[k][1], 0), matrixHelper.applyToY(pathNodes.v[k][0], pathNodes.v[k][1], 0));
       }
-      pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToY(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToX(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToY(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
+      pathArr.push(matrixHelper.applyToX(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToY(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToX(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToY(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
       commands[j] = pathArr;
     }
     if(singleShape) {
@@ -91,7 +91,7 @@ CVTextElement.prototype.buildNewText = function () {
     } else {
       this.textSpans[cnt] = {elem: commands};
     }
-    cnt +=1;
+    cnt += 1;
   }
 };
 
@@ -115,7 +115,7 @@ CVTextElement.prototype.renderInnerContent = function () {
   len = letters.length;
   var renderedLetter;
   var lastFill = null, lastStroke = null, lastStrokeW = null, commands, pathArr;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     if(letters[i].n) {
       continue;
     }
@@ -138,7 +138,7 @@ CVTextElement.prototype.renderInnerContent = function () {
       commands = this.textSpans[i].elem;
       jLen = commands.length;
       this.globalData.canvasContext.beginPath();
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         pathArr = commands[j];
         kLen = pathArr.length;
         this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
@@ -172,7 +172,7 @@ CVTextElement.prototype.renderInnerContent = function () {
       commands = this.textSpans[i].elem;
       jLen = commands.length;
       this.globalData.canvasContext.beginPath();
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         pathArr = commands[j];
         kLen = pathArr.length;
         this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);

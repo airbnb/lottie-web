@@ -92,7 +92,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
   if(this.renderConfig.viewBoxSize) {
     this.svgElement.setAttribute('viewBox', this.renderConfig.viewBoxSize);
   } else {
-    this.svgElement.setAttribute('viewBox', '0 0 '+animData.w+' '+animData.h);
+    this.svgElement.setAttribute('viewBox', '0 0 ' + animData.w + ' ' + animData.h);
   }
 
   if(!this.renderConfig.viewBoxOnly) {
@@ -131,7 +131,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
   var maskId = createElementID();
   maskElement.setAttribute('id', maskId);
   maskElement.appendChild(rect);
-  this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#'+maskId+')');
+  this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#' + maskId + ')');
 
   defs.appendChild(maskElement);
   this.layers = animData.layers;
@@ -191,7 +191,7 @@ SVGRenderer.prototype.checkPendingElements  = function () {
     element.checkParenting();
     if(element.data.tt) {
       var i = 0, len = this.elements.length;
-      while(i<len) {
+      while(i < len) {
         if(this.elements[i] === element) {
           element.setMatte(this.elements[i - 1].layerId);
           break;
@@ -242,8 +242,8 @@ SVGRenderer.prototype.appendElementInPos = function (element, pos) {
   }
   var i = 0;
   var nextElement;
-  while(i<pos) {
-    if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()) {
+  while(i < pos) {
+    if(this.elements[i] && this.elements[i] !== true && this.elements[i].getBaseElement()) {
       nextElement = this.elements[i].getBaseElement();
     }
     i += 1;

@@ -5,7 +5,7 @@ function SVGEffects(elem) {
   var count = 0;
   this.filters = [];
   var filterManager;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     filterManager = null;
     if(elem.data.ef[i].ty === 20) {
       count += 1;
@@ -37,7 +37,7 @@ function SVGEffects(elem) {
   }
   if(count) {
     elem.globalData.defs.appendChild(fil);
-    elem.layerElement.setAttribute('filter', 'url(' + locationHref + '#'+filId+')');
+    elem.layerElement.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
   }
   if (this.filters.length) {
     elem.addRenderableComponent(this);
@@ -46,7 +46,7 @@ function SVGEffects(elem) {
 
 SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
   var i, len = this.filters.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     this.filters[i].renderFrame(_isFirstFrame);
   }
 };

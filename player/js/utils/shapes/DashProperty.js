@@ -32,7 +32,7 @@ DashProperty.prototype.getValue = function (forceRender) {
     if(this.renderer === 'svg') {
       this.dashStr = '';
     }
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       if(this.dataProps[i].n != 'o') {
         if(this.renderer === 'svg') {
           this.dashStr += ' ' + this.dataProps[i].p.v;

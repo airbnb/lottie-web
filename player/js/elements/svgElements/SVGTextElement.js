@@ -63,7 +63,7 @@ SVGTextElement.prototype.buildNewText = function () {
   var matrixHelper = this.mHelper;
   var shapes, shapeStr = '', singleShape = this.data.singleShape;
   var xPos = 0, yPos = 0, firstLine = true;
-  var trackingOffset = documentData.tr/1000*documentData.finalSize;
+  var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
   if(singleShape && !usesGlyphs && !documentData.sz) {
     var tElement = this.textContainer;
     var justify = 'start';
@@ -97,7 +97,7 @@ SVGTextElement.prototype.buildNewText = function () {
     var shapeData, charData;
     for (i = 0; i < len; i += 1) {
       if(!usesGlyphs || !singleShape || i === 0) {
-        tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs?'path':'text');
+        tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs ? 'path' : 'text');
         if (cachedSpansLength <= i) {
           tSpan.setAttribute('stroke-linecap', 'butt');
           tSpan.setAttribute('stroke-linejoin', 'round');
@@ -181,7 +181,7 @@ SVGTextElement.prototype.renderInnerContent = function () {
 
       len = letters.length;
       var renderedLetter, textSpan;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         if(letters[i].n) {
           continue;
         }

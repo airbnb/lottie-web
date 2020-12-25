@@ -138,10 +138,10 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
       continue;
     }
 
-    t1 = (-b + bm_sqrt(b2ac))/(2 * a);
+    t1 = (-b + bm_sqrt(b2ac)) / (2 * a);
     if (0 < t1 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
 
-    t2 = (-b - bm_sqrt(b2ac))/(2 * a);
+    t2 = (-b - bm_sqrt(b2ac)) / (2 * a);
     if (0 < t2 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
 
   }
@@ -153,9 +153,9 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
 };
 
 HShapeElement.prototype.calculateF = function (t, p0, p1, p2, p3, i) {
-  return bm_pow(1-t, 3) * p0[i]
-        + 3 * bm_pow(1-t, 2) * t * p1[i]
-        + 3 * (1-t) * bm_pow(t, 2) * p2[i]
+  return bm_pow(1 - t, 3) * p0[i]
+        + 3 * bm_pow(1 - t, 2) * t * p1[i]
+        + 3 * (1 - t) * bm_pow(t, 2) * p2[i]
         + bm_pow(t, 3) * p3[i];
 }
 
@@ -211,7 +211,7 @@ HShapeElement.prototype.renderInnerContent = function () {
       this.currentBBox.x = tempBoundingBox.x;
       this.currentBBox.y = tempBoundingBox.y;
 
-      this.shapeCont.setAttribute('viewBox', this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+      this.shapeCont.setAttribute('viewBox', this.currentBBox.x + ' ' + this.currentBBox.y + ' ' + this.currentBBox.w + ' ' + this.currentBBox.h);
       this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
     }
   }

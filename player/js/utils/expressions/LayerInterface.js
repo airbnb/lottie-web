@@ -37,17 +37,17 @@ var LayerExpressionInterface = (function () {
   function applyPoint(matrix, arr) {
     if(this._elem.hierarchy && this._elem.hierarchy.length) {
       var i, len = this._elem.hierarchy.length;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
       }
     }
-    return matrix.applyToPointArray(arr[0], arr[1], arr[2]||0);
+    return matrix.applyToPointArray(arr[0], arr[1], arr[2] || 0);
   }
 
   function invertPoint(matrix, arr) {
     if (this._elem.hierarchy && this._elem.hierarchy.length) {
       var i, len = this._elem.hierarchy.length;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
       }
     }
@@ -60,7 +60,7 @@ var LayerExpressionInterface = (function () {
     this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
     if(this._elem.hierarchy && this._elem.hierarchy.length) {
       var i, len = this._elem.hierarchy.length;
-      for(i=0;i<len;i+=1) {
+      for(i = 0;i < len;i += 1) {
         this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
       }
       return toWorldMat.inversePoint(arr);
@@ -153,8 +153,8 @@ var LayerExpressionInterface = (function () {
     _thisLayerFunction.source = elem.data.refId;
     _thisLayerFunction.height = elem.data.ty === 0 ? elem.data.h : 100;
     _thisLayerFunction.width = elem.data.ty === 0 ? elem.data.w : 100;
-    _thisLayerFunction.inPoint = elem.data.ip/elem.comp.globalData.frameRate;
-    _thisLayerFunction.outPoint = elem.data.op/elem.comp.globalData.frameRate;
+    _thisLayerFunction.inPoint = elem.data.ip / elem.comp.globalData.frameRate;
+    _thisLayerFunction.outPoint = elem.data.op / elem.comp.globalData.frameRate;
     _thisLayerFunction._name = elem.data.nm;
 
     _thisLayerFunction.registerMaskInterface = _registerMaskInterface;

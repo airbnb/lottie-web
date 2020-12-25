@@ -10,7 +10,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
         this.buildItem(i);
       }
     }
-    this.completeLayers = this.elements[i] ? this.completeLayers:false;
+    this.completeLayers = this.elements[i] ? this.completeLayers : false;
   }
   this.checkPendingElements();
 };
@@ -47,7 +47,7 @@ BaseRenderer.prototype.createAudio = function (data) {
 
 BaseRenderer.prototype.buildAllItems = function () {
   var i, len = this.layers.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     this.buildItem(i);
   }
   this.checkPendingElements();
@@ -57,9 +57,9 @@ BaseRenderer.prototype.includeLayers = function (newLayers) {
   this.completeLayers = false;
   var i, len = newLayers.length;
   var j, jLen = this.layers.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     j = 0;
-    while(j<jLen) {
+    while(j < jLen) {
       if(this.layers[j].id == newLayers[i].id) {
         this.layers[j] = newLayers[i];
         break;
@@ -81,7 +81,7 @@ BaseRenderer.prototype.initItems = function () {
 BaseRenderer.prototype.buildElementParenting = function (element, parentName, hierarchy) {
   var elements = this.elements;
   var layers = this.layers;
-  var i=0, len = layers.length;
+  var i = 0, len = layers.length;
   while (i < len) {
     if (layers[i].ind == parentName) {
       if (!elements[i] || elements[i] === true) {
@@ -107,7 +107,7 @@ BaseRenderer.prototype.addPendingElement = function (element) {
 
 BaseRenderer.prototype.searchExtraCompositions = function (assets) {
   var i, len = assets.length;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     if(assets[i].xt) {
       var comp = this.createComp(assets[i]);
       comp.initExpressions();

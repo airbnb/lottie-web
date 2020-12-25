@@ -30,7 +30,7 @@ SVGTintFilter.prototype.renderFrame = function (forceRender) {
   if(forceRender || this.filterManager._mdf) {
     var colorBlack = this.filterManager.effectElements[0].p.v;
     var colorWhite = this.filterManager.effectElements[1].p.v;
-    var opacity = this.filterManager.effectElements[2].p.v/100;
-    this.matrixFilter.setAttribute('values', (colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
+    var opacity = this.filterManager.effectElements[2].p.v / 100;
+    this.matrixFilter.setAttribute('values', (colorWhite[0] - colorBlack[0]) + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 ' + opacity + ' 0');
   }
 };

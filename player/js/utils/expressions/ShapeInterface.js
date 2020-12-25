@@ -3,7 +3,7 @@ var ShapeExpressionInterface = (function () {
   function iterateElements(shapes, view, propertyGroup) {
     var arr = [];
     var i, len = shapes ? shapes.length : 0;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       if(shapes[i].ty == 'gr') {
         arr.push(groupInterfaceFactory(shapes[i], view[i], propertyGroup));
       }else if(shapes[i].ty == 'fl') {
@@ -35,14 +35,14 @@ var ShapeExpressionInterface = (function () {
     var interfaces;
     var interfaceFunction = function _interfaceFunction(value) {
       var i = 0, len = interfaces.length;
-      while(i<len) {
+      while(i < len) {
         if(interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value) {
           return interfaces[i];
         }
-        i+=1;
+        i += 1;
       }
       if(typeof value === 'number') {
-        return interfaces[value-1];
+        return interfaces[value - 1];
       }
     };
 
@@ -462,15 +462,15 @@ var ShapeExpressionInterface = (function () {
         if (value === 0) {
           return propertyGroup
         } else {
-          return interfaces[value-1];
+          return interfaces[value - 1];
         }
       } else {
         var i = 0, len = interfaces.length;
-        while(i<len) {
+        while(i < len) {
           if(interfaces[i]._name === value) {
             return interfaces[i];
           }
-          i+=1;
+          i += 1;
         }
       }
     }

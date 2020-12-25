@@ -32,7 +32,7 @@ var MaskManagerInterface = (function () {
 
     var maskFunction = function (name) {
       i = 0;
-      while(i<len) {
+      while(i < len) {
         if(maskManager.masksProperties[i].nm === name) {
           return _masksInterfaces[i];
         }

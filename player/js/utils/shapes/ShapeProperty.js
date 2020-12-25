@@ -6,11 +6,11 @@ var ShapePropertyFactory = (function () {
     var iterationIndex = caching.lastIndex;
     var keyPropS, keyPropE, isHold, j, k, jLen, kLen, perc, vertexValue;
     var kf = this.keyframes;
-    if(frameNum < kf[0].t-this.offsetTime) {
+    if(frameNum < kf[0].t - this.offsetTime) {
       keyPropS = kf[0].s[0];
       isHold = true;
       iterationIndex = 0;
-    }else if(frameNum >= kf[kf.length - 1].t-this.offsetTime) {
+    }else if(frameNum >= kf[kf.length - 1].t - this.offsetTime) {
       keyPropS = kf[kf.length - 1].s ? kf[kf.length - 1].s[0] : kf[kf.length - 2].e[0];
       /* if(kf[kf.length - 1].s){
                 keyPropS = kf[kf.length - 1].s[0];
@@ -20,10 +20,10 @@ var ShapePropertyFactory = (function () {
       isHold = true;
     }else{
       var i = iterationIndex;
-      var len = kf.length- 1, flag = true, keyData, nextKeyData;
+      var len = kf.length - 1, flag = true, keyData, nextKeyData;
       while(flag) {
         keyData = kf[i];
-        nextKeyData = kf[i+1];
+        nextKeyData = kf[i + 1];
         if((nextKeyData.t - this.offsetTime) > frameNum) {
           break;
         }
@@ -36,9 +36,9 @@ var ShapePropertyFactory = (function () {
       isHold = keyData.h === 1;
       iterationIndex = i;
       if(!isHold) {
-        if(frameNum >= nextKeyData.t-this.offsetTime) {
+        if(frameNum >= nextKeyData.t - this.offsetTime) {
           perc = 1;
-        }else if(frameNum < keyData.t-this.offsetTime) {
+        }else if(frameNum < keyData.t - this.offsetTime) {
           perc = 0;
         }else{
           var fnc;
@@ -48,7 +48,7 @@ var ShapePropertyFactory = (function () {
             fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y).get;
             keyData.__fnct = fnc;
           }
-          perc = fnc((frameNum-(keyData.t-this.offsetTime))/((nextKeyData.t-this.offsetTime)-(keyData.t-this.offsetTime)));
+          perc = fnc((frameNum - (keyData.t - this.offsetTime)) / ((nextKeyData.t - this.offsetTime) - (keyData.t - this.offsetTime)));
         }
         keyPropE = nextKeyData.s ? nextKeyData.s[0] : keyData.e[0];
       }
@@ -58,13 +58,13 @@ var ShapePropertyFactory = (function () {
     kLen = keyPropS.i[0].length;
     caching.lastIndex = iterationIndex;
 
-    for(j=0;j<jLen;j+=1) {
-      for(k=0;k<kLen;k+=1) {
-        vertexValue = isHold ? keyPropS.i[j][k] :  keyPropS.i[j][k]+(keyPropE.i[j][k]-keyPropS.i[j][k])*perc;
+    for(j = 0;j < jLen;j += 1) {
+      for(k = 0;k < kLen;k += 1) {
+        vertexValue = isHold ? keyPropS.i[j][k] :  keyPropS.i[j][k] + (keyPropE.i[j][k] - keyPropS.i[j][k]) * perc;
         previousValue.i[j][k] = vertexValue;
-        vertexValue = isHold ? keyPropS.o[j][k] :  keyPropS.o[j][k]+(keyPropE.o[j][k]-keyPropS.o[j][k])*perc;
+        vertexValue = isHold ? keyPropS.o[j][k] :  keyPropS.o[j][k] + (keyPropE.o[j][k] - keyPropS.o[j][k]) * perc;
         previousValue.o[j][k] = vertexValue;
-        vertexValue = isHold ? keyPropS.v[j][k] :  keyPropS.v[j][k]+(keyPropE.v[j][k]-keyPropS.v[j][k])*perc;
+        vertexValue = isHold ? keyPropS.v[j][k] :  keyPropS.v[j][k] + (keyPropE.v[j][k] - keyPropS.v[j][k]) * perc;
         previousValue.v[j][k] = vertexValue;
       }
     }
@@ -241,7 +241,7 @@ var ShapePropertyFactory = (function () {
         }
       },
       convertEllToPath: function () {
-        var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0]/2, s1 = this.s.v[1]/2;
+        var p0 = this.p.v[0], p1 = this.p.v[1], s0 = this.s.v[0] / 2, s1 = this.s.v[1] / 2;
         var _cw = this.d !== 3;
         var _v = this.v;
         _v.v[0][0] = p0;
@@ -323,8 +323,8 @@ var ShapePropertyFactory = (function () {
         }
       },
       convertStarToPath: function () {
-        var numPts = Math.floor(this.pt.v)*2;
-        var angle = Math.PI*2/numPts;
+        var numPts = Math.floor(this.pt.v) * 2;
+        var angle = Math.PI * 2 / numPts;
         /* this.v.v.length = numPts;
                 this.v.i.length = numPts;
                 this.v.o.length = numPts; */
@@ -333,51 +333,51 @@ var ShapePropertyFactory = (function () {
         var shortRad = this.ir.v;
         var longRound = this.os.v;
         var shortRound = this.is.v;
-        var longPerimSegment = 2*Math.PI*longRad/(numPts*2);
-        var shortPerimSegment = 2*Math.PI*shortRad/(numPts*2);
-        var i, rad, roundness, perimSegment, currentAng = -Math.PI/ 2;
+        var longPerimSegment = 2 * Math.PI * longRad / (numPts * 2);
+        var shortPerimSegment = 2 * Math.PI * shortRad / (numPts * 2);
+        var i, rad, roundness, perimSegment, currentAng = -Math.PI / 2;
         currentAng += this.r.v;
         var dir = this.data.d === 3 ? -1 : 1;
         this.v._length = 0;
-        for(i=0;i<numPts;i+=1) {
+        for(i = 0;i < numPts;i += 1) {
           rad = longFlag ? longRad : shortRad;
           roundness = longFlag ? longRound : shortRound;
           perimSegment = longFlag ? longPerimSegment : shortPerimSegment;
           var x = rad * Math.cos(currentAng);
           var y = rad * Math.sin(currentAng);
-          var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
-          var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
+          var ox = x === 0 && y === 0 ? 0 : y / Math.sqrt(x * x + y * y);
+          var oy = x === 0 && y === 0 ? 0 : -x / Math.sqrt(x * x + y * y);
           x +=  + this.p.v[0];
           y +=  + this.p.v[1];
-          this.v.setTripleAt(x, y, x-ox*perimSegment*roundness*dir, y-oy*perimSegment*roundness*dir, x+ox*perimSegment*roundness*dir, y+oy*perimSegment*roundness*dir, i, true);
+          this.v.setTripleAt(x, y, x - ox * perimSegment * roundness * dir, y - oy * perimSegment * roundness * dir, x + ox * perimSegment * roundness * dir, y + oy * perimSegment * roundness * dir, i, true);
 
           /* this.v.v[i] = [x,y];
                     this.v.i[i] = [x+ox*perimSegment*roundness*dir,y+oy*perimSegment*roundness*dir];
                     this.v.o[i] = [x-ox*perimSegment*roundness*dir,y-oy*perimSegment*roundness*dir];
                     this.v._length = numPts; */
           longFlag = !longFlag;
-          currentAng += angle*dir;
+          currentAng += angle * dir;
         }
       },
       convertPolygonToPath: function () {
         var numPts = Math.floor(this.pt.v);
-        var angle = Math.PI*2/numPts;
+        var angle = Math.PI * 2 / numPts;
         var rad = this.or.v;
         var roundness = this.os.v;
-        var perimSegment = 2*Math.PI*rad/(numPts*4);
-        var i, currentAng = -Math.PI/ 2;
+        var perimSegment = 2 * Math.PI * rad / (numPts * 4);
+        var i, currentAng = -Math.PI / 2;
         var dir = this.data.d === 3 ? -1 : 1;
         currentAng += this.r.v;
         this.v._length = 0;
-        for(i=0;i<numPts;i+=1) {
+        for(i = 0;i < numPts;i += 1) {
           var x = rad * Math.cos(currentAng);
           var y = rad * Math.sin(currentAng);
-          var ox = x === 0 && y === 0 ? 0 : y/Math.sqrt(x*x + y*y);
-          var oy = x === 0 && y === 0 ? 0 : -x/Math.sqrt(x*x + y*y);
+          var ox = x === 0 && y === 0 ? 0 : y / Math.sqrt(x * x + y * y);
+          var oy = x === 0 && y === 0 ? 0 : -x / Math.sqrt(x * x + y * y);
           x +=  + this.p.v[0];
           y +=  + this.p.v[1];
-          this.v.setTripleAt(x, y, x-ox*perimSegment*roundness*dir, y-oy*perimSegment*roundness*dir, x+ox*perimSegment*roundness*dir, y+oy*perimSegment*roundness*dir, i, true);
-          currentAng += angle*dir;
+          this.v.setTripleAt(x, y, x - ox * perimSegment * roundness * dir, y - oy * perimSegment * roundness * dir, x + ox * perimSegment * roundness * dir, y + oy * perimSegment * roundness * dir, i, true);
+          currentAng += angle * dir;
         }
         this.paths.length = 0;
         this.paths[0] = this.v;
@@ -415,39 +415,39 @@ var ShapePropertyFactory = (function () {
 
     RectShapeProperty.prototype = {
       convertRectToPath: function () {
-        var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0]/2, v1 = this.s.v[1]/2;
+        var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0] / 2, v1 = this.s.v[1] / 2;
         var round = bm_min(v0, v1, this.r.v);
-        var cPoint = round*(1-roundCorner);
+        var cPoint = round * (1 - roundCorner);
         this.v._length = 0;
 
         if(this.d === 2 || this.d === 1) {
-          this.v.setTripleAt(p0+v0, p1-v1+round, p0+v0, p1-v1+round, p0+v0, p1-v1+cPoint, 0, true);
-          this.v.setTripleAt(p0+v0, p1+v1-round, p0+v0, p1+v1-cPoint, p0+v0, p1+v1-round, 1, true);
-          if(round!== 0) {
-            this.v.setTripleAt(p0+v0-round, p1+v1, p0+v0-round, p1+v1, p0+v0-cPoint, p1+v1, 2, true);
-            this.v.setTripleAt(p0-v0+round, p1+v1, p0-v0+cPoint, p1+v1, p0-v0+round, p1+v1, 3, true);
-            this.v.setTripleAt(p0-v0, p1+v1-round, p0-v0, p1+v1-round, p0-v0, p1+v1-cPoint, 4, true);
-            this.v.setTripleAt(p0-v0, p1-v1+round, p0-v0, p1-v1+cPoint, p0-v0, p1-v1+round, 5, true);
-            this.v.setTripleAt(p0-v0+round, p1-v1, p0-v0+round, p1-v1, p0-v0+cPoint, p1-v1, 6, true);
-            this.v.setTripleAt(p0+v0-round, p1-v1, p0+v0-cPoint, p1-v1, p0+v0-round, p1-v1, 7, true);
+          this.v.setTripleAt(p0 + v0, p1 - v1 + round, p0 + v0, p1 - v1 + round, p0 + v0, p1 - v1 + cPoint, 0, true);
+          this.v.setTripleAt(p0 + v0, p1 + v1 - round, p0 + v0, p1 + v1 - cPoint, p0 + v0, p1 + v1 - round, 1, true);
+          if(round !== 0) {
+            this.v.setTripleAt(p0 + v0 - round, p1 + v1, p0 + v0 - round, p1 + v1, p0 + v0 - cPoint, p1 + v1, 2, true);
+            this.v.setTripleAt(p0 - v0 + round, p1 + v1, p0 - v0 + cPoint, p1 + v1, p0 - v0 + round, p1 + v1, 3, true);
+            this.v.setTripleAt(p0 - v0, p1 + v1 - round, p0 - v0, p1 + v1 - round, p0 - v0, p1 + v1 - cPoint, 4, true);
+            this.v.setTripleAt(p0 - v0, p1 - v1 + round, p0 - v0, p1 - v1 + cPoint, p0 - v0, p1 - v1 + round, 5, true);
+            this.v.setTripleAt(p0 - v0 + round, p1 - v1, p0 - v0 + round, p1 - v1, p0 - v0 + cPoint, p1 - v1, 6, true);
+            this.v.setTripleAt(p0 + v0 - round, p1 - v1, p0 + v0 - cPoint, p1 - v1, p0 + v0 - round, p1 - v1, 7, true);
           } else {
-            this.v.setTripleAt(p0-v0, p1+v1, p0-v0+cPoint, p1+v1, p0-v0, p1+v1, 2);
-            this.v.setTripleAt(p0-v0, p1-v1, p0-v0, p1-v1+cPoint, p0-v0, p1-v1, 3);
+            this.v.setTripleAt(p0 - v0, p1 + v1, p0 - v0 + cPoint, p1 + v1, p0 - v0, p1 + v1, 2);
+            this.v.setTripleAt(p0 - v0, p1 - v1, p0 - v0, p1 - v1 + cPoint, p0 - v0, p1 - v1, 3);
           }
         }else{
-          this.v.setTripleAt(p0+v0, p1-v1+round, p0+v0, p1-v1+cPoint, p0+v0, p1-v1+round, 0, true);
-          if(round!== 0) {
-            this.v.setTripleAt(p0+v0-round, p1-v1, p0+v0-round, p1-v1, p0+v0-cPoint, p1-v1, 1, true);
-            this.v.setTripleAt(p0-v0+round, p1-v1, p0-v0+cPoint, p1-v1, p0-v0+round, p1-v1, 2, true);
-            this.v.setTripleAt(p0-v0, p1-v1+round, p0-v0, p1-v1+round, p0-v0, p1-v1+cPoint, 3, true);
-            this.v.setTripleAt(p0-v0, p1+v1-round, p0-v0, p1+v1-cPoint, p0-v0, p1+v1-round, 4, true);
-            this.v.setTripleAt(p0-v0+round, p1+v1, p0-v0+round, p1+v1, p0-v0+cPoint, p1+v1, 5, true);
-            this.v.setTripleAt(p0+v0-round, p1+v1, p0+v0-cPoint, p1+v1, p0+v0-round, p1+v1, 6, true);
-            this.v.setTripleAt(p0+v0, p1+v1-round, p0+v0, p1+v1-round, p0+v0, p1+v1-cPoint, 7, true);
+          this.v.setTripleAt(p0 + v0, p1 - v1 + round, p0 + v0, p1 - v1 + cPoint, p0 + v0, p1 - v1 + round, 0, true);
+          if(round !== 0) {
+            this.v.setTripleAt(p0 + v0 - round, p1 - v1, p0 + v0 - round, p1 - v1, p0 + v0 - cPoint, p1 - v1, 1, true);
+            this.v.setTripleAt(p0 - v0 + round, p1 - v1, p0 - v0 + cPoint, p1 - v1, p0 - v0 + round, p1 - v1, 2, true);
+            this.v.setTripleAt(p0 - v0, p1 - v1 + round, p0 - v0, p1 - v1 + round, p0 - v0, p1 - v1 + cPoint, 3, true);
+            this.v.setTripleAt(p0 - v0, p1 + v1 - round, p0 - v0, p1 + v1 - cPoint, p0 - v0, p1 + v1 - round, 4, true);
+            this.v.setTripleAt(p0 - v0 + round, p1 + v1, p0 - v0 + round, p1 + v1, p0 - v0 + cPoint, p1 + v1, 5, true);
+            this.v.setTripleAt(p0 + v0 - round, p1 + v1, p0 + v0 - cPoint, p1 + v1, p0 + v0 - round, p1 + v1, 6, true);
+            this.v.setTripleAt(p0 + v0, p1 + v1 - round, p0 + v0, p1 + v1 - round, p0 + v0, p1 + v1 - cPoint, 7, true);
           } else {
-            this.v.setTripleAt(p0-v0, p1-v1, p0-v0+cPoint, p1-v1, p0-v0, p1-v1, 1, true);
-            this.v.setTripleAt(p0-v0, p1+v1, p0-v0, p1+v1-cPoint, p0-v0, p1+v1, 2, true);
-            this.v.setTripleAt(p0+v0, p1+v1, p0+v0-cPoint, p1+v1, p0+v0, p1+v1, 3, true);
+            this.v.setTripleAt(p0 - v0, p1 - v1, p0 - v0 + cPoint, p1 - v1, p0 - v0, p1 - v1, 1, true);
+            this.v.setTripleAt(p0 - v0, p1 + v1, p0 - v0, p1 + v1 - cPoint, p0 - v0, p1 + v1, 2, true);
+            this.v.setTripleAt(p0 + v0, p1 + v1, p0 + v0 - cPoint, p1 + v1, p0 + v0, p1 + v1, 3, true);
 
           }
         }

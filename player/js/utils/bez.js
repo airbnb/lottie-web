@@ -4,7 +4,7 @@ function bezFunction() {
   var math = Math;
 
   function pointOnLine2D(x1, y1, x2, y2, x3, y3) {
-    var det1 = (x1*y2) + (y1*x3) + (x2*y3) - (x3*y2) - (y3*x1) - (x2*y1);
+    var det1 = (x1 * y2) + (y1 * x3) + (x2 * y3) - (x3 * y2) - (y3 * x1) - (x2 * y1);
     return det1 > -0.001 && det1 < 0.001;
   }
 
@@ -41,11 +41,11 @@ function bezFunction() {
       var point = [], lastPoint = [];
       var lengthData = bezier_length_pool.newElement();
       len = pt3.length;
-      for(k=0;k<curveSegments;k+=1) {
-        perc = k/(curveSegments-1);
+      for(k = 0;k < curveSegments;k += 1) {
+        perc = k / (curveSegments - 1);
         ptDistance = 0;
-        for(i=0;i<len;i+=1) {
-          ptCoord = bm_pow(1-perc, 3)*pt1[i]+3*bm_pow(1-perc, 2)*perc*pt3[i]+3*(1-perc)*bm_pow(perc, 2)*pt4[i]+bm_pow(perc, 3)*pt2[i];
+        for(i = 0;i < len;i += 1) {
+          ptCoord = bm_pow(1 - perc, 3) * pt1[i] + 3 * bm_pow(1 - perc, 2) * perc * pt3[i] + 3 * (1 - perc) * bm_pow(perc, 2) * pt4[i] + bm_pow(perc, 3) * pt2[i];
           point[i] = ptCoord;
           if(lastPoint[i] !== null) {
             ptDistance += bm_pow(point[i] - lastPoint[i], 2);
@@ -73,8 +73,8 @@ function bezFunction() {
     var i, len = shapeData._length;
     var lengths = segmentsLength.lengths;
     var totalLength = 0;
-    for(i=0;i<len-1;i+=1) {
-      lengths[i] = getBezierLength(pathV[i], pathV[i+1], pathO[i], pathI[i+1]);
+    for(i = 0;i < len - 1;i += 1) {
+      lengths[i] = getBezierLength(pathV[i], pathV[i + 1], pathO[i], pathI[i + 1]);
       totalLength += lengths[i].addedLength;
     }
     if(closed && len) {
@@ -100,14 +100,14 @@ function bezFunction() {
     var storedData = {};
 
     return function (pt1, pt2, pt3, pt4) {
-      var bezierName = (pt1[0]+'_'+pt1[1]+'_'+pt2[0]+'_'+pt2[1]+'_'+pt3[0]+'_'+pt3[1]+'_'+pt4[0]+'_'+pt4[1]).replace(/\./g, 'p');
+      var bezierName = (pt1[0] + '_' + pt1[1] + '_' + pt2[0] + '_' + pt2[1] + '_' + pt3[0] + '_' + pt3[1] + '_' + pt4[0] + '_' + pt4[1]).replace(/\./g, 'p');
       if(!storedData[bezierName]) {
         var curveSegments = defaultCurveSegments;
         var k, i, len;
         var ptCoord, perc, addedLength = 0;
         var ptDistance;
         var point, lastPoint = null;
-        if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0], pt1[1], pt2[0], pt2[1], pt1[0]+pt3[0], pt1[1]+pt3[1]) && pointOnLine2D(pt1[0], pt1[1], pt2[0], pt2[1], pt2[0]+pt4[0], pt2[1]+pt4[1])) {
+        if (pt1.length === 2 && (pt1[0] != pt2[0] || pt1[1] != pt2[1]) && pointOnLine2D(pt1[0], pt1[1], pt2[0], pt2[1], pt1[0] + pt3[0], pt1[1] + pt3[1]) && pointOnLine2D(pt1[0], pt1[1], pt2[0], pt2[1], pt2[0] + pt4[0], pt2[1] + pt4[1])) {
           curveSegments = 2;
         }
         var bezierData = new BezierData(curveSegments);
@@ -117,7 +117,7 @@ function bezFunction() {
           perc = k / (curveSegments - 1);
           ptDistance = 0;
           for (i = 0; i < len; i += 1) {
-            ptCoord = bm_pow(1-perc, 3)*pt1[i]+3*bm_pow(1-perc, 2)*perc*(pt1[i] + pt3[i])+3*(1-perc)*bm_pow(perc, 2)*(pt2[i] + pt4[i])+bm_pow(perc, 3)*pt2[i];
+            ptCoord = bm_pow(1 - perc, 3) * pt1[i] + 3 * bm_pow(1 - perc, 2) * perc * (pt1[i] + pt3[i]) + 3 * (1 - perc) * bm_pow(perc, 2) * (pt2[i] + pt4[i]) + bm_pow(perc, 3) * pt2[i];
             point[i] = ptCoord;
             if(lastPoint !== null) {
               ptDistance += bm_pow(point[i] - lastPoint[i], 2);
@@ -139,8 +139,8 @@ function bezFunction() {
     var percents = bezierData.percents;
     var lengths = bezierData.lengths;
     var len = percents.length;
-    var initPos = bm_floor((len-1)*perc);
-    var lengthPos = perc*bezierData.addedLength;
+    var initPos = bm_floor((len - 1) * perc);
+    var lengthPos = perc * bezierData.addedLength;
     var lPerc = 0;
     if(initPos === len - 1 || initPos === 0 || lengthPos === lengths[initPos]) {
       return percents[initPos];
@@ -148,8 +148,8 @@ function bezFunction() {
       var dir = lengths[initPos] > lengthPos ? -1 : 1;
       var flag = true;
       while(flag) {
-        if(lengths[initPos] <= lengthPos && lengths[initPos+1] > lengthPos) {
-          lPerc = (lengthPos - lengths[initPos]) / (lengths[initPos+1] - lengths[initPos]);
+        if(lengths[initPos] <= lengthPos && lengths[initPos + 1] > lengthPos) {
+          lPerc = (lengthPos - lengths[initPos]) / (lengths[initPos + 1] - lengths[initPos]);
           flag = false;
         }else{
           initPos += dir;
@@ -162,7 +162,7 @@ function bezFunction() {
           flag = false;
         }
       }
-      return percents[initPos] + (percents[initPos+1] - percents[initPos])*lPerc;
+      return percents[initPos] + (percents[initPos + 1] - percents[initPos]) * lPerc;
     }
   }
 
@@ -170,8 +170,8 @@ function bezFunction() {
     var t1 = getDistancePerc(percent, bezierData);
     var u0 = 1;
     var u1 = 1 - t1;
-    var ptX = Math.round((u1*u1*u1* pt1[0] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[0] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[0] + t1*t1*t1* pt2[0])* 1000) / 1000;
-    var ptY = Math.round((u1*u1*u1* pt1[1] + (t1*u1*u1 + u1*t1*u1 + u1*u1*t1)* pt3[1] + (t1*t1*u1 + u1*t1*t1 + t1*u1*t1)*pt4[1] + t1*t1*t1* pt2[1])* 1000) / 1000;
+    var ptX = Math.round((u1 * u1 * u1 * pt1[0] + (t1 * u1 * u1 + u1 * t1 * u1 + u1 * u1 * t1) * pt3[0] + (t1 * t1 * u1 + u1 * t1 * t1 + t1 * u1 * t1) * pt4[0] + t1 * t1 * t1 * pt2[0]) * 1000) / 1000;
+    var ptY = Math.round((u1 * u1 * u1 * pt1[1] + (t1 * u1 * u1 + u1 * t1 * u1 + u1 * u1 * t1) * pt3[1] + (t1 * t1 * u1 + u1 * t1 * t1 + t1 * u1 * t1) * pt4[1] + t1 * t1 * t1 * pt2[1]) * 1000) / 1000;
     return [ptX, ptY];
   }
 
@@ -190,26 +190,26 @@ function bezFunction() {
     var i, len = pt1.length;
     var u0 = 1 - t0;
     var u1 = 1 - t1;
-    var u0u0u0 = u0*u0*u0;
-    var t0u0u0_3 = t0*u0*u0*3;
-    var t0t0u0_3 = t0*t0*u0*3;
-    var t0t0t0 = t0*t0*t0;
+    var u0u0u0 = u0 * u0 * u0;
+    var t0u0u0_3 = t0 * u0 * u0 * 3;
+    var t0t0u0_3 = t0 * t0 * u0 * 3;
+    var t0t0t0 = t0 * t0 * t0;
     //
-    var u0u0u1 = u0*u0*u1;
-    var t0u0u1_3 = t0*u0*u1 + u0*t0*u1 + u0*u0*t1;
-    var t0t0u1_3 = t0*t0*u1 + u0*t0*t1 + t0*u0*t1;
-    var t0t0t1 = t0*t0*t1;
+    var u0u0u1 = u0 * u0 * u1;
+    var t0u0u1_3 = t0 * u0 * u1 + u0 * t0 * u1 + u0 * u0 * t1;
+    var t0t0u1_3 = t0 * t0 * u1 + u0 * t0 * t1 + t0 * u0 * t1;
+    var t0t0t1 = t0 * t0 * t1;
     //
-    var u0u1u1 = u0*u1*u1;
-    var t0u1u1_3 = t0*u1*u1 + u0*t1*u1 + u0*u1*t1;
-    var t0t1u1_3 = t0*t1*u1 + u0*t1*t1 + t0*u1*t1;
-    var t0t1t1 = t0*t1*t1;
+    var u0u1u1 = u0 * u1 * u1;
+    var t0u1u1_3 = t0 * u1 * u1 + u0 * t1 * u1 + u0 * u1 * t1;
+    var t0t1u1_3 = t0 * t1 * u1 + u0 * t1 * t1 + t0 * u1 * t1;
+    var t0t1t1 = t0 * t1 * t1;
     //
-    var u1u1u1 = u1*u1*u1;
-    var t1u1u1_3 = t1*u1*u1 + u1*t1*u1 + u1*u1*t1;
-    var t1t1u1_3 = t1*t1*u1 + u1*t1*t1 + t1*u1*t1;
-    var t1t1t1 = t1*t1*t1;
-    for(i=0;i<len;i+=1) {
+    var u1u1u1 = u1 * u1 * u1;
+    var t1u1u1_3 = t1 * u1 * u1 + u1 * t1 * u1 + u1 * u1 * t1;
+    var t1t1u1_3 = t1 * t1 * u1 + u1 * t1 * t1 + t1 * u1 * t1;
+    var t1t1t1 = t1 * t1 * t1;
+    for(i = 0;i < len;i += 1) {
       bezier_segment_points[i * 4] = Math.round((u0u0u0 * pt1[i] + t0u0u0_3 * pt3[i] + t0t0u0_3 * pt4[i] + t0t0t0 * pt2[i]) * 1000) / 1000;
       bezier_segment_points[i * 4 + 1] = Math.round((u0u0u1 * pt1[i] + t0u0u1_3 * pt3[i] + t0t0u1_3 * pt4[i] + t0t0t1 * pt2[i]) * 1000) / 1000;
       bezier_segment_points[i * 4 + 2] = Math.round((u0u1u1 * pt1[i] + t0u1u1_3 * pt3[i] + t0t1u1_3 * pt4[i] + t0t1t1 * pt2[i]) * 1000) / 1000;

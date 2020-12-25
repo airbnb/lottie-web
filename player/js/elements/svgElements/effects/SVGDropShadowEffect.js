@@ -55,10 +55,10 @@ SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
     }
     if(forceRender || this.filterManager.effectElements[0].p._mdf) {
       var col = this.filterManager.effectElements[0].p.v;
-      this.feFlood.setAttribute('flood-color', rgbToHex(Math.round(col[0]*255), Math.round(col[1]*255), Math.round(col[2]*255)));
+      this.feFlood.setAttribute('flood-color', rgbToHex(Math.round(col[0] * 255), Math.round(col[1] * 255), Math.round(col[2] * 255)));
     }
     if(forceRender || this.filterManager.effectElements[1].p._mdf) {
-      this.feFlood.setAttribute('flood-opacity', this.filterManager.effectElements[1].p.v/255);
+      this.feFlood.setAttribute('flood-opacity', this.filterManager.effectElements[1].p.v / 255);
     }
     if(forceRender || this.filterManager.effectElements[2].p._mdf || this.filterManager.effectElements[3].p._mdf) {
       var distance = this.filterManager.effectElements[3].p.v;

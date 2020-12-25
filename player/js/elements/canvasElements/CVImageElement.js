@@ -19,17 +19,17 @@ CVImageElement.prototype.createContent = function () {
     var imgW = this.img.width;
     var imgH = this.img.height;
     var imgRel = imgW / imgH;
-    var canvasRel = this.assetData.w/this.assetData.h;
+    var canvasRel = this.assetData.w / this.assetData.h;
     var widthCrop, heightCrop;
     var par = this.assetData.pr || this.globalData.renderConfig.imagePreserveAspectRatio;
     if((imgRel > canvasRel && par === 'xMidYMid slice') || (imgRel < canvasRel && par !== 'xMidYMid slice')) {
       heightCrop = imgH;
-      widthCrop = heightCrop*canvasRel;
+      widthCrop = heightCrop * canvasRel;
     } else {
       widthCrop = imgW;
-      heightCrop = widthCrop/canvasRel;
+      heightCrop = widthCrop / canvasRel;
     }
-    ctx.drawImage(this.img, (imgW-widthCrop)/2, (imgH-heightCrop)/2, widthCrop, heightCrop, 0, 0, this.assetData.w, this.assetData.h);
+    ctx.drawImage(this.img, (imgW - widthCrop) / 2, (imgH - heightCrop) / 2, widthCrop, heightCrop, 0, 0, this.assetData.w, this.assetData.h);
     this.img = canvas;
   }
 

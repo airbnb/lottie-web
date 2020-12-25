@@ -39,7 +39,7 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
 
   if(amount !== 0) {
     var shapeData, newPaths, localShapeCollection;
-    for(i=0;i<len;i+=1) {
+    for(i = 0;i < len;i += 1) {
       shapeData = this.shapes[i];
       newPaths = shapeData.shape.paths;
       localShapeCollection = shapeData.localShapeCollection;
@@ -48,7 +48,7 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
         shapeData.shape._mdf = true;
         shapePaths = shapeData.shape.paths.shapes;
         jLen = shapeData.shape.paths._length;
-        for(j=0;j<jLen;j+=1) {
+        for(j = 0;j < jLen;j += 1) {
           localShapeCollection.addShape(this.processPath(shapePaths[j], amount));
         }
       }

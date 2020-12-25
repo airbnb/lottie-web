@@ -20,7 +20,7 @@ SVGStrokeEffect.prototype.initialize = function () {
   groupPath.setAttribute('fill', 'none');
   groupPath.setAttribute('stroke-linecap', 'round');
   groupPath.setAttribute('stroke-dashoffset', 1);
-  for(i;i<len;i+=1) {
+  for(i;i < len;i += 1) {
     path = createNS('path');
     groupPath.appendChild(path);
     this.paths.push({p:path, m:i});
@@ -33,7 +33,7 @@ SVGStrokeEffect.prototype.initialize = function () {
     mask.appendChild(groupPath);
     this.elem.globalData.defs.appendChild(mask);
     var g = createNS('g');
-    g.setAttribute('mask', 'url(' + locationHref + '#'+id+')');
+    g.setAttribute('mask', 'url(' + locationHref + '#' + id + ')');
     while (elemChildren[0]) {
       g.appendChild(elemChildren[0]);
     }
@@ -61,7 +61,7 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
   }
   var i, len = this.paths.length;
   var mask, path;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     if(this.paths[i].m === -1) {
       continue;
     }
@@ -73,26 +73,26 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
     if(forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf) {
       var dasharrayValue;
       if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100) {
-        var s = Math.min(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v)/100;
-        var e = Math.max(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v)/100;
+        var s = Math.min(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v) / 100;
+        var e = Math.max(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v) / 100;
         var l = path.getTotalLength();
-        dasharrayValue = '0 0 0 ' + l*s + ' ';
-        var lineLength = l*(e-s);
-        var segment = 1+this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
-        var units = Math.floor(lineLength/segment);
+        dasharrayValue = '0 0 0 ' + l * s + ' ';
+        var lineLength = l * (e - s);
+        var segment = 1 + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v / 100;
+        var units = Math.floor(lineLength / segment);
         var j;
-        for(j=0;j<units;j+=1) {
-          dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100 + ' ';
+        for(j = 0;j < units;j += 1) {
+          dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v / 100 + ' ';
         }
-        dasharrayValue += '0 ' + l*10 + ' 0 0';
+        dasharrayValue += '0 ' + l * 10 + ' 0 0';
       } else {
-        dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
+        dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v / 100;
       }
       path.setAttribute('stroke-dasharray', dasharrayValue);
     }
   }
   if(forceRender || this.filterManager.effectElements[4].p._mdf) {
-    this.pathMasker.setAttribute('stroke-width', this.filterManager.effectElements[4].p.v*2);
+    this.pathMasker.setAttribute('stroke-width', this.filterManager.effectElements[4].p.v * 2);
   }
     
   if(forceRender || this.filterManager.effectElements[6].p._mdf) {
@@ -101,7 +101,7 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
   if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
     if(forceRender || this.filterManager.effectElements[3].p._mdf) {
       var color = this.filterManager.effectElements[3].p.v;
-      this.pathMasker.setAttribute('stroke', 'rgb('+bm_floor(color[0]*255)+','+bm_floor(color[1]*255)+','+bm_floor(color[2]*255)+')');
+      this.pathMasker.setAttribute('stroke', 'rgb(' + bm_floor(color[0] * 255) + ',' + bm_floor(color[1] * 255) + ',' + bm_floor(color[2] * 255) + ')');
     }
   }
 };

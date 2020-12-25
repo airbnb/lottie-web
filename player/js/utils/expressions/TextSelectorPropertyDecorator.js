@@ -3,7 +3,7 @@
   var TextExpressionSelectorProp = (function () {
 
     function getValueProxy(index, total) {
-      this.textIndex = index+1;
+      this.textIndex = index + 1;
       this.textTotal = total;
       this.v = this.getValue() * this.mult;
       return this.v;

@@ -19,7 +19,7 @@ function TextAnimatorProperty(textData, renderType, elem) {
 TextAnimatorProperty.prototype.searchProperties = function () {
   var i, len = this._textData.a.length, animatorProps;
   var getProp = PropertyFactory.getProp;
-  for(i=0;i<len;i+=1) {
+  for(i = 0;i < len;i += 1) {
     animatorProps = this._textData.a[i];
     this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this);
   }
@@ -170,9 +170,9 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             animatorSelector = animators[j].s;
             mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
             if (mult.length) {
-              animatorJustifyOffset += animatorProps.t.v*mult[0] * justifyOffsetMult;
+              animatorJustifyOffset += animatorProps.t.v * mult[0] * justifyOffsetMult;
             } else {
-              animatorJustifyOffset += animatorProps.t.v*mult * justifyOffsetMult;
+              animatorJustifyOffset += animatorProps.t.v * mult * justifyOffsetMult;
             }
           }
         }
@@ -219,7 +219,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
               currentLength += totalLength - documentData.lineWidths[letters[i].line];
               break;
             case 2:
-              currentLength += (totalLength - documentData.lineWidths[letters[i].line])/2;
+              currentLength += (totalLength - documentData.lineWidths[letters[i].line]) / 2;
               break;
           }
           currentLine = letters[i].line;
@@ -262,7 +262,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
             xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
             yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-            matrixHelper.translate(-alignment[0]*letters[i].an/200, -(alignment[1] * yOff / 100));
+            matrixHelper.translate(-alignment[0] * letters[i].an / 200, -(alignment[1] * yOff / 100));
             flag = false;
           } else if (points) {
             segmentLength += currentPoint.partialLength;
@@ -293,15 +293,15 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         offf = letters[i].an / 2 - letters[i].add;
         matrixHelper.translate(-offf, 0, 0);
       } else {
-        offf = letters[i].an/2 - letters[i].add;
+        offf = letters[i].an / 2 - letters[i].add;
         matrixHelper.translate(-offf, 0, 0);
 
         // Grouping alignment
-        matrixHelper.translate(-alignment[0]*letters[i].an/200, -alignment[1]*yOff/100, 0);
+        matrixHelper.translate(-alignment[0] * letters[i].an / 200, -alignment[1] * yOff / 100, 0);
       }
 
-      lineLength += letters[i].l/2;
-      for(j=0;j<jLen;j+=1) {
+      lineLength += letters[i].l / 2;
+      for(j = 0;j < jLen;j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.t.propType) {
           animatorSelector = animators[j].s;
@@ -310,21 +310,21 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           if(xPos !== 0 || documentData.j !== 0) {
             if(this._hasMaskedPath) {
               if(mult.length) {
-                currentLength += animatorProps.t.v*mult[0];
+                currentLength += animatorProps.t.v * mult[0];
               } else {
-                currentLength += animatorProps.t.v*mult;
+                currentLength += animatorProps.t.v * mult;
               }
             }else{
               if(mult.length) {
-                xPos += animatorProps.t.v*mult[0];
+                xPos += animatorProps.t.v * mult[0];
               } else {
-                xPos += animatorProps.t.v*mult;
+                xPos += animatorProps.t.v * mult;
               }
             }
           }
         }
       }
-      lineLength += letters[i].l/2;
+      lineLength += letters[i].l / 2;
       if(documentData.strokeWidthAnim) {
         sw = documentData.sw || 0;
       }
@@ -338,32 +338,32 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       if(documentData.fillColorAnim && documentData.fc) {
         fc = [documentData.fc[0], documentData.fc[1], documentData.fc[2]];
       }
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.a.propType) {
           animatorSelector = animators[j].s;
           mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
 
           if(mult.length) {
-            matrixHelper.translate(-animatorProps.a.v[0]*mult[0], -animatorProps.a.v[1]*mult[1], animatorProps.a.v[2]*mult[2]);
+            matrixHelper.translate(-animatorProps.a.v[0] * mult[0], -animatorProps.a.v[1] * mult[1], animatorProps.a.v[2] * mult[2]);
           } else {
-            matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult, animatorProps.a.v[2]*mult);
+            matrixHelper.translate(-animatorProps.a.v[0] * mult, -animatorProps.a.v[1] * mult, animatorProps.a.v[2] * mult);
           }
         }
       }
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.s.propType) {
           animatorSelector = animators[j].s;
           mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
           if(mult.length) {
-            matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult[0]), 1+((animatorProps.s.v[1]-1)*mult[1]), 1);
+            matrixHelper.scale(1 + ((animatorProps.s.v[0] - 1) * mult[0]), 1 + ((animatorProps.s.v[1] - 1) * mult[1]), 1);
           } else {
-            matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult), 1+((animatorProps.s.v[1]-1)*mult), 1);
+            matrixHelper.scale(1 + ((animatorProps.s.v[0] - 1) * mult), 1 + ((animatorProps.s.v[1] - 1) * mult), 1);
           }
         }
       }
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         animatorProps = animators[j].a;
         animatorSelector = animators[j].s;
         mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
@@ -384,76 +384,76 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         if (animatorProps.ry.propType) {
 
           if(mult.length) {
-            matrixHelper.rotateY(animatorProps.ry.v*mult[1]);
+            matrixHelper.rotateY(animatorProps.ry.v * mult[1]);
           }else{
-            matrixHelper.rotateY(animatorProps.ry.v*mult);
+            matrixHelper.rotateY(animatorProps.ry.v * mult);
           }
         }
         if (animatorProps.rx.propType) {
           if(mult.length) {
-            matrixHelper.rotateX(animatorProps.rx.v*mult[0]);
+            matrixHelper.rotateX(animatorProps.rx.v * mult[0]);
           } else {
-            matrixHelper.rotateX(animatorProps.rx.v*mult);
+            matrixHelper.rotateX(animatorProps.rx.v * mult);
           }
         }
         if (animatorProps.o.propType) {
           if(mult.length) {
-            elemOpacity += ((animatorProps.o.v)*mult[0] - elemOpacity)*mult[0];
+            elemOpacity += ((animatorProps.o.v) * mult[0] - elemOpacity) * mult[0];
           } else {
-            elemOpacity += ((animatorProps.o.v)*mult - elemOpacity)*mult;
+            elemOpacity += ((animatorProps.o.v) * mult - elemOpacity) * mult;
           }
         }
         if (documentData.strokeWidthAnim && animatorProps.sw.propType) {
           if(mult.length) {
-            sw += animatorProps.sw.v*mult[0];
+            sw += animatorProps.sw.v * mult[0];
           } else {
-            sw += animatorProps.sw.v*mult;
+            sw += animatorProps.sw.v * mult;
           }
         }
         if (documentData.strokeColorAnim && animatorProps.sc.propType) {
-          for(k=0;k<3;k+=1) {
+          for(k = 0;k < 3;k += 1) {
             if(mult.length) {
-              sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0];
+              sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k]) * mult[0];
             } else {
-              sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult;
+              sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k]) * mult;
             }
           }
         }
         if (documentData.fillColorAnim && documentData.fc) {
           if(animatorProps.fc.propType) {
-            for(k=0;k<3;k+=1) {
+            for(k = 0;k < 3;k += 1) {
               if(mult.length) {
-                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0];
+                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k]) * mult[0];
               } else {
-                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult;
+                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k]) * mult;
               }
             }
           }
           if(animatorProps.fh.propType) {
             if(mult.length) {
-              fc = addHueToRGB(fc, animatorProps.fh.v*mult[0]);
+              fc = addHueToRGB(fc, animatorProps.fh.v * mult[0]);
             } else {
-              fc = addHueToRGB(fc, animatorProps.fh.v*mult);
+              fc = addHueToRGB(fc, animatorProps.fh.v * mult);
             }
           }
           if(animatorProps.fs.propType) {
             if(mult.length) {
-              fc = addSaturationToRGB(fc, animatorProps.fs.v*mult[0]);
+              fc = addSaturationToRGB(fc, animatorProps.fs.v * mult[0]);
             } else {
-              fc = addSaturationToRGB(fc, animatorProps.fs.v*mult);
+              fc = addSaturationToRGB(fc, animatorProps.fs.v * mult);
             }
           }
           if(animatorProps.fb.propType) {
             if(mult.length) {
-              fc = addBrightnessToRGB(fc, animatorProps.fb.v*mult[0]);
+              fc = addBrightnessToRGB(fc, animatorProps.fb.v * mult[0]);
             } else {
-              fc = addBrightnessToRGB(fc, animatorProps.fb.v*mult);
+              fc = addBrightnessToRGB(fc, animatorProps.fb.v * mult);
             }
           }
         }
       }
 
-      for(j=0;j<jLen;j+=1) {
+      for(j = 0;j < jLen;j += 1) {
         animatorProps = animators[j].a;
 
         if (animatorProps.p.propType) {
@@ -479,16 +479,16 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         letterSw = sw < 0 ? 0 : sw;
       }
       if(documentData.strokeColorAnim) {
-        letterSc = 'rgb('+Math.round(sc[0]*255)+','+Math.round(sc[1]*255)+','+Math.round(sc[2]*255)+')';
+        letterSc = 'rgb(' + Math.round(sc[0] * 255) + ',' + Math.round(sc[1] * 255) + ',' + Math.round(sc[2] * 255) + ')';
       }
       if(documentData.fillColorAnim && documentData.fc) {
-        letterFc = 'rgb('+Math.round(fc[0]*255)+','+Math.round(fc[1]*255)+','+Math.round(fc[2]*255)+')';
+        letterFc = 'rgb(' + Math.round(fc[0] * 255) + ',' + Math.round(fc[1] * 255) + ',' + Math.round(fc[2] * 255) + ')';
       }
 
       if(this._hasMaskedPath) {
         matrixHelper.translate(0, -documentData.ls);
 
-        matrixHelper.translate(0, alignment[1]*yOff/100 + yPos, 0);
+        matrixHelper.translate(0, alignment[1] * yOff / 100 + yPos, 0);
         if (textData.p.p) {
           tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
           var rot = Math.atan(tanAngle) * 180 / Math.PI;
@@ -498,10 +498,10 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           matrixHelper.rotate(-rot * Math.PI / 180);
         }
         matrixHelper.translate(xPathPos, yPathPos, 0);
-        currentLength -= alignment[0]*letters[i].an/200;
-        if(letters[i+1] && ind !== letters[i+1].ind) {
+        currentLength -= alignment[0] * letters[i].an / 200;
+        if(letters[i + 1] && ind !== letters[i + 1].ind) {
           currentLength += letters[i].an / 2;
-          currentLength += documentData.tr/1000*documentData.finalSize;
+          currentLength += documentData.tr / 1000 * documentData.finalSize;
         }
       }else{
 
@@ -516,13 +516,13 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]), 0, 0);
             break;
           case 2:
-            matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line])/2, 0, 0);
+            matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]) / 2, 0, 0);
             break;
         }
         matrixHelper.translate(0, -documentData.ls);
         matrixHelper.translate(offf, 0, 0);
-        matrixHelper.translate(alignment[0]*letters[i].an/200, alignment[1]*yOff/100, 0);
-        xPos += letters[i].l + documentData.tr/1000*documentData.finalSize;
+        matrixHelper.translate(alignment[0] * letters[i].an / 200, alignment[1] * yOff / 100, 0);
+        xPos += letters[i].l + documentData.tr / 1000 * documentData.finalSize;
       }
       if(renderType === 'html') {
         letterM = matrixHelper.toCSS();

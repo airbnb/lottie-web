@@ -90,8 +90,8 @@ var TextSelectorProp = (function () {
           /* ind += 0.5;
                     mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind; */
           ind = min(max(0, ind + 0.5 - s), e - s);
-          var x = -tot/2+ind;
-          var a = tot/2;
+          var x = -tot / 2 + ind;
+          var a = tot / 2;
           mult = Math.sqrt(1 - (x * x) / (a * a));
         }
         mult = easer(mult);
@@ -113,7 +113,7 @@ var TextSelectorProp = (function () {
         }
         mult = easer(mult);
       }
-      return mult*this.a.v;
+      return mult * this.a.v;
     },
     getValue: function (newCharsFlag) {
       this.iterateDynamicProperties();
@@ -123,10 +123,10 @@ var TextSelectorProp = (function () {
         this.e.v = this._currentTextLength;
       }
       var divisor = this.data.r === 2 ? 1 : 100 / this.data.totalChars;
-      var o = this.o.v/divisor;
-      var s = this.s.v/divisor + o;
-      var e = (this.e.v/divisor) + o;
-      if(s>e) {
+      var o = this.o.v / divisor;
+      var s = this.s.v / divisor + o;
+      var e = (this.e.v / divisor) + o;
+      if(s > e) {
         var _s = s;
         s = e;
         e = _s;

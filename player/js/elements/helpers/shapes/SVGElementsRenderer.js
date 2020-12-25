@@ -40,12 +40,12 @@ var SVGElementsRenderer = (function () {
     var j, jLen, pathStringTransformed, redraw, pathNodes, l, lLen = itemData.styles.length;
     var lvl = itemData.lvl;
     var paths, mat, props, iterations, k;
-    for(l=0;l<lLen;l+=1) {
+    for(l = 0;l < lLen;l += 1) {
       redraw = itemData.sh._mdf || isFirstFrame;
       if(itemData.styles[l].lvl < lvl) {
         mat = _matrixHelper.reset();
         iterations = lvl - itemData.styles[l].lvl;
-        k = itemData.transformers.length-1;
+        k = itemData.transformers.length - 1;
         while(!redraw && iterations > 0) {
           redraw = itemData.transformers[k].mProps._mdf || redraw;
           iterations --;
@@ -53,7 +53,7 @@ var SVGElementsRenderer = (function () {
         }
         if(redraw) {
           iterations = lvl - itemData.styles[l].lvl;
-          k = itemData.transformers.length-1;
+          k = itemData.transformers.length - 1;
           while(iterations > 0) {
             props = itemData.transformers[k].mProps.v.props;
             mat.transform(props[0], props[1], props[2], props[3], props[4], props[5], props[6], props[7], props[8], props[9], props[10], props[11], props[12], props[13], props[14], props[15]);
@@ -68,7 +68,7 @@ var SVGElementsRenderer = (function () {
       jLen = paths._length;
       if(redraw) {
         pathStringTransformed = '';
-        for(j=0;j<jLen;j+=1) {
+        for(j = 0;j < jLen;j += 1) {
           pathNodes = paths.shapes[j];
           if(pathNodes && pathNodes._length) {
             pathStringTransformed += buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
@@ -87,7 +87,7 @@ var SVGElementsRenderer = (function () {
     var styleElem = itemData.style;
 
     if(itemData.c._mdf || isFirstFrame) {
-      styleElem.pElem.setAttribute('fill', 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
+      styleElem.pElem.setAttribute('fill', 'rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
     }
     if(itemData.o._mdf || isFirstFrame) {
       styleElem.pElem.setAttribute('fill-opacity', itemData.o.v);
@@ -126,7 +126,7 @@ var SVGElementsRenderer = (function () {
       for (i = 0; i < len; i += 1) {
         stop = stops[i];
         stop.setAttribute('offset', cValues[i * 4] + '%');
-        stop.setAttribute('stop-color', 'rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
+        stop.setAttribute('stop-color', 'rgb(' + cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ',' + cValues[i * 4 + 3] + ')');
       }
     }
     if (hasOpacity && (itemData.g._omdf || isFirstFrame)) {
@@ -169,7 +169,7 @@ var SVGElementsRenderer = (function () {
         }
         var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
 
-        var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99: itemData.h.v;
+        var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99 : itemData.h.v;
         var dist = rad * percent;
         var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
         var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];

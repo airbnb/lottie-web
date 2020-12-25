@@ -60,7 +60,7 @@ var PropertyFactory = (function () {
           keyData.__fnct = fnc;
         }
         perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
-        var distanceInLine = bezierData.segmentLength*perc;
+        var distanceInLine = bezierData.segmentLength * perc;
 
         var segmentPerc;
         var addedLength =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
@@ -204,12 +204,12 @@ var PropertyFactory = (function () {
     var qy = quat[1];
     var qz = quat[2];
     var qw = quat[3];
-    var heading = Math.atan2(2*qy*qw-2*qx*qz, 1 - 2*qy*qy - 2*qz*qz)
-    var attitude = Math.asin(2*qx*qy + 2*qz*qw) 
-    var bank = Math.atan2(2*qx*qw-2*qy*qz, 1 - 2*qx*qx - 2*qz*qz);
-    out[0] = heading/degToRads;
-    out[1] = attitude/degToRads;
-    out[2] = bank/degToRads;
+    var heading = Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy * qy - 2 * qz * qz)
+    var attitude = Math.asin(2 * qx * qy + 2 * qz * qw) 
+    var bank = Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx * qx - 2 * qz * qz);
+    out[0] = heading / degToRads;
+    out[1] = attitude / degToRads;
+    out[2] = bank / degToRads;
   }
 
   function createQuaternion(values) {
@@ -233,7 +233,7 @@ var PropertyFactory = (function () {
   function getValueAtCurrentTime() {
     var frameNum = this.comp.renderedFrame - this.offsetTime;
     var initTime = this.keyframes[0].t - this.offsetTime;
-    var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
+    var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
     if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))) {
       if(this._caching.lastFrame >= frameNum) {
         this._caching._lastKeyframeIndex = -1;
@@ -409,7 +409,7 @@ var PropertyFactory = (function () {
       this.v[i] = initFrame;
       this.pv[i] = initFrame;
     }
-    this._caching={lastFrame:initFrame, lastIndex:0, value:createTypedArray('float32', arrLen)};
+    this._caching = {lastFrame:initFrame, lastIndex:0, value:createTypedArray('float32', arrLen)};
     this.addEffect = addEffect;
   }
 

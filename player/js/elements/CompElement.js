@@ -44,7 +44,7 @@ ICompElement.prototype.prepareFrame = function (num) {
     }
     this.renderedFrame = timeRemapped;
   } else {
-    this.renderedFrame = num/this.data.sr;
+    this.renderedFrame = num / this.data.sr;
   }
   var i, len = this.elements.length;
   if(!this.completeLayers) {
@@ -80,7 +80,7 @@ ICompElement.prototype.getElements = function () {
 
 ICompElement.prototype.destroyElements = function () {
   var i, len = this.layers.length;
-  for( i = 0; i < len; i+=1 ) {
+  for( i = 0; i < len; i += 1 ) {
     if(this.elements[i]) {
       this.elements[i].destroy();
     }
