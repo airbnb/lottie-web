@@ -34,7 +34,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
     gfill.appendChild(stop);
     stops.push(stop);
   }
-  pathElement.setAttribute( data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
+  pathElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
     
   this.gf = gfill;
   this.cst = stops;
@@ -44,7 +44,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
   if(this.g._hasOpacity && !this.g._collapsable) {
     var stop, j, jLen;
     var mask = createNS('mask');
-    var maskElement = createNS( 'path');
+    var maskElement = createNS('path');
     mask.appendChild(maskElement);
     var opacityId = createElementID();
     var maskId = createElementID();
@@ -61,7 +61,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
       opFill.appendChild(stop);
       stops.push(stop);
     }
-    maskElement.setAttribute( data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + opacityId + ')');
+    maskElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + opacityId + ')');
     this.of = opFill;
     this.ms = mask;
     this.ost = stops;

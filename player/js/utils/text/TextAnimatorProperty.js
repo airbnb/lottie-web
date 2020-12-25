@@ -189,7 +189,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   }
   //
 
-  for( i = 0; i < len; i += 1) {
+  for(i = 0; i < len; i += 1) {
 
     matrixHelper.reset();
     elemOpacity = 1;

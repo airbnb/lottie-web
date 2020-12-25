@@ -230,7 +230,7 @@ var FontManager = (function () {
 
   function getCharData(char, style, font) {
     var i = 0, len = this.chars.length;
-    while( i < len) {
+    while(i < len) {
       if(this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font) {
 
         return this.chars[i];

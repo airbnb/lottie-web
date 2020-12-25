@@ -95,9 +95,9 @@ HCameraElement.prototype.renderFrame = function () {
       var mag = Math.sqrt(Math.pow(diffVector[0], 2) + Math.pow(diffVector[1], 2) + Math.pow(diffVector[2], 2));
       // var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
       var lookDir = [diffVector[0] / mag, diffVector[1] / mag, diffVector[2] / mag];
-      var lookLengthOnXZ = Math.sqrt( lookDir[2] * lookDir[2] + lookDir[0] * lookDir[0] );
-      var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));
-      var m_rotationY = (Math.atan2( lookDir[0], -lookDir[2]));
+      var lookLengthOnXZ = Math.sqrt(lookDir[2] * lookDir[2] + lookDir[0] * lookDir[0]);
+      var m_rotationX = (Math.atan2(lookDir[1], lookLengthOnXZ));
+      var m_rotationY = (Math.atan2(lookDir[0], -lookDir[2]));
       this.mat.rotateY(m_rotationY).rotateX(-m_rotationX);
 
     }

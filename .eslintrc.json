@@ -25,7 +25,6 @@
         "vars-on-top": "off",
         "comma-dangle": "off",
         "key-spacing": "off",
-        "space-in-parens": "off",
         "no-continue": "off",
         "no-plusplus": "off",
         "semi": "off",

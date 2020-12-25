@@ -51,7 +51,7 @@ ICompElement.prototype.prepareFrame = function (num) {
     this.checkLayers(this.renderedFrame);
   }
   // This iteration needs to be backwards because of how expressions connect between each other
-  for( i = len - 1; i >= 0; i -= 1 ) {
+  for(i = len - 1; i >= 0; i -= 1) {
     if(this.completeLayers || this.elements[i]) {
       this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
       if(this.elements[i]._mdf) {
@@ -63,7 +63,7 @@ ICompElement.prototype.prepareFrame = function (num) {
 
 ICompElement.prototype.renderInnerContent = function () {
   var i, len = this.layers.length;
-  for( i = 0; i < len; i += 1 ) {
+  for(i = 0; i < len; i += 1) {
     if(this.completeLayers || this.elements[i]) {
       this.elements[i].renderFrame();
     }
@@ -80,7 +80,7 @@ ICompElement.prototype.getElements = function () {
 
 ICompElement.prototype.destroyElements = function () {
   var i, len = this.layers.length;
-  for( i = 0; i < len; i += 1 ) {
+  for(i = 0; i < len; i += 1) {
     if(this.elements[i]) {
       this.elements[i].destroy();
     }

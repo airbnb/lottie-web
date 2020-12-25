@@ -62,7 +62,7 @@ ITextElement.prototype.applyTextPropertiesToMatrix = function (documentData, mat
       matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber]), 0, 0);
       break;
     case 2:
-      matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber] ) / 2, 0, 0);
+      matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber]) / 2, 0, 0);
       break;
   }
   matrixHelper.translate(xPos, yPos, 0);

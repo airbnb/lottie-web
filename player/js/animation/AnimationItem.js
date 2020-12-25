@@ -75,7 +75,7 @@ AnimationItem.prototype.setParams = function (params) {
     this.configAnimation(params.animationData);
   } else if(params.path) {
 
-    if( params.path.lastIndexOf('\\') !== -1) {
+    if(params.path.lastIndexOf('\\') !== -1) {
       this.path = params.path.substr(0, params.path.lastIndexOf('\\') + 1);
     } else {
       this.path = params.path.substr(0, params.path.lastIndexOf('/') + 1);

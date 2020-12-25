@@ -23,7 +23,7 @@ function SVGRenderer(animationItem, config) {
   if (ariaLabel) {
     this.svgElement.setAttribute('aria-labelledby', ariaLabel)
   }
-  var defs = createNS( 'defs');
+  var defs = createNS('defs');
   this.svgElement.appendChild(defs);
   var maskElement = createNS('g');
   this.svgElement.appendChild(maskElement);
@@ -122,7 +122,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
   this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
   this.data = animData;
 
-  var maskElement = createNS( 'clipPath');
+  var maskElement = createNS('clipPath');
   var rect = createNS('rect');
   rect.setAttribute('width', animData.w);
   rect.setAttribute('height', animData.h);

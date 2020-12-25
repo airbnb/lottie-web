@@ -182,7 +182,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
   if(this.animationItem.wrapper && this.animationItem.container) {
     elementWidth = this.animationItem.wrapper.offsetWidth;
     elementHeight = this.animationItem.wrapper.offsetHeight;
-    this.animationItem.container.setAttribute('width', elementWidth * this.renderConfig.dpr );
+    this.animationItem.container.setAttribute('width', elementWidth * this.renderConfig.dpr);
     this.animationItem.container.setAttribute('height', elementHeight * this.renderConfig.dpr);
   }else{
     elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;

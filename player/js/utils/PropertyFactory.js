@@ -147,7 +147,7 @@ var PropertyFactory = (function () {
                   fnc = keyData.__fnct;
                 }
               }
-              perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime ));
+              perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
             }
           }
 

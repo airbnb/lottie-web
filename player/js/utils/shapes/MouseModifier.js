@@ -35,7 +35,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
     x = mouseCoords[0] - positions.v[i][0];
     y = mouseCoords[1] - positions.v[i][1];
-    var distance = Math.sqrt( (x * x) + (y * y) );
+    var distance = Math.sqrt((x * x) + (y * y));
     positions.distV[i] += (distance - positions.distV[i]) * this.data.dc;
 
     positions.v[i][0] = Math.cos(theta) * Math.max(0, this.data.maxDist - positions.distV[i]) / 2 + (path.v[i][0]);
@@ -49,7 +49,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
     x = mouseCoords[0] - positions.o[i][0];
     y = mouseCoords[1] - positions.o[i][1];
-    var distance = Math.sqrt( (x * x) + (y * y) );
+    var distance = Math.sqrt((x * x) + (y * y));
     positions.distO[i] += (distance - positions.distO[i]) * this.data.dc;
 
     positions.o[i][0] = Math.cos(theta) * Math.max(0, this.data.maxDist - positions.distO[i]) / 2 + (path.o[i][0]);
@@ -63,7 +63,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
     x = mouseCoords[0] - positions.i[i][0];
     y = mouseCoords[1] - positions.i[i][1];
-    var distance = Math.sqrt( (x * x) + (y * y) );
+    var distance = Math.sqrt((x * x) + (y * y));
     positions.distI[i] += (distance - positions.distI[i]) * this.data.dc;
 
     positions.i[i][0] = Math.cos(theta) * Math.max(0, this.data.maxDist - positions.distI[i]) / 2 + (path.i[i][0]);

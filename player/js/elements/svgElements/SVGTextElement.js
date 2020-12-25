@@ -80,7 +80,7 @@ SVGTextElement.prototype.buildNewText = function () {
     var textContent = this.buildTextContents(documentData.finalText);
     len = textContent.length;
     yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
-    for ( i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       tSpan = this.textSpans[i] || createNS('tspan');
       tSpan.textContent = textContent[i];
       tSpan.setAttribute('x', 0);

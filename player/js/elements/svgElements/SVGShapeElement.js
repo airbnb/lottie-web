@@ -181,7 +181,7 @@ SVGShapeElement.prototype.setElementStyles = function (elementData) {
 SVGShapeElement.prototype.reloadShapes = function () {
   this._isFirstFrame = true;
   var i, len = this.itemsData.length;
-  for( i = 0; i < len; i += 1) {
+  for(i = 0; i < len; i += 1) {
     this.prevViewData[i] = this.itemsData[i];
   }
   this.searchShapes(this.shapesData, this.itemsData, this.prevViewData, this.layerElement, 0, [], true);
