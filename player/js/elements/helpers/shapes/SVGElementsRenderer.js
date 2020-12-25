@@ -146,7 +146,7 @@ var SVGElementsRenderer = (function () {
       }
     }
     if (styleData.t === 1) {
-      if (itemData.e._mdf  || isFirstFrame) {
+      if (itemData.e._mdf || isFirstFrame) {
         gfill.setAttribute('x2', pt2[0]);
         gfill.setAttribute('y2', pt2[1]);
         if (hasOpacity && !itemData.g._collapsable) {

@@ -60,11 +60,11 @@ var ShapePropertyFactory = (function () {
 
     for(j = 0; j < jLen; j += 1) {
       for(k = 0; k < kLen; k += 1) {
-        vertexValue = isHold ? keyPropS.i[j][k] :  keyPropS.i[j][k] + (keyPropE.i[j][k] - keyPropS.i[j][k]) * perc;
+        vertexValue = isHold ? keyPropS.i[j][k] : keyPropS.i[j][k] + (keyPropE.i[j][k] - keyPropS.i[j][k]) * perc;
         previousValue.i[j][k] = vertexValue;
-        vertexValue = isHold ? keyPropS.o[j][k] :  keyPropS.o[j][k] + (keyPropE.o[j][k] - keyPropS.o[j][k]) * perc;
+        vertexValue = isHold ? keyPropS.o[j][k] : keyPropS.o[j][k] + (keyPropE.o[j][k] - keyPropS.o[j][k]) * perc;
         previousValue.o[j][k] = vertexValue;
-        vertexValue = isHold ? keyPropS.v[j][k] :  keyPropS.v[j][k] + (keyPropE.v[j][k] - keyPropS.v[j][k]) * perc;
+        vertexValue = isHold ? keyPropS.v[j][k] : keyPropS.v[j][k] + (keyPropE.v[j][k] - keyPropS.v[j][k]) * perc;
         previousValue.v[j][k] = vertexValue;
       }
     }
@@ -347,8 +347,8 @@ var ShapePropertyFactory = (function () {
           var y = rad * Math.sin(currentAng);
           var ox = x === 0 && y === 0 ? 0 : y / Math.sqrt(x * x + y * y);
           var oy = x === 0 && y === 0 ? 0 : -x / Math.sqrt(x * x + y * y);
-          x +=  + this.p.v[0];
-          y +=  + this.p.v[1];
+          x += + this.p.v[0];
+          y += + this.p.v[1];
           this.v.setTripleAt(x, y, x - ox * perimSegment * roundness * dir, y - oy * perimSegment * roundness * dir, x + ox * perimSegment * roundness * dir, y + oy * perimSegment * roundness * dir, i, true);
 
           /* this.v.v[i] = [x,y];
@@ -374,8 +374,8 @@ var ShapePropertyFactory = (function () {
           var y = rad * Math.sin(currentAng);
           var ox = x === 0 && y === 0 ? 0 : y / Math.sqrt(x * x + y * y);
           var oy = x === 0 && y === 0 ? 0 : -x / Math.sqrt(x * x + y * y);
-          x +=  + this.p.v[0];
-          y +=  + this.p.v[1];
+          x += + this.p.v[0];
+          y += + this.p.v[1];
           this.v.setTripleAt(x, y, x - ox * perimSegment * roundness * dir, y - oy * perimSegment * roundness * dir, x + ox * perimSegment * roundness * dir, y + oy * perimSegment * roundness * dir, i, true);
           currentAng += angle * dir;
         }

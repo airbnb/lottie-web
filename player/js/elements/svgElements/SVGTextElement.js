@@ -174,7 +174,7 @@ SVGTextElement.prototype.renderInnerContent = function () {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {
       this._sizeChanged = true;
-      var  i, len;
+      var i, len;
       var renderedLetters = this.textAnimator.renderedLetters;
 
       var letters = this.textProperty.currentData.l;

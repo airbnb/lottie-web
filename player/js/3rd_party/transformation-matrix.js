@@ -60,7 +60,7 @@ var Matrix = (function () {
     }
     var mCos = _cos(angle);
     var mSin = _sin(angle);
-    return this._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
+    return this._t(mCos, -mSin, 0, 0, mSin, mCos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   }
 
   function rotateX(angle) {
@@ -69,7 +69,7 @@ var Matrix = (function () {
     }
     var mCos = _cos(angle);
     var mSin = _sin(angle);
-    return this._t(1, 0, 0, 0, 0, mCos, -mSin, 0, 0, mSin,  mCos, 0, 0, 0, 0, 1);
+    return this._t(1, 0, 0, 0, 0, mCos, -mSin, 0, 0, mSin, mCos, 0, 0, 0, 0, 1);
   }
 
   function rotateY(angle) {
@@ -78,7 +78,7 @@ var Matrix = (function () {
     }
     var mCos = _cos(angle);
     var mSin = _sin(angle);
-    return this._t(mCos,  0,  mSin, 0, 0, 1, 0, 0, -mSin,  0,  mCos, 0, 0, 0, 0, 1);
+    return this._t(mCos, 0, mSin, 0, 0, 1, 0, 0, -mSin, 0, mCos, 0, 0, 0, 0, 1);
   }
 
   function rotateZ(angle) {
@@ -87,7 +87,7 @@ var Matrix = (function () {
     }
     var mCos = _cos(angle);
     var mSin = _sin(angle);
-    return this._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
+    return this._t(mCos, -mSin, 0, 0, mSin, mCos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   }
 
   function shear(sx, sy) {
@@ -101,9 +101,9 @@ var Matrix = (function () {
   function skewFromAxis(ax, angle) {
     var mCos = _cos(angle);
     var mSin = _sin(angle);
-    return this._t(mCos, mSin,  0, 0, -mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1)
-      ._t(1, 0,  0, 0, _tan(ax),  1, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1)
-      ._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
+    return this._t(mCos, mSin, 0, 0, -mSin, mCos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+      ._t(1, 0, 0, 0, _tan(ax), 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+      ._t(mCos, -mSin, 0, 0, mSin, mCos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     // return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, _tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
   }
 

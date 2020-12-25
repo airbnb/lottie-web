@@ -58,7 +58,7 @@ function styleDiv(element) {
   element.style.left = 0;
   element.style.display = 'block';
   element.style.transformOrigin = element.style.webkitTransformOrigin = '0 0';
-  element.style.backfaceVisibility  = element.style.webkitBackfaceVisibility = 'visible';
+  element.style.backfaceVisibility = element.style.webkitBackfaceVisibility = 'visible';
   element.style.transformStyle = element.style.webkitTransformStyle = element.style.mozTransformStyle = 'preserve-3d';
 }
 

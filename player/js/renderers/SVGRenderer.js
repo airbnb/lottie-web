@@ -159,7 +159,7 @@ SVGRenderer.prototype.destroy = function () {
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.buildItem  = function (pos) {
+SVGRenderer.prototype.buildItem = function (pos) {
   var elements = this.elements;
   if(elements[pos] || this.layers[pos].ty == 99) {
     return;
@@ -185,7 +185,7 @@ SVGRenderer.prototype.buildItem  = function (pos) {
   }
 };
 
-SVGRenderer.prototype.checkPendingElements  = function () {
+SVGRenderer.prototype.checkPendingElements = function () {
   while(this.pendingElements.length) {
     var element = this.pendingElements.pop();
     element.checkParenting();

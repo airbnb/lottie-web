@@ -315,7 +315,7 @@ CanvasRenderer.prototype.buildItem = function (pos) {
     } */
 };
 
-CanvasRenderer.prototype.checkPendingElements  = function () {
+CanvasRenderer.prototype.checkPendingElements = function () {
   while(this.pendingElements.length) {
     var element = this.pendingElements.pop();
     element.checkParenting();

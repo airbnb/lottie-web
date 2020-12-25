@@ -15,7 +15,7 @@ var ExpressionManager = (function () {
 
   function $bm_neg(a) {
     var tOfA = typeof a;
-    if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number) {
+    if(tOfA === 'number' || tOfA === 'boolean' || a instanceof Number) {
       return -a;
     }
     if($bm_isInstanceOfArray(a)) {
@@ -89,7 +89,7 @@ var ExpressionManager = (function () {
       a[0] = a[0] - b;
       return a;
     }
-    if(isNumerable(tOfA, a) &&  $bm_isInstanceOfArray(b)) {
+    if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
       b = b.slice(0);
       b[0] = a - b[0];
       return b;

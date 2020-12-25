@@ -432,7 +432,7 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
 CVShapeElement.prototype.renderStroke = function (styleData, itemData, groupTransform) {
   var styleElem = itemData.style;
   var d = itemData.d;
-  if(d && (d._mdf  || this._isFirstFrame)) {
+  if(d && (d._mdf || this._isFirstFrame)) {
     styleElem.da = d.dashArray;
     styleElem.do = d.dashoffset[0];
   }

@@ -27,15 +27,15 @@
 // The following constants are related to IEEE 754 limits.
 //
   var global = this,
-    width = 256,        // each RC4 output is 0 <= x < 256
-    chunks = 6,         // at least six RC4 outputs for each double
-    digits = 52,        // there are 52 significant digits in a double
+    width = 256, // each RC4 output is 0 <= x < 256
+    chunks = 6, // at least six RC4 outputs for each double
+    digits = 52, // there are 52 significant digits in a double
     rngname = 'random', // rngname: name for Math.random and Math.seedrandom
     startdenom = math.pow(width, chunks),
     significance = math.pow(2, digits),
     overflow = significance * 2,
     mask = width - 1,
-    nodecrypto;         // node.js crypto module, initialized at the bottom.
+    nodecrypto; // node.js crypto module, initialized at the bottom.
 
   //
   // seedrandom()
@@ -57,20 +57,20 @@
     // This function returns a random double in [0, 1) that contains
     // randomness in every bit of the mantissa of the IEEE 754 value.
     var prng = function () {
-      var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
-        d = startdenom,                 //   and denominator d = 2 ^ 48.
-        x = 0;                          //   and no 'extra last byte'.
-      while (n < significance) {          // Fill up all significant digits by
-        n = (n + x) * width;              //   shifting numerator and
-        d *= width;                       //   denominator and generating a
-        x = arc4.g(1);                    //   new least-significant-byte.
+      var n = arc4.g(chunks), // Start with a numerator n < 2 ^ 48
+        d = startdenom, //   and denominator d = 2 ^ 48.
+        x = 0; //   and no 'extra last byte'.
+      while (n < significance) { // Fill up all significant digits by
+        n = (n + x) * width; //   shifting numerator and
+        d *= width; //   denominator and generating a
+        x = arc4.g(1); //   new least-significant-byte.
       }
-      while (n >= overflow) {             // To avoid rounding up, before adding
-        n /= 2;                           //   last byte, shift everything
-        d /= 2;                           //   right using integer math until
-        x >>>= 1;                         //   we have exactly the desired bits.
+      while (n >= overflow) { // To avoid rounding up, before adding
+        n /= 2; //   last byte, shift everything
+        d /= 2; //   right using integer math until
+        x >>>= 1; //   we have exactly the desired bits.
       }
-      return (n + x) / d;                 // Form the number within [0, 1).
+      return (n + x) / d; // Form the number within [0, 1).
     };
 
     prng.int32 = function () { return arc4.g(4) | 0; };
@@ -231,6 +231,6 @@
 
 // End anonymous scope, and pass initial values.
 })(
-  [],     // pool: entropy pool starts empty
-  BMMath,    // math: package containing random, pow, and seedrandom
+  [], // pool: entropy pool starts empty
+  BMMath, // math: package containing random, pow, and seedrandom
 );

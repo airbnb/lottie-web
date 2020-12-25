@@ -63,8 +63,8 @@ var PropertyFactory = (function () {
         var distanceInLine = bezierData.segmentLength * perc;
 
         var segmentPerc;
-        var addedLength =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
-        j =  (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastPoint : 0;
+        var addedLength = (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastAddedLength : 0;
+        j = (caching.lastFrame < frameNum && caching._lastKeyframeIndex === i) ? caching._lastPoint : 0;
         flag = true;
         jLen = bezierData.points.length;
         while (flag) {

@@ -63,7 +63,7 @@ GradientProperty.prototype.getValue = function (forceRender) {
       len = this.prop.v.length;
       for(i = this.data.p * 4; i < len; i += 1) {
         mult = i % 2 === 0 ? 100 : 1;
-        val = i % 2 === 0 ?  Math.round(this.prop.v[i] * 100) : this.prop.v[i];
+        val = i % 2 === 0 ? Math.round(this.prop.v[i] * 100) : this.prop.v[i];
         if(this.o[i - this.data.p * 4] !== val) {
           this.o[i - this.data.p * 4] = val;
           this._omdf = !forceRender;

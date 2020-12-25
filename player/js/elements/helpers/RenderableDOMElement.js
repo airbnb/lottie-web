@@ -53,7 +53,7 @@ function RenderableDOMElement() {}
       this.checkTransparency();
     },
     destroy: function () {
-      this.innerElem =  null;
+      this.innerElem = null;
       this.destroyBaseElement();
     },
   };

@@ -205,7 +205,7 @@ HShapeElement.prototype.renderInnerContent = function () {
       this.shapeCont.setAttribute('height', tempBoundingBox.height);
       changed = true;
     }
-    if(changed  || this.currentBBox.x !== tempBoundingBox.x  || this.currentBBox.y !== tempBoundingBox.y) {
+    if(changed || this.currentBBox.x !== tempBoundingBox.x || this.currentBBox.y !== tempBoundingBox.y) {
       this.currentBBox.w = tempBoundingBox.width;
       this.currentBBox.h = tempBoundingBox.height;
       this.currentBBox.x = tempBoundingBox.x;

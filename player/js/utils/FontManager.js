@@ -26,20 +26,20 @@ var FontManager = (function () {
 
   function setUpNode(font, family) {
     var parentNode = createTag('span');
-    parentNode.style.fontFamily    = family;
+    parentNode.style.fontFamily = family;
     var node = createTag('span');
     // Characters that vary significantly among different fonts
     node.innerText = 'giItT1WQy@!-/#';
     // Visible - so we can measure it - but not on the screen
-    parentNode.style.position      = 'absolute';
-    parentNode.style.left          = '-10000px';
-    parentNode.style.top           = '-10000px';
+    parentNode.style.position = 'absolute';
+    parentNode.style.left = '-10000px';
+    parentNode.style.top = '-10000px';
     // Large font size makes even subtle changes obvious
-    parentNode.style.fontSize      = '300px';
+    parentNode.style.fontSize = '300px';
     // Reset any font properties
-    parentNode.style.fontVariant   = 'normal';
-    parentNode.style.fontStyle     = 'normal';
-    parentNode.style.fontWeight    = 'normal';
+    parentNode.style.fontVariant = 'normal';
+    parentNode.style.fontStyle = 'normal';
+    parentNode.style.fontWeight = 'normal';
     parentNode.style.letterSpacing = '0';
     parentNode.appendChild(node);
     document.body.appendChild(parentNode);

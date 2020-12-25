@@ -61,7 +61,7 @@ SVGBaseElement.prototype = {
         /// /
         this.globalData.defs.appendChild(fil);
         var alphaRect = createNS('rect');
-        alphaRect.setAttribute('width',  this.comp.data.w);
+        alphaRect.setAttribute('width', this.comp.data.w);
         alphaRect.setAttribute('height', this.comp.data.h);
         alphaRect.setAttribute('x', '0');
         alphaRect.setAttribute('y', '0');

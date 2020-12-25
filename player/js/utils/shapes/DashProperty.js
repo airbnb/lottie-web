@@ -5,8 +5,8 @@ function DashProperty(elem, data, renderer, container) {
   this.renderer = renderer;
   this.k = false;
   this.dashStr = '';
-  this.dashArray = createTypedArray('float32',  data.length ? data.length - 1 : 0);
-  this.dashoffset = createTypedArray('float32',  1);
+  this.dashArray = createTypedArray('float32', data.length ? data.length - 1 : 0);
+  this.dashoffset = createTypedArray('float32', 1);
   this.initDynamicPropertyContainer(container);
   var i, len = data.length || 0, prop;
   for(i = 0; i < len; i += 1) {

@@ -107,7 +107,7 @@ CVTextElement.prototype.renderInnerContent = function () {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
   }
 
-  var  i, len, j, jLen, k, kLen;
+  var i, len, j, jLen, k, kLen;
   var renderedLetters = this.textAnimator.renderedLetters;
 
   var letters = this.textProperty.currentData.l;

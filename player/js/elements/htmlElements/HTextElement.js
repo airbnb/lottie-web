@@ -186,7 +186,7 @@ HTextElement.prototype.renderInnerContent = function () {
   if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag) {
     return;
   }
-  var  i, len, count = 0;
+  var i, len, count = 0;
   var renderedLetters = this.textAnimator.renderedLetters;
 
   var letters = this.textProperty.currentData.l;
@@ -236,7 +236,7 @@ HTextElement.prototype.renderInnerContent = function () {
     }
 
     var margin = 1;
-    if(this.currentBBox.w !== (boundingBox.width + margin * 2) || this.currentBBox.h !== (boundingBox.height + margin * 2)  || this.currentBBox.x !== (boundingBox.x - margin)  || this.currentBBox.y !== (boundingBox.y - margin)) {
+    if(this.currentBBox.w !== (boundingBox.width + margin * 2) || this.currentBBox.h !== (boundingBox.height + margin * 2) || this.currentBBox.x !== (boundingBox.x - margin) || this.currentBBox.y !== (boundingBox.y - margin)) {
       this.currentBBox.w = boundingBox.width + margin * 2;
       this.currentBBox.h = boundingBox.height + margin * 2;
       this.currentBBox.x = boundingBox.x - margin;

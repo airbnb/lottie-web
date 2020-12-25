@@ -105,7 +105,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
     }
     cont = 0;
     var renderFlag;
-    for(i = 0; i  <= this._groups.length - 1; i += 1) {
+    for(i = 0; i <= this._groups.length - 1; i += 1) {
       renderFlag = cont < copies;
       this._groups[i]._render = renderFlag;
       this.changeGroupRender(this._groups[i].it, renderFlag);

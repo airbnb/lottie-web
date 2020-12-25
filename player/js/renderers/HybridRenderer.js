@@ -32,7 +32,7 @@ extendPrototype([BaseRenderer], HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 
-HybridRenderer.prototype.checkPendingElements  = function () {
+HybridRenderer.prototype.checkPendingElements = function () {
   while(this.pendingElements.length) {
     var element = this.pendingElements.pop();
     element.checkParenting();

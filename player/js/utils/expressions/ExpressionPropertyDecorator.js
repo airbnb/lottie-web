@@ -30,12 +30,12 @@
       if(type === 'pingpong') {
         var iterations = Math.floor((currentFrame - firstKeyFrame) / cycleDuration);
         if(iterations % 2 !== 0) {
-          return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
+          return this.getValueAtTime(((cycleDuration - (currentFrame - firstKeyFrame) % cycleDuration + firstKeyFrame)) / this.comp.globalData.frameRate, 0);
         }
       } else if(type === 'offset') {
         var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
         var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
-        var current = this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+        var current = this.getValueAtTime(((currentFrame - firstKeyFrame) % cycleDuration + firstKeyFrame) / this.comp.globalData.frameRate, 0);
         var repeats = Math.floor((currentFrame - firstKeyFrame) / cycleDuration);
         if(this.pv.length) {
           ret = new Array(initV.length);
@@ -59,7 +59,7 @@
         }
         return lastValue + (lastValue - nextLastValue) * (((currentFrame - lastKeyFrame)) / 0.001);
       }
-      return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
+      return this.getValueAtTime((((currentFrame - firstKeyFrame) % cycleDuration + firstKeyFrame)) / this.comp.globalData.frameRate, 0);
     }
   }
 
@@ -93,12 +93,12 @@
       if(type === 'pingpong') {
         var iterations = Math.floor((firstKeyFrame - currentFrame) / cycleDuration);
         if(iterations % 2 === 0) {
-          return this.getValueAtTime((((firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
+          return this.getValueAtTime((((firstKeyFrame - currentFrame) % cycleDuration + firstKeyFrame)) / this.comp.globalData.frameRate, 0);
         }
       } else if(type === 'offset') {
         var initV = this.getValueAtTime(firstKeyFrame / this.comp.globalData.frameRate, 0);
         var endV = this.getValueAtTime(lastKeyFrame / this.comp.globalData.frameRate, 0);
-        var current = this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame) / this.comp.globalData.frameRate, 0);
+        var current = this.getValueAtTime((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration + firstKeyFrame) / this.comp.globalData.frameRate, 0);
         var repeats = Math.floor((firstKeyFrame - currentFrame) / cycleDuration) + 1;
         if(this.pv.length) {
           ret = new Array(initV.length);
@@ -122,7 +122,7 @@
         }
         return firstValue + (firstValue - nextFirstValue) * (firstKeyFrame - currentFrame) / 0.001;
       }
-      return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration +  firstKeyFrame)) / this.comp.globalData.frameRate, 0);
+      return this.getValueAtTime(((cycleDuration - (firstKeyFrame - currentFrame) % cycleDuration + firstKeyFrame)) / this.comp.globalData.frameRate, 0);
     }
   }
 
@@ -287,7 +287,7 @@
     prop.propertyIndex = data.ix;
     var value = 0;
     if(type !== 0) {
-      value = createTypedArray('float32', data.a === 1 ?  data.k[0].s.length : data.k.length);
+      value = createTypedArray('float32', data.a === 1 ? data.k[0].s.length : data.k.length);
     }
     prop._cachingAtTime = {
       lastFrame: initialDefaultFrame,
