@@ -59,7 +59,7 @@ TextProperty.prototype.copyData = function (obj, data) {
     }
   }
   return obj;
-}
+};
 
 TextProperty.prototype.setCurrentData = function (data) {
   if(!data.__complete) {
@@ -80,7 +80,7 @@ TextProperty.prototype.searchKeyframes = function () {
     this.addEffect(this.getKeyframeValue.bind(this));
   }
   return this.kf;
-}
+};
 
 TextProperty.prototype.addEffect = function (effectFunction) {
   this.effectsSequence.push(effectFunction);
@@ -117,7 +117,7 @@ TextProperty.prototype.getValue = function (_finalValue) {
   this.pv = this.v = this.currentData;
   this.lock = false;
   this.frameId = this.elem.globalData.frameId;
-}
+};
 
 TextProperty.prototype.getKeyframeValue = function () {
   var textKeys = this.data.d.k, textDocumentData;
@@ -161,7 +161,7 @@ TextProperty.prototype.buildFinalText = function (text) {
     i += 1;
   }
   return charactersArray;
-}
+};
 
 TextProperty.prototype.completeTextData = function (documentData) {
   documentData.__complete = true;
@@ -424,7 +424,7 @@ TextProperty.prototype.recalculate = function (index) {
   this.keysIndex = 0;
   this._isFirstFrame = true;
   this.getValue(dData);
-}
+};
 
 TextProperty.prototype.canResizeFont = function (_canResize) {
   this.canResize = _canResize;

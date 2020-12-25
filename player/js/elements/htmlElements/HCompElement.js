@@ -37,4 +37,4 @@ HCompElement.prototype.addTo3dContainer = function (elem, pos) {
   } else {
     this.layerElement.appendChild(elem);
   }
-}
+};

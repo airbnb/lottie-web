@@ -112,9 +112,9 @@ function BMAnimationConfigErrorEvent(type, nativeError) {
 var createElementID = (function () {
   var _count = 0;
   return function createID() {
-    return '__lottie_element_' + ++_count
-  }
-}())
+    return '__lottie_element_' + ++_count;
+  };
+}());
 
 function HSVtoRGB(h, s, v) {
   var r, g, b, i, f, p, q, t;

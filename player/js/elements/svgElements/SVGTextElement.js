@@ -27,7 +27,7 @@ SVGTextElement.prototype.buildTextContents = function (textArray) {
   }
   textContents.push(currentTextContent);
   return textContents;
-}
+};
 
 SVGTextElement.prototype.buildNewText = function () {
   var i, len;

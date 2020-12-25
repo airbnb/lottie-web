@@ -17,9 +17,9 @@ var getBlendMode = (function () {
     13: 'saturation',
     14: 'color',
     15: 'luminosity',
-  }
+  };
 
   return function (mode) {
     return blendModeEnums[mode] || '';
-  }
-}())
+  };
+}());

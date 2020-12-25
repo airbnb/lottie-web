@@ -34,7 +34,7 @@ AudioElement.prototype.renderFrame = function () {
     } else if (!this.audio.playing()
 			|| Math.abs(this._currentTime / this.globalData.frameRate - this.audio.seek()) > 0.1
     ) {
-      this.audio.seek(this._currentTime / this.globalData.frameRate)
+      this.audio.seek(this._currentTime / this.globalData.frameRate);
     }
   }
 };

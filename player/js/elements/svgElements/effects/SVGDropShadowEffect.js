@@ -1,5 +1,5 @@
 function SVGDropShadowEffect(filter, filterManager) {
-  var filterSize = filterManager.container.globalData.renderConfig.filterSize
+  var filterSize = filterManager.container.globalData.renderConfig.filterSize;
   filter.setAttribute('x', filterSize.x);
   filter.setAttribute('y', filterSize.y);
   filter.setAttribute('width', filterSize.width);

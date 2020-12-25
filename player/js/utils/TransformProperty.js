@@ -1,6 +1,6 @@
 var TransformPropertyFactory = (function () {
 
-  var defaultVector = [0, 0]
+  var defaultVector = [0, 0];
 
   function applyToMatrix(mat) {
     var _mdf = this._mdf;
@@ -90,7 +90,7 @@ var TransformPropertyFactory = (function () {
             v2[1] = py.getValueAtTime((py._caching.lastFrame + py.offsetTime - 0.01) / frameRate, py.offsetTime);
           }
         } else {
-          v1 = v2 = defaultVector
+          v1 = v2 = defaultVector;
         }
         this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
       }
@@ -210,7 +210,7 @@ var TransformPropertyFactory = (function () {
     getValue: processKeys,
     precalculateMatrix: precalculateMatrix,
     autoOrient: autoOrient,
-  }
+  };
 
   extendPrototype([DynamicPropertyContainer], TransformProperty);
   TransformProperty.prototype.addDynamicProperty = addDynamicProperty;

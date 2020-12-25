@@ -1,7 +1,7 @@
 var ExpressionPropertyInterface = (function () {
 
-  var defaultUnidimensionalValue = {pv: 0, v: 0, mult: 1}
-  var defaultMultidimensionalValue = {pv: [0, 0, 0], v: [0, 0, 0], mult: 1}
+  var defaultUnidimensionalValue = {pv: 0, v: 0, mult: 1};
+  var defaultMultidimensionalValue = {pv: [0, 0, 0], v: [0, 0, 0], mult: 1};
 
   function completeProperty(expressionValue, property, type) {
     Object.defineProperty(expressionValue, 'velocity', {
@@ -55,7 +55,7 @@ var ExpressionPropertyInterface = (function () {
         completeProperty(expressionValue, property, 'unidimensional');
       }
       return expressionValue;
-    }
+    };
   }
 
   function MultidimensionalPropertyInterface(property) {
@@ -77,7 +77,7 @@ var ExpressionPropertyInterface = (function () {
         expressionValue[i] = arrValue[i] = property.v[i] * mult;
       }
       return expressionValue;
-    }
+    };
   }
 
   // TODO: try to avoid using this getter
@@ -93,5 +93,5 @@ var ExpressionPropertyInterface = (function () {
     } else {
       return MultidimensionalPropertyInterface(property);
     }
-  }
+  };
 }());

@@ -174,7 +174,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     i: iValues,
     c: path.c,
   };
-}
+};
 
 MouseModifier.prototype.processShapes = function () {
   var mouseX = this.elem.globalData.mouseX;
@@ -215,7 +215,7 @@ MouseModifier.prototype.processShapes = function () {
 
   }
 
-}
+};
 
 MouseModifier.prototype.initModifierProperties = function (elem, data) {
   this.getValue = this.processKeys;

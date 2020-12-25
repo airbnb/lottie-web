@@ -28,7 +28,7 @@ var EffectsExpressionInterface = (function () {
           return effects.length;
         },
       });
-      return groupInterface
+      return groupInterface;
     }
   }
 

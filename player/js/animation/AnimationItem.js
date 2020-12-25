@@ -185,14 +185,14 @@ AnimationItem.prototype.loadSegments = function () {
 
 AnimationItem.prototype.imagesLoaded = function () {
   this.trigger('loaded_images');
-  this.checkLoaded()
-}
+  this.checkLoaded();
+};
 
 AnimationItem.prototype.preloadImages = function () {
   this.imagePreloader.setAssetsPath(this.assetsPath);
   this.imagePreloader.setPath(this.path);
   this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
-}
+};
 
 AnimationItem.prototype.configAnimation = function (animData) {
   if(!this.renderer) {
@@ -239,7 +239,7 @@ AnimationItem.prototype.waitForFontsLoaded = function () {
   }else{
     setTimeout(this.waitForFontsLoaded.bind(this), 20);
   }
-}
+};
 
 AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded 
@@ -539,7 +539,7 @@ AnimationItem.prototype.unmute = function (name) {
 
 AnimationItem.prototype.updaFrameModifier = function () {
   this.frameModifier = this.frameMult * this.playSpeed * this.playDirection;
-  this.audioController.setRate(this.playSpeed * this.playDirection)
+  this.audioController.setRate(this.playSpeed * this.playDirection);
 };
 
 AnimationItem.prototype.getPath = function () {
@@ -633,7 +633,7 @@ AnimationItem.prototype.triggerRenderFrameError = function (nativeError) {
   if (this.onError) {
     this.onError.call(this, error);
   }
-}
+};
 
 AnimationItem.prototype.triggerConfigError = function (nativeError) {
 
@@ -643,4 +643,4 @@ AnimationItem.prototype.triggerConfigError = function (nativeError) {
   if (this.onError) {
     this.onError.call(this, error);
   }
-}
+};

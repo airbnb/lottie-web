@@ -14,19 +14,19 @@ var audioControllerFactory = (function () {
     pause: function () {
       var i, len = this.audios.length;
       for(i = 0; i < len; i += 1) {
-        this.audios[i].pause()
+        this.audios[i].pause();
       }
     },
     resume: function () {
       var i, len = this.audios.length;
       for(i = 0; i < len; i += 1) {
-        this.audios[i].resume()
+        this.audios[i].resume();
       }
     },
     setRate: function (rateValue) {
       var i, len = this.audios.length;
       for(i = 0; i < len; i += 1) {
-        this.audios[i].setRate(rateValue)
+        this.audios[i].setRate(rateValue);
       }
     },
     createAudio: function (assetPath) {
@@ -35,16 +35,16 @@ var audioControllerFactory = (function () {
       } else if (Howl) {
         return new Howl({
           src: [assetPath],
-        })
+        });
       } else {
         return {
           isPlaying: false,
-          play: function () { this.isPlaying = true },
-          seek: function () { this.isPlaying = false },
+          play: function () { this.isPlaying = true; },
+          seek: function () { this.isPlaying = false; },
           playing: function () {},
           rate: function () {},
           setVolume: function () {},
-        }
+        };
       }
     },
     setAudioFactory: function (audioFactory) {
@@ -68,13 +68,13 @@ var audioControllerFactory = (function () {
     _updateVolume: function () {
       var i, len = this.audios.length;
       for(i = 0; i < len; i += 1) {
-        this.audios[i].volume(this._volume * (this._isMuted ? 0 : 1))
+        this.audios[i].volume(this._volume * (this._isMuted ? 0 : 1));
       }
     },
-  }
+  };
 
   return function () {
-    return new AudioController()
-  }
+    return new AudioController();
+  };
 
-}())
+}());

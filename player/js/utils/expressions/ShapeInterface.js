@@ -458,9 +458,9 @@ var ShapeExpressionInterface = (function () {
     var interfaces;
     function _interfaceFunction(value) {
       if(typeof value === 'number') {
-        value = value === undefined ? 1 : value
+        value = value === undefined ? 1 : value;
         if (value === 0) {
-          return propertyGroup
+          return propertyGroup;
         } else {
           return interfaces[value - 1];
         }
@@ -475,7 +475,7 @@ var ShapeExpressionInterface = (function () {
       }
     }
     function parentGroupWrapper() {
-      return propertyGroup
+      return propertyGroup;
     }
     _interfaceFunction.propertyGroup = propertyGroupFactory(_interfaceFunction, parentGroupWrapper);
     interfaces = iterateElements(shapes, view, _interfaceFunction.propertyGroup);

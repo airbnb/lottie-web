@@ -30,7 +30,7 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
   this.globalData.compSize = {
     w: animData.w,
     h: animData.h,
-  }
+  };
   this.globalData.canvasContext = this.canvasContext;
   this.globalData.renderer = this;
   this.globalData.isDashed = false;

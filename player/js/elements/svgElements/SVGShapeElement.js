@@ -58,14 +58,14 @@ SVGShapeElement.prototype.filterUniqueShapes = function () {
       this.setShapesAsAnimated(tempShapes);
     }
   }
-}
+};
 
 SVGShapeElement.prototype.setShapesAsAnimated = function (shapes) {
   var i, len = shapes.length;
   for(i = 0; i < len; i += 1) {
     shapes[i].setAsAnimated();
   }
-}
+};
 
 SVGShapeElement.prototype.createStyleElement = function (data, level) {
   // TODO: prevent drawing of hidden styles
@@ -305,7 +305,7 @@ SVGShapeElement.prototype.renderShape = function () {
       animatedContent.fn(animatedContent.data, animatedContent.element, this._isFirstFrame);
     }
   }
-}
+};
 
 SVGShapeElement.prototype.destroy = function () {
   this.destroyBaseElement();

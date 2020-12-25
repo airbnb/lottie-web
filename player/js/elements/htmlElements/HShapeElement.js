@@ -54,7 +54,7 @@ HShapeElement.prototype.getTransformedPoint = function (transformers, point) {
     point = transformers[i].mProps.v.applyToPointArray(point[0], point[1], 0);
   }
   return point;
-}
+};
 
 HShapeElement.prototype.calculateShapeBoundingBox = function (item, boundingBox) {
   var shape = item.sh.v;
@@ -77,7 +77,7 @@ HShapeElement.prototype.calculateShapeBoundingBox = function (item, boundingBox)
     nextVPoint = this.getTransformedPoint(transformers, shape.v[0]);
     this.checkBounds(vPoint, oPoint, nextIPoint, nextVPoint, boundingBox);
   }
-}
+};
 
 HShapeElement.prototype.checkBounds = function (vPoint, oPoint, nextIPoint, nextVPoint, boundingBox) {
   this.getBoundsOfCurve(vPoint, oPoint, nextIPoint, nextVPoint);
@@ -86,14 +86,14 @@ HShapeElement.prototype.checkBounds = function (vPoint, oPoint, nextIPoint, next
   boundingBox.xMax = bm_max(bounds.right, boundingBox.xMax);
   boundingBox.y = bm_min(bounds.top, boundingBox.y);
   boundingBox.yMax = bm_max(bounds.bottom, boundingBox.yMax);
-}
+};
 
 HShapeElement.prototype.shapeBoundingBox = {
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
-}
+};
 
 HShapeElement.prototype.tempBoundingBox = {
   x: 0,
@@ -102,7 +102,7 @@ HShapeElement.prototype.tempBoundingBox = {
   yMax: 0,
   width: 0,
   height: 0,
-}
+};
 
 HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
 
@@ -157,25 +157,25 @@ HShapeElement.prototype.calculateF = function (t, p0, p1, p2, p3, i) {
         + 3 * bm_pow(1 - t, 2) * t * p1[i]
         + 3 * (1 - t) * bm_pow(t, 2) * p2[i]
         + bm_pow(t, 3) * p3[i];
-}
+};
 
 HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox) {
   var i, len = itemsData.length, path;
   for(i = 0; i < len; i += 1) {
     if(itemsData[i] && itemsData[i].sh) {
-      this.calculateShapeBoundingBox(itemsData[i], boundingBox)
+      this.calculateShapeBoundingBox(itemsData[i], boundingBox);
     } else if(itemsData[i] && itemsData[i].it) {
-      this.calculateBoundingBox(itemsData[i].it, boundingBox)
+      this.calculateBoundingBox(itemsData[i].it, boundingBox);
     }
   }
-}
+};
 
 HShapeElement.prototype.currentBoxContains = function (box) {
   return this.currentBBox.x <= box.x 
     && this.currentBBox.y <= box.y 
     && this.currentBBox.width + this.currentBBox.x >= box.x + box.width
-    && this.currentBBox.height + this.currentBBox.y >= box.y + box.height
-}
+    && this.currentBBox.height + this.currentBBox.y >= box.y + box.height;
+};
 
 HShapeElement.prototype.renderInnerContent = function () {
   this._renderShapeFrame();

@@ -269,7 +269,7 @@ var ShapePropertyFactory = (function () {
         _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
         _v.o[3][1] = p1 - s1 * cPoint;
       },
-    }
+    };
 
     extendPrototype([DynamicPropertyContainer], EllShapeProperty);
 
@@ -383,7 +383,7 @@ var ShapePropertyFactory = (function () {
         this.paths[0] = this.v;
       },
 
-    }
+    };
     extendPrototype([DynamicPropertyContainer], StarShapeProperty);
 
     return StarShapeProperty;
@@ -464,7 +464,7 @@ var ShapePropertyFactory = (function () {
 
       },
       reset: resetShape,
-    }
+    };
     extendPrototype([DynamicPropertyContainer], RectShapeProperty);
 
     return RectShapeProperty;

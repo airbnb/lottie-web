@@ -18,7 +18,7 @@
       return newData;
     }
     return currentValue;
-  }
+  };
 
   TextProperty.prototype.searchProperty = function () {
 

@@ -14,4 +14,4 @@ var buildShapeString = function (pathNodes, length, closed, mat) {
     shapeString += 'z';
   }
   return shapeString;
-}
+};

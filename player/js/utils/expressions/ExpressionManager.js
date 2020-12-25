@@ -351,9 +351,9 @@ var ExpressionManager = (function () {
     thisProperty.valueAtTime = thisProperty.getValueAtTime;
     Object.defineProperty(thisProperty, 'value', {
       get: function () {
-        return thisProperty.v
+        return thisProperty.v;
       },
-    })
+    });
     elem.comp.frameDuration = 1 / elem.comp.globalData.frameRate;
     elem.comp.displayStartTime = 0;
     var inPoint = elem.data.ip / elem.comp.globalData.frameRate;
@@ -536,7 +536,7 @@ var ExpressionManager = (function () {
       len = arr.length;
       for(i = 0; i < len; i += 1) {
         ob[i] = arr[i];
-        ob.value[i] = arr[i]
+        ob.value[i] = arr[i];
       }
       return ob;
     }
@@ -569,9 +569,9 @@ var ExpressionManager = (function () {
     function substring(init, end) {
       if(typeof value === 'string') {
         if(end === undefined) {
-          return value.substring(init)
+          return value.substring(init);
         }
-        return value.substring(init, end)
+        return value.substring(init, end);
       }
       return '';
     }
@@ -579,16 +579,16 @@ var ExpressionManager = (function () {
     function substr(init, end) {
       if(typeof value === 'string') {
         if(end === undefined) {
-          return value.substr(init)
+          return value.substr(init);
         }
-        return value.substr(init, end)
+        return value.substr(init, end);
       }
       return '';
     }
 
     function posterizeTime(framesPerSecond) {
-      time = framesPerSecond === 0 ? 0 : Math.floor(time * framesPerSecond) / framesPerSecond
-      value = valueAtTime(time)
+      time = framesPerSecond === 0 ? 0 : Math.floor(time * framesPerSecond) / framesPerSecond;
+      value = valueAtTime(time);
     }
 
     var time, velocity, value, text, textIndex, textTotal, selectorValue;

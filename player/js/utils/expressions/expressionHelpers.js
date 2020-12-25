@@ -77,5 +77,5 @@ var expressionHelpers = (function () {
     getValueAtTime: getValueAtTime,
     getStaticValueAtTime: getStaticValueAtTime,
     setGroupProperty: setGroupProperty,
-  }
+  };
 }());

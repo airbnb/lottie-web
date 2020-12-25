@@ -134,7 +134,7 @@ var TextSelectorProp = (function () {
       this.finalS = s;
       this.finalE = e;
     },
-  }
+  };
   extendPrototype([DynamicPropertyContainer], TextSelectorProp);
 
   function getTextSelectorProp(elem, data, arr) {

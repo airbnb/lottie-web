@@ -170,7 +170,7 @@ var PropertyFactory = (function () {
   function slerp(a, b, t) {
     var out = [];
     var ax = a[0], ay = a[1], az = a[2], aw = a[3],
-      bx = b[0], by = b[1], bz = b[2], bw = b[3]
+      bx = b[0], by = b[1], bz = b[2], bw = b[3];
 
     var omega, cosom, sinom, scale0, scale1;
 
@@ -204,8 +204,8 @@ var PropertyFactory = (function () {
     var qy = quat[1];
     var qz = quat[2];
     var qw = quat[3];
-    var heading = Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy * qy - 2 * qz * qz)
-    var attitude = Math.asin(2 * qx * qy + 2 * qz * qw) 
+    var heading = Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy * qy - 2 * qz * qz);
+    var attitude = Math.asin(2 * qx * qy + 2 * qz * qw); 
     var bank = Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx * qx - 2 * qz * qz);
     out[0] = heading / degToRads;
     out[1] = attitude / degToRads;

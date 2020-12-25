@@ -7,4 +7,4 @@ dataManager.completeData = function (animationData, fontManager) {
   this.checkShapes(animationData);
   this.completeLayers(animationData.layers, animationData.assets, fontManager);
   animationData.__complete = true;
-}
+};

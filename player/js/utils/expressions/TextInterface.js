@@ -9,7 +9,7 @@ var TextExpressionInterface = (function () {
     }
     Object.defineProperty(_thisLayerFunction, 'sourceText', {
       get: function () {
-        elem.textProperty.getValue()
+        elem.textProperty.getValue();
         var stringValue = elem.textProperty.currentData.t;
         if(stringValue !== _prevValue) {
           elem.textProperty.currentData.t = _prevValue;

@@ -37,6 +37,6 @@ var ShapePathInterface = (
         'propertyGroup': {value: propertyGroup},
       });
       return interfaceFunction;
-    }
+    };
   }()
-)
+);

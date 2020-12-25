@@ -86,7 +86,7 @@ HCameraElement.prototype.renderFrame = function () {
       this.mat.translate(-this.px.v, -this.py.v, this.pz.v);
     }
     if (this.a) {
-      var diffVector
+      var diffVector;
       if (this.p) {
         diffVector = [this.p.v[0] - this.a.v[0], this.p.v[1] - this.a.v[1], this.p.v[2] - this.a.v[2]];
       } else {

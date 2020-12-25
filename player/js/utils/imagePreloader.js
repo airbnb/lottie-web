@@ -8,7 +8,7 @@ var ImagePreloader = (function () {
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.fillRect(0, 0, 1, 1);
     return canvas;
-  }())
+  }());
 
   function imageLoaded() {
     this.loadedAssets += 1;
@@ -46,14 +46,14 @@ var ImagePreloader = (function () {
         clearInterval(intervalId);
       }
       _count += 1;
-    }.bind(this), 50)
+    }.bind(this), 50);
   }
 
   function createImageData(assetData) {
     var path = getAssetsPath(assetData, this.assetsPath, this.path);
     var img = createNS('image');
     if (isSafari) {
-      this.testImageLoaded(img)
+      this.testImageLoaded(img);
     } else {
       img.addEventListener('load', this._imageLoaded, false);
     }
@@ -66,7 +66,7 @@ var ImagePreloader = (function () {
     var ob = {
       img: img,
       assetData: assetData,
-    }
+    };
     return ob;
   }
 
@@ -83,7 +83,7 @@ var ImagePreloader = (function () {
     var ob = {
       img: img,
       assetData: assetData,
-    }
+    };
     return ob;
   }
 
@@ -156,7 +156,7 @@ var ImagePreloader = (function () {
     createImageData: createImageData,
     imageLoaded: imageLoaded,
     setCacheType: setCacheType,
-  }
+  };
 
   return ImagePreloader;
 }());

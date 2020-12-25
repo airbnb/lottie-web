@@ -242,7 +242,7 @@ var FontManager = (function () {
             && console.warn
             && !this._warned
     ) {
-      this._warned = true
+      this._warned = true;
       console.warn('Missing character from exported characters list: ', char, style, font);
     }
     return emptyChar;
@@ -287,7 +287,7 @@ var FontManager = (function () {
   }
 
   function setIsLoaded() {
-    this.isLoaded = true
+    this.isLoaded = true;
   }
 
   var Font = function () {
@@ -297,8 +297,8 @@ var FontManager = (function () {
     this.isLoaded = false;
     this._warned = false;
     this.initTime = Date.now();
-    this.setIsLoadedBinded = this.setIsLoaded.bind(this)
-    this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)
+    this.setIsLoadedBinded = this.setIsLoaded.bind(this);
+    this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this);
   };
     // TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
   Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
@@ -311,7 +311,7 @@ var FontManager = (function () {
     measureText: measureText,
     checkLoadedFonts: checkLoadedFonts,
     setIsLoaded: setIsLoaded,
-  }
+  };
 
   Font.prototype = fontPrototype;
 

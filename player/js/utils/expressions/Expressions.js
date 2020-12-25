@@ -21,7 +21,7 @@ var Expressions = (function () {
 
     function registerExpressionProperty(expression) {
       if (registers.indexOf(expression) === -1) {
-        registers.push(expression)
+        registers.push(expression);
       }
     }
 

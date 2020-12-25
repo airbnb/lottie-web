@@ -21,7 +21,7 @@ function SVGRenderer(animationItem, config) {
     ariaLabel += ' ' + descId;
   }
   if (ariaLabel) {
-    this.svgElement.setAttribute('aria-labelledby', ariaLabel)
+    this.svgElement.setAttribute('aria-labelledby', ariaLabel);
   }
   var defs = createNS('defs');
   this.svgElement.appendChild(defs);

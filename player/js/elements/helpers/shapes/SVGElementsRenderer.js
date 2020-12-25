@@ -4,7 +4,7 @@ var SVGElementsRenderer = (function () {
 
   var ob = {
     createRenderFunction: createRenderFunction,
-  }
+  };
 
   function createRenderFunction(data) {
     var ty = data.ty;
@@ -206,4 +206,4 @@ var SVGElementsRenderer = (function () {
   };
 
   return ob;
-}())
+}());

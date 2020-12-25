@@ -30,7 +30,7 @@ ShapeTransformManager.prototype = {
         _mdf = true;
         break;
       }
-      i += 1
+      i += 1;
     }
     if (_mdf) {
       var props;
@@ -53,4 +53,4 @@ ShapeTransformManager.prototype = {
   getNewKey: function () {
     return '_' + this.transform_key_count++;
   },
-}
+};

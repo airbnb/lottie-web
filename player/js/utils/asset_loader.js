@@ -40,5 +40,5 @@ var assetLoader = (function () {
   }
   return {
     load: loadAsset,
-  }
-}())
+  };
+}());

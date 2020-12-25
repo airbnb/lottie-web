@@ -16,7 +16,7 @@ function CVShapeData(element, data, styles, transformsManager) {
       styledShape = {
         transforms: transformsManager.addTransformSequence(styles[i].transforms),
         trNodes: [],
-      }
+      };
       this.styledShapes.push(styledShape);
       styles[i].elements.push(styledShape);
     }

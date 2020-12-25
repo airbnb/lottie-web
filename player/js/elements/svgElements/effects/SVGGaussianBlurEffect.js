@@ -36,4 +36,4 @@ SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
     var edgeMode = (this.filterManager.effectElements[2].p.v == 1) ? 'wrap' : 'duplicate';
     this.feGaussianBlur.setAttribute('edgeMode', edgeMode);
   }
-}
+};

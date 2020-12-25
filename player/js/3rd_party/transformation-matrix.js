@@ -283,7 +283,7 @@ var Matrix = (function () {
 
   function inversePoint(pt) {
     var inverseMatrix = this.getInverseMatrix();
-    return inverseMatrix.applyToPointArray(pt[0], pt[1], pt[2] || 0)
+    return inverseMatrix.applyToPointArray(pt[0], pt[1], pt[2] || 0);
   }
 
   function inversePoints(pts) {

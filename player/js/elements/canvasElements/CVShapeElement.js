@@ -122,7 +122,7 @@ CVShapeElement.prototype.addTransformToStyleList = function (transform) {
       this.stylesList[i].transforms.push(transform);
     }
   }
-}
+};
 
 CVShapeElement.prototype.removeTransformFromStyleList = function () {
   var i, len = this.stylesList.length;
@@ -131,14 +131,14 @@ CVShapeElement.prototype.removeTransformFromStyleList = function () {
       this.stylesList[i].transforms.pop();
     }
   }
-}
+};
 
 CVShapeElement.prototype.closeStyles = function (styles) {
   var i, len = styles.length, j, jLen;
   for (i = 0; i < len; i += 1) {
     styles[i].closed = true;
   }
-}
+};
 
 CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, shouldRender, transforms) {
   var i, len = arr.length - 1;
@@ -369,7 +369,7 @@ CVShapeElement.prototype.renderStyledShape = function (styledShape, shape) {
     }
     styledShape.trNodes = shapeNodes;
   }
-}
+};
 
 CVShapeElement.prototype.renderPath = function (pathData, itemData) {
   if(pathData.hd !== true && pathData._shouldRender) {

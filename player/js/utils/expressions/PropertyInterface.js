@@ -3,10 +3,10 @@ var PropertyInterface = (function () {
 
     var interfaceFunction = {
       _name: propertyName,
-    }
+    };
 
     function _propertyGroup(val) {
-      val = val === undefined ? 1 : val
+      val = val === undefined ? 1 : val;
       if(val <= 0) {
         return interfaceFunction;
       } else {
@@ -15,5 +15,5 @@ var PropertyInterface = (function () {
     }
 
     return _propertyGroup;
-  }
-}())
+  };
+}());

@@ -21,4 +21,4 @@ IImageElement.prototype.createContent = function () {
 
 IImageElement.prototype.sourceRectAtTime = function () {
   return this.sourceRect;
-}
+};
