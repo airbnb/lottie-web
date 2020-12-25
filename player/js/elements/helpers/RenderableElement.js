@@ -46,8 +46,7 @@ RenderableElement.prototype = {
      * 
      */
   checkLayerLimits: function (num) {
-    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
-    {
+    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num) {
       if(this.isInRange !== true) {
         this.globalData._mdf = true;
         this._mdf = true;

@@ -162,8 +162,7 @@ function addSaturationToRGB(color, offset) {
   hsv[1] += offset;
   if (hsv[1] > 1) {
     hsv[1] = 1;
-  }
-  else if (hsv[1] <= 0) {
+  } else if (hsv[1] <= 0) {
     hsv[1] = 0;
   }
   return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
@@ -174,8 +173,7 @@ function addBrightnessToRGB(color, offset) {
   hsv[2] += offset;
   if (hsv[2] > 1) {
     hsv[2] = 1;
-  }
-  else if (hsv[2] < 0) {
+  } else if (hsv[2] < 0) {
     hsv[2] = 0;
   }
   return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
@@ -186,8 +184,7 @@ function addHueToRGB(color, offset) {
   hsv[0] += offset / 360;
   if (hsv[0] > 1) {
     hsv[0] -= 1;
-  }
-  else if (hsv[0] < 0) {
+  } else if (hsv[0] < 0) {
     hsv[0] += 1;
   }
   return HSVtoRGB(hsv[0], hsv[1], hsv[2]);

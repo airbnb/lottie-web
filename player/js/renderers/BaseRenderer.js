@@ -5,8 +5,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
   for (i = len - 1; i >= 0; i--) {
     if (!this.elements[i]) {
       data = this.layers[i];
-      if(data.ip - data.st <= (num - this.layers[i].st) && data.op - data.st > (num - this.layers[i].st))
-      {
+      if(data.ip - data.st <= (num - this.layers[i].st) && data.op - data.st > (num - this.layers[i].st)) {
         this.buildItem(i);
       }
     }

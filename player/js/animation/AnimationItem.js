@@ -55,8 +55,7 @@ AnimationItem.prototype.setParams = function (params) {
   if (params.loop === ''
         || params.loop === null
         || params.loop === undefined
-        || params.loop === true)
-  {
+        || params.loop === true) {
     this.loop = true;
   } else if (params.loop === false) {
     this.loop = false;

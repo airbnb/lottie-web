@@ -92,6 +92,7 @@
 
           // If called as a method of Math (Math.seedrandom()), mutate
           // Math.random because that is how seedrandom.js has worked since v1.0.
+          // eslint-disable-next-line brace-style
           if (is_math_call) { math[rngname] = prng; return seed; }
 
           // Otherwise, it is a newer calling convention, so return the

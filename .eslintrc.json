@@ -60,7 +60,6 @@
         "prefer-spread": "off",
         "no-floating-decimal": "off",
         "object-curly-newline": "off",
-        "brace-style": "off",
         "radix": "off",
         "no-trailing-spaces": "off",
         "no-bitwise": "off",

@@ -39,14 +39,12 @@ var TextSelectorProp = (function () {
       var y2 = 1;
       if(this.ne.v > 0) {
         x1 = this.ne.v / 100.0;
-      }
-      else {
+      } else {
         y1 = -this.ne.v / 100.0;
       }
       if(this.xe.v > 0) {
         x2 = 1.0 - this.xe.v / 100.0;
-      }
-      else {
+      } else {
         y2 = 1.0 + this.xe.v / 100.0;
       }
       var easer = BezierFactory.getBezierEasing(x1, y1, x2, y2).get;
