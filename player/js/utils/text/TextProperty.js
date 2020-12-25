@@ -272,7 +272,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
 
   }
-  lineWidth = - trackingOffset;
+  lineWidth = -trackingOffset;
   cLength = 0;
   var uncollapsedSpaces = 0;
   var currentChar;
@@ -284,7 +284,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
       uncollapsedSpaces = 0;
       lineWidths.push(lineWidth);
       maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
-      lineWidth = - 2 * trackingOffset;
+      lineWidth = -2 * trackingOffset;
       val = '';
       newLineFlag = true;
       currentLine += 1;
@@ -354,10 +354,10 @@ TextProperty.prototype.completeTextData = function (documentData) {
     documentData.boxWidth = maxLineWidth;
     switch(documentData.j) {
       case 1:
-        documentData.justifyOffset = - documentData.boxWidth;
+        documentData.justifyOffset = -documentData.boxWidth;
         break;
       case 2:
-        documentData.justifyOffset = - documentData.boxWidth / 2;
+        documentData.justifyOffset = -documentData.boxWidth / 2;
         break;
       default:
         documentData.justifyOffset = 0;

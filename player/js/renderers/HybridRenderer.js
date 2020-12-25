@@ -173,7 +173,7 @@ HybridRenderer.prototype.build3dContainers = function () {
     }
   }
   len = this.threeDElements.length;
-  for(i = len - 1; i >= 0; i --) {
+  for(i = len - 1; i >= 0; i--) {
     this.resizerElem.appendChild(this.threeDElements[i].perspectiveElem);
   }
 };

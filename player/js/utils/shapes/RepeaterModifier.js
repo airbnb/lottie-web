@@ -145,7 +145,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
         iteration -= 1;
       }
       if(offsetModulo) {
-        this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, - offsetModulo, true);
+        this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, -offsetModulo, true);
         iteration -= offsetModulo;
       }
     }

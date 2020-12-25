@@ -482,7 +482,7 @@ var ExpressionManager = (function () {
 
     function nearestKey(time) {
       var i, len = data.k.length, index, keyTime;
-      if(!data.k.length || typeof(data.k[0]) === 'number') {
+      if(!data.k.length || typeof (data.k[0]) === 'number') {
         index = 0;
         keyTime = 0;
       } else {
@@ -523,7 +523,7 @@ var ExpressionManager = (function () {
 
     function key(ind) {
       var ob, i, len;
-      if(!data.k.length || typeof(data.k[0]) === 'number') {
+      if(!data.k.length || typeof (data.k[0]) === 'number') {
         throw new Error('The property has no keyframe at index ' + ind);
       }
       ind -= 1;

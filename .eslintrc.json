@@ -55,7 +55,6 @@
         "prefer-arrow-callback": "off",
         "no-console": "off",
         "new-cap": "off",
-        "space-unary-ops": "off",
         "no-nested-ternary": "off",
         "prefer-rest-params": "off",
         "prefer-spread": "off",

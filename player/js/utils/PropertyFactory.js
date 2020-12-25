@@ -417,7 +417,7 @@ var PropertyFactory = (function () {
     var p;
     if(!data.k.length) {
       p = new ValueProperty(elem, data, mult, container);
-    }else if(typeof(data.k[0]) === 'number') {
+    }else if(typeof (data.k[0]) === 'number') {
       p = new MultiDimensionalProperty(elem, data, mult, container);
     }else{
       switch(type) {

@@ -266,11 +266,11 @@ var Matrix = (function () {
   function getInverseMatrix() {
     var determinant = this.props[0] * this.props[5] - this.props[1] * this.props[4];
     var a = this.props[5] / determinant;
-    var b = - this.props[1] / determinant;
-    var c = - this.props[4] / determinant;
+    var b = -this.props[1] / determinant;
+    var c = -this.props[4] / determinant;
     var d = this.props[0] / determinant;
     var e = (this.props[4] * this.props[13] - this.props[5] * this.props[12]) / determinant;
-    var f = - (this.props[0] * this.props[13] - this.props[1] * this.props[12]) / determinant;
+    var f = -(this.props[0] * this.props[13] - this.props[1] * this.props[12]) / determinant;
     var inverseMatrix = new Matrix();
     inverseMatrix.props[0] = a;
     inverseMatrix.props[1] = b;
