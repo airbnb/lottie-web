@@ -136,4 +136,4 @@ HCameraElement.prototype.prepareFrame = function(num) {
 
 HCameraElement.prototype.destroy = function(){
 };
-HCameraElement.prototype.getBaseElement = function(){return null;};
+HCameraElement.prototype.getBaseElement = function(){ return null; };

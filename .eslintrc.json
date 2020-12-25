@@ -56,7 +56,6 @@
         "curly": "off",
         "nonblock-statement-body-position": "off",
         "no-else-return": "off",
-        "block-spacing": "off",
         "no-unused-expressions": "off",
         "no-return-assign": "off",
         "object-curly-spacing": "off",

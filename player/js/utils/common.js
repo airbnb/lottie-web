@@ -21,7 +21,7 @@ var BMMath = {};
     }
 }());
 
-function ProjectInterface(){return {};}
+function ProjectInterface(){ return {}; }
 
 BMMath.random = Math.random;
 BMMath.abs = function(val){
