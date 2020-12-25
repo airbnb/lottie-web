@@ -68,7 +68,6 @@
         "no-prototype-builtins": "off",
         "no-extra-semi": "off",
         "no-restricted-properties": "off",
-        "quote-props": "off",
         "no-new-wrappers": "off",
         "camelcase": "off",
         "no-useless-return": "off",

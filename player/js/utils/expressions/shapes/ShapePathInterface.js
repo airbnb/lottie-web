@@ -14,7 +14,7 @@ var ShapePathInterface = (
       var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
       prop.setGroupProperty(PropertyInterface('Path', _propertyGroup));
       Object.defineProperties(interfaceFunction, {
-        'path': {
+        path: {
           get: function () {
             if(prop.k) {
               prop.getValue();
@@ -22,7 +22,7 @@ var ShapePathInterface = (
             return prop;
           },
         },
-        'shape': {
+        shape: {
           get: function () {
             if(prop.k) {
               prop.getValue();
@@ -30,11 +30,11 @@ var ShapePathInterface = (
             return prop;
           },
         },
-        '_name': { value: shape.nm },
-        'ix': { value: shape.ix },
-        'propertyIndex': { value: shape.ix },
-        'mn': { value: shape.mn },
-        'propertyGroup': {value: propertyGroup},
+        _name: { value: shape.nm },
+        ix: { value: shape.ix },
+        propertyIndex: { value: shape.ix },
+        mn: { value: shape.mn },
+        propertyGroup: {value: propertyGroup},
       });
       return interfaceFunction;
     };

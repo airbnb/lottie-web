@@ -98,14 +98,14 @@ var ShapeExpressionInterface = (function () {
       }
     }
     Object.defineProperties(interfaceFunction, {
-      'color': {
+      color: {
         get: ExpressionPropertyInterface(view.c),
       },
-      'opacity': {
+      opacity: {
         get: ExpressionPropertyInterface(view.o),
       },
-      '_name': { value: shape.nm },
-      'mn': { value: shape.mn },
+      _name: { value: shape.nm },
+      mn: { value: shape.mn },
     });
 
     view.c.setGroupProperty(PropertyInterface('Color', propertyGroup));
@@ -138,22 +138,22 @@ var ShapeExpressionInterface = (function () {
       }
     }
     Object.defineProperties(interfaceFunction, {
-      'color': {
+      color: {
         get: ExpressionPropertyInterface(view.c),
       },
-      'opacity': {
+      opacity: {
         get: ExpressionPropertyInterface(view.o),
       },
-      'strokeWidth': {
+      strokeWidth: {
         get: ExpressionPropertyInterface(view.w),
       },
-      'dash': {
+      dash: {
         get: function () {
           return dashOb;
         },
       },
-      '_name': { value: shape.nm },
-      'mn': { value: shape.mn },
+      _name: { value: shape.nm },
+      mn: { value: shape.mn },
     });
 
     view.c.setGroupProperty(PropertyInterface('Color', _propertyGroup));
@@ -186,16 +186,16 @@ var ShapeExpressionInterface = (function () {
     interfaceFunction.propertyGroup = propertyGroup;
 
     Object.defineProperties(interfaceFunction, {
-      'start': {
+      start: {
         get: ExpressionPropertyInterface(view.s),
       },
-      'end': {
+      end: {
         get: ExpressionPropertyInterface(view.e),
       },
-      'offset': {
+      offset: {
         get: ExpressionPropertyInterface(view.o),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.mn = shape.mn;
     return interfaceFunction;
@@ -239,28 +239,28 @@ var ShapeExpressionInterface = (function () {
     }
     view.transform.op.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
     Object.defineProperties(interfaceFunction, {
-      'opacity': {
+      opacity: {
         get: ExpressionPropertyInterface(view.transform.mProps.o),
       },
-      'position': {
+      position: {
         get: ExpressionPropertyInterface(view.transform.mProps.p),
       },
-      'anchorPoint': {
+      anchorPoint: {
         get: ExpressionPropertyInterface(view.transform.mProps.a),
       },
-      'scale': {
+      scale: {
         get: ExpressionPropertyInterface(view.transform.mProps.s),
       },
-      'rotation': {
+      rotation: {
         get: ExpressionPropertyInterface(view.transform.mProps.r),
       },
-      'skew': {
+      skew: {
         get: ExpressionPropertyInterface(view.transform.mProps.sk),
       },
-      'skewAxis': {
+      skewAxis: {
         get: ExpressionPropertyInterface(view.transform.mProps.sa),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.ty = 'tr';
     interfaceFunction.mn = shape.mn;
@@ -285,13 +285,13 @@ var ShapeExpressionInterface = (function () {
     prop.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
 
     Object.defineProperties(interfaceFunction, {
-      'size': {
+      size: {
         get: ExpressionPropertyInterface(prop.s),
       },
-      'position': {
+      position: {
         get: ExpressionPropertyInterface(prop.p),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.mn = shape.mn;
     return interfaceFunction;
@@ -338,28 +338,28 @@ var ShapeExpressionInterface = (function () {
     }
 
     Object.defineProperties(interfaceFunction, {
-      'position': {
+      position: {
         get: ExpressionPropertyInterface(prop.p),
       },
-      'rotation': {
+      rotation: {
         get: ExpressionPropertyInterface(prop.r),
       },
-      'points': {
+      points: {
         get: ExpressionPropertyInterface(prop.pt),
       },
-      'outerRadius': {
+      outerRadius: {
         get: ExpressionPropertyInterface(prop.or),
       },
-      'outerRoundness': {
+      outerRoundness: {
         get: ExpressionPropertyInterface(prop.os),
       },
-      'innerRadius': {
+      innerRadius: {
         get: ExpressionPropertyInterface(prop.ir),
       },
-      'innerRoundness': {
+      innerRoundness: {
         get: ExpressionPropertyInterface(prop.is),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.mn = shape.mn;
     return interfaceFunction;
@@ -388,16 +388,16 @@ var ShapeExpressionInterface = (function () {
     prop.r.setGroupProperty(PropertyInterface('Rotation', _propertyGroup));
 
     Object.defineProperties(interfaceFunction, {
-      'position': {
+      position: {
         get: ExpressionPropertyInterface(prop.p),
       },
-      'roundness': {
+      roundness: {
         get: ExpressionPropertyInterface(prop.r),
       },
-      'size': {
+      size: {
         get: ExpressionPropertyInterface(prop.s),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.mn = shape.mn;
     return interfaceFunction;
@@ -417,10 +417,10 @@ var ShapeExpressionInterface = (function () {
     prop.rd.setGroupProperty(PropertyInterface('Radius', _propertyGroup));
 
     Object.defineProperties(interfaceFunction, {
-      'radius': {
+      radius: {
         get: ExpressionPropertyInterface(prop.rd),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.mn = shape.mn;
     return interfaceFunction;
@@ -442,13 +442,13 @@ var ShapeExpressionInterface = (function () {
     prop.c.setGroupProperty(PropertyInterface('Copies', _propertyGroup));
     prop.o.setGroupProperty(PropertyInterface('Offset', _propertyGroup));
     Object.defineProperties(interfaceFunction, {
-      'copies': {
+      copies: {
         get: ExpressionPropertyInterface(prop.c),
       },
-      'offset': {
+      offset: {
         get: ExpressionPropertyInterface(prop.o),
       },
-      '_name': { value: shape.nm },
+      _name: { value: shape.nm },
     });
     interfaceFunction.mn = shape.mn;
     return interfaceFunction;
