@@ -1,5 +1,5 @@
 'use strict';
-/*<%= contents %>*/
+/* <%= contents %> */
 var lottie = {};
 
 var _isFrozen = false;
@@ -83,7 +83,7 @@ lottie.registerAnimation = animationManager.registerAnimation;
 lottie.loadAnimation = loadAnimation;
 lottie.setSubframeRendering = setSubframeRendering;
 lottie.resize = animationManager.resize;
-//lottie.start = start;
+// lottie.start = start;
 lottie.goToAndStop = animationManager.goToAndStop;
 lottie.destroy = animationManager.destroy;
 lottie.setQuality = setQuality;

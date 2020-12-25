@@ -1,21 +1,21 @@
 function HShapeElement(data,globalData,comp) {
-    //List of drawable elements
+    // List of drawable elements
     this.shapes = [];
     // Full shape data
     this.shapesData = data.shapes;
-    //List of styles that will be applied to shapes
+    // List of styles that will be applied to shapes
     this.stylesList = [];
-    //List of modifiers that will be applied to shapes
+    // List of modifiers that will be applied to shapes
     this.shapeModifiers = [];
-    //List of items in shape tree
+    // List of items in shape tree
     this.itemsData = [];
-    //List of items in previous shape tree
+    // List of items in previous shape tree
     this.processedElements = [];
     // List of animated components
     this.animatedContents = [];
     this.shapesContainer = createNS('g');
     this.initElement(data,globalData,comp);
-    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
+    // Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     // List of elements that have been created
     this.prevViewData = [];
     this.currentBBox = {
@@ -190,7 +190,7 @@ HShapeElement.prototype.renderInnerContent = function () {
         this.calculateBoundingBox(this.itemsData, tempBoundingBox);
         tempBoundingBox.width = tempBoundingBox.xMax < tempBoundingBox.x ? 0 : tempBoundingBox.xMax - tempBoundingBox.x;
         tempBoundingBox.height = tempBoundingBox.yMax < tempBoundingBox.y ? 0 : tempBoundingBox.yMax - tempBoundingBox.y;
-        //var tempBoundingBox = this.shapeCont.getBBox();
+        // var tempBoundingBox = this.shapeCont.getBBox();
         if(this.currentBoxContains(tempBoundingBox)) {
             return;
         }

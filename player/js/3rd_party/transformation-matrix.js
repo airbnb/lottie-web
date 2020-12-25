@@ -104,7 +104,7 @@ var Matrix = (function () {
         return this._t(mCos, mSin,  0, 0, -mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1)
             ._t(1, 0,  0, 0, _tan(ax),  1, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1)
             ._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
-        //return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, _tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
+        // return this._t(mCos, mSin, -mSin, mCos, 0, 0)._t(1, 0, _tan(ax), 1, 0, 0)._t(mCos, -mSin, mSin, mCos, 0, 0);
     }
 
     function scale(sx, sy, sz) {
@@ -150,13 +150,13 @@ var Matrix = (function () {
         var _p = this.props;
 
         if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0) {
-            //NOTE: commenting this condition because TurboFan deoptimizes code when present
-            //if(m2 !== 0 || n2 !== 0 || o2 !== 0){
+            // NOTE: commenting this condition because TurboFan deoptimizes code when present
+            // if(m2 !== 0 || n2 !== 0 || o2 !== 0){
                 _p[12] = _p[12] * a2 + _p[15] * m2;
                 _p[13] = _p[13] * f2 + _p[15] * n2;
                 _p[14] = _p[14] * k2 + _p[15] * o2;
                 _p[15] = _p[15] * p2;
-            //}
+            // }
             this._identityCalculated = false;
             return this;
         }
@@ -248,10 +248,10 @@ var Matrix = (function () {
             y: x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
             z: x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]
         };
-        /*return {
+        /* return {
          x: x * me.a + y * me.c + me.e,
          y: x * me.b + y * me.d + me.f
-         };*/
+         }; */
     }
     function applyToX(x, y, z) {
         return x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12];
@@ -338,10 +338,10 @@ var Matrix = (function () {
     }
 
     function toCSS() {
-        //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
-        /*if(this.isIdentity()) {
+        // Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
+        /* if(this.isIdentity()) {
             return '';
-        }*/
+        } */
         var i = 0;
         var props = this.props;
         var cssValue = 'matrix3d(';
@@ -363,10 +363,10 @@ var Matrix = (function () {
     }
 
     function to2dCSS() {
-        //Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
-        /*if(this.isIdentity()) {
+        // Doesn't make much sense to add this optimization. If it is an identity matrix, it's very likely this will get called only once since it won't be keyframed.
+        /* if(this.isIdentity()) {
             return '';
-        }*/
+        } */
         var props = this.props;
         var _a = roundMatrixProperty(props[0]);
         var _b = roundMatrixProperty(props[1]);

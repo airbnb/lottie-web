@@ -13,7 +13,7 @@ var ShapeExpressionInterface = (function () {
             }else if(shapes[i].ty == 'tm') {
                 arr.push(trimInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'tr') {
-                //arr.push(transformInterfaceFactory(shapes[i],view[i],propertyGroup));
+                // arr.push(transformInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'el') {
                 arr.push(ellipseInterfaceFactory(shapes[i],view[i],propertyGroup));
             }else if(shapes[i].ty == 'sr') {
@@ -64,9 +64,9 @@ var ShapeExpressionInterface = (function () {
                 case 'Contents':
                 case 2:
                     return interfaceFunction.content;
-                //Not necessary for now. Keeping them here in case a new case appears
-                //case 'ADBE Vector Transform Group':
-                //case 3:
+                // Not necessary for now. Keeping them here in case a new case appears
+                // case 'ADBE Vector Transform Group':
+                // case 3:
                 default:
                     return interfaceFunction.transform;
             }
@@ -81,7 +81,7 @@ var ShapeExpressionInterface = (function () {
                 return shape.nm;
             }
         });
-        //interfaceFunction.content = interfaceFunction;
+        // interfaceFunction.content = interfaceFunction;
         interfaceFunction.numProperties = shape.np;
         interfaceFunction.propertyIndex = shape.ix;
         interfaceFunction.nm = shape.nm;

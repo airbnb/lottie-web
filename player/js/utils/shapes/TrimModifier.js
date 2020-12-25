@@ -146,7 +146,7 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
             if (shapeData.shape._mdf) {
                 localShapeCollection = shapeData.localShapeCollection;
                 localShapeCollection.releaseShapes();
-                //if m === 2 means paths are trimmed individually so edges need to be found for this specific shape relative to whoel group
+                // if m === 2 means paths are trimmed individually so edges need to be found for this specific shape relative to whoel group
                 if (this.m === 2 && len > 1) {
                     edges = this.calculateShapeEdges(s, e, shapeData.totalShapeLength, addedLength, totalModifierLength);
                     addedLength += shapeData.totalShapeLength;
@@ -200,8 +200,8 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
         }
     } else if (this._mdf) {
         for (i = 0; i < len; i += 1) {
-            //Releasign Trim Cached paths data when no trim applied in case shapes are modified inbetween.
-            //Don't remove this even if it's losing cached info.
+            // Releasign Trim Cached paths data when no trim applied in case shapes are modified inbetween.
+            // Don't remove this even if it's losing cached info.
             this.shapes[i].pathsData.length = 0;
             this.shapes[i].shape._mdf = true;
         }

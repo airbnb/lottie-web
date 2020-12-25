@@ -104,7 +104,7 @@ TextProperty.prototype.getValue = function (_finalValue) {
     var i, len = this.effectsSequence.length;
     var finalValue = _finalValue || this.data.d.k[this.keysIndex].s;
     for(i = 0; i < len; i += 1) {
-        //Checking if index changed to prevent creating a new object every time the expression updates.
+        // Checking if index changed to prevent creating a new object every time the expression updates.
         if(currentIndex !== this.keysIndex) {
             finalValue = this.effectsSequence[i](finalValue, finalValue.t);
         } else {
@@ -241,7 +241,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
                     charData = fontManager.getCharData(finalText[i], fontData.fStyle, fontData.fFamily);
                     cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
                 }else{
-                    //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
+                    // tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
                     cLength = fontManager.measureText(finalText[i], documentData.f, documentData.finalSize);
                 }
                 if(lineWidth + cLength > boxWidth && finalText[i] !== ' ') {
@@ -252,7 +252,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
                     }
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
                     finalText.splice(i, lastSpaceIndex === i ? 1 : 0,'\r');
-                    //finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
+                    // finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
                     lastSpaceIndex = -1;
                     lineWidth = 0;
                 }else {
@@ -295,8 +295,8 @@ TextProperty.prototype.completeTextData = function (documentData) {
             charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
             cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
         }else{
-            //var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
-            //tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
+            // var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
+            // tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
             cLength = fontManager.measureText(val, documentData.f, documentData.finalSize);
         }
 

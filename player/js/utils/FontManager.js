@@ -7,7 +7,7 @@ var FontManager = (function () {
         shapes:[]
     };
     var combinedCharacters = [];
-    //Hindi characters
+    // Hindi characters
     combinedCharacters = combinedCharacters.concat([2304, 2305, 2306, 2307, 2362, 2363, 2364, 2364, 2366
     , 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379
     , 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
@@ -93,7 +93,7 @@ var FontManager = (function () {
     function createHelper(def, fontData) {
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
-        //tHelper.style.fontFamily = fontData.fFamily;
+        // tHelper.style.fontFamily = fontData.fFamily;
         tHelper.setAttribute('font-family', fontData.fFamily);
         tHelper.setAttribute('font-style', fontData.fStyle);
         tHelper.setAttribute('font-weight', fontData.fWeight);
@@ -107,7 +107,7 @@ var FontManager = (function () {
         def.appendChild(tHelper);
         var tCanvasHelper = createTag('canvas').getContext('2d');
         tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
-        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+        // tCanvasHelper.font = ' 100px '+ fontData.fFamily;
         return tHelper;
     }
 
@@ -197,8 +197,8 @@ var FontManager = (function () {
         if (_pendingFonts === 0) {
             this.isLoaded = true;
         } else {
-            //On some cases even if the font is loaded, it won't load correctly when measuring text on canvas.
-            //Adding this timeout seems to fix it
+            // On some cases even if the font is loaded, it won't load correctly when measuring text on canvas.
+            // Adding this timeout seems to fix it
            setTimeout(this.checkLoadedFonts.bind(this), 100);
         }
     }
@@ -253,10 +253,10 @@ var FontManager = (function () {
         var index = char.charCodeAt(0);
         if(!fontData.cache[index + 1]) {
             var tHelper = fontData.helper;
-            //Canvas version
-            //fontData.cache[index] = tHelper.measureText(char).width / 100;
-            //SVG version
-            //console.log(tHelper.getBBox().width)
+            // Canvas version
+            // fontData.cache[index] = tHelper.measureText(char).width / 100;
+            // SVG version
+            // console.log(tHelper.getBBox().width)
             if (char === ' ') {
                 tHelper.textContent = '|' + char + '|';
                 var doubleSize = tHelper.getComputedTextLength();
@@ -300,7 +300,7 @@ var FontManager = (function () {
         this.setIsLoadedBinded = this.setIsLoaded.bind(this)
         this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)
     };
-    //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
+    // TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
     Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
 
     var fontPrototype = {

@@ -11,7 +11,7 @@ SVGBaseElement.prototype = {
         this.maskedElement = this.layerElement;
         this._sizeChanged = false;
         var layerElementParent = null;
-        //If this layer acts as a mask for the following layer
+        // If this layer acts as a mask for the following layer
         var filId, fil, gg;
         if (this.data.td) {
             if (this.data.td == 3 || this.data.td == 1) {
@@ -42,15 +42,15 @@ SVGBaseElement.prototype = {
                 maskGroup.appendChild(maskGrouper);
                 filId = createElementID();
                 fil = filtersFactory.createFilter(filId);
-                ////
+                /// /
 
                 // This solution doesn't work on Android when meta tag with viewport attribute is set
-                /*var feColorMatrix = createNS('feColorMatrix');
+                /* var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type', 'matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
                 feColorMatrix.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 -1 1');
-                fil.appendChild(feColorMatrix);*/
-                ////
+                fil.appendChild(feColorMatrix); */
+                /// /
                 var feCTr = createNS('feComponentTransfer');
                 feCTr.setAttribute('in','SourceGraphic');
                 fil.appendChild(feCTr);
@@ -58,7 +58,7 @@ SVGBaseElement.prototype = {
                 feFunc.setAttribute('type','table');
                 feFunc.setAttribute('tableValues','1.0 0.0');
                 feCTr.appendChild(feFunc);
-                ////
+                /// /
                 this.globalData.defs.appendChild(fil);
                 var alphaRect = createNS('rect');
                 alphaRect.setAttribute('width',  this.comp.data.w);
@@ -95,7 +95,7 @@ SVGBaseElement.prototype = {
         if (this.data.cl) {
             this.layerElement.setAttribute('class', this.data.cl);
         }
-        //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
+        // Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
         if (this.data.ty === 0 && !this.data.hd) {
             var cp = createNS( 'clipPath');
             var pt = createNS('path');

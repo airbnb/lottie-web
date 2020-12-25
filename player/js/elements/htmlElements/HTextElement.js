@@ -103,7 +103,7 @@ HTextElement.prototype.buildNewText = function () {
                 tSpan = this.textPaths[cnt] ? this.textPaths[cnt] : createNS('text');
             }
         }
-        //tSpan.setAttribute('visibility', 'hidden');
+        // tSpan.setAttribute('visibility', 'hidden');
         if(this.globalData.fontManager.chars) {
             var charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
             var shapeData;
@@ -123,7 +123,7 @@ HTextElement.prototype.buildNewText = function () {
                 this.innerElem.appendChild(tParent);
                 if(shapeData && shapeData.shapes) {
 
-                    //document.body.appendChild is needed to get exact measure of shape
+                    // document.body.appendChild is needed to get exact measure of shape
                     document.body.appendChild(tCont);
                     var boundingBox = tCont.getBBox();
                     tCont.setAttribute('width',boundingBox.width + 2);
@@ -209,7 +209,7 @@ HTextElement.prototype.renderInnerContent = function () {
                 textSpan.setAttribute('transform',renderedLetter.m);
             }
         }
-        ////textSpan.setAttribute('opacity',renderedLetter.o);
+        /// /textSpan.setAttribute('opacity',renderedLetter.o);
         textSpan.style.opacity = renderedLetter.o;
         if(renderedLetter.sw && renderedLetter._mdf.sw) {
             textPath.setAttribute('stroke-width',renderedLetter.sw);

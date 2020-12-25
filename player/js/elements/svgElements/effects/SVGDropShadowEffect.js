@@ -68,7 +68,7 @@ SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
             this.feOffset.setAttribute('dx', x);
             this.feOffset.setAttribute('dy', y);
         }
-        /*if(forceRender || this.filterManager.effectElements[5].p._mdf){
+        /* if(forceRender || this.filterManager.effectElements[5].p._mdf){
             if(this.filterManager.effectElements[5].p.v === 1 && this.originalNodeAdded) {
                 this.feMerge.removeChild(this.feMergeNode);
                 this.originalNodeAdded = false;
@@ -76,6 +76,6 @@ SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
                 this.feMerge.appendChild(this.feMergeNode);
                 this.originalNodeAdded = true;
             }
-        }*/
+        } */
     }
 };

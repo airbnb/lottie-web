@@ -119,7 +119,7 @@ SVGTextElement.prototype.buildNewText = function () {
                 }
                 this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
                 xPos += letters[i].l || 0;
-                //xPos += letters[i].val === ' ' ? 0 : trackingOffset;
+                // xPos += letters[i].val === ' ' ? 0 : trackingOffset;
                 xPos += trackingOffset;
             }
             if(usesGlyphs) {

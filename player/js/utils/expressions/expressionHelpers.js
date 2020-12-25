@@ -43,7 +43,7 @@ var expressionHelpers = (function () {
             return this.vel;
         }
         var delta = -0.001;
-        //frameNum += this.elem.data.st;
+        // frameNum += this.elem.data.st;
         var v1 = this.getValueAtTime(frameNum);
         var v2 = this.getValueAtTime(frameNum + delta);
         var velocity;
@@ -51,9 +51,9 @@ var expressionHelpers = (function () {
             velocity = createTypedArray('float32', v1.length);
             var i;
             for(i=0;i<v1.length;i+=1) {
-                //removing frameRate
-                //if needed, don't add it here
-                //velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
+                // removing frameRate
+                // if needed, don't add it here
+                // velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);
                 velocity[i] = (v2[i] - v1[i])/delta;
             }
         } else {

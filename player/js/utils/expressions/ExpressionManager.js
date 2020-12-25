@@ -385,22 +385,22 @@ var ExpressionManager = (function () {
             i = 0;
             j = 0;
             while(i<iterations) {
-                //var rnd = BMMath.random();
+                // var rnd = BMMath.random();
                 for(j=0;j<len;j+=1) {
                     addedAmps[j] += -amp + amp*2*BMMath.random();
-                    //addedAmps[j] += -amp + amp*2*rnd;
+                    // addedAmps[j] += -amp + amp*2*rnd;
                 }
                 i += 1;
             }
-            //var rnd2 = BMMath.random();
+            // var rnd2 = BMMath.random();
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
             var arr = createTypedArray('float32', len);
             if(len>1) {
                 for(j=0;j<len;j+=1) {
                     arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
-                    //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-                    //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
+                    // arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
+                    // arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
                 }
                 return arr;
             } else {
@@ -627,9 +627,9 @@ var ExpressionManager = (function () {
                 $bm_transform = transform;
                 if(transform) {
                     anchorPoint = transform.anchorPoint;
-                    /*position = transform.position;
+                    /* position = transform.position;
                     rotation = transform.rotation;
-                    scale = transform.scale;*/
+                    scale = transform.scale; */
                 }
             }
             
@@ -650,7 +650,7 @@ var ExpressionManager = (function () {
             expression_function();
             this.frameExpressionId = elem.globalData.frameId;
 
-            //TODO: Check if it's possible to return on ShapeInterface the .v value
+            // TODO: Check if it's possible to return on ShapeInterface the .v value
             if (scoped_bm_rt.propType === 'shape') {
                 scoped_bm_rt = scoped_bm_rt.v;
             }

@@ -13,9 +13,9 @@ HierarchyElement.prototype = {
      *
      */
     initHierarchy: function () {
-        //element's parent list
+        // element's parent list
         this.hierarchy = [];
-        //if element is parent of another layer _isParent will be true
+        // if element is parent of another layer _isParent will be true
         this._isParent = false;
         this.checkParenting();
     },

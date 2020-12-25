@@ -143,7 +143,7 @@ var TransformPropertyFactory = (function () {
 
     function autoOrient() {
         //
-        //var prevP = this.getValueAtTime();
+        // var prevP = this.getValueAtTime();
     }
 
     function addDynamicProperty(prop) {
@@ -158,7 +158,7 @@ var TransformPropertyFactory = (function () {
         this.propType = 'transform';
         this.data = data;
         this.v = new Matrix();
-        //Precalculated matrix with non animated properties
+        // Precalculated matrix with non animated properties
         this.pre = new Matrix();
         this.appliedTransformations = 0;
         this.initDynamicPropertyContainer(container || elem);
@@ -182,7 +182,7 @@ var TransformPropertyFactory = (function () {
                 }
             }
             this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this);
-            //sh Indicates it needs to be capped between -180 and 180
+            // sh Indicates it needs to be capped between -180 and 180
             this.or.sh = true;
         } else {
             this.r = PropertyFactory.getProp(elem, data.r || {k: 0}, 0, degToRads, this);

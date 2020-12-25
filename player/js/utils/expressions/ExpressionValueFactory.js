@@ -80,7 +80,7 @@ var ExpressionPropertyInterface = (function () {
         }
     }
 
-    //TODO: try to avoid using this getter
+    // TODO: try to avoid using this getter
     function defaultGetter() {
         return defaultUnidimensionalValue;
     }

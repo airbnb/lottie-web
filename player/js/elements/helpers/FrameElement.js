@@ -14,9 +14,9 @@ FrameElement.prototype = {
      *
      */
     initFrame: function () {
-        //set to true when inpoint is rendered
+        // set to true when inpoint is rendered
         this._isFirstFrame = false;
-        //list of animated properties
+        // list of animated properties
         this.dynamicProperties = [];
         // If layer has been modified in current tick this will be true
         this._mdf = false;

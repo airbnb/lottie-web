@@ -19,9 +19,9 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
         if(currentV[0]===currentO[0] && currentV[1]===currentO[1] && currentV[0]===currentI[0] && currentV[1]===currentI[1]) {
             if((i===0 || i === len - 1) && !path.c) {
                 cloned_path.setTripleAt(currentV[0],currentV[1],currentO[0],currentO[1],currentI[0],currentI[1],index);
-                /*cloned_path.v[index] = currentV;
+                /* cloned_path.v[index] = currentV;
                 cloned_path.o[index] = currentO;
-                cloned_path.i[index] = currentI;*/
+                cloned_path.i[index] = currentI; */
                 index += 1;
             } else {
                 if(i===0) {

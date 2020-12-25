@@ -1,6 +1,6 @@
 var lottiejs = (function (window) {
     'use strict';
-    /*<%= contents %>*/
+    /* <%= contents %> */
     var lottiejs = {};
 
     var _isFrozen = false;

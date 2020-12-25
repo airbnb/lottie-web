@@ -141,7 +141,7 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
     }
     
     perspectiveElem.appendChild(container);
-    //this.resizerElem.appendChild(perspectiveElem);
+    // this.resizerElem.appendChild(perspectiveElem);
     var threeDContainerData = {
         container:container,
         perspectiveElem:perspectiveElem,
@@ -223,7 +223,7 @@ HybridRenderer.prototype.configAnimation = function (animData) {
     var defs = createNS('defs');
     svg.appendChild(defs);
     this.data = animData;
-    //Mask animation
+    // Mask animation
     this.setupGlobalData(animData, svg);
     this.globalData.defs = defs;
     this.layers = animData.layers;

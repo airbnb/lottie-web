@@ -17,7 +17,7 @@ ICompElement.prototype.initElement = function (data,globalData,comp) {
     this.hide();
 };
 
-/*ICompElement.prototype.hide = function(){
+/* ICompElement.prototype.hide = function(){
     if(!this.hidden){
         this.hideElement();
         var i,len = this.elements.length;
@@ -27,7 +27,7 @@ ICompElement.prototype.initElement = function (data,globalData,comp) {
             }
         }
     }
-};*/
+}; */
 
 ICompElement.prototype.prepareFrame = function (num) {
     this._mdf = false;
@@ -50,7 +50,7 @@ ICompElement.prototype.prepareFrame = function (num) {
     if(!this.completeLayers) {
         this.checkLayers(this.renderedFrame);
     }
-    //This iteration needs to be backwards because of how expressions connect between each other
+    // This iteration needs to be backwards because of how expressions connect between each other
     for( i = len - 1; i >= 0; i -= 1 ) {
         if(this.completeLayers || this.elements[i]) {
             this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);

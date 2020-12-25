@@ -62,16 +62,16 @@ CanvasRenderer.prototype.ctxTransform = function (props) {
     this.transformMat.cloneFromProps(props);
     var cProps = this.contextData.cTr.props;
     this.transformMat.transform(cProps[0],cProps[1],cProps[2],cProps[3],cProps[4],cProps[5],cProps[6],cProps[7],cProps[8],cProps[9],cProps[10],cProps[11],cProps[12],cProps[13],cProps[14],cProps[15]);
-    //this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+    // this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
     this.contextData.cTr.cloneFromProps(this.transformMat.props);
     var trProps = this.contextData.cTr.props;
     this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
 };
 
 CanvasRenderer.prototype.ctxOpacity = function (op) {
-    /*if(op === 1){
+    /* if(op === 1){
         return;
-    }*/
+    } */
     if(!this.renderConfig.clearCanvas) {
         this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
         this.globalData.currentGlobalAlpha = this.contextData.cO;
@@ -141,8 +141,8 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
         this.animationItem.container = createTag('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';
-        //this.animationItem.container.style.transform = 'translate3d(0,0,0)';
-        //this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
+        // this.animationItem.container.style.transform = 'translate3d(0,0,0)';
+        // this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
         this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = '0px 0px 0px';
         this.animationItem.wrapper.appendChild(this.animationItem.container);
         this.canvasContext = this.animationItem.container.getContext('2d');
@@ -232,12 +232,12 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.ty = 0;
     }
     this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
-    /*var i, len = this.elements.length;
+    /* var i, len = this.elements.length;
     for(i=0;i<len;i+=1){
         if(this.elements[i] && this.elements[i].data.ty === 0){
             this.elements[i].resize(this.globalData.transformCanvas);
         }
-    }*/
+    } */
     this.ctxTransform(this.transformCanvas.props);
     this.canvasContext.beginPath();
     this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
@@ -310,9 +310,9 @@ CanvasRenderer.prototype.buildItem = function (pos) {
     var element = this.createItem(this.layers[pos], this,this.globalData);
     elements[pos] = element;
     element.initExpressions();
-    /*if(this.layers[pos].ty === 0){
+    /* if(this.layers[pos].ty === 0){
         element.resize(this.globalData.transformCanvas);
-    }*/
+    } */
 };
 
 CanvasRenderer.prototype.checkPendingElements  = function () {

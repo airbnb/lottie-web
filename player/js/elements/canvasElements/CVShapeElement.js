@@ -240,11 +240,11 @@ CVShapeElement.prototype.drawLayer = function () {
         currentStyle = this.stylesList[i];
         type = currentStyle.type;
 
-        //Skipping style when
-        //Stroke width equals 0
-        //style should not be rendered (extra unused repeaters)
-        //current opacity equals 0
-        //global opacity equals 0
+        // Skipping style when
+        // Stroke width equals 0
+        // style should not be rendered (extra unused repeaters)
+        // current opacity equals 0
+        // global opacity equals 0
         if(((type === 'st' || type === 'gs') && currentStyle.wi === 0) || !currentStyle.data._shouldRender || currentStyle.coOp === 0 || this.globalData.currentGlobalAlpha === 0) {
             continue;
         }

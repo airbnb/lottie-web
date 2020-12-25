@@ -32,7 +32,7 @@ var TextSelectorProp = (function () {
             if(this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
                 this.getValue();
             }
-            //var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
+            // var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
             var x1 = 0;
             var y1 = 0;
             var x2 = 1;
@@ -87,8 +87,8 @@ var TextSelectorProp = (function () {
                     mult = 0;
                 } else {
                     var tot = e - s;
-                    /*ind += 0.5;
-                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind;*/
+                    /* ind += 0.5;
+                    mult = -4/(tot*tot)*(ind*ind)+(4/tot)*ind; */
                     ind = min(max(0, ind + 0.5 - s), e - s);
                     var x = -tot/2+ind;
                     var a = tot/2;

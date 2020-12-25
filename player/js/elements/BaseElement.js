@@ -45,7 +45,7 @@ BaseElement.prototype = {
         this.data = data;
         this.layerId = createElementID();
         
-        //Stretch factor for old animations missing this property.
+        // Stretch factor for old animations missing this property.
         if(!this.data.sr) {
             this.data.sr = 1;
         }

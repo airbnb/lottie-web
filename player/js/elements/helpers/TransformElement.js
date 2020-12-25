@@ -12,9 +12,9 @@ TransformElement.prototype = {
             this.finalTransform.mProp.autoOriented = true;
         }
 
-        //TODO: check TYPE 11: Guided elements
+        // TODO: check TYPE 11: Guided elements
         if (this.data.ty !== 11) {
-            //this.createElements();
+            // this.createElements();
         }
     },
     renderTransform: function () {
@@ -26,7 +26,7 @@ TransformElement.prototype = {
             var mat;
             var finalMat = this.finalTransform.mat;
             var i = 0, len = this.hierarchy.length;
-            //Checking if any of the transformation matrices in the hierarchy chain has changed.
+            // Checking if any of the transformation matrices in the hierarchy chain has changed.
             if (!this.finalTransform._matMdf) {
                 while (i < len) {
                     if (this.hierarchy[i].finalTransform.mProp._mdf) {
@@ -65,7 +65,7 @@ TransformElement.prototype = {
         var i, len = transforms.length,ptNew;
         for (i = 0; i < len; i += 1) {
             ptNew = transforms[i].mat.applyToPointArray(0, 0, 0);
-            //ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
+            // ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);
             pt = [pt[0] - ptNew[0], pt[1] - ptNew[1], 0];
         }
         return pt;

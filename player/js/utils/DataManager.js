@@ -1,6 +1,6 @@
 function dataFunctionManager() {
 
-    //var tCanvasHelper = createTag('canvas').getContext('2d');
+    // var tCanvasHelper = createTag('canvas').getContext('2d');
 
     function completeLayers(layers, comps, fontManager) {
         var layerData;
@@ -86,7 +86,7 @@ function dataFunctionManager() {
                 completeShapes(arr[i].it);
             }
         }
-        /*if(hasPaths){
+        /* if(hasPaths){
             //mx: distance
             //ss: sensitivity
             //dc: decay
@@ -97,7 +97,7 @@ function dataFunctionManager() {
                  "dc":0.001,
                 "maxDist":200
             });
-        }*/
+        } */
     }
 
     function convertPathsToAbsoluteValues(path) {
@@ -342,7 +342,7 @@ function dataFunctionManager() {
         checkShapes(animationData);
         completeLayers(animationData.layers, animationData.assets, fontManager);
         animationData.__complete = true;
-        //blitAnimation(animationData, animationData.assets, fontManager);
+        // blitAnimation(animationData, animationData.assets, fontManager);
     }
 
     function completeText(data, fontManager) {

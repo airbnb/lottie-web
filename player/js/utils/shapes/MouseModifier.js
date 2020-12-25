@@ -17,7 +17,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     var vValues = [],oValues = [],iValues = [];
     var dist;
     var theta, x,y;
-    //// OPTION A
+    /// / OPTION A
     for(i=0;i<len;i+=1) {
         if(!positions.v[i]) {
             positions.v[i] = [path.v[i][0],path.v[i][1]];
@@ -69,36 +69,36 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         positions.i[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
         positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
 
-        /////OPTION 1
+        /// //OPTION 1
         vValues.push(positions.v[i]);
          oValues.push(positions.o[i]);
          iValues.push(positions.i[i]);
 
 
 
-        /////OPTION 2
-        //vValues.push(positions.v[i]);
+        /// //OPTION 2
+        // vValues.push(positions.v[i]);
         // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
         // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
 
 
 
-        /////OPTION 3
-        //vValues.push(positions.v[i]);
-        //iValues.push(path.i[i]);
-        //oValues.push(path.o[i]);
+        /// //OPTION 3
+        // vValues.push(positions.v[i]);
+        // iValues.push(path.i[i]);
+        // oValues.push(path.o[i]);
 
 
-        /////OPTION 4
-        //vValues.push(path.v[i]);
-         //oValues.push(positions.o[i]);
-         //iValues.push(positions.i[i]);
+        /// //OPTION 4
+        // vValues.push(path.v[i]);
+         // oValues.push(positions.o[i]);
+         // iValues.push(positions.i[i]);
     }
 
 
 
-    //// OPTION B
-    /*for(i=0;i<len;i+=1){
+    /// / OPTION B
+    /* for(i=0;i<len;i+=1){
         if(!positions.v[i]){
             positions.v[i] = [path.v[i][0],path.v[i][1]];
             positions.o[i] = [path.o[i][0],path.o[i][1]];
@@ -165,7 +165,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         //vValues.push(path.v[i]);
         // oValues.push(positions.o[i]);
         // iValues.push(positions.i[i]);
-    }*/
+    } */
 
 
     return {

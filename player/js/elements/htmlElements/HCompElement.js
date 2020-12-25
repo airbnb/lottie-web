@@ -13,7 +13,7 @@ HCompElement.prototype._createBaseContainerElements = HCompElement.prototype.cre
 
 HCompElement.prototype.createContainerElements = function () {
     this._createBaseContainerElements();
-    //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
+    // divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
     if(this.data.hasMask) {
         this.svgElement.setAttribute('width',this.data.w);
         this.svgElement.setAttribute('height',this.data.h);

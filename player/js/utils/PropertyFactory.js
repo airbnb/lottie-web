@@ -166,7 +166,7 @@ var PropertyFactory = (function () {
         return newValue;
     }
 
-    //based on @Toji's https://github.com/toji/gl-matrix/
+    // based on @Toji's https://github.com/toji/gl-matrix/
     function slerp(a, b, t) {
         var out = [];
         var ax = a[0], ay = a[1], az = a[2], aw = a[3],

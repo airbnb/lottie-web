@@ -47,7 +47,7 @@ RepeaterModifier.prototype.init = function (elem, arr, pos, elemsData) {
     var cont = 0;
     while(pos>0) {
         pos -= 1;
-        //this._elements.unshift(arr.splice(pos,1)[0]);
+        // this._elements.unshift(arr.splice(pos,1)[0]);
         this._elements.unshift(arr[pos]);
         cont += 1;
     }
@@ -113,7 +113,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
         }
         
         this._currentCopies = copies;
-        ////
+        /// /
 
         var offset = this.o.v;
         var offsetModulo = offset%1;

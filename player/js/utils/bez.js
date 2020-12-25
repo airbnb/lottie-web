@@ -155,7 +155,7 @@ function bezFunction() {
                     initPos += dir;
                 }
                 if(initPos < 0 || initPos >= len - 1) {
-                    //FIX for TypedArrays that don't store floating point values with enough accuracy
+                    // FIX for TypedArrays that don't store floating point values with enough accuracy
                     if(initPos === len - 1) {
                         return percents[initPos];
                     }

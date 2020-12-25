@@ -25,7 +25,7 @@ function SVGEffects(elem) {
             count += 1;
             filterManager = new SVGDropShadowEffect(fil, elem.effectsManager.effectElements[i]);
         }else if(elem.data.ef[i].ty === 28) {
-            //count += 1;
+            // count += 1;
             filterManager = new SVGMatte3Effect(fil, elem.effectsManager.effectElements[i], elem);
         }else if(elem.data.ef[i].ty === 29) {
             count += 1;

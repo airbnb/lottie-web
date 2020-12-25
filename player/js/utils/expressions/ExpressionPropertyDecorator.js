@@ -186,7 +186,7 @@
                 v: new Matrix(),
             };
         }
-        ////
+        /// /
         var matrix = this._transformCachingAtTime.v;
         matrix.cloneFromProps(this.pre.props);
         if (this.appliedTransformations < 1) {
@@ -247,7 +247,7 @@
             );
         }
         return matrix;
-        ////
+        /// /
     }
 
     function getTransformStaticValueAtTime(time) {
@@ -269,9 +269,9 @@
     var propertyGetProp = PropertyFactory.getProp;
     PropertyFactory.getProp = function (elem,data,type, mult, container) {
         var prop = propertyGetProp(elem,data,type, mult, container);
-        //prop.getVelocityAtTime = getVelocityAtTime;
-        //prop.loopOut = loopOut;
-        //prop.loopIn = loopIn;
+        // prop.getVelocityAtTime = getVelocityAtTime;
+        // prop.loopOut = loopOut;
+        // prop.loopIn = loopIn;
         if(prop.kf) {
             prop.getValueAtTime = expressionHelpers.getValueAtTime.bind(prop);
         } else {
@@ -303,7 +303,7 @@
     };
 
     function getShapeValueAtTime(frameNum) {
-        //For now this caching object is created only when needed instead of creating it when the shape is initialized.
+        // For now this caching object is created only when needed instead of creating it when the shape is initialized.
         if (!this._cachingAtTime) {
             this._cachingAtTime = {
                 shapeValue: shape_pool.clone(this.pv),
@@ -394,7 +394,7 @@
             return pt;
         },
         vectorOnPath: function (perc, time, vectorType) {
-            //perc doesn't use triple equality because it can be a Number object as well as a primitive.
+            // perc doesn't use triple equality because it can be a Number object as well as a primitive.
             perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
             var pt1 = this.pointOnPath(perc, time);
             var pt2 = this.pointOnPath(perc + 0.001, time);

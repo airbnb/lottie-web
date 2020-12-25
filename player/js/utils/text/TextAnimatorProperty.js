@@ -306,7 +306,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
                 if (animatorProps.t.propType) {
                     animatorSelector = animators[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
-                    //This condition is to prevent applying tracking to first character in each line. Might be better to use a boolean "isNewLine"
+                    // This condition is to prevent applying tracking to first character in each line. Might be better to use a boolean "isNewLine"
                     if(xPos !== 0 || documentData.j !== 0) {
                         if(this._hasMaskedPath) {
                             if(mult.length) {
@@ -508,7 +508,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
                 matrixHelper.translate(xPos,yPos,0);
 
                 if(documentData.ps) {
-                    //matrixHelper.translate(documentData.ps[0],documentData.ps[1],0);
+                    // matrixHelper.translate(documentData.ps[0],documentData.ps[1],0);
                     matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
                 }
                 switch(documentData.j) {

@@ -51,7 +51,7 @@ GroupEffect.prototype.init = function (data,element) {
             case 5:
                 eff = new EffectsManager(effects[i],element,this);
                 break;
-            //case 6:
+            // case 6:
             default:
                 eff = new NoValueEffect(effects[i],element,this);
                 break;

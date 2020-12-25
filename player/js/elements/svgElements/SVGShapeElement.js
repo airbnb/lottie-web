@@ -1,23 +1,23 @@
 function SVGShapeElement(data,globalData,comp) {
-    //List of drawable elements
+    // List of drawable elements
     this.shapes = [];
     // Full shape data
     this.shapesData = data.shapes;
-    //List of styles that will be applied to shapes
+    // List of styles that will be applied to shapes
     this.stylesList = [];
-    //List of modifiers that will be applied to shapes
+    // List of modifiers that will be applied to shapes
     this.shapeModifiers = [];
-    //List of items in shape tree
+    // List of items in shape tree
     this.itemsData = [];
-    //List of items in previous shape tree
+    // List of items in previous shape tree
     this.processedElements = [];
     // List of animated components
     this.animatedContents = [];
     this.initElement(data,globalData,comp);
-    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
+    // Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     // List of elements that have been created
     this.prevViewData = [];
-    //Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
+    // Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,IShapeElement,HierarchyElement,FrameElement,RenderableDOMElement], SVGShapeElement);
@@ -68,7 +68,7 @@ SVGShapeElement.prototype.setShapesAsAnimated = function (shapes) {
 }
 
 SVGShapeElement.prototype.createStyleElement = function (data, level) {
-    //TODO: prevent drawing of hidden styles
+    // TODO: prevent drawing of hidden styles
     var elementData;
     var styleOb = new SVGStyleData(data, level);
 
@@ -288,7 +288,7 @@ SVGShapeElement.prototype.renderInnerContent = function () {
         if (this.stylesList[i]._mdf || this._isFirstFrame) {
             if(this.stylesList[i].msElem) {
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
-                //Adding M0 0 fixes same mask bug on all browsers
+                // Adding M0 0 fixes same mask bug on all browsers
                 this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
             }
             this.stylesList[i].pElem.setAttribute('d', this.stylesList[i].d || 'M0 0');

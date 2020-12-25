@@ -40,7 +40,7 @@ extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 HCameraElement.prototype.setup = function () {
     var i, len = this.comp.threeDElements.length, comp;
     for(i=0;i<len;i+=1) {
-        //[perspectiveElem,container]
+        // [perspectiveElem,container]
         comp = this.comp.threeDElements[i];
         if(comp.type === '3d') {
             comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v+'px';
@@ -93,7 +93,7 @@ HCameraElement.prototype.renderFrame = function () {
                 diffVector = [this.px.v - this.a.v[0], this.py.v - this.a.v[1], this.pz.v - this.a.v[2]];
             }
             var mag = Math.sqrt(Math.pow(diffVector[0],2)+Math.pow(diffVector[1],2)+Math.pow(diffVector[2],2));
-            //var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
+            // var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
             var lookDir = [diffVector[0]/mag,diffVector[1]/mag,diffVector[2]/mag];
             var lookLengthOnXZ = Math.sqrt( lookDir[2]*lookDir[2] + lookDir[0]*lookDir[0] );
             var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));

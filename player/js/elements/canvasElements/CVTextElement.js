@@ -46,7 +46,7 @@ CVTextElement.prototype.buildNewText = function () {
     this.stroke = hasStroke;
     this.values.fValue = documentData.finalSize + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
     len = documentData.finalText.length;
-    //this.tHelper.font = this.values.fValue;
+    // this.tHelper.font = this.values.fValue;
     var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     var xPos = 0, yPos = 0, firstLine = true;
@@ -148,7 +148,7 @@ CVTextElement.prototype.renderInnerContent = function () {
             }
             this.globalData.canvasContext.closePath();
             this.globalData.canvasContext.fill();
-            ///ctx.fillText(this.textSpans[i].val,0,0);
+            /// ctx.fillText(this.textSpans[i].val,0,0);
         }
         if(this.stroke) {
             if(renderedLetter && renderedLetter.sw) {
@@ -182,7 +182,7 @@ CVTextElement.prototype.renderInnerContent = function () {
             }
             this.globalData.canvasContext.closePath();
             this.globalData.canvasContext.stroke();
-            ///ctx.strokeText(letters[i].val,0,0);
+            /// ctx.strokeText(letters[i].val,0,0);
         }
         if(renderedLetter) {
             this.globalData.renderer.restore();
