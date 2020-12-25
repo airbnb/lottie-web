@@ -178,7 +178,7 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
                             e:shapeData.totalShapeLength * (shapeE - 1)
                         });
                     }
-                    var newShapesData = this.addShapes(shapeData,segments[0]);
+                    var newShapesData = this.addShapes(shapeData, segments[0]);
                     if (segments[0].s !== segments[0].e) {
                         if (segments.length > 1) {
                             var lastShapeInCollection = shapeData.shape.paths.shapes[shapeData.shape.paths._length - 1];
@@ -238,7 +238,7 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
     var shapePaths = shapeData.shape.paths.shapes;
     var i, len = shapeData.shape.paths._length, j, jLen;
     var addedLength = 0;
-    var currentLengthData,segmentCount;
+    var currentLengthData, segmentCount;
     var lengths;
     var segment;
     var shapes = [];
@@ -270,7 +270,7 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
                     this.addSegment(shapePaths[i].v[j - 1], shapePaths[i].o[j - 1], shapePaths[i].i[j], shapePaths[i].v[j], shapePath, segmentCount, newShape);
                     newShape = false;
                 } else {
-                    segment = bez.getNewSegment(shapePaths[i].v[j - 1], shapePaths[i].v[j], shapePaths[i].o[j - 1], shapePaths[i].i[j], (shapeSegment.s - addedLength)/currentLengthData.addedLength,(shapeSegment.e - addedLength)/currentLengthData.addedLength, lengths[j-1]);
+                    segment = bez.getNewSegment(shapePaths[i].v[j - 1], shapePaths[i].v[j], shapePaths[i].o[j - 1], shapePaths[i].i[j], (shapeSegment.s - addedLength)/currentLengthData.addedLength, (shapeSegment.e - addedLength)/currentLengthData.addedLength, lengths[j-1]);
                     this.addSegmentFromArray(segment, shapePath, segmentCount, newShape);
                     // this.addSegment(segment.pt1, segment.pt3, segment.pt4, segment.pt2, shapePath, segmentCount, newShape);
                     newShape = false;
@@ -302,7 +302,7 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
         }
         if (shapePath._length) {
             shapePath.setXYAt(shapePath.v[initPos][0], shapePath.v[initPos][1], 'i', initPos);
-            shapePath.setXYAt(shapePath.v[shapePath._length - 1][0], shapePath.v[shapePath._length - 1][1],'o', shapePath._length - 1);
+            shapePath.setXYAt(shapePath.v[shapePath._length - 1][0], shapePath.v[shapePath._length - 1][1], 'o', shapePath._length - 1);
         }
         if (addedLength > shapeSegment.e) {
             break;

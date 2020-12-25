@@ -1,4 +1,4 @@
-function NullElement(data,globalData,comp) {
+function NullElement(data, globalData, comp) {
     this.initFrame();
 	this.initBaseData(data, globalData, comp);
     this.initFrame();
@@ -26,4 +26,4 @@ NullElement.prototype.sourceRectAtTime = function () {
 NullElement.prototype.hide = function () {
 };
 
-extendPrototype([BaseElement,TransformElement,HierarchyElement,FrameElement], NullElement);
+extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement], NullElement);

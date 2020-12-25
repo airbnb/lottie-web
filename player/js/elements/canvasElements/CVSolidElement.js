@@ -1,5 +1,5 @@
 function CVSolidElement(data, globalData, comp) {
-    this.initElement(data,globalData,comp);
+    this.initElement(data, globalData, comp);
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVSolidElement);
 

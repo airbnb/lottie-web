@@ -10,7 +10,7 @@ var EffectsExpressionInterface = (function () {
             var effectsData = elem.data.ef;
             var i, len = elem.effectsManager.effectElements.length;
             for(i=0;i<len;i+=1) {
-                effectElements.push(createGroupInterface(effectsData[i],elem.effectsManager.effectElements[i],propertyGroup,elem));
+                effectElements.push(createGroupInterface(effectsData[i], elem.effectsManager.effectElements[i], propertyGroup, elem));
             }
 
             var effects = elem.data.ef || [];
@@ -32,7 +32,7 @@ var EffectsExpressionInterface = (function () {
         }
     }
 
-    function createGroupInterface(data,elements, propertyGroup, elem) {
+    function createGroupInterface(data, elements, propertyGroup, elem) {
 
         function groupInterface(name) {
             var effects = data.ef, i = 0, len = effects.length;
@@ -54,9 +54,9 @@ var EffectsExpressionInterface = (function () {
         var i, len = data.ef.length;
         for(i=0;i<len;i+=1) {
             if(data.ef[i].ty === 5) {
-                effectElements.push(createGroupInterface(data.ef[i],elements.effectElements[i],elements.effectElements[i].propertyGroup, elem));
+                effectElements.push(createGroupInterface(data.ef[i], elements.effectElements[i], elements.effectElements[i].propertyGroup, elem));
             } else {
-                effectElements.push(createValueInterface(elements.effectElements[i],data.ef[i].ty, elem, _propertyGroup));
+                effectElements.push(createValueInterface(elements.effectElements[i], data.ef[i].ty, elem, _propertyGroup));
             }
         }
 

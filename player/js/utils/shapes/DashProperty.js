@@ -10,9 +10,9 @@ function DashProperty(elem, data, renderer, container) {
     this.initDynamicPropertyContainer(container);
     var i, len = data.length || 0, prop;
     for(i = 0; i < len; i += 1) {
-        prop = PropertyFactory.getProp(elem,data[i].v,0, 0, this);
+        prop = PropertyFactory.getProp(elem, data[i].v, 0, 0, this);
         this.k = prop.k || this.k;
-        this.dataProps[i] = {n:data[i].n,p:prop};
+        this.dataProps[i] = {n:data[i].n, p:prop};
     }
     if(!this.k) {
         this.getValue(true);

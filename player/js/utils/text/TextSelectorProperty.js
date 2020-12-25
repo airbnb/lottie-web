@@ -3,7 +3,7 @@ var TextSelectorProp = (function () {
     var min = Math.min;
     var floor = Math.floor;
 
-    function TextSelectorProp(elem,data) {
+    function TextSelectorProp(elem, data) {
         this._currentTextLength = -1;
         this.k = false;
         this.data = data;
@@ -12,16 +12,16 @@ var TextSelectorProp = (function () {
         this.finalS = 0;
         this.finalE = 0;
         this.initDynamicPropertyContainer(elem);
-        this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this);
+        this.s = PropertyFactory.getProp(elem, data.s || {k:0}, 0, 0, this);
         if('e' in data) {
-            this.e = PropertyFactory.getProp(elem,data.e,0,0,this);
+            this.e = PropertyFactory.getProp(elem, data.e, 0, 0, this);
         }else{
             this.e = {v:100};
         }
-        this.o = PropertyFactory.getProp(elem,data.o || {k:0},0,0,this);
-        this.xe = PropertyFactory.getProp(elem,data.xe || {k:0},0,0,this);
-        this.ne = PropertyFactory.getProp(elem,data.ne || {k:0},0,0,this);
-        this.a = PropertyFactory.getProp(elem,data.a,0,0.01,this);
+        this.o = PropertyFactory.getProp(elem, data.o || {k:0}, 0, 0, this);
+        this.xe = PropertyFactory.getProp(elem, data.xe || {k:0}, 0, 0, this);
+        this.ne = PropertyFactory.getProp(elem, data.ne || {k:0}, 0, 0, this);
+        this.a = PropertyFactory.getProp(elem, data.a, 0, 0.01, this);
         if(!this.dynamicProperties.length) {
             this.getValue();
         }
@@ -66,7 +66,7 @@ var TextSelectorProp = (function () {
                 if (e === s) {
                     mult = ind >= e ? 0 : 1;
                 }else{
-                    mult = 1 - max(0, min(0.5 / (e - s) + (ind - s) / (e - s),1));
+                    mult = 1 - max(0, min(0.5 / (e - s) + (ind - s) / (e - s), 1));
                 }
 
                 mult = easer(mult);
@@ -137,7 +137,7 @@ var TextSelectorProp = (function () {
     }
     extendPrototype([DynamicPropertyContainer], TextSelectorProp);
 
-    function getTextSelectorProp(elem, data,arr) {
+    function getTextSelectorProp(elem, data, arr) {
         return new TextSelectorProp(elem, data, arr);
     }
 

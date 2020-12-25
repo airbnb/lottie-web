@@ -59,45 +59,45 @@ function SVGRenderer(animationItem, config) {
 
 }
 
-extendPrototype([BaseRenderer],SVGRenderer);
+extendPrototype([BaseRenderer], SVGRenderer);
 
 SVGRenderer.prototype.createNull = function (data) {
-    return new NullElement(data,this.globalData,this);
+    return new NullElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.createShape = function (data) {
-    return new SVGShapeElement(data,this.globalData,this);
+    return new SVGShapeElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.createText = function (data) {
-    return new SVGTextElement(data,this.globalData,this);
+    return new SVGTextElement(data, this.globalData, this);
 
 };
 
 SVGRenderer.prototype.createImage = function (data) {
-    return new IImageElement(data,this.globalData,this);
+    return new IImageElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.createComp = function (data) {
-    return new SVGCompElement(data,this.globalData,this);
+    return new SVGCompElement(data, this.globalData, this);
 
 };
 
 SVGRenderer.prototype.createSolid = function (data) {
-    return new ISolidElement(data,this.globalData,this);
+    return new ISolidElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.configAnimation = function (animData) {
-    this.svgElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    this.svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     if(this.renderConfig.viewBoxSize) {
-        this.svgElement.setAttribute('viewBox',this.renderConfig.viewBoxSize);
+        this.svgElement.setAttribute('viewBox', this.renderConfig.viewBoxSize);
     } else {
-        this.svgElement.setAttribute('viewBox','0 0 '+animData.w+' '+animData.h);
+        this.svgElement.setAttribute('viewBox', '0 0 '+animData.w+' '+animData.h);
     }
 
     if(!this.renderConfig.viewBoxOnly) {
-        this.svgElement.setAttribute('width',animData.w);
-        this.svgElement.setAttribute('height',animData.h);
+        this.svgElement.setAttribute('width', animData.w);
+        this.svgElement.setAttribute('height', animData.h);
         this.svgElement.style.width = '100%';
         this.svgElement.style.height = '100%';
         this.svgElement.style.transform = 'translate3d(0,0,0)';
@@ -111,7 +111,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
     if (this.renderConfig.focusable !== undefined) {
         this.svgElement.setAttribute('focusable', this.renderConfig.focusable);
     }
-    this.svgElement.setAttribute('preserveAspectRatio',this.renderConfig.preserveAspectRatio);
+    this.svgElement.setAttribute('preserveAspectRatio', this.renderConfig.preserveAspectRatio);
     // this.layerElement.style.transform = 'translate3d(0,0,0)';
     // this.layerElement.style.transformOrigin = this.layerElement.style.mozTransformOrigin = this.layerElement.style.webkitTransformOrigin = this.layerElement.style['-webkit-transform'] = "0px 0px 0px";
     this.animationItem.wrapper.appendChild(this.svgElement);
@@ -124,10 +124,10 @@ SVGRenderer.prototype.configAnimation = function (animData) {
 
     var maskElement = createNS( 'clipPath');
     var rect = createNS('rect');
-    rect.setAttribute('width',animData.w);
-    rect.setAttribute('height',animData.h);
-    rect.setAttribute('x',0);
-    rect.setAttribute('y',0);
+    rect.setAttribute('width', animData.w);
+    rect.setAttribute('height', animData.h);
+    rect.setAttribute('x', 0);
+    rect.setAttribute('y', 0);
     var maskId = createElementID();
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
@@ -174,7 +174,7 @@ SVGRenderer.prototype.buildItem  = function (pos) {
         }
         element.initExpressions();
     }
-    this.appendElementInPos(element,pos);
+    this.appendElementInPos(element, pos);
     if(this.layers[pos].tt) {
         if(!this.elements[pos - 1] || this.elements[pos - 1] === true) {
             this.buildItem(pos - 1);

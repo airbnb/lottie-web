@@ -2,7 +2,7 @@ function RenderableDOMElement() {}
 
 (function () {
     var _prototype = {
-        initElement: function (data,globalData,comp) {
+        initElement: function (data, globalData, comp) {
             this.initFrame();
             this.initBaseData(data, globalData, comp);
             this.initTransform(data, globalData, comp);

@@ -4,13 +4,13 @@ var ShapeModifiers = (function () {
     ob.registerModifier = registerModifier;
     ob.getModifier = getModifier;
 
-    function registerModifier(nm,factory) {
+    function registerModifier(nm, factory) {
         if(!modifiers[nm]) {
             modifiers[nm] = factory;
         }
     }
 
-    function getModifier(nm,elem, data) {
+    function getModifier(nm, elem, data) {
         return new modifiers[nm](elem, data);
     }
 
@@ -32,11 +32,11 @@ ShapeModifier.prototype.addShape = function (data) {
         }
     }
 };
-ShapeModifier.prototype.init = function (elem,data) {
+ShapeModifier.prototype.init = function (elem, data) {
     this.shapes = [];
     this.elem = elem;
     this.initDynamicPropertyContainer(elem);
-    this.initModifierProperties(elem,data);
+    this.initModifierProperties(elem, data);
     this.frameId = initialDefaultFrame;
     this.closed = false;
     this.k = false;

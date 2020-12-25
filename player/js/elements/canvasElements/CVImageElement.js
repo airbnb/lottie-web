@@ -1,7 +1,7 @@
 function CVImageElement(data, globalData, comp) {
     this.assetData = globalData.getAssetData(data.refId);
     this.img = globalData.imageLoader.getImage(this.assetData);
-    this.initElement(data,globalData,comp);
+    this.initElement(data, globalData, comp);
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVImageElement);
 
@@ -29,7 +29,7 @@ CVImageElement.prototype.createContent = function () {
             widthCrop = imgW;
             heightCrop = widthCrop/canvasRel;
         }
-        ctx.drawImage(this.img,(imgW-widthCrop)/2,(imgH-heightCrop)/2,widthCrop,heightCrop,0,0,this.assetData.w,this.assetData.h);
+        ctx.drawImage(this.img, (imgW-widthCrop)/2, (imgH-heightCrop)/2, widthCrop, heightCrop, 0, 0, this.assetData.w, this.assetData.h);
         this.img = canvas;
     }
 

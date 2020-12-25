@@ -157,8 +157,8 @@ function RGBtoHSV(r, g, b) {
     ];
 }
 
-function addSaturationToRGB(color,offset) {
-    var hsv = RGBtoHSV(color[0]*255,color[1]*255,color[2]*255);
+function addSaturationToRGB(color, offset) {
+    var hsv = RGBtoHSV(color[0]*255, color[1]*255, color[2]*255);
     hsv[1] += offset;
     if (hsv[1] > 1) {
         hsv[1] = 1;
@@ -166,11 +166,11 @@ function addSaturationToRGB(color,offset) {
     else if (hsv[1] <= 0) {
         hsv[1] = 0;
     }
-    return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
+    return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
 }
 
-function addBrightnessToRGB(color,offset) {
-    var hsv = RGBtoHSV(color[0]*255,color[1]*255,color[2]*255);
+function addBrightnessToRGB(color, offset) {
+    var hsv = RGBtoHSV(color[0]*255, color[1]*255, color[2]*255);
     hsv[2] += offset;
     if (hsv[2] > 1) {
         hsv[2] = 1;
@@ -178,11 +178,11 @@ function addBrightnessToRGB(color,offset) {
     else if (hsv[2] < 0) {
         hsv[2] = 0;
     }
-    return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
+    return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
 }
 
-function addHueToRGB(color,offset) {
-    var hsv = RGBtoHSV(color[0]*255,color[1]*255,color[2]*255);
+function addHueToRGB(color, offset) {
+    var hsv = RGBtoHSV(color[0]*255, color[1]*255, color[2]*255);
     hsv[0] += offset/360;
     if (hsv[0] > 1) {
         hsv[0] -= 1;
@@ -190,7 +190,7 @@ function addHueToRGB(color,offset) {
     else if (hsv[0] < 0) {
         hsv[0] += 1;
     }
-    return HSVtoRGB(hsv[0],hsv[1],hsv[2]);
+    return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
 }
 
 var rgbToHex = (function () {

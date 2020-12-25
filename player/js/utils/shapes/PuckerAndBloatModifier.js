@@ -1,8 +1,8 @@
 function PuckerAndBloatModifier() {}
-extendPrototype([ShapeModifier],PuckerAndBloatModifier);
-PuckerAndBloatModifier.prototype.initModifierProperties = function (elem,data) {
+extendPrototype([ShapeModifier], PuckerAndBloatModifier);
+PuckerAndBloatModifier.prototype.initModifierProperties = function (elem, data) {
     this.getValue = this.processKeys;
-    this.amount = PropertyFactory.getProp(elem,data.a,0,null,this);
+    this.amount = PropertyFactory.getProp(elem, data.a, 0, null, this);
     this._isAnimated = !!this.amount.effectsSequence.length;
 };
 
@@ -59,4 +59,4 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
         this._mdf = false;
     }
 };
-ShapeModifiers.registerModifier('pb',PuckerAndBloatModifier);
+ShapeModifiers.registerModifier('pb', PuckerAndBloatModifier);

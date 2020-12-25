@@ -1,6 +1,6 @@
 var TransformPropertyFactory = (function () {
 
-    var defaultVector = [0,0]
+    var defaultVector = [0, 0]
 
     function applyToMatrix(mat) {
         var _mdf = this._mdf;
@@ -58,10 +58,10 @@ var TransformPropertyFactory = (function () {
                 this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
             }
             if (this.autoOriented) {
-                var v1,v2, frameRate = this.elem.globalData.frameRate;
+                var v1, v2, frameRate = this.elem.globalData.frameRate;
                 if(this.p && this.p.keyframes && this.p.getValueAtTime) {
                     if (this.p._caching.lastFrame+this.p.offsetTime <= this.p.keyframes[0].t) {
-                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / frameRate,0);
+                        v1 = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / frameRate, 0);
                         v2 = this.p.getValueAtTime(this.p.keyframes[0].t / frameRate, 0);
                     } else if(this.p._caching.lastFrame+this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t) {
                         v1 = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t / frameRate), 0);
@@ -75,19 +75,19 @@ var TransformPropertyFactory = (function () {
                     v2 = [];
                     var px = this.px, py = this.py, frameRate;
                     if (px._caching.lastFrame+px.offsetTime <= px.keyframes[0].t) {
-                        v1[0] = px.getValueAtTime((px.keyframes[0].t + 0.01) / frameRate,0);
-                        v1[1] = py.getValueAtTime((py.keyframes[0].t + 0.01) / frameRate,0);
-                        v2[0] = px.getValueAtTime((px.keyframes[0].t) / frameRate,0);
-                        v2[1] = py.getValueAtTime((py.keyframes[0].t) / frameRate,0);
+                        v1[0] = px.getValueAtTime((px.keyframes[0].t + 0.01) / frameRate, 0);
+                        v1[1] = py.getValueAtTime((py.keyframes[0].t + 0.01) / frameRate, 0);
+                        v2[0] = px.getValueAtTime((px.keyframes[0].t) / frameRate, 0);
+                        v2[1] = py.getValueAtTime((py.keyframes[0].t) / frameRate, 0);
                     } else if(px._caching.lastFrame+px.offsetTime >= px.keyframes[px.keyframes.length - 1].t) {
-                        v1[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t / frameRate),0);
-                        v1[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t / frameRate),0);
-                        v2[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t - 0.01) / frameRate,0);
-                        v2[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t - 0.01) / frameRate,0);
+                        v1[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t / frameRate), 0);
+                        v1[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t / frameRate), 0);
+                        v2[0] = px.getValueAtTime((px.keyframes[px.keyframes.length - 1].t - 0.01) / frameRate, 0);
+                        v2[1] = py.getValueAtTime((py.keyframes[py.keyframes.length - 1].t - 0.01) / frameRate, 0);
                     } else {
                         v1 = [px.pv, py.pv];
-                        v2[0] = px.getValueAtTime((px._caching.lastFrame+px.offsetTime - 0.01) / frameRate,px.offsetTime);
-                        v2[1] = py.getValueAtTime((py._caching.lastFrame+py.offsetTime - 0.01) / frameRate,py.offsetTime);
+                        v2[0] = px.getValueAtTime((px._caching.lastFrame+px.offsetTime - 0.01) / frameRate, px.offsetTime);
+                        v2[1] = py.getValueAtTime((py._caching.lastFrame+py.offsetTime - 0.01) / frameRate, py.offsetTime);
                     }
                 } else {
                     v1 = v2 = defaultVector
@@ -101,7 +101,7 @@ var TransformPropertyFactory = (function () {
                     this.v.translate(this.px.v, this.py.v, 0);
                 }
             }else{
-                this.v.translate(this.p.v[0],this.p.v[1],-this.p.v[2]);
+                this.v.translate(this.p.v[0], this.p.v[1], -this.p.v[2]);
             }
         }
         this.frameId = this.elem.globalData.frameId;
@@ -152,7 +152,7 @@ var TransformPropertyFactory = (function () {
         this._isDirty = true;
     }
 
-    function TransformProperty(elem,data,container) {
+    function TransformProperty(elem, data, container) {
         this.elem = elem;
         this.frameId = -1;
         this.propType = 'transform';
@@ -163,13 +163,13 @@ var TransformPropertyFactory = (function () {
         this.appliedTransformations = 0;
         this.initDynamicPropertyContainer(container || elem);
         if(data.p && data.p.s) {
-            this.px = PropertyFactory.getProp(elem,data.p.x,0,0,this);
-            this.py = PropertyFactory.getProp(elem,data.p.y,0,0,this);
+            this.px = PropertyFactory.getProp(elem, data.p.x, 0, 0, this);
+            this.py = PropertyFactory.getProp(elem, data.p.y, 0, 0, this);
             if(data.p.z) {
-                this.pz = PropertyFactory.getProp(elem,data.p.z,0,0,this);
+                this.pz = PropertyFactory.getProp(elem, data.p.z, 0, 0, this);
             }
         }else{
-            this.p = PropertyFactory.getProp(elem,data.p || {k:[0,0,0]},1,0,this);
+            this.p = PropertyFactory.getProp(elem, data.p || {k:[0, 0, 0]}, 1, 0, this);
         }
         if(data.rx) {
             this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this);
@@ -191,13 +191,13 @@ var TransformPropertyFactory = (function () {
             this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this);
             this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this);
         }
-        this.a = PropertyFactory.getProp(elem,data.a || {k:[0,0,0]},1,0,this);
-        this.s = PropertyFactory.getProp(elem,data.s || {k:[100,100,100]},1,0.01,this);
+        this.a = PropertyFactory.getProp(elem, data.a || {k:[0, 0, 0]}, 1, 0, this);
+        this.s = PropertyFactory.getProp(elem, data.s || {k:[100, 100, 100]}, 1, 0.01, this);
         // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
         if(data.o) {
-            this.o = PropertyFactory.getProp(elem,data.o,0,0.01,elem);
+            this.o = PropertyFactory.getProp(elem, data.o, 0, 0.01, elem);
         } else {
-            this.o = {_mdf:false,v:1};
+            this.o = {_mdf:false, v:1};
         }
         this._isDirty = true;
         if(!this.dynamicProperties.length) {
@@ -216,8 +216,8 @@ var TransformPropertyFactory = (function () {
     TransformProperty.prototype.addDynamicProperty = addDynamicProperty;
     TransformProperty.prototype._addDynamicProperty = DynamicPropertyContainer.prototype.addDynamicProperty;
 
-    function getTransformProperty(elem,data,container) {
-        return new TransformProperty(elem,data,container);
+    function getTransformProperty(elem, data, container) {
+        return new TransformProperty(elem, data, container);
     }
 
     return {

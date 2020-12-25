@@ -57,7 +57,7 @@ AnimationItem.prototype.includeLayers = function (data) {
         }
     }
     this.animationData.__complete = false;
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
+    dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin) {
         expressionsPlugin.initExpressions(this);

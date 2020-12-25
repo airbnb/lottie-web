@@ -32,12 +32,12 @@ SVGBaseElement.prototype = {
                     gg.appendChild(this.layerElement);
                     layerElementParent = gg;
                     masker.appendChild(gg);
-                    gg.setAttribute('filter','url(' + locationHref + '#' + filId + ')');
+                    gg.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
                 }
             } else if(this.data.td == 2) {
                 var maskGroup = createNS('mask');
                 maskGroup.setAttribute('id', this.layerId);
-                maskGroup.setAttribute('mask-type','alpha');
+                maskGroup.setAttribute('mask-type', 'alpha');
                 var maskGrouper = createNS('g');
                 maskGroup.appendChild(maskGrouper);
                 filId = createElementID();
@@ -52,21 +52,21 @@ SVGBaseElement.prototype = {
                 fil.appendChild(feColorMatrix); */
                 /// /
                 var feCTr = createNS('feComponentTransfer');
-                feCTr.setAttribute('in','SourceGraphic');
+                feCTr.setAttribute('in', 'SourceGraphic');
                 fil.appendChild(feCTr);
                 var feFunc = createNS('feFuncA');
-                feFunc.setAttribute('type','table');
-                feFunc.setAttribute('tableValues','1.0 0.0');
+                feFunc.setAttribute('type', 'table');
+                feFunc.setAttribute('tableValues', '1.0 0.0');
                 feCTr.appendChild(feFunc);
                 /// /
                 this.globalData.defs.appendChild(fil);
                 var alphaRect = createNS('rect');
                 alphaRect.setAttribute('width',  this.comp.data.w);
                 alphaRect.setAttribute('height', this.comp.data.h);
-                alphaRect.setAttribute('x','0');
-                alphaRect.setAttribute('y','0');
-                alphaRect.setAttribute('fill','#ffffff');
-                alphaRect.setAttribute('opacity','0');
+                alphaRect.setAttribute('x', '0');
+                alphaRect.setAttribute('y', '0');
+                alphaRect.setAttribute('fill', '#ffffff');
+                alphaRect.setAttribute('opacity', '0');
                 maskGrouper.setAttribute('filter', 'url(' + locationHref + '#'+filId+')');
                 maskGrouper.appendChild(alphaRect);
                 maskGrouper.appendChild(this.layerElement);
@@ -99,15 +99,15 @@ SVGBaseElement.prototype = {
         if (this.data.ty === 0 && !this.data.hd) {
             var cp = createNS( 'clipPath');
             var pt = createNS('path');
-            pt.setAttribute('d','M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
+            pt.setAttribute('d', 'M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
             var clipId = createElementID();
-            cp.setAttribute('id',clipId);
+            cp.setAttribute('id', clipId);
             cp.appendChild(pt);
             this.globalData.defs.appendChild(cp);
 
             if (this.checkMasks()) {
                 var cpGroup = createNS('g');
-                cpGroup.setAttribute('clip-path','url(' + locationHref + '#'+clipId + ')');
+                cpGroup.setAttribute('clip-path', 'url(' + locationHref + '#'+clipId + ')');
                 cpGroup.appendChild(this.layerElement);
                 this.transformedElement = cpGroup;
                 if (layerElementParent) {
@@ -116,7 +116,7 @@ SVGBaseElement.prototype = {
                     this.baseElement = this.transformedElement;
                 }
             } else {
-                this.layerElement.setAttribute('clip-path','url(' + locationHref + '#'+clipId+')');
+                this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#'+clipId+')');
             }
             
         }

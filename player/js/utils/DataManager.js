@@ -39,7 +39,7 @@ function dataFunctionManager() {
             }
             if(layerData.ty===0) {
                 layerData.layers = findCompLayers(layerData.refId, comps);
-                completeLayers(layerData.layers,comps, fontManager);
+                completeLayers(layerData.layers, comps, fontManager);
             }else if(layerData.ty === 4) {
                 completeShapes(layerData.shapes);
             }else if(layerData.ty == 5) {
@@ -48,7 +48,7 @@ function dataFunctionManager() {
         }
     }
 
-    function findCompLayers(id,comps) {
+    function findCompLayers(id, comps) {
         var i = 0, len = comps.length;
         while(i<len) {
             if(comps[i].id === id) {
@@ -110,8 +110,8 @@ function dataFunctionManager() {
         }
     }
 
-    function checkVersion(minimum,animVersionString) {
-        var animVersion = animVersionString ? animVersionString.split('.') : [100,100,100];
+    function checkVersion(minimum, animVersionString) {
+        var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
         if(minimum[0]>animVersion[0]) {
             return true;
         } else if(animVersion[0] > minimum[0]) {
@@ -130,7 +130,7 @@ function dataFunctionManager() {
     }
 
     var checkText = (function () {
-        var minimumVersion = [4,4,14];
+        var minimumVersion = [4, 4, 14];
 
         function updateTextLayer(textLayer) {
             var documentData = textLayer.t.d;
@@ -154,7 +154,7 @@ function dataFunctionManager() {
         }
 
         return function (animationData) {
-            if(checkVersion(minimumVersion,animationData.v)) {
+            if(checkVersion(minimumVersion, animationData.v)) {
                 iterateLayers(animationData.layers);
                 if(animationData.assets) {
                     var i, len = animationData.assets.length;
@@ -170,9 +170,9 @@ function dataFunctionManager() {
     }());
 
     var checkChars = (function () {
-        var minimumVersion = [4,7,99];
+        var minimumVersion = [4, 7, 99];
         return function (animationData) {
-            if(animationData.chars && !checkVersion(minimumVersion,animationData.v)) {
+            if(animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
                 var i, len = animationData.chars.length, j, jLen, k, kLen;
                 var pathData, paths;
                 for(i = 0; i < len; i += 1) {
@@ -194,7 +194,7 @@ function dataFunctionManager() {
     }());
 
     var checkColors = (function () {
-        var minimumVersion = [4,1,9];
+        var minimumVersion = [4, 1, 9];
 
         function iterateShapes(shapes) {
             var i, len = shapes.length;
@@ -239,7 +239,7 @@ function dataFunctionManager() {
         }
 
         return function (animationData) {
-            if(checkVersion(minimumVersion,animationData.v)) {
+            if(checkVersion(minimumVersion, animationData.v)) {
                 iterateLayers(animationData.layers);
                 if(animationData.assets) {
                     var i, len = animationData.assets.length;
@@ -255,7 +255,7 @@ function dataFunctionManager() {
     }());
 
     var checkShapes = (function () {
-        var minimumVersion = [4,4,18];
+        var minimumVersion = [4, 4, 18];
 
 
 
@@ -317,7 +317,7 @@ function dataFunctionManager() {
         }
 
         return function (animationData) {
-            if(checkVersion(minimumVersion,animationData.v)) {
+            if(checkVersion(minimumVersion, animationData.v)) {
                 iterateLayers(animationData.layers);
                 if(animationData.assets) {
                     var i, len = animationData.assets.length;

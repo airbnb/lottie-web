@@ -61,7 +61,7 @@ var ImagePreloader = (function () {
             ob.img = proxyImage;
             this._imageLoaded();
         }.bind(this), false);
-        img.setAttributeNS('http://www.w3.org/1999/xlink','href', path);
+        img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
         this._elementHelper.append(img);
         var ob = {
             img: img,

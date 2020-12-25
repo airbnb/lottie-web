@@ -2,7 +2,7 @@ function ICompElement() {}
 
 extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
 
-ICompElement.prototype.initElement = function (data,globalData,comp) {
+ICompElement.prototype.initElement = function (data, globalData, comp) {
     this.initFrame();
     this.initBaseData(data, globalData, comp);
     this.initTransform(data, globalData, comp);
@@ -46,7 +46,7 @@ ICompElement.prototype.prepareFrame = function (num) {
     } else {
         this.renderedFrame = num/this.data.sr;
     }
-    var i,len = this.elements.length;
+    var i, len = this.elements.length;
     if(!this.completeLayers) {
         this.checkLayers(this.renderedFrame);
     }
@@ -62,7 +62,7 @@ ICompElement.prototype.prepareFrame = function (num) {
 };
 
 ICompElement.prototype.renderInnerContent = function () {
-    var i,len = this.layers.length;
+    var i, len = this.layers.length;
     for( i = 0; i < len; i += 1 ) {
         if(this.completeLayers || this.elements[i]) {
             this.elements[i].renderFrame();
@@ -79,7 +79,7 @@ ICompElement.prototype.getElements = function () {
 };
 
 ICompElement.prototype.destroyElements = function () {
-    var i,len = this.layers.length;
+    var i, len = this.layers.length;
     for( i = 0; i < len; i+=1 ) {
         if(this.elements[i]) {
             this.elements[i].destroy();

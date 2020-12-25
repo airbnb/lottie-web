@@ -31,11 +31,11 @@ var ExpressionManager = (function () {
         }
     }
 
-    var easeInBez = BezierFactory.getBezierEasing(0.333,0,.833,.833, 'easeIn').get;
-    var easeOutBez = BezierFactory.getBezierEasing(0.167,0.167,.667,1, 'easeOut').get;
-    var easeInOutBez = BezierFactory.getBezierEasing(.33,0,.667,1, 'easeInOut').get;
+    var easeInBez = BezierFactory.getBezierEasing(0.333, 0, .833, .833, 'easeIn').get;
+    var easeOutBez = BezierFactory.getBezierEasing(0.167, 0.167, .667, 1, 'easeOut').get;
+    var easeInOutBez = BezierFactory.getBezierEasing(.33, 0, .667, 1, 'easeInOut').get;
 
-    function sum(a,b) {
+    function sum(a, b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
         if(tOfA === 'string' || tOfB === 'string') {
@@ -72,7 +72,7 @@ var ExpressionManager = (function () {
     }
     var add = sum;
 
-    function sub(a,b) {
+    function sub(a, b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
         if(isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
@@ -110,7 +110,7 @@ var ExpressionManager = (function () {
         return 0;
     }
 
-    function mul(a,b) {
+    function mul(a, b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
         var arr;
@@ -138,7 +138,7 @@ var ExpressionManager = (function () {
         return 0;
     }
 
-    function div(a,b) {
+    function div(a, b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
         var arr;
@@ -164,7 +164,7 @@ var ExpressionManager = (function () {
         }
         return 0;
     }
-    function mod(a,b) {
+    function mod(a, b) {
         if(typeof a === 'string') {
             a = parseInt(a);
         }
@@ -198,7 +198,7 @@ var ExpressionManager = (function () {
     }
     var degrees_to_radians = radiansToDegrees;
 
-    var helperLengthArray = [0,0,0,0,0,0];
+    var helperLengthArray = [0, 0, 0, 0, 0, 0];
 
     function length(arr1, arr2) {
         if (typeof arr1 === 'number' || arr1 instanceof Number) {
@@ -238,7 +238,7 @@ var ExpressionManager = (function () {
             h /= 6;
         }
 
-        return [h, s, l,val[3]];
+        return [h, s, l, val[3]];
     }
 
     function hue2rgb(p, q, t) {
@@ -268,7 +268,7 @@ var ExpressionManager = (function () {
             b = hue2rgb(p, q, h - 1/3);
         }
 
-        return [r, g , b, val[3]];
+        return [r, g, b, val[3]];
     }
 
     function linear(t, tMin, tMax, value1, value2) {
@@ -299,7 +299,7 @@ var ExpressionManager = (function () {
         }
         return arr;
     }
-    function random(min,max) {
+    function random(min, max) {
         if(max === undefined) {
             if(min === undefined) {
                 min = 0;
@@ -332,21 +332,21 @@ var ExpressionManager = (function () {
         var i, len = points.length;
         var path = shape_pool.newElement();
         path.setPathData(!!closed, len);
-        var arrPlaceholder = [0,0], inVertexPoint, outVertexPoint;
+        var arrPlaceholder = [0, 0], inVertexPoint, outVertexPoint;
         for(i = 0; i < len; i += 1) {
             inVertexPoint = (inTangents && inTangents[i]) ? inTangents[i] : arrPlaceholder;
             outVertexPoint = (outTangents && outTangents[i]) ? outTangents[i] : arrPlaceholder;
-            path.setTripleAt(points[i][0],points[i][1],outVertexPoint[0] + points[i][0],outVertexPoint[1] + points[i][1],inVertexPoint[0] + points[i][0],inVertexPoint[1] + points[i][1],i,true);
+            path.setTripleAt(points[i][0], points[i][1], outVertexPoint[0] + points[i][0], outVertexPoint[1] + points[i][1], inVertexPoint[0] + points[i][0], inVertexPoint[1] + points[i][1], i, true);
         }
         return path;
     }
 
-    function initiateExpression(elem,data,property) {
+    function initiateExpression(elem, data, property) {
         var val = data.x;
         var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
         var elemType = elem.data.ty;
-        var transform,$bm_transform,content,effect;
+        var transform, $bm_transform, content, effect;
         var thisProperty = property;
         thisProperty.valueAtTime = thisProperty.getValueAtTime;
         Object.defineProperty(thisProperty, 'value', {
@@ -362,7 +362,7 @@ var ExpressionManager = (function () {
         var height = elem.data.sh ? elem.data.sh : 0;
         var name = elem.data.nm;
         var loopIn, loop_in, loopOut, loop_out, smooth;
-        var toWorld,fromWorld,fromComp,toComp,fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer, thisComp,mask,valueAtTime,velocityAtTime;
+        var toWorld, fromWorld, fromComp, toComp, fromCompToSurface, position, rotation, anchorPoint, scale, thisLayer, thisComp, mask, valueAtTime, velocityAtTime;
         var __expression_functions = [];
         if(data.xf) {
             var i, len = data.xf.length;
@@ -377,8 +377,8 @@ var ExpressionManager = (function () {
 
         var active = !this.data || this.data.hd !== true;
 
-        var wiggle = function wiggle(freq,amp) {
-            var i,j, len = this.pv.length ? this.pv.length : 1;
+        var wiggle = function wiggle(freq, amp) {
+            var i, j, len = this.pv.length ? this.pv.length : 1;
             var addedAmps = createTypedArray('float32', len);
             freq = 5;
             var iterations = Math.floor(time*freq);
@@ -422,12 +422,12 @@ var ExpressionManager = (function () {
             smooth = thisProperty.smooth.bind(thisProperty);
         }
 
-        function loopInDuration(type,duration) {
-            return loopIn(type,duration,true);
+        function loopInDuration(type, duration) {
+            return loopIn(type, duration, true);
         }
 
-        function loopOutDuration(type,duration) {
-            return loopOut(type,duration,true);
+        function loopOutDuration(type, duration) {
+            return loopOut(type, duration, true);
         }
 
         if(this.getValueAtTime) {
@@ -440,11 +440,11 @@ var ExpressionManager = (function () {
 
         var comp = elem.comp.globalData.projectInterface.bind(elem.comp.globalData.projectInterface);
 
-        function lookAt(elem1,elem2) {
-            var fVec = [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
-            var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
-            var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
-            return [yaw,pitch,0];
+        function lookAt(elem1, elem2) {
+            var fVec = [elem2[0]-elem1[0], elem2[1]-elem1[1], elem2[2]-elem1[2]];
+            var pitch = Math.atan2(fVec[0], Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
+            var yaw = -Math.atan2(fVec[1], fVec[2])/degToRads;
+            return [yaw, pitch, 0];
         }
 
         function easeOut(t, tMin, tMax, val1, val2) {
@@ -481,7 +481,7 @@ var ExpressionManager = (function () {
         }
 
         function nearestKey(time) {
-            var i, len = data.k.length,index,keyTime;
+            var i, len = data.k.length, index, keyTime;
             if(!data.k.length || typeof(data.k[0]) === 'number') {
                 index = 0;
                 keyTime = 0;

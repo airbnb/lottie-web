@@ -131,8 +131,8 @@ var FontManager = (function () {
             var loadedSelector;
             var j;
             fontArr[i].loaded = false;
-            fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
-            fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
+            fontArr[i].monoCase = setUpNode(fontArr[i].fFamily, 'monospace');
+            fontArr[i].sansCase = setUpNode(fontArr[i].fFamily, 'sans-serif');
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
                 _pendingFonts -= 1;
@@ -185,12 +185,12 @@ var FontManager = (function () {
                     var sc = createTag('link');
                     sc.setAttribute('f-forigin', fontArr[i].fOrigin);
                     sc.setAttribute('f-origin', fontArr[i].origin);
-                    sc.setAttribute('rel','stylesheet');
-                    sc.setAttribute('href',fontArr[i].fPath);
+                    sc.setAttribute('rel', 'stylesheet');
+                    sc.setAttribute('href', fontArr[i].fPath);
                     defs.appendChild(sc);
                 }
             }
-            fontArr[i].helper = createHelper(defs,fontArr[i]);
+            fontArr[i].helper = createHelper(defs, fontArr[i]);
             fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }

@@ -62,7 +62,7 @@ TransformElement.prototype = {
                 flag = false;
             }
         }
-        var i, len = transforms.length,ptNew;
+        var i, len = transforms.length, ptNew;
         for (i = 0; i < len; i += 1) {
             ptNew = transforms[i].mat.applyToPointArray(0, 0, 0);
             // ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);

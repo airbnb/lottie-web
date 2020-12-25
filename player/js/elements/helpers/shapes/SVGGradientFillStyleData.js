@@ -5,12 +5,12 @@ function SVGGradientFillStyleData(elem, data, styleOb) {
 }
 
 SVGGradientFillStyleData.prototype.initGradientData = function (elem, data, styleOb) {
-    this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this);
-    this.s = PropertyFactory.getProp(elem,data.s,1,null,this);
-    this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
-    this.h = PropertyFactory.getProp(elem,data.h||{k:0},0,0.01,this);
-    this.a = PropertyFactory.getProp(elem,data.a||{k:0},0,degToRads,this);
-    this.g = new GradientProperty(elem,data.g,this);
+    this.o = PropertyFactory.getProp(elem, data.o, 0, 0.01, this);
+    this.s = PropertyFactory.getProp(elem, data.s, 1, null, this);
+    this.e = PropertyFactory.getProp(elem, data.e, 1, null, this);
+    this.h = PropertyFactory.getProp(elem, data.h||{k:0}, 0, 0.01, this);
+    this.a = PropertyFactory.getProp(elem, data.a||{k:0}, 0, degToRads, this);
+    this.g = new GradientProperty(elem, data.g, this);
     this.style = styleOb;
     this.stops = [];
     this.setGradientData(styleOb.pElem, data);
@@ -19,13 +19,13 @@ SVGGradientFillStyleData.prototype.initGradientData = function (elem, data, styl
 
 };
 
-SVGGradientFillStyleData.prototype.setGradientData = function (pathElement,data) {
+SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data) {
 
     var gradientId = createElementID();
     var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
-    gfill.setAttribute('id',gradientId);
-    gfill.setAttribute('spreadMethod','pad');
-    gfill.setAttribute('gradientUnits','userSpaceOnUse');
+    gfill.setAttribute('id', gradientId);
+    gfill.setAttribute('spreadMethod', 'pad');
+    gfill.setAttribute('gradientUnits', 'userSpaceOnUse');
     var stops = [];
     var stop, j, jLen;
     jLen = data.g.p*4;
@@ -34,7 +34,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement,data)
         gfill.appendChild(stop);
         stops.push(stop);
     }
-    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+gradientId+')');
+    pathElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke', 'url(' + locationHref + '#'+gradientId+')');
     
     this.gf = gfill;
     this.cst = stops;
@@ -48,20 +48,20 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
         mask.appendChild(maskElement);
         var opacityId = createElementID();
         var maskId = createElementID();
-        mask.setAttribute('id',maskId);
+        mask.setAttribute('id', maskId);
         var opFill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
-        opFill.setAttribute('id',opacityId);
-        opFill.setAttribute('spreadMethod','pad');
-        opFill.setAttribute('gradientUnits','userSpaceOnUse');
+        opFill.setAttribute('id', opacityId);
+        opFill.setAttribute('spreadMethod', 'pad');
+        opFill.setAttribute('gradientUnits', 'userSpaceOnUse');
         jLen = data.g.k.k[0].s ? data.g.k.k[0].s.length : data.g.k.k.length;
         var stops = this.stops;
         for(j=data.g.p*4;j<jLen;j+=2) {
             stop = createNS('stop');
-            stop.setAttribute('stop-color','rgb(255,255,255)');
+            stop.setAttribute('stop-color', 'rgb(255,255,255)');
             opFill.appendChild(stop);
             stops.push(stop);
         }
-        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke','url(' + locationHref + '#'+opacityId+')');
+        maskElement.setAttribute( data.ty === 'gf' ? 'fill':'stroke', 'url(' + locationHref + '#'+opacityId+')');
         this.of = opFill;
         this.ms = mask;
         this.ost = stops;

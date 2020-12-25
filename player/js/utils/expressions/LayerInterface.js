@@ -41,7 +41,7 @@ var LayerExpressionInterface = (function () {
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
             }
         }
-        return matrix.applyToPointArray(arr[0],arr[1],arr[2]||0);
+        return matrix.applyToPointArray(arr[0], arr[1], arr[2]||0);
     }
 
     function invertPoint(matrix, arr) {
@@ -69,7 +69,7 @@ var LayerExpressionInterface = (function () {
     }
 
     function sampleImage() {
-        return [1,1,1,1];
+        return [1, 1, 1, 1];
     }
 
 
@@ -119,7 +119,7 @@ var LayerExpressionInterface = (function () {
         _thisLayerFunction._elem = elem;
         transformInterface = TransformExpressionInterface(elem.finalTransform.mProp);
         var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
-        Object.defineProperties(_thisLayerFunction,{
+        Object.defineProperties(_thisLayerFunction, {
             hasParent: {
                 get: function () {
                     return elem.hierarchy.length;

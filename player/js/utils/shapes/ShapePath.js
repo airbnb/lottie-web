@@ -57,10 +57,10 @@ ShapePath.prototype.setXYAt = function (x, y, type, pos, replace) {
     arr[pos][1] = y;
 };
 
-ShapePath.prototype.setTripleAt = function (vX,vY,oX,oY,iX,iY,pos, replace) {
-    this.setXYAt(vX,vY,'v',pos, replace);
-    this.setXYAt(oX,oY,'o',pos, replace);
-    this.setXYAt(iX,iY,'i',pos, replace);
+ShapePath.prototype.setTripleAt = function (vX, vY, oX, oY, iX, iY, pos, replace) {
+    this.setXYAt(vX, vY, 'v', pos, replace);
+    this.setXYAt(oX, oY, 'o', pos, replace);
+    this.setXYAt(iX, iY, 'i', pos, replace);
 };
 
 ShapePath.prototype.reverse = function () {

@@ -76,12 +76,12 @@ AnimationItem.prototype.setParams = function (params) {
     } else if(params.path) {
 
         if( params.path.lastIndexOf('\\') !== -1) {
-            this.path = params.path.substr(0,params.path.lastIndexOf('\\')+1);
+            this.path = params.path.substr(0, params.path.lastIndexOf('\\')+1);
         } else {
-            this.path = params.path.substr(0,params.path.lastIndexOf('/')+1);
+            this.path = params.path.substr(0, params.path.lastIndexOf('/')+1);
         }
         this.fileName = params.path.substr(params.path.lastIndexOf('/')+1);
-        this.fileName = this.fileName.substr(0,this.fileName.lastIndexOf('.json'));
+        this.fileName = this.fileName.substr(0, this.fileName.lastIndexOf('.json'));
 
         assetLoader.load(params.path, this.configAnimation.bind(this), function () {
             this.trigger('data_failed');
@@ -151,7 +151,7 @@ AnimationItem.prototype.includeLayers = function (data) {
         }
     }
     this.animationData.__complete = false;
-    dataManager.completeData(this.animationData,this.renderer.globalData.fontManager);
+    dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
     this.renderer.includeLayers(data.layers);
     if(expressionsPlugin) {
         expressionsPlugin.initExpressions(this);
@@ -237,7 +237,7 @@ AnimationItem.prototype.waitForFontsLoaded = function () {
     if(this.renderer.globalData.fontManager.isLoaded) {
         this.checkLoaded();
     }else{
-        setTimeout(this.waitForFontsLoaded.bind(this),20);
+        setTimeout(this.waitForFontsLoaded.bind(this), 20);
     }
 }
 
@@ -430,7 +430,7 @@ AnimationItem.prototype.adjustSegment = function (arr, offset) {
     }
     this.trigger('segmentStart');
 };
-AnimationItem.prototype.setSegment = function (init,end) {
+AnimationItem.prototype.setSegment = function (init, end) {
     var pendingFrame = -1;
     if(this.isPaused) {
         if (this.currentRawFrame + this.firstFrame < init) {
@@ -443,7 +443,7 @@ AnimationItem.prototype.setSegment = function (init,end) {
     this.firstFrame = init;
     this.timeCompleted = this.totalFrames = end - init;
     if(pendingFrame !== -1) {
-        this.goToAndStop(pendingFrame,true);
+        this.goToAndStop(pendingFrame, true);
     }
 };
 
@@ -469,7 +469,7 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
 
 AnimationItem.prototype.resetSegments = function (forceFlag) {
     this.segments.length = 0;
-    this.segments.push([this.animationData.ip,this.animationData.op]);
+    this.segments.push([this.animationData.ip, this.animationData.op]);
     // this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
     if (forceFlag) {
         this.checkSegments(0);
@@ -590,38 +590,38 @@ AnimationItem.prototype.trigger = function (name) {
     if(this._cbs && this._cbs[name]) {
         switch(name) {
             case 'enterFrame':
-                this.triggerEvent(name,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameModifier));
+                this.triggerEvent(name, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameModifier));
                 break;
             case 'loopComplete':
-                this.triggerEvent(name,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
+                this.triggerEvent(name, new BMCompleteLoopEvent(name, this.loop, this.playCount, this.frameMult));
                 break;
             case 'complete':
-                this.triggerEvent(name,new BMCompleteEvent(name,this.frameMult));
+                this.triggerEvent(name, new BMCompleteEvent(name, this.frameMult));
                 break;
             case 'segmentStart':
-                this.triggerEvent(name,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
+                this.triggerEvent(name, new BMSegmentStartEvent(name, this.firstFrame, this.totalFrames));
                 break;
             case 'destroy':
-                this.triggerEvent(name,new BMDestroyEvent(name,this));
+                this.triggerEvent(name, new BMDestroyEvent(name, this));
                 break;
             default:
                 this.triggerEvent(name);
         }
     }
     if(name === 'enterFrame' && this.onEnterFrame) {
-        this.onEnterFrame.call(this,new BMEnterFrameEvent(name,this.currentFrame,this.totalFrames,this.frameMult));
+        this.onEnterFrame.call(this, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameMult));
     }
     if(name === 'loopComplete' && this.onLoopComplete) {
-        this.onLoopComplete.call(this,new BMCompleteLoopEvent(name,this.loop,this.playCount,this.frameMult));
+        this.onLoopComplete.call(this, new BMCompleteLoopEvent(name, this.loop, this.playCount, this.frameMult));
     }
     if(name === 'complete' && this.onComplete) {
-        this.onComplete.call(this,new BMCompleteEvent(name,this.frameMult));
+        this.onComplete.call(this, new BMCompleteEvent(name, this.frameMult));
     }
     if(name === 'segmentStart' && this.onSegmentStart) {
-        this.onSegmentStart.call(this,new BMSegmentStartEvent(name,this.firstFrame,this.totalFrames));
+        this.onSegmentStart.call(this, new BMSegmentStartEvent(name, this.firstFrame, this.totalFrames));
     }
     if(name === 'destroy' && this.onDestroy) {
-        this.onDestroy.call(this,new BMDestroyEvent(name,this));
+        this.onDestroy.call(this, new BMDestroyEvent(name, this));
     }
 };
 

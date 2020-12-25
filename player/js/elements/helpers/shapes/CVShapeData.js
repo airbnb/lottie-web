@@ -1,6 +1,6 @@
 function CVShapeData(element, data, styles, transformsManager) {
     this.styledShapes = [];
-    this.tr = [0,0,0,0,0,0];
+    this.tr = [0, 0, 0, 0, 0, 0];
     var ty = 4;
     if(data.ty == 'rc') {
         ty = 5;
@@ -9,8 +9,8 @@ function CVShapeData(element, data, styles, transformsManager) {
     }else if(data.ty == 'sr') {
         ty = 7;
     }
-    this.sh = ShapePropertyFactory.getShapeProp(element,data,ty,element);
-    var i , len = styles.length,styledShape;
+    this.sh = ShapePropertyFactory.getShapeProp(element, data, ty, element);
+    var i, len = styles.length, styledShape;
     for (i = 0; i < len; i += 1) {
         if (!styles[i].closed) {
             styledShape = {

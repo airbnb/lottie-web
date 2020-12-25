@@ -1,31 +1,31 @@
-function HCameraElement(data,globalData,comp) {
+function HCameraElement(data, globalData, comp) {
     this.initFrame();
-    this.initBaseData(data,globalData,comp);
+    this.initBaseData(data, globalData, comp);
     this.initHierarchy();
     var getProp = PropertyFactory.getProp;
-    this.pe = getProp(this,data.pe,0,0,this);
+    this.pe = getProp(this, data.pe, 0, 0, this);
     if(data.ks.p.s) {
-        this.px = getProp(this,data.ks.p.x,1,0,this);
-        this.py = getProp(this,data.ks.p.y,1,0,this);
-        this.pz = getProp(this,data.ks.p.z,1,0,this);
+        this.px = getProp(this, data.ks.p.x, 1, 0, this);
+        this.py = getProp(this, data.ks.p.y, 1, 0, this);
+        this.pz = getProp(this, data.ks.p.z, 1, 0, this);
     }else{
-        this.p = getProp(this,data.ks.p,1,0,this);
+        this.p = getProp(this, data.ks.p, 1, 0, this);
     }
     if(data.ks.a) {
-        this.a = getProp(this,data.ks.a,1,0,this);
+        this.a = getProp(this, data.ks.a, 1, 0, this);
     }
     if(data.ks.or.k.length && data.ks.or.k[0].to) {
-        var i,len = data.ks.or.k.length;
+        var i, len = data.ks.or.k.length;
         for(i=0;i<len;i+=1) {
             data.ks.or.k[i].to = null;
             data.ks.or.k[i].ti = null;
         }
     }
-    this.or = getProp(this,data.ks.or,1,degToRads,this);
+    this.or = getProp(this, data.ks.or, 1, degToRads, this);
     this.or.sh = true;
-    this.rx = getProp(this,data.ks.rx,0,degToRads,this);
-    this.ry = getProp(this,data.ks.ry,0,degToRads,this);
-    this.rz = getProp(this,data.ks.rz,0,degToRads,this);
+    this.rx = getProp(this, data.ks.rx, 0, degToRads, this);
+    this.ry = getProp(this, data.ks.ry, 0, degToRads, this);
+    this.rz = getProp(this, data.ks.rz, 0, degToRads, this);
     this.mat = new Matrix();
     this._prevMat = new Matrix();
     this._isFirstFrame = true;
@@ -73,17 +73,17 @@ HCameraElement.prototype.renderFrame = function () {
             len = this.hierarchy.length - 1;
             for (i = len; i >= 0; i -= 1) {
                 var mTransf = this.hierarchy[i].finalTransform.mProp;
-                this.mat.translate(-mTransf.p.v[0],-mTransf.p.v[1],mTransf.p.v[2]);
+                this.mat.translate(-mTransf.p.v[0], -mTransf.p.v[1], mTransf.p.v[2]);
                 this.mat.rotateX(-mTransf.or.v[0]).rotateY(-mTransf.or.v[1]).rotateZ(mTransf.or.v[2]);
                 this.mat.rotateX(-mTransf.rx.v).rotateY(-mTransf.ry.v).rotateZ(mTransf.rz.v);
-                this.mat.scale(1/mTransf.s.v[0],1/mTransf.s.v[1],1/mTransf.s.v[2]);
-                this.mat.translate(mTransf.a.v[0],mTransf.a.v[1],mTransf.a.v[2]);
+                this.mat.scale(1/mTransf.s.v[0], 1/mTransf.s.v[1], 1/mTransf.s.v[2]);
+                this.mat.translate(mTransf.a.v[0], mTransf.a.v[1], mTransf.a.v[2]);
             }
         }
         if (this.p) {
-            this.mat.translate(-this.p.v[0],-this.p.v[1],this.p.v[2]);
+            this.mat.translate(-this.p.v[0], -this.p.v[1], this.p.v[2]);
         } else {
-            this.mat.translate(-this.px.v,-this.py.v,this.pz.v);
+            this.mat.translate(-this.px.v, -this.py.v, this.pz.v);
         }
         if (this.a) {
             var diffVector
@@ -92,9 +92,9 @@ HCameraElement.prototype.renderFrame = function () {
             } else {
                 diffVector = [this.px.v - this.a.v[0], this.py.v - this.a.v[1], this.pz.v - this.a.v[2]];
             }
-            var mag = Math.sqrt(Math.pow(diffVector[0],2)+Math.pow(diffVector[1],2)+Math.pow(diffVector[2],2));
+            var mag = Math.sqrt(Math.pow(diffVector[0], 2)+Math.pow(diffVector[1], 2)+Math.pow(diffVector[2], 2));
             // var lookDir = getNormalizedPoint(getDiffVector(this.a.v,this.p.v));
-            var lookDir = [diffVector[0]/mag,diffVector[1]/mag,diffVector[2]/mag];
+            var lookDir = [diffVector[0]/mag, diffVector[1]/mag, diffVector[2]/mag];
             var lookLengthOnXZ = Math.sqrt( lookDir[2]*lookDir[2] + lookDir[0]*lookDir[0] );
             var m_rotationX = (Math.atan2( lookDir[1], lookLengthOnXZ ));
             var m_rotationY = (Math.atan2( lookDir[0], -lookDir[2]));
@@ -103,8 +103,8 @@ HCameraElement.prototype.renderFrame = function () {
         }
         this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
         this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);
-        this.mat.translate(this.globalData.compSize.w/2,this.globalData.compSize.h/2,0);
-        this.mat.translate(0,0,this.pe.v);
+        this.mat.translate(this.globalData.compSize.w/2, this.globalData.compSize.h/2, 0);
+        this.mat.translate(0, 0, this.pe.v);
 
 
         

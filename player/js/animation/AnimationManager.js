@@ -59,10 +59,10 @@ var animationManager = (function () {
     }
 
     function setupAnimation(animItem, element) {
-        animItem.addEventListener('destroy',removeElement);
-        animItem.addEventListener('_active',addPlayingCount);
-        animItem.addEventListener('_idle',subtractPlayingCount);
-        registeredAnimations.push({elem: element,animation:animItem});
+        animItem.addEventListener('destroy', removeElement);
+        animItem.addEventListener('_active', addPlayingCount);
+        animItem.addEventListener('_idle', subtractPlayingCount);
+        registeredAnimations.push({elem: element, animation:animItem});
         len += 1;
     }
 
@@ -74,7 +74,7 @@ var animationManager = (function () {
     }
 
 
-    function setSpeed(val,animation) {
+    function setSpeed(val, animation) {
         var i;
         for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.setSpeed(val, animation);
@@ -120,10 +120,10 @@ var animationManager = (function () {
         }
     }
 
-    function goToAndStop(value,isFrame,animation) {
+    function goToAndStop(value, isFrame, animation) {
         var i;
         for(i=0;i<len;i+=1) {
-            registeredAnimations[i].animation.goToAndStop(value,isFrame,animation);
+            registeredAnimations[i].animation.goToAndStop(value, isFrame, animation);
         }
     }
 
@@ -154,7 +154,7 @@ var animationManager = (function () {
         var i, len = animElements.length;
         for(i=0;i<len;i+=1) {
             if(renderer) {
-                animElements[i].setAttribute('data-bm-type',renderer);
+                animElements[i].setAttribute('data-bm-type', renderer);
             }
             registerAnimation(animElements[i], animationData);
         }
@@ -167,7 +167,7 @@ var animationManager = (function () {
             var div = createTag('div');
             div.style.width = '100%';
             div.style.height = '100%';
-            div.setAttribute('data-bm-type',renderer);
+            div.setAttribute('data-bm-type', renderer);
             body.appendChild(div);
             registerAnimation(div, animationData);
         }
@@ -198,7 +198,7 @@ var animationManager = (function () {
         activate();
     }
 
-    function setVolume(val,animation) {
+    function setVolume(val, animation) {
         var i;
         for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.setVolume(val, animation);

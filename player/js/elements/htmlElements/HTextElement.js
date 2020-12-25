@@ -1,4 +1,4 @@
-function HTextElement(data,globalData,comp) {
+function HTextElement(data, globalData, comp) {
     this.textSpans = [];
     this.textPaths = [];
     this.currentBBox = {
@@ -9,10 +9,10 @@ function HTextElement(data,globalData,comp) {
     };
     this.renderType = 'svg';
     this.isMasked = false;
-    this.initElement(data,globalData,comp);
+    this.initElement(data, globalData, comp);
 
 }
-extendPrototype([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], HTextElement);
+extendPrototype([BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, ITextElement], HTextElement);
 
 HTextElement.prototype.createContent = function () {
     this.isMasked = this.checkMasks();
@@ -20,8 +20,8 @@ HTextElement.prototype.createContent = function () {
         this.renderType = 'svg';
         this.compW = this.comp.data.w;
         this.compH = this.comp.data.h;
-        this.svgElement.setAttribute('width',this.compW);
-        this.svgElement.setAttribute('height',this.compH);
+        this.svgElement.setAttribute('width', this.compW);
+        this.svgElement.setAttribute('height', this.compH);
         var g = createNS('g');
         this.maskedElement.appendChild(g);
         this.innerElem = g;
@@ -60,7 +60,7 @@ HTextElement.prototype.buildNewText = function () {
 
     var letters = documentData.l;
     len = letters.length;
-    var tSpan,tParent,tCont;
+    var tSpan, tParent, tCont;
     var matrixHelper = this.mHelper;
     var shapes, shapeStr = '';
     var cnt = 0;
@@ -69,8 +69,8 @@ HTextElement.prototype.buildNewText = function () {
             if(!this.textPaths[cnt]) {
                 tSpan = createNS('path');
                 tSpan.setAttribute('stroke-linecap', 'butt');
-                tSpan.setAttribute('stroke-linejoin','round');
-                tSpan.setAttribute('stroke-miterlimit','4');
+                tSpan.setAttribute('stroke-linejoin', 'round');
+                tSpan.setAttribute('stroke-miterlimit', '4');
             } else {
                 tSpan = this.textPaths[cnt];
             }
@@ -115,9 +115,9 @@ HTextElement.prototype.buildNewText = function () {
             matrixHelper.reset();
             if(shapeData && shapeData.shapes) {
                 shapes = shapeData.shapes[0].it;
-                matrixHelper.scale(documentData.finalSize/100,documentData.finalSize/100);
-                shapeStr = this.createPathShape(matrixHelper,shapes);
-                tSpan.setAttribute('d',shapeStr);
+                matrixHelper.scale(documentData.finalSize/100, documentData.finalSize/100);
+                shapeStr = this.createPathShape(matrixHelper, shapes);
+                tSpan.setAttribute('d', shapeStr);
             }
             if(!this.isMasked) {
                 this.innerElem.appendChild(tParent);
@@ -126,16 +126,16 @@ HTextElement.prototype.buildNewText = function () {
                     // document.body.appendChild is needed to get exact measure of shape
                     document.body.appendChild(tCont);
                     var boundingBox = tCont.getBBox();
-                    tCont.setAttribute('width',boundingBox.width + 2);
-                    tCont.setAttribute('height',boundingBox.height + 2);
-                    tCont.setAttribute('viewBox',(boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
+                    tCont.setAttribute('width', boundingBox.width + 2);
+                    tCont.setAttribute('height', boundingBox.height + 2);
+                    tCont.setAttribute('viewBox', (boundingBox.x-1)+' '+ (boundingBox.y-1)+' '+ (boundingBox.width+2)+' '+ (boundingBox.height+2));
                     tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x-1) + 'px,' + (boundingBox.y-1) + 'px)';
 
                     letters[i].yOffset = boundingBox.y-1;
 
                 } else{
-                    tCont.setAttribute('width',1);
-                    tCont.setAttribute('height',1);
+                    tCont.setAttribute('width', 1);
+                    tCont.setAttribute('height', 1);
                 }
                     tParent.appendChild(tCont);
             }else{
@@ -143,7 +143,7 @@ HTextElement.prototype.buildNewText = function () {
             }
         }else{
             tSpan.textContent = letters[i].val;
-            tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space','preserve');
+            tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space', 'preserve');
             if(!this.isMasked) {
                 this.innerElem.appendChild(tParent);
                 //
@@ -176,7 +176,7 @@ HTextElement.prototype.renderInnerContent = function () {
         } else {
             // Todo Benchmark if using this is better than getBBox
              if(this.isMasked && this.finalTransform._matMdf) {
-                 this.svgElement.setAttribute('viewBox',-this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
+                 this.svgElement.setAttribute('viewBox', -this.finalTransform.mProp.p.v[0]+' '+ -this.finalTransform.mProp.p.v[1]+' '+this.compW+' '+this.compH);
                 this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
              }
         }
@@ -186,7 +186,7 @@ HTextElement.prototype.renderInnerContent = function () {
     if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag) {
         return;
     }
-    var  i,len, count = 0;
+    var  i, len, count = 0;
     var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.textProperty.currentData.l;
@@ -206,19 +206,19 @@ HTextElement.prototype.renderInnerContent = function () {
             if(!this.isMasked) {
                 textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
             }else{
-                textSpan.setAttribute('transform',renderedLetter.m);
+                textSpan.setAttribute('transform', renderedLetter.m);
             }
         }
         /// /textSpan.setAttribute('opacity',renderedLetter.o);
         textSpan.style.opacity = renderedLetter.o;
         if(renderedLetter.sw && renderedLetter._mdf.sw) {
-            textPath.setAttribute('stroke-width',renderedLetter.sw);
+            textPath.setAttribute('stroke-width', renderedLetter.sw);
         }
         if(renderedLetter.sc && renderedLetter._mdf.sc) {
-            textPath.setAttribute('stroke',renderedLetter.sc);
+            textPath.setAttribute('stroke', renderedLetter.sc);
         }
         if(renderedLetter.fc && renderedLetter._mdf.fc) {
-            textPath.setAttribute('fill',renderedLetter.fc);
+            textPath.setAttribute('fill', renderedLetter.fc);
             textPath.style.color = renderedLetter.fc;
         }
     }
@@ -228,11 +228,11 @@ HTextElement.prototype.renderInnerContent = function () {
 
         if(this.currentBBox.w !== boundingBox.width) {
             this.currentBBox.w = boundingBox.width;
-            this.svgElement.setAttribute('width',boundingBox.width);
+            this.svgElement.setAttribute('width', boundingBox.width);
         }
         if(this.currentBBox.h !== boundingBox.height) {
             this.currentBBox.h = boundingBox.height;
-            this.svgElement.setAttribute('height',boundingBox.height);
+            this.svgElement.setAttribute('height', boundingBox.height);
         }
 
         var margin = 1;
@@ -242,7 +242,7 @@ HTextElement.prototype.renderInnerContent = function () {
             this.currentBBox.x = boundingBox.x - margin;
             this.currentBBox.y = boundingBox.y - margin;
 
-            this.svgElement.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+            this.svgElement.setAttribute('viewBox', this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
             this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
         }
     }

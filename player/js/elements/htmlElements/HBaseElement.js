@@ -1,4 +1,4 @@
-function HBaseElement(data,globalData,comp) {}
+function HBaseElement(data, globalData, comp) {}
 HBaseElement.prototype = {
     checkBlendMode: function () {},
     initRendererElement: function () {
@@ -19,7 +19,7 @@ HBaseElement.prototype = {
         this.transformedElement = this.baseElement;
         this.maskedElement = this.layerElement;
         if (this.data.ln) {
-            this.layerElement.setAttribute('id',this.data.ln);
+            this.layerElement.setAttribute('id', this.data.ln);
         }
         if (this.data.cl) {
             this.layerElement.setAttribute('class', this.data.cl);

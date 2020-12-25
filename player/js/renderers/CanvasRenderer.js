@@ -27,7 +27,7 @@ function CanvasRenderer(animationItem, config) {
     this.completeLayers = false;
     this.rendererType = 'canvas';
 }
-extendPrototype([BaseRenderer],CanvasRenderer);
+extendPrototype([BaseRenderer], CanvasRenderer);
 
 CanvasRenderer.prototype.createShape = function (data) {
     return new CVShapeElement(data, this.globalData, this);
@@ -56,16 +56,16 @@ CanvasRenderer.prototype.ctxTransform = function (props) {
         return;
     }
     if(!this.renderConfig.clearCanvas) {
-        this.canvasContext.transform(props[0],props[1],props[4],props[5],props[12],props[13]);
+        this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
         return;
     }
     this.transformMat.cloneFromProps(props);
     var cProps = this.contextData.cTr.props;
-    this.transformMat.transform(cProps[0],cProps[1],cProps[2],cProps[3],cProps[4],cProps[5],cProps[6],cProps[7],cProps[8],cProps[9],cProps[10],cProps[11],cProps[12],cProps[13],cProps[14],cProps[15]);
+    this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]);
     // this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
     this.contextData.cTr.cloneFromProps(this.transformMat.props);
     var trProps = this.contextData.cTr.props;
-    this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
+    this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
 };
 
 CanvasRenderer.prototype.ctxOpacity = function (op) {
@@ -123,11 +123,11 @@ CanvasRenderer.prototype.restore = function (actionFlag) {
     }
     this.contextData.cArrPos -= 1;
     var popped = this.contextData.saved[this.contextData.cArrPos];
-    var i,arr = this.contextData.cTr.props;
+    var i, arr = this.contextData.cTr.props;
     for(i=0;i<16;i+=1) {
         arr[i] = popped[i];
     }
-    this.canvasContext.setTransform(popped[0],popped[1],popped[4],popped[5],popped[12],popped[13]);
+    this.canvasContext.setTransform(popped[0], popped[1], popped[4], popped[5], popped[12], popped[13]);
     popped = this.contextData.savedOp[this.contextData.cArrPos];
     this.contextData.cO = popped;
     if(this.globalData.currentGlobalAlpha !== popped) {
@@ -178,22 +178,22 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
 
 CanvasRenderer.prototype.updateContainerSize = function () {
     this.reset();
-    var elementWidth,elementHeight;
+    var elementWidth, elementHeight;
     if(this.animationItem.wrapper && this.animationItem.container) {
         elementWidth = this.animationItem.wrapper.offsetWidth;
         elementHeight = this.animationItem.wrapper.offsetHeight;
-        this.animationItem.container.setAttribute('width',elementWidth * this.renderConfig.dpr );
-        this.animationItem.container.setAttribute('height',elementHeight * this.renderConfig.dpr);
+        this.animationItem.container.setAttribute('width', elementWidth * this.renderConfig.dpr );
+        this.animationItem.container.setAttribute('height', elementHeight * this.renderConfig.dpr);
     }else{
         elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
         elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
     }
-    var elementRel,animationRel;
+    var elementRel, animationRel;
     if(this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1) {
         var par = this.renderConfig.preserveAspectRatio.split(' ');
         var fillType = par[1] || 'meet';
         var pos = par[0] || 'xMidYMid';
-        var xPos = pos.substr(0,4);
+        var xPos = pos.substr(0, 4);
         var yPos = pos.substr(4);
         elementRel = elementWidth/elementHeight;
         animationRel = this.transformCanvas.w/this.transformCanvas.h;
@@ -231,7 +231,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         this.transformCanvas.tx = 0;
         this.transformCanvas.ty = 0;
     }
-    this.transformCanvas.props = [this.transformCanvas.sx,0,0,0,0,this.transformCanvas.sy,0,0,0,0,1,0,this.transformCanvas.tx,this.transformCanvas.ty,0,1];
+    this.transformCanvas.props = [this.transformCanvas.sx, 0, 0, 0, 0, this.transformCanvas.sy, 0, 0, 0, 0, 1, 0, this.transformCanvas.tx, this.transformCanvas.ty, 0, 1];
     /* var i, len = this.elements.length;
     for(i=0;i<len;i+=1){
         if(this.elements[i] && this.elements[i].data.ty === 0){
@@ -240,7 +240,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     } */
     this.ctxTransform(this.transformCanvas.props);
     this.canvasContext.beginPath();
-    this.canvasContext.rect(0,0,this.transformCanvas.w,this.transformCanvas.h);
+    this.canvasContext.rect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
     this.canvasContext.closePath();
     this.canvasContext.clip();
 
@@ -307,7 +307,7 @@ CanvasRenderer.prototype.buildItem = function (pos) {
     if(elements[pos] || this.layers[pos].ty == 99) {
         return;
     }
-    var element = this.createItem(this.layers[pos], this,this.globalData);
+    var element = this.createItem(this.layers[pos], this, this.globalData);
     elements[pos] = element;
     element.initExpressions();
     /* if(this.layers[pos].ty === 0){

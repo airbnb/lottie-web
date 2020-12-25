@@ -90,7 +90,7 @@ var Matrix = (function () {
         return this._t(mCos, -mSin,  0, 0, mSin,  mCos, 0, 0, 0,  0,  1, 0, 0, 0, 0, 1);
     }
 
-    function shear(sx,sy) {
+    function shear(sx, sy) {
         return this._t(1, sy, sx, 1, 0, 0);
     }
 
@@ -140,7 +140,7 @@ var Matrix = (function () {
     function translate(tx, ty, tz) {
         tz = tz || 0;
         if(tx !== 0 || ty !== 0 || tz !== 0) {
-            return this._t(1,0,0,0,0,1,0,0,0,0,1,0,tx,ty,tz,1);
+            return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
         }
         return this;
     }
@@ -315,10 +315,10 @@ var Matrix = (function () {
         return arr;
     }
 
-    function applyToPointArray(x,y,z) {
+    function applyToPointArray(x, y, z) {
         var arr;
         if(this.isIdentity()) {
-            arr = [x,y,z];
+            arr = [x, y, z];
         } else {
             arr = [
                 x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],

@@ -1,4 +1,4 @@
-function HShapeElement(data,globalData,comp) {
+function HShapeElement(data, globalData, comp) {
     // List of drawable elements
     this.shapes = [];
     // Full shape data
@@ -14,7 +14,7 @@ function HShapeElement(data,globalData,comp) {
     // List of animated components
     this.animatedContents = [];
     this.shapesContainer = createNS('g');
-    this.initElement(data,globalData,comp);
+    this.initElement(data, globalData, comp);
     // Moving any property that doesn't get too much access after initialization because of v8 way of handling more than 10 properties.
     // List of elements that have been created
     this.prevViewData = [];
@@ -25,7 +25,7 @@ function HShapeElement(data,globalData,comp) {
         w: 0
     };
 }
-extendPrototype([BaseElement,TransformElement,HSolidElement,SVGShapeElement,HBaseElement,HierarchyElement,FrameElement,RenderableElement], HShapeElement);
+extendPrototype([BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement, HierarchyElement, FrameElement, RenderableElement], HShapeElement);
 HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderInnerContent;
 
 HShapeElement.prototype.createContent = function () {
@@ -37,13 +37,13 @@ HShapeElement.prototype.createContent = function () {
     } else {
         cont = createNS('svg');
         var size = this.comp.data ? this.comp.data : this.globalData.compSize;
-        cont.setAttribute('width',size.w);
-        cont.setAttribute('height',size.h);
+        cont.setAttribute('width', size.w);
+        cont.setAttribute('height', size.h);
         cont.appendChild(this.shapesContainer);
         this.layerElement.appendChild(cont);
     }
 
-    this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.shapesContainer,0, [], true);
+    this.searchShapes(this.shapesData, this.itemsData, this.prevViewData, this.shapesContainer, 0, [], true);
     this.filterUniqueShapes();
     this.shapeCont = cont;
 };
@@ -106,7 +106,7 @@ HShapeElement.prototype.tempBoundingBox = {
 
 HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
 
-    var bounds = [[p0[0],p3[0]], [p0[1],p3[1]]];
+    var bounds = [[p0[0], p3[0]], [p0[1], p3[1]]];
 
     for (var a, b, c, t, b2ac, t1, t2, i = 0; i < 2; ++i) {
 
@@ -127,7 +127,7 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
         t = -c / b;
 
         if (0 < t && t < 1) {
-          bounds[i].push(this.calculateF(t,p0,p1,p2,p3,i));
+          bounds[i].push(this.calculateF(t, p0, p1, p2, p3, i));
         }
         continue;
       }
@@ -139,10 +139,10 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
       }
 
       t1 = (-b + bm_sqrt(b2ac))/(2 * a);
-      if (0 < t1 && t1 < 1) bounds[i].push(this.calculateF(t1,p0,p1,p2,p3,i));
+      if (0 < t1 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
 
       t2 = (-b - bm_sqrt(b2ac))/(2 * a);
-      if (0 < t2 && t2 < 1) bounds[i].push(this.calculateF(t2,p0,p1,p2,p3,i));
+      if (0 < t2 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
 
     }
 
@@ -197,12 +197,12 @@ HShapeElement.prototype.renderInnerContent = function () {
         var changed = false;
         if(this.currentBBox.w !== tempBoundingBox.width) {
             this.currentBBox.w = tempBoundingBox.width;
-            this.shapeCont.setAttribute('width',tempBoundingBox.width);
+            this.shapeCont.setAttribute('width', tempBoundingBox.width);
             changed = true;
         }
         if(this.currentBBox.h !== tempBoundingBox.height) {
             this.currentBBox.h = tempBoundingBox.height;
-            this.shapeCont.setAttribute('height',tempBoundingBox.height);
+            this.shapeCont.setAttribute('height', tempBoundingBox.height);
             changed = true;
         }
         if(changed  || this.currentBBox.x !== tempBoundingBox.x  || this.currentBBox.y !== tempBoundingBox.y) {
@@ -211,7 +211,7 @@ HShapeElement.prototype.renderInnerContent = function () {
             this.currentBBox.x = tempBoundingBox.x;
             this.currentBBox.y = tempBoundingBox.y;
 
-            this.shapeCont.setAttribute('viewBox',this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
+            this.shapeCont.setAttribute('viewBox', this.currentBBox.x+' '+this.currentBBox.y+' '+this.currentBBox.w+' '+this.currentBBox.h);
             this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
         }
     }

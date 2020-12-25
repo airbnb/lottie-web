@@ -2,7 +2,7 @@
 
     function searchExpressions() {
         if(this.data.d.x) {
-            this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem,this.data.d,this);
+            this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem, this.data.d, this);
             this.addEffect(this.getExpressionValue.bind(this));
             return true;
         }

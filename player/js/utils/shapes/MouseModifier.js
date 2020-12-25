@@ -1,5 +1,5 @@
 function MouseModifier() {}
-extendPrototype([ShapeModifier],MouseModifier);
+extendPrototype([ShapeModifier], MouseModifier);
 MouseModifier.prototype.processKeys = function (forceRender) {
     if(this.elem.globalData.frameId === this.frameId && !forceRender) {
         return;
@@ -14,15 +14,15 @@ MouseModifier.prototype.addShapeToModifier = function () {
 
 MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     var i, len = path.v.length;
-    var vValues = [],oValues = [],iValues = [];
+    var vValues = [], oValues = [], iValues = [];
     var dist;
-    var theta, x,y;
+    var theta, x, y;
     /// / OPTION A
     for(i=0;i<len;i+=1) {
         if(!positions.v[i]) {
-            positions.v[i] = [path.v[i][0],path.v[i][1]];
-            positions.o[i] = [path.o[i][0],path.o[i][1]];
-            positions.i[i] = [path.i[i][0],path.i[i][1]];
+            positions.v[i] = [path.v[i][0], path.v[i][1]];
+            positions.o[i] = [path.o[i][0], path.o[i][1]];
+            positions.i[i] = [path.i[i][0], path.i[i][1]];
             positions.distV[i] = 0;
             positions.distO[i] = 0;
             positions.distI[i] = 0;
@@ -38,8 +38,8 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         var distance = Math.sqrt( (x * x) + (y * y) );
         positions.distV[i] += (distance - positions.distV[i]) * this.data.dc;
 
-        positions.v[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][0]);
-        positions.v[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
+        positions.v[i][0] = Math.cos(theta) * Math.max(0, this.data.maxDist-positions.distV[i])/2 + (path.v[i][0]);
+        positions.v[i][1] = Math.sin(theta) * Math.max(0, this.data.maxDist-positions.distV[i])/2 + (path.v[i][1]);
 
 
         theta = Math.atan2(
@@ -52,8 +52,8 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         var distance = Math.sqrt( (x * x) + (y * y) );
         positions.distO[i] += (distance - positions.distO[i]) * this.data.dc;
 
-        positions.o[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][0]);
-        positions.o[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
+        positions.o[i][0] = Math.cos(theta) * Math.max(0, this.data.maxDist-positions.distO[i])/2 + (path.o[i][0]);
+        positions.o[i][1] = Math.sin(theta) * Math.max(0, this.data.maxDist-positions.distO[i])/2 + (path.o[i][1]);
 
 
         theta = Math.atan2(
@@ -66,8 +66,8 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         var distance = Math.sqrt( (x * x) + (y * y) );
         positions.distI[i] += (distance - positions.distI[i]) * this.data.dc;
 
-        positions.i[i][0] = Math.cos(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
-        positions.i[i][1] = Math.sin(theta) * Math.max(0,this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
+        positions.i[i][0] = Math.cos(theta) * Math.max(0, this.data.maxDist-positions.distI[i])/2 + (path.i[i][0]);
+        positions.i[i][1] = Math.sin(theta) * Math.max(0, this.data.maxDist-positions.distI[i])/2 + (path.i[i][1]);
 
         /// //OPTION 1
         vValues.push(positions.v[i]);
@@ -184,7 +184,7 @@ MouseModifier.prototype.processShapes = function () {
     var j, jLen;
 
     if(mouseX) {
-        var localMouseCoords = this.elem.globalToLocal([mouseX,mouseY,0]);
+        var localMouseCoords = this.elem.globalToLocal([mouseX, mouseY, 0]);
 
         var shapeData, newPaths = [];
         for(i=0;i<len;i+=1) {
@@ -206,7 +206,7 @@ MouseModifier.prototype.processShapes = function () {
                             distI:[]
                         };
                     }
-                    newPaths.push(this.processPath(shapePaths[j],localMouseCoords, this.positions[i][j]));
+                    newPaths.push(this.processPath(shapePaths[j], localMouseCoords, this.positions[i][j]));
                 }
                 shapeData.shape.paths = newPaths;
                 shapeData.last = newPaths;
@@ -217,7 +217,7 @@ MouseModifier.prototype.processShapes = function () {
 
 }
 
-MouseModifier.prototype.initModifierProperties = function (elem,data) {
+MouseModifier.prototype.initModifierProperties = function (elem, data) {
     this.getValue = this.processKeys;
     this.data = data;
     this.positions = [];
@@ -225,4 +225,4 @@ MouseModifier.prototype.initModifierProperties = function (elem,data) {
 
 
 
-ShapeModifiers.registerModifier('ms',MouseModifier);
+ShapeModifiers.registerModifier('ms', MouseModifier);

@@ -1,10 +1,10 @@
-function SVGTextElement(data,globalData,comp) {
+function SVGTextElement(data, globalData, comp) {
     this.textSpans = [];
     this.renderType = 'svg';
-    this.initElement(data,globalData,comp);
+    this.initElement(data, globalData, comp);
 }
 
-extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], SVGTextElement);
+extendPrototype([BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, ITextElement], SVGTextElement);
 
 SVGTextElement.prototype.createContent = function () {
 
@@ -46,7 +46,7 @@ SVGTextElement.prototype.buildNewText = function () {
     this.layerElement.setAttribute('font-size', documentData.finalSize);
     var fontData = this.globalData.fontManager.getFontByName(documentData.f);
     if(fontData.fClass) {
-        this.layerElement.setAttribute('class',fontData.fClass);
+        this.layerElement.setAttribute('class', fontData.fClass);
     } else {
         this.layerElement.setAttribute('font-family', fontData.fFamily);
         var fWeight = documentData.fWeight, fStyle = documentData.fStyle;
@@ -75,8 +75,8 @@ SVGTextElement.prototype.buildNewText = function () {
                 justify = 'middle';
                 break;
         }
-        tElement.setAttribute('text-anchor',justify);
-        tElement.setAttribute('letter-spacing',trackingOffset);
+        tElement.setAttribute('text-anchor', justify);
+        tElement.setAttribute('letter-spacing', trackingOffset);
         var textContent = this.buildTextContents(documentData.finalText);
         len = textContent.length;
         yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
@@ -100,8 +100,8 @@ SVGTextElement.prototype.buildNewText = function () {
                 tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs?'path':'text');
                 if (cachedSpansLength <= i) {
                     tSpan.setAttribute('stroke-linecap', 'butt');
-                    tSpan.setAttribute('stroke-linejoin','round');
-                    tSpan.setAttribute('stroke-miterlimit','4');
+                    tSpan.setAttribute('stroke-linejoin', 'round');
+                    tSpan.setAttribute('stroke-miterlimit', '4');
                     this.textSpans[i] = tSpan;
                     this.layerElement.appendChild(tSpan);
                 }
@@ -127,21 +127,21 @@ SVGTextElement.prototype.buildNewText = function () {
                 shapeData = charData && charData.data || {};
                 shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
                 if(!singleShape) {
-                    tSpan.setAttribute('d',this.createPathShape(matrixHelper,shapes));
+                    tSpan.setAttribute('d', this.createPathShape(matrixHelper, shapes));
                 } else {
-                    shapeStr += this.createPathShape(matrixHelper,shapes);
+                    shapeStr += this.createPathShape(matrixHelper, shapes);
                 }
             } else {
                 if(singleShape) {
                     tSpan.setAttribute('transform', 'translate(' + matrixHelper.props[12] + ',' + matrixHelper.props[13] + ')');
                 }
                 tSpan.textContent = letters[i].val;
-                tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space','preserve');
+                tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space', 'preserve');
             }
             //
         }
         if (singleShape && tSpan) {
-            tSpan.setAttribute('d',shapeStr);
+            tSpan.setAttribute('d', shapeStr);
         }
     }
     while (i < this.textSpans.length) {
@@ -174,7 +174,7 @@ SVGTextElement.prototype.renderInnerContent = function () {
         this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
         if(this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {
             this._sizeChanged = true;
-            var  i,len;
+            var  i, len;
             var renderedLetters = this.textAnimator.renderedLetters;
 
             var letters = this.textProperty.currentData.l;
@@ -188,19 +188,19 @@ SVGTextElement.prototype.renderInnerContent = function () {
                 renderedLetter = renderedLetters[i];
                 textSpan = this.textSpans[i];
                 if(renderedLetter._mdf.m) {
-                    textSpan.setAttribute('transform',renderedLetter.m);
+                    textSpan.setAttribute('transform', renderedLetter.m);
                 }
                 if(renderedLetter._mdf.o) {
-                    textSpan.setAttribute('opacity',renderedLetter.o);
+                    textSpan.setAttribute('opacity', renderedLetter.o);
                 }
                 if(renderedLetter._mdf.sw) {
-                    textSpan.setAttribute('stroke-width',renderedLetter.sw);
+                    textSpan.setAttribute('stroke-width', renderedLetter.sw);
                 }
                 if(renderedLetter._mdf.sc) {
-                    textSpan.setAttribute('stroke',renderedLetter.sc);
+                    textSpan.setAttribute('stroke', renderedLetter.sc);
                 }
                 if(renderedLetter._mdf.fc) {
-                    textSpan.setAttribute('fill',renderedLetter.fc);
+                    textSpan.setAttribute('fill', renderedLetter.fc);
                 }
             }
         }

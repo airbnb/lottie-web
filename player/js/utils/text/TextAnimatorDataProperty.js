@@ -11,7 +11,7 @@ function TextAnimatorDataProperty(elem, animatorProps, container) {
 		s: textAnimator_animatables.s ? getProp(elem, textAnimator_animatables.s, 1, 0.01, container) : defaultData,
 		a: textAnimator_animatables.a ? getProp(elem, textAnimator_animatables.a, 1, 0, container) : defaultData,
 		o: textAnimator_animatables.o ? getProp(elem, textAnimator_animatables.o, 0, 0.01, container) : defaultData,
-		p: textAnimator_animatables.p ? getProp(elem,textAnimator_animatables.p, 1, 0, container) : defaultData,
+		p: textAnimator_animatables.p ? getProp(elem, textAnimator_animatables.p, 1, 0, container) : defaultData,
 		sw: textAnimator_animatables.sw ? getProp(elem, textAnimator_animatables.sw, 0, 0, container) : defaultData,
 		sc: textAnimator_animatables.sc ? getProp(elem, textAnimator_animatables.sc, 1, 0, container) : defaultData,
 		fc: textAnimator_animatables.fc ? getProp(elem, textAnimator_animatables.fc, 1, 0, container) : defaultData,
@@ -21,6 +21,6 @@ function TextAnimatorDataProperty(elem, animatorProps, container) {
 		t: textAnimator_animatables.t ? getProp(elem, textAnimator_animatables.t, 0, 0, container) : defaultData
 	};
 
-	this.s = TextSelectorProp.getTextSelectorProp(elem,animatorProps.s, container);
+	this.s = TextSelectorProp.getTextSelectorProp(elem, animatorProps.s, container);
     this.s.t = animatorProps.s.t;
 }

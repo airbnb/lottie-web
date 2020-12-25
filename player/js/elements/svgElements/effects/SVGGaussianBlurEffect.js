@@ -1,9 +1,9 @@
 function SVGGaussianBlurEffect(filter, filterManager) {
     // Outset the filter region by 100% on all sides to accommodate blur expansion.
-    filter.setAttribute('x','-100%');
-    filter.setAttribute('y','-100%');
-    filter.setAttribute('width','300%');
-    filter.setAttribute('height','300%');
+    filter.setAttribute('x', '-100%');
+    filter.setAttribute('y', '-100%');
+    filter.setAttribute('width', '300%');
+    filter.setAttribute('height', '300%');
 
     this.filterManager = filterManager;
     var feGaussianBlur = createNS('feGaussianBlur');

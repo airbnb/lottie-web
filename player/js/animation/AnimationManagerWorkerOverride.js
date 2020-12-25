@@ -59,10 +59,10 @@ animationManager = (function () {
     }
 
     function setupAnimation(animItem, element) {
-        animItem.addEventListener('destroy',removeElement);
-        animItem.addEventListener('_active',addPlayingCount);
-        animItem.addEventListener('_idle',subtractPlayingCount);
-        registeredAnimations.push({elem: element,animation:animItem});
+        animItem.addEventListener('destroy', removeElement);
+        animItem.addEventListener('_active', addPlayingCount);
+        animItem.addEventListener('_idle', subtractPlayingCount);
+        registeredAnimations.push({elem: element, animation:animItem});
         len += 1;
     }
 
@@ -74,7 +74,7 @@ animationManager = (function () {
     }
 
 
-    function setSpeed(val,animation) {
+    function setSpeed(val, animation) {
         var i;
         for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.setSpeed(val, animation);
@@ -120,10 +120,10 @@ animationManager = (function () {
         }
     }
 
-    function goToAndStop(value,isFrame,animation) {
+    function goToAndStop(value, isFrame, animation) {
         var i;
         for(i=0;i<len;i+=1) {
-            registeredAnimations[i].animation.goToAndStop(value,isFrame,animation);
+            registeredAnimations[i].animation.goToAndStop(value, isFrame, animation);
         }
     }
 

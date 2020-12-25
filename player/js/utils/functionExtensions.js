@@ -1,4 +1,4 @@
-function extendPrototype(sources,destination) {
+function extendPrototype(sources, destination) {
     var i, len = sources.length, sourcePrototype;
     for (i = 0;i < len;i += 1) {
         sourcePrototype = sources[i].prototype;

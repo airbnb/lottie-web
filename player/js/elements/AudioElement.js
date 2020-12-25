@@ -1,4 +1,4 @@
-function AudioElement(data,globalData,comp) {
+function AudioElement(data, globalData, comp) {
     this.initFrame();
     this.initRenderable();
     this.assetData = globalData.getAssetData(data.refId);
@@ -9,7 +9,7 @@ function AudioElement(data,globalData,comp) {
     this.audio = this.globalData.audioController.createAudio(assetPath);
     this._currentTime = 0;
     this.globalData.audioController.addAudio(this);
-    this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate,this) : {_placeholder:true};
+    this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {_placeholder:true};
 }
 
 AudioElement.prototype.prepareFrame = function (num) {
@@ -23,7 +23,7 @@ AudioElement.prototype.prepareFrame = function (num) {
     }
 };
 
-extendPrototype([RenderableElement,BaseElement,FrameElement], AudioElement);
+extendPrototype([RenderableElement, BaseElement, FrameElement], AudioElement);
 
 AudioElement.prototype.renderFrame = function () {
 	if (this.isInRange && this._canPlay) {

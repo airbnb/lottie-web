@@ -15,9 +15,9 @@ function CVTextElement(data, globalData, comp) {
         sWidth: 0,
         fValue: ''
     };
-    this.initElement(data,globalData,comp);
+    this.initElement(data, globalData, comp);
 }
-extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], CVTextElement);
+extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement, ITextElement], CVTextElement);
 
 CVTextElement.prototype.tHelper = createTag('canvas').getContext('2d');
 
@@ -64,7 +64,7 @@ CVTextElement.prototype.buildNewText = function () {
 
         shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
         jLen = shapes.length;
-        matrixHelper.scale(documentData.finalSize/100,documentData.finalSize/100);
+        matrixHelper.scale(documentData.finalSize/100, documentData.finalSize/100);
         if(singleShape) {
             this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
         }
@@ -75,11 +75,11 @@ CVTextElement.prototype.buildNewText = function () {
             pathArr = [];
             for(k=1;k<kLen;k+=1) {
                 if(k==1) {
-                    pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
+                    pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
                 }
-                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToY(pathNodes.i[k][0],pathNodes.i[k][1],0),matrixHelper.applyToX(pathNodes.v[k][0],pathNodes.v[k][1],0),matrixHelper.applyToY(pathNodes.v[k][0],pathNodes.v[k][1],0));
+                pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToY(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToX(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToY(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToX(pathNodes.v[k][0], pathNodes.v[k][1], 0), matrixHelper.applyToY(pathNodes.v[k][0], pathNodes.v[k][1], 0));
             }
-            pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToY(pathNodes.o[k-1][0],pathNodes.o[k-1][1],0),matrixHelper.applyToX(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToY(pathNodes.i[0][0],pathNodes.i[0][1],0),matrixHelper.applyToX(pathNodes.v[0][0],pathNodes.v[0][1],0),matrixHelper.applyToY(pathNodes.v[0][0],pathNodes.v[0][1],0));
+            pathArr.push(matrixHelper.applyToX(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToY(pathNodes.o[k-1][0], pathNodes.o[k-1][1], 0), matrixHelper.applyToX(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToY(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
             commands[j] = pathArr;
         }
         if(singleShape) {
@@ -107,7 +107,7 @@ CVTextElement.prototype.renderInnerContent = function () {
         this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     }
 
-    var  i,len, j, jLen, k, kLen;
+    var  i, len, j, jLen, k, kLen;
     var renderedLetters = this.textAnimator.renderedLetters;
 
     var letters = this.textProperty.currentData.l;

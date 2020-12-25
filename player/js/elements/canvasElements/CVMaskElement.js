@@ -1,5 +1,5 @@
 
-function CVMaskElement(data,element) {
+function CVMaskElement(data, element) {
     this.data = data;
     this.element = element;
     this.masksProperties = this.data.masksProperties || [];
@@ -9,7 +9,7 @@ function CVMaskElement(data,element) {
         if(this.masksProperties[i].mode !== 'n') {
             hasMasks = true;
         }
-        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element,this.masksProperties[i],3);
+        this.viewData[i] = ShapePropertyFactory.getShapeProp(this.element, this.masksProperties[i], 3);
     }
     this.hasMasks = hasMasks;
     if(hasMasks) {
@@ -24,7 +24,7 @@ CVMaskElement.prototype.renderFrame = function () {
     var transform = this.element.finalTransform.mat;
     var ctx = this.element.canvasContext;
     var i, len = this.masksProperties.length;
-    var pt,pts,data;
+    var pt, pts, data;
     ctx.beginPath();
     for (i = 0; i < len; i++) {
         if(this.masksProperties[i].mode !== 'n') {
@@ -36,7 +36,7 @@ CVMaskElement.prototype.renderFrame = function () {
                 ctx.lineTo(0, 0);
             }
             data = this.viewData[i].v;
-            pt = transform.applyToPointArray(data.v[0][0],data.v[0][1],0);
+            pt = transform.applyToPointArray(data.v[0][0], data.v[0][1], 0);
             ctx.moveTo(pt[0], pt[1]);
             var j, jLen = data._length;
             for (j = 1; j < jLen; j++) {

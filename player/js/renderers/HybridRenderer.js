@@ -28,7 +28,7 @@ function HybridRenderer(animationItem, config) {
 
 }
 
-extendPrototype([BaseRenderer],HybridRenderer);
+extendPrototype([BaseRenderer], HybridRenderer);
 
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 
@@ -47,7 +47,7 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
     var layer = this.layers[pos];
     if(!layer.ddd || !this.supports3d) {
         if(this.threeDElements) {
-            this.addTo3dContainer(newDOMElement,pos);
+            this.addTo3dContainer(newDOMElement, pos);
         } else {
             var i = 0;
             var nextDOMElement, nextLayer, tmpDOMElement;
@@ -71,7 +71,7 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
         }
         
     } else {
-        this.addTo3dContainer(newDOMElement,pos);
+        this.addTo3dContainer(newDOMElement, pos);
     }
 };
 
@@ -161,15 +161,15 @@ HybridRenderer.prototype.build3dContainers = function () {
         if(this.layers[i].ddd && this.layers[i].ty !== 3) {
             if(currentContainer !== '3d') {
                 currentContainer = '3d';
-                lastThreeDContainerData = this.createThreeDContainer(i,'3d');
+                lastThreeDContainerData = this.createThreeDContainer(i, '3d');
             }
-            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
+            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos, i);
         } else {
             if(currentContainer !== '2d') {
                 currentContainer = '2d';
-                lastThreeDContainerData = this.createThreeDContainer(i,'2d');
+                lastThreeDContainerData = this.createThreeDContainer(i, '2d');
             }
-            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos,i);
+            lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos, i);
         }
     }
     len = this.threeDElements.length;
@@ -178,7 +178,7 @@ HybridRenderer.prototype.build3dContainers = function () {
     }
 };
 
-HybridRenderer.prototype.addTo3dContainer = function (elem,pos) {
+HybridRenderer.prototype.addTo3dContainer = function (elem, pos) {
     var i = 0, len = this.threeDElements.length;
     while(i<len) {
         if(pos <= this.threeDElements[i].endPos) {
@@ -216,8 +216,8 @@ HybridRenderer.prototype.configAnimation = function (animData) {
 
     resizerElem.style.overflow = 'hidden';
     var svg = createNS('svg');
-    svg.setAttribute('width','1');
-    svg.setAttribute('height','1');
+    svg.setAttribute('width', '1');
+    svg.setAttribute('height', '1');
     styleDiv(svg);
     this.resizerElem.appendChild(svg);
     var defs = createNS('defs');
@@ -252,7 +252,7 @@ HybridRenderer.prototype.updateContainerSize = function () {
     var elementHeight = this.animationItem.wrapper.offsetHeight;
     var elementRel = elementWidth/elementHeight;
     var animationRel = this.globalData.compSize.w/this.globalData.compSize.h;
-    var sx,sy,tx,ty;
+    var sx, sy, tx, ty;
     if(animationRel>elementRel) {
         sx = elementWidth/(this.globalData.compSize.w);
         sy = elementWidth/(this.globalData.compSize.w);
@@ -286,7 +286,7 @@ HybridRenderer.prototype.initItems = function () {
         var cHeight = this.globalData.compSize.h;
         var i, len = this.threeDElements.length;
         for(i=0;i<len;i+=1) {
-            this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth,2) + Math.pow(cHeight,2)) + 'px';
+            this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth, 2) + Math.pow(cHeight, 2)) + 'px';
         }
     }
 };
@@ -296,7 +296,7 @@ HybridRenderer.prototype.searchExtraCompositions = function (assets) {
     var floatingContainer = createTag('div');
     for(i=0;i<len;i+=1) {
         if(assets[i].xt) {
-            var comp = this.createComp(assets[i],floatingContainer,this.globalData.comp,null);
+            var comp = this.createComp(assets[i], floatingContainer, this.globalData.comp, null);
             comp.initExpressions();
             this.globalData.projectInterface.registerComposition(comp);
         }

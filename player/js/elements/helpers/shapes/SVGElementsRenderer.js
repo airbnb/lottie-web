@@ -29,15 +29,15 @@ var SVGElementsRenderer = (function () {
 
     function renderContentTransform(styleData, itemData, isFirstFrame) {
         if(isFirstFrame || itemData.transform.op._mdf) {
-            itemData.transform.container.setAttribute('opacity',itemData.transform.op.v);
+            itemData.transform.container.setAttribute('opacity', itemData.transform.op.v);
         }
         if(isFirstFrame || itemData.transform.mProps._mdf) {
-            itemData.transform.container.setAttribute('transform',itemData.transform.mProps.v.to2dCSS());
+            itemData.transform.container.setAttribute('transform', itemData.transform.mProps.v.to2dCSS());
         }
     }
 
     function renderPath(styleData, itemData, isFirstFrame) {
-        var j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
+        var j, jLen, pathStringTransformed, redraw, pathNodes, l, lLen = itemData.styles.length;
         var lvl = itemData.lvl;
         var paths, mat, props, iterations, k;
         for(l=0;l<lLen;l+=1) {
@@ -56,7 +56,7 @@ var SVGElementsRenderer = (function () {
                     k = itemData.transformers.length-1;
                     while(iterations > 0) {
                         props = itemData.transformers[k].mProps.v.props;
-                        mat.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
+                        mat.transform(props[0], props[1], props[2], props[3], props[4], props[5], props[6], props[7], props[8], props[9], props[10], props[11], props[12], props[13], props[14], props[15]);
                         iterations --;
                         k --;
                     }
@@ -83,14 +83,14 @@ var SVGElementsRenderer = (function () {
         }
     }
 
-    function renderFill(styleData,itemData, isFirstFrame) {
+    function renderFill(styleData, itemData, isFirstFrame) {
         var styleElem = itemData.style;
 
         if(itemData.c._mdf || isFirstFrame) {
-            styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
+            styleElem.pElem.setAttribute('fill', 'rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
         }
         if(itemData.o._mdf || isFirstFrame) {
-            styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
+            styleElem.pElem.setAttribute('fill-opacity', itemData.o.v);
         }
     };
 
@@ -126,7 +126,7 @@ var SVGElementsRenderer = (function () {
             for (i = 0; i < len; i += 1) {
                 stop = stops[i];
                 stop.setAttribute('offset', cValues[i * 4] + '%');
-                stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
+                stop.setAttribute('stop-color', 'rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
             }
         }
         if (hasOpacity && (itemData.g._omdf || isFirstFrame)) {
@@ -192,7 +192,7 @@ var SVGElementsRenderer = (function () {
             styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
         }
         if(itemData.c && (itemData.c._mdf || isFirstFrame)) {
-            styleElem.pElem.setAttribute('stroke','rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
+            styleElem.pElem.setAttribute('stroke', 'rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
         }
         if(itemData.o._mdf || isFirstFrame) {
             styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);

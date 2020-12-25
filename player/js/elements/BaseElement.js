@@ -20,13 +20,13 @@ BaseElement.prototype = {
         if(this.data.hasMask && this.maskManager) {
             this.layerInterface.registerMaskInterface(this.maskManager);
         }
-        var effectsInterface = EffectsExpressionInterface.createEffectsInterface(this,this.layerInterface);
+        var effectsInterface = EffectsExpressionInterface.createEffectsInterface(this, this.layerInterface);
         this.layerInterface.registerEffectsInterface(effectsInterface);
 
         if(this.data.ty === 0 || this.data.xt) {
             this.compInterface = CompExpressionInterface(this);
         } else if(this.data.ty === 4) {
-            this.layerInterface.shapeInterface = ShapeExpressionInterface(this.shapesData,this.itemsData,this.layerInterface);
+            this.layerInterface.shapeInterface = ShapeExpressionInterface(this.shapesData, this.itemsData, this.layerInterface);
             this.layerInterface.content = this.layerInterface.shapeInterface;
         } else if(this.data.ty === 5) {
             this.layerInterface.textInterface = TextExpressionInterface(this);
@@ -50,11 +50,11 @@ BaseElement.prototype = {
             this.data.sr = 1;
         }
         // effects manager
-        this.effectsManager = new EffectsManager(this.data,this,this.dynamicProperties);
+        this.effectsManager = new EffectsManager(this.data, this, this.dynamicProperties);
         
     },
     getType: function () {
         return this.type;
     }
-    ,sourceRectAtTime: function () {}
+    , sourceRectAtTime: function () {}
 }

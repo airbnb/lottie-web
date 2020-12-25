@@ -50,7 +50,7 @@ function TextProperty(elem, data) {
     }
 }
 
-TextProperty.prototype.defaultBoxWidth = [0,0];
+TextProperty.prototype.defaultBoxWidth = [0, 0];
 
 TextProperty.prototype.copyData = function (obj, data) {
     for(var s in data) {
@@ -251,7 +251,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
                         i = lastSpaceIndex;
                     }
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
-                    finalText.splice(i, lastSpaceIndex === i ? 1 : 0,'\r');
+                    finalText.splice(i, lastSpaceIndex === i ? 1 : 0, '\r');
                     // finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
                     lastSpaceIndex = -1;
                     lineWidth = 0;
@@ -307,7 +307,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
             lineWidth += cLength + trackingOffset + uncollapsedSpaces;
             uncollapsedSpaces = 0;
         }
-        letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
+        letters.push({l:cLength, an:cLength, add:currentSize, n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
         if(anchorGrouping == 2) {
             currentSize += cLength;
             if(val === '' || val === ' ' || i === len - 1) {
@@ -398,7 +398,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
                 letterData = letters[i];
                 if(currentInd != letterData.anIndexes[j]) {
                     currentInd = letterData.anIndexes[j];
-                    newInd = indexes.splice(Math.floor(Math.random()*indexes.length),1)[0];
+                    newInd = indexes.splice(Math.floor(Math.random()*indexes.length), 1)[0];
                 }
                 letterData.anIndexes[j] = newInd;
             }

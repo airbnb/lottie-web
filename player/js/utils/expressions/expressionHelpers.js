@@ -1,11 +1,11 @@
 var expressionHelpers = (function () {
 
-    function searchExpressions(elem,data,prop) {
+    function searchExpressions(elem, data, prop) {
         if(data.x) {
             prop.k = true;
             prop.x = true;
             prop.initiateExpression = ExpressionManager.initiateExpression;
-            prop.effectsSequence.push(prop.initiateExpression(elem,data,prop).bind(prop));
+            prop.effectsSequence.push(prop.initiateExpression(elem, data, prop).bind(prop));
         }
     }
 

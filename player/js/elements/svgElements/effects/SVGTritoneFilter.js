@@ -1,25 +1,25 @@
 function SVGTritoneFilter(filter, filterManager) {
     this.filterManager = filterManager;
     var feColorMatrix = createNS('feColorMatrix');
-    feColorMatrix.setAttribute('type','matrix');
-    feColorMatrix.setAttribute('color-interpolation-filters','linearRGB');
-    feColorMatrix.setAttribute('values','0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
-    feColorMatrix.setAttribute('result','f1');
+    feColorMatrix.setAttribute('type', 'matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
+    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('result', 'f1');
     filter.appendChild(feColorMatrix);
     var feComponentTransfer = createNS('feComponentTransfer');
-    feComponentTransfer.setAttribute('color-interpolation-filters','sRGB');
+    feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
     filter.appendChild(feComponentTransfer);
     this.matrixFilter = feComponentTransfer;
     var feFuncR = createNS('feFuncR');
-    feFuncR.setAttribute('type','table');
+    feFuncR.setAttribute('type', 'table');
     feComponentTransfer.appendChild(feFuncR);
     this.feFuncR = feFuncR;
     var feFuncG = createNS('feFuncG');
-    feFuncG.setAttribute('type','table');
+    feFuncG.setAttribute('type', 'table');
     feComponentTransfer.appendChild(feFuncG);
     this.feFuncG = feFuncG;
     var feFuncB = createNS('feFuncB');
-    feFuncB.setAttribute('type','table');
+    feFuncB.setAttribute('type', 'table');
     feComponentTransfer.appendChild(feFuncB);
     this.feFuncB = feFuncB;
 }

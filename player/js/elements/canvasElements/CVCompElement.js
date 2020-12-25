@@ -4,7 +4,7 @@ function CVCompElement(data, globalData, comp) {
     this.pendingElements = [];
     this.elements = createSizedArray(this.layers.length);
     this.initElement(data, globalData, comp);
-    this.tm = data.tm ? PropertyFactory.getProp(this,data.tm,0,globalData.frameRate, this) : {_placeholder:true};
+    this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {_placeholder:true};
 }
 
 extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
@@ -18,7 +18,7 @@ CVCompElement.prototype.renderInnerContent = function () {
     ctx.lineTo(0, this.data.h);
     ctx.lineTo(0, 0);
     ctx.clip();
-    var i,len = this.layers.length;
+    var i, len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ) {
         if(this.completeLayers || this.elements[i]) {
             this.elements[i].renderFrame();
@@ -27,7 +27,7 @@ CVCompElement.prototype.renderInnerContent = function () {
 };
 
 CVCompElement.prototype.destroy = function () {
-    var i,len = this.layers.length;
+    var i, len = this.layers.length;
     for( i = len - 1; i >= 0; i -= 1 ) {
         if(this.elements[i]) {
             this.elements[i].destroy();

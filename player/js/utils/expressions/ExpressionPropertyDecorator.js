@@ -1,6 +1,6 @@
 (function addPropertyDecorator() {
 
-    function loopOut(type,duration,durationFlag) {
+    function loopOut(type, duration, durationFlag) {
         if(!this.k || !this.keyframes) {
             return this.pv;
         }
@@ -20,7 +20,7 @@
                 cycleDuration = lastKeyFrame - firstKeyFrame;
             } else {
                 if(!duration) {
-                    cycleDuration = Math.max(0,lastKeyFrame - this.elem.data.ip);
+                    cycleDuration = Math.max(0, lastKeyFrame - this.elem.data.ip);
                 } else {
                     cycleDuration = Math.abs(lastKeyFrame - elem.comp.globalData.frameRate*duration);
                 }
@@ -63,7 +63,7 @@
         }
     }
 
-    function loopIn(type,duration, durationFlag) {
+    function loopIn(type, duration, durationFlag) {
         if(!this.k) {
             return this.pv;
         }
@@ -83,7 +83,7 @@
                 cycleDuration = lastKeyFrame - firstKeyFrame;
             } else {
                 if(!duration) {
-                    cycleDuration = Math.max(0,this.elem.data.op - firstKeyFrame);
+                    cycleDuration = Math.max(0, this.elem.data.op - firstKeyFrame);
                 } else {
                     cycleDuration = Math.abs(elem.comp.globalData.frameRate*duration);
                 }
@@ -267,8 +267,8 @@
     };
 
     var propertyGetProp = PropertyFactory.getProp;
-    PropertyFactory.getProp = function (elem,data,type, mult, container) {
-        var prop = propertyGetProp(elem,data,type, mult, container);
+    PropertyFactory.getProp = function (elem, data, type, mult, container) {
+        var prop = propertyGetProp(elem, data, type, mult, container);
         // prop.getVelocityAtTime = getVelocityAtTime;
         // prop.loopOut = loopOut;
         // prop.loopIn = loopIn;
@@ -294,7 +294,7 @@
             lastIndex: 0,
             value: value
         };
-        expressionHelpers.searchExpressions(elem,data,prop);
+        expressionHelpers.searchExpressions(elem, data, prop);
         if(prop.k) {
             container.addDynamicProperty(prop);
         }
@@ -389,7 +389,7 @@
                 i += 1;
             }
             if(!pt) {
-                pt = shapePath.c ? [shapePath.v[0][0],shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0],shapePath.v[shapePath._length-1][1]];
+                pt = shapePath.c ? [shapePath.v[0][0], shapePath.v[0][1]]:[shapePath.v[shapePath._length-1][0], shapePath.v[shapePath._length-1][1]];
             }
             return pt;
         },
@@ -400,9 +400,9 @@
             var pt2 = this.pointOnPath(perc + 0.001, time);
             var xLength = pt2[0] - pt1[0];
             var yLength = pt2[1] - pt1[1];
-            var magnitude = Math.sqrt(Math.pow(xLength,2) + Math.pow(yLength,2));
+            var magnitude = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
             if (magnitude === 0) {
-                return [0,0];
+                return [0, 0];
             }
             var unitVector = vectorType === 'tangent' ? [xLength/magnitude, yLength/magnitude] : [-yLength/magnitude, xLength/magnitude];
             return unitVector;
@@ -422,14 +422,14 @@
     KeyframedShapePropertyConstructorFunction.prototype.initiateExpression = ExpressionManager.initiateExpression;
 
     var propertyGetShapeProp = ShapePropertyFactory.getShapeProp;
-    ShapePropertyFactory.getShapeProp = function (elem,data,type, arr, trims) {
-        var prop = propertyGetShapeProp(elem,data,type, arr, trims);
+    ShapePropertyFactory.getShapeProp = function (elem, data, type, arr, trims) {
+        var prop = propertyGetShapeProp(elem, data, type, arr, trims);
         prop.propertyIndex = data.ix;
         prop.lock = false;
         if(type === 3) {
-            expressionHelpers.searchExpressions(elem,data.pt,prop);
+            expressionHelpers.searchExpressions(elem, data.pt, prop);
         } else if(type === 4) {
-            expressionHelpers.searchExpressions(elem,data.ks,prop);
+            expressionHelpers.searchExpressions(elem, data.ks, prop);
         }
         if(prop.k) {
             elem.addDynamicProperty(prop);

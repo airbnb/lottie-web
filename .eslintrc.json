@@ -18,7 +18,6 @@
         "indent": "off",
         "func-names": "off",
         "no-param-reassign": "off",
-        "comma-spacing": "off",
         "keyword-spacing": "off",
         "max-len": "off",
         "space-infix-ops": "off",
