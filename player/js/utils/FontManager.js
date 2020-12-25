@@ -4,7 +4,7 @@ var FontManager = (function () {
   var emptyChar = {
     w: 0,
     size:0,
-    shapes:[]
+    shapes:[],
   };
   var combinedCharacters = [];
   // Hindi characters

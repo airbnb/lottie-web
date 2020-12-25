@@ -47,5 +47,5 @@ FrameElement.prototype = {
     if(this.dynamicProperties.indexOf(prop) === -1) {
       this.dynamicProperties.push(prop);
     }
-  }
+  },
 };

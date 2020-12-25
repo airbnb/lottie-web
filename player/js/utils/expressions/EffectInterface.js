@@ -1,6 +1,6 @@
 var EffectsExpressionInterface = (function () {
   var ob = {
-    createEffectsInterface: createEffectsInterface
+    createEffectsInterface: createEffectsInterface,
   };
 
   function createEffectsInterface(elem, propertyGroup) {
@@ -26,7 +26,7 @@ var EffectsExpressionInterface = (function () {
       Object.defineProperty(groupInterface, 'numProperties', {
         get: function () {
           return effects.length;
-        }
+        },
       });
       return groupInterface
     }
@@ -64,14 +64,14 @@ var EffectsExpressionInterface = (function () {
       Object.defineProperty(groupInterface, 'color', {
         get: function () {
           return effectElements[0]();
-        }
+        },
       });
     }
     Object.defineProperties(groupInterface, {
       numProperties: {
         get: function () {
           return data.np;
-        }
+        },
       },
       _name: { value: data.nm },
       propertyGroup: {value: _propertyGroup},

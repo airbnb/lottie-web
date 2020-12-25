@@ -436,7 +436,7 @@ var PropertyFactory = (function () {
   }
 
   var ob = {
-    getProp: getProp
+    getProp: getProp,
   };
   return ob;
 }());

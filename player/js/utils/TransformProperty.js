@@ -209,7 +209,7 @@ var TransformPropertyFactory = (function () {
     applyToMatrix: applyToMatrix,
     getValue: processKeys,
     precalculateMatrix: precalculateMatrix,
-    autoOrient: autoOrient
+    autoOrient: autoOrient,
   }
 
   extendPrototype([DynamicPropertyContainer], TransformProperty);
@@ -221,7 +221,7 @@ var TransformPropertyFactory = (function () {
   }
 
   return {
-    getTransformProperty: getTransformProperty
+    getTransformProperty: getTransformProperty,
   };
 
 }());

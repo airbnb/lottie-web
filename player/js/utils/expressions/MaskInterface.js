@@ -10,7 +10,7 @@ var MaskManagerInterface = (function () {
         this._mask.prop.getValue();
       }
       return this._mask.prop;
-    }
+    },
   });
   Object.defineProperty(MaskInterface.prototype, 'maskOpacity', {
     get: function () {
@@ -18,7 +18,7 @@ var MaskManagerInterface = (function () {
         this._mask.op.getValue();
       }
       return this._mask.op.v * 100;
-    }
+    },
   });
 
   var MaskManager = function (maskManager, elem) {

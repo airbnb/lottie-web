@@ -13,7 +13,7 @@ function CVTextElement(data, globalData, comp) {
     fill: 'rgba(0,0,0,0)',
     stroke: 'rgba(0,0,0,0)',
     sWidth: 0,
-    fValue: ''
+    fValue: '',
   };
   this.initElement(data, globalData, comp);
 }

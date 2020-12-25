@@ -11,7 +11,7 @@ function LetterProps(o, sw, sc, fc, m, p) {
     sc: !!sc,
     fc: !!fc,
     m: true,
-    p: true
+    p: true,
   };
 }
 

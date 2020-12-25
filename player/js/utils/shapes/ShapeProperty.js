@@ -268,7 +268,7 @@ var ShapePropertyFactory = (function () {
         _v.o[2][1] = p1 + s1;
         _v.o[3][0] = _cw ? p0 - s0 : p0 + s0;
         _v.o[3][1] = p1 - s1 * cPoint;
-      }
+      },
     }
 
     extendPrototype([DynamicPropertyContainer], EllShapeProperty);
@@ -381,7 +381,7 @@ var ShapePropertyFactory = (function () {
         }
         this.paths.length = 0;
         this.paths[0] = this.v;
-      }
+      },
 
     }
     extendPrototype([DynamicPropertyContainer], StarShapeProperty);
@@ -463,7 +463,7 @@ var ShapePropertyFactory = (function () {
         }
 
       },
-      reset: resetShape
+      reset: resetShape,
     }
     extendPrototype([DynamicPropertyContainer], RectShapeProperty);
 

@@ -46,5 +46,5 @@ HierarchyElement.prototype = {
     if (this.data.parent !== undefined) {
       this.comp.buildElementParenting(this, this.data.parent, []);
     }
-  }
+  },
 };

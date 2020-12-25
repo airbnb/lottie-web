@@ -5,7 +5,7 @@ function HTextElement(data, globalData, comp) {
     x:999999,
     y: -999999,
     h: 0,
-    w: 0
+    w: 0,
   };
   this.renderType = 'svg';
   this.isMasked = false;

@@ -8,7 +8,7 @@ function TextAnimatorProperty(textData, renderType, elem) {
   this._animatorsData = createSizedArray(this._textData.a.length);
   this._pathData = {};
   this._moreOptions = {
-    alignment: {}
+    alignment: {},
   };
   this.renderedLetters = [];
   this.lettersChangedFlag = false;
@@ -28,7 +28,7 @@ TextAnimatorProperty.prototype.searchProperties = function () {
       f: getProp(this._elem, this._textData.p.f, 0, 0, this),
       l: getProp(this._elem, this._textData.p.l, 0, 0, this),
       r: this._textData.p.r,
-      m: this._elem.maskManager.getMaskProperty(this._textData.p.m)
+      m: this._elem.maskManager.getMaskProperty(this._textData.p.m),
     };
     this._hasMaskedPath = true;
   } else {
@@ -63,7 +63,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       // TODO: release bezier data cached from previous pathInfo: this._pathData.pi
       pathInfo = {
         tLength: 0,
-        segments: []
+        segments: [],
       };
       len = paths._length - 1;
       var bezierData;

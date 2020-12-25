@@ -133,7 +133,7 @@ var TextSelectorProp = (function () {
       }
       this.finalS = s;
       this.finalE = e;
-    }
+    },
   }
   extendPrototype([DynamicPropertyContainer], TextSelectorProp);
 
@@ -142,7 +142,7 @@ var TextSelectorProp = (function () {
   }
 
   return {
-    getTextSelectorProp: getTextSelectorProp
+    getTextSelectorProp: getTextSelectorProp,
   };
 }());
 

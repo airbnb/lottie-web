@@ -7,7 +7,7 @@ var pool_factory = (function () {
 
     var ob = {
       newElement: newElement,
-      release: release
+      release: release,
     };
 
     function newElement() {

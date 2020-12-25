@@ -66,7 +66,7 @@ HBaseElement.prototype = {
   },
   addEffects: function () {
   },
-  setMatte: function () {}
+  setMatte: function () {},
 };
 HBaseElement.prototype.getBaseElement = SVGBaseElement.prototype.getBaseElement;
 HBaseElement.prototype.destroyBaseElement = HBaseElement.prototype.destroy;

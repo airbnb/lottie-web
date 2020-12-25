@@ -21,21 +21,21 @@ TrimModifier.prototype.calculateShapeEdges = function (s, e, shapeLength, addedL
   if (e <= 1) {
     segments.push({
       s: s,
-      e: e
+      e: e,
     });
   } else if (s >= 1) {
     segments.push({
       s: s - 1,
-      e: e - 1
+      e: e - 1,
     });
   } else {
     segments.push({
       s: s,
-      e: 1
+      e: 1,
     });
     segments.push({
       s: 0,
-      e: e - 1
+      e: e - 1,
     });
   }
   var shapeSegments = [];
@@ -161,21 +161,21 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
           if (shapeE <= 1) {
             segments.push({
               s:shapeData.totalShapeLength * shapeS,
-              e:shapeData.totalShapeLength * shapeE
+              e:shapeData.totalShapeLength * shapeE,
             });
           } else if (shapeS >= 1) {
             segments.push({
               s:shapeData.totalShapeLength * (shapeS - 1),
-              e:shapeData.totalShapeLength * (shapeE - 1)
+              e:shapeData.totalShapeLength * (shapeE - 1),
             });
           } else {
             segments.push({
               s:shapeData.totalShapeLength * shapeS,
-              e:shapeData.totalShapeLength
+              e:shapeData.totalShapeLength,
             });
             segments.push({
               s:0,
-              e:shapeData.totalShapeLength * (shapeE - 1)
+              e:shapeData.totalShapeLength * (shapeE - 1),
             });
           }
           var newShapesData = this.addShapes(shapeData, segments[0]);

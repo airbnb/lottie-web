@@ -70,8 +70,8 @@ var onmessage = function (evt) {
     rendererSettings: {
       context: ctx,
       scaleMode: 'noScale',
-      clearCanvas: true
-    }
+      clearCanvas: true,
+    },
   });
   animations.push(animation);
   animation.play();

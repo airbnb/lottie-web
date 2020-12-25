@@ -56,5 +56,5 @@ BaseElement.prototype = {
   getType: function () {
     return this.type;
   }
-  , sourceRectAtTime: function () {}
+  , sourceRectAtTime: function () {},
 }

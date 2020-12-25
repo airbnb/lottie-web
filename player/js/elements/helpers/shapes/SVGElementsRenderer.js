@@ -3,7 +3,7 @@ var SVGElementsRenderer = (function () {
   var _matrixHelper = new Matrix();
 
   var ob = {
-    createRenderFunction: createRenderFunction
+    createRenderFunction: createRenderFunction,
   }
 
   function createRenderFunction(data) {

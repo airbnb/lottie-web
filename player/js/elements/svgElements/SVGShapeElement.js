@@ -164,7 +164,7 @@ SVGShapeElement.prototype.addToAnimatedContents = function (data, element) {
   this.animatedContents.push({
     fn: SVGElementsRenderer.createRenderFunction(data),
     element: element,
-    data: data
+    data: data,
   });
 };
 

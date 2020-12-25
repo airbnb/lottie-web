@@ -15,7 +15,7 @@ function CVShapeData(element, data, styles, transformsManager) {
     if (!styles[i].closed) {
       styledShape = {
         transforms: transformsManager.addTransformSequence(styles[i].transforms),
-        trNodes: []
+        trNodes: [],
       }
       this.styledShapes.push(styledShape);
       styles[i].elements.push(styledShape);

@@ -22,14 +22,14 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
     sx:0,
     sy:0,
     tx:0,
-    ty:0
+    ty:0,
   };
   this.globalData.frameId = 0;
   this.globalData.frameRate = animData.fr;
   this.globalData.nm = animData.nm;
   this.globalData.compSize = {
     w: animData.w,
-    h: animData.h
+    h: animData.h,
   }
   this.globalData.canvasContext = this.canvasContext;
   this.globalData.renderer = this;

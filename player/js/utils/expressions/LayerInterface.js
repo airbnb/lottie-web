@@ -123,12 +123,12 @@ var LayerExpressionInterface = (function () {
       hasParent: {
         get: function () {
           return elem.hierarchy.length;
-        }
+        },
       },
       parent: {
         get: function () {
           return elem.hierarchy[0].layerInterface;
-        }
+        },
       },
       rotation: getDescriptor(transformInterface, 'rotation'),
       scale: getDescriptor(transformInterface, 'scale'),
@@ -139,13 +139,13 @@ var LayerExpressionInterface = (function () {
       transform: {
         get: function () {
           return transformInterface;
-        }
+        },
       },
       active: {
         get: function () {
           return elem.isInRange;
-        }
-      }
+        },
+      },
     });
 
     _thisLayerFunction.startTime = elem.data.st;

@@ -39,6 +39,6 @@ var assetLoader = (function () {
     };
   }
   return {
-    load: loadAsset
+    load: loadAsset,
   }
 }())

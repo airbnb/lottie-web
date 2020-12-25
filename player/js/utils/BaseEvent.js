@@ -35,5 +35,5 @@ BaseEvent.prototype = {
         this._cbs[eventName] = null;
       }
     }
-  }
+  },
 };

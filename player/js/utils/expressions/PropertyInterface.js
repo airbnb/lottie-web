@@ -2,7 +2,7 @@ var PropertyInterface = (function () {
   return function (propertyName, propertyGroup) {
 
     var interfaceFunction = {
-      _name: propertyName
+      _name: propertyName,
     }
 
     function _propertyGroup(val) {

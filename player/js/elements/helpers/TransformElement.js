@@ -6,7 +6,7 @@ TransformElement.prototype = {
       mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this) : {o:0},
       _matMdf: false,
       _opMdf: false,
-      mat: new Matrix()
+      mat: new Matrix(),
     };
     if (this.data.ao) {
       this.finalTransform.mProp.autoOriented = true;
@@ -70,5 +70,5 @@ TransformElement.prototype = {
     }
     return pt;
   },
-  mHelper: new Matrix()
+  mHelper: new Matrix(),
 };

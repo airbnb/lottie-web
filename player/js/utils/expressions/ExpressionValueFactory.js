@@ -7,7 +7,7 @@ var ExpressionPropertyInterface = (function () {
     Object.defineProperty(expressionValue, 'velocity', {
       get: function () {
         return property.getVelocityAtTime(property.comp.currentFrame);
-      }
+      },
     });
     expressionValue.numKeys = property.keyframes ? property.keyframes.length : 0;
     expressionValue.key = function (pos) {

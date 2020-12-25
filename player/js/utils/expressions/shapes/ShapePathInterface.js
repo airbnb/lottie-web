@@ -20,7 +20,7 @@ var ShapePathInterface = (
               prop.getValue();
             }
             return prop;
-          }
+          },
         },
         'shape': {
           get: function () {
@@ -28,7 +28,7 @@ var ShapePathInterface = (
               prop.getValue();
             }
             return prop;
-          }
+          },
         },
         '_name': { value: shape.nm },
         'ix': { value: shape.ix },

@@ -129,6 +129,6 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
   this.globalData.nm = animData.nm;
   this.globalData.compSize = {
     w: animData.w,
-    h: animData.h
+    h: animData.h,
   }
 }

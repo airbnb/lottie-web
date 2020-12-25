@@ -48,7 +48,7 @@
     // Flatten the seed string or build one from local entropy if needed.
     var shortseed = mixkey(flatten(
       options.entropy ? [seed, tostring(pool)]
-        : (seed === null) ? autoseed() : seed, 3
+        : (seed === null) ? autoseed() : seed, 3,
     ), key);
 
     // Use the seed to initialize an ARC4 generator.
@@ -101,7 +101,7 @@
       prng,
       shortseed,
       'global' in options ? options.global : (this == math),
-      options.state
+      options.state,
     );
   }
   math['seed' + rngname] = seedrandom;
@@ -232,5 +232,5 @@
 // End anonymous scope, and pass initial values.
 })(
   [],     // pool: entropy pool starts empty
-  BMMath    // math: package containing random, pow, and seedrandom
+  BMMath,    // math: package containing random, pow, and seedrandom
 );

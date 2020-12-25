@@ -352,7 +352,7 @@ var ExpressionManager = (function () {
     Object.defineProperty(thisProperty, 'value', {
       get: function () {
         return thisProperty.v
-      }
+      },
     })
     elem.comp.frameDuration = 1 / elem.comp.globalData.frameRate;
     elem.comp.displayStartTime = 0;
@@ -529,7 +529,7 @@ var ExpressionManager = (function () {
       ind -= 1;
       ob = {
         time: data.k[ind].t / elem.comp.globalData.frameRate,
-        value: []
+        value: [],
       };
       var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
 

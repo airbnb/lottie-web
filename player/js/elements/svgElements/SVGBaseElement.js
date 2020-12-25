@@ -153,5 +153,5 @@ SVGBaseElement.prototype = {
       return;
     }
     this.matteElement.setAttribute('mask', 'url(' + locationHref + '#' + id + ')');
-  }
+  },
 };

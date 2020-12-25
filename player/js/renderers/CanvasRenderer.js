@@ -18,7 +18,7 @@ function CanvasRenderer(animationItem, config) {
     frameNum: -1,
     _mdf: false,
     renderConfig: this.renderConfig,
-    currentGlobalAlpha: -1
+    currentGlobalAlpha: -1,
   };
   this.contextData = new CVContextData();
   this.elements = [];
@@ -163,7 +163,7 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
     sx:0,
     sy:0,
     tx:0,
-    ty:0
+    ty:0,
   };
   this.setupGlobalData(animData, document.body);
   this.globalData.canvasContext = this.canvasContext;

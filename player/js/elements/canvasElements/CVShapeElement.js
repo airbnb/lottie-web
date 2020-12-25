@@ -29,7 +29,7 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
     preTransforms: this.transformsManager.addTransformSequence(transforms),
     transforms: [],
     elements: [],
-    closed: data.hd === true
+    closed: data.hd === true,
   };
   var elementData = {};
   if(data.ty == 'fl' || data.ty == 'st') {
@@ -74,7 +74,7 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
 CVShapeElement.prototype.createGroupElement = function (data) {
   var elementData = {
     it: [],
-    prevViewData: []
+    prevViewData: [],
   };
   return elementData;
 };
@@ -86,8 +86,8 @@ CVShapeElement.prototype.createTransformElement = function (data) {
       _opMdf:false,
       key: this.transformsManager.getNewKey(),
       op: PropertyFactory.getProp(this, data.o, 0, 0.01, this),
-      mProps: TransformPropertyFactory.getTransformProperty(this, data, this)
-    }
+      mProps: TransformPropertyFactory.getTransformProperty(this, data, this),
+    },
   };
   return elementData;
 };
@@ -342,27 +342,27 @@ CVShapeElement.prototype.renderStyledShape = function (styledShape, shape) {
           if (i === 1) {
             shapeNodes.push({
               t: 'm',
-              p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+              p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0),
             });
           }
           shapeNodes.push({
             t: 'c',
-            pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[i], pathNodes.v[i])
+            pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[i], pathNodes.v[i]),
           });
         }
         if (len === 1) {
           shapeNodes.push({
             t: 'm',
-            p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0)
+            p: groupTransformMat.applyToPointArray(pathNodes.v[0][0], pathNodes.v[0][1], 0),
           });
         }
         if (pathNodes.c && len) {
           shapeNodes.push({
             t: 'c',
-            pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[0], pathNodes.v[0])
+            pts: groupTransformMat.applyToTriplePoints(pathNodes.o[i - 1], pathNodes.i[0], pathNodes.v[0]),
           });
           shapeNodes.push({
-            t: 'z'
+            t: 'z',
           });
         }
       }

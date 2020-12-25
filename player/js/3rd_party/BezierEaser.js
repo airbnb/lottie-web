@@ -148,7 +148,7 @@ var BezierFactory = (function () {
       } else {
         return binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
       }
-    }
+    },
   };
 
   return ob;

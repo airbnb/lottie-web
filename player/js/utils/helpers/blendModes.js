@@ -16,7 +16,7 @@ var getBlendMode = (function () {
     12:'hue',
     13:'saturation',
     14:'color',
-    15:'luminosity'
+    15:'luminosity',
   }
 
   return function (mode) {

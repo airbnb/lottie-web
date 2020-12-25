@@ -32,7 +32,7 @@ function HCameraElement(data, globalData, comp) {
     
   // TODO: find a better way to make the HCamera element to be compatible with the LayerInterface and TransformInterface.
   this.finalTransform = {
-    mProp: this
+    mProp: this,
   };
 }
 extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);

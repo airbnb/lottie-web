@@ -34,12 +34,12 @@ IShapeElement.prototype = {
   lcEnum: {
     '1': 'butt',
     '2': 'round',
-    '3': 'square'
+    '3': 'square',
   },
   ljEnum: {
     '1': 'miter',
     '2': 'round',
-    '3': 'bevel'
+    '3': 'bevel',
   },
   searchProcessedElement: function (elem) {
     var elements = this.processedElements;
@@ -67,5 +67,5 @@ IShapeElement.prototype = {
   prepareFrame: function (num) {
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
-  }
+  },
 };

@@ -246,7 +246,7 @@ var Matrix = (function () {
     return {
       x: x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],
       y: x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
-      z: x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]
+      z: x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14],
     };
     /* return {
          x: x * me.a + y * me.c + me.e,
@@ -323,7 +323,7 @@ var Matrix = (function () {
       arr = [
         x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],
         x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
-        x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14]
+        x * this.props[2] + y * this.props[6] + z * this.props[10] + this.props[14],
       ];
     }
     return arr;

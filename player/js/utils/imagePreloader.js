@@ -65,7 +65,7 @@ var ImagePreloader = (function () {
     this._elementHelper.append(img);
     var ob = {
       img: img,
-      assetData: assetData
+      assetData: assetData,
     }
     return ob;
   }
@@ -82,7 +82,7 @@ var ImagePreloader = (function () {
     img.src = path;
     var ob = {
       img: img,
-      assetData: assetData
+      assetData: assetData,
     }
     return ob;
   }

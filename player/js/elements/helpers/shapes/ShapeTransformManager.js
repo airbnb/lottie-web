@@ -16,7 +16,7 @@ ShapeTransformManager.prototype = {
       sequence = {
         transforms: [].concat(transforms),
         finalTransform: new Matrix(),
-        _mdf: false
+        _mdf: false,
       };
       this.sequences[key] = sequence;
       this.sequenceList.push(sequence);
@@ -52,5 +52,5 @@ ShapeTransformManager.prototype = {
   },
   getNewKey: function () {
     return '_' + this.transform_key_count++;
-  }
+  },
 }

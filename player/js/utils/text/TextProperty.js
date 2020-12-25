@@ -40,7 +40,7 @@ function TextProperty(elem, data) {
     finalSize:0,
     finalText:[],
     finalLineHeight: 0,
-    __complete: false
+    __complete: false,
 
   };
   this.copyData(this.currentData, this.data.d.k[0].s);

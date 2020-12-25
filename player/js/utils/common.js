@@ -153,7 +153,7 @@ function RGBtoHSV(r, g, b) {
   return [
     h,
     s,
-    v
+    v,
   ];
 }
 

@@ -121,7 +121,7 @@ if (standalone) {
   var scripts = document.getElementsByTagName('script');
   var index = scripts.length - 1;
   var myScript = scripts[index] || {
-    src: ''
+    src: '',
   };
   var queryString = myScript.src.replace(/^[^\?]+\??/, '');
   renderer = getQueryVariable('renderer');

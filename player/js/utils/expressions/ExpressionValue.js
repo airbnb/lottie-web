@@ -45,7 +45,7 @@ function ExpressionValue(elementProp, mult, type) {
   Object.defineProperty(expressionValue, 'velocity', {
     get: function () {
       return elementProp.getVelocityAtTime(elementProp.comp.currentFrame);
-    }
+    },
   });
   return expressionValue;
 };

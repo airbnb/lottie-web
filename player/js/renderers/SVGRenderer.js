@@ -43,14 +43,14 @@ function SVGRenderer(animationItem, config) {
       height: config && config.filterSize && config.filterSize.height || '100%',
       x: config && config.filterSize && config.filterSize.x || '0%',
       y: config && config.filterSize && config.filterSize.y || '0%',
-    }
+    },
   };
 
   this.globalData = {
     _mdf: false,
     frameNum: -1,
     defs: defs,
-    renderConfig: this.renderConfig
+    renderConfig: this.renderConfig,
   };
   this.elements = [];
   this.pendingElements = [];

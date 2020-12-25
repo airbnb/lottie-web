@@ -41,22 +41,22 @@ var TransformExpressionInterface = (function () {
       }
     }
     Object.defineProperty(_thisFunction, 'rotation', {
-      get: ExpressionPropertyInterface(transform.r || transform.rz)
+      get: ExpressionPropertyInterface(transform.r || transform.rz),
     });
 
     Object.defineProperty(_thisFunction, 'zRotation', {
-      get: ExpressionPropertyInterface(transform.rz || transform.r)
+      get: ExpressionPropertyInterface(transform.rz || transform.r),
     });
 
     Object.defineProperty(_thisFunction, 'xRotation', {
-      get: ExpressionPropertyInterface(transform.rx)
+      get: ExpressionPropertyInterface(transform.rx),
     });
 
     Object.defineProperty(_thisFunction, 'yRotation', {
-      get: ExpressionPropertyInterface(transform.ry)
+      get: ExpressionPropertyInterface(transform.ry),
     });
     Object.defineProperty(_thisFunction, 'scale', {
-      get: ExpressionPropertyInterface(transform.s)
+      get: ExpressionPropertyInterface(transform.s),
     });
 
     if(transform.p) {
@@ -79,39 +79,39 @@ var TransformExpressionInterface = (function () {
             _py(),
             _pz ? _pz() : 0];
         }
-      }
+      },
     });
 
     Object.defineProperty(_thisFunction, 'xPosition', {
-      get: ExpressionPropertyInterface(transform.px)
+      get: ExpressionPropertyInterface(transform.px),
     });
 
     Object.defineProperty(_thisFunction, 'yPosition', {
-      get: ExpressionPropertyInterface(transform.py)
+      get: ExpressionPropertyInterface(transform.py),
     });
 
     Object.defineProperty(_thisFunction, 'zPosition', {
-      get: ExpressionPropertyInterface(transform.pz)
+      get: ExpressionPropertyInterface(transform.pz),
     });
 
     Object.defineProperty(_thisFunction, 'anchorPoint', {
-      get: ExpressionPropertyInterface(transform.a)
+      get: ExpressionPropertyInterface(transform.a),
     });
 
     Object.defineProperty(_thisFunction, 'opacity', {
-      get: ExpressionPropertyInterface(transform.o)
+      get: ExpressionPropertyInterface(transform.o),
     });
 
     Object.defineProperty(_thisFunction, 'skew', {
-      get: ExpressionPropertyInterface(transform.sk)
+      get: ExpressionPropertyInterface(transform.sk),
     });
 
     Object.defineProperty(_thisFunction, 'skewAxis', {
-      get: ExpressionPropertyInterface(transform.sa)
+      get: ExpressionPropertyInterface(transform.sa),
     });
 
     Object.defineProperty(_thisFunction, 'orientation', {
-      get: ExpressionPropertyInterface(transform.or)
+      get: ExpressionPropertyInterface(transform.or),
     });
 
     return _thisFunction;

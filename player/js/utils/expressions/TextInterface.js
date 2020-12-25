@@ -18,7 +18,7 @@ var TextExpressionInterface = (function () {
           _sourceText.value = stringValue ? stringValue : new String(stringValue);
         }
         return _sourceText;
-      }
+      },
     });
     return _thisLayerFunction;
   };

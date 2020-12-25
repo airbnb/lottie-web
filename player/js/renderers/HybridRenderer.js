@@ -11,12 +11,12 @@ function HybridRenderer(animationItem, config) {
       height: config && config.filterSize && config.filterSize.height || '400%',
       x: config && config.filterSize && config.filterSize.x || '-100%',
       y: config && config.filterSize && config.filterSize.y || '-100%',
-    }
+    },
   };
   this.globalData = {
     _mdf: false,
     frameNum: -1,
-    renderConfig: this.renderConfig
+    renderConfig: this.renderConfig,
   };
   this.pendingElements = [];
   this.elements = [];
@@ -147,7 +147,7 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
     perspectiveElem:perspectiveElem,
     startPos: pos,
     endPos: pos,
-    type: type
+    type: type,
   };
   this.threeDElements.push(threeDContainerData);
   return threeDContainerData;

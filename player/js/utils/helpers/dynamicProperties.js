@@ -22,5 +22,5 @@ DynamicPropertyContainer.prototype = {
     this.dynamicProperties = [];
     this._mdf = false;
     this._isAnimated = false;
-  }
+  },
 }

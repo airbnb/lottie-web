@@ -30,7 +30,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     }
     theta = Math.atan2(
       path.v[i][1] - mouseCoords[1],
-      path.v[i][0] - mouseCoords[0]
+      path.v[i][0] - mouseCoords[0],
     );
 
     x = mouseCoords[0] - positions.v[i][0];
@@ -44,7 +44,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
     theta = Math.atan2(
       path.o[i][1] - mouseCoords[1],
-      path.o[i][0] - mouseCoords[0]
+      path.o[i][0] - mouseCoords[0],
     );
 
     x = mouseCoords[0] - positions.o[i][0];
@@ -58,7 +58,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
     theta = Math.atan2(
       path.i[i][1] - mouseCoords[1],
-      path.i[i][0] - mouseCoords[0]
+      path.i[i][0] - mouseCoords[0],
     );
 
     x = mouseCoords[0] - positions.i[i][0];
@@ -172,7 +172,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     v:vValues,
     o:oValues,
     i:iValues,
-    c:path.c
+    c:path.c,
   };
 }
 
@@ -203,7 +203,7 @@ MouseModifier.prototype.processShapes = function () {
               i:[],
               distV:[],
               distO:[],
-              distI:[]
+              distI:[],
             };
           }
           newPaths.push(this.processPath(shapePaths[j], localMouseCoords, this.positions[i][j]));

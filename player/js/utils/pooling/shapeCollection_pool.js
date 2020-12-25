@@ -1,7 +1,7 @@
 var shapeCollection_pool = (function () {
   var ob = {
     newShapeCollection: newShapeCollection,
-    release: release
+    release: release,
   };
 
   var _length = 0;

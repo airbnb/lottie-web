@@ -194,7 +194,7 @@
       matrix.translate(
         -anchor[0] * this.a.mult,
         -anchor[1] * this.a.mult,
-        anchor[2] * this.a.mult
+        anchor[2] * this.a.mult,
       );
     }
     if (this.appliedTransformations < 2) {
@@ -202,7 +202,7 @@
       matrix.scale(
         scale[0] * this.s.mult,
         scale[1] * this.s.mult,
-        scale[2] * this.s.mult
+        scale[2] * this.s.mult,
       );
     }
     if (this.sk && this.appliedTransformations < 3) {
@@ -233,7 +233,7 @@
         matrix.translate(
           positionX * this.px.mult,
           positionY * this.py.mult,
-          -positionZ * this.pz.mult
+          -positionZ * this.pz.mult,
         );
       } else {
         matrix.translate(positionX * this.px.mult, positionY * this.py.mult, 0);
@@ -243,7 +243,7 @@
       matrix.translate(
         position[0] * this.p.mult,
         position[1] * this.p.mult,
-        -position[2] * this.p.mult
+        -position[2] * this.p.mult,
       );
     }
     return matrix;
@@ -292,7 +292,7 @@
     prop._cachingAtTime = {
       lastFrame: initialDefaultFrame,
       lastIndex: 0,
-      value: value
+      value: value,
     };
     expressionHelpers.searchExpressions(elem, data, prop);
     if(prop.k) {
@@ -308,7 +308,7 @@
       this._cachingAtTime = {
         shapeValue: shape_pool.clone(this.pv),
         lastIndex: 0,
-        lastTime: initialDefaultFrame
+        lastTime: initialDefaultFrame,
       };
     }
         
@@ -414,7 +414,7 @@
       return this.vectorOnPath(perc, time, 'normal');
     },
     setGroupProperty: expressionHelpers.setGroupProperty,
-    getValueAtTime: expressionHelpers.getStaticValueAtTime
+    getValueAtTime: expressionHelpers.getStaticValueAtTime,
   };
   extendPrototype([ShapeExpressions], ShapePropertyConstructorFunction);
   extendPrototype([ShapeExpressions], KeyframedShapePropertyConstructorFunction);

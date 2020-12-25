@@ -162,7 +162,7 @@ SVGTextElement.prototype.sourceRectAtTime = function (time) {
       top: textBox.y,
       left: textBox.x,
       width: textBox.width,
-      height: textBox.height
+      height: textBox.height,
     };
   }
   return this.bbox;

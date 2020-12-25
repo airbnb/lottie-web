@@ -138,9 +138,9 @@ function dataFunctionManager() {
         k: [
           {
             s:documentData,
-            t:0
-          }
-        ]
+            t:0,
+          },
+        ],
       };
     }
 

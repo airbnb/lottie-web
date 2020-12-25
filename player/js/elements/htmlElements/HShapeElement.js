@@ -22,7 +22,7 @@ function HShapeElement(data, globalData, comp) {
     x:999999,
     y: -999999,
     h: 0,
-    w: 0
+    w: 0,
   };
 }
 extendPrototype([BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement, HierarchyElement, FrameElement, RenderableElement], HShapeElement);
@@ -101,7 +101,7 @@ HShapeElement.prototype.tempBoundingBox = {
   y:0,
   yMax:0,
   width:0,
-  height:0
+  height:0,
 }
 
 HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {

@@ -3,7 +3,7 @@ var segments_length_pool = (function () {
   function create() {
     return {
       lengths: [],
-      totalLength: 0
+      totalLength: 0,
     };
   }
 

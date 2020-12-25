@@ -225,7 +225,7 @@ function bezFunction() {
     getPointInSegment : getPointInSegment,
     buildBezierData : buildBezierData,
     pointOnLine2D : pointOnLine2D,
-    pointOnLine3D : pointOnLine3D
+    pointOnLine3D : pointOnLine3D,
   };
 }
 

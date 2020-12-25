@@ -34,7 +34,7 @@ var audioControllerFactory = (function () {
         return this.audioFactory(assetPath);
       } else if (Howl) {
         return new Howl({
-          src: [assetPath]
+          src: [assetPath],
         })
       } else {
         return {
@@ -70,7 +70,7 @@ var audioControllerFactory = (function () {
       for(i = 0; i < len; i += 1) {
         this.audios[i].volume(this._volume * (this._isMuted ? 0 : 1))
       }
-    }
+    },
   }
 
   return function () {
