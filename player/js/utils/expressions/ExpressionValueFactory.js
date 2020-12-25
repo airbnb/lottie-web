@@ -5,7 +5,7 @@ var ExpressionPropertyInterface = (function() {
 
     function completeProperty(expressionValue, property, type) {
         Object.defineProperty(expressionValue, 'velocity', {
-            get: function(){
+            get: function() {
                 return property.getVelocityAtTime(property.comp.currentFrame);
             }
         });

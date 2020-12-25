@@ -1,1 +1,1 @@
-function SVGEffects(){}
+function SVGEffects() {}

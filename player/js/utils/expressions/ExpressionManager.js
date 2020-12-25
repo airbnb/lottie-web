@@ -1,4 +1,4 @@
-var ExpressionManager = (function(){
+var ExpressionManager = (function() {
     'use strict';
     var ob = {};
     var Math = BMMath;
@@ -13,15 +13,15 @@ var ExpressionManager = (function(){
         return tOfV === 'number' || tOfV === 'boolean' || tOfV === 'string' || v instanceof Number;
     }
 
-    function $bm_neg(a){
+    function $bm_neg(a) {
         var tOfA = typeof a;
-        if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ){
+        if(tOfA === 'number' || tOfA === 'boolean'  || a instanceof Number ) {
             return -a;
         }
-        if($bm_isInstanceOfArray(a)){
+        if($bm_isInstanceOfArray(a)) {
             var i, lenA = a.length;
             var retArr = [];
-            for(i=0;i<lenA;i+=1){
+            for(i=0;i<lenA;i+=1) {
                 retArr[i] = -a[i];
             }
             return retArr;
@@ -38,28 +38,28 @@ var ExpressionManager = (function(){
     function sum(a,b) {
         var tOfA = typeof a;
         var tOfB = typeof b;
-        if(tOfA === 'string' || tOfB === 'string'){
+        if(tOfA === 'string' || tOfB === 'string') {
             return a + b;
         }
         if(isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
             return a + b;
         }
-        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
             a = a.slice(0);
             a[0] = a[0] + b;
             return a;
         }
-        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
             b = b.slice(0);
             b[0] = a + b[0];
             return b;
         }
-        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)) {
             
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
-            while(i<lenA || i < lenB){
-                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
+            while(i<lenA || i < lenB) {
+                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)) {
                     retArr[i] = a[i] + b[i];
                 }else{
                     retArr[i] = b[i] === undefined ? a[i] : a[i] || b[i];
@@ -84,21 +84,21 @@ var ExpressionManager = (function(){
             }
             return a - b;
         }
-        if( $bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
+        if( $bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
             a = a.slice(0);
             a[0] = a[0] - b;
             return a;
         }
-        if(isNumerable(tOfA, a) &&  $bm_isInstanceOfArray(b)){
+        if(isNumerable(tOfA, a) &&  $bm_isInstanceOfArray(b)) {
             b = b.slice(0);
             b[0] = a - b[0];
             return b;
         }
-        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)){
+        if($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)) {
             var i = 0, lenA = a.length, lenB = b.length;
             var retArr = [];
-            while(i<lenA || i < lenB){
-                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)){
+            while(i<lenA || i < lenB) {
+                if((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)) {
                     retArr[i] = a[i] - b[i];
                 }else{
                     retArr[i] = b[i] === undefined ? a[i] : a[i] || b[i];
@@ -119,18 +119,18 @@ var ExpressionManager = (function(){
         }
 
         var i, len;
-        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
             len = a.length;
             arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 arr[i] = a[i] * b;
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
             len = b.length;
             arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 arr[i] = a * b[i];
             }
             return arr;
@@ -146,18 +146,18 @@ var ExpressionManager = (function(){
             return a / b;
         }
         var i, len;
-        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)){
+        if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
             len = a.length;
             arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 arr[i] = a[i] / b;
             }
             return arr;
         }
-        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)){
+        if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
             len = b.length;
             arr = createTypedArray('float32', len);
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 arr[i] = a / b[i];
             }
             return arr;
@@ -180,7 +180,7 @@ var ExpressionManager = (function(){
     var $bm_mod = mod;
 
     function clamp(num, min, max) {
-        if(min > max){
+        if(min > max) {
             var mm = max;
             max = min;
             min = mm;
@@ -225,12 +225,12 @@ var ExpressionManager = (function(){
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
         var h, s, l = (max + min) / 2;
 
-        if(max == min){
+        if(max == min) {
             h = s = 0; // achromatic
         }else{
             var d = max - min;
             s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch(max){
+            switch(max) {
                 case r: h = (g - b) / d + (g < b ? 6 : 0); break;
                 case g: h = (b - r) / d + 2; break;
                 case b: h = (r - g) / d + 4; break;
@@ -241,7 +241,7 @@ var ExpressionManager = (function(){
         return [h, s, l,val[3]];
     }
 
-    function hue2rgb(p, q, t){
+    function hue2rgb(p, q, t) {
         if(t < 0) t += 1;
         if(t > 1) t -= 1;
         if(t < 1/6) return p + (q - p) * 6 * t;
@@ -250,14 +250,14 @@ var ExpressionManager = (function(){
         return p;
     }
 
-    function hslToRgb(val){
+    function hslToRgb(val) {
         var h = val[0];
         var s = val[1];
         var l = val[2];
 
         var r, g, b;
 
-        if(s === 0){
+        if(s === 0) {
             r = g = b = l; // achromatic
         }else{
 
@@ -271,8 +271,8 @@ var ExpressionManager = (function(){
         return [r, g , b, val[3]];
     }
 
-    function linear(t, tMin, tMax, value1, value2){
-        if(value1 === undefined || value2 === undefined){
+    function linear(t, tMin, tMax, value1, value2) {
+        if(value1 === undefined || value2 === undefined) {
             value1 = tMin;
             value2 = tMax;
             tMin = 0;
@@ -285,23 +285,23 @@ var ExpressionManager = (function(){
         }
         if(t <= tMin) {
             return value1;
-        }else if(t >= tMax){
+        }else if(t >= tMax) {
             return value2;
         }
         var perc = tMax === tMin ? 0 : (t-tMin)/(tMax-tMin);
-        if(!value1.length){
+        if(!value1.length) {
             return value1 + (value2-value1)*perc;
         }
         var i, len = value1.length;
         var arr = createTypedArray('float32', len);
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             arr[i] = value1[i] + (value2[i]-value1[i])*perc;
         }
         return arr;
     }
-    function random(min,max){
-        if(max === undefined){
-            if(min === undefined){
+    function random(min,max) {
+        if(max === undefined) {
+            if(min === undefined) {
                 min = 0;
                 max = 1;
             } else {
@@ -309,19 +309,19 @@ var ExpressionManager = (function(){
                 min = undefined;
             }
         }
-        if(max.length){
+        if(max.length) {
             var i, len = max.length;
-            if(!min){
+            if(!min) {
                 min = createTypedArray('float32', len);
             }
             var arr = createTypedArray('float32', len);
             var rnd = BMMath.random();
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 arr[i] = min[i] + rnd*(max[i]-min[i]);
             }
             return arr;
         }
-        if(min === undefined){
+        if(min === undefined) {
             min = 0;
         }
         var rndm = BMMath.random();
@@ -341,7 +341,7 @@ var ExpressionManager = (function(){
         return path;
     }
 
-    function initiateExpression(elem,data,property){
+    function initiateExpression(elem,data,property) {
         var val = data.x;
         var needsVelocity = /velocity(?![\w\d])/.test(val);
         var _needsRandom = val.indexOf('random') !== -1;
@@ -377,16 +377,16 @@ var ExpressionManager = (function(){
 
         var active = !this.data || this.data.hd !== true;
 
-        var wiggle = function wiggle(freq,amp){
+        var wiggle = function wiggle(freq,amp) {
             var i,j, len = this.pv.length ? this.pv.length : 1;
             var addedAmps = createTypedArray('float32', len);
             freq = 5;
             var iterations = Math.floor(time*freq);
             i = 0;
             j = 0;
-            while(i<iterations){
+            while(i<iterations) {
                 //var rnd = BMMath.random();
-                for(j=0;j<len;j+=1){
+                for(j=0;j<len;j+=1) {
                     addedAmps[j] += -amp + amp*2*BMMath.random();
                     //addedAmps[j] += -amp + amp*2*rnd;
                 }
@@ -396,8 +396,8 @@ var ExpressionManager = (function(){
             var periods = time*freq;
             var perc = periods - Math.floor(periods);
             var arr = createTypedArray('float32', len);
-            if(len>1){
-                for(j=0;j<len;j+=1){
+            if(len>1) {
+                for(j=0;j<len;j+=1) {
                     arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*BMMath.random())*perc;
                     //arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
                     //arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
@@ -422,11 +422,11 @@ var ExpressionManager = (function(){
             smooth = thisProperty.smooth.bind(thisProperty);
         }
 
-        function loopInDuration(type,duration){
+        function loopInDuration(type,duration) {
             return loopIn(type,duration,true);
         }
 
-        function loopOutDuration(type,duration){
+        function loopOutDuration(type,duration) {
             return loopOut(type,duration,true);
         }
 
@@ -440,27 +440,27 @@ var ExpressionManager = (function(){
 
         var comp = elem.comp.globalData.projectInterface.bind(elem.comp.globalData.projectInterface);
 
-        function lookAt(elem1,elem2){
+        function lookAt(elem1,elem2) {
             var fVec = [elem2[0]-elem1[0],elem2[1]-elem1[1],elem2[2]-elem1[2]];
             var pitch = Math.atan2(fVec[0],Math.sqrt(fVec[1]*fVec[1]+fVec[2]*fVec[2]))/degToRads;
             var yaw = -Math.atan2(fVec[1],fVec[2])/degToRads;
             return [yaw,pitch,0];
         }
 
-        function easeOut(t, tMin, tMax, val1, val2){
+        function easeOut(t, tMin, tMax, val1, val2) {
             return applyEase(easeOutBez, t, tMin, tMax, val1, val2);
         }
 
-        function easeIn(t, tMin, tMax, val1, val2){
+        function easeIn(t, tMin, tMax, val1, val2) {
             return applyEase(easeInBez, t, tMin, tMax, val1, val2);
         }
 
-        function ease(t, tMin, tMax, val1, val2){
+        function ease(t, tMin, tMax, val1, val2) {
             return applyEase(easeInOutBez, t, tMin, tMax, val1, val2);
         }
 
         function applyEase(fn, t, tMin, tMax, val1, val2) {
-            if(val1 === undefined){
+            if(val1 === undefined) {
                 val1 = tMin;
                 val2 = tMax;
             } else {
@@ -480,9 +480,9 @@ var ExpressionManager = (function(){
             }
         }
 
-        function nearestKey(time){
+        function nearestKey(time) {
             var i, len = data.k.length,index,keyTime;
-            if(!data.k.length || typeof(data.k[0]) === 'number'){
+            if(!data.k.length || typeof(data.k[0]) === 'number') {
                 index = 0;
                 keyTime = 0;
             } else {
@@ -492,13 +492,13 @@ var ExpressionManager = (function(){
                     index = 1;
                     keyTime = data.k[0].t;
                 } else {
-                    for(i=0;i<len-1;i+=1){
-                        if(time === data.k[i].t){
+                    for(i=0;i<len-1;i+=1) {
+                        if(time === data.k[i].t) {
                             index = i + 1;
                             keyTime = data.k[i].t;
                             break;
-                        }else if(time>data.k[i].t && time<data.k[i+1].t){
-                            if(time-data.k[i].t > data.k[i+1].t - time){
+                        }else if(time>data.k[i].t && time<data.k[i+1].t) {
+                            if(time-data.k[i].t > data.k[i+1].t - time) {
                                 index = i + 2;
                                 keyTime = data.k[i+1].t;
                             } else {
@@ -508,7 +508,7 @@ var ExpressionManager = (function(){
                             break;
                         }
                     }
-                    if(index === -1){
+                    if(index === -1) {
                         index = i + 1;
                         keyTime = data.k[i].t;
                     }
@@ -521,9 +521,9 @@ var ExpressionManager = (function(){
             return ob;
         }
 
-        function key(ind){
+        function key(ind) {
             var ob, i, len;
-            if(!data.k.length || typeof(data.k[0]) === 'number'){
+            if(!data.k.length || typeof(data.k[0]) === 'number') {
                 throw new Error('The property has no keyframe at index ' + ind);
             }
             ind -= 1;
@@ -534,7 +534,7 @@ var ExpressionManager = (function(){
             var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
 
             len = arr.length;
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 ob[i] = arr[i];
                 ob.value[i] = arr[i]
             }
@@ -558,7 +558,7 @@ var ExpressionManager = (function(){
             return t * fps;
         }
 
-        function seedRandom(seed){
+        function seedRandom(seed) {
             BMMath.seedrandom(randSeed + seed);
         }
 
@@ -606,7 +606,7 @@ var ExpressionManager = (function(){
             if (this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector') {
                 return value;
             }
-            if(this.propType === 'textSelector'){
+            if(this.propType === 'textSelector') {
                 textIndex = this.textIndex;
                 textTotal = this.textTotal;
                 selectorValue = this.selectorValue;

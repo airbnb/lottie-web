@@ -17,7 +17,6 @@
         "no-undef": "off",
         "indent": "off",
         "space-before-function-paren": "off",
-        "space-before-blocks": "off",
         "func-names": "off",
         "no-param-reassign": "off",
         "comma-spacing": "off",

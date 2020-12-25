@@ -10,9 +10,9 @@ var pool_factory = (function() {
 			release: release
 		};
 
-		function newElement(){
+		function newElement() {
 			var element;
-			if(_length){
+			if(_length) {
 				_length -= 1;
 				element = pool[_length];
 			} else {

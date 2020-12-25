@@ -1,10 +1,10 @@
-function IShapeElement(){
+function IShapeElement() {
 }
 
 IShapeElement.prototype = {
     addShapeToModifiers: function(data) {
         var i, len = this.shapeModifiers.length;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             this.shapeModifiers[i].addShape(data);
         }
     },
@@ -18,16 +18,16 @@ IShapeElement.prototype = {
         return false;
     },
     renderModifiers: function() {
-        if(!this.shapeModifiers.length){
+        if(!this.shapeModifiers.length) {
             return;
         }
         var i, len = this.shapes.length;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             this.shapes[i].sh.reset();
         }
 
         len = this.shapeModifiers.length;
-        for(i=len-1;i>=0;i-=1){
+        for(i=len-1;i>=0;i-=1) {
             this.shapeModifiers[i].processShapes(this._isFirstFrame);
         }
     },
@@ -41,7 +41,7 @@ IShapeElement.prototype = {
         '2': 'round',
         '3': 'bevel'
     },
-    searchProcessedElement: function(elem){
+    searchProcessedElement: function(elem) {
         var elements = this.processedElements;
         var i = 0, len = elements.length;
         while (i < len) {
@@ -52,7 +52,7 @@ IShapeElement.prototype = {
         }
         return 0;
     },
-    addProcessedElement: function(elem, pos){
+    addProcessedElement: function(elem, pos) {
         var elements = this.processedElements;
         var i = elements.length;
         while(i) {

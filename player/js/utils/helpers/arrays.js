@@ -1,5 +1,5 @@
-var createTypedArray = (function(){
-	function createRegularArray(type, len){
+var createTypedArray = (function() {
+	function createRegularArray(type, len) {
 		var i = 0, arr = [], value;
 		switch(type) {
 			case 'int16':
@@ -15,7 +15,7 @@ var createTypedArray = (function(){
 		}
 		return arr;
 	}
-	function createTypedArray(type, len){
+	function createTypedArray(type, len) {
 		if(type === 'float32') {
 			return new Float32Array(len);
 		} else if(type === 'int16') {

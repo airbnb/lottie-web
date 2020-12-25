@@ -1,15 +1,15 @@
-function SVGStrokeEffect(elem, filterManager){
+function SVGStrokeEffect(elem, filterManager) {
     this.initialized = false;
     this.filterManager = filterManager;
     this.elem = elem;
     this.paths = [];
 }
 
-SVGStrokeEffect.prototype.initialize = function(){
+SVGStrokeEffect.prototype.initialize = function() {
 
     var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
     var path,groupPath, i, len;
-    if(this.filterManager.effectElements[1].p.v === 1){
+    if(this.filterManager.effectElements[1].p.v === 1) {
         len = this.elem.maskManager.masksProperties.length;
         i = 0;
     } else {
@@ -20,12 +20,12 @@ SVGStrokeEffect.prototype.initialize = function(){
     groupPath.setAttribute('fill','none');
     groupPath.setAttribute('stroke-linecap','round');
     groupPath.setAttribute('stroke-dashoffset',1);
-    for(i;i<len;i+=1){
+    for(i;i<len;i+=1) {
         path = createNS('path');
         groupPath.appendChild(path);
         this.paths.push({p:path,m:i});
     }
-    if(this.filterManager.effectElements[10].p.v === 3){
+    if(this.filterManager.effectElements[10].p.v === 3) {
         var mask = createNS('mask');
         var id = createElementID();
         mask.setAttribute('id',id);
@@ -40,10 +40,10 @@ SVGStrokeEffect.prototype.initialize = function(){
         this.elem.layerElement.appendChild(g);
         this.masker = mask;
         groupPath.setAttribute('stroke','#fff');
-    } else if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
-        if(this.filterManager.effectElements[10].p.v === 2){
+    } else if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
+        if(this.filterManager.effectElements[10].p.v === 2) {
             elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
-            while(elemChildren.length){
+            while(elemChildren.length) {
                 this.elem.layerElement.removeChild(elemChildren[0]);
             }
         }
@@ -55,24 +55,24 @@ SVGStrokeEffect.prototype.initialize = function(){
     this.pathMasker = groupPath;
 };
 
-SVGStrokeEffect.prototype.renderFrame = function(forceRender){
-    if(!this.initialized){
+SVGStrokeEffect.prototype.renderFrame = function(forceRender) {
+    if(!this.initialized) {
         this.initialize();
     }
     var i, len = this.paths.length;
     var mask, path;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         if(this.paths[i].m === -1) {
             continue;
         }
         mask = this.elem.maskManager.viewData[this.paths[i].m];
         path = this.paths[i].p;
-        if(forceRender || this.filterManager._mdf || mask.prop._mdf){
+        if(forceRender || this.filterManager._mdf || mask.prop._mdf) {
             path.setAttribute('d',mask.lastPath);
         }
-        if(forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf){
+        if(forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf) {
             var dasharrayValue;
-            if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100){
+            if(this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100) {
                 var s = Math.min(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
                 var e = Math.max(this.filterManager.effectElements[7].p.v,this.filterManager.effectElements[8].p.v)/100;
                 var l = path.getTotalLength();
@@ -81,7 +81,7 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
                 var segment = 1+this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100;
                 var units = Math.floor(lineLength/segment);
                 var j;
-                for(j=0;j<units;j+=1){
+                for(j=0;j<units;j+=1) {
                     dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v*2*this.filterManager.effectElements[9].p.v/100 + ' ';
                 }
                 dasharrayValue += '0 ' + l*10 + ' 0 0';
@@ -91,15 +91,15 @@ SVGStrokeEffect.prototype.renderFrame = function(forceRender){
             path.setAttribute('stroke-dasharray',dasharrayValue);
         }
     }
-    if(forceRender || this.filterManager.effectElements[4].p._mdf){
+    if(forceRender || this.filterManager.effectElements[4].p._mdf) {
         this.pathMasker.setAttribute('stroke-width',this.filterManager.effectElements[4].p.v*2);
     }
     
-    if(forceRender || this.filterManager.effectElements[6].p._mdf){
+    if(forceRender || this.filterManager.effectElements[6].p._mdf) {
         this.pathMasker.setAttribute('opacity',this.filterManager.effectElements[6].p.v);
     }
-    if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2){
-        if(forceRender || this.filterManager.effectElements[3].p._mdf){
+    if(this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
+        if(forceRender || this.filterManager.effectElements[3].p._mdf) {
             var color = this.filterManager.effectElements[3].p.v;
             this.pathMasker.setAttribute('stroke','rgb('+bm_floor(color[0]*255)+','+bm_floor(color[1]*255)+','+bm_floor(color[2]*255)+')');
         }

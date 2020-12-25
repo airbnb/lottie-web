@@ -28,10 +28,10 @@ var SVGElementsRenderer = (function() {
     }
 
     function renderContentTransform(styleData, itemData, isFirstFrame) {
-        if(isFirstFrame || itemData.transform.op._mdf){
+        if(isFirstFrame || itemData.transform.op._mdf) {
             itemData.transform.container.setAttribute('opacity',itemData.transform.op.v);
         }
-        if(isFirstFrame || itemData.transform.mProps._mdf){
+        if(isFirstFrame || itemData.transform.mProps._mdf) {
             itemData.transform.container.setAttribute('transform',itemData.transform.mProps.v.to2dCSS());
         }
     }
@@ -40,9 +40,9 @@ var SVGElementsRenderer = (function() {
         var j, jLen,pathStringTransformed,redraw,pathNodes,l, lLen = itemData.styles.length;
         var lvl = itemData.lvl;
         var paths, mat, props, iterations, k;
-        for(l=0;l<lLen;l+=1){
+        for(l=0;l<lLen;l+=1) {
             redraw = itemData.sh._mdf || isFirstFrame;
-            if(itemData.styles[l].lvl < lvl){
+            if(itemData.styles[l].lvl < lvl) {
                 mat = _matrixHelper.reset();
                 iterations = lvl - itemData.styles[l].lvl;
                 k = itemData.transformers.length-1;
@@ -66,11 +66,11 @@ var SVGElementsRenderer = (function() {
             }
             paths = itemData.sh.paths;
             jLen = paths._length;
-            if(redraw){
+            if(redraw) {
                 pathStringTransformed = '';
-                for(j=0;j<jLen;j+=1){
+                for(j=0;j<jLen;j+=1) {
                     pathNodes = paths.shapes[j];
-                    if(pathNodes && pathNodes._length){
+                    if(pathNodes && pathNodes._length) {
                         pathStringTransformed += buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);
                     }
                 }
@@ -83,13 +83,13 @@ var SVGElementsRenderer = (function() {
         }
     }
 
-    function renderFill (styleData,itemData, isFirstFrame){
+    function renderFill (styleData,itemData, isFirstFrame) {
         var styleElem = itemData.style;
 
-        if(itemData.c._mdf || isFirstFrame){
+        if(itemData.c._mdf || isFirstFrame) {
             styleElem.pElem.setAttribute('fill','rgb('+bm_floor(itemData.c.v[0])+','+bm_floor(itemData.c.v[1])+','+bm_floor(itemData.c.v[2])+')');
         }
-        if(itemData.o._mdf || isFirstFrame){
+        if(itemData.o._mdf || isFirstFrame) {
             styleElem.pElem.setAttribute('fill-opacity',itemData.o.v);
         }
     };
@@ -123,7 +123,7 @@ var SVGElementsRenderer = (function() {
             stops = itemData.cst;
             var cValues = itemData.g.c;
             len = stops.length;
-            for (i = 0; i < len; i += 1){
+            for (i = 0; i < len; i += 1) {
                 stop = stops[i];
                 stop.setAttribute('offset', cValues[i * 4] + '%');
                 stop.setAttribute('stop-color','rgb('+ cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ','+cValues[i * 4 + 3] + ')');
@@ -159,7 +159,7 @@ var SVGElementsRenderer = (function() {
             if (itemData.s._mdf || itemData.e._mdf || isFirstFrame) {
                 rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
                 gfill.setAttribute('r', rad);
-                if(hasOpacity && !itemData.g._collapsable){
+                if(hasOpacity && !itemData.g._collapsable) {
                     itemData.of.setAttribute('r', rad);
                 }
             }
@@ -191,15 +191,15 @@ var SVGElementsRenderer = (function() {
             styleElem.pElem.setAttribute('stroke-dasharray', d.dashStr);
             styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
         }
-        if(itemData.c && (itemData.c._mdf || isFirstFrame)){
+        if(itemData.c && (itemData.c._mdf || isFirstFrame)) {
             styleElem.pElem.setAttribute('stroke','rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
         }
-        if(itemData.o._mdf || isFirstFrame){
+        if(itemData.o._mdf || isFirstFrame) {
             styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);
         }
-        if(itemData.w._mdf || isFirstFrame){
+        if(itemData.w._mdf || isFirstFrame) {
             styleElem.pElem.setAttribute('stroke-width', itemData.w.v);
-            if(styleElem.msElem){
+            if(styleElem.msElem) {
                 styleElem.msElem.setAttribute('stroke-width', itemData.w.v);
             }
         }

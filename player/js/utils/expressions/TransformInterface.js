@@ -1,7 +1,7 @@
-var TransformExpressionInterface = (function (){
-    return function(transform){
-        function _thisFunction(name){
-            switch(name){
+var TransformExpressionInterface = (function () {
+    return function(transform) {
+        function _thisFunction(name) {
+            switch(name) {
                 case 'scale':
                 case 'Scale':
                 case 'ADBE Scale':

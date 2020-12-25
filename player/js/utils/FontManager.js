@@ -1,4 +1,4 @@
-var FontManager = (function(){
+var FontManager = (function() {
 
     var maxWaitingTime = 5000;
     var emptyChar = {
@@ -24,7 +24,7 @@ var FontManager = (function(){
         return enabledFamilies.join(',');
     }
 
-    function setUpNode(font, family){
+    function setUpNode(font, family) {
         var parentNode = createTag('span');
         parentNode.style.fontFamily    = family;
         var node = createTag('span');
@@ -54,35 +54,35 @@ var FontManager = (function(){
         var i, len = this.fonts.length;
         var node, w;
         var loadedCount = len;
-        for(i=0;i<len; i+= 1){
-            if(this.fonts[i].loaded){
+        for(i=0;i<len; i+= 1) {
+            if(this.fonts[i].loaded) {
                 loadedCount -= 1;
                 continue;
             }
-            if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0){
+            if(this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0) {
                 this.fonts[i].loaded = true;
             } else{
                 node = this.fonts[i].monoCase.node;
                 w = this.fonts[i].monoCase.w;
-                if(node.offsetWidth !== w){
+                if(node.offsetWidth !== w) {
                     loadedCount -= 1;
                     this.fonts[i].loaded = true;
                 }else{
                     node = this.fonts[i].sansCase.node;
                     w = this.fonts[i].sansCase.w;
-                    if(node.offsetWidth !== w){
+                    if(node.offsetWidth !== w) {
                         loadedCount -= 1;
                         this.fonts[i].loaded = true;
                     }
                 }
-                if(this.fonts[i].loaded){
+                if(this.fonts[i].loaded) {
                     this.fonts[i].sansCase.parent.parentNode.removeChild(this.fonts[i].sansCase.parent);
                     this.fonts[i].monoCase.parent.parentNode.removeChild(this.fonts[i].monoCase.parent);
                 }
             }
         }
 
-        if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
+        if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime) {
             setTimeout(this.checkLoadedFontsBinded, 20);
         }else{
             setTimeout(this.setIsLoadedBinded, 10);
@@ -90,7 +90,7 @@ var FontManager = (function(){
         }
     }
 
-    function createHelper(def, fontData){
+    function createHelper(def, fontData) {
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
         //tHelper.style.fontFamily = fontData.fFamily;
@@ -98,7 +98,7 @@ var FontManager = (function(){
         tHelper.setAttribute('font-style', fontData.fStyle);
         tHelper.setAttribute('font-weight', fontData.fWeight);
         tHelper.textContent = '1';
-        if(fontData.fClass){
+        if(fontData.fClass) {
             tHelper.style.fontFamily = 'inherit';
             tHelper.setAttribute('class', fontData.fClass);
         } else {
@@ -111,12 +111,12 @@ var FontManager = (function(){
         return tHelper;
     }
 
-    function addFonts(fontData, defs){
-        if(!fontData){
+    function addFonts(fontData, defs) {
+        if(!fontData) {
             this.isLoaded = true;
             return;
         }
-        if(this.chars){
+        if(this.chars) {
             this.isLoaded = true;
             this.fonts = fontData.list;
             return;
@@ -126,7 +126,7 @@ var FontManager = (function(){
         var fontArr = fontData.list;
         var i, len = fontArr.length;
         var _pendingFonts = len;
-        for(i=0; i<len; i+= 1){
+        for(i=0; i<len; i+= 1) {
             var shouldLoadFont = true;
             var loadedSelector;
             var j;
@@ -136,7 +136,7 @@ var FontManager = (function(){
             if(!fontArr[i].fPath) {
                 fontArr[i].loaded = true;
                 _pendingFonts -= 1;
-            }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
+            }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3) {
                 loadedSelector = document.querySelectorAll('style[f-forigin="p"][f-family="'+ fontArr[i].fFamily +'"], style[f-origin="3"][f-family="'+ fontArr[i].fFamily +'"]');
 
                 if (loadedSelector.length > 0) {
@@ -152,7 +152,7 @@ var FontManager = (function(){
                     s.innerText = '@font-face {' + 'font-family: '+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                     defs.appendChild(s);
                 }
-            } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
+            } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1) {
                 loadedSelector = document.querySelectorAll('link[f-forigin="g"], link[f-origin="1"]');
 
                 for (j = 0; j < loadedSelector.length; j++) {
@@ -171,7 +171,7 @@ var FontManager = (function(){
                     l.href = fontArr[i].fPath;
                     document.body.appendChild(l);
                 }
-            } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
+            } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2) {
                 loadedSelector = document.querySelectorAll('script[f-forigin="t"], script[f-origin="2"]');
 
                 for (j = 0; j < loadedSelector.length; j++) {
@@ -203,35 +203,35 @@ var FontManager = (function(){
         }
     }
 
-    function addChars(chars){
-        if(!chars){
+    function addChars(chars) {
+        if(!chars) {
             return;
         }
-        if(!this.chars){
+        if(!this.chars) {
             this.chars = [];
         }
         var i, len = chars.length;
         var j, jLen = this.chars.length, found;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             j = 0;
             found = false;
-            while(j<jLen){
-                if(this.chars[j].style === chars[i].style && this.chars[j].fFamily === chars[i].fFamily && this.chars[j].ch === chars[i].ch){
+            while(j<jLen) {
+                if(this.chars[j].style === chars[i].style && this.chars[j].fFamily === chars[i].fFamily && this.chars[j].ch === chars[i].ch) {
                     found = true;
                 }
                 j += 1;
             }
-            if(!found){
+            if(!found) {
                 this.chars.push(chars[i]);
                 jLen += 1;
             }
         }
     }
 
-    function getCharData(char, style, font){
+    function getCharData(char, style, font) {
         var i = 0, len = this.chars.length;
         while( i < len) {
-            if(this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font){
+            if(this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font) {
 
                 return this.chars[i];
             }
@@ -271,9 +271,9 @@ var FontManager = (function(){
         return fontData.cache[index + 1] * size;
     }
 
-    function getFontByName(name){
+    function getFontByName(name) {
         var i = 0, len = this.fonts.length;
-        while(i<len){
+        while(i<len) {
             if(this.fonts[i].fName === name) {
                 return this.fonts[i];
             }
@@ -290,7 +290,7 @@ var FontManager = (function(){
         this.isLoaded = true
     }
 
-    var Font = function(){
+    var Font = function() {
         this.fonts = [];
         this.chars = null;
         this.typekitLoaded = 0;

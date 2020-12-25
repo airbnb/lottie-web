@@ -1,4 +1,4 @@
-function ICompElement(){}
+function ICompElement() {}
 
 extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement], ICompElement);
 
@@ -11,7 +11,7 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     this.initRendererElement();
     this.createContainerElements();
     this.createRenderableComponents();
-    if(this.data.xt || !globalData.progressiveLoad){
+    if(this.data.xt || !globalData.progressiveLoad) {
         this.buildAllItems();
     }
     this.hide();
@@ -29,17 +29,17 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
     }
 };*/
 
-ICompElement.prototype.prepareFrame = function(num){
+ICompElement.prototype.prepareFrame = function(num) {
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
-    if(!this.isInRange && !this.data.xt){
+    if(!this.isInRange && !this.data.xt) {
         return;
     }
 
     if (!this.tm._placeholder) {
         var timeRemapped = this.tm.v;
-        if(timeRemapped === this.data.op){
+        if(timeRemapped === this.data.op) {
             timeRemapped = this.data.op - 1;
         }
         this.renderedFrame = timeRemapped;
@@ -47,12 +47,12 @@ ICompElement.prototype.prepareFrame = function(num){
         this.renderedFrame = num/this.data.sr;
     }
     var i,len = this.elements.length;
-    if(!this.completeLayers){
+    if(!this.completeLayers) {
         this.checkLayers(this.renderedFrame);
     }
     //This iteration needs to be backwards because of how expressions connect between each other
-    for( i = len - 1; i >= 0; i -= 1 ){
-        if(this.completeLayers || this.elements[i]){
+    for( i = len - 1; i >= 0; i -= 1 ) {
+        if(this.completeLayers || this.elements[i]) {
             this.elements[i].prepareFrame(this.renderedFrame - this.layers[i].st);
             if(this.elements[i]._mdf) {
                 this._mdf = true;
@@ -63,31 +63,31 @@ ICompElement.prototype.prepareFrame = function(num){
 
 ICompElement.prototype.renderInnerContent = function() {
     var i,len = this.layers.length;
-    for( i = 0; i < len; i += 1 ){
-        if(this.completeLayers || this.elements[i]){
+    for( i = 0; i < len; i += 1 ) {
+        if(this.completeLayers || this.elements[i]) {
             this.elements[i].renderFrame();
         }
     }
 };
 
-ICompElement.prototype.setElements = function(elems){
+ICompElement.prototype.setElements = function(elems) {
     this.elements = elems;
 };
 
-ICompElement.prototype.getElements = function(){
+ICompElement.prototype.getElements = function() {
     return this.elements;
 };
 
-ICompElement.prototype.destroyElements = function(){
+ICompElement.prototype.destroyElements = function() {
     var i,len = this.layers.length;
-    for( i = 0; i < len; i+=1 ){
-        if(this.elements[i]){
+    for( i = 0; i < len; i+=1 ) {
+        if(this.elements[i]) {
             this.elements[i].destroy();
         }
     }
 };
 
-ICompElement.prototype.destroy = function(){
+ICompElement.prototype.destroy = function() {
     this.destroyElements();
     this.destroyBaseElement();
 };

@@ -1,9 +1,9 @@
-var Expressions = (function(){
+var Expressions = (function() {
     var ob = {};
     ob.initExpressions = initExpressions;
 
 
-    function initExpressions(animation){
+    function initExpressions(animation) {
 
         var stackCount = 0;
         var registers = [];

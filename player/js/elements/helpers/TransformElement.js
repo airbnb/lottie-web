@@ -1,4 +1,4 @@
-function TransformElement(){}
+function TransformElement() {}
 
 TransformElement.prototype = {
     initTransform: function() {

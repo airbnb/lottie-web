@@ -1,25 +1,25 @@
-function MouseModifier(){}
+function MouseModifier() {}
 extendPrototype([ShapeModifier],MouseModifier);
-MouseModifier.prototype.processKeys = function(forceRender){
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
+MouseModifier.prototype.processKeys = function(forceRender) {
+    if(this.elem.globalData.frameId === this.frameId && !forceRender) {
         return;
     }
     this._mdf = true;
 
 };
 
-MouseModifier.prototype.addShapeToModifier = function(){
+MouseModifier.prototype.addShapeToModifier = function() {
     this.positions.push([]);
 };
 
-MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
+MouseModifier.prototype.processPath = function(path, mouseCoords, positions) {
     var i, len = path.v.length;
     var vValues = [],oValues = [],iValues = [];
     var dist;
     var theta, x,y;
     //// OPTION A
-    for(i=0;i<len;i+=1){
-        if(!positions.v[i]){
+    for(i=0;i<len;i+=1) {
+        if(!positions.v[i]) {
             positions.v[i] = [path.v[i][0],path.v[i][1]];
             positions.o[i] = [path.o[i][0],path.o[i][1]];
             positions.i[i] = [path.i[i][0],path.i[i][1]];
@@ -176,27 +176,27 @@ MouseModifier.prototype.processPath = function(path, mouseCoords, positions){
     };
 }
 
-MouseModifier.prototype.processShapes = function(){
+MouseModifier.prototype.processShapes = function() {
     var mouseX = this.elem.globalData.mouseX;
     var mouseY = this.elem.globalData.mouseY;
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
 
-    if(mouseX){
+    if(mouseX) {
         var localMouseCoords = this.elem.globalToLocal([mouseX,mouseY,0]);
 
         var shapeData, newPaths = [];
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             shapeData = this.shapes[i];
-            if(!shapeData.shape._mdf && !this._mdf){
+            if(!shapeData.shape._mdf && !this._mdf) {
                 shapeData.shape.paths = shapeData.last;
             } else {
                 shapeData.shape._mdf = true;
                 shapePaths = shapeData.shape.paths;
                 jLen = shapePaths.length;
-                for(j=0;j<jLen;j+=1){
-                    if(!this.positions[i][j]){
+                for(j=0;j<jLen;j+=1) {
+                    if(!this.positions[i][j]) {
                         this.positions[i][j] = {
                             v:[],
                             o:[],
@@ -217,7 +217,7 @@ MouseModifier.prototype.processShapes = function(){
 
 }
 
-MouseModifier.prototype.initModifierProperties = function(elem,data){
+MouseModifier.prototype.initModifierProperties = function(elem,data) {
     this.getValue = this.processKeys;
     this.data = data;
     this.positions = [];

@@ -1,4 +1,4 @@
-function HImageElement(data,globalData,comp){
+function HImageElement(data,globalData,comp) {
     this.assetData = globalData.getAssetData(data.refId);
     this.initElement(data,globalData,comp);
 }
@@ -6,11 +6,11 @@ function HImageElement(data,globalData,comp){
 extendPrototype([BaseElement,TransformElement,HBaseElement,HSolidElement,HierarchyElement,FrameElement,RenderableElement], HImageElement);
 
 
-HImageElement.prototype.createContent = function(){
+HImageElement.prototype.createContent = function() {
     var assetPath = this.globalData.getAssetsPath(this.assetData);
     var img = new Image();
 
-    if(this.data.hasMask){
+    if(this.data.hasMask) {
         this.imageElem = createNS('image');
         this.imageElem.setAttribute('width',this.assetData.w+'px');
         this.imageElem.setAttribute('height',this.assetData.h+'px');
@@ -23,7 +23,7 @@ HImageElement.prototype.createContent = function(){
     }
     img.crossOrigin = 'anonymous';
     img.src = assetPath;
-    if(this.data.ln){
+    if(this.data.ln) {
         this.baseElement.setAttribute('id',this.data.ln);
     }
 };

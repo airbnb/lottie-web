@@ -1,11 +1,11 @@
-function HSolidElement(data,globalData,comp){
+function HSolidElement(data,globalData,comp) {
     this.initElement(data,globalData,comp);
 }
 extendPrototype([BaseElement,TransformElement,HBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], HSolidElement);
 
-HSolidElement.prototype.createContent = function(){
+HSolidElement.prototype.createContent = function() {
     var rect;
-    if(this.data.hasMask){
+    if(this.data.hasMask) {
         rect = createNS('rect');
         rect.setAttribute('width',this.data.sw);
         rect.setAttribute('height',this.data.sh);

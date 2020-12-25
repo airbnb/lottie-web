@@ -1,11 +1,11 @@
-function SVGBaseElement(){
+function SVGBaseElement() {
 }
 
 SVGBaseElement.prototype = {
     initRendererElement: function() {
         this.layerElement = createNS('g');
     },
-    createContainerElements: function(){
+    createContainerElements: function() {
         this.matteElement = createNS('g');
         this.transformedElement = this.layerElement;
         this.maskedElement = this.layerElement;

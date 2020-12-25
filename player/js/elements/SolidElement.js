@@ -1,9 +1,9 @@
-function ISolidElement(data,globalData,comp){
+function ISolidElement(data,globalData,comp) {
     this.initElement(data,globalData,comp);
 }
 extendPrototype([IImageElement], ISolidElement);
 
-ISolidElement.prototype.createContent = function(){
+ISolidElement.prototype.createContent = function() {
 
     var rect = createNS('rect');
     ////rect.style.width = this.data.sw;

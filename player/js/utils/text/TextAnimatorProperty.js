@@ -1,4 +1,4 @@
-function TextAnimatorProperty(textData, renderType, elem){
+function TextAnimatorProperty(textData, renderType, elem) {
     this._isFirstFrame = true;
 	this._hasMaskedPath = false;
 	this._frameId = -1;
@@ -16,14 +16,14 @@ function TextAnimatorProperty(textData, renderType, elem){
 
 }
 
-TextAnimatorProperty.prototype.searchProperties = function(){
+TextAnimatorProperty.prototype.searchProperties = function() {
     var i, len = this._textData.a.length, animatorProps;
     var getProp = PropertyFactory.getProp;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         animatorProps = this._textData.a[i];
         this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this);
     }
-    if(this._textData.p && 'm' in this._textData.p){
+    if(this._textData.p && 'm' in this._textData.p) {
         this._pathData = {
             f: getProp(this._elem,this._textData.p.f,0,0,this),
             l: getProp(this._elem,this._textData.p.l,0,0,this),
@@ -37,7 +37,7 @@ TextAnimatorProperty.prototype.searchProperties = function(){
     this._moreOptions.alignment = getProp(this._elem,this._textData.m.a,1,0,this);
 };
 
-TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag){
+TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChangedFlag) {
     this.lettersChangedFlag = lettersChangedFlag;
     if(!this._mdf && !this._isFirstFrame && !lettersChangedFlag && (!this._hasMaskedPath || !this._pathData.m._mdf)) {
         return;
@@ -55,9 +55,9 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     var letters = documentData.l, pathInfo, currentLength, currentPoint, segmentLength, flag, pointInd, segmentInd, prevPoint, points, segments, partialLength, totalLength, perc, tanAngle, mask;
     if(this._hasMaskedPath) {
         mask = this._pathData.m;
-        if(!this._pathData.n || this._pathData._mdf){
+        if(!this._pathData.n || this._pathData._mdf) {
             var paths = mask.v;
-            if(this._pathData.r){
+            if(this._pathData.r) {
                 paths = paths.reverse();
             }
             // TODO: release bezier data cached from previous pathInfo: this._pathData.pi
@@ -213,8 +213,8 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             letterP = this.defaultPropsArray;
         }else{
             if(this._hasMaskedPath) {
-                if(currentLine !== letters[i].line){
-                    switch(documentData.j){
+                if(currentLine !== letters[i].line) {
+                    switch(documentData.j) {
                         case 1:
                             currentLength += totalLength - documentData.lineWidths[letters[i].line];
                             break;
@@ -238,7 +238,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                     if (animatorProps.p.propType) {
                         animatorSelector = animators[j].s;
                         mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
-                        if(mult.length){
+                        if(mult.length) {
                             animatorOffset += animatorProps.p.v[0] * mult[0];
                         } else{
                             animatorOffset += animatorProps.p.v[0] * mult;
@@ -248,7 +248,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                     if (animatorProps.a.propType) {
                         animatorSelector = animators[j].s;
                         mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
-                        if(mult.length){
+                        if(mult.length) {
                             animatorOffset += animatorProps.a.v[0] * mult[0];
                         } else{
                             animatorOffset += animatorProps.a.v[0] * mult;
@@ -301,7 +301,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             }
 
             lineLength += letters[i].l/2;
-            for(j=0;j<jLen;j+=1){
+            for(j=0;j<jLen;j+=1) {
                 animatorProps = animators[j].a;
                 if (animatorProps.t.propType) {
                     animatorSelector = animators[j].s;
@@ -329,7 +329,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 sw = documentData.sw || 0;
             }
             if(documentData.strokeColorAnim) {
-                if(documentData.sc){
+                if(documentData.sc) {
                     sc = [documentData.sc[0], documentData.sc[1], documentData.sc[2]];
                 }else{
                     sc = [0,0,0];
@@ -338,25 +338,25 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
             if(documentData.fillColorAnim && documentData.fc) {
                 fc = [documentData.fc[0], documentData.fc[1], documentData.fc[2]];
             }
-            for(j=0;j<jLen;j+=1){
+            for(j=0;j<jLen;j+=1) {
                 animatorProps = animators[j].a;
                 if (animatorProps.a.propType) {
                     animatorSelector = animators[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
 
-                    if(mult.length){
+                    if(mult.length) {
                         matrixHelper.translate(-animatorProps.a.v[0]*mult[0], -animatorProps.a.v[1]*mult[1], animatorProps.a.v[2]*mult[2]);
                     } else {
                         matrixHelper.translate(-animatorProps.a.v[0]*mult, -animatorProps.a.v[1]*mult, animatorProps.a.v[2]*mult);
                     }
                 }
             }
-            for(j=0;j<jLen;j+=1){
+            for(j=0;j<jLen;j+=1) {
                 animatorProps = animators[j].a;
                 if (animatorProps.s.propType) {
                     animatorSelector = animators[j].s;
                     mult = animatorSelector.getMult(letters[i].anIndexes[j],textData.a[j].s.totalChars);
-                    if(mult.length){
+                    if(mult.length) {
                         matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult[0]),1+((animatorProps.s.v[1]-1)*mult[1]),1);
                     } else {
                         matrixHelper.scale(1+((animatorProps.s.v[0]-1)*mult),1+((animatorProps.s.v[1]-1)*mult),1);
@@ -411,7 +411,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                     }
                 }
                 if (documentData.strokeColorAnim && animatorProps.sc.propType) {
-                    for(k=0;k<3;k+=1){
+                    for(k=0;k<3;k+=1) {
                         if(mult.length) {
                             sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k])*mult[0];
                         } else {
@@ -420,8 +420,8 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                     }
                 }
                 if (documentData.fillColorAnim && documentData.fc) {
-                    if(animatorProps.fc.propType){
-                        for(k=0;k<3;k+=1){
+                    if(animatorProps.fc.propType) {
+                        for(k=0;k<3;k+=1) {
                             if(mult.length) {
                                 fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k])*mult[0];
                             } else {
@@ -429,21 +429,21 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                             }
                         }
                     }
-                    if(animatorProps.fh.propType){
+                    if(animatorProps.fh.propType) {
                         if(mult.length) {
                             fc = addHueToRGB(fc,animatorProps.fh.v*mult[0]);
                         } else {
                             fc = addHueToRGB(fc,animatorProps.fh.v*mult);
                         }
                     }
-                    if(animatorProps.fs.propType){
+                    if(animatorProps.fs.propType) {
                         if(mult.length) {
                             fc = addSaturationToRGB(fc,animatorProps.fs.v*mult[0]);
                         } else {
                             fc = addSaturationToRGB(fc,animatorProps.fs.v*mult);
                         }
                     }
-                    if(animatorProps.fb.propType){
+                    if(animatorProps.fb.propType) {
                         if(mult.length) {
                             fc = addBrightnessToRGB(fc,animatorProps.fb.v*mult[0]);
                         } else {
@@ -453,7 +453,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 }
             }
 
-            for(j=0;j<jLen;j+=1){
+            for(j=0;j<jLen;j+=1) {
                 animatorProps = animators[j].a;
 
                 if (animatorProps.p.propType) {
@@ -475,13 +475,13 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                     }
                 }
             }
-            if(documentData.strokeWidthAnim){
+            if(documentData.strokeWidthAnim) {
                 letterSw = sw < 0 ? 0 : sw;
             }
-            if(documentData.strokeColorAnim){
+            if(documentData.strokeColorAnim) {
                 letterSc = 'rgb('+Math.round(sc[0]*255)+','+Math.round(sc[1]*255)+','+Math.round(sc[2]*255)+')';
             }
-            if(documentData.fillColorAnim && documentData.fc){
+            if(documentData.fillColorAnim && documentData.fc) {
                 letterFc = 'rgb('+Math.round(fc[0]*255)+','+Math.round(fc[1]*255)+','+Math.round(fc[2]*255)+')';
             }
 
@@ -499,7 +499,7 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 }
                 matrixHelper.translate(xPathPos, yPathPos, 0);
                 currentLength -= alignment[0]*letters[i].an/200;
-                if(letters[i+1] && ind !== letters[i+1].ind){
+                if(letters[i+1] && ind !== letters[i+1].ind) {
                     currentLength += letters[i].an / 2;
                     currentLength += documentData.tr/1000*documentData.finalSize;
                 }
@@ -507,11 +507,11 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
 
                 matrixHelper.translate(xPos,yPos,0);
 
-                if(documentData.ps){
+                if(documentData.ps) {
                     //matrixHelper.translate(documentData.ps[0],documentData.ps[1],0);
                     matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
                 }
-                switch(documentData.j){
+                switch(documentData.j) {
                     case 1:
                         matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]),0,0);
                         break;
@@ -524,9 +524,9 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
                 matrixHelper.translate(alignment[0]*letters[i].an/200,alignment[1]*yOff/100,0);
                 xPos += letters[i].l + documentData.tr/1000*documentData.finalSize;
             }
-            if(renderType === 'html'){
+            if(renderType === 'html') {
                 letterM = matrixHelper.toCSS();
-            }else if(renderType === 'svg'){
+            }else if(renderType === 'svg') {
                 letterM = matrixHelper.to2dCSS();
             }else{
                 letterP = [matrixHelper.props[0],matrixHelper.props[1],matrixHelper.props[2],matrixHelper.props[3],matrixHelper.props[4],matrixHelper.props[5],matrixHelper.props[6],matrixHelper.props[7],matrixHelper.props[8],matrixHelper.props[9],matrixHelper.props[10],matrixHelper.props[11],matrixHelper.props[12],matrixHelper.props[13],matrixHelper.props[14],matrixHelper.props[15]];
@@ -546,8 +546,8 @@ TextAnimatorProperty.prototype.getMeasures = function(documentData, lettersChang
     }
 };
 
-TextAnimatorProperty.prototype.getValue = function(){
-	if(this._elem.globalData.frameId === this._frameId){
+TextAnimatorProperty.prototype.getValue = function() {
+	if(this._elem.globalData.frameId === this._frameId) {
         return;
     }
     this._frameId = this._elem.globalData.frameId;

@@ -1,9 +1,9 @@
-var TextSelectorProp = (function(){
+var TextSelectorProp = (function() {
     var max = Math.max;
     var min = Math.min;
     var floor = Math.floor;
 
-    function TextSelectorProp(elem,data){
+    function TextSelectorProp(elem,data) {
         this._currentTextLength = -1;
         this.k = false;
         this.data = data;
@@ -13,7 +13,7 @@ var TextSelectorProp = (function(){
         this.finalE = 0;
         this.initDynamicPropertyContainer(elem);
         this.s = PropertyFactory.getProp(elem,data.s || {k:0},0,0,this);
-        if('e' in data){
+        if('e' in data) {
             this.e = PropertyFactory.getProp(elem,data.e,0,0,this);
         }else{
             this.e = {v:100};
@@ -22,7 +22,7 @@ var TextSelectorProp = (function(){
         this.xe = PropertyFactory.getProp(elem,data.xe || {k:0},0,0,this);
         this.ne = PropertyFactory.getProp(elem,data.ne || {k:0},0,0,this);
         this.a = PropertyFactory.getProp(elem,data.a,0,0.01,this);
-        if(!this.dynamicProperties.length){
+        if(!this.dynamicProperties.length) {
             this.getValue();
         }
     }
@@ -55,7 +55,7 @@ var TextSelectorProp = (function(){
             var s = this.finalS;
             var e = this.finalE;
             var type = this.data.sh;
-            if (type === 2){
+            if (type === 2) {
                 if (e === s) {
                     mult = ind >= e ? 1 : 0;
                 } else {
@@ -83,7 +83,7 @@ var TextSelectorProp = (function(){
                 }
                 mult = easer(mult);
             } else if (type === 5) {
-                if (e === s){
+                if (e === s) {
                     mult = 0;
                 } else {
                     var tot = e - s;
@@ -96,7 +96,7 @@ var TextSelectorProp = (function(){
                 }
                 mult = easer(mult);
             } else if (type === 6) {
-                if (e === s){
+                if (e === s) {
                     mult = 0;
                 } else {
                     ind = min(max(0, ind + 0.5 - s), e - s);
@@ -126,7 +126,7 @@ var TextSelectorProp = (function(){
             var o = this.o.v/divisor;
             var s = this.s.v/divisor + o;
             var e = (this.e.v/divisor) + o;
-            if(s>e){
+            if(s>e) {
                 var _s = s;
                 s = e;
                 e = _s;

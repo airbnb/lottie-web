@@ -1,4 +1,4 @@
-function NullElement(data,globalData,comp){
+function NullElement(data,globalData,comp) {
     this.initFrame();
 	this.initBaseData(data, globalData, comp);
     this.initFrame();

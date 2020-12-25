@@ -1,4 +1,4 @@
-animationManager = (function(){
+animationManager = (function() {
     var moduleOb = {};
     var registeredAnimations = [];
     var initTime = 0;
@@ -7,7 +7,7 @@ animationManager = (function(){
     var _stopped = true;
     var _isFrozen = false;
 
-    function removeElement(ev){
+    function removeElement(ev) {
         var i = 0;
         var animItem = ev.target;
         while(i<len) {
@@ -15,7 +15,7 @@ animationManager = (function(){
                 registeredAnimations.splice(i, 1);
                 i -= 1;
                 len -= 1;
-                if(!animItem.isPaused){
+                if(!animItem.isPaused) {
                     subtractPlayingCount();
                 }
             }
@@ -23,13 +23,13 @@ animationManager = (function(){
         }
     }
 
-    function registerAnimation(element, animationData){
-        if(!element){
+    function registerAnimation(element, animationData) {
+        if(!element) {
             return null;
         }
         var i=0;
-        while(i<len){
-            if(registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null ){
+        while(i<len) {
+            if(registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null ) {
                 return registeredAnimations[i].animation;
             }
             i+=1;
@@ -49,16 +49,16 @@ animationManager = (function(){
         return animations;
     }
 
-    function addPlayingCount(){
+    function addPlayingCount() {
         playingAnimationsNum += 1;
         activate();
     }
 
-    function subtractPlayingCount(){
+    function subtractPlayingCount() {
         playingAnimationsNum -= 1;
     }
 
-    function setupAnimation(animItem, element){
+    function setupAnimation(animItem, element) {
         animItem.addEventListener('destroy',removeElement);
         animItem.addEventListener('_active',addPlayingCount);
         animItem.addEventListener('_idle',subtractPlayingCount);
@@ -66,7 +66,7 @@ animationManager = (function(){
         len += 1;
     }
 
-    function loadAnimation(params){
+    function loadAnimation(params) {
         var animItem = new AnimationItem();
         setupAnimation(animItem, null);
         animItem.setParams(params);
@@ -74,30 +74,30 @@ animationManager = (function(){
     }
 
 
-    function setSpeed(val,animation){
+    function setSpeed(val,animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.setSpeed(val, animation);
         }
     }
 
-    function setDirection(val, animation){
+    function setDirection(val, animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.setDirection(val, animation);
         }
     }
 
-    function play(animation){
+    function play(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.play(animation);
         }
     }
     function resume(nowTime) {
         var elapsedTime = nowTime - initTime;
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.advanceTime(elapsedTime);
         }
         initTime = nowTime;
@@ -108,59 +108,59 @@ animationManager = (function(){
         }
     }
 
-    function first(nowTime){
+    function first(nowTime) {
         initTime = nowTime;
         requestAnimationFrame(resume);
     }
 
     function pause(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.pause(animation);
         }
     }
 
     function goToAndStop(value,isFrame,animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.goToAndStop(value,isFrame,animation);
         }
     }
 
     function stop(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.stop(animation);
         }
     }
 
     function togglePause(animation) {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.togglePause(animation);
         }
     }
 
     function destroy(animation) {
         var i;
-        for(i=(len-1);i>=0;i-=1){
+        for(i=(len-1);i>=0;i-=1) {
             registeredAnimations[i].animation.destroy(animation);
         }
     }
 
-    function searchAnimations(animationData, standalone, renderer){
+    function searchAnimations(animationData, standalone, renderer) {
         throw new Error('Cannot access DOM from worker thread');
     }
 
-    function resize(){
+    function resize() {
         var i;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             registeredAnimations[i].animation.resize();
         }
     }
 
-    function activate(){
-        if(!_isFrozen && playingAnimationsNum){
+    function activate() {
+        if(!_isFrozen && playingAnimationsNum) {
             if(_stopped) {
                 requestAnimationFrame(first);
                 _stopped = false;

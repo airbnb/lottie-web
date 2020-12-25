@@ -14,14 +14,14 @@ function DashProperty(elem, data, renderer, container) {
         this.k = prop.k || this.k;
         this.dataProps[i] = {n:data[i].n,p:prop};
     }
-    if(!this.k){
+    if(!this.k) {
         this.getValue(true);
     }
     this._isAnimated = this.k;
 }
 
 DashProperty.prototype.getValue = function(forceRender) {
-    if(this.elem.globalData.frameId === this.frameId && !forceRender){
+    if(this.elem.globalData.frameId === this.frameId && !forceRender) {
         return;
     }
     this.frameId = this.elem.globalData.frameId;
@@ -32,8 +32,8 @@ DashProperty.prototype.getValue = function(forceRender) {
         if(this.renderer === 'svg') {
             this.dashStr = '';
         }
-        for(i=0;i<len;i+=1){
-            if(this.dataProps[i].n != 'o'){
+        for(i=0;i<len;i+=1) {
+            if(this.dataProps[i].n != 'o') {
                 if(this.renderer === 'svg') {
                     this.dashStr += ' ' + this.dataProps[i].p.v;
                 }else{

@@ -1,4 +1,4 @@
-var LayerExpressionInterface = (function (){
+var LayerExpressionInterface = (function () {
 
     function getMatrix(time) {
         var toWorldMat = new Matrix();
@@ -12,32 +12,32 @@ var LayerExpressionInterface = (function (){
         return toWorldMat;
     }
 
-    function toWorldVec(arr, time){
+    function toWorldVec(arr, time) {
         var toWorldMat = this.getMatrix(time);
         toWorldMat.props[12] = toWorldMat.props[13] = toWorldMat.props[14] = 0;
         return this.applyPoint(toWorldMat, arr);
     }
 
-    function toWorld(arr, time){
+    function toWorld(arr, time) {
         var toWorldMat = this.getMatrix(time);
         return this.applyPoint(toWorldMat, arr);
     }
 
-    function fromWorldVec(arr, time){
+    function fromWorldVec(arr, time) {
         var toWorldMat = this.getMatrix(time);
         toWorldMat.props[12] = toWorldMat.props[13] = toWorldMat.props[14] = 0;
         return this.invertPoint(toWorldMat, arr);
     }
 
-    function fromWorld(arr, time){
+    function fromWorld(arr, time) {
         var toWorldMat = this.getMatrix(time);
         return this.invertPoint(toWorldMat, arr);
     }
 
     function applyPoint(matrix, arr) {
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
+        if(this._elem.hierarchy && this._elem.hierarchy.length) {
             var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
             }
         }
@@ -45,22 +45,22 @@ var LayerExpressionInterface = (function (){
     }
 
     function invertPoint(matrix, arr) {
-        if (this._elem.hierarchy && this._elem.hierarchy.length){
+        if (this._elem.hierarchy && this._elem.hierarchy.length) {
             var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
             }
         }
         return matrix.inversePoint(arr);
     }
 
-    function fromComp(arr){
+    function fromComp(arr) {
         var toWorldMat = new Matrix();
         toWorldMat.reset();
         this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
-        if(this._elem.hierarchy && this._elem.hierarchy.length){
+        if(this._elem.hierarchy && this._elem.hierarchy.length) {
             var i, len = this._elem.hierarchy.length;
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
             }
             return toWorldMat.inversePoint(arr);
@@ -73,19 +73,19 @@ var LayerExpressionInterface = (function (){
     }
 
 
-    return function(elem){
+    return function(elem) {
 
         var transformInterface;
 
-        function _registerMaskInterface(maskManager){
+        function _registerMaskInterface(maskManager) {
             _thisLayerFunction.mask = new MaskManagerInterface(maskManager, elem);
         }
-        function _registerEffectsInterface(effects){
+        function _registerEffectsInterface(effects) {
             _thisLayerFunction.effect = effects;
         }
 
-        function _thisLayerFunction(name){
-            switch(name){
+        function _thisLayerFunction(name) {
+            switch(name) {
                 case 'ADBE Root Vectors Group':
                 case 'Contents':
                 case 2:
@@ -121,12 +121,12 @@ var LayerExpressionInterface = (function (){
         var anchorPointDescriptor = getDescriptor(transformInterface, 'anchorPoint');
         Object.defineProperties(_thisLayerFunction,{
             hasParent: {
-                get: function(){
+                get: function() {
                     return elem.hierarchy.length;
                 }
             },
             parent: {
-                get: function(){
+                get: function() {
                     return elem.hierarchy[0].layerInterface;
                 }
             },
@@ -142,7 +142,7 @@ var LayerExpressionInterface = (function (){
                 }
             },
             active: {
-                get: function(){
+                get: function() {
                     return elem.isInRange;
                 }
             }

@@ -1,4 +1,4 @@
-function TrimModifier(){
+function TrimModifier() {
 }
 extendPrototype([ShapeModifier], TrimModifier);
 TrimModifier.prototype.initModifierProperties = function(elem, data) {
@@ -12,7 +12,7 @@ TrimModifier.prototype.initModifierProperties = function(elem, data) {
     this._isAnimated = !!this.s.effectsSequence.length || !!this.e.effectsSequence.length || !!this.o.effectsSequence.length;
 };
 
-TrimModifier.prototype.addShapeToModifier = function(shapeData){
+TrimModifier.prototype.addShapeToModifier = function(shapeData) {
     shapeData.pathsData = [];
 };
 
@@ -112,7 +112,7 @@ TrimModifier.prototype.processShapes = function(_isFirstFrame) {
                 this.shapes[i].pathsData.length = 0;
             }
         }
-    } else if (!((e === 1 && s === 0) || (e===0 && s === 1))){
+    } else if (!((e === 1 && s === 0) || (e===0 && s === 1))) {
         var segments = [], shapeData, localShapeCollection;
         for (i = 0; i < len; i += 1) {
             shapeData = this.shapes[i];
@@ -218,7 +218,7 @@ TrimModifier.prototype.addPaths = function(newPaths, localShapeCollection) {
 TrimModifier.prototype.addSegment = function(pt1, pt2, pt3, pt4, shapePath, pos, newShape) {
     shapePath.setXYAt(pt2[0], pt2[1], 'o', pos);
     shapePath.setXYAt(pt3[0], pt3[1], 'i', pos + 1);
-    if(newShape){
+    if(newShape) {
         shapePath.setXYAt(pt1[0], pt1[1], 'v', pos);
     }
     shapePath.setXYAt(pt4[0], pt4[1], 'v', pos + 1);
@@ -227,7 +227,7 @@ TrimModifier.prototype.addSegment = function(pt1, pt2, pt3, pt4, shapePath, pos,
 TrimModifier.prototype.addSegmentFromArray = function(points, shapePath, pos, newShape) {
     shapePath.setXYAt(points[1], points[5], 'o', pos);
     shapePath.setXYAt(points[2], points[6], 'i', pos + 1);
-    if(newShape){
+    if(newShape) {
         shapePath.setXYAt(points[0], points[4], 'v', pos);
     }
     shapePath.setXYAt(points[3], points[7], 'v', pos + 1);

@@ -1,6 +1,6 @@
 function RenderableDOMElement() {}
 
-(function(){
+(function() {
     var _prototype = {
         initElement: function(data,globalData,comp) {
             this.initFrame();
@@ -14,15 +14,15 @@ function RenderableDOMElement() {}
             this.createContent();
             this.hide();
         },
-        hide: function(){
+        hide: function() {
             if (!this.hidden && (!this.isInRange || this.isTransparent)) {
                 var elem = this.baseElement || this.layerElement;
                 elem.style.display = 'none';
                 this.hidden = true;
             }
         },
-        show: function(){
-            if (this.isInRange && !this.isTransparent){
+        show: function() {
+            if (this.isInRange && !this.isTransparent) {
                 if (!this.data.hd) {
                     var elem = this.baseElement || this.layerElement;
                     elem.style.display = 'block';
@@ -52,7 +52,7 @@ function RenderableDOMElement() {}
             this.prepareProperties(num, this.isInRange);
             this.checkTransparency();
         },
-        destroy: function(){
+        destroy: function() {
             this.innerElem =  null;
             this.destroyBaseElement();
         }

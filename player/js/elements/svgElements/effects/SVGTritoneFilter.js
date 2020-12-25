@@ -1,4 +1,4 @@
-function SVGTritoneFilter(filter, filterManager){
+function SVGTritoneFilter(filter, filterManager) {
     this.filterManager = filterManager;
     var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type','matrix');
@@ -24,8 +24,8 @@ function SVGTritoneFilter(filter, filterManager){
     this.feFuncB = feFuncB;
 }
 
-SVGTritoneFilter.prototype.renderFrame = function(forceRender){
-    if(forceRender || this.filterManager._mdf){
+SVGTritoneFilter.prototype.renderFrame = function(forceRender) {
+    if(forceRender || this.filterManager._mdf) {
         var color1 = this.filterManager.effectElements[0].p.v;
         var color2 = this.filterManager.effectElements[1].p.v;
         var color3 = this.filterManager.effectElements[2].p.v;

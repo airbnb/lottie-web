@@ -1,22 +1,22 @@
-function HCameraElement(data,globalData,comp){
+function HCameraElement(data,globalData,comp) {
     this.initFrame();
     this.initBaseData(data,globalData,comp);
     this.initHierarchy();
     var getProp = PropertyFactory.getProp;
     this.pe = getProp(this,data.pe,0,0,this);
-    if(data.ks.p.s){
+    if(data.ks.p.s) {
         this.px = getProp(this,data.ks.p.x,1,0,this);
         this.py = getProp(this,data.ks.p.y,1,0,this);
         this.pz = getProp(this,data.ks.p.z,1,0,this);
     }else{
         this.p = getProp(this,data.ks.p,1,0,this);
     }
-    if(data.ks.a){
+    if(data.ks.a) {
         this.a = getProp(this,data.ks.a,1,0,this);
     }
-    if(data.ks.or.k.length && data.ks.or.k[0].to){
+    if(data.ks.or.k.length && data.ks.or.k[0].to) {
         var i,len = data.ks.or.k.length;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             data.ks.or.k[i].to = null;
             data.ks.or.k[i].ti = null;
         }
@@ -39,7 +39,7 @@ extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 
 HCameraElement.prototype.setup = function() {
     var i, len = this.comp.threeDElements.length, comp;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         //[perspectiveElem,container]
         comp = this.comp.threeDElements[i];
         if(comp.type === '3d') {
@@ -50,25 +50,25 @@ HCameraElement.prototype.setup = function() {
     }
 };
 
-HCameraElement.prototype.createElements = function(){
+HCameraElement.prototype.createElements = function() {
 };
 
-HCameraElement.prototype.hide = function(){
+HCameraElement.prototype.hide = function() {
 };
 
-HCameraElement.prototype.renderFrame = function(){
+HCameraElement.prototype.renderFrame = function() {
     var _mdf = this._isFirstFrame;
     var i, len;
-    if(this.hierarchy){
+    if(this.hierarchy) {
         len = this.hierarchy.length;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             _mdf = this.hierarchy[i].finalTransform.mProp._mdf || _mdf;
         }
     }
     if(_mdf || this.pe._mdf || (this.p && this.p._mdf) || (this.px && (this.px._mdf || this.py._mdf || this.pz._mdf)) || this.rx._mdf || this.ry._mdf || this.rz._mdf || this.or._mdf || (this.a && this.a._mdf)) {
         this.mat.reset();
 
-        if(this.hierarchy){
+        if(this.hierarchy) {
             var mat;
             len = this.hierarchy.length - 1;
             for (i = len; i >= 0; i -= 1) {
@@ -113,7 +113,7 @@ HCameraElement.prototype.renderFrame = function(){
         if((hasMatrixChanged || this.pe._mdf) && this.comp.threeDElements) {
             len = this.comp.threeDElements.length;
             var comp;
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 comp = this.comp.threeDElements[i];
                 if(comp.type === '3d') {
                     if(hasMatrixChanged) {
@@ -134,6 +134,6 @@ HCameraElement.prototype.prepareFrame = function(num) {
     this.prepareProperties(num, true);
 };
 
-HCameraElement.prototype.destroy = function(){
+HCameraElement.prototype.destroy = function() {
 };
-HCameraElement.prototype.getBaseElement = function(){ return null; };
+HCameraElement.prototype.getBaseElement = function() { return null; };

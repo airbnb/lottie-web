@@ -1,15 +1,15 @@
-(function(){
+(function() {
 
-    var TextExpressionSelectorProp = (function(){
+    var TextExpressionSelectorProp = (function() {
 
-        function getValueProxy(index,total){
+        function getValueProxy(index,total) {
             this.textIndex = index+1;
             this.textTotal = total;
             this.v = this.getValue() * this.mult;
             return this.v;
         }
 
-        return function TextExpressionSelectorProp(elem,data){
+        return function TextExpressionSelectorProp(elem,data) {
             this.pv = 1;
             this.comp = elem.comp;
             this.elem = elem;
@@ -23,7 +23,7 @@
             this.getValue = ExpressionManager.initiateExpression.bind(this)(elem,data,this);
             this.getMult = getValueProxy;
             this.getVelocityAtTime = expressionHelpers.getVelocityAtTime;
-            if(this.kf){
+            if(this.kf) {
                 this.getValueAtTime = expressionHelpers.getValueAtTime.bind(this);
             } else {
                 this.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(this);
@@ -33,8 +33,8 @@
     }());
 
     var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
-        if(data.t === 1){
+    TextSelectorProp.getTextSelectorProp = function(elem, data,arr) {
+        if(data.t === 1) {
             return new TextExpressionSelectorProp(elem, data,arr);
         } else {
             return propertyGetTextProp(elem,data,arr);

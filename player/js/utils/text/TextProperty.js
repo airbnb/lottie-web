@@ -1,4 +1,4 @@
-function TextProperty(elem, data){
+function TextProperty(elem, data) {
 	this._frameId = initialDefaultFrame;
 	this.pv = '';
 	this.v = '';
@@ -61,7 +61,7 @@ TextProperty.prototype.copyData = function(obj, data) {
     return obj;
 }
 
-TextProperty.prototype.setCurrentData = function(data){
+TextProperty.prototype.setCurrentData = function(data) {
     if(!data.__complete) {
         this.completeTextData(data);
     }
@@ -125,7 +125,7 @@ TextProperty.prototype.getKeyframeValue = function() {
     var i = 0, len = textKeys.length;
     while(i <= len - 1) {
         textDocumentData = textKeys[i].s;
-        if(i === len - 1 || textKeys[i+1].t > frameNum){
+        if(i === len - 1 || textKeys[i+1].t > frameNum) {
             break;
         }
         i += 1;
@@ -182,7 +182,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var fWeight = 'normal', fStyle = 'normal';
     len = styles.length;
     var styleName;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         styleName = styles[i].toLowerCase();
         switch(styleName) {
             case 'italic':
@@ -215,7 +215,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.finalLineHeight = documentData.lh;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     var charCode;
-    if(documentData.sz){
+    if(documentData.sz) {
         var flag = true;
         var boxWidth = documentData.sz[0];
         var boxHeight = documentData.sz[1];
@@ -227,25 +227,25 @@ TextProperty.prototype.completeTextData = function(documentData) {
             len = finalText.length;
             trackingOffset = documentData.tr/1000*documentData.finalSize;
             var lastSpaceIndex = -1;
-            for(i=0;i<len;i+=1){
+            for(i=0;i<len;i+=1) {
                 charCode = finalText[i].charCodeAt(0);
                 newLineFlag = false;
-                if(finalText[i] === ' '){
+                if(finalText[i] === ' ') {
                     lastSpaceIndex = i;
-                }else if(charCode === 13 || charCode === 3){
+                }else if(charCode === 13 || charCode === 3) {
                     lineWidth = 0;
                     newLineFlag = true;
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
                 }
-                if(fontManager.chars){
+                if(fontManager.chars) {
                     charData = fontManager.getCharData(finalText[i], fontData.fStyle, fontData.fFamily);
                     cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
                 }else{
                     //tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
                     cLength = fontManager.measureText(finalText[i], documentData.f, documentData.finalSize);
                 }
-                if(lineWidth + cLength > boxWidth && finalText[i] !== ' '){
-                    if(lastSpaceIndex === -1){
+                if(lineWidth + cLength > boxWidth && finalText[i] !== ' ') {
+                    if(lastSpaceIndex === -1) {
                         len += 1;
                     } else {
                         i = lastSpaceIndex;
@@ -291,7 +291,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         }else{
             val = currentChar;
         }
-        if(fontManager.chars){
+        if(fontManager.chars) {
             charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
             cLength = newLineFlag ? 0 : charData.w*documentData.finalSize/100;
         }else{
@@ -301,20 +301,20 @@ TextProperty.prototype.completeTextData = function(documentData) {
         }
 
         //
-        if(currentChar === ' '){
+        if(currentChar === ' ') {
             uncollapsedSpaces += cLength + trackingOffset;
         } else {
             lineWidth += cLength + trackingOffset + uncollapsedSpaces;
             uncollapsedSpaces = 0;
         }
         letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
-        if(anchorGrouping == 2){
+        if(anchorGrouping == 2) {
             currentSize += cLength;
-            if(val === '' || val === ' ' || i === len - 1){
-                if(val === '' || val === ' '){
+            if(val === '' || val === ' ' || i === len - 1) {
+                if(val === '' || val === ' ') {
                     currentSize -= cLength;
                 }
-                while(currentPos<=i){
+                while(currentPos<=i) {
                     letters[currentPos].an = currentSize;
                     letters[currentPos].ind = index;
                     letters[currentPos].extra = cLength;
@@ -323,13 +323,13 @@ TextProperty.prototype.completeTextData = function(documentData) {
                 index += 1;
                 currentSize = 0;
             }
-        }else if(anchorGrouping == 3){
+        }else if(anchorGrouping == 3) {
             currentSize += cLength;
-            if(val === '' || i === len - 1){
-                if(val === ''){
+            if(val === '' || i === len - 1) {
+                if(val === '') {
                     currentSize -= cLength;
                 }
-                while(currentPos<=i){
+                while(currentPos<=i) {
                     letters[currentPos].an = currentSize;
                     letters[currentPos].ind = index;
                     letters[currentPos].extra = cLength;
@@ -347,12 +347,12 @@ TextProperty.prototype.completeTextData = function(documentData) {
     documentData.l = letters;
     maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
     lineWidths.push(lineWidth);
-    if(documentData.sz){
+    if(documentData.sz) {
         documentData.boxWidth = documentData.sz[0];
         documentData.justifyOffset = 0;
     }else{
         documentData.boxWidth = maxLineWidth;
-        switch(documentData.j){
+        switch(documentData.j) {
             case 1:
                 documentData.justifyOffset = - documentData.boxWidth;
                 break;
@@ -368,24 +368,24 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var animators = data.a, animatorData, letterData;
     jLen = animators.length;
     var based, ind, indexes = [];
-    for(j=0;j<jLen;j+=1){
+    for(j=0;j<jLen;j+=1) {
         animatorData = animators[j];
-        if(animatorData.a.sc){
+        if(animatorData.a.sc) {
             documentData.strokeColorAnim = true;
         }
-        if(animatorData.a.sw){
+        if(animatorData.a.sw) {
             documentData.strokeWidthAnim = true;
         }
-        if(animatorData.a.fc || animatorData.a.fh || animatorData.a.fs || animatorData.a.fb){
+        if(animatorData.a.fc || animatorData.a.fh || animatorData.a.fs || animatorData.a.fb) {
             documentData.fillColorAnim = true;
         }
         ind = 0;
         based = animatorData.s.b;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             letterData = letters[i];
             letterData.anIndexes[j] = ind;
-            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
-                if(animatorData.s.rn === 1){
+            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) {
+                if(animatorData.s.rn === 1) {
                     indexes.push(ind);
                 }
                 ind += 1;
@@ -393,10 +393,10 @@ TextProperty.prototype.completeTextData = function(documentData) {
         }
         data.a[j].s.totalChars = ind;
         var currentInd = -1, newInd;
-        if(animatorData.s.rn === 1){
-            for(i = 0; i < len; i += 1){
+        if(animatorData.s.rn === 1) {
+            for(i = 0; i < len; i += 1) {
                 letterData = letters[i];
-                if(currentInd != letterData.anIndexes[j]){
+                if(currentInd != letterData.anIndexes[j]) {
                     currentInd = letterData.anIndexes[j];
                     newInd = indexes.splice(Math.floor(Math.random()*indexes.length),1)[0];
                 }

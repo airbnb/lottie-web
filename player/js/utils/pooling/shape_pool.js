@@ -1,4 +1,4 @@
-var shape_pool = (function(){
+var shape_pool = (function() {
 
 	function create() {
 		return new ShapePath();

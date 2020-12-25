@@ -1,3 +1,3 @@
-var BaseTextElement = function (){
+var BaseTextElement = function () {
 };
 

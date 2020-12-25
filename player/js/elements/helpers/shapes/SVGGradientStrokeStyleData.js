@@ -1,4 +1,4 @@
-function SVGGradientStrokeStyleData(elem, data, styleOb){
+function SVGGradientStrokeStyleData(elem, data, styleOb) {
 	this.initDynamicPropertyContainer(elem);
 	this.getValue = this.iterateDynamicProperties;
 	this.w = PropertyFactory.getProp(elem,data.w,0,null,this);

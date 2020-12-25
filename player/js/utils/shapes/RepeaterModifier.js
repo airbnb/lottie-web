@@ -1,7 +1,7 @@
-function RepeaterModifier(){}
+function RepeaterModifier() {}
 extendPrototype([ShapeModifier], RepeaterModifier);
 
-RepeaterModifier.prototype.initModifierProperties = function(elem,data){
+RepeaterModifier.prototype.initModifierProperties = function(elem,data) {
     this.getValue = this.processKeys;
     this.c = PropertyFactory.getProp(elem,data.c,0,null,this);
     this.o = PropertyFactory.getProp(elem,data.o,0,null,this);
@@ -9,7 +9,7 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.so = PropertyFactory.getProp(elem,data.tr.so,0,0.01,this);
     this.eo = PropertyFactory.getProp(elem,data.tr.eo,0,0.01,this);
     this.data = data;
-    if(!this.dynamicProperties.length){
+    if(!this.dynamicProperties.length) {
         this.getValue(true);
     }
     this._isAnimated = !!this.dynamicProperties.length;
@@ -20,7 +20,7 @@ RepeaterModifier.prototype.initModifierProperties = function(elem,data){
     this.matrix = new Matrix();
 };
 
-RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix, transform, perc, inv){
+RepeaterModifier.prototype.applyTransforms = function(pMatrix, rMatrix, sMatrix, transform, perc, inv) {
     var dir = inv ? -1 : 1;
     var scaleX = transform.s.v[0] + (1 - transform.s.v[0]) * (1 - perc);
     var scaleY = transform.s.v[1] + (1 - transform.s.v[1]) * (1 - perc);
@@ -45,30 +45,30 @@ RepeaterModifier.prototype.init = function(elem, arr, pos, elemsData) {
     this.initDynamicPropertyContainer(elem);
     this.initModifierProperties(elem,arr[pos]);
     var cont = 0;
-    while(pos>0){
+    while(pos>0) {
         pos -= 1;
         //this._elements.unshift(arr.splice(pos,1)[0]);
         this._elements.unshift(arr[pos]);
         cont += 1;
     }
-    if(this.dynamicProperties.length){
+    if(this.dynamicProperties.length) {
         this.k = true;
     }else{
         this.getValue(true);
     }
 };
 
-RepeaterModifier.prototype.resetElements = function(elements){
+RepeaterModifier.prototype.resetElements = function(elements) {
     var i, len = elements.length;
     for(i = 0; i < len; i += 1) {
         elements[i]._processed = false;
-        if(elements[i].ty === 'gr'){
+        if(elements[i].ty === 'gr') {
             this.resetElements(elements[i].it);
         }
     }
 };
 
-RepeaterModifier.prototype.cloneElements = function(elements){
+RepeaterModifier.prototype.cloneElements = function(elements) {
     var i, len = elements.length;
     var newElements = JSON.parse(JSON.stringify(elements));
     this.resetElements(newElements);
@@ -87,10 +87,10 @@ RepeaterModifier.prototype.changeGroupRender = function(elements, renderFlag) {
 
 RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
     var items, itemsTransform, i, dir, cont;
-    if(this._mdf || _isFirstFrame){
+    if(this._mdf || _isFirstFrame) {
         var copies = Math.ceil(this.c.v);
-        if(this._groups.length < copies){
-            while(this._groups.length < copies){
+        if(this._groups.length < copies) {
+            while(this._groups.length < copies) {
                 var group = {
                     it:this.cloneElements(this._elements),
                     ty:'gr'
@@ -105,7 +105,7 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
         }
         cont = 0;
         var renderFlag;
-        for(i = 0; i  <= this._groups.length - 1; i += 1){
+        for(i = 0; i  <= this._groups.length - 1; i += 1) {
             renderFlag = cont < copies;
             this._groups[i]._render = renderFlag;
             this.changeGroupRender(this._groups[i].it, renderFlag);
@@ -131,20 +131,20 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
         var iteration = 0;
 
         if(offset > 0) {
-            while(iteration<roundOffset){
+            while(iteration<roundOffset) {
                 this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
                 iteration += 1;
             }
-            if(offsetModulo){
+            if(offsetModulo) {
                 this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, offsetModulo, false);
                 iteration += offsetModulo;
             }
         } else if(offset < 0) {
-            while(iteration>roundOffset){
+            while(iteration>roundOffset) {
                 this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, true);
                 iteration -= 1;
             }
-            if(offsetModulo){
+            if(offsetModulo) {
                 this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, - offsetModulo, true);
                 iteration -= offsetModulo;
             }
@@ -153,15 +153,15 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
         dir = this.data.m === 1 ? 1 : -1;
         cont = this._currentCopies;
         var j, jLen;
-        while(cont){
+        while(cont) {
             items = this.elemsData[i].it;
             itemsTransform = items[items.length - 1].transform.mProps.v.props;
             jLen = itemsTransform.length;
             items[items.length - 1].transform.mProps._mdf = true;
             items[items.length - 1].transform.op._mdf = true;
             items[items.length - 1].transform.op.v = this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
-            if(iteration !== 0){
-                if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)){
+            if(iteration !== 0) {
+                if((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)) {
                     this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
                 }
                 this.matrix.transform(rProps[0],rProps[1],rProps[2],rProps[3],rProps[4],rProps[5],rProps[6],rProps[7],rProps[8],rProps[9],rProps[10],rProps[11],rProps[12],rProps[13],rProps[14],rProps[15]);
@@ -186,7 +186,7 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
         cont = this._currentCopies;
         i = 0;
         dir = 1;
-        while(cont){
+        while(cont) {
             items = this.elemsData[i].it;
             itemsTransform = items[items.length - 1].transform.mProps.v.props;
             items[items.length - 1].transform.mProps._mdf = false;
@@ -197,6 +197,6 @@ RepeaterModifier.prototype.processShapes = function(_isFirstFrame) {
     }
 };
 
-RepeaterModifier.prototype.addShape = function(){};
+RepeaterModifier.prototype.addShape = function() {};
 
 ShapeModifiers.registerModifier('rp',RepeaterModifier);

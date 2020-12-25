@@ -1,4 +1,4 @@
-function SVGRenderer(animationItem, config){
+function SVGRenderer(animationItem, config) {
     this.animationItem = animationItem;
     this.layers = null;
     this.renderedFrame = -1;
@@ -87,7 +87,7 @@ SVGRenderer.prototype.createSolid = function (data) {
     return new ISolidElement(data,this.globalData,this);
 };
 
-SVGRenderer.prototype.configAnimation = function(animData){
+SVGRenderer.prototype.configAnimation = function(animData) {
     this.svgElement.setAttribute('xmlns','http://www.w3.org/2000/svg');
     if(this.renderConfig.viewBoxSize) {
         this.svgElement.setAttribute('viewBox',this.renderConfig.viewBoxSize);
@@ -147,7 +147,7 @@ SVGRenderer.prototype.destroy = function () {
     this.globalData.defs = null;
     var i, len = this.layers ? this.layers.length : 0;
     for (i = 0; i < len; i++) {
-        if(this.elements[i]){
+        if(this.elements[i]) {
             this.elements[i].destroy();
         }
     }
@@ -159,24 +159,24 @@ SVGRenderer.prototype.destroy = function () {
 SVGRenderer.prototype.updateContainerSize = function () {
 };
 
-SVGRenderer.prototype.buildItem  = function(pos){
+SVGRenderer.prototype.buildItem  = function(pos) {
     var elements = this.elements;
-    if(elements[pos] || this.layers[pos].ty == 99){
+    if(elements[pos] || this.layers[pos].ty == 99) {
         return;
     }
     elements[pos] = true;
     var element = this.createItem(this.layers[pos]);
 
     elements[pos] = element;
-    if(expressionsPlugin){
-        if(this.layers[pos].ty === 0){
+    if(expressionsPlugin) {
+        if(this.layers[pos].ty === 0) {
             this.globalData.projectInterface.registerComposition(element);
         }
         element.initExpressions();
     }
     this.appendElementInPos(element,pos);
-    if(this.layers[pos].tt){
-        if(!this.elements[pos - 1] || this.elements[pos - 1] === true){
+    if(this.layers[pos].tt) {
+        if(!this.elements[pos - 1] || this.elements[pos - 1] === true) {
             this.buildItem(pos - 1);
             this.addPendingElement(element);
         } else {
@@ -185,14 +185,14 @@ SVGRenderer.prototype.buildItem  = function(pos){
     }
 };
 
-SVGRenderer.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
+SVGRenderer.prototype.checkPendingElements  = function() {
+    while(this.pendingElements.length) {
         var element = this.pendingElements.pop();
         element.checkParenting();
-        if(element.data.tt){
+        if(element.data.tt) {
             var i = 0, len = this.elements.length;
-            while(i<len){
-                if(this.elements[i] === element){
+            while(i<len) {
+                if(this.elements[i] === element) {
                     element.setMatte(this.elements[i - 1].layerId);
                     break;
                 }
@@ -202,11 +202,11 @@ SVGRenderer.prototype.checkPendingElements  = function(){
     }
 };
 
-SVGRenderer.prototype.renderFrame = function(num){
-    if(this.renderedFrame === num || this.destroyed){
+SVGRenderer.prototype.renderFrame = function(num) {
+    if(this.renderedFrame === num || this.destroyed) {
         return;
     }
-    if(num === null){
+    if(num === null) {
         num = this.renderedFrame;
     }else{
         this.renderedFrame = num;
@@ -218,47 +218,47 @@ SVGRenderer.prototype.renderFrame = function(num){
     this.globalData.projectInterface.currentFrame = num;
     this.globalData._mdf = false;
     var i, len = this.layers.length;
-    if(!this.completeLayers){
+    if(!this.completeLayers) {
         this.checkLayers(num);
     }
     for (i = len - 1; i >= 0; i--) {
-        if(this.completeLayers || this.elements[i]){
+        if(this.completeLayers || this.elements[i]) {
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
     if(this.globalData._mdf) {
         for (i = 0; i < len; i += 1) {
-            if(this.completeLayers || this.elements[i]){
+            if(this.completeLayers || this.elements[i]) {
                 this.elements[i].renderFrame();
             }
         }
     }
 };
 
-SVGRenderer.prototype.appendElementInPos = function(element, pos){
+SVGRenderer.prototype.appendElementInPos = function(element, pos) {
     var newElement = element.getBaseElement();
-    if(!newElement){
+    if(!newElement) {
         return;
     }
     var i = 0;
     var nextElement;
-    while(i<pos){
-        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()){
+    while(i<pos) {
+        if(this.elements[i] && this.elements[i]!== true && this.elements[i].getBaseElement()) {
             nextElement = this.elements[i].getBaseElement();
         }
         i += 1;
     }
-    if(nextElement){
+    if(nextElement) {
         this.layerElement.insertBefore(newElement, nextElement);
     } else {
         this.layerElement.appendChild(newElement);
     }
 };
 
-SVGRenderer.prototype.hide = function(){
+SVGRenderer.prototype.hide = function() {
     this.layerElement.style.display = 'none';
 };
 
-SVGRenderer.prototype.show = function(){
+SVGRenderer.prototype.show = function() {
     this.layerElement.style.display = 'block';
 };

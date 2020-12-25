@@ -1,12 +1,12 @@
-function PuckerAndBloatModifier(){}
+function PuckerAndBloatModifier() {}
 extendPrototype([ShapeModifier],PuckerAndBloatModifier);
-PuckerAndBloatModifier.prototype.initModifierProperties = function(elem,data){
+PuckerAndBloatModifier.prototype.initModifierProperties = function(elem,data) {
     this.getValue = this.processKeys;
     this.amount = PropertyFactory.getProp(elem,data.a,0,null,this);
     this._isAnimated = !!this.amount.effectsSequence.length;
 };
 
-PuckerAndBloatModifier.prototype.processPath = function(path, amount){
+PuckerAndBloatModifier.prototype.processPath = function(path, amount) {
     var percent = amount / 100;
     var centerPoint = [0, 0];
     var pathLength = path._length, i = 0;
@@ -31,31 +31,31 @@ PuckerAndBloatModifier.prototype.processPath = function(path, amount){
     return cloned_path;
 };
 
-PuckerAndBloatModifier.prototype.processShapes = function(_isFirstFrame){
+PuckerAndBloatModifier.prototype.processShapes = function(_isFirstFrame) {
     var shapePaths;
     var i, len = this.shapes.length;
     var j, jLen;
     var amount = this.amount.v;
 
-    if(amount !== 0){
+    if(amount !== 0) {
         var shapeData, newPaths, localShapeCollection;
-        for(i=0;i<len;i+=1){
+        for(i=0;i<len;i+=1) {
             shapeData = this.shapes[i];
             newPaths = shapeData.shape.paths;
             localShapeCollection = shapeData.localShapeCollection;
-            if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)){
+            if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)) {
                 localShapeCollection.releaseShapes();
                 shapeData.shape._mdf = true;
                 shapePaths = shapeData.shape.paths.shapes;
                 jLen = shapeData.shape.paths._length;
-                for(j=0;j<jLen;j+=1){
+                for(j=0;j<jLen;j+=1) {
                     localShapeCollection.addShape(this.processPath(shapePaths[j], amount));
                 }
             }
             shapeData.shape.paths = shapeData.localShapeCollection;
         }
     }
-    if(!this.dynamicProperties.length){
+    if(!this.dynamicProperties.length) {
         this._mdf = false;
     }
 };

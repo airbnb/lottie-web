@@ -1,14 +1,14 @@
-var TextExpressionInterface = (function(){
-	return function(elem){
+var TextExpressionInterface = (function() {
+	return function(elem) {
         var _prevValue, _sourceText;
-        function _thisLayerFunction(name){
-            switch(name){
+        function _thisLayerFunction(name) {
+            switch(name) {
                 case 'ADBE Text Document':
                     return _thisLayerFunction.sourceText;
             }
         }
         Object.defineProperty(_thisLayerFunction, 'sourceText', {
-            get: function(){
+            get: function() {
                 elem.textProperty.getValue()
                 var stringValue = elem.textProperty.currentData.t;
                 if(stringValue !== _prevValue) {

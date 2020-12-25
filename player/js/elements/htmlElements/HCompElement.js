@@ -1,4 +1,4 @@
-function HCompElement(data,globalData,comp){
+function HCompElement(data,globalData,comp) {
     this.layers = data.layers;
     this.supports3d = !data.hasMask;
     this.completeLayers = false;
@@ -11,10 +11,10 @@ function HCompElement(data,globalData,comp){
 extendPrototype([HybridRenderer, ICompElement, HBaseElement], HCompElement);
 HCompElement.prototype._createBaseContainerElements = HCompElement.prototype.createContainerElements;
 
-HCompElement.prototype.createContainerElements = function(){
+HCompElement.prototype.createContainerElements = function() {
     this._createBaseContainerElements();
     //divElement.style.clip = 'rect(0px, '+this.data.w+'px, '+this.data.h+'px, 0px)';
-    if(this.data.hasMask){
+    if(this.data.hasMask) {
         this.svgElement.setAttribute('width',this.data.w);
         this.svgElement.setAttribute('height',this.data.h);
         this.transformedElement = this.baseElement;
@@ -26,13 +26,13 @@ HCompElement.prototype.createContainerElements = function(){
 HCompElement.prototype.addTo3dContainer = function(elem,pos) {
     var j = 0;
     var nextElement;
-    while(j<pos){
-        if(this.elements[j] && this.elements[j].getBaseElement){
+    while(j<pos) {
+        if(this.elements[j] && this.elements[j].getBaseElement) {
             nextElement = this.elements[j].getBaseElement();
         }
         j += 1;
     }
-    if(nextElement){
+    if(nextElement) {
         this.layerElement.insertBefore(elem, nextElement);
     } else {
         this.layerElement.appendChild(elem);

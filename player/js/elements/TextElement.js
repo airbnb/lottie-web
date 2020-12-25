@@ -1,7 +1,7 @@
-function ITextElement(){
+function ITextElement() {
 }
 
-ITextElement.prototype.initElement = function(data,globalData,comp){
+ITextElement.prototype.initElement = function(data,globalData,comp) {
     this.lettersChangedFlag = true;
     this.initFrame();
     this.initBaseData(data, globalData, comp);
@@ -33,7 +33,7 @@ ITextElement.prototype.createPathShape = function(matrixHelper, shapes) {
     var j,jLen = shapes.length;
     var k, kLen, pathNodes;
     var shapeStr = '';
-    for(j=0;j<jLen;j+=1){
+    for(j=0;j<jLen;j+=1) {
         pathNodes = shapes[j].ks.k;
         shapeStr += buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
     }
@@ -53,11 +53,11 @@ ITextElement.prototype.setMinimumFontSize = function(_fontSize) {
 };
 
 ITextElement.prototype.applyTextPropertiesToMatrix = function(documentData, matrixHelper, lineNumber, xPos, yPos) {
-    if(documentData.ps){
+    if(documentData.ps) {
         matrixHelper.translate(documentData.ps[0],documentData.ps[1] + documentData.ascent,0);
     }
     matrixHelper.translate(0,-documentData.ls,0);
-    switch(documentData.j){
+    switch(documentData.j) {
         case 1:
             matrixHelper.translate(documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[lineNumber]),0,0);
             break;
@@ -75,6 +75,6 @@ ITextElement.prototype.buildColor = function(colorData) {
 
 ITextElement.prototype.emptyProp = new LetterProps();
 
-ITextElement.prototype.destroy = function(){
+ITextElement.prototype.destroy = function() {
     
 };

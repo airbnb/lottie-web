@@ -1,4 +1,4 @@
-var BezierFactory = (function(){
+var BezierFactory = (function() {
     /**
      * BezierEasing - use bezier curve for transition easing function
      * by Gaëtan Renaudeau 2014 - 2015 – MIT License
@@ -14,9 +14,9 @@ var BezierFactory = (function(){
     ob.getBezierEasing = getBezierEasing;
     var beziers = {};
 
-    function getBezierEasing(a,b,c,d,nm){
+    function getBezierEasing(a,b,c,d,nm) {
         var str = nm || ('bez_' + a+'_'+b+'_'+c+'_'+d).replace(/\./g, 'p');
-        if(beziers[str]){
+        if(beziers[str]) {
             return beziers[str];
         }
         var bezEasing = new BezierEasing([a,b,c,d]);

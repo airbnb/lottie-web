@@ -1,5 +1,5 @@
-CanvasRenderer.prototype.configAnimation = function(animData){
-    if(this.animationItem.wrapper){
+CanvasRenderer.prototype.configAnimation = function(animData) {
+    if(this.animationItem.wrapper) {
         this.animationItem.container = createTag('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';

@@ -1,4 +1,4 @@
-var shapeCollection_pool = (function(){
+var shapeCollection_pool = (function() {
 	var ob = {
 		newShapeCollection: newShapeCollection,
 		release: release
@@ -8,9 +8,9 @@ var shapeCollection_pool = (function(){
 	var _maxLength = 4;
 	var pool = createSizedArray(_maxLength);
 
-	function newShapeCollection(){
+	function newShapeCollection() {
 		var shapeCollection;
-		if(_length){
+		if(_length) {
 			_length -= 1;
 			shapeCollection = pool[_length];
 		} else {

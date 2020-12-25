@@ -1,4 +1,4 @@
-function IImageElement(data,globalData,comp){
+function IImageElement(data,globalData,comp) {
     this.assetData = globalData.getAssetData(data.refId);
     this.initElement(data,globalData,comp);
     this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
@@ -6,7 +6,7 @@ function IImageElement(data,globalData,comp){
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
-IImageElement.prototype.createContent = function(){
+IImageElement.prototype.createContent = function() {
 
     var assetPath = this.globalData.getAssetsPath(this.assetData);
 

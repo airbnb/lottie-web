@@ -1,4 +1,4 @@
-function SVGShapeElement(data,globalData,comp){
+function SVGShapeElement(data,globalData,comp) {
     //List of drawable elements
     this.shapes = [];
     // Full shape data
@@ -27,9 +27,9 @@ SVGShapeElement.prototype.initSecondaryElement = function() {
 
 SVGShapeElement.prototype.identityMatrix = new Matrix();
 
-SVGShapeElement.prototype.buildExpressionInterface = function(){};
+SVGShapeElement.prototype.buildExpressionInterface = function() {};
 
-SVGShapeElement.prototype.createContent = function(){
+SVGShapeElement.prototype.createContent = function() {
     this.searchShapes(this.shapesData,this.itemsData,this.prevViewData,this.layerElement, 0, [], true);
     this.filterUniqueShapes();
 };
@@ -37,7 +37,7 @@ SVGShapeElement.prototype.createContent = function(){
 /*
 This method searches for multiple shapes that affect a single element and one of them is animated
 */
-SVGShapeElement.prototype.filterUniqueShapes = function(){
+SVGShapeElement.prototype.filterUniqueShapes = function() {
     var i, len = this.shapes.length, shape;
     var j, jLen = this.stylesList.length;
     var style, count = 0;
@@ -60,14 +60,14 @@ SVGShapeElement.prototype.filterUniqueShapes = function(){
     }
 }
 
-SVGShapeElement.prototype.setShapesAsAnimated = function(shapes){
+SVGShapeElement.prototype.setShapesAsAnimated = function(shapes) {
     var i, len = shapes.length;
     for(i = 0; i < len; i += 1) {
         shapes[i].setAsAnimated();
     }
 }
 
-SVGShapeElement.prototype.createStyleElement = function(data, level){
+SVGShapeElement.prototype.createStyleElement = function(data, level) {
     //TODO: prevent drawing of hidden styles
     var elementData;
     var styleOb = new SVGStyleData(data, level);
@@ -101,13 +101,13 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
         pathElement.setAttribute('fill-rule', 'evenodd');
     }
 
-    if(data.ln){
+    if(data.ln) {
         pathElement.setAttribute('id',data.ln);
     }
-    if(data.cl){
+    if(data.cl) {
         pathElement.setAttribute('class',data.cl);
     }
-    if(data.bm){
+    if(data.bm) {
         pathElement.style['mix-blend-mode'] = getBlendMode(data.bm);
     }
     this.stylesList.push(styleOb);
@@ -117,13 +117,13 @@ SVGShapeElement.prototype.createStyleElement = function(data, level){
 
 SVGShapeElement.prototype.createGroupElement = function(data) {
     var elementData = new ShapeGroupData();
-    if(data.ln){
+    if(data.ln) {
         elementData.gr.setAttribute('id',data.ln);
     }
-    if(data.cl){
+    if(data.cl) {
         elementData.gr.setAttribute('class',data.cl);
     }
-    if(data.bm){
+    if(data.bm) {
         elementData.gr.style['mix-blend-mode'] = getBlendMode(data.bm);
     }
     return elementData;
@@ -138,11 +138,11 @@ SVGShapeElement.prototype.createTransformElement = function(data, container) {
 
 SVGShapeElement.prototype.createShapeElement = function(data, ownTransformers, level) {
     var ty = 4;
-    if(data.ty === 'rc'){
+    if(data.ty === 'rc') {
         ty = 5;
-    }else if(data.ty === 'el'){
+    }else if(data.ty === 'el') {
         ty = 6;
-    }else if(data.ty === 'sr'){
+    }else if(data.ty === 'sr') {
         ty = 7;
     }
     var shapeProperty = ShapePropertyFactory.getShapeProp(this,data,ty,this);
@@ -168,7 +168,7 @@ SVGShapeElement.prototype.addToAnimatedContents = function(data, element) {
     });
 };
 
-SVGShapeElement.prototype.setElementStyles = function(elementData){
+SVGShapeElement.prototype.setElementStyles = function(elementData) {
     var arr = elementData.styles;
     var j, jLen = this.stylesList.length;
     for (j = 0; j < jLen; j += 1) {
@@ -178,7 +178,7 @@ SVGShapeElement.prototype.setElementStyles = function(elementData){
     }
 };
 
-SVGShapeElement.prototype.reloadShapes = function(){
+SVGShapeElement.prototype.reloadShapes = function() {
     this._isFirstFrame = true;
     var i, len = this.itemsData.length;
     for( i = 0; i < len; i += 1) {
@@ -193,55 +193,55 @@ SVGShapeElement.prototype.reloadShapes = function(){
     this.renderModifiers();
 };
 
-SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container, level, transformers, render){
+SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,container, level, transformers, render) {
     var ownTransformers = [].concat(transformers);
     var i, len = arr.length - 1;
     var j, jLen;
     var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier, processedPos;
-    for(i=len;i>=0;i-=1){
+    for(i=len;i>=0;i-=1) {
         processedPos = this.searchProcessedElement(arr[i]);
-        if(!processedPos){
+        if(!processedPos) {
             arr[i]._render = render;
         } else {
             itemsData[i] = prevViewData[processedPos - 1];
         }
-        if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs'){
-            if(!processedPos){
+        if(arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs') {
+            if(!processedPos) {
                 itemsData[i] = this.createStyleElement(arr[i], level);
             } else {
                 itemsData[i].style.closed = false;
             }
-            if(arr[i]._render){
+            if(arr[i]._render) {
                 container.appendChild(itemsData[i].style.pElem);
             }
             ownStyles.push(itemsData[i].style);
-        }else if(arr[i].ty == 'gr'){
-            if(!processedPos){
+        }else if(arr[i].ty == 'gr') {
+            if(!processedPos) {
                 itemsData[i] = this.createGroupElement(arr[i]);
             } else {
                 jLen = itemsData[i].it.length;
-                for(j=0;j<jLen;j+=1){
+                for(j=0;j<jLen;j+=1) {
                     itemsData[i].prevViewData[j] = itemsData[i].it[j];
                 }
             }
             this.searchShapes(arr[i].it,itemsData[i].it,itemsData[i].prevViewData,itemsData[i].gr, level + 1, ownTransformers, render);
-            if(arr[i]._render){
+            if(arr[i]._render) {
                 container.appendChild(itemsData[i].gr);
             }
-        }else if(arr[i].ty == 'tr'){
-            if(!processedPos){
+        }else if(arr[i].ty == 'tr') {
+            if(!processedPos) {
                 itemsData[i] = this.createTransformElement(arr[i], container);
             }
             currentTransform = itemsData[i].transform;
             ownTransformers.push(currentTransform);
-        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr'){
-            if(!processedPos){
+        }else if(arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr') {
+            if(!processedPos) {
                 itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level);
             }
             this.setElementStyles(itemsData[i]);
 
-        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'pb'){
-            if(!processedPos){
+        }else if(arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'pb') {
+            if(!processedPos) {
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 modifier.init(this,arr[i]);
                 itemsData[i] = modifier;
@@ -251,8 +251,8 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
                 modifier.closed = false;
             }
             ownModifiers.push(modifier);
-        }else if(arr[i].ty == 'rp'){
-            if(!processedPos){
+        }else if(arr[i].ty == 'rp') {
+            if(!processedPos) {
                 modifier = ShapeModifiers.getModifier(arr[i].ty);
                 itemsData[i] = modifier;
                 modifier.init(this,arr,i,itemsData);
@@ -267,11 +267,11 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
         this.addProcessedElement(arr[i], i + 1);
     }
     len = ownStyles.length;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         ownStyles[i].closed = true;
     }
     len = ownModifiers.length;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         ownModifiers[i].closed = true;
     }
 };
@@ -279,14 +279,14 @@ SVGShapeElement.prototype.searchShapes = function(arr,itemsData,prevViewData,con
 SVGShapeElement.prototype.renderInnerContent = function() {
     this.renderModifiers();
     var i, len = this.stylesList.length;
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         this.stylesList[i].reset();
     }
     this.renderShape();
 
     for (i = 0; i < len; i += 1) {
         if (this.stylesList[i]._mdf || this._isFirstFrame) {
-            if(this.stylesList[i].msElem){
+            if(this.stylesList[i].msElem) {
                 this.stylesList[i].msElem.setAttribute('d', this.stylesList[i].d);
                 //Adding M0 0 fixes same mask bug on all browsers
                 this.stylesList[i].d = 'M0 0' + this.stylesList[i].d;
@@ -307,7 +307,7 @@ SVGShapeElement.prototype.renderShape = function() {
     }
 }
 
-SVGShapeElement.prototype.destroy = function(){
+SVGShapeElement.prototype.destroy = function() {
     this.destroyBaseElement();
     this.shapesData = null;
     this.itemsData = null;

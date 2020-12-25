@@ -5,9 +5,9 @@ var PropertyInterface = (function() {
             _name: propertyName
         }
 
-        function _propertyGroup(val){
+        function _propertyGroup(val) {
             val = val === undefined ? 1 : val
-            if(val <= 0){
+            if(val <= 0) {
                 return interfaceFunction;
             } else {
                 return propertyGroup(--val);

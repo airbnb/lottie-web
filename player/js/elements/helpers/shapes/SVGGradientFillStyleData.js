@@ -1,10 +1,10 @@
-function SVGGradientFillStyleData(elem, data, styleOb){
+function SVGGradientFillStyleData(elem, data, styleOb) {
     this.initDynamicPropertyContainer(elem);
     this.getValue = this.iterateDynamicProperties;
     this.initGradientData(elem, data, styleOb);
 }
 
-SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, styleOb){
+SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, styleOb) {
     this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this);
     this.s = PropertyFactory.getProp(elem,data.s,1,null,this);
     this.e = PropertyFactory.getProp(elem,data.e,1,null,this);
@@ -19,7 +19,7 @@ SVGGradientFillStyleData.prototype.initGradientData = function(elem, data, style
 
 };
 
-SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
+SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data) {
 
     var gradientId = createElementID();
     var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
@@ -29,7 +29,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
     var stops = [];
     var stop, j, jLen;
     jLen = data.g.p*4;
-    for(j=0;j<jLen;j+=4){
+    for(j=0;j<jLen;j+=4) {
         stop = createNS('stop');
         gfill.appendChild(stop);
         stops.push(stop);
@@ -40,8 +40,8 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
     this.cst = stops;
 };
 
-SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
-    if(this.g._hasOpacity && !this.g._collapsable){
+SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb) {
+    if(this.g._hasOpacity && !this.g._collapsable) {
         var stop, j, jLen;
         var mask = createNS('mask');
         var maskElement = createNS( 'path');
@@ -55,7 +55,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
         opFill.setAttribute('gradientUnits','userSpaceOnUse');
         jLen = data.g.k.k[0].s ? data.g.k.k[0].s.length : data.g.k.k.length;
         var stops = this.stops;
-        for(j=data.g.p*4;j<jLen;j+=2){
+        for(j=data.g.p*4;j<jLen;j+=2) {
             stop = createNS('stop');
             stop.setAttribute('stop-color','rgb(255,255,255)');
             opFill.appendChild(stop);

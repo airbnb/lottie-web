@@ -5,7 +5,7 @@
  *
  */
 
-function FrameElement(){}
+function FrameElement() {}
 
 FrameElement.prototype = {
     /**
@@ -13,7 +13,7 @@ FrameElement.prototype = {
      * Initializes frame related properties.
      *
      */
-    initFrame: function(){
+    initFrame: function() {
         //set to true when inpoint is rendered
         this._isFirstFrame = false;
         //list of animated properties

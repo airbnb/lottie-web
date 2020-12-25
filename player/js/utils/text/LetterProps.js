@@ -1,4 +1,4 @@
-function LetterProps(o, sw, sc, fc, m, p){
+function LetterProps(o, sw, sc, fc, m, p) {
     this.o = o;
     this.sw = sw;
     this.sc = sc;

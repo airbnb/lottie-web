@@ -5,7 +5,7 @@ function CVContextData() {
     this.cO = 1;
     var i, len = 15;
     this.savedOp = createTypedArray('float32', len);
-    for(i=0;i<len;i+=1){
+    for(i=0;i<len;i+=1) {
         this.saved[i] = createTypedArray('float32', 16);
     }
     this._length = len;

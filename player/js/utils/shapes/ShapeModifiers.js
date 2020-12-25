@@ -1,26 +1,26 @@
-var ShapeModifiers = (function(){
+var ShapeModifiers = (function() {
     var ob = {};
     var modifiers = {};
     ob.registerModifier = registerModifier;
     ob.getModifier = getModifier;
 
-    function registerModifier(nm,factory){
-        if(!modifiers[nm]){
+    function registerModifier(nm,factory) {
+        if(!modifiers[nm]) {
             modifiers[nm] = factory;
         }
     }
 
-    function getModifier(nm,elem, data){
+    function getModifier(nm,elem, data) {
         return new modifiers[nm](elem, data);
     }
 
     return ob;
 }());
 
-function ShapeModifier(){}
-ShapeModifier.prototype.initModifierProperties = function(){};
-ShapeModifier.prototype.addShapeToModifier = function(){};
-ShapeModifier.prototype.addShape = function(data){
+function ShapeModifier() {}
+ShapeModifier.prototype.initModifierProperties = function() {};
+ShapeModifier.prototype.addShapeToModifier = function() {};
+ShapeModifier.prototype.addShape = function(data) {
     if (!this.closed) {
         // Adding shape to dynamic properties. It covers the case where a shape has no effects applied, to reset it's _mdf state on every tick.
         data.sh.container.addDynamicProperty(data.sh);
@@ -32,7 +32,7 @@ ShapeModifier.prototype.addShape = function(data){
         }
     }
 };
-ShapeModifier.prototype.init = function(elem,data){
+ShapeModifier.prototype.init = function(elem,data) {
     this.shapes = [];
     this.elem = elem;
     this.initDynamicPropertyContainer(elem);
@@ -40,14 +40,14 @@ ShapeModifier.prototype.init = function(elem,data){
     this.frameId = initialDefaultFrame;
     this.closed = false;
     this.k = false;
-    if(this.dynamicProperties.length){
+    if(this.dynamicProperties.length) {
         this.k = true;
     }else{
         this.getValue(true);
     }
 };
-ShapeModifier.prototype.processKeys = function(){
-    if(this.elem.globalData.frameId === this.frameId){
+ShapeModifier.prototype.processKeys = function() {
+    if(this.elem.globalData.frameId === this.frameId) {
         return;
     }
     this.frameId = this.elem.globalData.frameId;

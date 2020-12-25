@@ -1,4 +1,4 @@
-var assetLoader = (function(){
+var assetLoader = (function() {
 
     function formatResponse(xhr) {
         if(xhr.response && typeof xhr.response === 'object') {
@@ -22,14 +22,14 @@ var assetLoader = (function(){
         xhr.send();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
-                if(xhr.status == 200){
+                if(xhr.status == 200) {
                     response = formatResponse(xhr);
                     callback(response);
                 }else{
                     try{
                         response = formatResponse(xhr);
                         callback(response);
-                    }catch(err){
+                    }catch(err) {
                         if(errorCallback) {
                             errorCallback(err);
                         }

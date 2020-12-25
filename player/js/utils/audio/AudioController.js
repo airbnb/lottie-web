@@ -39,11 +39,11 @@ var audioControllerFactory = (function() {
 			} else {
 				return {
 					isPlaying: false,
-					play: function(){ this.isPlaying = true },
-					seek: function(){ this.isPlaying = false },
-					playing: function(){},
-					rate: function(){},
-					setVolume: function(){},
+					play: function() { this.isPlaying = true },
+					seek: function() { this.isPlaying = false },
+					playing: function() {},
+					rate: function() {},
+					setVolume: function() {},
 				}
 			}
 		},

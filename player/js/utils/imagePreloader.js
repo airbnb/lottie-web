@@ -1,6 +1,6 @@
-var ImagePreloader = (function(){
+var ImagePreloader = (function() {
 
-    var proxyImage = (function(){
+    var proxyImage = (function() {
         var canvas = createTag('canvas');
         canvas.width = 1;
         canvas.height = 1;
@@ -10,9 +10,9 @@ var ImagePreloader = (function(){
         return canvas;
     }())
 
-    function imageLoaded(){
+    function imageLoaded() {
         this.loadedAssets += 1;
-        if(this.loadedAssets === this.totalImages){
+        if(this.loadedAssets === this.totalImages) {
             if(this.imagesLoadedCb) {
                 this.imagesLoadedCb(null);
             }
@@ -87,22 +87,22 @@ var ImagePreloader = (function(){
         return ob;
     }
 
-    function loadAssets(assets, cb){
+    function loadAssets(assets, cb) {
         this.imagesLoadedCb = cb;
         var i, len = assets.length;
         for (i = 0; i < len; i += 1) {
-            if(!assets[i].layers){
+            if(!assets[i].layers) {
                 this.totalImages += 1;
                 this.images.push(this._createImageData(assets[i]));
             }
         }
     }
 
-    function setPath(path){
+    function setPath(path) {
         this.path = path || '';
     }
 
-    function setAssetsPath(path){
+    function setAssetsPath(path) {
         this.assetsPath = path || '';
     }
 
@@ -134,7 +134,7 @@ var ImagePreloader = (function(){
         }
     }
 
-    function ImagePreloader(type){
+    function ImagePreloader(type) {
         this._imageLoaded = imageLoaded.bind(this);
         this.testImageLoaded = testImageLoaded.bind(this);
         this.assetsPath = '';

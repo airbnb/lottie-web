@@ -1,4 +1,4 @@
-var point_pool = (function(){
+var point_pool = (function() {
 
 	function create() {
 		return createTypedArray('float32', 2);

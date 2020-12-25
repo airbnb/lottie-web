@@ -1,4 +1,4 @@
-function AudioElement(data,globalData,comp){
+function AudioElement(data,globalData,comp) {
     this.initFrame();
     this.initRenderable();
     this.assetData = globalData.getAssetData(data.refId);

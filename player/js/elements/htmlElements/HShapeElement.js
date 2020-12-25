@@ -1,4 +1,4 @@
-function HShapeElement(data,globalData,comp){
+function HShapeElement(data,globalData,comp) {
     //List of drawable elements
     this.shapes = [];
     // Full shape data
@@ -28,7 +28,7 @@ function HShapeElement(data,globalData,comp){
 extendPrototype([BaseElement,TransformElement,HSolidElement,SVGShapeElement,HBaseElement,HierarchyElement,FrameElement,RenderableElement], HShapeElement);
 HShapeElement.prototype._renderShapeFrame = HShapeElement.prototype.renderInnerContent;
 
-HShapeElement.prototype.createContent = function(){
+HShapeElement.prototype.createContent = function() {
     var cont;
     this.baseElement.style.fontSize = 0;
     if (this.data.hasMask) {
@@ -195,17 +195,17 @@ HShapeElement.prototype.renderInnerContent = function() {
             return;
         }
         var changed = false;
-        if(this.currentBBox.w !== tempBoundingBox.width){
+        if(this.currentBBox.w !== tempBoundingBox.width) {
             this.currentBBox.w = tempBoundingBox.width;
             this.shapeCont.setAttribute('width',tempBoundingBox.width);
             changed = true;
         }
-        if(this.currentBBox.h !== tempBoundingBox.height){
+        if(this.currentBBox.h !== tempBoundingBox.height) {
             this.currentBBox.h = tempBoundingBox.height;
             this.shapeCont.setAttribute('height',tempBoundingBox.height);
             changed = true;
         }
-        if(changed  || this.currentBBox.x !== tempBoundingBox.x  || this.currentBBox.y !== tempBoundingBox.y){
+        if(changed  || this.currentBBox.x !== tempBoundingBox.x  || this.currentBBox.y !== tempBoundingBox.y) {
             this.currentBBox.w = tempBoundingBox.width;
             this.currentBBox.h = tempBoundingBox.height;
             this.currentBBox.x = tempBoundingBox.x;

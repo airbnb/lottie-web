@@ -1,4 +1,4 @@
-var PropertyFactory = (function(){
+var PropertyFactory = (function() {
 
     var initFrame = initialDefaultFrame;
     var math_abs = Math.abs;
@@ -17,18 +17,18 @@ var PropertyFactory = (function(){
         while (flag) {
             keyData = this.keyframes[i];
             nextKeyData = this.keyframes[i + 1];
-            if (i === len - 1 && frameNum >= nextKeyData.t - offsetTime){
-                if(keyData.h){
+            if (i === len - 1 && frameNum >= nextKeyData.t - offsetTime) {
+                if(keyData.h) {
                     keyData = nextKeyData;
                 }
                 iterationIndex = 0;
                 break;
             }
-            if ((nextKeyData.t - offsetTime) > frameNum){
+            if ((nextKeyData.t - offsetTime) > frameNum) {
                 iterationIndex = i;
                 break;
             }
-            if (i < len - 1){
+            if (i < len - 1) {
                 i += 1;
             } else {
                 iterationIndex = 0;
@@ -83,7 +83,7 @@ var PropertyFactory = (function(){
                         }
                         break;
                     }
-                    if (j < jLen - 1){
+                    if (j < jLen - 1) {
                         j += 1;
                     } else {
                         flag = false;
@@ -230,11 +230,11 @@ var PropertyFactory = (function(){
         return [x,y,z,w];
     }
 
-    function getValueAtCurrentTime(){
+    function getValueAtCurrentTime() {
         var frameNum = this.comp.renderedFrame - this.offsetTime;
         var initTime = this.keyframes[0].t - this.offsetTime;
         var endTime = this.keyframes[this.keyframes.length- 1].t-this.offsetTime;
-        if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))){
+        if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))) {
             if(this._caching.lastFrame >= frameNum) {
                 this._caching._lastKeyframeIndex = -1;
                 this._caching.lastIndex = 0;
@@ -295,7 +295,7 @@ var PropertyFactory = (function(){
         this.container.addDynamicProperty(this);
     }
 
-    function ValueProperty(elem, data, mult, container){
+    function ValueProperty(elem, data, mult, container) {
         this.propType = 'unidimensional';
         this.mult = mult || 1;
         this.data = data;
@@ -365,7 +365,7 @@ var PropertyFactory = (function(){
         this.addEffect = addEffect;
     }
 
-    function KeyframedMultidimensionalProperty(elem, data, mult, container){
+    function KeyframedMultidimensionalProperty(elem, data, mult, container) {
         this.propType = 'multidimensional';
         var i, len = data.k.length;
         var s, e,to,ti;
@@ -375,7 +375,7 @@ var PropertyFactory = (function(){
                 e = data.k[i + 1].s;
                 to = data.k[i].to;
                 ti = data.k[i].ti;
-                if((s.length === 2 && !(s[0] === e[0] && s[1] === e[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],s[0] + to[0],s[1] + to[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],e[0] + ti[0],e[1] + ti[1])) || (s.length === 3 && !(s[0] === e[0] && s[1] === e[1] && s[2] === e[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],s[0] + to[0],s[1] + to[1],s[2] + to[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],e[0] + ti[0],e[1] + ti[1],e[2] + ti[2]))){
+                if((s.length === 2 && !(s[0] === e[0] && s[1] === e[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],s[0] + to[0],s[1] + to[1]) && bez.pointOnLine2D(s[0],s[1],e[0],e[1],e[0] + ti[0],e[1] + ti[1])) || (s.length === 3 && !(s[0] === e[0] && s[1] === e[1] && s[2] === e[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],s[0] + to[0],s[1] + to[1],s[2] + to[2]) && bez.pointOnLine3D(s[0],s[1],s[2],e[0],e[1],e[2],e[0] + ti[0],e[1] + ti[1],e[2] + ti[2]))) {
                     data.k[i].to = null;
                     data.k[i].ti = null;
                 }
@@ -415,12 +415,12 @@ var PropertyFactory = (function(){
 
     function getProp(elem,data,type, mult, container) {
         var p;
-        if(!data.k.length){
+        if(!data.k.length) {
             p = new ValueProperty(elem,data, mult, container);
-        }else if(typeof(data.k[0]) === 'number'){
+        }else if(typeof(data.k[0]) === 'number') {
             p = new MultiDimensionalProperty(elem,data, mult, container);
         }else{
-            switch(type){
+            switch(type) {
                 case 0:
                     p = new KeyframedValueProperty(elem,data,mult, container);
                     break;
@@ -429,7 +429,7 @@ var PropertyFactory = (function(){
                     break;
             }
         }
-        if(p.effectsSequence.length){
+        if(p.effectsSequence.length) {
             container.addDynamicProperty(p);
         }
         return p;

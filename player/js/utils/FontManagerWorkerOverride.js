@@ -1,5 +1,5 @@
-FontManager = (function(){
-    var Font = function(){
+FontManager = (function() {
+    var Font = function() {
         this.fonts = [];
         this.chars = null;
         this.typekitLoaded = 0;

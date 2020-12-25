@@ -1,4 +1,4 @@
-function SVGGaussianBlurEffect(filter, filterManager){
+function SVGGaussianBlurEffect(filter, filterManager) {
     // Outset the filter region by 100% on all sides to accommodate blur expansion.
     filter.setAttribute('x','-100%');
     filter.setAttribute('y','-100%');
@@ -11,8 +11,8 @@ function SVGGaussianBlurEffect(filter, filterManager){
     this.feGaussianBlur = feGaussianBlur;
 }
 
-SVGGaussianBlurEffect.prototype.renderFrame = function(forceRender){
-    if(forceRender || this.filterManager._mdf){
+SVGGaussianBlurEffect.prototype.renderFrame = function(forceRender) {
+    if(forceRender || this.filterManager._mdf) {
         // Empirical value, matching AE's blur appearance.
         var kBlurrinessToSigma = 0.3;
         var sigma = this.filterManager.effectElements[0].p.v * kBlurrinessToSigma;

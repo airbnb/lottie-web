@@ -1,5 +1,5 @@
 dataManager.completeData = function(animationData, fontManager) {
-    if(animationData.__complete){
+    if(animationData.__complete) {
             return;
         }
         this.checkColors(animationData);

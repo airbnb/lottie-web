@@ -16,7 +16,7 @@ function ExpressionValue(elementProp, mult, type) {
             }
             expressionValue.value = arrValue;
         }
-    } else if (elementProp.propType === 'unidimensional'){
+    } else if (elementProp.propType === 'unidimensional') {
         val = elementProp.v * mult;
         expressionValue = new Number(val);
         expressionValue.value = val;
@@ -43,7 +43,7 @@ function ExpressionValue(elementProp, mult, type) {
     expressionValue.velocityAtTime = elementProp.getVelocityAtTime;
     expressionValue.propertyGroup = elementProp.propertyGroup;
     Object.defineProperty(expressionValue, 'velocity', {
-        get: function(){
+        get: function() {
             return elementProp.getVelocityAtTime(elementProp.comp.currentFrame);
         }
     });

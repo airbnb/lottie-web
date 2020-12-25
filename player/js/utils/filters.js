@@ -1,9 +1,9 @@
-var filtersFactory = (function(){
+var filtersFactory = (function() {
     var ob = {};
     ob.createFilter = createFilter;
     ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
-    function createFilter(filId){
+    function createFilter(filId) {
             var fil = createNS('filter');
             fil.setAttribute('id',filId);
                 fil.setAttribute('filterUnits','objectBoundingBox');
@@ -14,7 +14,7 @@ var filtersFactory = (function(){
                 return fil;
     }
 
-    function createAlphaToLuminanceFilter(){
+    function createAlphaToLuminanceFilter() {
                 var feColorMatrix = createNS('feColorMatrix');
                 feColorMatrix.setAttribute('type','matrix');
                 feColorMatrix.setAttribute('color-interpolation-filters','sRGB');

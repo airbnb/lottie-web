@@ -1,7 +1,7 @@
 (function addDecorator() {
 
-    function searchExpressions(){
-        if(this.data.d.x){
+    function searchExpressions() {
+        if(this.data.d.x) {
             this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem,this.data.d,this);
             this.addEffect(this.getExpressionValue.bind(this));
             return true;
@@ -20,7 +20,7 @@
         return currentValue;
     }
 
-    TextProperty.prototype.searchProperty = function(){
+    TextProperty.prototype.searchProperty = function() {
 
         var isKeyframed = this.searchKeyframes();
         var hasExpressions = this.searchExpressions();

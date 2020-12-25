@@ -1,4 +1,4 @@
-function RenderableElement(){
+function RenderableElement() {
 
 }
 
@@ -26,9 +26,9 @@ RenderableElement.prototype = {
     prepareRenderableFrame: function(num) {
         this.checkLayerLimits(num);
     },
-    checkTransparency: function(){
+    checkTransparency: function() {
         if(this.finalTransform.mProp.o.v <= 0) {
-            if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent){
+            if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent) {
                 this.isTransparent = true;
                 this.hide();
             }
@@ -48,14 +48,14 @@ RenderableElement.prototype = {
     checkLayerLimits: function(num) {
         if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num)
         {
-            if(this.isInRange !== true){
+            if(this.isInRange !== true) {
                 this.globalData._mdf = true;
                 this._mdf = true;
                 this.isInRange = true;
                 this.show();
             }
         } else {
-            if(this.isInRange !== false){
+            if(this.isInRange !== false) {
                 this.globalData._mdf = true;
                 this.isInRange = false;
                 this.hide();
@@ -70,7 +70,7 @@ RenderableElement.prototype = {
         /*this.maskManager.renderFrame(this.finalTransform.mat);
         this.renderableEffectsManager.renderFrame(this._isFirstFrame);*/
     },
-    sourceRectAtTime: function(){
+    sourceRectAtTime: function() {
         return {
             top:0,
             left:0,
@@ -78,8 +78,8 @@ RenderableElement.prototype = {
             height:100
         };
     },
-    getLayerSize: function(){
-        if(this.data.ty === 5){
+    getLayerSize: function() {
+        if(this.data.ty === 5) {
             return {w:this.data.textData.width,h:this.data.textData.height};
         }else{
             return {w:this.data.width,h:this.data.height};

@@ -1,6 +1,6 @@
 var _svgMatteSymbols = [];
 
-function SVGMatte3Effect(filterElem, filterManager, elem){
+function SVGMatte3Effect(filterElem, filterManager, elem) {
     this.initialized = false;
     this.filterManager = filterManager;
     this.filterElem = filterElem;

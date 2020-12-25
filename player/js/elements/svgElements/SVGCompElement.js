@@ -1,4 +1,4 @@
-function SVGCompElement(data,globalData,comp){
+function SVGCompElement(data,globalData,comp) {
     this.layers = data.layers;
     this.supports3d = true;
     this.completeLayers = false;

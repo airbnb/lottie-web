@@ -4,7 +4,7 @@
  *
  */
 
-function HierarchyElement(){}
+function HierarchyElement() {}
 
 HierarchyElement.prototype = {
     /**
@@ -26,7 +26,7 @@ HierarchyElement.prototype = {
      * layer's parent list
      *
      */ 
-    setHierarchy: function(hierarchy){
+    setHierarchy: function(hierarchy) {
         this.hierarchy = hierarchy;
     },
     /**
@@ -42,8 +42,8 @@ HierarchyElement.prototype = {
      * Searches layer's parenting chain
      *
      */ 
-    checkParenting: function(){
-        if (this.data.parent !== undefined){
+    checkParenting: function() {
+        if (this.data.parent !== undefined) {
             this.comp.buildElementParenting(this, this.data.parent, []);
         }
     }

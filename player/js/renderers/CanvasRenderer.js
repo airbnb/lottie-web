@@ -1,4 +1,4 @@
-function CanvasRenderer(animationItem, config){
+function CanvasRenderer(animationItem, config) {
     this.animationItem = animationItem;
     this.renderConfig = {
         clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
@@ -51,11 +51,11 @@ CanvasRenderer.prototype.createSolid = function (data) {
 
 CanvasRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
-CanvasRenderer.prototype.ctxTransform = function(props){
-    if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0){
+CanvasRenderer.prototype.ctxTransform = function(props) {
+    if(props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0) {
         return;
     }
-    if(!this.renderConfig.clearCanvas){
+    if(!this.renderConfig.clearCanvas) {
         this.canvasContext.transform(props[0],props[1],props[4],props[5],props[12],props[13]);
         return;
     }
@@ -68,11 +68,11 @@ CanvasRenderer.prototype.ctxTransform = function(props){
     this.canvasContext.setTransform(trProps[0],trProps[1],trProps[4],trProps[5],trProps[12],trProps[13]);
 };
 
-CanvasRenderer.prototype.ctxOpacity = function(op){
+CanvasRenderer.prototype.ctxOpacity = function(op) {
     /*if(op === 1){
         return;
     }*/
-    if(!this.renderConfig.clearCanvas){
+    if(!this.renderConfig.clearCanvas) {
         this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
         this.globalData.currentGlobalAlpha = this.contextData.cO;
         return;
@@ -84,20 +84,20 @@ CanvasRenderer.prototype.ctxOpacity = function(op){
     }
 };
 
-CanvasRenderer.prototype.reset = function(){
-    if(!this.renderConfig.clearCanvas){
+CanvasRenderer.prototype.reset = function() {
+    if(!this.renderConfig.clearCanvas) {
         this.canvasContext.restore();
         return;
     }
     this.contextData.reset();
 };
 
-CanvasRenderer.prototype.save = function(actionFlag){
-    if(!this.renderConfig.clearCanvas){
+CanvasRenderer.prototype.save = function(actionFlag) {
+    if(!this.renderConfig.clearCanvas) {
         this.canvasContext.save();
         return;
     }
-    if(actionFlag){
+    if(actionFlag) {
         this.canvasContext.save();
     }
     var props = this.contextData.cTr.props;
@@ -112,19 +112,19 @@ CanvasRenderer.prototype.save = function(actionFlag){
     this.contextData.cArrPos += 1;
 };
 
-CanvasRenderer.prototype.restore = function(actionFlag){
-    if(!this.renderConfig.clearCanvas){
+CanvasRenderer.prototype.restore = function(actionFlag) {
+    if(!this.renderConfig.clearCanvas) {
         this.canvasContext.restore();
         return;
     }
-    if(actionFlag){
+    if(actionFlag) {
         this.canvasContext.restore();
         this.globalData.blendMode = 'source-over';
     }
     this.contextData.cArrPos -= 1;
     var popped = this.contextData.saved[this.contextData.cArrPos];
     var i,arr = this.contextData.cTr.props;
-    for(i=0;i<16;i+=1){
+    for(i=0;i<16;i+=1) {
         arr[i] = popped[i];
     }
     this.canvasContext.setTransform(popped[0],popped[1],popped[4],popped[5],popped[12],popped[13]);
@@ -136,8 +136,8 @@ CanvasRenderer.prototype.restore = function(actionFlag){
     }
 };
 
-CanvasRenderer.prototype.configAnimation = function(animData){
-    if(this.animationItem.wrapper){
+CanvasRenderer.prototype.configAnimation = function(animData) {
+    if(this.animationItem.wrapper) {
         this.animationItem.container = createTag('canvas');
         this.animationItem.container.style.width = '100%';
         this.animationItem.container.style.height = '100%';
@@ -179,7 +179,7 @@ CanvasRenderer.prototype.configAnimation = function(animData){
 CanvasRenderer.prototype.updateContainerSize = function () {
     this.reset();
     var elementWidth,elementHeight;
-    if(this.animationItem.wrapper && this.animationItem.container){
+    if(this.animationItem.wrapper && this.animationItem.container) {
         elementWidth = this.animationItem.wrapper.offsetWidth;
         elementHeight = this.animationItem.wrapper.offsetHeight;
         this.animationItem.container.setAttribute('width',elementWidth * this.renderConfig.dpr );
@@ -189,7 +189,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
     }
     var elementRel,animationRel;
-    if(this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1){
+    if(this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1) {
         var par = this.renderConfig.preserveAspectRatio.split(' ');
         var fillType = par[1] || 'meet';
         var pos = par[0] || 'xMidYMid';
@@ -197,7 +197,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
         var yPos = pos.substr(4);
         elementRel = elementWidth/elementHeight;
         animationRel = this.transformCanvas.w/this.transformCanvas.h;
-        if(animationRel>elementRel && fillType === 'meet' || animationRel<elementRel && fillType === 'slice'){
+        if(animationRel>elementRel && fillType === 'meet' || animationRel<elementRel && fillType === 'slice') {
             this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
             this.transformCanvas.sy = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
         }else{
@@ -205,22 +205,22 @@ CanvasRenderer.prototype.updateContainerSize = function () {
             this.transformCanvas.sy = elementHeight/(this.transformCanvas.h / this.renderConfig.dpr);
         }
 
-        if(xPos === 'xMid' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))){
+        if(xPos === 'xMid' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))) {
             this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))/2*this.renderConfig.dpr;
-        } else if(xPos === 'xMax' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))){
+        } else if(xPos === 'xMax' && ((animationRel<elementRel && fillType==='meet') || (animationRel>elementRel && fillType === 'slice'))) {
             this.transformCanvas.tx = (elementWidth-this.transformCanvas.w*(elementHeight/this.transformCanvas.h))*this.renderConfig.dpr;
         } else {
             this.transformCanvas.tx = 0;
         }
-        if(yPos === 'YMid' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))){
+        if(yPos === 'YMid' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))) {
             this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w))/2)*this.renderConfig.dpr;
-        } else if(yPos === 'YMax' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))){
+        } else if(yPos === 'YMax' && ((animationRel>elementRel && fillType==='meet') || (animationRel<elementRel && fillType === 'slice'))) {
             this.transformCanvas.ty = ((elementHeight-this.transformCanvas.h*(elementWidth/this.transformCanvas.w)))*this.renderConfig.dpr;
         } else {
             this.transformCanvas.ty = 0;
         }
 
-    }else if(this.renderConfig.preserveAspectRatio == 'none'){
+    }else if(this.renderConfig.preserveAspectRatio == 'none') {
         this.transformCanvas.sx = elementWidth/(this.transformCanvas.w/this.renderConfig.dpr);
         this.transformCanvas.sy = elementHeight/(this.transformCanvas.h/this.renderConfig.dpr);
         this.transformCanvas.tx = 0;
@@ -263,8 +263,8 @@ CanvasRenderer.prototype.destroy = function () {
     this.destroyed = true;
 };
 
-CanvasRenderer.prototype.renderFrame = function(num, forceRender){
-    if((this.renderedFrame === num && this.renderConfig.clearCanvas === true && !forceRender) || this.destroyed || num === -1){
+CanvasRenderer.prototype.renderFrame = function(num, forceRender) {
+    if((this.renderedFrame === num && this.renderConfig.clearCanvas === true && !forceRender) || this.destroyed || num === -1) {
         return;
     }
     this.renderedFrame = num;
@@ -276,35 +276,35 @@ CanvasRenderer.prototype.renderFrame = function(num, forceRender){
      // console.log('--------');
      // console.log('NEW: ',num);
     var i, len = this.layers.length;
-    if(!this.completeLayers){
+    if(!this.completeLayers) {
         this.checkLayers(num);
     }
 
     for (i = 0; i < len; i++) {
-        if(this.completeLayers || this.elements[i]){
+        if(this.completeLayers || this.elements[i]) {
             this.elements[i].prepareFrame(num - this.layers[i].st);
         }
     }
     if(this.globalData._mdf) {
-        if(this.renderConfig.clearCanvas === true){
+        if(this.renderConfig.clearCanvas === true) {
             this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
         }else{
             this.save();
         }
         for (i = len - 1; i >= 0; i-=1) {
-            if(this.completeLayers || this.elements[i]){
+            if(this.completeLayers || this.elements[i]) {
                 this.elements[i].renderFrame();
             }
         }
-        if(this.renderConfig.clearCanvas !== true){
+        if(this.renderConfig.clearCanvas !== true) {
             this.restore();
         }
     }
 };
 
-CanvasRenderer.prototype.buildItem = function(pos){
+CanvasRenderer.prototype.buildItem = function(pos) {
     var elements = this.elements;
-    if(elements[pos] || this.layers[pos].ty == 99){
+    if(elements[pos] || this.layers[pos].ty == 99) {
         return;
     }
     var element = this.createItem(this.layers[pos], this,this.globalData);
@@ -315,17 +315,17 @@ CanvasRenderer.prototype.buildItem = function(pos){
     }*/
 };
 
-CanvasRenderer.prototype.checkPendingElements  = function(){
-    while(this.pendingElements.length){
+CanvasRenderer.prototype.checkPendingElements  = function() {
+    while(this.pendingElements.length) {
         var element = this.pendingElements.pop();
         element.checkParenting();
     }
 };
 
-CanvasRenderer.prototype.hide = function(){
+CanvasRenderer.prototype.hide = function() {
     this.animationItem.container.style.display = 'none';
 };
 
-CanvasRenderer.prototype.show = function(){
+CanvasRenderer.prototype.show = function() {
     this.animationItem.container.style.display = 'block';
 };

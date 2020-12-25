@@ -1,4 +1,4 @@
-function SVGStrokeStyleData(elem, data, styleOb){
+function SVGStrokeStyleData(elem, data, styleOb) {
 	this.initDynamicPropertyContainer(elem);
 	this.getValue = this.iterateDynamicProperties;
 	this.o = PropertyFactory.getProp(elem,data.o,0,0.01,this);
