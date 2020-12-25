@@ -583,38 +583,6 @@ function parseHTML(html) {
 	})
 }
 
-function getScripts($) {
-	return new Promise((resolve, reject)=> {
-		try {
-			const scriptNodes = []
-			let shouldAddToScripts = false;
-			$("head").contents().each((index, node) => {
-				if(node.nodeType === 8 && node.data.indexOf('build:js') !== -1) {
-					shouldAddToScripts = true;
-				} else if(shouldAddToScripts) {
-					if(node.type === 'script') {
-
-						scriptNodes.push(node)
-					} else if(node.nodeType === 8 && node.data.indexOf('endbuild') !== -1) {
-						shouldAddToScripts = false;
-					}
-				}
-			})
-			const scripts = scriptNodes.map((node)=>{
-				const builds = node.attribs['data-builds'] ? node.attribs['data-builds'].split(',') : defaultBuilds
-				return {
-					src: node.attribs.src,
-					builds: builds,
-				}
-			})
-			resolve(scripts);
-		} catch(err) {
-			reject(err);
-		}
-
-	})
-}
-
 function concatScripts(scripts, build) {
 	return new Promise((resolve, reject)=>{
 		// Concatenating scripts
@@ -639,7 +607,7 @@ function wrapScriptWithModule(code, build) {
 			// Wrapping with module
 			let moduleFileName = (build =='canvas_worker') ? 'module_worker' : 'module';
 			let wrappedCode = fs.readFileSync(`${rootFolder}js/${moduleFileName}.js`, "utf8");
-			wrappedCode = wrappedCode.replace('/*<%= contents %>*/',code);
+			wrappedCode = wrappedCode.replace('/* <%= contents %> */',code);
 			wrappedCode = wrappedCode.replace('[[BM_VERSION]]',bm_version);
 			resolve(wrappedCode);
 		} catch(err) {
@@ -824,7 +792,6 @@ async function build() {
 	try {
 		const htmlData = await loadIndex();
 		const parsedData = await parseHTML(htmlData);
-		// const scripts = await getScripts(parsedData);
 		const result = await buildVersions(scripts);
 		console.log(result);
 
