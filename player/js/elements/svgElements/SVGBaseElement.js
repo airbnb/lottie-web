@@ -152,6 +152,6 @@ SVGBaseElement.prototype = {
         if (!this.matteElement) {
             return;
         }
-        this.matteElement.setAttribute("mask", "url(" + locationHref + "#" + id + ")");
+        this.matteElement.setAttribute('mask', 'url(' + locationHref + '#' + id + ')');
     }
 };

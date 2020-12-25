@@ -133,10 +133,10 @@ SVGTextElement.prototype.buildNewText = function(){
                 }
             } else {
                 if(singleShape) {
-                    tSpan.setAttribute("transform", "translate(" + matrixHelper.props[12] + "," + matrixHelper.props[13] + ")");
+                    tSpan.setAttribute('transform', 'translate(' + matrixHelper.props[12] + ',' + matrixHelper.props[13] + ')');
                 }
                 tSpan.textContent = letters[i].val;
-                tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
+                tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space','preserve');
             }
             //
         }

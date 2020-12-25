@@ -1,5 +1,5 @@
 var lottiejs = (function(window) {
-    "use strict";
+    'use strict';
     /*<%= contents %>*/
     var lottiejs = {};
 
@@ -61,7 +61,7 @@ var animations = [];
 var onmessage = function(evt) {
     var canvas = evt.data.canvas;
     var params = evt.data.params;
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext('2d');
     var animation = lottiejs.loadAnimation({
         renderer: 'canvas',
         loop: evt.data.loop,

@@ -143,7 +143,7 @@ HTextElement.prototype.buildNewText = function(){
             }
         }else{
             tSpan.textContent = letters[i].val;
-            tSpan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space","preserve");
+            tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space','preserve');
             if(!this.isMasked){
                 this.innerElem.appendChild(tParent);
                 //

@@ -148,8 +148,8 @@ var FontManager = (function(){
                     s.setAttribute('f-forigin', fontArr[i].fOrigin);
                     s.setAttribute('f-origin', fontArr[i].origin);
                     s.setAttribute('f-family', fontArr[i].fFamily);
-                    s.type = "text/css";
-                    s.innerText = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+                    s.type = 'text/css';
+                    s.innerText = '@font-face {' + 'font-family: '+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
                     defs.appendChild(s);
                 }
             } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
@@ -166,8 +166,8 @@ var FontManager = (function(){
                     var l = createTag('link');
                     l.setAttribute('f-forigin', fontArr[i].fOrigin);
                     l.setAttribute('f-origin', fontArr[i].origin);
-                    l.type = "text/css";
-                    l.rel = "stylesheet";
+                    l.type = 'text/css';
+                    l.rel = 'stylesheet';
                     l.href = fontArr[i].fPath;
                     document.body.appendChild(l);
                 }

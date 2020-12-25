@@ -374,7 +374,7 @@ var Matrix = (function(){
         var _d = roundMatrixProperty(props[5]);
         var _e = roundMatrixProperty(props[12]);
         var _f = roundMatrixProperty(props[13]);
-        return "matrix(" + _a + ',' + _b + ',' + _c + ',' + _d + ',' + _e + ',' + _f + ")";
+        return 'matrix(' + _a + ',' + _b + ',' + _c + ',' + _d + ',' + _e + ',' + _f + ')';
     }
 
     return function(){

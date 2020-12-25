@@ -11,7 +11,7 @@ var CompExpressionInterface = (function () {
             return null;
             //return {active:false};
         }
-        Object.defineProperty(_thisLayerFunction, "_name", { value: comp.data.nm });
+        Object.defineProperty(_thisLayerFunction, '_name', { value: comp.data.nm });
         _thisLayerFunction.layer = _thisLayerFunction;
         _thisLayerFunction.pixelAspect = 1;
         _thisLayerFunction.height = comp.data.h || comp.globalData.compSize.h;

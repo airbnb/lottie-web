@@ -623,7 +623,7 @@ var ExpressionManager = (function(){
                 fromCompToSurface = fromComp;
             }
             if (!transform) {
-                transform = elem.layerInterface("ADBE Transform Group");
+                transform = elem.layerInterface('ADBE Transform Group');
                 $bm_transform = transform;
                 if(transform) {
                     anchorPoint = transform.anchorPoint;
@@ -634,7 +634,7 @@ var ExpressionManager = (function(){
             }
             
             if (elemType === 4 && !content) {
-                content = thisLayer("ADBE Root Vectors Group");
+                content = thisLayer('ADBE Root Vectors Group');
             }
             if (!effect) {
                 effect = thisLayer(4);
@@ -651,7 +651,7 @@ var ExpressionManager = (function(){
             this.frameExpressionId = elem.globalData.frameId;
 
             //TODO: Check if it's possible to return on ShapeInterface the .v value
-            if (scoped_bm_rt.propType === "shape") {
+            if (scoped_bm_rt.propType === 'shape') {
                 scoped_bm_rt = scoped_bm_rt.v;
             }
             // globalData.popExpression();

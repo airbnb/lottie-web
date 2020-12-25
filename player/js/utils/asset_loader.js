@@ -17,7 +17,7 @@ var assetLoader = (function(){
         // set responseType after calling open or IE will break.
         try {
             // This crashes on Android WebView prior to KitKat
-            xhr.responseType = "json";
+            xhr.responseType = 'json';
         } catch (err) {}
         xhr.send();
         xhr.onreadystatechange = function () {

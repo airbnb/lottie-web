@@ -136,7 +136,7 @@ HybridRenderer.prototype.createThreeDContainer = function(pos, type){
     if(type === '3d') {
         perspectiveElem.style.width = this.globalData.compSize.w+'px';
         perspectiveElem.style.height = this.globalData.compSize.h+'px';
-        perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "50% 50%";
+        perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = '50% 50%';
         container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     }
     
@@ -208,7 +208,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     resizerElem.style.height = animData.h+'px';
     this.resizerElem = resizerElem;
     styleDiv(resizerElem);
-    resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
+    resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = 'flat';
     if(this.renderConfig.className) {
       resizerElem.setAttribute('class', this.renderConfig.className);
     }

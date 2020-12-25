@@ -43,7 +43,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function(pathElement,data){
 SVGGradientFillStyleData.prototype.setGradientOpacity = function(data, styleOb){
     if(this.g._hasOpacity && !this.g._collapsable){
         var stop, j, jLen;
-        var mask = createNS("mask");
+        var mask = createNS('mask');
         var maskElement = createNS( 'path');
         mask.appendChild(maskElement);
         var opacityId = createElementID();

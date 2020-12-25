@@ -86,22 +86,22 @@ var LayerExpressionInterface = (function (){
 
         function _thisLayerFunction(name){
             switch(name){
-                case "ADBE Root Vectors Group":
-                case "Contents":
+                case 'ADBE Root Vectors Group':
+                case 'Contents':
                 case 2:
                     return _thisLayerFunction.shapeInterface;
                 case 1:
                 case 6:
-                case "Transform":
-                case "transform":
-                case "ADBE Transform Group":
+                case 'Transform':
+                case 'transform':
+                case 'ADBE Transform Group':
                     return transformInterface;
                 case 4:
-                case "ADBE Effect Parade":
-                case "effects":
-                case "Effects":
+                case 'ADBE Effect Parade':
+                case 'effects':
+                case 'Effects':
                     return _thisLayerFunction.effect;
-                case "ADBE Text Properties":
+                case 'ADBE Text Properties':
                     return _thisLayerFunction.textInterface;
             }
         }

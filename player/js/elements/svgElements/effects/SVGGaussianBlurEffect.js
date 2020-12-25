@@ -27,7 +27,7 @@ SVGGaussianBlurEffect.prototype.renderFrame = function(forceRender){
         var sigmaX = (dimensions == 3) ? 0 : sigma;
         var sigmaY = (dimensions == 2) ? 0 : sigma;
 
-        this.feGaussianBlur.setAttribute('stdDeviation', sigmaX + " " + sigmaY);
+        this.feGaussianBlur.setAttribute('stdDeviation', sigmaX + ' ' + sigmaY);
 
         // Repeat edges mapping:
         //

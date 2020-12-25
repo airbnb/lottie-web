@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*<%= contents %>*/
 var lottie = {};
 
@@ -62,11 +62,11 @@ function installPlugin(type, plugin) {
 
 function getFactory(name) {
     switch (name) {
-        case "propertyFactory":
+        case 'propertyFactory':
             return PropertyFactory;
-        case "shapePropertyFactory":
+        case 'shapePropertyFactory':
             return ShapePropertyFactory;
-        case "matrix":
+        case 'matrix':
             return Matrix;
     }
 }
@@ -99,7 +99,7 @@ lottie.__getFactory = getFactory;
 lottie.version = '[[BM_VERSION]]';
 
 function checkReady() {
-    if (document.readyState === "complete") {
+    if (document.readyState === 'complete') {
         clearInterval(readyStateCheckInterval);
         searchAnimations();
     }

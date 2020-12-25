@@ -251,7 +251,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
                         i = lastSpaceIndex;
                     }
                     currentHeight += documentData.finalLineHeight || documentData.finalSize*1.2;
-                    finalText.splice(i, lastSpaceIndex === i ? 1 : 0,"\r");
+                    finalText.splice(i, lastSpaceIndex === i ? 1 : 0,'\r');
                     //finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
                     lastSpaceIndex = -1;
                     lineWidth = 0;

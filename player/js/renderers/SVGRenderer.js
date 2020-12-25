@@ -131,7 +131,7 @@ SVGRenderer.prototype.configAnimation = function(animData){
     var maskId = createElementID();
     maskElement.setAttribute('id', maskId);
     maskElement.appendChild(rect);
-    this.layerElement.setAttribute("clip-path", "url(" + locationHref + "#"+maskId+")");
+    this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#'+maskId+')');
 
     defs.appendChild(maskElement);
     this.layers = animData.layers;
