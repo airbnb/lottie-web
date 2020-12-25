@@ -47,8 +47,9 @@
 
         // Flatten the seed string or build one from local entropy if needed.
         var shortseed = mixkey(flatten(
-            options.entropy ? [seed, tostring(pool)] :
-                (seed === null) ? autoseed() : seed, 3), key);
+            options.entropy ? [seed, tostring(pool)]
+                : (seed === null) ? autoseed() : seed, 3
+), key);
 
         // Use the seed to initialize an ARC4 generator.
         var arc4 = new ARC4(key);
@@ -80,8 +81,8 @@
         mixkey(tostring(arc4.S), pool);
 
         // Calling convention: what to return as a function of prng, seed, is_math.
-        return (options.pass || callback ||
-        function(prng, seed, is_math_call, state) {
+        return (options.pass || callback
+        || function(prng, seed, is_math_call, state) {
             if (state) {
                 // Load the arc4 state from the given state if it has an S array.
                 if (state.S) { copy(state, arc4); }
@@ -100,7 +101,8 @@
             prng,
             shortseed,
             'global' in options ? options.global : (this == math),
-            options.state);
+            options.state
+);
     }
     math['seed' + rngname] = seedrandom;
 
@@ -166,7 +168,9 @@
         var result = [], typ = (typeof obj), prop;
         if (depth && typ == 'object') {
             for (prop in obj) {
-                try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+                if (obj.hasOwnProperty(props)) {
+                    try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+                }
             }
         }
         return (result.length ? result : typ == 'string' ? obj : obj + '\0');
@@ -180,8 +184,7 @@
     function mixkey(seed, key) {
         var stringseed = seed + '', smear, j = 0;
         while (j < stringseed.length) {
-            key[mask & j] =
-                mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
+            key[mask & j] = mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
         }
         return tostring(key);
     }
