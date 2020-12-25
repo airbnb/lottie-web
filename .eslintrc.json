@@ -15,7 +15,6 @@
         "prefer-template": "off",
         "linebreak-style": "off",
         "no-undef": "off",
-        "indent": "off",
         "func-names": "off",
         "no-param-reassign": "off",
         "keyword-spacing": "off",
