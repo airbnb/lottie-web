@@ -32,12 +32,12 @@
         };
     }());
 
-	var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-	TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
-	    if(data.t === 1){
-	        return new TextExpressionSelectorProp(elem, data,arr);
-	    } else {
-	        return propertyGetTextProp(elem,data,arr);
-	    }
-	};
+    var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
+    TextSelectorProp.getTextSelectorProp = function(elem, data,arr){
+        if(data.t === 1){
+            return new TextExpressionSelectorProp(elem, data,arr);
+        } else {
+            return propertyGetTextProp(elem,data,arr);
+        }
+    };
 }());

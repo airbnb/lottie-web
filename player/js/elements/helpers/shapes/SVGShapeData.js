@@ -12,11 +12,11 @@ function SVGShapeData(transformers, level, shape) {
     // TODO: commenting this for now since all shapes are animated
     var i = 0, len = transformers.length;
     while(i < len) {
-    	if(transformers[i].mProps.dynamicProperties.length) {
-    		this._isAnimated = true;
-    		break;
-    	}
-    	i += 1;
+        if(transformers[i].mProps.dynamicProperties.length) {
+            this._isAnimated = true;
+            break;
+        }
+        i += 1;
     }
 }
 

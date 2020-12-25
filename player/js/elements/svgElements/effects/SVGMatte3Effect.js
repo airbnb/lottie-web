@@ -76,16 +76,16 @@ SVGMatte3Effect.prototype.initialize = function() {
     var elements = this.elem.comp.elements;
     var i = 0, len = elements.length;
     while (i < len) {
-    	if (elements[i] && elements[i].data.ind === ind) {
-    		this.setElementAsMask(this.elem, elements[i]);
-    	}
-    	i += 1;
+        if (elements[i] && elements[i].data.ind === ind) {
+            this.setElementAsMask(this.elem, elements[i]);
+        }
+        i += 1;
     }
     this.initialized = true;
 };
 
 SVGMatte3Effect.prototype.renderFrame = function() {
-	if(!this.initialized) {
-		this.initialize();
-	}
+    if(!this.initialized) {
+        this.initialize();
+    }
 };

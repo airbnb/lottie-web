@@ -2,26 +2,26 @@ function ExpressionValue(elementProp, mult, type) {
     mult = mult || 1;
     var expressionValue, arrayValue;
 
-	if (elementProp.k) {
+    if (elementProp.k) {
         elementProp.getValue();
     }
     var i, len, arrValue, val;
     if (type) {
-    	if(type === 'color') {
-    		len = 4;
+        if(type === 'color') {
+            len = 4;
             expressionValue = createTypedArray('float32', len);
             arrValue = createTypedArray('float32', len);
-	        for (i = 0; i < len; i += 1) {
-	            expressionValue[i] = arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
-	        }
-        	expressionValue.value = arrValue;
-    	}
+            for (i = 0; i < len; i += 1) {
+                expressionValue[i] = arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
+            }
+            expressionValue.value = arrValue;
+        }
     } else if (elementProp.propType === 'unidimensional'){
         val = elementProp.v * mult;
         expressionValue = new Number(val);
         expressionValue.value = val;
     } else {
-    	len = elementProp.pv.length;
+        len = elementProp.pv.length;
         expressionValue = createTypedArray('float32', len);
         arrValue = createTypedArray('float32', len);
         for (i = 0; i < len; i += 1) {
