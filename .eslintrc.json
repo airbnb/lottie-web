@@ -42,7 +42,6 @@
         "no-multiple-empty-lines": "off",
         "prefer-destructuring": "off",
         "no-use-before-define": "off",
-        "eol-last": "off",
         "strict": "off",
         "lines-around-directive": "off",
         "consistent-return": "off",
