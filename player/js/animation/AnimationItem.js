@@ -493,6 +493,8 @@ AnimationItem.prototype.destroy = function (name) {
     this._cbs = null;
     this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
     this.renderer = null;
+    this.imagePreloader = null;
+    this.projectInterface = null;
 };
 
 AnimationItem.prototype.setCurrentRawFrameValue = function(value){
