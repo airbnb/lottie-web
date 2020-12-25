@@ -143,8 +143,8 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
   perspectiveElem.appendChild(container);
   // this.resizerElem.appendChild(perspectiveElem);
   var threeDContainerData = {
-    container:container,
-    perspectiveElem:perspectiveElem,
+    container: container,
+    perspectiveElem: perspectiveElem,
     startPos: pos,
     endPos: pos,
     type: type,

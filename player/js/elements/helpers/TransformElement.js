@@ -3,7 +3,7 @@ function TransformElement() {}
 TransformElement.prototype = {
   initTransform: function () {
     this.finalTransform = {
-      mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this) : {o:0},
+      mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this) : {o: 0},
       _matMdf: false,
       _opMdf: false,
       mat: new Matrix(),

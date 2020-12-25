@@ -137,8 +137,8 @@ function dataFunctionManager() {
       textLayer.t.d = {
         k: [
           {
-            s:documentData,
-            t:0,
+            s: documentData,
+            t: 0,
           },
         ],
       };

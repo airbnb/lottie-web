@@ -62,7 +62,7 @@ var animationManager = (function () {
     animItem.addEventListener('destroy', removeElement);
     animItem.addEventListener('_active', addPlayingCount);
     animItem.addEventListener('_idle', subtractPlayingCount);
-    registeredAnimations.push({elem: element, animation:animItem});
+    registeredAnimations.push({elem: element, animation: animItem});
     len += 1;
   }
 

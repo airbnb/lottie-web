@@ -160,22 +160,22 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
           segments.length = 0;
           if (shapeE <= 1) {
             segments.push({
-              s:shapeData.totalShapeLength * shapeS,
-              e:shapeData.totalShapeLength * shapeE,
+              s: shapeData.totalShapeLength * shapeS,
+              e: shapeData.totalShapeLength * shapeE,
             });
           } else if (shapeS >= 1) {
             segments.push({
-              s:shapeData.totalShapeLength * (shapeS - 1),
-              e:shapeData.totalShapeLength * (shapeE - 1),
+              s: shapeData.totalShapeLength * (shapeS - 1),
+              e: shapeData.totalShapeLength * (shapeE - 1),
             });
           } else {
             segments.push({
-              s:shapeData.totalShapeLength * shapeS,
-              e:shapeData.totalShapeLength,
+              s: shapeData.totalShapeLength * shapeS,
+              e: shapeData.totalShapeLength,
             });
             segments.push({
-              s:0,
-              e:shapeData.totalShapeLength * (shapeE - 1),
+              s: 0,
+              e: shapeData.totalShapeLength * (shapeE - 1),
             });
           }
           var newShapesData = this.addShapes(shapeData, segments[0]);

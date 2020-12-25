@@ -31,14 +31,14 @@ function TextProperty(elem, data) {
     sw: 0,
     t: 0,
     tr: 0,
-    sz:0,
-    ps:null,
+    sz: 0,
+    ps: null,
     fillColorAnim: false,
     strokeColorAnim: false,
     strokeWidthAnim: false,
     yOffset: 0,
-    finalSize:0,
-    finalText:[],
+    finalSize: 0,
+    finalText: [],
     finalLineHeight: 0,
     __complete: false,
 
@@ -307,7 +307,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
       lineWidth += cLength + trackingOffset + uncollapsedSpaces;
       uncollapsedSpaces = 0;
     }
-    letters.push({l:cLength, an:cLength, add:currentSize, n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
+    letters.push({l: cLength, an: cLength, add: currentSize, n: newLineFlag, anIndexes: [], val: val, line: currentLine, animatorJustifyOffset: 0});
     if(anchorGrouping == 2) {
       currentSize += cLength;
       if(val === '' || val === ' ' || i === len - 1) {

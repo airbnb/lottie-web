@@ -169,10 +169,10 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
 
   return {
-    v:vValues,
-    o:oValues,
-    i:iValues,
-    c:path.c,
+    v: vValues,
+    o: oValues,
+    i: iValues,
+    c: path.c,
   };
 }
 
@@ -198,12 +198,12 @@ MouseModifier.prototype.processShapes = function () {
         for(j = 0; j < jLen; j += 1) {
           if(!this.positions[i][j]) {
             this.positions[i][j] = {
-              v:[],
-              o:[],
-              i:[],
-              distV:[],
-              distO:[],
-              distI:[],
+              v: [],
+              o: [],
+              i: [],
+              distV: [],
+              distO: [],
+              distI: [],
             };
           }
           newPaths.push(this.processPath(shapePaths[j], localMouseCoords, this.positions[i][j]));

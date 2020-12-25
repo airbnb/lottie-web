@@ -32,5 +32,5 @@ var createTypedArray = (function () {
 }());
 
 function createSizedArray(len) {
-  return Array.apply(null, {length:len});
+  return Array.apply(null, {length: len});
 }

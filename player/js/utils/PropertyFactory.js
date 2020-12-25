@@ -409,7 +409,7 @@ var PropertyFactory = (function () {
       this.v[i] = initFrame;
       this.pv[i] = initFrame;
     }
-    this._caching = {lastFrame:initFrame, lastIndex:0, value:createTypedArray('float32', arrLen)};
+    this._caching = {lastFrame: initFrame, lastIndex: 0, value: createTypedArray('float32', arrLen)};
     this.addEffect = addEffect;
   }
 

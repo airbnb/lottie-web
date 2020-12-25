@@ -169,7 +169,7 @@ var TransformPropertyFactory = (function () {
         this.pz = PropertyFactory.getProp(elem, data.p.z, 0, 0, this);
       }
     }else{
-      this.p = PropertyFactory.getProp(elem, data.p || {k:[0, 0, 0]}, 1, 0, this);
+      this.p = PropertyFactory.getProp(elem, data.p || {k: [0, 0, 0]}, 1, 0, this);
     }
     if(data.rx) {
       this.rx = PropertyFactory.getProp(elem, data.rx, 0, degToRads, this);
@@ -191,13 +191,13 @@ var TransformPropertyFactory = (function () {
       this.sk = PropertyFactory.getProp(elem, data.sk, 0, degToRads, this);
       this.sa = PropertyFactory.getProp(elem, data.sa, 0, degToRads, this);
     }
-    this.a = PropertyFactory.getProp(elem, data.a || {k:[0, 0, 0]}, 1, 0, this);
-    this.s = PropertyFactory.getProp(elem, data.s || {k:[100, 100, 100]}, 1, 0.01, this);
+    this.a = PropertyFactory.getProp(elem, data.a || {k: [0, 0, 0]}, 1, 0, this);
+    this.s = PropertyFactory.getProp(elem, data.s || {k: [100, 100, 100]}, 1, 0.01, this);
     // Opacity is not part of the transform properties, that's why it won't use this.dynamicProperties. That way transforms won't get updated if opacity changes.
     if(data.o) {
       this.o = PropertyFactory.getProp(elem, data.o, 0, 0.01, elem);
     } else {
-      this.o = {_mdf:false, v:1};
+      this.o = {_mdf: false, v: 1};
     }
     this._isDirty = true;
     if(!this.dynamicProperties.length) {

@@ -2,7 +2,7 @@ function HTextElement(data, globalData, comp) {
   this.textSpans = [];
   this.textPaths = [];
   this.currentBBox = {
-    x:999999,
+    x: 999999,
     y: -999999,
     h: 0,
     w: 0,

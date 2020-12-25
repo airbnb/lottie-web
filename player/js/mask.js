@@ -77,9 +77,9 @@ function MaskElement(data, element, globalData) {
       x: x,
       expan: feMorph,
       lastPath: '',
-      lastOperator:'',
-      filterId:filterID,
-      lastRadius:0,
+      lastOperator: '',
+      filterId: filterID,
+      lastRadius: 0,
     };
     if(properties[i].mode == 'i') {
       jLen = currentMasks.length;
@@ -107,7 +107,7 @@ function MaskElement(data, element, globalData) {
       elem: path,
       lastPath: '',
       op: PropertyFactory.getProp(this.element, properties[i].o, 0, 0.01, this.element),
-      prop:ShapePropertyFactory.getShapeProp(this.element, properties[i], 3),
+      prop: ShapePropertyFactory.getShapeProp(this.element, properties[i], 3),
       invRect: rect,
     };
     if(!this.viewData[i].prop.k) {

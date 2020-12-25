@@ -12,15 +12,15 @@ var TextSelectorProp = (function () {
     this.finalS = 0;
     this.finalE = 0;
     this.initDynamicPropertyContainer(elem);
-    this.s = PropertyFactory.getProp(elem, data.s || {k:0}, 0, 0, this);
+    this.s = PropertyFactory.getProp(elem, data.s || {k: 0}, 0, 0, this);
     if('e' in data) {
       this.e = PropertyFactory.getProp(elem, data.e, 0, 0, this);
     }else{
-      this.e = {v:100};
+      this.e = {v: 100};
     }
-    this.o = PropertyFactory.getProp(elem, data.o || {k:0}, 0, 0, this);
-    this.xe = PropertyFactory.getProp(elem, data.xe || {k:0}, 0, 0, this);
-    this.ne = PropertyFactory.getProp(elem, data.ne || {k:0}, 0, 0, this);
+    this.o = PropertyFactory.getProp(elem, data.o || {k: 0}, 0, 0, this);
+    this.xe = PropertyFactory.getProp(elem, data.xe || {k: 0}, 0, 0, this);
+    this.ne = PropertyFactory.getProp(elem, data.ne || {k: 0}, 0, 0, this);
     this.a = PropertyFactory.getProp(elem, data.a, 0, 0.01, this);
     if(!this.dynamicProperties.length) {
       this.getValue();

@@ -23,7 +23,7 @@ SVGStrokeEffect.prototype.initialize = function () {
   for(i; i < len; i += 1) {
     path = createNS('path');
     groupPath.appendChild(path);
-    this.paths.push({p:path, m:i});
+    this.paths.push({p: path, m: i});
   }
   if(this.filterManager.effectElements[10].p.v === 3) {
     var mask = createNS('mask');

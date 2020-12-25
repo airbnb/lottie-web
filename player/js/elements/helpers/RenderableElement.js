@@ -72,17 +72,17 @@ RenderableElement.prototype = {
   },
   sourceRectAtTime: function () {
     return {
-      top:0,
-      left:0,
-      width:100,
-      height:100,
+      top: 0,
+      left: 0,
+      width: 100,
+      height: 100,
     };
   },
   getLayerSize: function () {
     if(this.data.ty === 5) {
-      return {w:this.data.textData.width, h:this.data.textData.height};
+      return {w: this.data.textData.width, h: this.data.textData.height};
     }else{
-      return {w:this.data.width, h:this.data.height};
+      return {w: this.data.width, h: this.data.height};
     }
   },
 };

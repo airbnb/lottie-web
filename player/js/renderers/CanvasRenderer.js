@@ -159,11 +159,11 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
   this.layers = animData.layers;
   this.transformCanvas = {
     w: animData.w,
-    h:animData.h,
-    sx:0,
-    sy:0,
-    tx:0,
-    ty:0,
+    h: animData.h,
+    sx: 0,
+    sy: 0,
+    tx: 0,
+    ty: 0,
   };
   this.setupGlobalData(animData, document.body);
   this.globalData.canvasContext = this.canvasContext;

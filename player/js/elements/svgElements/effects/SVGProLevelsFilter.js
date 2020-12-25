@@ -46,7 +46,7 @@ SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, g
   var perc;
   var min = Math.min(inputBlack, inputWhite);
   var max = Math.max(inputBlack, inputWhite);
-  var table = Array.call(null, {length:segments});
+  var table = Array.call(null, {length: segments});
   var colorValue;
   var pos = 0;
   var outputDelta = outputWhite - outputBlack; 

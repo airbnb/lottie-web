@@ -220,12 +220,12 @@ function bezFunction() {
   }
 
   return {
-    getSegmentsLength : getSegmentsLength,
-    getNewSegment : getNewSegment,
-    getPointInSegment : getPointInSegment,
-    buildBezierData : buildBezierData,
-    pointOnLine2D : pointOnLine2D,
-    pointOnLine3D : pointOnLine3D,
+    getSegmentsLength: getSegmentsLength,
+    getNewSegment: getNewSegment,
+    getPointInSegment: getPointInSegment,
+    buildBezierData: buildBezierData,
+    pointOnLine2D: pointOnLine2D,
+    pointOnLine3D: pointOnLine3D,
   };
 }
 

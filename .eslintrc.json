@@ -23,7 +23,6 @@
         "one-var": "off",
         "padded-blocks": "off",
         "vars-on-top": "off",
-        "key-spacing": "off",
         "no-continue": "off",
         "no-plusplus": "off",
         "semi": "off",

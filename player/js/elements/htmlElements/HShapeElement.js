@@ -19,7 +19,7 @@ function HShapeElement(data, globalData, comp) {
   // List of elements that have been created
   this.prevViewData = [];
   this.currentBBox = {
-    x:999999,
+    x: 999999,
     y: -999999,
     h: 0,
     w: 0,
@@ -89,19 +89,19 @@ HShapeElement.prototype.checkBounds = function (vPoint, oPoint, nextIPoint, next
 }
 
 HShapeElement.prototype.shapeBoundingBox = {
-  left:0,
-  right:0,
-  top:0,
-  bottom:0,
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0,
 }
 
 HShapeElement.prototype.tempBoundingBox = {
-  x:0,
-  xMax:0,
-  y:0,
-  yMax:0,
-  width:0,
-  height:0,
+  x: 0,
+  xMax: 0,
+  y: 0,
+  yMax: 0,
+  width: 0,
+  height: 0,
 }
 
 HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {

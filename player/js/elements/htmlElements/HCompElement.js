@@ -5,7 +5,7 @@ function HCompElement(data, globalData, comp) {
   this.pendingElements = [];
   this.elements = this.layers ? createSizedArray(this.layers.length) : [];
   this.initElement(data, globalData, comp);
-  this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {_placeholder:true};
+  this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {_placeholder: true};
 }
 
 extendPrototype([HybridRenderer, ICompElement, HBaseElement], HCompElement);
