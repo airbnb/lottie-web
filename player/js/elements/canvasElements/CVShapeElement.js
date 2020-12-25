@@ -145,7 +145,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
   var j, jLen;
   var ownStyles = [], ownModifiers = [], processedPos, modifier, currentTransform;
   var ownTransforms = [].concat(transforms);
-  for(i = len;i >= 0;i -= 1) {
+  for(i = len; i >= 0; i -= 1) {
     processedPos = this.searchProcessedElement(arr[i]);
     if(!processedPos) {
       arr[i]._shouldRender = shouldRender;
@@ -165,7 +165,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
         itemsData[i] = this.createGroupElement(arr[i]);
       } else {
         jLen = itemsData[i].it.length;
-        for(j = 0;j < jLen;j += 1) {
+        for(j = 0; j < jLen; j += 1) {
           itemsData[i].prevViewData[j] = itemsData[i].it[j];
         }
       }
@@ -211,7 +211,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
   this.removeTransformFromStyleList();
   this.closeStyles(ownStyles);
   len = ownModifiers.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     ownModifiers[i].closed = true;
   }
 };
@@ -236,7 +236,7 @@ CVShapeElement.prototype.renderShapeTransform = function (parentTransform, group
 CVShapeElement.prototype.drawLayer = function () {
   var i, len = this.stylesList.length;
   var j, jLen, k, kLen, elems, nodes, renderer = this.globalData.renderer, ctx = this.globalData.canvasContext, type, currentStyle;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     currentStyle = this.stylesList[i];
     type = currentStyle.type;
 
@@ -265,7 +265,7 @@ CVShapeElement.prototype.drawLayer = function () {
     }
     renderer.ctxTransform(currentStyle.preTransforms.finalTransform.props);
     jLen = elems.length;
-    for(j = 0;j < jLen;j += 1) {
+    for(j = 0; j < jLen; j += 1) {
       if(type === 'st' || type === 'gs') {
         ctx.beginPath();
         if(currentStyle.da) {
@@ -276,7 +276,7 @@ CVShapeElement.prototype.drawLayer = function () {
       nodes = elems[j].trNodes;
       kLen = nodes.length;
 
-      for(k = 0;k < kLen;k += 1) {
+      for(k = 0; k < kLen; k += 1) {
         if(nodes[k].t == 'm') {
           ctx.moveTo(nodes[k].p[0], nodes[k].p[1]);
         }else if(nodes[k].t == 'c') {
@@ -303,7 +303,7 @@ CVShapeElement.prototype.renderShape = function (parentTransform, items, data, i
   var i, len = items.length - 1;
   var groupTransform;
   groupTransform = parentTransform;
-  for(i = len;i >= 0;i -= 1) {
+  for(i = len; i >= 0; i -= 1) {
     if(items[i].ty == 'tr') {
       groupTransform = data[i].transform;
       this.renderShapeTransform(parentTransform, groupTransform);

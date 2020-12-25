@@ -76,28 +76,28 @@ var animationManager = (function () {
 
   function setSpeed(val, animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.setSpeed(val, animation);
     }
   }
 
   function setDirection(val, animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.setDirection(val, animation);
     }
   }
 
   function play(animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.play(animation);
     }
   }
   function resume(nowTime) {
     var elapsedTime = nowTime - initTime;
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.advanceTime(elapsedTime);
     }
     initTime = nowTime;
@@ -115,35 +115,35 @@ var animationManager = (function () {
 
   function pause(animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.pause(animation);
     }
   }
 
   function goToAndStop(value, isFrame, animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.goToAndStop(value, isFrame, animation);
     }
   }
 
   function stop(animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.stop(animation);
     }
   }
 
   function togglePause(animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.togglePause(animation);
     }
   }
 
   function destroy(animation) {
     var i;
-    for(i = (len - 1);i >= 0;i -= 1) {
+    for(i = (len - 1); i >= 0; i -= 1) {
       registeredAnimations[i].animation.destroy(animation);
     }
   }
@@ -152,7 +152,7 @@ var animationManager = (function () {
     var animElements = [].concat([].slice.call(document.getElementsByClassName('lottie')),
       [].slice.call(document.getElementsByClassName('bodymovin')));
     var i, len = animElements.length;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       if(renderer) {
         animElements[i].setAttribute('data-bm-type', renderer);
       }
@@ -175,7 +175,7 @@ var animationManager = (function () {
 
   function resize() {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.resize();
     }
   }
@@ -200,21 +200,21 @@ var animationManager = (function () {
 
   function setVolume(val, animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.setVolume(val, animation);
     }
   }
 
   function mute(animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.mute(animation);
     }
   }
 
   function unmute(animation) {
     var i;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.unmute(animation);
     }
   }

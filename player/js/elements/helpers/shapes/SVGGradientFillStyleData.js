@@ -29,7 +29,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
   var stops = [];
   var stop, j, jLen;
   jLen = data.g.p * 4;
-  for(j = 0;j < jLen;j += 4) {
+  for(j = 0; j < jLen; j += 4) {
     stop = createNS('stop');
     gfill.appendChild(stop);
     stops.push(stop);
@@ -55,7 +55,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
     opFill.setAttribute('gradientUnits', 'userSpaceOnUse');
     jLen = data.g.k.k[0].s ? data.g.k.k[0].s.length : data.g.k.k.length;
     var stops = this.stops;
-    for(j = data.g.p * 4;j < jLen;j += 2) {
+    for(j = data.g.p * 4; j < jLen; j += 2) {
       stop = createNS('stop');
       stop.setAttribute('stop-color', 'rgb(255,255,255)');
       opFill.appendChild(stop);

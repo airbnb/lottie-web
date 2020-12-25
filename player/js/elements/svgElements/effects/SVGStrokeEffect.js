@@ -20,7 +20,7 @@ SVGStrokeEffect.prototype.initialize = function () {
   groupPath.setAttribute('fill', 'none');
   groupPath.setAttribute('stroke-linecap', 'round');
   groupPath.setAttribute('stroke-dashoffset', 1);
-  for(i;i < len;i += 1) {
+  for(i; i < len; i += 1) {
     path = createNS('path');
     groupPath.appendChild(path);
     this.paths.push({p:path, m:i});
@@ -61,7 +61,7 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
   }
   var i, len = this.paths.length;
   var mask, path;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     if(this.paths[i].m === -1) {
       continue;
     }
@@ -81,7 +81,7 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
         var segment = 1 + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v / 100;
         var units = Math.floor(lineLength / segment);
         var j;
-        for(j = 0;j < units;j += 1) {
+        for(j = 0; j < units; j += 1) {
           dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v / 100 + ' ';
         }
         dasharrayValue += '0 ' + l * 10 + ' 0 0';

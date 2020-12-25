@@ -12,7 +12,7 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
   var i, len = path._length;
   var currentV, currentI, currentO, closerV, newV, newO, newI, distance, newPosPerc, index = 0;
   var vX, vY, oX, oY, iX, iY;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     currentV = path.v[i];
     currentO = path.o[i];
     currentI = path.i[i];
@@ -68,7 +68,7 @@ RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
 
   if(rd !== 0) {
     var shapeData, newPaths, localShapeCollection;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       newPaths = shapeData.shape.paths;
       localShapeCollection = shapeData.localShapeCollection;
@@ -77,7 +77,7 @@ RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
         shapeData.shape._mdf = true;
         shapePaths = shapeData.shape.paths.shapes;
         jLen = shapeData.shape.paths._length;
-        for(j = 0;j < jLen;j += 1) {
+        for(j = 0; j < jLen; j += 1) {
           localShapeCollection.addShape(this.processPath(shapePaths[j], rd));
         }
       }

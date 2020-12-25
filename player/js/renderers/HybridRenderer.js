@@ -157,7 +157,7 @@ HybridRenderer.prototype.build3dContainers = function () {
   var i, len = this.layers.length;
   var lastThreeDContainerData;
   var currentContainer = '';
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     if(this.layers[i].ddd && this.layers[i].ty !== 3) {
       if(currentContainer !== '3d') {
         currentContainer = '3d';
@@ -285,7 +285,7 @@ HybridRenderer.prototype.initItems = function () {
     var cWidth = this.globalData.compSize.w;
     var cHeight = this.globalData.compSize.h;
     var i, len = this.threeDElements.length;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth, 2) + Math.pow(cHeight, 2)) + 'px';
     }
   }
@@ -294,7 +294,7 @@ HybridRenderer.prototype.initItems = function () {
 HybridRenderer.prototype.searchExtraCompositions = function (assets) {
   var i, len = assets.length;
   var floatingContainer = createTag('div');
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     if(assets[i].xt) {
       var comp = this.createComp(assets[i], floatingContainer, this.globalData.comp, null);
       comp.initExpressions();

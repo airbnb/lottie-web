@@ -177,7 +177,7 @@ var TransformPropertyFactory = (function () {
       this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this);
       if(data.or.k[0].ti) {
         var i, len = data.or.k.length;
-        for(i = 0;i < len;i += 1) {
+        for(i = 0; i < len; i += 1) {
           data.or.k[i].to = data.or.k[i].ti = null;
         }
       }

@@ -84,7 +84,7 @@ function MaskElement(data, element, globalData) {
     if(properties[i].mode == 'i') {
       jLen = currentMasks.length;
       var g = createNS('g');
-      for(j = 0;j < jLen;j += 1) {
+      for(j = 0; j < jLen; j += 1) {
         g.appendChild(currentMasks[j]);
       }
       var mask = createNS('mask');
@@ -118,7 +118,7 @@ function MaskElement(data, element, globalData) {
   this.maskElement = createNS( maskType);
 
   len = currentMasks.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     this.maskElement.appendChild(currentMasks[i]);
   }
 
@@ -178,9 +178,9 @@ MaskElement.prototype.getMaskelement = function () {
 
 MaskElement.prototype.createLayerSolidPath = function () {
   var path = 'M0,0 ';
-  path += ' h' + this.globalData.compSize.w ;
-  path += ' v' + this.globalData.compSize.h ;
-  path += ' h-' + this.globalData.compSize.w ;
+  path += ' h' + this.globalData.compSize.w;
+  path += ' v' + this.globalData.compSize.h;
+  path += ' h-' + this.globalData.compSize.w;
   path += ' v-' + this.globalData.compSize.h + ' ';
   return path;
 };
@@ -189,7 +189,7 @@ MaskElement.prototype.drawPath = function (pathData, pathNodes, viewData) {
   var pathString = ' M' + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
   var i, len;
   len = pathNodes._length;
-  for(i = 1;i < len;i += 1) {
+  for(i = 1; i < len; i += 1) {
     // pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];
     pathString += ' C' + pathNodes.o[i - 1][0] + ',' + pathNodes.o[i - 1][1] + ' ' + pathNodes.i[i][0] + ',' + pathNodes.i[i][1] + ' ' + pathNodes.v[i][0] + ',' + pathNodes.v[i][1];
   }

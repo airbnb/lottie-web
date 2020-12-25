@@ -19,7 +19,7 @@ function TextAnimatorProperty(textData, renderType, elem) {
 TextAnimatorProperty.prototype.searchProperties = function () {
   var i, len = this._textData.a.length, animatorProps;
   var getProp = PropertyFactory.getProp;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     animatorProps = this._textData.a[i];
     this._animatorsData[i] = new TextAnimatorDataProperty(this._elem, animatorProps, this);
   }
@@ -197,7 +197,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       xPos = 0;
       yPos += documentData.yOffset;
       yPos += firstLine ? 1 : 0;
-      currentLength = initPathPos ;
+      currentLength = initPathPos;
       firstLine = false;
       lineLength = 0;
       if(this._hasMaskedPath) {
@@ -301,7 +301,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       }
 
       lineLength += letters[i].l / 2;
-      for(j = 0;j < jLen;j += 1) {
+      for(j = 0; j < jLen; j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.t.propType) {
           animatorSelector = animators[j].s;
@@ -338,7 +338,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       if(documentData.fillColorAnim && documentData.fc) {
         fc = [documentData.fc[0], documentData.fc[1], documentData.fc[2]];
       }
-      for(j = 0;j < jLen;j += 1) {
+      for(j = 0; j < jLen; j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.a.propType) {
           animatorSelector = animators[j].s;
@@ -351,7 +351,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
       }
-      for(j = 0;j < jLen;j += 1) {
+      for(j = 0; j < jLen; j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.s.propType) {
           animatorSelector = animators[j].s;
@@ -363,7 +363,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
       }
-      for(j = 0;j < jLen;j += 1) {
+      for(j = 0; j < jLen; j += 1) {
         animatorProps = animators[j].a;
         animatorSelector = animators[j].s;
         mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
@@ -411,7 +411,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
         if (documentData.strokeColorAnim && animatorProps.sc.propType) {
-          for(k = 0;k < 3;k += 1) {
+          for(k = 0; k < 3; k += 1) {
             if(mult.length) {
               sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k]) * mult[0];
             } else {
@@ -421,7 +421,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         }
         if (documentData.fillColorAnim && documentData.fc) {
           if(animatorProps.fc.propType) {
-            for(k = 0;k < 3;k += 1) {
+            for(k = 0; k < 3; k += 1) {
               if(mult.length) {
                 fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k]) * mult[0];
               } else {
@@ -453,7 +453,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         }
       }
 
-      for(j = 0;j < jLen;j += 1) {
+      for(j = 0; j < jLen; j += 1) {
         animatorProps = animators[j].a;
 
         if (animatorProps.p.propType) {

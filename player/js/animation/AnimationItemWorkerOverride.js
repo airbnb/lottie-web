@@ -46,7 +46,7 @@ AnimationItem.prototype.includeLayers = function (data) {
   var i, len = layers.length;
   var newLayers = data.layers;
   var j, jLen = newLayers.length;
-  for(j = 0;j < jLen;j += 1) {
+  for(j = 0; j < jLen; j += 1) {
     i = 0;
     while(i < len) {
       if(layers[i].id == newLayers[j].id) {

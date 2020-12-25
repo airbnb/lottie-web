@@ -184,24 +184,24 @@ var Matrix = (function () {
          * 001
          */
     _p[0] = a1 * a2 + b1 * e2 + c1 * i2 + d1 * m2;
-    _p[1] = a1 * b2 + b1 * f2 + c1 * j2 + d1 * n2 ;
-    _p[2] = a1 * c2 + b1 * g2 + c1 * k2 + d1 * o2 ;
-    _p[3] = a1 * d2 + b1 * h2 + c1 * l2 + d1 * p2 ;
+    _p[1] = a1 * b2 + b1 * f2 + c1 * j2 + d1 * n2;
+    _p[2] = a1 * c2 + b1 * g2 + c1 * k2 + d1 * o2;
+    _p[3] = a1 * d2 + b1 * h2 + c1 * l2 + d1 * p2;
 
-    _p[4] = e1 * a2 + f1 * e2 + g1 * i2 + h1 * m2 ;
-    _p[5] = e1 * b2 + f1 * f2 + g1 * j2 + h1 * n2 ;
-    _p[6] = e1 * c2 + f1 * g2 + g1 * k2 + h1 * o2 ;
-    _p[7] = e1 * d2 + f1 * h2 + g1 * l2 + h1 * p2 ;
+    _p[4] = e1 * a2 + f1 * e2 + g1 * i2 + h1 * m2;
+    _p[5] = e1 * b2 + f1 * f2 + g1 * j2 + h1 * n2;
+    _p[6] = e1 * c2 + f1 * g2 + g1 * k2 + h1 * o2;
+    _p[7] = e1 * d2 + f1 * h2 + g1 * l2 + h1 * p2;
 
-    _p[8] = i1 * a2 + j1 * e2 + k1 * i2 + l1 * m2 ;
-    _p[9] = i1 * b2 + j1 * f2 + k1 * j2 + l1 * n2 ;
-    _p[10] = i1 * c2 + j1 * g2 + k1 * k2 + l1 * o2 ;
-    _p[11] = i1 * d2 + j1 * h2 + k1 * l2 + l1 * p2 ;
+    _p[8] = i1 * a2 + j1 * e2 + k1 * i2 + l1 * m2;
+    _p[9] = i1 * b2 + j1 * f2 + k1 * j2 + l1 * n2;
+    _p[10] = i1 * c2 + j1 * g2 + k1 * k2 + l1 * o2;
+    _p[11] = i1 * d2 + j1 * h2 + k1 * l2 + l1 * p2;
 
-    _p[12] = m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2 ;
-    _p[13] = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2 ;
-    _p[14] = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2 ;
-    _p[15] = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2 ;
+    _p[12] = m1 * a2 + n1 * e2 + o1 * i2 + p1 * m2;
+    _p[13] = m1 * b2 + n1 * f2 + o1 * j2 + p1 * n2;
+    _p[14] = m1 * c2 + n1 * g2 + o1 * k2 + p1 * o2;
+    _p[15] = m1 * d2 + n1 * h2 + o1 * l2 + p1 * p2;
 
     this._identityCalculated = false;
     return this;
@@ -228,7 +228,7 @@ var Matrix = (function () {
 
   function clone(matr) {
     var i;
-    for(i = 0;i < 16;i += 1) {
+    for(i = 0; i < 16; i += 1) {
       matr.props[i] = this.props[i];
     }
     return matr;
@@ -236,7 +236,7 @@ var Matrix = (function () {
 
   function cloneFromProps(props) {
     var i;
-    for(i = 0;i < 16;i += 1) {
+    for(i = 0; i < 16; i += 1) {
       this.props[i] = props[i];
     }
   }
@@ -288,7 +288,7 @@ var Matrix = (function () {
 
   function inversePoints(pts) {
     var i, len = pts.length, retPts = [];
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       retPts[i] = inversePoint(pts[i]);
     }
     return retPts;

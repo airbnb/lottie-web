@@ -40,7 +40,7 @@ var SVGElementsRenderer = (function () {
     var j, jLen, pathStringTransformed, redraw, pathNodes, l, lLen = itemData.styles.length;
     var lvl = itemData.lvl;
     var paths, mat, props, iterations, k;
-    for(l = 0;l < lLen;l += 1) {
+    for(l = 0; l < lLen; l += 1) {
       redraw = itemData.sh._mdf || isFirstFrame;
       if(itemData.styles[l].lvl < lvl) {
         mat = _matrixHelper.reset();
@@ -68,7 +68,7 @@ var SVGElementsRenderer = (function () {
       jLen = paths._length;
       if(redraw) {
         pathStringTransformed = '';
-        for(j = 0;j < jLen;j += 1) {
+        for(j = 0; j < jLen; j += 1) {
           pathNodes = paths.shapes[j];
           if(pathNodes && pathNodes._length) {
             pathStringTransformed += buildShapeString(pathNodes, pathNodes._length, pathNodes.c, mat);

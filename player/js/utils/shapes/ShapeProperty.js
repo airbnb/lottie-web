@@ -58,8 +58,8 @@ var ShapePropertyFactory = (function () {
     kLen = keyPropS.i[0].length;
     caching.lastIndex = iterationIndex;
 
-    for(j = 0;j < jLen;j += 1) {
-      for(k = 0;k < kLen;k += 1) {
+    for(j = 0; j < jLen; j += 1) {
+      for(k = 0; k < kLen; k += 1) {
         vertexValue = isHold ? keyPropS.i[j][k] :  keyPropS.i[j][k] + (keyPropE.i[j][k] - keyPropS.i[j][k]) * perc;
         previousValue.i[j][k] = vertexValue;
         vertexValue = isHold ? keyPropS.o[j][k] :  keyPropS.o[j][k] + (keyPropE.o[j][k] - keyPropS.o[j][k]) * perc;
@@ -339,7 +339,7 @@ var ShapePropertyFactory = (function () {
         currentAng += this.r.v;
         var dir = this.data.d === 3 ? -1 : 1;
         this.v._length = 0;
-        for(i = 0;i < numPts;i += 1) {
+        for(i = 0; i < numPts; i += 1) {
           rad = longFlag ? longRad : shortRad;
           roundness = longFlag ? longRound : shortRound;
           perimSegment = longFlag ? longPerimSegment : shortPerimSegment;
@@ -369,7 +369,7 @@ var ShapePropertyFactory = (function () {
         var dir = this.data.d === 3 ? -1 : 1;
         currentAng += this.r.v;
         this.v._length = 0;
-        for(i = 0;i < numPts;i += 1) {
+        for(i = 0; i < numPts; i += 1) {
           var x = rad * Math.cos(currentAng);
           var y = rad * Math.sin(currentAng);
           var ox = x === 0 && y === 0 ? 0 : y / Math.sqrt(x * x + y * y);

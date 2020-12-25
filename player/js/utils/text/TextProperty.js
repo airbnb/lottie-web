@@ -182,7 +182,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   var fWeight = 'normal', fStyle = 'normal';
   len = styles.length;
   var styleName;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     styleName = styles[i].toLowerCase();
     switch(styleName) {
       case 'italic':
@@ -227,7 +227,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
       len = finalText.length;
       trackingOffset = documentData.tr / 1000 * documentData.finalSize;
       var lastSpaceIndex = -1;
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         charCode = finalText[i].charCodeAt(0);
         newLineFlag = false;
         if(finalText[i] === ' ') {
@@ -276,7 +276,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   cLength = 0;
   var uncollapsedSpaces = 0;
   var currentChar;
-  for (i = 0;i < len ;i += 1) {
+  for (i = 0; i < len; i += 1) {
     newLineFlag = false;
     currentChar = documentData.finalText[i];
     charCode = currentChar.charCodeAt(0);
@@ -368,7 +368,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   var animators = data.a, animatorData, letterData;
   jLen = animators.length;
   var based, ind, indexes = [];
-  for(j = 0;j < jLen;j += 1) {
+  for(j = 0; j < jLen; j += 1) {
     animatorData = animators[j];
     if(animatorData.a.sc) {
       documentData.strokeColorAnim = true;
@@ -381,7 +381,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
     ind = 0;
     based = animatorData.s.b;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       letterData = letters[i];
       letterData.anIndexes[j] = ind;
       if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) {

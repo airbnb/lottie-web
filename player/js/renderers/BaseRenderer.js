@@ -47,7 +47,7 @@ BaseRenderer.prototype.createAudio = function (data) {
 
 BaseRenderer.prototype.buildAllItems = function () {
   var i, len = this.layers.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     this.buildItem(i);
   }
   this.checkPendingElements();
@@ -57,7 +57,7 @@ BaseRenderer.prototype.includeLayers = function (newLayers) {
   this.completeLayers = false;
   var i, len = newLayers.length;
   var j, jLen = this.layers.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     j = 0;
     while(j < jLen) {
       if(this.layers[j].id == newLayers[i].id) {
@@ -107,7 +107,7 @@ BaseRenderer.prototype.addPendingElement = function (element) {
 
 BaseRenderer.prototype.searchExtraCompositions = function (assets) {
   var i, len = assets.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     if(assets[i].xt) {
       var comp = this.createComp(assets[i]);
       comp.initExpressions();

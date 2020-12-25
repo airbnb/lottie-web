@@ -40,7 +40,7 @@
         if(this.pv.length) {
           ret = new Array(initV.length);
           len = ret.length;
-          for(i = 0;i < len;i += 1) {
+          for(i = 0; i < len; i += 1) {
             ret[i] = (endV[i] - initV[i]) * repeats + current[i];
           }
           return ret;
@@ -52,7 +52,7 @@
         if(this.pv.length) {
           ret = new Array(lastValue.length);
           len = ret.length;
-          for(i = 0;i < len;i += 1) {
+          for(i = 0; i < len; i += 1) {
             ret[i] = lastValue[i] + (lastValue[i] - nextLastValue[i]) * ((currentFrame - lastKeyFrame) / this.comp.globalData.frameRate) / 0.0005;
           }
           return ret;
@@ -103,7 +103,7 @@
         if(this.pv.length) {
           ret = new Array(initV.length);
           len = ret.length;
-          for(i = 0;i < len;i += 1) {
+          for(i = 0; i < len; i += 1) {
             ret[i] = current[i] - (endV[i] - initV[i]) * repeats;
           }
           return ret;
@@ -115,7 +115,7 @@
         if(this.pv.length) {
           ret = new Array(firstValue.length);
           len = ret.length;
-          for(i = 0;i < len;i += 1) {
+          for(i = 0; i < len; i += 1) {
             ret[i] = firstValue[i] + (firstValue[i] - nextFirstValue[i]) * (firstKeyFrame - currentFrame) / 0.001;
           }
           return ret;

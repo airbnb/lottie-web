@@ -41,10 +41,10 @@ function bezFunction() {
       var point = [], lastPoint = [];
       var lengthData = bezier_length_pool.newElement();
       len = pt3.length;
-      for(k = 0;k < curveSegments;k += 1) {
+      for(k = 0; k < curveSegments; k += 1) {
         perc = k / (curveSegments - 1);
         ptDistance = 0;
-        for(i = 0;i < len;i += 1) {
+        for(i = 0; i < len; i += 1) {
           ptCoord = bm_pow(1 - perc, 3) * pt1[i] + 3 * bm_pow(1 - perc, 2) * perc * pt3[i] + 3 * (1 - perc) * bm_pow(perc, 2) * pt4[i] + bm_pow(perc, 3) * pt2[i];
           point[i] = ptCoord;
           if(lastPoint[i] !== null) {
@@ -73,7 +73,7 @@ function bezFunction() {
     var i, len = shapeData._length;
     var lengths = segmentsLength.lengths;
     var totalLength = 0;
-    for(i = 0;i < len - 1;i += 1) {
+    for(i = 0; i < len - 1; i += 1) {
       lengths[i] = getBezierLength(pathV[i], pathV[i + 1], pathO[i], pathI[i + 1]);
       totalLength += lengths[i].addedLength;
     }
@@ -209,7 +209,7 @@ function bezFunction() {
     var t1u1u1_3 = t1 * u1 * u1 + u1 * t1 * u1 + u1 * u1 * t1;
     var t1t1u1_3 = t1 * t1 * u1 + u1 * t1 * t1 + t1 * u1 * t1;
     var t1t1t1 = t1 * t1 * t1;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       bezier_segment_points[i * 4] = Math.round((u0u0u0 * pt1[i] + t0u0u0_3 * pt3[i] + t0t0u0_3 * pt4[i] + t0t0t0 * pt2[i]) * 1000) / 1000;
       bezier_segment_points[i * 4 + 1] = Math.round((u0u0u1 * pt1[i] + t0u0u1_3 * pt3[i] + t0t0u1_3 * pt4[i] + t0t0t1 * pt2[i]) * 1000) / 1000;
       bezier_segment_points[i * 4 + 2] = Math.round((u0u1u1 * pt1[i] + t0u1u1_3 * pt3[i] + t0t1u1_3 * pt4[i] + t0t1t1 * pt2[i]) * 1000) / 1000;

@@ -18,7 +18,7 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
   var dist;
   var theta, x, y;
   /// / OPTION A
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     if(!positions.v[i]) {
       positions.v[i] = [path.v[i][0], path.v[i][1]];
       positions.o[i] = [path.o[i][0], path.o[i][1]];
@@ -187,7 +187,7 @@ MouseModifier.prototype.processShapes = function () {
     var localMouseCoords = this.elem.globalToLocal([mouseX, mouseY, 0]);
 
     var shapeData, newPaths = [];
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       if(!shapeData.shape._mdf && !this._mdf) {
         shapeData.shape.paths = shapeData.last;
@@ -195,7 +195,7 @@ MouseModifier.prototype.processShapes = function () {
         shapeData.shape._mdf = true;
         shapePaths = shapeData.shape.paths;
         jLen = shapePaths.length;
-        for(j = 0;j < jLen;j += 1) {
+        for(j = 0; j < jLen; j += 1) {
           if(!this.positions[i][j]) {
             this.positions[i][j] = {
               v:[],

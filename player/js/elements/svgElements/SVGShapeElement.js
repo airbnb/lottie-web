@@ -198,7 +198,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
   var i, len = arr.length - 1;
   var j, jLen;
   var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier, processedPos;
-  for(i = len;i >= 0;i -= 1) {
+  for(i = len; i >= 0; i -= 1) {
     processedPos = this.searchProcessedElement(arr[i]);
     if(!processedPos) {
       arr[i]._render = render;
@@ -220,7 +220,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
         itemsData[i] = this.createGroupElement(arr[i]);
       } else {
         jLen = itemsData[i].it.length;
-        for(j = 0;j < jLen;j += 1) {
+        for(j = 0; j < jLen; j += 1) {
           itemsData[i].prevViewData[j] = itemsData[i].it[j];
         }
       }
@@ -267,11 +267,11 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
     this.addProcessedElement(arr[i], i + 1);
   }
   len = ownStyles.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     ownStyles[i].closed = true;
   }
   len = ownModifiers.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     ownModifiers[i].closed = true;
   }
 };
@@ -279,7 +279,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
 SVGShapeElement.prototype.renderInnerContent = function () {
   this.renderModifiers();
   var i, len = this.stylesList.length;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     this.stylesList[i].reset();
   }
   this.renderShape();

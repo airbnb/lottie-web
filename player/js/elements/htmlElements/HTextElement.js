@@ -64,7 +64,7 @@ HTextElement.prototype.buildNewText = function () {
   var matrixHelper = this.mHelper;
   var shapes, shapeStr = '';
   var cnt = 0;
-  for (i = 0;i < len ;i += 1) {
+  for (i = 0; i < len; i += 1) {
     if(this.globalData.fontManager.chars) {
       if(!this.textPaths[cnt]) {
         tSpan = createNS('path');
@@ -193,7 +193,7 @@ HTextElement.prototype.renderInnerContent = function () {
 
   len = letters.length;
   var renderedLetter, textSpan, textPath;
-  for(i = 0;i < len;i += 1) {
+  for(i = 0; i < len; i += 1) {
     if(letters[i].n) {
       count += 1;
       continue;

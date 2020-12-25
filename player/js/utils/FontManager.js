@@ -54,7 +54,7 @@ var FontManager = (function () {
     var i, len = this.fonts.length;
     var node, w;
     var loadedCount = len;
-    for(i = 0;i < len; i += 1) {
+    for(i = 0; i < len; i += 1) {
       if(this.fonts[i].loaded) {
         loadedCount -= 1;
         continue;
@@ -212,7 +212,7 @@ var FontManager = (function () {
     }
     var i, len = chars.length;
     var j, jLen = this.chars.length, found;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       j = 0;
       found = false;
       while(j < jLen) {

@@ -33,7 +33,7 @@ ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
   var j, jLen = shapes.length;
   var k, kLen, pathNodes;
   var shapeStr = '';
-  for(j = 0;j < jLen;j += 1) {
+  for(j = 0; j < jLen; j += 1) {
     pathNodes = shapes[j].ks.k;
     shapeStr += buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
   }

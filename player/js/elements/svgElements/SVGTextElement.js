@@ -181,7 +181,7 @@ SVGTextElement.prototype.renderInnerContent = function () {
 
       len = letters.length;
       var renderedLetter, textSpan;
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         if(letters[i].n) {
           continue;
         }

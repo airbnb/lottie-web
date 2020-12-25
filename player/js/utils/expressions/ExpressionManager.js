@@ -21,7 +21,7 @@ var ExpressionManager = (function () {
     if($bm_isInstanceOfArray(a)) {
       var i, lenA = a.length;
       var retArr = [];
-      for(i = 0;i < lenA;i += 1) {
+      for(i = 0; i < lenA; i += 1) {
         retArr[i] = -a[i];
       }
       return retArr;
@@ -122,7 +122,7 @@ var ExpressionManager = (function () {
     if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
       len = a.length;
       arr = createTypedArray('float32', len);
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         arr[i] = a[i] * b;
       }
       return arr;
@@ -130,7 +130,7 @@ var ExpressionManager = (function () {
     if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
       len = b.length;
       arr = createTypedArray('float32', len);
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         arr[i] = a * b[i];
       }
       return arr;
@@ -149,7 +149,7 @@ var ExpressionManager = (function () {
     if($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
       len = a.length;
       arr = createTypedArray('float32', len);
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         arr[i] = a[i] / b;
       }
       return arr;
@@ -157,7 +157,7 @@ var ExpressionManager = (function () {
     if(isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
       len = b.length;
       arr = createTypedArray('float32', len);
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         arr[i] = a / b[i];
       }
       return arr;
@@ -294,7 +294,7 @@ var ExpressionManager = (function () {
     }
     var i, len = value1.length;
     var arr = createTypedArray('float32', len);
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       arr[i] = value1[i] + (value2[i] - value1[i]) * perc;
     }
     return arr;
@@ -316,7 +316,7 @@ var ExpressionManager = (function () {
       }
       var arr = createTypedArray('float32', len);
       var rnd = BMMath.random();
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         arr[i] = min[i] + rnd * (max[i] - min[i]);
       }
       return arr;
@@ -386,7 +386,7 @@ var ExpressionManager = (function () {
       j = 0;
       while(i < iterations) {
         // var rnd = BMMath.random();
-        for(j = 0;j < len;j += 1) {
+        for(j = 0; j < len; j += 1) {
           addedAmps[j] += -amp + amp * 2 * BMMath.random();
           // addedAmps[j] += -amp + amp*2*rnd;
         }
@@ -397,7 +397,7 @@ var ExpressionManager = (function () {
       var perc = periods - Math.floor(periods);
       var arr = createTypedArray('float32', len);
       if(len > 1) {
-        for(j = 0;j < len;j += 1) {
+        for(j = 0; j < len; j += 1) {
           arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp * 2 * BMMath.random()) * perc;
           // arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
           // arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
@@ -492,7 +492,7 @@ var ExpressionManager = (function () {
           index = 1;
           keyTime = data.k[0].t;
         } else {
-          for(i = 0;i < len - 1;i += 1) {
+          for(i = 0; i < len - 1; i += 1) {
             if(time === data.k[i].t) {
               index = i + 1;
               keyTime = data.k[i].t;
@@ -534,7 +534,7 @@ var ExpressionManager = (function () {
       var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
 
       len = arr.length;
-      for(i = 0;i < len;i += 1) {
+      for(i = 0; i < len; i += 1) {
         ob[i] = arr[i];
         ob.value[i] = arr[i]
       }

@@ -51,7 +51,7 @@ GradientProperty.prototype.getValue = function (forceRender) {
   if(this.prop._mdf || forceRender) {
     var i, len = this.data.p * 4;
     var mult, val;
-    for(i = 0;i < len;i += 1) {
+    for(i = 0; i < len; i += 1) {
       mult = i % 4 === 0 ? 100 : 255;
       val = Math.round(this.prop.v[i] * mult);
       if(this.c[i] !== val) {
@@ -61,7 +61,7 @@ GradientProperty.prototype.getValue = function (forceRender) {
     }
     if(this.o.length) {
       len = this.prop.v.length;
-      for(i = this.data.p * 4;i < len;i += 1) {
+      for(i = this.data.p * 4; i < len; i += 1) {
         mult = i % 2 === 0 ? 100 : 1;
         val = i % 2 === 0 ?  Math.round(this.prop.v[i] * 100) : this.prop.v[i];
         if(this.o[i - this.data.p * 4] !== val) {
