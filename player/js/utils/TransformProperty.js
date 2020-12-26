@@ -131,8 +131,6 @@ var TransformPropertyFactory = (function () {
       if (!this.r.effectsSequence.length) {
         this.pre.rotate(-this.r.v);
         this.appliedTransformations = 4;
-      } else {
-        return;
       }
     } else if (!this.rz.effectsSequence.length && !this.ry.effectsSequence.length && !this.rx.effectsSequence.length && !this.or.effectsSequence.length) {
       this.pre.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);

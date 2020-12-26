@@ -69,7 +69,6 @@
         "no-prototype-builtins": "off",
         "no-restricted-properties": "off",
         "camelcase": "off",
-        "no-useless-return": "off",
         "newline-per-chained-call": "off",
         "no-useless-concat": "off",
         "no-eval": "off",
