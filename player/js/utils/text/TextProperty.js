@@ -154,7 +154,7 @@ TextProperty.prototype.buildFinalText = function (text) {
       charCode = text.charCodeAt(i + 1);
       if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
         charactersArray.push(text.substr(i, 2));
-        ++i;
+        i += 1;
       } else {
         charactersArray.push(text.charAt(i));
       }

@@ -53,6 +53,7 @@ ShapeTransformManager.prototype = {
     }
   },
   getNewKey: function () {
-    return '_' + this.transform_key_count++;
+    this.transform_key_count += 1;
+    return '_' + this.transform_key_count;
   },
 };

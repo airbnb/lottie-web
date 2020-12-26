@@ -4,7 +4,7 @@ function EffectsManager(data, element) {
   var i,
     len = effects.length;
   var effectItem;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     effectItem = new GroupEffect(effects[i], element);
     this.effectElements.push(effectItem);
   }

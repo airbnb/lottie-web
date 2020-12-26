@@ -60,8 +60,8 @@ var SVGElementsRenderer = (function () {
         k = itemData.transformers.length - 1;
         while (!redraw && iterations > 0) {
           redraw = itemData.transformers[k].mProps._mdf || redraw;
-          iterations--;
-          k--;
+          iterations -= 1;
+          k -= 1;
         }
         if (redraw) {
           iterations = lvl - itemData.styles[l].lvl;
@@ -69,8 +69,8 @@ var SVGElementsRenderer = (function () {
           while (iterations > 0) {
             props = itemData.transformers[k].mProps.v.props;
             mat.transform(props[0], props[1], props[2], props[3], props[4], props[5], props[6], props[7], props[8], props[9], props[10], props[11], props[12], props[13], props[14], props[15]);
-            iterations--;
-            k--;
+            iterations -= 1;
+            k -= 1;
           }
         }
       } else {

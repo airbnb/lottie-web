@@ -24,7 +24,7 @@ function MaskElement(data, element, globalData) {
     x;
   var maskType = 'clipPath',
     maskRef = 'clip-path';
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     if ((properties[i].mode !== 'a' && properties[i].mode !== 'n') || properties[i].inv || properties[i].o.k !== 100 || properties[i].o.x) {
       maskType = 'mask';
       maskRef = 'mask';
@@ -146,7 +146,7 @@ MaskElement.prototype.renderFrame = function (isFirstFrame) {
   var finalMat = this.element.finalTransform.mat;
   var i,
     len = this.masksProperties.length;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     if (this.viewData[i].prop._mdf || isFirstFrame) {
       this.drawPath(this.masksProperties[i], this.viewData[i].prop.v, this.viewData[i]);
     }

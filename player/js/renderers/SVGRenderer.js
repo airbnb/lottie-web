@@ -143,7 +143,7 @@ SVGRenderer.prototype.destroy = function () {
   this.globalData.defs = null;
   var i,
     len = this.layers ? this.layers.length : 0;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     if (this.elements[i]) {
       this.elements[i].destroy();
     }
@@ -220,7 +220,7 @@ SVGRenderer.prototype.renderFrame = function (num) {
   if (!this.completeLayers) {
     this.checkLayers(num);
   }
-  for (i = len - 1; i >= 0; i--) {
+  for (i = len - 1; i >= 0; i -= 1) {
     if (this.completeLayers || this.elements[i]) {
       this.elements[i].prepareFrame(num - this.layers[i].st);
     }

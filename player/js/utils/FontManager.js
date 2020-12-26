@@ -154,7 +154,7 @@ var FontManager = (function () {
       } else if (fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1) {
         loadedSelector = document.querySelectorAll('link[f-forigin="g"], link[f-origin="1"]');
 
-        for (j = 0; j < loadedSelector.length; j++) {
+        for (j = 0; j < loadedSelector.length; j += 1) {
           if (loadedSelector[j].href.indexOf(fontArr[i].fPath) !== -1) {
             // Font is already loaded
             shouldLoadFont = false;
@@ -173,7 +173,7 @@ var FontManager = (function () {
       } else if (fontArr[i].fOrigin === 't' || fontArr[i].origin === 2) {
         loadedSelector = document.querySelectorAll('script[f-forigin="t"], script[f-origin="2"]');
 
-        for (j = 0; j < loadedSelector.length; j++) {
+        for (j = 0; j < loadedSelector.length; j += 1) {
           if (fontArr[i].fPath === loadedSelector[j].src) {
             // Font is already loaded
             shouldLoadFont = false;

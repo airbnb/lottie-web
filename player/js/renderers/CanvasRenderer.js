@@ -288,7 +288,7 @@ CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
     this.checkLayers(num);
   }
 
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     if (this.completeLayers || this.elements[i]) {
       this.elements[i].prepareFrame(num - this.layers[i].st);
     }

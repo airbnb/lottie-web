@@ -9,7 +9,7 @@ var PropertyInterface = (function () {
       if (val <= 0) {
         return interfaceFunction;
       }
-      return propertyGroup(--val);
+      return propertyGroup(val - 1);
     }
 
     return _propertyGroup;

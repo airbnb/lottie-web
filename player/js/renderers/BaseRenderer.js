@@ -4,7 +4,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
     len = this.layers.length,
     data;
   this.completeLayers = true;
-  for (i = len - 1; i >= 0; i--) {
+  for (i = len - 1; i >= 0; i -= 1) {
     if (!this.elements[i]) {
       data = this.layers[i];
       if (data.ip - data.st <= (num - this.layers[i].st) && data.op - data.st > (num - this.layers[i].st)) {

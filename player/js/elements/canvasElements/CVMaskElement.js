@@ -6,7 +6,7 @@ function CVMaskElement(data, element) {
   var i,
     len = this.masksProperties.length,
     hasMasks = false;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     if (this.masksProperties[i].mode !== 'n') {
       hasMasks = true;
     }
@@ -30,7 +30,7 @@ CVMaskElement.prototype.renderFrame = function () {
     pts,
     data;
   ctx.beginPath();
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     if (this.masksProperties[i].mode !== 'n') {
       if (this.masksProperties[i].inv) {
         ctx.moveTo(0, 0);
@@ -44,7 +44,7 @@ CVMaskElement.prototype.renderFrame = function () {
       ctx.moveTo(pt[0], pt[1]);
       var j,
         jLen = data._length;
-      for (j = 1; j < jLen; j++) {
+      for (j = 1; j < jLen; j += 1) {
         pts = transform.applyToTriplePoints(data.o[j - 1], data.i[j], data.v[j]);
         ctx.bezierCurveTo(pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]);
       }

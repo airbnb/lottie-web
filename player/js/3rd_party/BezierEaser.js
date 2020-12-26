@@ -1,3 +1,4 @@
+/* eslint-disable */
 var BezierFactory = (function () {
   /**
      * BezierEasing - use bezier curve for transition easing function

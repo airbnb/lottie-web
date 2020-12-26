@@ -182,7 +182,7 @@ HybridRenderer.prototype.build3dContainers = function () {
     }
   }
   len = this.threeDElements.length;
-  for (i = len - 1; i >= 0; i--) {
+  for (i = len - 1; i >= 0; i -= 1) {
     this.resizerElem.appendChild(this.threeDElements[i].perspectiveElem);
   }
 };
@@ -253,7 +253,7 @@ HybridRenderer.prototype.destroy = function () {
   this.globalData.defs = null;
   var i,
     len = this.layers ? this.layers.length : 0;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i += 1) {
     this.elements[i].destroy();
   }
   this.elements.length = 0;

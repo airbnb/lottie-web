@@ -114,7 +114,7 @@ HShapeElement.prototype.tempBoundingBox = {
 HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
   var bounds = [[p0[0], p3[0]], [p0[1], p3[1]]];
 
-  for (var a, b, c, t, b2ac, t1, t2, i = 0; i < 2; ++i) {
+  for (var a, b, c, t, b2ac, t1, t2, i = 0; i < 2; ++i) { // eslint-disable-line no-plusplus
     b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
     a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
     c = 3 * p1[i] - 3 * p0[i];

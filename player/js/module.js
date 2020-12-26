@@ -110,7 +110,7 @@ function checkReady() {
 
 function getQueryVariable(variable) {
   var vars = queryString.split('&');
-  for (var i = 0; i < vars.length; i++) {
+  for (var i = 0; i < vars.length; i += 1) {
     var pair = vars[i].split('=');
     if (decodeURIComponent(pair[0]) == variable) { // eslint-disable-line eqeqeq
       return decodeURIComponent(pair[1]);

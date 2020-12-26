@@ -61,7 +61,8 @@ SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, g
     } else {
       colorValue = (outputBlack + outputDelta * Math.pow((perc - inputBlack) / inputDelta, 1 / gamma));
     }
-    table[pos++] = colorValue;
+    table[pos] = colorValue;
+    pos += 1;
     cnt += 256 / (segments - 1);
   }
   return table.join(' ');
