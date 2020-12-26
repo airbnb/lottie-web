@@ -44,7 +44,7 @@ function dataFunctionManager() {
           completeLayers(layerData.layers, comps, fontManager);
         } else if (layerData.ty === 4) {
           completeShapes(layerData.shapes);
-        } else if (layerData.ty == 5) {
+        } else if (layerData.ty === 5) {
           completeText(layerData, fontManager);
         }
       }
@@ -74,7 +74,7 @@ function dataFunctionManager() {
       jLen;
     var hasPaths = false;
     for (i = len - 1; i >= 0; i -= 1) {
-      if (arr[i].ty == 'sh') {
+      if (arr[i].ty === 'sh') {
         if (arr[i].ks.k.i) {
           convertPathsToAbsoluteValues(arr[i].ks.k);
         } else {
@@ -89,7 +89,7 @@ function dataFunctionManager() {
           }
         }
         hasPaths = true;
-      } else if (arr[i].ty == 'gr') {
+      } else if (arr[i].ty === 'gr') {
         completeShapes(arr[i].it);
       }
     }
@@ -283,7 +283,7 @@ function dataFunctionManager() {
         jLen;
       var hasPaths = false;
       for (i = len - 1; i >= 0; i -= 1) {
-        if (arr[i].ty == 'sh') {
+        if (arr[i].ty === 'sh') {
           if (arr[i].ks.k.i) {
             arr[i].ks.k.c = arr[i].closed;
           } else {
@@ -298,7 +298,7 @@ function dataFunctionManager() {
             }
           }
           hasPaths = true;
-        } else if (arr[i].ty == 'gr') {
+        } else if (arr[i].ty === 'gr') {
           completeClosingShapes(arr[i].it);
         }
       }

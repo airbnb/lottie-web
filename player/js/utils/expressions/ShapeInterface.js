@@ -4,27 +4,27 @@ var ShapeExpressionInterface = (function () {
     var i,
       len = shapes ? shapes.length : 0;
     for (i = 0; i < len; i += 1) {
-      if (shapes[i].ty == 'gr') {
+      if (shapes[i].ty === 'gr') {
         arr.push(groupInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'fl') {
+      } else if (shapes[i].ty === 'fl') {
         arr.push(fillInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'st') {
+      } else if (shapes[i].ty === 'st') {
         arr.push(strokeInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'tm') {
+      } else if (shapes[i].ty === 'tm') {
         arr.push(trimInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'tr') {
+      } else if (shapes[i].ty === 'tr') {
         // arr.push(transformInterfaceFactory(shapes[i],view[i],propertyGroup));
-      } else if (shapes[i].ty == 'el') {
+      } else if (shapes[i].ty === 'el') {
         arr.push(ellipseInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'sr') {
+      } else if (shapes[i].ty === 'sr') {
         arr.push(starInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'sh') {
+      } else if (shapes[i].ty === 'sh') {
         arr.push(ShapePathInterface(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'rc') {
+      } else if (shapes[i].ty === 'rc') {
         arr.push(rectInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'rd') {
+      } else if (shapes[i].ty === 'rd') {
         arr.push(roundedInterfaceFactory(shapes[i], view[i], propertyGroup));
-      } else if (shapes[i].ty == 'rp') {
+      } else if (shapes[i].ty === 'rp') {
         arr.push(repeaterInterfaceFactory(shapes[i], view[i], propertyGroup));
       }
     }

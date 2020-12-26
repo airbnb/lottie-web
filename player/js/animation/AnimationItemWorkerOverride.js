@@ -57,7 +57,7 @@ AnimationItem.prototype.includeLayers = function (data) {
   for (j = 0; j < jLen; j += 1) {
     i = 0;
     while (i < len) {
-      if (layers[i].id == newLayers[j].id) {
+      if (layers[i].id === newLayers[j].id) {
         layers[i] = newLayers[j];
         break;
       }
@@ -130,7 +130,7 @@ AnimationItem.prototype.checkLoaded = function () {
 };
 
 AnimationItem.prototype.destroy = function (name) {
-  if ((name && this.name != name) || !this.renderer) {
+  if ((name && this.name !== name) || !this.renderer) {
     return;
   }
   this.renderer.destroy();

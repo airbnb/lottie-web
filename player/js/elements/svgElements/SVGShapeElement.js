@@ -220,7 +220,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
     } else {
       itemsData[i] = prevViewData[processedPos - 1];
     }
-    if (arr[i].ty == 'fl' || arr[i].ty == 'st' || arr[i].ty == 'gf' || arr[i].ty == 'gs') {
+    if (arr[i].ty === 'fl' || arr[i].ty === 'st' || arr[i].ty === 'gf' || arr[i].ty === 'gs') {
       if (!processedPos) {
         itemsData[i] = this.createStyleElement(arr[i], level);
       } else {
@@ -230,7 +230,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
         container.appendChild(itemsData[i].style.pElem);
       }
       ownStyles.push(itemsData[i].style);
-    } else if (arr[i].ty == 'gr') {
+    } else if (arr[i].ty === 'gr') {
       if (!processedPos) {
         itemsData[i] = this.createGroupElement(arr[i]);
       } else {
@@ -243,18 +243,18 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
       if (arr[i]._render) {
         container.appendChild(itemsData[i].gr);
       }
-    } else if (arr[i].ty == 'tr') {
+    } else if (arr[i].ty === 'tr') {
       if (!processedPos) {
         itemsData[i] = this.createTransformElement(arr[i], container);
       }
       currentTransform = itemsData[i].transform;
       ownTransformers.push(currentTransform);
-    } else if (arr[i].ty == 'sh' || arr[i].ty == 'rc' || arr[i].ty == 'el' || arr[i].ty == 'sr') {
+    } else if (arr[i].ty === 'sh' || arr[i].ty === 'rc' || arr[i].ty === 'el' || arr[i].ty === 'sr') {
       if (!processedPos) {
         itemsData[i] = this.createShapeElement(arr[i], ownTransformers, level);
       }
       this.setElementStyles(itemsData[i]);
-    } else if (arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'ms' || arr[i].ty == 'pb') {
+    } else if (arr[i].ty === 'tm' || arr[i].ty === 'rd' || arr[i].ty === 'ms' || arr[i].ty === 'pb') {
       if (!processedPos) {
         modifier = ShapeModifiers.getModifier(arr[i].ty);
         modifier.init(this, arr[i]);
@@ -265,7 +265,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
         modifier.closed = false;
       }
       ownModifiers.push(modifier);
-    } else if (arr[i].ty == 'rp') {
+    } else if (arr[i].ty === 'rp') {
       if (!processedPos) {
         modifier = ShapeModifiers.getModifier(arr[i].ty);
         itemsData[i] = modifier;

@@ -30,7 +30,7 @@ function MaskElement(data, element, globalData) {
       maskRef = 'mask';
     }
 
-    if ((properties[i].mode == 's' || properties[i].mode == 'i') && count === 0) {
+    if ((properties[i].mode === 's' || properties[i].mode === 'i') && count === 0) {
       rect = createNS('rect');
       rect.setAttribute('fill', '#ffffff');
       rect.setAttribute('width', this.element.comp.data.w || 0);
@@ -41,7 +41,7 @@ function MaskElement(data, element, globalData) {
     }
 
     path = createNS('path');
-    if (properties[i].mode == 'n') {
+    if (properties[i].mode === 'n') {
       // TODO move this to a factory or to a constructor
       this.viewData[i] = {
         op: PropertyFactory.getProp(this.element, properties[i].o, 0, 0.01, this.element),
@@ -86,7 +86,7 @@ function MaskElement(data, element, globalData) {
         filterId: filterID,
         lastRadius: 0,
       };
-      if (properties[i].mode == 'i') {
+      if (properties[i].mode === 'i') {
         jLen = currentMasks.length;
         var g = createNS('g');
         for (j = 0; j < jLen; j += 1) {

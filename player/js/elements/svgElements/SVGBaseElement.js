@@ -16,15 +16,15 @@ SVGBaseElement.prototype = {
       fil,
       gg;
     if (this.data.td) {
-      if (this.data.td == 3 || this.data.td == 1) {
+      if (this.data.td == 3 || this.data.td == 1) { // eslint-disable-line eqeqeq
         var masker = createNS('mask');
         masker.setAttribute('id', this.layerId);
-        masker.setAttribute('mask-type', this.data.td == 3 ? 'luminance' : 'alpha');
+        masker.setAttribute('mask-type', this.data.td == 3 ? 'luminance' : 'alpha'); // eslint-disable-line eqeqeq
         masker.appendChild(this.layerElement);
         layerElementParent = masker;
         this.globalData.defs.appendChild(masker);
         // This is only for IE and Edge when mask if of type alpha
-        if (!featureSupport.maskType && this.data.td == 1) {
+        if (!featureSupport.maskType && this.data.td == 1) { // eslint-disable-line eqeqeq
           masker.setAttribute('mask-type', 'luminance');
           filId = createElementID();
           fil = filtersFactory.createFilter(filId);
@@ -36,7 +36,7 @@ SVGBaseElement.prototype = {
           masker.appendChild(gg);
           gg.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
         }
-      } else if (this.data.td == 2) {
+      } else if (this.data.td == 2) { // eslint-disable-line eqeqeq
         var maskGroup = createNS('mask');
         maskGroup.setAttribute('id', this.layerId);
         maskGroup.setAttribute('mask-type', 'alpha');

@@ -112,7 +112,7 @@ function getQueryVariable(variable) {
   var vars = queryString.split('&');
   for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split('=');
-    if (decodeURIComponent(pair[0]) == variable) {
+    if (decodeURIComponent(pair[0]) == variable) { // eslint-disable-line eqeqeq
       return decodeURIComponent(pair[1]);
     }
   }

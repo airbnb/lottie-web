@@ -29,7 +29,7 @@ var animationManager = (function () {
     }
     var i = 0;
     while (i < len) {
-      if (registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null) {
+      if (registeredAnimations[i].elem === element && registeredAnimations[i].elem !== null) {
         return registeredAnimations[i].animation;
       }
       i += 1;

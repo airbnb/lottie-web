@@ -324,7 +324,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     letters.push({
       l: cLength, an: cLength, add: currentSize, n: newLineFlag, anIndexes: [], val: val, line: currentLine, animatorJustifyOffset: 0,
     });
-    if (anchorGrouping == 2) {
+    if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
       currentSize += cLength;
       if (val === '' || val === ' ' || i === len - 1) {
         if (val === '' || val === ' ') {
@@ -339,7 +339,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
         index += 1;
         currentSize = 0;
       }
-    } else if (anchorGrouping == 3) {
+    } else if (anchorGrouping == 3) { // eslint-disable-line eqeqeq
       currentSize += cLength;
       if (val === '' || i === len - 1) {
         if (val === '') {
@@ -404,7 +404,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     for (i = 0; i < len; i += 1) {
       letterData = letters[i];
       letterData.anIndexes[j] = ind;
-      if ((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) {
+      if ((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val === ' ' || i === len - 1)) || (based == 4 && (letterData.n || i === len - 1))) { // eslint-disable-line eqeqeq
         if (animatorData.s.rn === 1) {
           indexes.push(ind);
         }
@@ -417,7 +417,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     if (animatorData.s.rn === 1) {
       for (i = 0; i < len; i += 1) {
         letterData = letters[i];
-        if (currentInd != letterData.anIndexes[j]) {
+        if (currentInd != letterData.anIndexes[j]) { // eslint-disable-line eqeqeq
           currentInd = letterData.anIndexes[j];
           newInd = indexes.splice(Math.floor(Math.random() * indexes.length), 1)[0];
         }

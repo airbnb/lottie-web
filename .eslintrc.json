@@ -42,7 +42,6 @@
         "no-underscore-dangle": "off",
         "no-use-before-define": "off",
         "strict": "off",
-        "lines-around-directive": "off",
-        "eqeqeq": "off"
+        "lines-around-directive": "off"
     }
 }

@@ -403,9 +403,9 @@
     },
     vectorOnPath: function (perc, time, vectorType) {
       // perc doesn't use triple equality because it can be a Number object as well as a primitive.
-      if (perc == 1) {
+      if (perc == 1) { // eslint-disable-line eqeqeq
         perc = this.v.c;
-      } else if (perc == 0) {
+      } else if (perc == 0) { // eslint-disable-line eqeqeq
         perc = 0.999;
       }
       var pt1 = this.pointOnPath(perc, time);

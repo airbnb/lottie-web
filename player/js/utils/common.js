@@ -208,7 +208,7 @@ var rgbToHex = (function () {
   var hex;
   for (i = 0; i < 256; i += 1) {
     hex = i.toString(16);
-    colorMap[i] = hex.length == 1 ? '0' + hex : hex;
+    colorMap[i] = hex.length === 1 ? '0' + hex : hex;
   }
 
   return function (r, g, b) {

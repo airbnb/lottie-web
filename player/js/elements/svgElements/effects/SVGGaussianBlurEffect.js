@@ -24,8 +24,8 @@ SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
     //   3 -> vertical only
     //
     var dimensions = this.filterManager.effectElements[1].p.v;
-    var sigmaX = (dimensions == 3) ? 0 : sigma;
-    var sigmaY = (dimensions == 2) ? 0 : sigma;
+    var sigmaX = (dimensions == 3) ? 0 : sigma; // eslint-disable-line eqeqeq
+    var sigmaY = (dimensions == 2) ? 0 : sigma; // eslint-disable-line eqeqeq
 
     this.feGaussianBlur.setAttribute('stdDeviation', sigmaX + ' ' + sigmaY);
 
@@ -33,7 +33,7 @@ SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
     //
     //   0 -> off -> duplicate
     //   1 -> on  -> wrap
-    var edgeMode = (this.filterManager.effectElements[2].p.v == 1) ? 'wrap' : 'duplicate';
+    var edgeMode = (this.filterManager.effectElements[2].p.v == 1) ? 'wrap' : 'duplicate'; // eslint-disable-line eqeqeq
     this.feGaussianBlur.setAttribute('edgeMode', edgeMode);
   }
 };

@@ -181,7 +181,7 @@ AnimationItem.prototype.includeLayers = function (data) {
   for (j = 0; j < jLen; j += 1) {
     i = 0;
     while (i < len) {
-      if (layers[i].id == newLayers[j].id) {
+      if (layers[i].id === newLayers[j].id) {
         layers[i] = newLayers[j];
         break;
       }
@@ -340,7 +340,7 @@ AnimationItem.prototype.renderFrame = function () {
 };
 
 AnimationItem.prototype.play = function (name) {
-  if (name && this.name != name) {
+  if (name && this.name !== name) {
     return;
   }
   if (this.isPaused === true) {
@@ -354,7 +354,7 @@ AnimationItem.prototype.play = function (name) {
 };
 
 AnimationItem.prototype.pause = function (name) {
-  if (name && this.name != name) {
+  if (name && this.name !== name) {
     return;
   }
   if (this.isPaused === false) {
@@ -366,7 +366,7 @@ AnimationItem.prototype.pause = function (name) {
 };
 
 AnimationItem.prototype.togglePause = function (name) {
-  if (name && this.name != name) {
+  if (name && this.name !== name) {
     return;
   }
   if (this.isPaused === true) {
@@ -377,7 +377,7 @@ AnimationItem.prototype.togglePause = function (name) {
 };
 
 AnimationItem.prototype.stop = function (name) {
-  if (name && this.name != name) {
+  if (name && this.name !== name) {
     return;
   }
   this.pause();
@@ -387,7 +387,7 @@ AnimationItem.prototype.stop = function (name) {
 };
 
 AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
-  if (name && this.name != name) {
+  if (name && this.name !== name) {
     return;
   }
   if (isFrame) {
@@ -536,7 +536,7 @@ AnimationItem.prototype.checkSegments = function (offset) {
 };
 
 AnimationItem.prototype.destroy = function (name) {
-  if ((name && this.name != name) || !this.renderer) {
+  if ((name && this.name !== name) || !this.renderer) {
     return;
   }
   this.renderer.destroy();
@@ -625,7 +625,7 @@ AnimationItem.prototype.getAssetData = function (id) {
   var i = 0,
     len = this.assets.length;
   while (i < len) {
-    if (id == this.assets[i].id) {
+    if (id === this.assets[i].id) {
       return this.assets[i];
     }
     i += 1;

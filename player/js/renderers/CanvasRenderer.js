@@ -226,7 +226,7 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     } else {
       this.transformCanvas.ty = 0;
     }
-  } else if (this.renderConfig.preserveAspectRatio == 'none') {
+  } else if (this.renderConfig.preserveAspectRatio === 'none') {
     this.transformCanvas.sx = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
     this.transformCanvas.sy = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
     this.transformCanvas.tx = 0;
@@ -312,7 +312,7 @@ CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
 
 CanvasRenderer.prototype.buildItem = function (pos) {
   var elements = this.elements;
-  if (elements[pos] || this.layers[pos].ty == 99) {
+  if (elements[pos] || this.layers[pos].ty === 99) {
     return;
   }
   var element = this.createItem(this.layers[pos], this, this.globalData);

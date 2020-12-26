@@ -65,7 +65,7 @@ BaseRenderer.prototype.includeLayers = function (newLayers) {
   for (i = 0; i < len; i += 1) {
     j = 0;
     while (j < jLen) {
-      if (this.layers[j].id == newLayers[i].id) {
+      if (this.layers[j].id === newLayers[i].id) {
         this.layers[j] = newLayers[i];
         break;
       }
@@ -89,7 +89,7 @@ BaseRenderer.prototype.buildElementParenting = function (element, parentName, hi
   var i = 0,
     len = layers.length;
   while (i < len) {
-    if (layers[i].ind == parentName) {
+    if (layers[i].ind == parentName) { // eslint-disable-line eqeqeq
       if (!elements[i] || elements[i] === true) {
         this.buildItem(i);
         this.addPendingElement(element);

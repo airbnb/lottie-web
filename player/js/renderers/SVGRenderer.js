@@ -158,7 +158,7 @@ SVGRenderer.prototype.updateContainerSize = function () {
 
 SVGRenderer.prototype.buildItem = function (pos) {
   var elements = this.elements;
-  if (elements[pos] || this.layers[pos].ty == 99) {
+  if (elements[pos] || this.layers[pos].ty === 99) {
     return;
   }
   elements[pos] = true;
