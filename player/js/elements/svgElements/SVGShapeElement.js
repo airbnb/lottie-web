@@ -78,8 +78,8 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
   } else if (data.ty === 'fl') {
     elementData = new SVGFillStyleData(this, data, styleOb);
   } else if (data.ty === 'gf' || data.ty === 'gs') {
-    var gradientConstructor = data.ty === 'gf' ? SVGGradientFillStyleData : SVGGradientStrokeStyleData;
-    elementData = new gradientConstructor(this, data, styleOb);
+    var GradientConstructor = data.ty === 'gf' ? SVGGradientFillStyleData : SVGGradientStrokeStyleData;
+    elementData = new GradientConstructor(this, data, styleOb);
     this.globalData.defs.appendChild(elementData.gf);
     if (elementData.maskId) {
       this.globalData.defs.appendChild(elementData.ms);
