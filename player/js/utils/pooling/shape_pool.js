@@ -24,7 +24,7 @@ var shape_pool = (function () {
     cloned.setLength(len);
     cloned.c = shape.c;
     var pt;
-		
+
     for(i = 0; i < len; i += 1) {
       cloned.setTripleAt(shape.v[i][0], shape.v[i][1], shape.o[i][0], shape.o[i][1], shape.i[i][0], shape.i[i][1], i);
     }

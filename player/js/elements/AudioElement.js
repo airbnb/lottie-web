@@ -32,7 +32,7 @@ AudioElement.prototype.renderFrame = function () {
       this.audio.seek(this._currentTime / this.globalData.frameRate);
       this._isPlaying = true;
     } else if (!this.audio.playing()
-			|| Math.abs(this._currentTime / this.globalData.frameRate - this.audio.seek()) > 0.1
+      || Math.abs(this._currentTime / this.globalData.frameRate - this.audio.seek()) > 0.1
     ) {
       this.audio.seek(this._currentTime / this.globalData.frameRate);
     }

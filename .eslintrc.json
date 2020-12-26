@@ -81,7 +81,6 @@
         "no-restricted-syntax": "off",
         "prefer-object-spread": "off",
         "no-unneeded-ternary": "off",
-        "no-tabs": "off",
         "eqeqeq": "off"
     }
 }
