@@ -22,7 +22,7 @@
       if (!duration) {
         cycleDuration = Math.max(0, lastKeyFrame - this.elem.data.ip);
       } else {
-        cycleDuration = Math.abs(lastKeyFrame - elem.comp.globalData.frameRate * duration);
+        cycleDuration = Math.abs(lastKeyFrame - this.elem.comp.globalData.frameRate * duration);
       }
       firstKeyFrame = lastKeyFrame - cycleDuration;
     }
@@ -88,7 +88,7 @@
       if (!duration) {
         cycleDuration = Math.max(0, this.elem.data.op - firstKeyFrame);
       } else {
-        cycleDuration = Math.abs(elem.comp.globalData.frameRate * duration);
+        cycleDuration = Math.abs(this.elem.comp.globalData.frameRate * duration);
       }
       lastKeyFrame = firstKeyFrame + cycleDuration;
     }

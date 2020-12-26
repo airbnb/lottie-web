@@ -108,7 +108,6 @@ function BMConfigErrorEvent(nativeError) {
 function BMAnimationConfigErrorEvent(type, nativeError) {
   this.type = type;
   this.nativeError = nativeError;
-  this.currentTime = currentTime;
 }
 
 var createElementID = (function () {
