@@ -43,7 +43,6 @@
         "lines-around-directive": "off",
         "no-restricted-globals": "off",
         "default-case": "off",
-        "nonblock-statement-body-position": "off",
         "no-unused-expressions": "off",
         "no-sequences": "off",
         "no-void": "off",
