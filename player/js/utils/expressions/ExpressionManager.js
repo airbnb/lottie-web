@@ -80,10 +80,10 @@ var ExpressionManager = (function () {
     var tOfB = typeof b;
     if (isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
       if (tOfA === 'string') {
-        a = parseInt(a);
+        a = parseInt(a, 10);
       }
       if (tOfB === 'string') {
-        b = parseInt(b);
+        b = parseInt(b, 10);
       }
       return a - b;
     }
@@ -173,10 +173,10 @@ var ExpressionManager = (function () {
   }
   function mod(a, b) {
     if (typeof a === 'string') {
-      a = parseInt(a);
+      a = parseInt(a, 10);
     }
     if (typeof b === 'string') {
-      b = parseInt(b);
+      b = parseInt(b, 10);
     }
     return a % b;
   }

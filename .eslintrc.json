@@ -30,6 +30,7 @@
         "no-restricted-globals": "off",
         "prefer-arrow-callback": "off",
         "prefer-rest-params": "off",
+        "no-restricted-syntax": "off",
         "------": "off",
         "func-names": "off",
         "max-len": "off",
@@ -42,9 +43,7 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "radix": "off",
         "camelcase": "off",
-        "no-restricted-syntax": "off",
         "eqeqeq": "off"
     }
 }

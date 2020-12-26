@@ -65,7 +65,7 @@ AnimationItem.prototype.setParams = function (params) {
   } else if (params.loop === false) {
     this.loop = false;
   } else {
-    this.loop = parseInt(params.loop);
+    this.loop = parseInt(params.loop, 10);
   }
   this.autoplay = 'autoplay' in params ? params.autoplay : true;
   this.name = params.name ? params.name : '';
@@ -135,7 +135,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
   } else if (loop === 'true') {
     params.loop = true;
   } else if (loop !== '') {
-    params.loop = parseInt(loop);
+    params.loop = parseInt(loop, 10);
   }
   var autoplay = wrapperAttributes.getNamedItem('data-anim-autoplay') // eslint-disable-line no-nested-ternary
     ? wrapperAttributes.getNamedItem('data-anim-autoplay').value
