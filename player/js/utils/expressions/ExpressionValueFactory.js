@@ -21,7 +21,7 @@ var ExpressionPropertyInterface = (function () {
         } else {
           value = property.keyframes[pos - 2].s;
         }
-        var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value);
+        var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value); // eslint-disable-line no-new-wrappers
         valueProp.time = property.keyframes[pos - 1].t / property.elem.comp.globalData.frameRate;
         valueProp.value = type === 'unidimensional' ? value[0] : value;
         return valueProp;
@@ -39,7 +39,7 @@ var ExpressionPropertyInterface = (function () {
     }
     var mult = 1 / property.mult;
     var val = property.pv * mult;
-    var expressionValue = new Number(val);
+    var expressionValue = new Number(val); // eslint-disable-line no-new-wrappers
     expressionValue.value = val;
     completeProperty(expressionValue, property, 'unidimensional');
 
@@ -49,7 +49,7 @@ var ExpressionPropertyInterface = (function () {
       }
       val = property.v * mult;
       if (expressionValue.value !== val) {
-        expressionValue = new Number(val);
+        expressionValue = new Number(val); // eslint-disable-line no-new-wrappers
         expressionValue.value = val;
         completeProperty(expressionValue, property, 'unidimensional');
       }

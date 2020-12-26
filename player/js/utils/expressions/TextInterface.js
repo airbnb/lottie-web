@@ -15,9 +15,9 @@ var TextExpressionInterface = (function () {
         var stringValue = elem.textProperty.currentData.t;
         if (stringValue !== _prevValue) {
           elem.textProperty.currentData.t = _prevValue;
-          _sourceText = new String(stringValue);
+          _sourceText = new String(stringValue); // eslint-disable-line no-new-wrappers
           // If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive
-          _sourceText.value = stringValue ? stringValue : new String(stringValue);
+          _sourceText.value = stringValue ? stringValue : new String(stringValue); // eslint-disable-line no-new-wrappers
         }
         return _sourceText;
       },

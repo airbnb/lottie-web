@@ -68,7 +68,6 @@
         "no-multi-assign": "off",
         "no-prototype-builtins": "off",
         "no-restricted-properties": "off",
-        "no-new-wrappers": "off",
         "camelcase": "off",
         "no-useless-return": "off",
         "no-lonely-if": "off",

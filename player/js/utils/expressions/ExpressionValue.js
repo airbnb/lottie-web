@@ -18,7 +18,7 @@ function ExpressionValue(elementProp, mult, type) {
     }
   } else if (elementProp.propType === 'unidimensional') {
     val = elementProp.v * mult;
-    expressionValue = new Number(val);
+    expressionValue = new Number(val); // eslint-disable-line no-new-wrappers
     expressionValue.value = val;
   } else {
     len = elementProp.pv.length;
