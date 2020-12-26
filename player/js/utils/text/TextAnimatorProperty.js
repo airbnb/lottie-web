@@ -69,20 +69,20 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       var bezierData;
       totalLength = 0;
       for (i = 0; i < len; i += 1) {
-        bezierData = bez.buildBezierData(paths.v[i]
-          , paths.v[i + 1]
-          , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
-          , [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]);
+        bezierData = bez.buildBezierData(paths.v[i],
+          paths.v[i + 1],
+          [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
+          [paths.i[i + 1][0] - paths.v[i + 1][0], paths.i[i + 1][1] - paths.v[i + 1][1]]);
         pathInfo.tLength += bezierData.segmentLength;
         pathInfo.segments.push(bezierData);
         totalLength += bezierData.segmentLength;
       }
       i = len;
       if (mask.v.c) {
-        bezierData = bez.buildBezierData(paths.v[i]
-          , paths.v[0]
-          , [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]]
-          , [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]);
+        bezierData = bez.buildBezierData(paths.v[i],
+          paths.v[0],
+          [paths.o[i][0] - paths.v[i][0], paths.o[i][1] - paths.v[i][1]],
+          [paths.i[0][0] - paths.v[0][0], paths.i[0][1] - paths.v[0][1]]);
         pathInfo.tLength += bezierData.segmentLength;
         pathInfo.segments.push(bezierData);
         totalLength += bezierData.segmentLength;

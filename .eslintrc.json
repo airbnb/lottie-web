@@ -74,7 +74,6 @@
         "newline-per-chained-call": "off",
         "no-useless-concat": "off",
         "no-eval": "off",
-        "comma-style": "off",
         "no-restricted-syntax": "off",
         "prefer-object-spread": "off",
         "no-unneeded-ternary": "off",
