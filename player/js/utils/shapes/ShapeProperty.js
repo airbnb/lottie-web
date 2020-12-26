@@ -1,5 +1,4 @@
 var ShapePropertyFactory = (function () {
-
   var initFrame = -999999;
 
   function interpolateShape(frameNum, previousValue, caching) {
@@ -197,7 +196,6 @@ var ShapePropertyFactory = (function () {
   KeyframedShapeProperty.prototype.addEffect = addEffect;
 
   var EllShapeProperty = (function () {
-
     var cPoint = roundCorner;
 
     function EllShapeProperty(elem, data) {
@@ -277,7 +275,6 @@ var ShapePropertyFactory = (function () {
   }());
 
   var StarShapeProperty = (function () {
-
     function StarShapeProperty(elem, data) {
       this.v = shape_pool.newElement();
       this.v.setPathData(true, 0);
@@ -390,7 +387,6 @@ var ShapePropertyFactory = (function () {
   }());
 
   var RectShapeProperty = (function () {
-
     function RectShapeProperty(elem, data) {
       this.v = shape_pool.newElement();
       this.v.c = true;
@@ -448,7 +444,6 @@ var ShapePropertyFactory = (function () {
             this.v.setTripleAt(p0 - v0, p1 - v1, p0 - v0 + cPoint, p1 - v1, p0 - v0, p1 - v1, 1, true);
             this.v.setTripleAt(p0 - v0, p1 + v1, p0 - v0, p1 + v1 - cPoint, p0 - v0, p1 + v1, 2, true);
             this.v.setTripleAt(p0 + v0, p1 + v1, p0 + v0 - cPoint, p1 + v1, p0 + v0, p1 + v1, 3, true);
-
           }
         }
       },
@@ -461,7 +456,6 @@ var ShapePropertyFactory = (function () {
         if (this._mdf) {
           this.convertRectToPath();
         }
-
       },
       reset: resetShape,
     };

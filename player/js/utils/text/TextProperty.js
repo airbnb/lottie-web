@@ -270,7 +270,6 @@ TextProperty.prototype.completeTextData = function (documentData) {
         flag = false;
       }
     }
-
   }
   lineWidth = -trackingOffset;
   cLength = 0;

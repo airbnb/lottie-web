@@ -1,7 +1,6 @@
 var ShapePathInterface = (
 
   function () {
-
     return function pathInterfaceFactory(shape, view, propertyGroup) {
       var prop = view.sh;
 

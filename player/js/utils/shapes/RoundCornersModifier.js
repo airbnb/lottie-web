@@ -83,7 +83,6 @@ RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
       }
       shapeData.shape.paths = shapeData.localShapeCollection;
     }
-
   }
   if (!this.dynamicProperties.length) {
     this._mdf = false;

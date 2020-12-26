@@ -1,5 +1,4 @@
 var MaskManagerInterface = (function () {
-
   function MaskInterface(mask, data) {
     this._mask = mask;
     this._data = data;

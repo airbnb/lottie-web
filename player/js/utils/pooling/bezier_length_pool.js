@@ -1,5 +1,4 @@
 var bezier_length_pool = (function () {
-
   function create() {
     return {
       addedLength: 0,

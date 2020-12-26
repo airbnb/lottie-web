@@ -1,5 +1,4 @@
 var PropertyFactory = (function () {
-
   var initFrame = initialDefaultFrame;
   var math_abs = Math.abs;
 
@@ -112,7 +111,6 @@ var PropertyFactory = (function () {
           var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
           quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
         }
-
       } else {
         for (i = 0; i < len; i += 1) {
           if (keyData.h !== 1) {

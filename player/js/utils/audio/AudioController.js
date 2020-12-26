@@ -1,5 +1,4 @@
 var audioControllerFactory = (function () {
-
   function AudioController(audioFactory) {
     this.audios = [];
     this.audioFactory = audioFactory;
@@ -76,5 +75,4 @@ var audioControllerFactory = (function () {
   return function () {
     return new AudioController();
   };
-
 }());

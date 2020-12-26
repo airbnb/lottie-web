@@ -5,7 +5,6 @@ var EffectsExpressionInterface = (function () {
 
   function createEffectsInterface(elem, propertyGroup) {
     if (elem.effectsManager) {
-
       var effectElements = [];
       var effectsData = elem.data.ef;
       var i, len = elem.effectsManager.effectElements.length;
@@ -33,7 +32,6 @@ var EffectsExpressionInterface = (function () {
   }
 
   function createGroupInterface(data, elements, propertyGroup, elem) {
-
     function groupInterface(name) {
       var effects = data.ef, i = 0, len = effects.length;
       while (i < len) {
@@ -97,5 +95,4 @@ var EffectsExpressionInterface = (function () {
   }
 
   return ob;
-
 }());

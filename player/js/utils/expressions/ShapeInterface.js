@@ -1,5 +1,4 @@
 var ShapeExpressionInterface = (function () {
-
   function iterateElements(shapes, view, propertyGroup) {
     var arr = [];
     var i, len = shapes ? shapes.length : 0;
@@ -163,7 +162,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function trimInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(val) {
       if (val === shape.e.ix || val === 'End' || val === 'end') {
         return interfaceFunction.end;
@@ -202,7 +200,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function transformInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(value) {
       if (shape.a.ix === value || value === 'Anchor Point') {
         return interfaceFunction.anchorPoint;
@@ -269,7 +266,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function ellipseInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(value) {
       if (shape.p.ix === value) {
         return interfaceFunction.position;
@@ -298,7 +294,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function starInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(value) {
       if (shape.p.ix === value) {
         return interfaceFunction.position;
@@ -321,7 +316,6 @@ var ShapeExpressionInterface = (function () {
       if (shape.is && shape.is.ix === value) {
         return interfaceFunction.innerRoundness;
       }
-
     }
 
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -366,7 +360,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function rectInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(value) {
       if (shape.p.ix === value) {
         return interfaceFunction.position;
@@ -377,7 +370,6 @@ var ShapeExpressionInterface = (function () {
       if (shape.s.ix === value || value === 'Size' || value === 'ADBE Vector Rect Size') {
         return interfaceFunction.size;
       }
-
     }
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
 
@@ -404,7 +396,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function roundedInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(value) {
       if (shape.r.ix === value || value === 'Round Corners 1') {
         return interfaceFunction.radius;
@@ -427,7 +418,6 @@ var ShapeExpressionInterface = (function () {
   }
 
   function repeaterInterfaceFactory(shape, view, propertyGroup) {
-
     function interfaceFunction(value) {
       if (shape.c.ix === value || value === 'Copies') {
         return interfaceFunction.copies;

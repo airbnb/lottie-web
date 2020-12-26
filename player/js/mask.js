@@ -130,7 +130,6 @@ function MaskElement(data, element, globalData) {
   if (this.viewData.length) {
     this.element.addRenderableComponent(this);
   }
-
 }
 
 MaskElement.prototype.getMaskProperty = function (pos) {
@@ -165,7 +164,6 @@ MaskElement.prototype.renderFrame = function (isFirstFrame) {
             this.storedData[i].elem.setAttribute('filter', null);
           }
           this.storedData[i].elem.setAttribute('stroke-width', this.storedData[i].x.v * 2);
-
         }
       }
     }

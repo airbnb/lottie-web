@@ -18,7 +18,6 @@ TransformElement.prototype = {
     }
   },
   renderTransform: function () {
-
     this.finalTransform._opMdf = this.finalTransform.mProp.o._mdf || this._isFirstFrame;
     this.finalTransform._matMdf = this.finalTransform.mProp._mdf || this._isFirstFrame;
 

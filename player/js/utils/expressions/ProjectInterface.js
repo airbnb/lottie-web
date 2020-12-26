@@ -1,5 +1,4 @@
 var ProjectInterface = (function () {
-
   function registerComposition(comp) {
     this.compositions.push(comp);
   }

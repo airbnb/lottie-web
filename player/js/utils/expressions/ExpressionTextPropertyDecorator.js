@@ -1,5 +1,4 @@
 (function addDecorator() {
-
   function searchExpressions() {
     if (this.data.d.x) {
       this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem, this.data.d, this);
@@ -21,7 +20,6 @@
   };
 
   TextProperty.prototype.searchProperty = function () {
-
     var isKeyframed = this.searchKeyframes();
     var hasExpressions = this.searchExpressions();
     this.kf = isKeyframed || hasExpressions;
@@ -29,5 +27,4 @@
   };
 
   TextProperty.prototype.searchExpressions = searchExpressions;
-
 }());

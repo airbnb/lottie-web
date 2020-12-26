@@ -7,7 +7,6 @@ function IImageElement(data, globalData, comp) {
 extendPrototype([BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement], IImageElement);
 
 IImageElement.prototype.createContent = function () {
-
   var assetPath = this.globalData.getAssetsPath(this.assetData);
 
   this.innerElem = createNS('image');

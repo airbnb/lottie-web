@@ -9,7 +9,6 @@ CVImageElement.prototype.initElement = SVGShapeElement.prototype.initElement;
 CVImageElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 CVImageElement.prototype.createContent = function () {
-
   if (this.img.width && (this.assetData.w !== this.img.width || this.assetData.h !== this.img.height)) {
     var canvas = createTag('canvas');
     canvas.width = this.assetData.w;
@@ -32,7 +31,6 @@ CVImageElement.prototype.createContent = function () {
     ctx.drawImage(this.img, (imgW - widthCrop) / 2, (imgH - heightCrop) / 2, widthCrop, heightCrop, 0, 0, this.assetData.w, this.assetData.h);
     this.img = canvas;
   }
-
 };
 
 CVImageElement.prototype.renderInnerContent = function (parentMatrix) {

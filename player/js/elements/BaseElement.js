@@ -51,7 +51,6 @@ BaseElement.prototype = {
     }
     // effects manager
     this.effectsManager = new EffectsManager(this.data, this, this.dynamicProperties);
-
   },
   getType: function () {
     return this.type;

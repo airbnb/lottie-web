@@ -99,7 +99,6 @@ HCameraElement.prototype.renderFrame = function () {
       var m_rotationX = (Math.atan2(lookDir[1], lookLengthOnXZ));
       var m_rotationY = (Math.atan2(lookDir[0], -lookDir[2]));
       this.mat.rotateY(m_rotationY).rotateX(-m_rotationX);
-
     }
     this.mat.rotateX(-this.rx.v).rotateY(-this.ry.v).rotateZ(this.rz.v);
     this.mat.rotateX(-this.or.v[0]).rotateY(-this.or.v[1]).rotateZ(this.or.v[2]);

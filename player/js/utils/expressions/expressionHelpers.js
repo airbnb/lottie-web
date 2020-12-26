@@ -1,5 +1,4 @@
 var expressionHelpers = (function () {
-
   function searchExpressions(elem, data, prop) {
     if (data.x) {
       prop.k = true;
@@ -18,7 +17,6 @@ var expressionHelpers = (function () {
       this._cachingAtTime.lastFrame = frameNum;
     }
     return this._cachingAtTime.value;
-
   }
 
   function getSpeedAtTime(frameNum) {

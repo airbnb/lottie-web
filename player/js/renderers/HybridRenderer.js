@@ -25,7 +25,6 @@ function HybridRenderer(animationItem, config) {
   this.camera = null;
   this.supports3d = true;
   this.rendererType = 'html';
-
 }
 
 extendPrototype([BaseRenderer], HybridRenderer);
@@ -69,7 +68,6 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
         }
       }
     }
-
   } else {
     this.addTo3dContainer(newDOMElement, pos);
   }
@@ -106,7 +104,6 @@ HybridRenderer.prototype.createComp = function (data) {
     return new SVGCompElement(data, this.globalData, this);
   }
   return new HCompElement(data, this.globalData, this);
-
 };
 
 HybridRenderer.prototype.createSolid = function (data) {

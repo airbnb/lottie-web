@@ -13,7 +13,6 @@ function TextAnimatorProperty(textData, renderType, elem) {
   this.renderedLetters = [];
   this.lettersChangedFlag = false;
   this.initDynamicPropertyContainer(elem);
-
 }
 
 TextAnimatorProperty.prototype.searchProperties = function () {
@@ -113,7 +112,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           pointInd = points.length - 1;
         }
       }
-
     }
     points = segments[segmentInd].points;
     prevPoint = points[pointInd - 1];
@@ -190,7 +188,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   //
 
   for (i = 0; i < len; i += 1) {
-
     matrixHelper.reset();
     elemOpacity = 1;
     if (letters[i].n) {
@@ -243,7 +240,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             } else {
               animatorOffset += animatorProps.p.v[0] * mult;
             }
-
           }
           if (animatorProps.a.propType) {
             animatorSelector = animators[j].s;
@@ -253,7 +249,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             } else {
               animatorOffset += animatorProps.a.v[0] * mult;
             }
-
           }
         }
         flag = true;
@@ -382,7 +377,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
         if (animatorProps.ry.propType) {
-
           if (mult.length) {
             matrixHelper.rotateY(animatorProps.ry.v * mult[1]);
           } else {
@@ -470,7 +464,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
               matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
             } else {
               matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
-
             }
           }
         }
@@ -504,7 +497,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           currentLength += (documentData.tr * .001) * documentData.finalSize;
         }
       } else {
-
         matrixHelper.translate(xPos, yPos, 0);
 
         if (documentData.ps) {

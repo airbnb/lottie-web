@@ -1,5 +1,4 @@
 (function addPropertyDecorator() {
-
   function loopOut(type, duration, durationFlag) {
     if (!this.k || !this.keyframes) {
       return this.pv;
@@ -177,7 +176,6 @@
       this._cachingAtTime.lastFrame = frameNum;
     }
     return this._cachingAtTime.value;
-
   }
 
   function getTransformValueAtTime(time) {
@@ -345,7 +343,6 @@
         } else {
           arr[i] = [vertices[i][0], vertices[i][1]];
         }
-
       }
       return arr;
     },

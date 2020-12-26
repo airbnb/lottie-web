@@ -1,5 +1,4 @@
 function bezFunction() {
-
   var easingFunctions = [];
   var math = Math;
 
@@ -31,7 +30,6 @@ function bezFunction() {
   }
 
   var getBezierLength = (function () {
-
     return function (pt1, pt2, pt3, pt4) {
       var curveSegments = defaultCurveSegments;
       var k;
@@ -96,7 +94,6 @@ function bezFunction() {
   }
 
   var buildBezierData = (function () {
-
     var storedData = {};
 
     return function (pt1, pt2, pt3, pt4) {
@@ -182,7 +179,6 @@ function bezFunction() {
   var bezier_segment_points = createTypedArray('float32', 8);
 
   function getNewSegment(pt1, pt2, pt3, pt4, startPerc, endPerc, bezierData) {
-
     startPerc = startPerc < 0 ? 0 : startPerc > 1 ? 1 : startPerc;
     var t0 = getDistancePerc(startPerc, bezierData);
     endPerc = endPerc > 1 ? 1 : endPerc;

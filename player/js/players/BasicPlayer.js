@@ -18,7 +18,6 @@ BasicPlayer.prototype.pauseStarted = function () {
 };
 
 BasicPlayer.prototype.buildControls = function (item, wrapper) {
-
   var self = this;
   this.animationItem = item;
   wrapper.addEventListener('bmPlay', function () { self.playStarted(); });

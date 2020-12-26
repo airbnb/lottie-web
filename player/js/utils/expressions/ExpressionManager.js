@@ -55,7 +55,6 @@ var ExpressionManager = (function () {
       return b;
     }
     if ($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)) {
-
       var i = 0, lenA = a.length, lenB = b.length;
       var retArr = [];
       while (i < lenA || i < lenB) {
@@ -260,7 +259,6 @@ var ExpressionManager = (function () {
     if (s === 0) {
       r = g = b = l; // achromatic
     } else {
-
       var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       var p = 2 * l - q;
       r = hue2rgb(p, q, h + 1 / 3);
@@ -513,7 +511,6 @@ var ExpressionManager = (function () {
             keyTime = data.k[i].t;
           }
         }
-
       }
       var ob = {};
       ob.index = index;

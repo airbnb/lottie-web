@@ -1,5 +1,4 @@
 var ImagePreloader = (function () {
-
   var proxyImage = (function () {
     var canvas = createTag('canvas');
     canvas.width = 1;

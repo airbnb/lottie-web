@@ -1,5 +1,4 @@
 function dataFunctionManager() {
-
   // var tCanvasHelper = createTag('canvas').getContext('2d');
 
   function completeLayers(layers, comps, fontManager) {
@@ -161,7 +160,6 @@ function dataFunctionManager() {
           for (i = 0; i < len; i += 1) {
             if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
-
             }
           }
         }
@@ -246,7 +244,6 @@ function dataFunctionManager() {
           for (i = 0; i < len; i += 1) {
             if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
-
             }
           }
         }
@@ -324,7 +321,6 @@ function dataFunctionManager() {
           for (i = 0; i < len; i += 1) {
             if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
-
             }
           }
         }

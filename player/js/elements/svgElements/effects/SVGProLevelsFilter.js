@@ -24,7 +24,6 @@ function SVGProLevelsFilter(filter, filterManager) {
   }
 
   if (effectElements[3].p.k || effectElements[3].p.v !== 0 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 1 || effectElements[6].p.k || effectElements[6].p.v !== 0 || effectElements[7].p.k || effectElements[7].p.v !== 1) {
-
     feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
     filter.appendChild(feComponentTransfer);
     this.feFuncRComposed = this.createFeFunc('feFuncR', feComponentTransfer);
@@ -97,6 +96,5 @@ SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
       val = this.getTableValue(effectElements[31].p.v, effectElements[32].p.v, effectElements[33].p.v, effectElements[34].p.v, effectElements[35].p.v);
       this.feFuncA.setAttribute('tableValues', val);
     }
-
   }
 };

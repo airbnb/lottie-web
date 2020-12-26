@@ -73,7 +73,6 @@ AnimationItem.prototype.setParams = function (params) {
   if (params.animationData) {
     this.configAnimation(params.animationData);
   } else if (params.path) {
-
     if (params.path.lastIndexOf('\\') !== -1) {
       this.path = params.path.substr(0, params.path.lastIndexOf('\\') + 1);
     } else {
@@ -86,7 +85,6 @@ AnimationItem.prototype.setParams = function (params) {
       this.trigger('data_failed');
     }.bind(this));
   }
-
 };
 
 AnimationItem.prototype.setData = function (wrapper, animationData) {
@@ -625,7 +623,6 @@ AnimationItem.prototype.trigger = function (name) {
 };
 
 AnimationItem.prototype.triggerRenderFrameError = function (nativeError) {
-
   var error = new BMRenderFrameErrorEvent(nativeError, this.currentFrame);
   this.triggerEvent('error', error);
 
@@ -635,7 +632,6 @@ AnimationItem.prototype.triggerRenderFrameError = function (nativeError) {
 };
 
 AnimationItem.prototype.triggerConfigError = function (nativeError) {
-
   var error = new BMConfigErrorEvent(nativeError, this.currentFrame);
   this.triggerEvent('error', error);
 

@@ -1,5 +1,4 @@
 var segments_length_pool = (function () {
-
   function create() {
     return {
       lengths: [],

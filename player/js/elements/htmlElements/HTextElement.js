@@ -10,7 +10,6 @@ function HTextElement(data, globalData, comp) {
   this.renderType = 'svg';
   this.isMasked = false;
   this.initElement(data, globalData, comp);
-
 }
 extendPrototype([BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, ITextElement], HTextElement);
 
@@ -31,7 +30,6 @@ HTextElement.prototype.createContent = function () {
   }
 
   this.checkParenting();
-
 };
 
 HTextElement.prototype.buildNewText = function () {
@@ -79,7 +77,6 @@ HTextElement.prototype.buildNewText = function () {
           tParent = this.textSpans[cnt];
           tCont = tParent.children[0];
         } else {
-
           tParent = createTag('div');
           tParent.style.lineHeight = 0;
           tCont = createNS('svg');
@@ -122,7 +119,6 @@ HTextElement.prototype.buildNewText = function () {
       if (!this.isMasked) {
         this.innerElem.appendChild(tParent);
         if (shapeData && shapeData.shapes) {
-
           // document.body.appendChild is needed to get exact measure of shape
           document.body.appendChild(tCont);
           var boundingBox = tCont.getBBox();
@@ -132,7 +128,6 @@ HTextElement.prototype.buildNewText = function () {
           tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x - 1) + 'px,' + (boundingBox.y - 1) + 'px)';
 
           letters[i].yOffset = boundingBox.y - 1;
-
         } else {
           tCont.setAttribute('width', 1);
           tCont.setAttribute('height', 1);
@@ -169,7 +164,6 @@ HTextElement.prototype.buildNewText = function () {
 };
 
 HTextElement.prototype.renderInnerContent = function () {
-
   if (this.data.singleShape) {
     if (!this._isFirstFrame && !this.lettersChangedFlag) {
       return;

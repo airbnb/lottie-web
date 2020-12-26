@@ -1,5 +1,4 @@
 var getBlendMode = (function () {
-
   var blendModeEnums = {
     0: 'source-over',
     1: 'multiply',

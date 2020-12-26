@@ -118,12 +118,10 @@ SVGBaseElement.prototype = {
       } else {
         this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#' + clipId + ')');
       }
-
     }
     if (this.data.bm !== 0) {
       this.setBlendMode();
     }
-
   },
   renderElement: function () {
     if (this.finalTransform._matMdf) {

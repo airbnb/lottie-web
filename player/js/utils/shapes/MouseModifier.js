@@ -5,7 +5,6 @@ MouseModifier.prototype.processKeys = function (forceRender) {
     return;
   }
   this._mdf = true;
-
 };
 
 MouseModifier.prototype.addShapeToModifier = function () {
@@ -26,7 +25,6 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
       positions.distV[i] = 0;
       positions.distO[i] = 0;
       positions.distI[i] = 0;
-
     }
     theta = Math.atan2(
       path.v[i][1] - mouseCoords[1],
@@ -212,9 +210,7 @@ MouseModifier.prototype.processShapes = function () {
         shapeData.last = newPaths;
       }
     }
-
   }
-
 };
 
 MouseModifier.prototype.initModifierProperties = function (elem, data) {

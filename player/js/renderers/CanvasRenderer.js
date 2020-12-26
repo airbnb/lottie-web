@@ -219,7 +219,6 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     } else {
       this.transformCanvas.ty = 0;
     }
-
   } else if (this.renderConfig.preserveAspectRatio == 'none') {
     this.transformCanvas.sx = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
     this.transformCanvas.sy = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);

@@ -56,7 +56,6 @@ function SVGRenderer(animationItem, config) {
   this.pendingElements = [];
   this.destroyed = false;
   this.rendererType = 'svg';
-
 }
 
 extendPrototype([BaseRenderer], SVGRenderer);
@@ -71,7 +70,6 @@ SVGRenderer.prototype.createShape = function (data) {
 
 SVGRenderer.prototype.createText = function (data) {
   return new SVGTextElement(data, this.globalData, this);
-
 };
 
 SVGRenderer.prototype.createImage = function (data) {
@@ -80,7 +78,6 @@ SVGRenderer.prototype.createImage = function (data) {
 
 SVGRenderer.prototype.createComp = function (data) {
   return new SVGCompElement(data, this.globalData, this);
-
 };
 
 SVGRenderer.prototype.createSolid = function (data) {

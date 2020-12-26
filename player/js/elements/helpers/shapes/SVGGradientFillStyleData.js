@@ -16,11 +16,9 @@ SVGGradientFillStyleData.prototype.initGradientData = function (elem, data, styl
   this.setGradientData(styleOb.pElem, data);
   this.setGradientOpacity(data, styleOb);
   this._isAnimated = !!this._isAnimated;
-
 };
 
 SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data) {
-
   var gradientId = createElementID();
   var gfill = createNS(data.t === 1 ? 'linearGradient' : 'radialGradient');
   gfill.setAttribute('id', gradientId);

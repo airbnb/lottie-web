@@ -1,5 +1,4 @@
 var TransformPropertyFactory = (function () {
-
   var defaultVector = [0, 0];
 
   function applyToMatrix(mat) {
@@ -223,5 +222,4 @@ var TransformPropertyFactory = (function () {
   return {
     getTransformProperty: getTransformProperty,
   };
-
 }());

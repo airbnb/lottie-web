@@ -35,7 +35,6 @@ BMMath.abs = function (val) {
     return absArr;
   }
   return Math.abs(val);
-
 };
 var defaultCurveSegments = 150;
 var degToRads = Math.PI / 180;

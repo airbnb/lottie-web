@@ -181,7 +181,6 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
       if (!processedPos) {
         itemsData[i] = this.createShapeElement(arr[i]);
       }
-
     } else if (arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'pb') {
       if (!processedPos) {
         modifier = ShapeModifiers.getModifier(arr[i].ty);
@@ -324,7 +323,6 @@ CVShapeElement.prototype.renderShape = function (parentTransform, items, data, i
   if (isMain) {
     this.drawLayer();
   }
-
 };
 
 CVShapeElement.prototype.renderStyledShape = function (styledShape, shape) {
@@ -426,7 +424,6 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
     styleElem.grd = grd;
   }
   styleElem.coOp = itemData.o.v * groupTransform.opacity;
-
 };
 
 CVShapeElement.prototype.renderStroke = function (styleData, itemData, groupTransform) {

@@ -105,11 +105,9 @@ HShapeElement.prototype.tempBoundingBox = {
 };
 
 HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
-
   var bounds = [[p0[0], p3[0]], [p0[1], p3[1]]];
 
   for (var a, b, c, t, b2ac, t1, t2, i = 0; i < 2; ++i) {
-
     b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
     a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
     c = 3 * p1[i] - 3 * p0[i];
@@ -119,7 +117,6 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
     c = c | 0;
 
     if (a === 0) {
-
       if (b === 0) {
         continue;
       }
@@ -143,7 +140,6 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
 
     t2 = (-b - bm_sqrt(b2ac)) / (2 * a);
     if (t2 > 0 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
-
   }
 
   this.shapeBoundingBox.left = bm_min.apply(null, bounds[0]);
@@ -215,5 +211,4 @@ HShapeElement.prototype.renderInnerContent = function () {
       this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
     }
   }
-
 };

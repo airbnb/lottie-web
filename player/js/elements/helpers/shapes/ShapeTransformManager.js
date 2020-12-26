@@ -41,14 +41,12 @@ ShapeTransformManager.prototype = {
       }
     }
     sequence._mdf = _mdf;
-
   },
   processSequences: function (isFirstFrame) {
     var i, len = this.sequenceList.length;
     for (i = 0; i < len; i += 1) {
       this.processSequence(this.sequenceList[i], isFirstFrame);
     }
-
   },
   getNewKey: function () {
     return '_' + this.transform_key_count++;

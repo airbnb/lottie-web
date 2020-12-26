@@ -1,5 +1,4 @@
 var FontManager = (function () {
-
   var maxWaitingTime = 5000;
   var emptyChar = {
     w: 0,
@@ -86,7 +85,6 @@ var FontManager = (function () {
       setTimeout(this.checkLoadedFontsBinded, 20);
     } else {
       setTimeout(this.setIsLoadedBinded, 10);
-
     }
   }
 
@@ -232,7 +230,6 @@ var FontManager = (function () {
     var i = 0, len = this.chars.length;
     while (i < len) {
       if (this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font) {
-
         return this.chars[i];
       }
       i += 1;
@@ -316,5 +313,4 @@ var FontManager = (function () {
   Font.prototype = fontPrototype;
 
   return Font;
-
 }());

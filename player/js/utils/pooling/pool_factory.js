@@ -1,6 +1,5 @@
 var pool_factory = (function () {
   return function (initialLength, _create, _release, _clone) {
-
     var _length = 0;
     var _maxLength = initialLength;
     var pool = createSizedArray(_maxLength);

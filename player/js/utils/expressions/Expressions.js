@@ -4,7 +4,6 @@ var Expressions = (function () {
 
 
   function initExpressions(animation) {
-
     var stackCount = 0;
     var registers = [];
 

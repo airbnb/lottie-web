@@ -193,7 +193,6 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
             }
             this.addPaths(newShapesData, localShapeCollection);
           }
-
         }
         shapeData.shape.paths = localShapeCollection;
       }

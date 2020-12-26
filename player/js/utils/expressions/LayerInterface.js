@@ -1,5 +1,4 @@
 var LayerExpressionInterface = (function () {
-
   function getMatrix(time) {
     var toWorldMat = new Matrix();
     if (time !== undefined) {
@@ -74,7 +73,6 @@ var LayerExpressionInterface = (function () {
 
 
   return function (elem) {
-
     var transformInterface;
 
     function _registerMaskInterface(maskManager) {

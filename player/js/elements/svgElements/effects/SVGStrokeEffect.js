@@ -6,7 +6,6 @@ function SVGStrokeEffect(elem, filterManager) {
 }
 
 SVGStrokeEffect.prototype.initialize = function () {
-
   var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
   var path, groupPath, i, len;
   if (this.filterManager.effectElements[1].p.v === 1) {

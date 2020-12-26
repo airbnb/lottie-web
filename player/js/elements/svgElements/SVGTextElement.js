@@ -7,7 +7,6 @@ function SVGTextElement(data, globalData, comp) {
 extendPrototype([BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, ITextElement], SVGTextElement);
 
 SVGTextElement.prototype.createContent = function () {
-
   if (this.data.singleShape && !this.globalData.fontManager.chars) {
     this.textContainer = createNS('text');
   }
@@ -169,7 +168,6 @@ SVGTextElement.prototype.sourceRectAtTime = function (time) {
 };
 
 SVGTextElement.prototype.renderInnerContent = function () {
-
   if (!this.data.singleShape) {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if (this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {

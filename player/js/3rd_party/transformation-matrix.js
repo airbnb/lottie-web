@@ -28,7 +28,6 @@
  */
 
 var Matrix = (function () {
-
   var _cos = Math.cos;
   var _sin = Math.sin;
   var _tan = Math.tan;
@@ -146,7 +145,6 @@ var Matrix = (function () {
   }
 
   function transform(a2, b2, c2, d2, e2, f2, g2, h2, i2, j2, k2, l2, m2, n2, o2, p2) {
-
     var _p = this.props;
 
     if (a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0) {
@@ -242,7 +240,6 @@ var Matrix = (function () {
   }
 
   function applyToPoint(x, y, z) {
-
     return {
       x: x * this.props[0] + y * this.props[4] + z * this.props[8] + this.props[12],
       y: x * this.props[1] + y * this.props[5] + z * this.props[9] + this.props[13],
