@@ -5,7 +5,8 @@ var ProjectInterface = (function () {
 
   return function () {
     function _thisProjectFunction(name) {
-      var i = 0, len = this.compositions.length;
+      var i = 0,
+        len = this.compositions.length;
       while (i < len) {
         if (this.compositions[i].data && this.compositions[i].data.nm === name) {
           if (this.compositions[i].prepareFrame && this.compositions[i].data.xt) {

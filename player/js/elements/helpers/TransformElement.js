@@ -24,7 +24,8 @@ TransformElement.prototype = {
     if (this.hierarchy) {
       var mat;
       var finalMat = this.finalTransform.mat;
-      var i = 0, len = this.hierarchy.length;
+      var i = 0,
+        len = this.hierarchy.length;
       // Checking if any of the transformation matrices in the hierarchy chain has changed.
       if (!this.finalTransform._matMdf) {
         while (i < len) {
@@ -61,7 +62,9 @@ TransformElement.prototype = {
         flag = false;
       }
     }
-    var i, len = transforms.length, ptNew;
+    var i,
+      len = transforms.length,
+      ptNew;
     for (i = 0; i < len; i += 1) {
       ptNew = transforms[i].mat.applyToPointArray(0, 0, 0);
       // ptNew = transforms[i].mat.applyToPointArray(pt[0],pt[1],pt[2]);

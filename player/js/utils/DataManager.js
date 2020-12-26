@@ -3,9 +3,14 @@ function dataFunctionManager() {
 
   function completeLayers(layers, comps, fontManager) {
     var layerData;
-    var animArray, lastFrame;
-    var i, len = layers.length;
-    var j, jLen, k, kLen;
+    var animArray,
+      lastFrame;
+    var i,
+      len = layers.length;
+    var j,
+      jLen,
+      k,
+      kLen;
     for (i = 0; i < len; i += 1) {
       layerData = layers[i];
       if (!('ks' in layerData) || layerData.completed) {
@@ -48,7 +53,8 @@ function dataFunctionManager() {
   }
 
   function findCompLayers(id, comps) {
-    var i = 0, len = comps.length;
+    var i = 0,
+      len = comps.length;
     while (i < len) {
       if (comps[i].id === id) {
         if (!comps[i].layers.__used) {
@@ -63,8 +69,10 @@ function dataFunctionManager() {
   }
 
   function completeShapes(arr) {
-    var i, len = arr.length;
-    var j, jLen;
+    var i,
+      len = arr.length;
+    var j,
+      jLen;
     var hasPaths = false;
     for (i = len - 1; i >= 0; i -= 1) {
       if (arr[i].ty == 'sh') {
@@ -101,7 +109,8 @@ function dataFunctionManager() {
   }
 
   function convertPathsToAbsoluteValues(path) {
-    var i, len = path.i.length;
+    var i,
+      len = path.i.length;
     for (i = 0; i < len; i += 1) {
       path.i[i][0] += path.v[i][0];
       path.i[i][1] += path.v[i][1];
@@ -146,7 +155,8 @@ function dataFunctionManager() {
     }
 
     function iterateLayers(layers) {
-      var i, len = layers.length;
+      var i,
+        len = layers.length;
       for (i = 0; i < len; i += 1) {
         if (layers[i].ty === 5) {
           updateTextLayer(layers[i]);
@@ -158,7 +168,8 @@ function dataFunctionManager() {
       if (checkVersion(minimumVersion, animationData.v)) {
         iterateLayers(animationData.layers);
         if (animationData.assets) {
-          var i, len = animationData.assets.length;
+          var i,
+            len = animationData.assets.length;
           for (i = 0; i < len; i += 1) {
             if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
@@ -173,8 +184,14 @@ function dataFunctionManager() {
     var minimumVersion = [4, 7, 99];
     return function (animationData) {
       if (animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
-        var i, len = animationData.chars.length, j, jLen, k, kLen;
-        var pathData, paths;
+        var i,
+          len = animationData.chars.length,
+          j,
+          jLen,
+          k,
+          kLen;
+        var pathData,
+          paths;
         for (i = 0; i < len; i += 1) {
           if (animationData.chars[i].data && animationData.chars[i].data.shapes) {
             paths = animationData.chars[i].data.shapes[0].it;
@@ -197,8 +214,10 @@ function dataFunctionManager() {
     var minimumVersion = [4, 1, 9];
 
     function iterateShapes(shapes) {
-      var i, len = shapes.length;
-      var j, jLen;
+      var i,
+        len = shapes.length;
+      var j,
+        jLen;
       for (i = 0; i < len; i += 1) {
         if (shapes[i].ty === 'gr') {
           iterateShapes(shapes[i].it);
@@ -230,7 +249,8 @@ function dataFunctionManager() {
     }
 
     function iterateLayers(layers) {
-      var i, len = layers.length;
+      var i,
+        len = layers.length;
       for (i = 0; i < len; i += 1) {
         if (layers[i].ty === 4) {
           iterateShapes(layers[i].shapes);
@@ -242,7 +262,8 @@ function dataFunctionManager() {
       if (checkVersion(minimumVersion, animationData.v)) {
         iterateLayers(animationData.layers);
         if (animationData.assets) {
-          var i, len = animationData.assets.length;
+          var i,
+            len = animationData.assets.length;
           for (i = 0; i < len; i += 1) {
             if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
@@ -257,8 +278,10 @@ function dataFunctionManager() {
     var minimumVersion = [4, 4, 18];
 
     function completeClosingShapes(arr) {
-      var i, len = arr.length;
-      var j, jLen;
+      var i,
+        len = arr.length;
+      var j,
+        jLen;
       var hasPaths = false;
       for (i = len - 1; i >= 0; i -= 1) {
         if (arr[i].ty == 'sh') {
@@ -284,8 +307,12 @@ function dataFunctionManager() {
 
     function iterateLayers(layers) {
       var layerData;
-      var i, len = layers.length;
-      var j, jLen, k, kLen;
+      var i,
+        len = layers.length;
+      var j,
+        jLen,
+        k,
+        kLen;
       for (i = 0; i < len; i += 1) {
         layerData = layers[i];
         if (layerData.hasMask) {
@@ -317,7 +344,8 @@ function dataFunctionManager() {
       if (checkVersion(minimumVersion, animationData.v)) {
         iterateLayers(animationData.layers);
         if (animationData.assets) {
-          var i, len = animationData.assets.length;
+          var i,
+            len = animationData.assets.length;
           for (i = 0; i < len; i += 1) {
             if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);

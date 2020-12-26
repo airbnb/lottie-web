@@ -1,6 +1,8 @@
 var createTypedArray = (function () {
   function createRegularArray(type, len) {
-    var i = 0, arr = [], value;
+    var i = 0,
+      arr = [],
+      value;
     switch (type) {
       case 'int16':
       case 'uint8c':

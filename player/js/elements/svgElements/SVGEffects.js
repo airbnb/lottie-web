@@ -1,5 +1,6 @@
 function SVGEffects(elem) {
-  var i, len = elem.data.ef ? elem.data.ef.length : 0;
+  var i,
+    len = elem.data.ef ? elem.data.ef.length : 0;
   var filId = createElementID();
   var fil = filtersFactory.createFilter(filId);
   var count = 0;
@@ -45,7 +46,8 @@ function SVGEffects(elem) {
 }
 
 SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
-  var i, len = this.filters.length;
+  var i,
+    len = this.filters.length;
   for (i = 0; i < len; i += 1) {
     this.filters[i].renderFrame(_isFirstFrame);
   }

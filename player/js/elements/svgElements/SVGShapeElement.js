@@ -38,9 +38,13 @@ SVGShapeElement.prototype.createContent = function () {
 This method searches for multiple shapes that affect a single element and one of them is animated
 */
 SVGShapeElement.prototype.filterUniqueShapes = function () {
-  var i, len = this.shapes.length, shape;
-  var j, jLen = this.stylesList.length;
-  var style, count = 0;
+  var i,
+    len = this.shapes.length,
+    shape;
+  var j,
+    jLen = this.stylesList.length;
+  var style,
+    count = 0;
   var tempShapes = [];
   var areAnimated = false;
   for (j = 0; j < jLen; j += 1) {
@@ -61,7 +65,8 @@ SVGShapeElement.prototype.filterUniqueShapes = function () {
 };
 
 SVGShapeElement.prototype.setShapesAsAnimated = function (shapes) {
-  var i, len = shapes.length;
+  var i,
+    len = shapes.length;
   for (i = 0; i < len; i += 1) {
     shapes[i].setAsAnimated();
   }
@@ -154,7 +159,8 @@ SVGShapeElement.prototype.createShapeElement = function (data, ownTransformers, 
 };
 
 SVGShapeElement.prototype.addToAnimatedContents = function (data, element) {
-  var i = 0, len = this.animatedContents.length;
+  var i = 0,
+    len = this.animatedContents.length;
   while (i < len) {
     if (this.animatedContents[i].element === element) {
       return;
@@ -170,7 +176,8 @@ SVGShapeElement.prototype.addToAnimatedContents = function (data, element) {
 
 SVGShapeElement.prototype.setElementStyles = function (elementData) {
   var arr = elementData.styles;
-  var j, jLen = this.stylesList.length;
+  var j,
+    jLen = this.stylesList.length;
   for (j = 0; j < jLen; j += 1) {
     if (!this.stylesList[j].closed) {
       arr.push(this.stylesList[j]);
@@ -180,7 +187,8 @@ SVGShapeElement.prototype.setElementStyles = function (elementData) {
 
 SVGShapeElement.prototype.reloadShapes = function () {
   this._isFirstFrame = true;
-  var i, len = this.itemsData.length;
+  var i,
+    len = this.itemsData.length;
   for (i = 0; i < len; i += 1) {
     this.prevViewData[i] = this.itemsData[i];
   }
@@ -195,9 +203,16 @@ SVGShapeElement.prototype.reloadShapes = function () {
 
 SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, container, level, transformers, render) {
   var ownTransformers = [].concat(transformers);
-  var i, len = arr.length - 1;
-  var j, jLen;
-  var ownStyles = [], ownModifiers = [], styleOb, currentTransform, modifier, processedPos;
+  var i,
+    len = arr.length - 1;
+  var j,
+    jLen;
+  var ownStyles = [],
+    ownModifiers = [],
+    styleOb,
+    currentTransform,
+    modifier,
+    processedPos;
   for (i = len; i >= 0; i -= 1) {
     processedPos = this.searchProcessedElement(arr[i]);
     if (!processedPos) {
@@ -277,7 +292,8 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
 
 SVGShapeElement.prototype.renderInnerContent = function () {
   this.renderModifiers();
-  var i, len = this.stylesList.length;
+  var i,
+    len = this.stylesList.length;
   for (i = 0; i < len; i += 1) {
     this.stylesList[i].reset();
   }
@@ -296,7 +312,8 @@ SVGShapeElement.prototype.renderInnerContent = function () {
 };
 
 SVGShapeElement.prototype.renderShape = function () {
-  var i, len = this.animatedContents.length;
+  var i,
+    len = this.animatedContents.length;
   var animatedContent;
   for (i = 0; i < len; i += 1) {
     animatedContent = this.animatedContents[i];

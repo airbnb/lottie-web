@@ -39,11 +39,14 @@ TrimModifier.prototype.calculateShapeEdges = function (s, e, shapeLength, addedL
     });
   }
   var shapeSegments = [];
-  var i, len = segments.length, segmentOb;
+  var i,
+    len = segments.length,
+    segmentOb;
   for (i = 0; i < len; i += 1) {
     segmentOb = segments[i];
     if (!(segmentOb.e * totalModifierLength < addedLength || segmentOb.s * totalModifierLength > addedLength + shapeLength)) {
-      var shapeS, shapeE;
+      var shapeS,
+        shapeE;
       if (segmentOb.s * totalModifierLength <= addedLength) {
         shapeS = 0;
       } else {
@@ -64,7 +67,8 @@ TrimModifier.prototype.calculateShapeEdges = function (s, e, shapeLength, addedL
 };
 
 TrimModifier.prototype.releasePathsData = function (pathsData) {
-  var i, len = pathsData.length;
+  var i,
+    len = pathsData.length;
   for (i = 0; i < len; i += 1) {
     segments_length_pool.release(pathsData[i]);
   }
@@ -73,7 +77,8 @@ TrimModifier.prototype.releasePathsData = function (pathsData) {
 };
 
 TrimModifier.prototype.processShapes = function (_isFirstFrame) {
-  var s, e;
+  var s,
+    e;
   if (this._mdf || _isFirstFrame) {
     var o = (this.o.v % 360) / 360;
     if (o < 0) {
@@ -96,8 +101,14 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
     e = this.eValue;
   }
   var shapePaths;
-  var i, len = this.shapes.length, j, jLen;
-  var pathsData, pathData, totalShapeLength, totalModifierLength = 0;
+  var i,
+    len = this.shapes.length,
+    j,
+    jLen;
+  var pathsData,
+    pathData,
+    totalShapeLength,
+    totalModifierLength = 0;
 
   if (e === s) {
     for (i = 0; i < len; i += 1) {
@@ -109,7 +120,9 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
       }
     }
   } else if (!((e === 1 && s === 0) || (e === 0 && s === 1))) {
-    var segments = [], shapeData, localShapeCollection;
+    var segments = [],
+      shapeData,
+      localShapeCollection;
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       // if shape hasn't changed and trim properties haven't changed, cached previous path can be used
@@ -136,7 +149,10 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
         shapeData.shape._mdf = true;
       }
     }
-    var shapeS = s, shapeE = e, addedLength = 0, edges;
+    var shapeS = s,
+      shapeE = e,
+      addedLength = 0,
+      edges;
     for (i = len - 1; i >= 0; i -= 1) {
       shapeData = this.shapes[i];
       if (shapeData.shape._mdf) {
@@ -204,7 +220,8 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
 };
 
 TrimModifier.prototype.addPaths = function (newPaths, localShapeCollection) {
-  var i, len = newPaths.length;
+  var i,
+    len = newPaths.length;
   for (i = 0; i < len; i += 1) {
     localShapeCollection.addShape(newPaths[i]);
   }
@@ -231,9 +248,13 @@ TrimModifier.prototype.addSegmentFromArray = function (points, shapePath, pos, n
 TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath) {
   var pathsData = shapeData.pathsData;
   var shapePaths = shapeData.shape.paths.shapes;
-  var i, len = shapeData.shape.paths._length, j, jLen;
+  var i,
+    len = shapeData.shape.paths._length,
+    j,
+    jLen;
   var addedLength = 0;
-  var currentLengthData, segmentCount;
+  var currentLengthData,
+    segmentCount;
   var lengths;
   var segment;
   var shapes = [];

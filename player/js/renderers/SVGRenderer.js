@@ -141,7 +141,8 @@ SVGRenderer.prototype.destroy = function () {
   }
   this.layerElement = null;
   this.globalData.defs = null;
-  var i, len = this.layers ? this.layers.length : 0;
+  var i,
+    len = this.layers ? this.layers.length : 0;
   for (i = 0; i < len; i++) {
     if (this.elements[i]) {
       this.elements[i].destroy();
@@ -186,7 +187,8 @@ SVGRenderer.prototype.checkPendingElements = function () {
     var element = this.pendingElements.pop();
     element.checkParenting();
     if (element.data.tt) {
-      var i = 0, len = this.elements.length;
+      var i = 0,
+        len = this.elements.length;
       while (i < len) {
         if (this.elements[i] === element) {
           element.setMatte(this.elements[i - 1].layerId);
@@ -213,7 +215,8 @@ SVGRenderer.prototype.renderFrame = function (num) {
   this.globalData.frameId += 1;
   this.globalData.projectInterface.currentFrame = num;
   this.globalData._mdf = false;
-  var i, len = this.layers.length;
+  var i,
+    len = this.layers.length;
   if (!this.completeLayers) {
     this.checkLayers(num);
   }

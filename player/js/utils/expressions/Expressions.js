@@ -24,7 +24,8 @@ var Expressions = (function () {
     }
 
     function releaseInstances() {
-      var i, len = registers.length;
+      var i,
+        len = registers.length;
       for (i = 0; i < len; i += 1) {
         registers[i].release();
       }

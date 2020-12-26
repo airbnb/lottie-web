@@ -14,7 +14,9 @@ function GradientProperty(elem, data, container) {
 }
 
 GradientProperty.prototype.comparePoints = function (values, points) {
-  var i = 0, len = this.o.length / 2, diff;
+  var i = 0,
+    len = this.o.length / 2,
+    diff;
   while (i < len) {
     diff = Math.abs(values[i * 4] - values[points * 4 + i * 2]);
     if (diff > 0.01) {
@@ -30,7 +32,8 @@ GradientProperty.prototype.checkCollapsable = function () {
     return false;
   }
   if (this.data.k.k[0].s) {
-    var i = 0, len = this.data.k.k.length;
+    var i = 0,
+      len = this.data.k.k.length;
     while (i < len) {
       if (!this.comparePoints(this.data.k.k[i].s, this.data.p)) {
         return false;
@@ -49,8 +52,10 @@ GradientProperty.prototype.getValue = function (forceRender) {
   this._cmdf = false;
   this._omdf = false;
   if (this.prop._mdf || forceRender) {
-    var i, len = this.data.p * 4;
-    var mult, val;
+    var i,
+      len = this.data.p * 4;
+    var mult,
+      val;
     for (i = 0; i < len; i += 1) {
       mult = i % 4 === 0 ? 100 : 255;
       val = Math.round(this.prop.v[i] * mult);

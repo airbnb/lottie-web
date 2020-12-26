@@ -6,17 +6,24 @@ function MaskElement(data, element, globalData) {
   this.masksProperties = this.data.masksProperties || [];
   this.maskElement = null;
   var defs = this.globalData.defs;
-  var i, len = this.masksProperties ? this.masksProperties.length : 0;
+  var i,
+    len = this.masksProperties ? this.masksProperties.length : 0;
   this.viewData = createSizedArray(len);
   this.solidPath = '';
 
-  var path, properties = this.masksProperties;
+  var path,
+    properties = this.masksProperties;
   var count = 0;
   var currentMasks = [];
-  var j, jLen;
+  var j,
+    jLen;
   var layerId = createElementID();
-  var rect, expansor, feMorph, x;
-  var maskType = 'clipPath', maskRef = 'clip-path';
+  var rect,
+    expansor,
+    feMorph,
+    x;
+  var maskType = 'clipPath',
+    maskRef = 'clip-path';
   for (i = 0; i < len; i++) {
     if ((properties[i].mode !== 'a' && properties[i].mode !== 'n') || properties[i].inv || properties[i].o.k !== 100 || properties[i].o.x) {
       maskType = 'mask';
@@ -137,7 +144,8 @@ MaskElement.prototype.getMaskProperty = function (pos) {
 
 MaskElement.prototype.renderFrame = function (isFirstFrame) {
   var finalMat = this.element.finalTransform.mat;
-  var i, len = this.masksProperties.length;
+  var i,
+    len = this.masksProperties.length;
   for (i = 0; i < len; i++) {
     if (this.viewData[i].prop._mdf || isFirstFrame) {
       this.drawPath(this.masksProperties[i], this.viewData[i].prop.v, this.viewData[i]);
@@ -184,7 +192,8 @@ MaskElement.prototype.createLayerSolidPath = function () {
 
 MaskElement.prototype.drawPath = function (pathData, pathNodes, viewData) {
   var pathString = ' M' + pathNodes.v[0][0] + ',' + pathNodes.v[0][1];
-  var i, len;
+  var i,
+    len;
   len = pathNodes._length;
   for (i = 1; i < len; i += 1) {
     // pathString += " C"+pathNodes.o[i-1][0]+','+pathNodes.o[i-1][1] + " "+pathNodes.i[i][0]+','+pathNodes.i[i][1] + " "+pathNodes.v[i][0]+','+pathNodes.v[i][1];

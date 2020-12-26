@@ -1,7 +1,8 @@
 function EffectsManager(data, element) {
   var effects = data.ef || [];
   this.effectElements = [];
-  var i, len = effects.length;
+  var i,
+    len = effects.length;
   var effectItem;
   for (i = 0; i < len; i++) {
     effectItem = new GroupEffect(effects[i], element);
@@ -21,8 +22,10 @@ GroupEffect.prototype.init = function (data, element) {
   this.data = data;
   this.effectElements = [];
   this.initDynamicPropertyContainer(element);
-  var i, len = this.data.ef.length;
-  var eff, effects = this.data.ef;
+  var i,
+    len = this.data.ef.length;
+  var eff,
+    effects = this.data.ef;
   for (i = 0; i < len; i += 1) {
     eff = null;
     switch (effects[i].ty) {

@@ -50,7 +50,9 @@ var BezierFactory = (function () {
   }
 
   function binarySubdivide(aX, aA, aB, mX1, mX2) {
-    var currentX, currentT, i = 0;
+    var currentX,
+      currentT,
+      i = 0;
     do {
       currentT = aA + (aB - aA) / 2.0;
       currentX = calcBezier(currentT, mX1, mX2) - aX;

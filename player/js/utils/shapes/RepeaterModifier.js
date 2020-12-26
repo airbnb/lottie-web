@@ -59,7 +59,8 @@ RepeaterModifier.prototype.init = function (elem, arr, pos, elemsData) {
 };
 
 RepeaterModifier.prototype.resetElements = function (elements) {
-  var i, len = elements.length;
+  var i,
+    len = elements.length;
   for (i = 0; i < len; i += 1) {
     elements[i]._processed = false;
     if (elements[i].ty === 'gr') {
@@ -69,14 +70,16 @@ RepeaterModifier.prototype.resetElements = function (elements) {
 };
 
 RepeaterModifier.prototype.cloneElements = function (elements) {
-  var i, len = elements.length;
+  var i,
+    len = elements.length;
   var newElements = JSON.parse(JSON.stringify(elements));
   this.resetElements(newElements);
   return newElements;
 };
 
 RepeaterModifier.prototype.changeGroupRender = function (elements, renderFlag) {
-  var i, len = elements.length;
+  var i,
+    len = elements.length;
   for (i = 0; i < len; i += 1) {
     elements[i]._render = renderFlag;
     if (elements[i].ty === 'gr') {
@@ -86,7 +89,11 @@ RepeaterModifier.prototype.changeGroupRender = function (elements, renderFlag) {
 };
 
 RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
-  var items, itemsTransform, i, dir, cont;
+  var items,
+    itemsTransform,
+    i,
+    dir,
+    cont;
   if (this._mdf || _isFirstFrame) {
     var copies = Math.ceil(this.c.v);
     if (this._groups.length < copies) {
@@ -152,7 +159,8 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
     i = this.data.m === 1 ? 0 : this._currentCopies - 1;
     dir = this.data.m === 1 ? 1 : -1;
     cont = this._currentCopies;
-    var j, jLen;
+    var j,
+      jLen;
     while (cont) {
       items = this.elemsData[i].it;
       itemsTransform = items[items.length - 1].transform.mProps.v.props;

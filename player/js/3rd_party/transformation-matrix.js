@@ -284,7 +284,9 @@ var Matrix = (function () {
   }
 
   function inversePoints(pts) {
-    var i, len = pts.length, retPts = [];
+    var i,
+      len = pts.length,
+      retPts = [];
     for (i = 0; i < len; i += 1) {
       retPts[i] = inversePoint(pts[i]);
     }
@@ -301,7 +303,12 @@ var Matrix = (function () {
       arr[4] = pt3[0];
       arr[5] = pt3[1];
     } else {
-      var p0 = this.props[0], p1 = this.props[1], p4 = this.props[4], p5 = this.props[5], p12 = this.props[12], p13 = this.props[13];
+      var p0 = this.props[0],
+        p1 = this.props[1],
+        p4 = this.props[4],
+        p5 = this.props[5],
+        p12 = this.props[12],
+        p13 = this.props[13];
       arr[0] = pt1[0] * p0 + pt1[1] * p4 + p12;
       arr[1] = pt1[0] * p1 + pt1[1] * p5 + p13;
       arr[2] = pt2[0] * p0 + pt2[1] * p4 + p12;

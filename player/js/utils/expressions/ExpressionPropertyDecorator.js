@@ -10,7 +10,8 @@
     if (currentFrame <= lastKeyFrame) {
       return this.pv;
     }
-    var cycleDuration, firstKeyFrame;
+    var cycleDuration,
+      firstKeyFrame;
     if (!durationFlag) {
       if (!duration || duration > keyframes.length - 1) {
         duration = keyframes.length - 1;
@@ -25,7 +26,9 @@
       }
       firstKeyFrame = lastKeyFrame - cycleDuration;
     }
-    var i, len, ret;
+    var i,
+      len,
+      ret;
     if (type === 'pingpong') {
       var iterations = Math.floor((currentFrame - firstKeyFrame) / cycleDuration);
       if (iterations % 2 !== 0) {
@@ -73,7 +76,8 @@
     if (currentFrame >= firstKeyFrame) {
       return this.pv;
     }
-    var cycleDuration, lastKeyFrame;
+    var cycleDuration,
+      lastKeyFrame;
     if (!durationFlag) {
       if (!duration || duration > keyframes.length - 1) {
         duration = keyframes.length - 1;
@@ -88,7 +92,9 @@
       }
       lastKeyFrame = firstKeyFrame + cycleDuration;
     }
-    var i, len, ret;
+    var i,
+      len,
+      ret;
     if (type === 'pingpong') {
       var iterations = Math.floor((firstKeyFrame - currentFrame) / cycleDuration);
       if (iterations % 2 === 0) {
@@ -138,7 +144,8 @@
     var initFrame = currentTime - width;
     var endFrame = currentTime + width;
     var sampleFrequency = samples > 1 ? (endFrame - initFrame) / (samples - 1) : 1;
-    var i = 0, j = 0;
+    var i = 0,
+      j = 0;
     var value;
     if (this.pv.length) {
       value = createTypedArray('float32', this.pv.length);
@@ -333,7 +340,8 @@
       if (time !== undefined) {
         shapePath = this.getValueAtTime(time, 0);
       }
-      var i, len = shapePath._length;
+      var i,
+        len = shapePath._length;
       var vertices = shapePath[prop];
       var points = shapePath.v;
       var arr = createSizedArray(len);
@@ -370,9 +378,12 @@
       var segmentsLength = this._segmentsLength;
       var lengths = segmentsLength.lengths;
       var lengthPos = segmentsLength.totalLength * perc;
-      var i = 0, len = lengths.length;
-      var j = 0, jLen;
-      var accumulatedLength = 0, pt;
+      var i = 0,
+        len = lengths.length;
+      var j = 0,
+        jLen;
+      var accumulatedLength = 0,
+        pt;
       while (i < len) {
         if (accumulatedLength + lengths[i].addedLength > lengthPos) {
           var initIndex = i;

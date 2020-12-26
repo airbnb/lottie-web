@@ -12,10 +12,15 @@ MouseModifier.prototype.addShapeToModifier = function () {
 };
 
 MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
-  var i, len = path.v.length;
-  var vValues = [], oValues = [], iValues = [];
+  var i,
+    len = path.v.length;
+  var vValues = [],
+    oValues = [],
+    iValues = [];
   var dist;
-  var theta, x, y;
+  var theta,
+    x,
+    y;
   /// / OPTION A
   for (i = 0; i < len; i += 1) {
     if (!positions.v[i]) {
@@ -161,13 +166,16 @@ MouseModifier.prototype.processShapes = function () {
   var mouseX = this.elem.globalData.mouseX;
   var mouseY = this.elem.globalData.mouseY;
   var shapePaths;
-  var i, len = this.shapes.length;
-  var j, jLen;
+  var i,
+    len = this.shapes.length;
+  var j,
+    jLen;
 
   if (mouseX) {
     var localMouseCoords = this.elem.globalToLocal([mouseX, mouseY, 0]);
 
-    var shapeData, newPaths = [];
+    var shapeData,
+      newPaths = [];
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       if (!shapeData.shape._mdf && !this._mdf) {

@@ -25,7 +25,9 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
   gfill.setAttribute('spreadMethod', 'pad');
   gfill.setAttribute('gradientUnits', 'userSpaceOnUse');
   var stops = [];
-  var stop, j, jLen;
+  var stop,
+    j,
+    jLen;
   jLen = data.g.p * 4;
   for (j = 0; j < jLen; j += 4) {
     stop = createNS('stop');
@@ -40,7 +42,9 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
 
 SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb) {
   if (this.g._hasOpacity && !this.g._collapsable) {
-    var stop, j, jLen;
+    var stop,
+      j,
+      jLen;
     var mask = createNS('mask');
     var maskElement = createNS('path');
     mask.appendChild(maskElement);

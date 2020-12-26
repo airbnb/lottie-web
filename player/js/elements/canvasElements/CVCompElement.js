@@ -18,7 +18,8 @@ CVCompElement.prototype.renderInnerContent = function () {
   ctx.lineTo(0, this.data.h);
   ctx.lineTo(0, 0);
   ctx.clip();
-  var i, len = this.layers.length;
+  var i,
+    len = this.layers.length;
   for (i = len - 1; i >= 0; i -= 1) {
     if (this.completeLayers || this.elements[i]) {
       this.elements[i].renderFrame();
@@ -27,7 +28,8 @@ CVCompElement.prototype.renderInnerContent = function () {
 };
 
 CVCompElement.prototype.destroy = function () {
-  var i, len = this.layers.length;
+  var i,
+    len = this.layers.length;
   for (i = len - 1; i >= 0; i -= 1) {
     if (this.elements[i]) {
       this.elements[i].destroy();

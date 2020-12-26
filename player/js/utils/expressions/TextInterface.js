@@ -1,6 +1,7 @@
 var TextExpressionInterface = (function () {
   return function (elem) {
-    var _prevValue, _sourceText;
+    var _prevValue,
+      _sourceText;
     function _thisLayerFunction(name) {
       switch (name) {
         case 'ADBE Text Document':

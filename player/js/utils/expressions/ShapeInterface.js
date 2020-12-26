@@ -1,7 +1,8 @@
 var ShapeExpressionInterface = (function () {
   function iterateElements(shapes, view, propertyGroup) {
     var arr = [];
-    var i, len = shapes ? shapes.length : 0;
+    var i,
+      len = shapes ? shapes.length : 0;
     for (i = 0; i < len; i += 1) {
       if (shapes[i].ty == 'gr') {
         arr.push(groupInterfaceFactory(shapes[i], view[i], propertyGroup));
@@ -33,7 +34,8 @@ var ShapeExpressionInterface = (function () {
   function contentsInterfaceFactory(shape, view, propertyGroup) {
     var interfaces;
     var interfaceFunction = function _interfaceFunction(value) {
-      var i = 0, len = interfaces.length;
+      var i = 0,
+        len = interfaces.length;
       while (i < len) {
         if (interfaces[i]._name === value || interfaces[i].mn === value || interfaces[i].propertyIndex === value || interfaces[i].ix === value || interfaces[i].ind === value) {
           return interfaces[i];
@@ -122,7 +124,8 @@ var ShapeExpressionInterface = (function () {
         get: ExpressionPropertyInterface(view.d.dataProps[i].p),
       });
     }
-    var i, len = shape.d ? shape.d.length : 0;
+    var i,
+      len = shape.d ? shape.d.length : 0;
     var dashOb = {};
     for (i = 0; i < len; i += 1) {
       addPropertyToDashOb(i);
@@ -464,7 +467,8 @@ var ShapeExpressionInterface = (function () {
         }
         return interfaces[value - 1];
       }
-      var i = 0, len = interfaces.length;
+      var i = 0,
+        len = interfaces.length;
       while (i < len) {
         if (interfaces[i]._name === value) {
           return interfaces[i];

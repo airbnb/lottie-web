@@ -10,7 +10,9 @@ function CVShapeData(element, data, styles, transformsManager) {
     ty = 7;
   }
   this.sh = ShapePropertyFactory.getShapeProp(element, data, ty, element);
-  var i, len = styles.length, styledShape;
+  var i,
+    len = styles.length,
+    styledShape;
   for (i = 0; i < len; i += 1) {
     if (!styles[i].closed) {
       styledShape = {

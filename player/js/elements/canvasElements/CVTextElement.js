@@ -40,16 +40,29 @@ CVTextElement.prototype.buildNewText = function () {
     this.values.sWidth = documentData.sw;
   }
   var fontData = this.globalData.fontManager.getFontByName(documentData.f);
-  var i, len;
+  var i,
+    len;
   var letters = documentData.l;
   var matrixHelper = this.mHelper;
   this.stroke = hasStroke;
   this.values.fValue = documentData.finalSize + 'px ' + this.globalData.fontManager.getFontByName(documentData.f).fFamily;
   len = documentData.finalText.length;
   // this.tHelper.font = this.values.fValue;
-  var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
+  var charData,
+    shapeData,
+    k,
+    kLen,
+    shapes,
+    j,
+    jLen,
+    pathNodes,
+    commands,
+    pathArr,
+    singleShape = this.data.singleShape;
   var trackingOffset = documentData.tr * .001 * documentData.finalSize;
-  var xPos = 0, yPos = 0, firstLine = true;
+  var xPos = 0,
+    yPos = 0,
+    firstLine = true;
   var cnt = 0;
   for (i = 0; i < len; i += 1) {
     charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
@@ -107,14 +120,23 @@ CVTextElement.prototype.renderInnerContent = function () {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
   }
 
-  var i, len, j, jLen, k, kLen;
+  var i,
+    len,
+    j,
+    jLen,
+    k,
+    kLen;
   var renderedLetters = this.textAnimator.renderedLetters;
 
   var letters = this.textProperty.currentData.l;
 
   len = letters.length;
   var renderedLetter;
-  var lastFill = null, lastStroke = null, lastStrokeW = null, commands, pathArr;
+  var lastFill = null,
+    lastStroke = null,
+    lastStrokeW = null,
+    commands,
+    pathArr;
   for (i = 0; i < len; i += 1) {
     if (letters[i].n) {
       continue;

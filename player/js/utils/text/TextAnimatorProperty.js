@@ -16,7 +16,9 @@ function TextAnimatorProperty(textData, renderType, elem) {
 }
 
 TextAnimatorProperty.prototype.searchProperties = function () {
-  var i, len = this._textData.a.length, animatorProps;
+  var i,
+    len = this._textData.a.length,
+    animatorProps;
   var getProp = PropertyFactory.getProp;
   for (i = 0; i < len; i += 1) {
     animatorProps = this._textData.a[i];
@@ -49,9 +51,26 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   var renderType = this._renderType;
   var renderedLettersCount = this.renderedLetters.length;
   var data = this.data;
-  var xPos, yPos;
-  var i, len;
-  var letters = documentData.l, pathInfo, currentLength, currentPoint, segmentLength, flag, pointInd, segmentInd, prevPoint, points, segments, partialLength, totalLength, perc, tanAngle, mask;
+  var xPos,
+    yPos;
+  var i,
+    len;
+  var letters = documentData.l,
+    pathInfo,
+    currentLength,
+    currentPoint,
+    segmentLength,
+    flag,
+    pointInd,
+    segmentInd,
+    prevPoint,
+    points,
+    segments,
+    partialLength,
+    totalLength,
+    perc,
+    tanAngle,
+    mask;
   if (this._hasMaskedPath) {
     mask = this._pathData.m;
     if (!this._pathData.n || this._pathData._mdf) {
@@ -124,19 +143,36 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   yPos = 0;
   var yOff = documentData.finalSize * 1.2 * 0.714;
   var firstLine = true;
-  var animatorProps, animatorSelector;
-  var j, jLen;
+  var animatorProps,
+    animatorSelector;
+  var j,
+    jLen;
   var letterValue;
 
   jLen = animators.length;
   var lastLetter;
 
-  var mult, ind = -1, offf, xPathPos, yPathPos;
-  var initPathPos = currentLength, initSegmentInd = segmentInd, initPointInd = pointInd, currentLine = -1;
+  var mult,
+    ind = -1,
+    offf,
+    xPathPos,
+    yPathPos;
+  var initPathPos = currentLength,
+    initSegmentInd = segmentInd,
+    initPointInd = pointInd,
+    currentLine = -1;
   var elemOpacity;
-  var sc, sw, fc, k;
+  var sc,
+    sw,
+    fc,
+    k;
   var lineLength = 0;
-  var letterSw, letterSc, letterFc, letterM = '', letterP = this.defaultPropsArray, letterO;
+  var letterSw,
+    letterSc,
+    letterFc,
+    letterM = '',
+    letterP = this.defaultPropsArray,
+    letterO;
 
   //
   if (documentData.j === 2 || documentData.j === 1) {

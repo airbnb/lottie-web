@@ -4,7 +4,8 @@ var shape_pool = (function () {
   }
 
   function release(shapePath) {
-    var len = shapePath._length, i;
+    var len = shapePath._length,
+      i;
     for (i = 0; i < len; i += 1) {
       point_pool.release(shapePath.v[i]);
       point_pool.release(shapePath.i[i]);
@@ -19,7 +20,8 @@ var shape_pool = (function () {
 
   function clone(shape) {
     var cloned = factory.newElement();
-    var i, len = shape._length === undefined ? shape.v.length : shape._length;
+    var i,
+      len = shape._length === undefined ? shape.v.length : shape._length;
     cloned.setLength(len);
     cloned.c = shape.c;
     var pt;

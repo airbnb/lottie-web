@@ -44,9 +44,11 @@ AnimationItem.prototype.includeLayers = function (data) {
     this.totalFrames = Math.floor(data.op - this.animationData.ip);
   }
   var layers = this.animationData.layers;
-  var i, len = layers.length;
+  var i,
+    len = layers.length;
   var newLayers = data.layers;
-  var j, jLen = newLayers.length;
+  var j,
+    jLen = newLayers.length;
   for (j = 0; j < jLen; j += 1) {
     i = 0;
     while (i < len) {

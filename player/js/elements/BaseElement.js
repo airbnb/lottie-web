@@ -6,7 +6,8 @@ BaseElement.prototype = {
     if (!this.data.hasMask) {
       return false;
     }
-    var i = 0, len = this.data.masksProperties.length;
+    var i = 0,
+      len = this.data.masksProperties.length;
     while (i < len) {
       if ((this.data.masksProperties[i].mode !== 'n' && this.data.masksProperties[i].cl !== false)) {
         return true;

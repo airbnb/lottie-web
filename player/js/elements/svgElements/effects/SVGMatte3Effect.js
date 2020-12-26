@@ -12,7 +12,8 @@ function SVGMatte3Effect(filterElem, filterManager, elem) {
 }
 
 SVGMatte3Effect.prototype.findSymbol = function (mask) {
-  var i = 0, len = _svgMatteSymbols.length;
+  var i = 0,
+    len = _svgMatteSymbols.length;
   while (i < len) {
     if (_svgMatteSymbols[i] === mask) {
       return _svgMatteSymbols[i];
@@ -28,7 +29,8 @@ SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
     return;
   }
   var children = parentNode.children;
-  var i = 0, len = children.length;
+  var i = 0,
+    len = children.length;
   while (i < len) {
     if (children[i] === mask.layerElement) {
       break;
@@ -74,7 +76,8 @@ SVGMatte3Effect.prototype.setElementAsMask = function (elem, mask) {
 SVGMatte3Effect.prototype.initialize = function () {
   var ind = this.filterManager.effectElements[0].p.v;
   var elements = this.elem.comp.elements;
-  var i = 0, len = elements.length;
+  var i = 0,
+    len = elements.length;
   while (i < len) {
     if (elements[i] && elements[i].data.ind === ind) {
       this.setElementAsMask(this.elem, elements[i]);

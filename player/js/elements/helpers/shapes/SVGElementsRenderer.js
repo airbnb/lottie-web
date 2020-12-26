@@ -39,9 +39,19 @@ var SVGElementsRenderer = (function () {
   }
 
   function renderPath(styleData, itemData, isFirstFrame) {
-    var j, jLen, pathStringTransformed, redraw, pathNodes, l, lLen = itemData.styles.length;
+    var j,
+      jLen,
+      pathStringTransformed,
+      redraw,
+      pathNodes,
+      l,
+      lLen = itemData.styles.length;
     var lvl = itemData.lvl;
-    var paths, mat, props, iterations, k;
+    var paths,
+      mat,
+      props,
+      iterations,
+      k;
     for (l = 0; l < lLen; l += 1) {
       redraw = itemData.sh._mdf || isFirstFrame;
       if (itemData.styles[l].lvl < lvl) {
@@ -104,7 +114,8 @@ var SVGElementsRenderer = (function () {
   function renderGradient(styleData, itemData, isFirstFrame) {
     var gfill = itemData.gf;
     var hasOpacity = itemData.g._hasOpacity;
-    var pt1 = itemData.s.v, pt2 = itemData.e.v;
+    var pt1 = itemData.s.v,
+      pt2 = itemData.e.v;
 
     if (itemData.o._mdf || isFirstFrame) {
       var attr = styleData.ty === 'gf' ? 'fill-opacity' : 'stroke-opacity';
@@ -120,7 +131,10 @@ var SVGElementsRenderer = (function () {
         itemData.of.setAttribute(attr2, pt1[1]);
       }
     }
-    var stops, i, len, stop;
+    var stops,
+      i,
+      len,
+      stop;
     if (itemData.g._cmdf || isFirstFrame) {
       stops = itemData.cst;
       var cValues = itemData.g.c;

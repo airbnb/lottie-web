@@ -41,7 +41,8 @@ var animationManager = (function () {
   }
 
   function getRegisteredAnimations() {
-    var i, lenAnims = registeredAnimations.length;
+    var i,
+      lenAnims = registeredAnimations.length;
     var animations = [];
     for (i = 0; i < lenAnims; i += 1) {
       animations.push(registeredAnimations[i].animation);
@@ -150,7 +151,8 @@ var animationManager = (function () {
   function searchAnimations(animationData, standalone, renderer) {
     var animElements = [].concat([].slice.call(document.getElementsByClassName('lottie')),
       [].slice.call(document.getElementsByClassName('bodymovin')));
-    var i, lenAnims = animElements.length;
+    var i,
+      lenAnims = animElements.length;
     for (i = 0; i < lenAnims; i += 1) {
       if (renderer) {
         animElements[i].setAttribute('data-bm-type', renderer);

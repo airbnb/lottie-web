@@ -7,7 +7,8 @@ var segments_length_pool = (function () {
   }
 
   function release(element) {
-    var i, len = element.lengths.length;
+    var i,
+      len = element.lengths.length;
     for (i = 0; i < len; i += 1) {
       bezier_length_pool.release(element.lengths[i]);
     }
