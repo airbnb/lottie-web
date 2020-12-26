@@ -45,7 +45,6 @@
         "default-case": "off",
         "nonblock-statement-body-position": "off",
         "no-unused-expressions": "off",
-        "no-return-assign": "off",
         "no-sequences": "off",
         "no-void": "off",
         "no-redeclare": "off",
