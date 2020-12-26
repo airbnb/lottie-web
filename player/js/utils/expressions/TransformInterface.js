@@ -60,13 +60,12 @@ var TransformExpressionInterface = (function () {
     Object.defineProperty(_thisFunction, 'scale', {
       get: ExpressionPropertyInterface(transform.s),
     });
-
+    var _px, _py, _pz, _transformFactory;
     if (transform.p) {
-      var _transformFactory = ExpressionPropertyInterface(transform.p);
+      _transformFactory = ExpressionPropertyInterface(transform.p);
     } else {
-      var _px = ExpressionPropertyInterface(transform.px);
-      var _py = ExpressionPropertyInterface(transform.py);
-      var _pz;
+      _px = ExpressionPropertyInterface(transform.px);
+      _py = ExpressionPropertyInterface(transform.py);
       if (transform.pz) {
         _pz = ExpressionPropertyInterface(transform.pz);
       }

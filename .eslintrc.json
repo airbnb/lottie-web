@@ -41,7 +41,6 @@
         "strict": "off",
         "lines-around-directive": "off",
         "no-useless-escape": "off",
-        "block-scoped-var": "off",
         "no-shadow": "off",
         "no-restricted-globals": "off",
         "default-case": "off",

@@ -394,9 +394,9 @@ CVShapeElement.prototype.renderFill = function (styleData, itemData, groupTransf
 
 CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, groupTransform) {
   var styleElem = itemData.style;
+  var grd;
   if (!styleElem.grd || itemData.g._mdf || itemData.s._mdf || itemData.e._mdf || (styleData.t !== 1 && (itemData.h._mdf || itemData.a._mdf))) {
     var ctx = this.globalData.canvasContext;
-    var grd;
     var pt1 = itemData.s.v, pt2 = itemData.e.v;
     if (styleData.t === 1) {
       grd = ctx.createLinearGradient(pt1[0], pt1[1], pt2[0], pt2[1]);
@@ -408,7 +408,7 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
       var dist = rad * percent;
       var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
       var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];
-      var grd = ctx.createRadialGradient(x, y, 0, pt1[0], pt1[1], rad);
+      grd = ctx.createRadialGradient(x, y, 0, pt1[0], pt1[1], rad);
     }
 
     var i, len = styleData.g.p;

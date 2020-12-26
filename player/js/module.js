@@ -120,13 +120,14 @@ function getQueryVariable(variable) {
 var standalone = '__[STANDALONE]__';
 var animationData = '__[ANIMATIONDATA]__';
 var renderer = '';
+var queryString;
 if (standalone) {
   var scripts = document.getElementsByTagName('script');
   var index = scripts.length - 1;
   var myScript = scripts[index] || {
     src: '',
   };
-  var queryString = myScript.src.replace(/^[^\?]+\??/, '');
+  queryString = myScript.src.replace(/^[^\?]+\??/, '');
   renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
