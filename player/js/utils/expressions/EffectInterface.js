@@ -14,7 +14,8 @@ var EffectsExpressionInterface = (function () {
 
       var effects = elem.data.ef || [];
       var groupInterface = function (name) {
-        i = 0, len = effects.length;
+        i = 0;
+        len = effects.length;
         while (i < len) {
           if (name === effects[i].nm || name === effects[i].mn || name === effects[i].ix) {
             return effectElements[i];
