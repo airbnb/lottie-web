@@ -1,5 +1,5 @@
 function TextAnimatorDataProperty(elem, animatorProps, container) {
-  var defaultData = {propType: false};
+  var defaultData = { propType: false };
   var getProp = PropertyFactory.getProp;
   var textAnimator_animatables = animatorProps.a;
   this.a = {

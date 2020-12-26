@@ -74,7 +74,7 @@ var EffectsExpressionInterface = (function () {
         },
       },
       _name: { value: data.nm },
-      propertyGroup: {value: _propertyGroup},
+      propertyGroup: { value: _propertyGroup },
     });
     groupInterface.active = groupInterface.enabled = data.en !== 0;
     return groupInterface;

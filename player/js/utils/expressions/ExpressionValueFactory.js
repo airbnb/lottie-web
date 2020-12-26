@@ -1,7 +1,7 @@
 var ExpressionPropertyInterface = (function () {
 
-  var defaultUnidimensionalValue = {pv: 0, v: 0, mult: 1};
-  var defaultMultidimensionalValue = {pv: [0, 0, 0], v: [0, 0, 0], mult: 1};
+  var defaultUnidimensionalValue = { pv: 0, v: 0, mult: 1 };
+  var defaultMultidimensionalValue = { pv: [0, 0, 0], v: [0, 0, 0], mult: 1 };
 
   function completeProperty(expressionValue, property, type) {
     Object.defineProperty(expressionValue, 'velocity', {

@@ -188,7 +188,7 @@ var ShapePropertyFactory = (function () {
     this.paths.addShape(this.v);
     this.lastFrame = initFrame;
     this.reset = resetShape;
-    this._caching = {lastFrame: initFrame, lastIndex: 0};
+    this._caching = { lastFrame: initFrame, lastIndex: 0 };
     this.effectsSequence = [interpolateShapeCurrentTime.bind(this)];
   }
   KeyframedShapeProperty.prototype.getValue = processEffectsSequence;

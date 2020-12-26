@@ -47,7 +47,7 @@ var FontManager = (function () {
     // Remember width with no applied web font
     var width = node.offsetWidth;
     node.style.fontFamily = trimFontOptions(font) + ', ' + family;
-    return {node: node, w: width, parent: parentNode};
+    return { node: node, w: width, parent: parentNode };
   }
 
   function checkLoadedFonts() {

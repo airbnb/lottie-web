@@ -9,7 +9,7 @@ function AudioElement(data, globalData, comp) {
   this.audio = this.globalData.audioController.createAudio(assetPath);
   this._currentTime = 0;
   this.globalData.audioController.addAudio(this);
-  this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {_placeholder: true};
+  this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : { _placeholder: true };
 }
 
 AudioElement.prototype.prepareFrame = function (num) {

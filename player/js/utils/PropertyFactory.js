@@ -347,7 +347,7 @@ var PropertyFactory = (function () {
     this.keyframes = data.k;
     this.offsetTime = elem.data.st;
     this.frameId = -1;
-    this._caching = {lastFrame: initFrame, lastIndex: 0, value: 0, _lastKeyframeIndex: -1};
+    this._caching = { lastFrame: initFrame, lastIndex: 0, value: 0, _lastKeyframeIndex: -1 };
     this.k = true;
     this.kf = true;
     this.data = data;
@@ -409,7 +409,7 @@ var PropertyFactory = (function () {
       this.v[i] = initFrame;
       this.pv[i] = initFrame;
     }
-    this._caching = {lastFrame: initFrame, lastIndex: 0, value: createTypedArray('float32', arrLen)};
+    this._caching = { lastFrame: initFrame, lastIndex: 0, value: createTypedArray('float32', arrLen) };
     this.addEffect = addEffect;
   }
 

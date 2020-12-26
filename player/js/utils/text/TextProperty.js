@@ -307,7 +307,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
       lineWidth += cLength + trackingOffset + uncollapsedSpaces;
       uncollapsedSpaces = 0;
     }
-    letters.push({l: cLength, an: cLength, add: currentSize, n: newLineFlag, anIndexes: [], val: val, line: currentLine, animatorJustifyOffset: 0});
+    letters.push({ l: cLength, an: cLength, add: currentSize, n: newLineFlag, anIndexes: [], val: val, line: currentLine, animatorJustifyOffset: 0 });
     if (anchorGrouping == 2) {
       currentSize += cLength;
       if (val === '' || val === ' ' || i === len - 1) {

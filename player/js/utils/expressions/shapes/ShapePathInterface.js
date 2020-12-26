@@ -34,7 +34,7 @@ var ShapePathInterface = (
         ix: { value: shape.ix },
         propertyIndex: { value: shape.ix },
         mn: { value: shape.mn },
-        propertyGroup: {value: propertyGroup},
+        propertyGroup: { value: propertyGroup },
       });
       return interfaceFunction;
     };

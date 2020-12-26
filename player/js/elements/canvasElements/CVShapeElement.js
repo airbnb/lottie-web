@@ -14,7 +14,7 @@ extendPrototype([BaseElement, TransformElement, CVBaseElement, IShapeElement, Hi
 
 CVShapeElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
 
-CVShapeElement.prototype.transformHelper = {opacity: 1, _opMdf: false};
+CVShapeElement.prototype.transformHelper = { opacity: 1, _opMdf: false };
 
 CVShapeElement.prototype.dashResetter = [];
 
@@ -40,8 +40,8 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   } else if (data.ty === 'gf' || data.ty === 'gs') {
     elementData.s = PropertyFactory.getProp(this, data.s, 1, null, this);
     elementData.e = PropertyFactory.getProp(this, data.e, 1, null, this);
-    elementData.h = PropertyFactory.getProp(this, data.h || {k: 0}, 0, 0.01, this);
-    elementData.a = PropertyFactory.getProp(this, data.a || {k: 0}, 0, degToRads, this);
+    elementData.h = PropertyFactory.getProp(this, data.h || { k: 0 }, 0, 0.01, this);
+    elementData.a = PropertyFactory.getProp(this, data.a || { k: 0 }, 0, degToRads, this);
     elementData.g = new GradientProperty(this, data.g, this);
   }
   elementData.o = PropertyFactory.getProp(this, data.o, 0, 0.01, this);

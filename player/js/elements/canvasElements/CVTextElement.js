@@ -89,7 +89,7 @@ CVTextElement.prototype.buildNewText = function () {
     if (this.textSpans[cnt]) {
       this.textSpans[cnt].elem = commands;
     } else {
-      this.textSpans[cnt] = {elem: commands};
+      this.textSpans[cnt] = { elem: commands };
     }
     cnt += 1;
   }
