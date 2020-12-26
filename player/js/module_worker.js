@@ -1,7 +1,7 @@
 var lottiejs = (function (window) {
   'use strict';
   /* <%= contents %> */
-  var lottiejs = {};
+  var lottiejsLibrary = {};
 
   var _isFrozen = false;
 
@@ -32,28 +32,28 @@ var lottiejs = (function (window) {
     }
   }
 
-  lottiejs.play = animationManager.play;
-  lottiejs.pause = animationManager.pause;
-  lottiejs.togglePause = animationManager.togglePause;
-  lottiejs.setSpeed = animationManager.setSpeed;
-  lottiejs.setDirection = animationManager.setDirection;
-  lottiejs.stop = animationManager.stop;
-  lottiejs.registerAnimation = animationManager.registerAnimation;
-  lottiejs.loadAnimation = loadAnimation;
-  lottiejs.resize = animationManager.resize;
-  lottiejs.goToAndStop = animationManager.goToAndStop;
-  lottiejs.destroy = animationManager.destroy;
-  lottiejs.setQuality = setQuality;
-  lottiejs.freeze = animationManager.freeze;
-  lottiejs.unfreeze = animationManager.unfreeze;
+  lottiejsLibrary.play = animationManager.play;
+  lottiejsLibrary.pause = animationManager.pause;
+  lottiejsLibrary.togglePause = animationManager.togglePause;
+  lottiejsLibrary.setSpeed = animationManager.setSpeed;
+  lottiejsLibrary.setDirection = animationManager.setDirection;
+  lottiejsLibrary.stop = animationManager.stop;
+  lottiejsLibrary.registerAnimation = animationManager.registerAnimation;
+  lottiejsLibrary.loadAnimation = loadAnimation;
+  lottiejsLibrary.resize = animationManager.resize;
+  lottiejsLibrary.goToAndStop = animationManager.goToAndStop;
+  lottiejsLibrary.destroy = animationManager.destroy;
+  lottiejsLibrary.setQuality = setQuality;
+  lottiejsLibrary.freeze = animationManager.freeze;
+  lottiejsLibrary.unfreeze = animationManager.unfreeze;
   lottie.setVolume = animationManager.setVolume;
   lottie.mute = animationManager.mute;
   lottie.unmute = animationManager.unmute;
-  lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-  lottiejs.version = '[[BM_VERSION]]';
+  lottiejsLibrary.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+  lottiejsLibrary.version = '[[BM_VERSION]]';
 
   var renderer = '';
-  return lottiejs;
+  return lottiejsLibrary;
 }({}));
 
 var animations = [];

@@ -3,7 +3,7 @@ var TextSelectorProp = (function () {
   var min = Math.min;
   var floor = Math.floor;
 
-  function TextSelectorProp(elem, data) {
+  function TextSelectorPropFactory(elem, data) {
     this._currentTextLength = -1;
     this.k = false;
     this.data = data;
@@ -27,7 +27,7 @@ var TextSelectorProp = (function () {
     }
   }
 
-  TextSelectorProp.prototype = {
+  TextSelectorPropFactory.prototype = {
     getMult: function (ind) {
       if (this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
         this.getValue();
@@ -133,10 +133,10 @@ var TextSelectorProp = (function () {
       this.finalE = e;
     },
   };
-  extendPrototype([DynamicPropertyContainer], TextSelectorProp);
+  extendPrototype([DynamicPropertyContainer], TextSelectorPropFactory);
 
   function getTextSelectorProp(elem, data, arr) {
-    return new TextSelectorProp(elem, data, arr);
+    return new TextSelectorPropFactory(elem, data, arr);
   }
 
   return {

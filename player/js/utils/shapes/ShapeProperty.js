@@ -198,7 +198,7 @@ var ShapePropertyFactory = (function () {
   var EllShapeProperty = (function () {
     var cPoint = roundCorner;
 
-    function EllShapeProperty(elem, data) {
+    function EllShapePropertyFactory(elem, data) {
       /* this.v = {
                 v: createSizedArray(4),
                 i: createSizedArray(4),
@@ -225,7 +225,7 @@ var ShapePropertyFactory = (function () {
       }
     }
 
-    EllShapeProperty.prototype = {
+    EllShapePropertyFactory.prototype = {
       reset: resetShape,
       getValue: function () {
         if (this.elem.globalData.frameId === this.frameId) {
@@ -269,13 +269,13 @@ var ShapePropertyFactory = (function () {
       },
     };
 
-    extendPrototype([DynamicPropertyContainer], EllShapeProperty);
+    extendPrototype([DynamicPropertyContainer], EllShapePropertyFactory);
 
-    return EllShapeProperty;
+    return EllShapePropertyFactory;
   }());
 
   var StarShapeProperty = (function () {
-    function StarShapeProperty(elem, data) {
+    function StarShapePropertyFactory(elem, data) {
       this.v = shape_pool.newElement();
       this.v.setPathData(true, 0);
       this.elem = elem;
@@ -307,7 +307,7 @@ var ShapePropertyFactory = (function () {
       }
     }
 
-    StarShapeProperty.prototype = {
+    StarShapePropertyFactory.prototype = {
       reset: resetShape,
       getValue: function () {
         if (this.elem.globalData.frameId === this.frameId) {
@@ -381,13 +381,13 @@ var ShapePropertyFactory = (function () {
       },
 
     };
-    extendPrototype([DynamicPropertyContainer], StarShapeProperty);
+    extendPrototype([DynamicPropertyContainer], StarShapePropertyFactory);
 
-    return StarShapeProperty;
+    return StarShapePropertyFactory;
   }());
 
   var RectShapeProperty = (function () {
-    function RectShapeProperty(elem, data) {
+    function RectShapePropertyFactory(elem, data) {
       this.v = shape_pool.newElement();
       this.v.c = true;
       this.localShapeCollection = shapeCollection_pool.newShapeCollection();
@@ -409,7 +409,7 @@ var ShapePropertyFactory = (function () {
       }
     }
 
-    RectShapeProperty.prototype = {
+    RectShapePropertyFactory.prototype = {
       convertRectToPath: function () {
         var p0 = this.p.v[0], p1 = this.p.v[1], v0 = this.s.v[0] / 2, v1 = this.s.v[1] / 2;
         var round = bm_min(v0, v1, this.r.v);
@@ -459,9 +459,9 @@ var ShapePropertyFactory = (function () {
       },
       reset: resetShape,
     };
-    extendPrototype([DynamicPropertyContainer], RectShapeProperty);
+    extendPrototype([DynamicPropertyContainer], RectShapePropertyFactory);
 
-    return RectShapeProperty;
+    return RectShapePropertyFactory;
   }());
 
   function getShapeProp(elem, data, type) {

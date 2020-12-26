@@ -134,7 +134,7 @@ var ImagePreloader = (function () {
     }
   }
 
-  function ImagePreloader(type) {
+  function ImagePreloaderFactory(type) {
     this._imageLoaded = imageLoaded.bind(this);
     this.testImageLoaded = testImageLoaded.bind(this);
     this.assetsPath = '';
@@ -145,7 +145,7 @@ var ImagePreloader = (function () {
     this.images = [];
   }
 
-  ImagePreloader.prototype = {
+  ImagePreloaderFactory.prototype = {
     loadAssets: loadAssets,
     setAssetsPath: setAssetsPath,
     setPath: setPath,
@@ -158,5 +158,5 @@ var ImagePreloader = (function () {
     setCacheType: setCacheType,
   };
 
-  return ImagePreloader;
+  return ImagePreloaderFactory;
 }());

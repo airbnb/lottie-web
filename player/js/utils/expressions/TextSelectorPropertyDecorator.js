@@ -7,7 +7,7 @@
       return this.v;
     }
 
-    return function TextExpressionSelectorProp(elem, data) {
+    return function TextExpressionSelectorPropFactory(elem, data) {
       this.pv = 1;
       this.comp = elem.comp;
       this.elem = elem;
@@ -33,7 +33,7 @@
   var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
   TextSelectorProp.getTextSelectorProp = function (elem, data, arr) {
     if (data.t === 1) {
-      return new TextExpressionSelectorProp(elem, data, arr);
+      return new TextExpressionSelectorPropFactory(elem, data, arr);
     } else {
       return propertyGetTextProp(elem, data, arr);
     }

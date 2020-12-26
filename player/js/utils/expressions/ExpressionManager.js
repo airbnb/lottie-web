@@ -377,26 +377,26 @@ var ExpressionManager = (function () {
     var active = !this.data || this.data.hd !== true;
 
     var wiggle = function wiggle(freq, amp) {
-      var i, j, len = this.pv.length ? this.pv.length : 1;
-      var addedAmps = createTypedArray('float32', len);
+      var iWiggle, j, lenWiggle = this.pv.length ? this.pv.length : 1;
+      var addedAmps = createTypedArray('float32', lenWiggle);
       freq = 5;
       var iterations = Math.floor(time * freq);
-      i = 0;
+      iWiggle = 0;
       j = 0;
-      while (i < iterations) {
+      while (iWiggle < iterations) {
         // var rnd = BMMath.random();
-        for (j = 0; j < len; j += 1) {
+        for (j = 0; j < lenWiggle; j += 1) {
           addedAmps[j] += -amp + amp * 2 * BMMath.random();
           // addedAmps[j] += -amp + amp*2*rnd;
         }
-        i += 1;
+        iWiggle += 1;
       }
       // var rnd2 = BMMath.random();
       var periods = time * freq;
       var perc = periods - Math.floor(periods);
-      var arr = createTypedArray('float32', len);
-      if (len > 1) {
-        for (j = 0; j < len; j += 1) {
+      var arr = createTypedArray('float32', lenWiggle);
+      if (lenWiggle > 1) {
+        for (j = 0; j < lenWiggle; j += 1) {
           arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp * 2 * BMMath.random()) * perc;
           // arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
           // arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
@@ -468,10 +468,10 @@ var ExpressionManager = (function () {
       t = t > 1 ? 1 : t < 0 ? 0 : t;
       var mult = fn(t);
       if ($bm_isInstanceOfArray(val1)) {
-        var i, len = val1.length;
-        var arr = createTypedArray('float32', len);
-        for (i = 0; i < len; i += 1) {
-          arr[i] = (val2[i] - val1[i]) * mult + val1[i];
+        var iKey, lenKey = val1.length;
+        var arr = createTypedArray('float32', lenKey);
+        for (iKey = 0; iKey < lenKey; iKey += 1) {
+          arr[iKey] = (val2[iKey] - val1[iKey]) * mult + val1[iKey];
         }
         return arr;
       } else {
@@ -480,7 +480,7 @@ var ExpressionManager = (function () {
     }
 
     function nearestKey(time) {
-      var i, len = data.k.length, index, keyTime;
+      var iKey, lenKey = data.k.length, index, keyTime;
       if (!data.k.length || typeof (data.k[0]) === 'number') {
         index = 0;
         keyTime = 0;
@@ -491,52 +491,52 @@ var ExpressionManager = (function () {
           index = 1;
           keyTime = data.k[0].t;
         } else {
-          for (i = 0; i < len - 1; i += 1) {
-            if (time === data.k[i].t) {
-              index = i + 1;
-              keyTime = data.k[i].t;
+          for (iKey = 0; iKey < lenKey - 1; iKey += 1) {
+            if (time === data.k[iKey].t) {
+              index = iKey + 1;
+              keyTime = data.k[iKey].t;
               break;
-            } else if (time > data.k[i].t && time < data.k[i + 1].t) {
-              if (time - data.k[i].t > data.k[i + 1].t - time) {
-                index = i + 2;
-                keyTime = data.k[i + 1].t;
+            } else if (time > data.k[iKey].t && time < data.k[iKey + 1].t) {
+              if (time - data.k[iKey].t > data.k[iKey + 1].t - time) {
+                index = iKey + 2;
+                keyTime = data.k[iKey + 1].t;
               } else {
-                index = i + 1;
-                keyTime = data.k[i].t;
+                index = iKey + 1;
+                keyTime = data.k[iKey].t;
               }
               break;
             }
           }
           if (index === -1) {
-            index = i + 1;
-            keyTime = data.k[i].t;
+            index = iKey + 1;
+            keyTime = data.k[iKey].t;
           }
         }
       }
-      var ob = {};
-      ob.index = index;
-      ob.time = keyTime / elem.comp.globalData.frameRate;
-      return ob;
+      var obKey = {};
+      obKey.index = index;
+      obKey.time = keyTime / elem.comp.globalData.frameRate;
+      return obKey;
     }
 
     function key(ind) {
-      var ob, i, len;
+      var obKey, iKey, lenKey;
       if (!data.k.length || typeof (data.k[0]) === 'number') {
         throw new Error('The property has no keyframe at index ' + ind);
       }
       ind -= 1;
-      ob = {
+      obKey = {
         time: data.k[ind].t / elem.comp.globalData.frameRate,
         value: [],
       };
       var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
 
-      len = arr.length;
-      for (i = 0; i < len; i += 1) {
-        ob[i] = arr[i];
-        ob.value[i] = arr[i];
+      lenKey = arr.length;
+      for (iKey = 0; iKey < lenKey; iKey += 1) {
+        obKey[iKey] = arr[iKey];
+        obKey.value[iKey] = arr[iKey];
       }
-      return ob;
+      return obKey;
     }
 
     function framesToTime(frames, fps) {

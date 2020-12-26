@@ -15,7 +15,7 @@ var createTypedArray = (function () {
     }
     return arr;
   }
-  function createTypedArray(type, len) {
+  function createTypedArrayFactory(type, len) {
     if (type === 'float32') {
       return new Float32Array(len);
     } else if (type === 'int16') {
@@ -26,7 +26,7 @@ var createTypedArray = (function () {
     return createRegularArray(type, len);
   }
   if (typeof Uint8ClampedArray === 'function' && typeof Float32Array === 'function') {
-    return createTypedArray;
+    return createTypedArrayFactory;
   } else {
     return createRegularArray;
   }

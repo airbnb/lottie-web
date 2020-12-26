@@ -256,7 +256,7 @@ function dataFunctionManager() {
   var checkShapes = (function () {
     var minimumVersion = [4, 4, 18];
 
-    function completeShapes(arr) {
+    function completeClosingShapes(arr) {
       var i, len = arr.length;
       var j, jLen;
       var hasPaths = false;
@@ -277,7 +277,7 @@ function dataFunctionManager() {
           }
           hasPaths = true;
         } else if (arr[i].ty == 'gr') {
-          completeShapes(arr[i].it);
+          completeClosingShapes(arr[i].it);
         }
       }
     }
@@ -308,7 +308,7 @@ function dataFunctionManager() {
           }
         }
         if (layerData.ty === 4) {
-          completeShapes(layerData.shapes);
+          completeClosingShapes(layerData.shapes);
         }
       }
     }

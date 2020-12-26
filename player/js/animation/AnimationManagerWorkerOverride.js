@@ -41,9 +41,9 @@ animationManager = (function () {
   }
 
   function getRegisteredAnimations() {
-    var i, len = registeredAnimations.length;
+    var i, lenAnims = registeredAnimations.length;
     var animations = [];
-    for (i = 0; i < len; i += 1) {
+    for (i = 0; i < lenAnims; i += 1) {
       animations.push(registeredAnimations[i].animation);
     }
     return animations;
