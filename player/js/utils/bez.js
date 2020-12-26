@@ -188,7 +188,11 @@ function bezFunction() {
   var bezier_segment_points = createTypedArray('float32', 8);
 
   function getNewSegment(pt1, pt2, pt3, pt4, startPerc, endPerc, bezierData) {
-    startPerc = startPerc < 0 ? 0 : startPerc > 1 ? 1 : startPerc;
+    if (startPerc < 0) {
+      startPerc = 0;
+    } else if (startPerc > 1) {
+      startPerc = 1;
+    }
     var t0 = getDistancePerc(startPerc, bezierData);
     endPerc = endPerc > 1 ? 1 : endPerc;
     var t1 = getDistancePerc(endPerc, bezierData);

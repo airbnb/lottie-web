@@ -44,7 +44,6 @@
         "lines-around-directive": "off",
         "no-void": "off",
         "no-redeclare": "off",
-        "no-nested-ternary": "off",
         "prefer-rest-params": "off",
         "no-floating-decimal": "off",
         "object-curly-newline": "off",

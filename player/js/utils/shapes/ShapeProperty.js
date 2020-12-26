@@ -141,7 +141,14 @@ var ShapePropertyFactory = (function () {
     }
     this.lock = true;
     this._mdf = false;
-    var finalValue = this.kf ? this.pv : this.data.ks ? this.data.ks.k : this.data.pt.k;
+    var finalValue;
+    if (this.kf) {
+      finalValue = this.pv;
+    } else if (this.data.ks) {
+      finalValue = this.data.ks.k;
+    } else {
+      finalValue = this.data.pt.k;
+    }
     var i,
       len = this.effectsSequence.length;
     for (i = 0; i < len; i += 1) {

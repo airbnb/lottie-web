@@ -506,7 +506,11 @@ var ExpressionManager = (function () {
       } else {
         t = (t - tMin) / (tMax - tMin);
       }
-      t = t > 1 ? 1 : t < 0 ? 0 : t;
+      if (t > 1) {
+        t = 1;
+      } else if (t < 0) {
+        t = 0;
+      }
       var mult = fn(t);
       if ($bm_isInstanceOfArray(val1)) {
         var iKey,

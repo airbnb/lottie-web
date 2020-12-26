@@ -403,7 +403,11 @@
     },
     vectorOnPath: function (perc, time, vectorType) {
       // perc doesn't use triple equality because it can be a Number object as well as a primitive.
-      perc = perc == 1 ? this.v.c ? 0 : 0.999 : perc;
+      if (perc == 1) {
+        perc = this.v.c;
+      } else if (perc == 0) {
+        perc = 0.999;
+      }
       var pt1 = this.pointOnPath(perc, time);
       var pt2 = this.pointOnPath(perc + 0.001, time);
       var xLength = pt2[0] - pt1[0];

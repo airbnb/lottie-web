@@ -2,7 +2,12 @@ AnimationItem.prototype.setParams = function (params) {
   if (params.context) {
     this.context = params.context;
   }
-  var animType = params.animType ? params.animType : params.renderer ? params.renderer : 'svg';
+  var animType = 'svg';
+  if (params.animType) {
+    animType = params.animType;
+  } else if (params.renderer) {
+    animType = params.renderer;
+  }
   switch (animType) {
     case 'canvas':
       this.renderer = new CanvasRenderer(this, params.rendererSettings);

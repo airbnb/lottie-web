@@ -185,7 +185,12 @@ var SVGElementsRenderer = (function () {
         }
         var ang = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
 
-        var percent = itemData.h.v >= 1 ? 0.99 : itemData.h.v <= -1 ? -0.99 : itemData.h.v;
+        var percent = itemData.h.v;
+        if (percent >= 1) {
+          percent = 0.99;
+        } else if (percent <= -1) {
+          percent = -0.99;
+        }
         var dist = rad * percent;
         var x = Math.cos(ang + itemData.a.v) * dist + pt1[0];
         var y = Math.sin(ang + itemData.a.v) * dist + pt1[1];

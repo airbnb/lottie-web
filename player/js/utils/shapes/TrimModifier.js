@@ -84,8 +84,20 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
     if (o < 0) {
       o += 1;
     }
-    s = (this.s.v > 1 ? 1 : this.s.v < 0 ? 0 : this.s.v) + o;
-    e = (this.e.v > 1 ? 1 : this.e.v < 0 ? 0 : this.e.v) + o;
+    if (this.s.v > 1) {
+      s = 1 + o;
+    } else if (this.s.v < 0) {
+      s = 0 + o;
+    } else {
+      s = this.s.v + o;
+    }
+    if (this.e.v > 1) {
+      e = 1 + o;
+    } else if (this.e.v < 0) {
+      e = 0 + o;
+    } else {
+      e = this.e.v + o;
+    }
 
     if (s > e) {
       var _s = s;
