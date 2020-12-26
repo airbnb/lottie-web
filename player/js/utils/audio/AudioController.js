@@ -31,20 +31,19 @@ var audioControllerFactory = (function () {
     createAudio: function (assetPath) {
       if (this.audioFactory) {
         return this.audioFactory(assetPath);
-      } else if (Howl) {
+      } if (Howl) {
         return new Howl({
           src: [assetPath],
         });
-      } else {
-        return {
-          isPlaying: false,
-          play: function () { this.isPlaying = true; },
-          seek: function () { this.isPlaying = false; },
-          playing: function () {},
-          rate: function () {},
-          setVolume: function () {},
-        };
       }
+      return {
+        isPlaying: false,
+        play: function () { this.isPlaying = true; },
+        seek: function () { this.isPlaying = false; },
+        playing: function () {},
+        rate: function () {},
+        setVolume: function () {},
+      };
     },
     setAudioFactory: function (audioFactory) {
       this.audioFactory = audioFactory;

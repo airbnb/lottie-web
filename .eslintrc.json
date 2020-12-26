@@ -44,7 +44,6 @@
         "no-restricted-globals": "off",
         "default-case": "off",
         "nonblock-statement-body-position": "off",
-        "no-else-return": "off",
         "no-unused-expressions": "off",
         "no-return-assign": "off",
         "no-sequences": "off",

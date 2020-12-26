@@ -2,9 +2,9 @@ var assetLoader = (function () {
   function formatResponse(xhr) {
     if (xhr.response && typeof xhr.response === 'object') {
       return xhr.response;
-    } else if (xhr.response && typeof xhr.response === 'string') {
+    } if (xhr.response && typeof xhr.response === 'string') {
       return JSON.parse(xhr.response);
-    } else if (xhr.responseText) {
+    } if (xhr.responseText) {
       return JSON.parse(xhr.responseText);
     }
     return null;

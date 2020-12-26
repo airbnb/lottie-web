@@ -8,9 +8,8 @@ var PropertyInterface = (function () {
       val = val === undefined ? 1 : val;
       if (val <= 0) {
         return interfaceFunction;
-      } else {
-        return propertyGroup(--val);
       }
+      return propertyGroup(--val);
     }
 
     return _propertyGroup;

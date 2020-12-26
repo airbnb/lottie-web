@@ -12,20 +12,19 @@ var ExpressionPropertyInterface = (function () {
     expressionValue.key = function (pos) {
       if (!expressionValue.numKeys) {
         return 0;
-      } else {
-        var value = '';
-        if ('s' in property.keyframes[pos - 1]) {
-          value = property.keyframes[pos - 1].s;
-        } else if ('e' in property.keyframes[pos - 2]) {
-          value = property.keyframes[pos - 2].e;
-        } else {
-          value = property.keyframes[pos - 2].s;
-        }
-        var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value); // eslint-disable-line no-new-wrappers
-        valueProp.time = property.keyframes[pos - 1].t / property.elem.comp.globalData.frameRate;
-        valueProp.value = type === 'unidimensional' ? value[0] : value;
-        return valueProp;
       }
+      var value = '';
+      if ('s' in property.keyframes[pos - 1]) {
+        value = property.keyframes[pos - 1].s;
+      } else if ('e' in property.keyframes[pos - 2]) {
+        value = property.keyframes[pos - 2].e;
+      } else {
+        value = property.keyframes[pos - 2].s;
+      }
+      var valueProp = type === 'unidimensional' ? new Number(value) : Object.assign({}, value); // eslint-disable-line no-new-wrappers
+      valueProp.time = property.keyframes[pos - 1].t / property.elem.comp.globalData.frameRate;
+      valueProp.value = type === 'unidimensional' ? value[0] : value;
+      return valueProp;
     };
     expressionValue.valueAtTime = property.getValueAtTime;
     expressionValue.speedAtTime = property.getSpeedAtTime;
@@ -87,10 +86,9 @@ var ExpressionPropertyInterface = (function () {
   return function (property) {
     if (!property) {
       return defaultGetter;
-    } else if (property.propType === 'unidimensional') {
+    } if (property.propType === 'unidimensional') {
       return UnidimensionalPropertyInterface(property);
-    } else {
-      return MultidimensionalPropertyInterface(property);
     }
+    return MultidimensionalPropertyInterface(property);
   };
 }());

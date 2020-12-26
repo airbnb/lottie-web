@@ -141,26 +141,25 @@ function bezFunction() {
     var lPerc = 0;
     if (initPos === len - 1 || initPos === 0 || lengthPos === lengths[initPos]) {
       return percents[initPos];
-    } else {
-      var dir = lengths[initPos] > lengthPos ? -1 : 1;
-      var flag = true;
-      while (flag) {
-        if (lengths[initPos] <= lengthPos && lengths[initPos + 1] > lengthPos) {
-          lPerc = (lengthPos - lengths[initPos]) / (lengths[initPos + 1] - lengths[initPos]);
-          flag = false;
-        } else {
-          initPos += dir;
-        }
-        if (initPos < 0 || initPos >= len - 1) {
-          // FIX for TypedArrays that don't store floating point values with enough accuracy
-          if (initPos === len - 1) {
-            return percents[initPos];
-          }
-          flag = false;
-        }
-      }
-      return percents[initPos] + (percents[initPos + 1] - percents[initPos]) * lPerc;
     }
+    var dir = lengths[initPos] > lengthPos ? -1 : 1;
+    var flag = true;
+    while (flag) {
+      if (lengths[initPos] <= lengthPos && lengths[initPos + 1] > lengthPos) {
+        lPerc = (lengthPos - lengths[initPos]) / (lengths[initPos + 1] - lengths[initPos]);
+        flag = false;
+      } else {
+        initPos += dir;
+      }
+      if (initPos < 0 || initPos >= len - 1) {
+        // FIX for TypedArrays that don't store floating point values with enough accuracy
+        if (initPos === len - 1) {
+          return percents[initPos];
+        }
+        flag = false;
+      }
+    }
+    return percents[initPos] + (percents[initPos + 1] - percents[initPos]) * lPerc;
   }
 
   function getPointInSegment(pt1, pt2, pt3, pt4, percent, bezierData) {

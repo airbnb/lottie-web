@@ -142,11 +142,10 @@ var BezierFactory = (function () {
       var initialSlope = getSlope(guessForT, mX1, mX2);
       if (initialSlope >= NEWTON_MIN_SLOPE) {
         return newtonRaphsonIterate(aX, guessForT, mX1, mX2);
-      } else if (initialSlope === 0.0) {
+      } if (initialSlope === 0.0) {
         return guessForT;
-      } else {
-        return binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
       }
+      return binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
     },
   };
 

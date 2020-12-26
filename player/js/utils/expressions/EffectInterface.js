@@ -40,9 +40,8 @@ var EffectsExpressionInterface = (function () {
         if (name === effects[i].nm || name === effects[i].mn || name === effects[i].ix) {
           if (effects[i].ty === 5) {
             return effectElements[i];
-          } else {
-            return effectElements[i]();
           }
+          return effectElements[i]();
         }
         i += 1;
       }

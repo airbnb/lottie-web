@@ -119,7 +119,7 @@ var ShapePropertyFactory = (function () {
   function processEffectsSequence() {
     if (this.elem.globalData.frameId === this.frameId) {
       return;
-    } else if (!this.effectsSequence.length) {
+    } if (!this.effectsSequence.length) {
       this._mdf = false;
       return;
     }

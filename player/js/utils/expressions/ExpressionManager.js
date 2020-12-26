@@ -284,7 +284,7 @@ var ExpressionManager = (function () {
     }
     if (t <= tMin) {
       return value1;
-    } else if (t >= tMax) {
+    } if (t >= tMax) {
       return value2;
     }
     var perc = tMax === tMin ? 0 : (t - tMin) / (tMax - tMin);
@@ -402,9 +402,8 @@ var ExpressionManager = (function () {
           // arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
         }
         return arr;
-      } else {
-        return this.pv + addedAmps[0] + (-amp + amp * 2 * BMMath.random()) * perc;
       }
+      return this.pv + addedAmps[0] + (-amp + amp * 2 * BMMath.random()) * perc;
     }.bind(this);
 
     if (thisProperty.loopIn) {
@@ -474,9 +473,8 @@ var ExpressionManager = (function () {
           arr[iKey] = (val2[iKey] - val1[iKey]) * mult + val1[iKey];
         }
         return arr;
-      } else {
-        return (val2 - val1) * mult + val1;
       }
+      return (val2 - val1) * mult + val1;
     }
 
     function nearestKey(time) {

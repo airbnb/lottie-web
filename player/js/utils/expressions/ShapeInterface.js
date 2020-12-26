@@ -93,7 +93,7 @@ var ShapeExpressionInterface = (function () {
     function interfaceFunction(val) {
       if (val === 'Color' || val === 'color') {
         return interfaceFunction.color;
-      } else if (val === 'Opacity' || val === 'opacity') {
+      } if (val === 'Opacity' || val === 'opacity') {
         return interfaceFunction.opacity;
       }
       return null;
@@ -132,9 +132,9 @@ var ShapeExpressionInterface = (function () {
     function interfaceFunction(val) {
       if (val === 'Color' || val === 'color') {
         return interfaceFunction.color;
-      } else if (val === 'Opacity' || val === 'opacity') {
+      } if (val === 'Opacity' || val === 'opacity') {
         return interfaceFunction.opacity;
-      } else if (val === 'Stroke Width' || val === 'stroke width') {
+      } if (val === 'Stroke Width' || val === 'stroke width') {
         return interfaceFunction.strokeWidth;
       }
       return null;
@@ -430,7 +430,7 @@ var ShapeExpressionInterface = (function () {
     function interfaceFunction(value) {
       if (shape.c.ix === value || value === 'Copies') {
         return interfaceFunction.copies;
-      } else if (shape.o.ix === value || value === 'Offset') {
+      } if (shape.o.ix === value || value === 'Offset') {
         return interfaceFunction.offset;
       }
       return null;
@@ -461,19 +461,17 @@ var ShapeExpressionInterface = (function () {
         value = value === undefined ? 1 : value;
         if (value === 0) {
           return propertyGroup;
-        } else {
-          return interfaces[value - 1];
         }
-      } else {
-        var i = 0, len = interfaces.length;
-        while (i < len) {
-          if (interfaces[i]._name === value) {
-            return interfaces[i];
-          }
-          i += 1;
-        }
-        return null;
+        return interfaces[value - 1];
       }
+      var i = 0, len = interfaces.length;
+      while (i < len) {
+        if (interfaces[i]._name === value) {
+          return interfaces[i];
+        }
+        i += 1;
+      }
+      return null;
     }
     function parentGroupWrapper() {
       return propertyGroup;

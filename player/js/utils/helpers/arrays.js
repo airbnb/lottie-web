@@ -18,18 +18,17 @@ var createTypedArray = (function () {
   function createTypedArrayFactory(type, len) {
     if (type === 'float32') {
       return new Float32Array(len);
-    } else if (type === 'int16') {
+    } if (type === 'int16') {
       return new Int16Array(len);
-    } else if (type === 'uint8c') {
+    } if (type === 'uint8c') {
       return new Uint8ClampedArray(len);
     }
     return createRegularArray(type, len);
   }
   if (typeof Uint8ClampedArray === 'function' && typeof Float32Array === 'function') {
     return createTypedArrayFactory;
-  } else {
-    return createRegularArray;
   }
+  return createRegularArray;
 }());
 
 function createSizedArray(len) {

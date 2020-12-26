@@ -74,12 +74,11 @@ var TransformExpressionInterface = (function () {
       get: function () {
         if (transform.p) {
           return _transformFactory();
-        } else {
-          return [
-            _px(),
-            _py(),
-            _pz ? _pz() : 0];
         }
+        return [
+          _px(),
+          _py(),
+          _pz ? _pz() : 0];
       },
     });
 
