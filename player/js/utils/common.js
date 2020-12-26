@@ -131,9 +131,9 @@ function HSVtoRGB(h, s, v) {
     case 4: r = t; g = p; b = v; break;
     case 5: r = v; g = p; b = q; break;
   }
-  return [ r,
+  return [r,
     g,
-    b ];
+    b];
 }
 
 function RGBtoHSV(r, g, b) {

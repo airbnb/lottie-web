@@ -70,7 +70,6 @@
         "no-useless-return": "off",
         "operator-assignment": "off",
         "no-lonely-if": "off",
-        "array-bracket-spacing": "off",
         "newline-per-chained-call": "off",
         "no-useless-concat": "off",
         "no-eval": "off",
