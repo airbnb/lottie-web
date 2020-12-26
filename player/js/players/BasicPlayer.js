@@ -39,16 +39,18 @@ BasicPlayer.prototype.buildControls = function (item, wrapper) {
   this.controls.appendChild(this.scrollBar);
 
   this.scrollBarThumb = createTag('div');
-  this.scrollBarThumb.style.width = '18px';
-  this.scrollBarThumb.style.height = '18px';
-  this.scrollBarThumb.style.position = 'absolute';
-  this.scrollBarThumb.style.transform = this.scrollBarThumb.style.webkitTransform = 'translate(-7px,0px)';
-  this.scrollBarThumb.style.top = '-3px';
-  this.scrollBarThumb.style.left = '0px';
-  this.scrollBarThumb.style.borderRadius = '11px';
-  this.scrollBarThumb.style.border = 'solid 2px #000000';
-  this.scrollBarThumb.style.backgroundColor = 'rgba(255,255,255,1)';
-  this.scrollBarThumb.style.cursor = 'pointer';
+  var scrollStyle = this.scrollBarThumb.style;
+  scrollStyle.width = '18px';
+  scrollStyle.height = '18px';
+  scrollStyle.position = 'absolute';
+  scrollStyle.transform = 'translate(-7px,0px)';
+  scrollStyle.webkitTransform = 'translate(-7px,0px)';
+  scrollStyle.top = '-3px';
+  scrollStyle.left = '0px';
+  scrollStyle.borderRadius = '11px';
+  scrollStyle.border = 'solid 2px #000000';
+  scrollStyle.backgroundColor = 'rgba(255,255,255,1)';
+  scrollStyle.cursor = 'pointer';
   this.controls.appendChild(this.scrollBarThumb);
 
   this.scrollBar.addEventListener('mousedown', function (ev) {

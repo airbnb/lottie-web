@@ -97,7 +97,8 @@ var TransformPropertyFactory = (function () {
             v2[1] = py.getValueAtTime((py._caching.lastFrame + py.offsetTime - 0.01) / frameRate, py.offsetTime);
           }
         } else {
-          v1 = v2 = defaultVector;
+          v2 = defaultVector;
+          v1 = v2;
         }
         this.v.rotate(-Math.atan2(v1[1] - v2[1], v1[0] - v2[0]));
       }
@@ -186,7 +187,8 @@ var TransformPropertyFactory = (function () {
         var i,
           len = data.or.k.length;
         for (i = 0; i < len; i += 1) {
-          data.or.k[i].to = data.or.k[i].ti = null;
+          data.or.k[i].to = null;
+          data.or.k[i].ti = null;
         }
       }
       this.or = PropertyFactory.getProp(elem, data.or, 1, degToRads, this);

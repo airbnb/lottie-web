@@ -36,7 +36,9 @@ HTextElement.prototype.buildNewText = function () {
   var documentData = this.textProperty.currentData;
   this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
   var innerElemStyle = this.innerElem.style;
-  innerElemStyle.color = innerElemStyle.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
+  var textColor = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
+  innerElemStyle.fill = textColor;
+  innerElemStyle.color = textColor;
   if (documentData.sc) {
     innerElemStyle.stroke = this.buildColor(documentData.sc);
     innerElemStyle.strokeWidth = documentData.sw + 'px';
@@ -128,7 +130,10 @@ HTextElement.prototype.buildNewText = function () {
           tCont.setAttribute('width', boundingBox.width + 2);
           tCont.setAttribute('height', boundingBox.height + 2);
           tCont.setAttribute('viewBox', (boundingBox.x - 1) + ' ' + (boundingBox.y - 1) + ' ' + (boundingBox.width + 2) + ' ' + (boundingBox.height + 2));
-          tCont.style.transform = tCont.style.webkitTransform = 'translate(' + (boundingBox.x - 1) + 'px,' + (boundingBox.y - 1) + 'px)';
+          var tContStyle = tCont.style;
+          var tContTranslation = 'translate(' + (boundingBox.x - 1) + 'px,' + (boundingBox.y - 1) + 'px)';
+          tContStyle.transform = tContTranslation;
+          tContStyle.webkitTransform = tContTranslation;
 
           letters[i].yOffset = boundingBox.y - 1;
         } else {
@@ -145,7 +150,10 @@ HTextElement.prototype.buildNewText = function () {
       if (!this.isMasked) {
         this.innerElem.appendChild(tParent);
         //
-        tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,' + -documentData.finalSize / 1.2 + 'px,0)';
+        var tStyle = tSpan.style;
+        var tSpanTranslation = 'translate3d(0,' + -documentData.finalSize / 1.2 + 'px,0)';
+        tStyle.transform = tSpanTranslation;
+        tStyle.webkitTransform = tSpanTranslation;
       } else {
         this.innerElem.appendChild(tSpan);
       }
@@ -167,13 +175,17 @@ HTextElement.prototype.buildNewText = function () {
 };
 
 HTextElement.prototype.renderInnerContent = function () {
+  var svgStyle;
   if (this.data.singleShape) {
     if (!this._isFirstFrame && !this.lettersChangedFlag) {
       return;
     } if (this.isMasked && this.finalTransform._matMdf) {
       // Todo Benchmark if using this is better than getBBox
       this.svgElement.setAttribute('viewBox', -this.finalTransform.mProp.p.v[0] + ' ' + -this.finalTransform.mProp.p.v[1] + ' ' + this.compW + ' ' + this.compH);
-      this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
+      svgStyle = this.svgElement.style;
+      var translation = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
+      svgStyle.transform = translation;
+      svgStyle.webkitTransform = translation;
     }
   }
 
@@ -203,7 +215,8 @@ HTextElement.prototype.renderInnerContent = function () {
     count += 1;
     if (renderedLetter._mdf.m) {
       if (!this.isMasked) {
-        textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
+        textSpan.style.webkitTransform = renderedLetter.m;
+        textSpan.style.transform = renderedLetter.m;
       } else {
         textSpan.setAttribute('transform', renderedLetter.m);
       }
@@ -242,7 +255,10 @@ HTextElement.prototype.renderInnerContent = function () {
       this.currentBBox.y = boundingBox.y - margin;
 
       this.svgElement.setAttribute('viewBox', this.currentBBox.x + ' ' + this.currentBBox.y + ' ' + this.currentBBox.w + ' ' + this.currentBBox.h);
-      this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+      svgStyle = this.svgElement.style;
+      var svgTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+      svgStyle.transform = svgTransform;
+      svgStyle.webkitTransform = svgTransform;
     }
   }
 };

@@ -217,7 +217,10 @@ HShapeElement.prototype.renderInnerContent = function () {
       this.currentBBox.y = tempBoundingBox.y;
 
       this.shapeCont.setAttribute('viewBox', this.currentBBox.x + ' ' + this.currentBBox.y + ' ' + this.currentBBox.w + ' ' + this.currentBBox.h);
-      this.shapeCont.style.transform = this.shapeCont.style.webkitTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+      var shapeStyle = this.shapeCont.style;
+      var shapeTransform = 'translate(' + this.currentBBox.x + 'px,' + this.currentBBox.y + 'px)';
+      shapeStyle.transform = shapeTransform;
+      shapeStyle.webkitTransform = shapeTransform;
     }
   }
 };

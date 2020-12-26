@@ -135,7 +135,11 @@ AnimationItem.prototype.destroy = function (name) {
   }
   this.renderer.destroy();
   this._cbs = null;
-  this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
+  this.onEnterFrame = null;
+  this.onLoopComplete = null;
+  this.onComplete = null;
+  this.onSegmentStart = null;
+  this.onDestroy = null;
   this.renderer = null;
 };
 

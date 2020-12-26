@@ -115,7 +115,8 @@ TextProperty.prototype.getValue = function (_finalValue) {
   if (currentValue !== finalValue) {
     this.setCurrentData(finalValue);
   }
-  this.pv = this.v = this.currentData;
+  this.v = this.currentData;
+  this.pv = this.v;
   this.lock = false;
   this.frameId = this.elem.globalData.frameId;
 };

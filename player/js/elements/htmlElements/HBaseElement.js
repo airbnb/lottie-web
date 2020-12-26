@@ -29,11 +29,14 @@ HBaseElement.prototype = {
     }
   },
   renderElement: function () {
+    var transformedElementStyle = this.transformedElement ? this.transformedElement.style : {};
     if (this.finalTransform._matMdf) {
-      this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
+      var matrixValue = this.finalTransform.mat.toCSS();
+      transformedElementStyle.transform = matrixValue;
+      transformedElementStyle.webkitTransform = matrixValue;
     }
     if (this.finalTransform._opMdf) {
-      this.transformedElement.style.opacity = this.finalTransform.mProp.o.v;
+      transformedElementStyle.opacity = this.finalTransform.mProp.o.v;
     }
   },
   renderFrame: function () {

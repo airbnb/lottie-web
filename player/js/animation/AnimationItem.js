@@ -461,7 +461,8 @@ AnimationItem.prototype.adjustSegment = function (arr, offset) {
         this.setDirection(-1);
       }
     }
-    this.timeCompleted = this.totalFrames = arr[0] - arr[1];
+    this.totalFrames = arr[0] - arr[1];
+    this.timeCompleted = this.totalFrames;
     this.firstFrame = arr[1];
     this.setCurrentRawFrameValue(this.totalFrames - 0.001 - offset);
   } else if (arr[1] > arr[0]) {
@@ -472,7 +473,8 @@ AnimationItem.prototype.adjustSegment = function (arr, offset) {
         this.setDirection(1);
       }
     }
-    this.timeCompleted = this.totalFrames = arr[1] - arr[0];
+    this.totalFrames = arr[1] - arr[0];
+    this.timeCompleted = this.totalFrames;
     this.firstFrame = arr[0];
     this.setCurrentRawFrameValue(0.001 + offset);
   }
@@ -489,7 +491,8 @@ AnimationItem.prototype.setSegment = function (init, end) {
   }
 
   this.firstFrame = init;
-  this.timeCompleted = this.totalFrames = end - init;
+  this.totalFrames = end - init;
+  this.timeCompleted = this.totalFrames;
   if (pendingFrame !== -1) {
     this.goToAndStop(pendingFrame, true);
   }
@@ -540,7 +543,12 @@ AnimationItem.prototype.destroy = function (name) {
   this.imagePreloader.destroy();
   this.trigger('destroy');
   this._cbs = null;
-  this.onEnterFrame = this.onLoopComplete = this.onComplete = this.onSegmentStart = this.onDestroy = null;
+  this.onEnterFrame = null;
+  this.onLoopComplete = null;
+  this.onComplete = null;
+  this.onSegmentStart = null;
+  this.onDestroy = null;
+  this.renderer = null;
   this.renderer = null;
   this.imagePreloader = null;
   this.projectInterface = null;

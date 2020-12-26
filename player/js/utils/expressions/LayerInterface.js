@@ -13,7 +13,9 @@ var LayerExpressionInterface = (function () {
 
   function toWorldVec(arr, time) {
     var toWorldMat = this.getMatrix(time);
-    toWorldMat.props[12] = toWorldMat.props[13] = toWorldMat.props[14] = 0;
+    toWorldMat.props[12] = 0;
+    toWorldMat.props[13] = 0;
+    toWorldMat.props[14] = 0;
     return this.applyPoint(toWorldMat, arr);
   }
 
@@ -24,7 +26,9 @@ var LayerExpressionInterface = (function () {
 
   function fromWorldVec(arr, time) {
     var toWorldMat = this.getMatrix(time);
-    toWorldMat.props[12] = toWorldMat.props[13] = toWorldMat.props[14] = 0;
+    toWorldMat.props[12] = 0;
+    toWorldMat.props[13] = 0;
+    toWorldMat.props[14] = 0;
     return this.invertPoint(toWorldMat, arr);
   }
 

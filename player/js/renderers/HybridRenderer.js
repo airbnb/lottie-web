@@ -129,14 +129,23 @@ HybridRenderer.prototype.getThreeDContainerByPos = function (pos) {
 
 HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
   var perspectiveElem = createTag('div');
+  var style,
+    containerStyle;
   styleDiv(perspectiveElem);
   var container = createTag('div');
   styleDiv(container);
   if (type === '3d') {
-    perspectiveElem.style.width = this.globalData.compSize.w + 'px';
-    perspectiveElem.style.height = this.globalData.compSize.h + 'px';
-    perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = '50% 50%';
-    container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    style = perspectiveElem.style;
+    style.width = this.globalData.compSize.w + 'px';
+    style.height = this.globalData.compSize.h + 'px';
+    var center = '50% 50%';
+    style.webkitTransformOrigin = center;
+    style.mozTransformOrigin = center;
+    style.transformOrigin = center;
+    containerStyle = container.style;
+    var matrix = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+    containerStyle.transform = matrix;
+    containerStyle.webkitTransform = matrix;
   }
 
   perspectiveElem.appendChild(container);
@@ -205,17 +214,20 @@ HybridRenderer.prototype.addTo3dContainer = function (elem, pos) {
 HybridRenderer.prototype.configAnimation = function (animData) {
   var resizerElem = createTag('div');
   var wrapper = this.animationItem.wrapper;
-  resizerElem.style.width = animData.w + 'px';
-  resizerElem.style.height = animData.h + 'px';
+  var style = resizerElem.style;
+  style.width = animData.w + 'px';
+  style.height = animData.h + 'px';
   this.resizerElem = resizerElem;
   styleDiv(resizerElem);
-  resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = 'flat';
+  style.transformStyle = 'flat';
+  style.mozTransformStyle = 'flat';
+  style.webkitTransformStyle = 'flat';
   if (this.renderConfig.className) {
     resizerElem.setAttribute('class', this.renderConfig.className);
   }
   wrapper.appendChild(resizerElem);
 
-  resizerElem.style.overflow = 'hidden';
+  style.overflow = 'hidden';
   var svg = createNS('svg');
   svg.setAttribute('width', '1');
   svg.setAttribute('height', '1');
@@ -269,7 +281,9 @@ HybridRenderer.prototype.updateContainerSize = function () {
     tx = (elementWidth - this.globalData.compSize.w * (elementHeight / this.globalData.compSize.h)) / 2;
     ty = 0;
   }
-  this.resizerElem.style.transform = this.resizerElem.style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,' + sy + ',0,0,0,0,1,0,' + tx + ',' + ty + ',0,1)';
+  var style = this.resizerElem.style;
+  style.webkitTransform = 'matrix3d(' + sx + ',0,0,0,0,' + sy + ',0,0,0,0,1,0,' + tx + ',' + ty + ',0,1)';
+  style.transform = style.webkitTransform;
 };
 
 HybridRenderer.prototype.renderFrame = SVGRenderer.prototype.renderFrame;
@@ -292,7 +306,9 @@ HybridRenderer.prototype.initItems = function () {
     var i,
       len = this.threeDElements.length;
     for (i = 0; i < len; i += 1) {
-      this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth, 2) + Math.pow(cHeight, 2)) + 'px';
+      var style = this.threeDElements[i].perspectiveElem.style;
+      style.webkitPerspective = Math.sqrt(Math.pow(cWidth, 2) + Math.pow(cHeight, 2)) + 'px';
+      style.perspective = style.webkitPerspective;
     }
   }
 };

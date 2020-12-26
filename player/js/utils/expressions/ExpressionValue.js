@@ -16,7 +16,8 @@ function ExpressionValue(elementProp, mult, type) {
       expressionValue = createTypedArray('float32', len);
       arrValue = createTypedArray('float32', len);
       for (i = 0; i < len; i += 1) {
-        expressionValue[i] = arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
+        arrValue[i] = (i < 3) ? elementProp.v[i] * mult : 1;
+        expressionValue[i] = arrValue[i];
       }
       expressionValue.value = arrValue;
     }
@@ -29,7 +30,8 @@ function ExpressionValue(elementProp, mult, type) {
     expressionValue = createTypedArray('float32', len);
     arrValue = createTypedArray('float32', len);
     for (i = 0; i < len; i += 1) {
-      expressionValue[i] = arrValue[i] = elementProp.v[i] * mult;
+      arrValue[i] = elementProp.v[i] * mult;
+      expressionValue[i] = arrValue[i];
     }
     expressionValue.value = arrValue;
   }

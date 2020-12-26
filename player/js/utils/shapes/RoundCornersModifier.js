@@ -46,8 +46,10 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
         }
         distance = Math.sqrt(Math.pow(currentV[0] - closerV[0], 2) + Math.pow(currentV[1] - closerV[1], 2));
         newPosPerc = distance ? Math.min(distance / 2, round) / distance : 0;
-        vX = iX = currentV[0] + (closerV[0] - currentV[0]) * newPosPerc;
-        vY = iY = currentV[1] - (currentV[1] - closerV[1]) * newPosPerc;
+        iX = currentV[0] + (closerV[0] - currentV[0]) * newPosPerc;
+        vX = iX;
+        iY = currentV[1] - (currentV[1] - closerV[1]) * newPosPerc;
+        vY = iY;
         oX = vX - (vX - currentV[0]) * roundCorner;
         oY = vY - (vY - currentV[1]) * roundCorner;
         cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, index);
@@ -60,8 +62,10 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
         }
         distance = Math.sqrt(Math.pow(currentV[0] - closerV[0], 2) + Math.pow(currentV[1] - closerV[1], 2));
         newPosPerc = distance ? Math.min(distance / 2, round) / distance : 0;
-        vX = oX = currentV[0] + (closerV[0] - currentV[0]) * newPosPerc;
-        vY = oY = currentV[1] + (closerV[1] - currentV[1]) * newPosPerc;
+        oX = currentV[0] + (closerV[0] - currentV[0]) * newPosPerc;
+        vX = oX;
+        oY = currentV[1] + (closerV[1] - currentV[1]) * newPosPerc;
+        vY = oY;
         iX = vX - (vX - currentV[0]) * roundCorner;
         iY = vY - (vY - currentV[1]) * roundCorner;
         cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, index);

@@ -237,7 +237,8 @@ var ExpressionManager = (function () {
       l = (max + min) / 2;
 
     if (max == min) {
-      h = s = 0; // achromatic
+      h = 0; // achromatic
+      s = 0; // achromatic
     } else {
       var d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -272,7 +273,9 @@ var ExpressionManager = (function () {
       b;
 
     if (s === 0) {
-      r = g = b = l; // achromatic
+      r = l; // achromatic
+      b = l; // achromatic
+      g = l; // achromatic
     } else {
       var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       var p = 2 * l - q;

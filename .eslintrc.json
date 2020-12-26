@@ -47,7 +47,6 @@
         "prefer-rest-params": "off",
         "radix": "off",
         "no-bitwise": "off",
-        "no-multi-assign": "off",
         "camelcase": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",

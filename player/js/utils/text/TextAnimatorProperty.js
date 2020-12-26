@@ -241,7 +241,10 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         partialLength = currentPoint.partialLength;
         segmentLength = 0;
       }
-      letterO = letterSw = letterFc = letterM = '';
+      letterM = '';
+      letterFc = '';
+      letterSw = '';
+      letterO = '';
       letterP = this.defaultPropsArray;
     } else {
       if (this._hasMaskedPath) {

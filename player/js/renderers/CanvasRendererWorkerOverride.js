@@ -1,11 +1,14 @@
 CanvasRenderer.prototype.configAnimation = function (animData) {
   if (this.animationItem.wrapper) {
     this.animationItem.container = createTag('canvas');
-    this.animationItem.container.style.width = '100%';
-    this.animationItem.container.style.height = '100%';
-    // this.animationItem.container.style.transform = 'translate3d(0,0,0)';
-    // this.animationItem.container.style.webkitTransform = 'translate3d(0,0,0)';
-    this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = '0px 0px 0px';
+    var containerStyle = this.animationItem.container.style;
+    containerStyle.width = '100%';
+    containerStyle.height = '100%';
+    var origin = '0px 0px 0px';
+    containerStyle.transformOrigin = origin;
+    containerStyle.mozTransformOrigin = origin;
+    containerStyle.webkitTransformOrigin = origin;
+    containerStyle['-webkit-transform'] = origin;
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.canvasContext = this.animationItem.container.getContext('2d');
     if (this.renderConfig.className) {

@@ -41,14 +41,25 @@ extendPrototype([BaseElement, FrameElement, HierarchyElement], HCameraElement);
 HCameraElement.prototype.setup = function () {
   var i,
     len = this.comp.threeDElements.length,
-    comp;
+    comp,
+    perspectiveStyle,
+    containerStyle;
   for (i = 0; i < len; i += 1) {
     // [perspectiveElem,container]
     comp = this.comp.threeDElements[i];
     if (comp.type === '3d') {
-      comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v + 'px';
-      comp.container.style.transformOrigin = comp.container.style.mozTransformOrigin = comp.container.style.webkitTransformOrigin = '0px 0px 0px';
-      comp.perspectiveElem.style.transform = comp.perspectiveElem.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+      perspectiveStyle = comp.perspectiveElem.style;
+      containerStyle = comp.container.style;
+      var perspective = this.pe.v + 'px';
+      var origin = '0px 0px 0px';
+      var matrix = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
+      perspectiveStyle.perspective = perspective;
+      perspectiveStyle.webkitPerspective = perspective;
+      containerStyle.transformOrigin = origin;
+      containerStyle.mozTransformOrigin = origin;
+      containerStyle.webkitTransformOrigin = origin;
+      perspectiveStyle.transform = matrix;
+      perspectiveStyle.webkitTransform = matrix;
     }
   }
 };
@@ -112,15 +123,22 @@ HCameraElement.prototype.renderFrame = function () {
     var hasMatrixChanged = !this._prevMat.equals(this.mat);
     if ((hasMatrixChanged || this.pe._mdf) && this.comp.threeDElements) {
       len = this.comp.threeDElements.length;
-      var comp;
+      var comp,
+        perspectiveStyle,
+        containerStyle;
       for (i = 0; i < len; i += 1) {
         comp = this.comp.threeDElements[i];
         if (comp.type === '3d') {
           if (hasMatrixChanged) {
-            comp.container.style.transform = comp.container.style.webkitTransform = this.mat.toCSS();
+            var matValue = this.mat.toCSS();
+            containerStyle = comp.container.style;
+            containerStyle.transform = matValue;
+            containerStyle.webkitTransform = matValue;
           }
           if (this.pe._mdf) {
-            comp.perspectiveElem.style.perspective = comp.perspectiveElem.style.webkitPerspective = this.pe.v + 'px';
+            perspectiveStyle = comp.perspectiveElem.style;
+            perspectiveStyle.perspective = this.pe.v + 'px';
+            perspectiveStyle.webkitPerspective = this.pe.v + 'px';
           }
         }
       }
