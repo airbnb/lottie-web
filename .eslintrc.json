@@ -47,7 +47,6 @@
         "no-unused-expressions": "off",
         "no-return-assign": "off",
         "no-sequences": "off",
-        "no-cond-assign": "off",
         "no-void": "off",
         "new-parens": "off",
         "no-redeclare": "off",
