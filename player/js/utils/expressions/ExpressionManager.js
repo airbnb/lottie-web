@@ -33,9 +33,9 @@ var ExpressionManager = (function () {
     return -a;
   }
 
-  var easeInBez = BezierFactory.getBezierEasing(0.333, 0, .833, .833, 'easeIn').get;
-  var easeOutBez = BezierFactory.getBezierEasing(0.167, 0.167, .667, 1, 'easeOut').get;
-  var easeInOutBez = BezierFactory.getBezierEasing(.33, 0, .667, 1, 'easeInOut').get;
+  var easeInBez = BezierFactory.getBezierEasing(0.333, 0, 0.833, 0.833, 'easeIn').get;
+  var easeOutBez = BezierFactory.getBezierEasing(0.167, 0.167, 0.667, 1, 'easeOut').get;
+  var easeInOutBez = BezierFactory.getBezierEasing(0.33, 0, 0.667, 1, 'easeInOut').get;
 
   function sum(a, b) {
     var tOfA = typeof a;

@@ -45,7 +45,6 @@
         "no-void": "off",
         "no-redeclare": "off",
         "prefer-rest-params": "off",
-        "no-floating-decimal": "off",
         "radix": "off",
         "no-bitwise": "off",
         "no-multi-assign": "off",

@@ -59,7 +59,7 @@ CVTextElement.prototype.buildNewText = function () {
     commands,
     pathArr,
     singleShape = this.data.singleShape;
-  var trackingOffset = documentData.tr * .001 * documentData.finalSize;
+  var trackingOffset = documentData.tr * 0.001 * documentData.finalSize;
   var xPos = 0,
     yPos = 0,
     firstLine = true;

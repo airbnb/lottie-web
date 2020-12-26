@@ -391,7 +391,7 @@ var ShapePropertyFactory = (function () {
         var roundness = this.os.v;
         var perimSegment = (2 * Math.PI * rad) / (numPts * 4);
         var i,
-          currentAng = -Math.PI * .5;
+          currentAng = -Math.PI * 0.5;
         var dir = this.data.d === 3 ? -1 : 1;
         currentAng += this.r.v;
         this.v._length = 0;

@@ -70,7 +70,7 @@ SVGTextElement.prototype.buildNewText = function () {
   var xPos = 0,
     yPos = 0,
     firstLine = true;
-  var trackingOffset = documentData.tr * .001 * documentData.finalSize;
+  var trackingOffset = documentData.tr * 0.001 * documentData.finalSize;
   if (singleShape && !usesGlyphs && !documentData.sz) {
     var tElement = this.textContainer;
     var justify = 'start';

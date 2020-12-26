@@ -265,7 +265,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           currentLength += letters[i].an / 2;
           ind = letters[i].ind;
         }
-        currentLength += (alignment[0] * letters[i].an) * .005;
+        currentLength += (alignment[0] * letters[i].an) * 0.005;
         var animatorOffset = 0;
         for (j = 0; j < jLen; j += 1) {
           animatorProps = animators[j].a;
@@ -294,7 +294,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
             xPathPos = prevPoint.point[0] + (currentPoint.point[0] - prevPoint.point[0]) * perc;
             yPathPos = prevPoint.point[1] + (currentPoint.point[1] - prevPoint.point[1]) * perc;
-            matrixHelper.translate((-alignment[0] * letters[i].an) * .005, -(alignment[1] * yOff) * .01);
+            matrixHelper.translate((-alignment[0] * letters[i].an) * 0.005, -(alignment[1] * yOff) * 0.01);
             flag = false;
           } else if (points) {
             segmentLength += currentPoint.partialLength;
@@ -329,7 +329,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         matrixHelper.translate(-offf, 0, 0);
 
         // Grouping alignment
-        matrixHelper.translate((-alignment[0] * letters[i].an) * .005, (-alignment[1] * yOff) * .01, 0);
+        matrixHelper.translate((-alignment[0] * letters[i].an) * 0.005, (-alignment[1] * yOff) * 0.01, 0);
       }
 
       lineLength += letters[i].l / 2;
@@ -514,7 +514,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       if (this._hasMaskedPath) {
         matrixHelper.translate(0, -documentData.ls);
 
-        matrixHelper.translate(0, (alignment[1] * yOff) * .01 + yPos, 0);
+        matrixHelper.translate(0, (alignment[1] * yOff) * 0.01 + yPos, 0);
         if (textData.p.p) {
           tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
           var rot = (Math.atan(tanAngle) * 180) / Math.PI;
@@ -524,10 +524,10 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           matrixHelper.rotate((-rot * Math.PI) / 180);
         }
         matrixHelper.translate(xPathPos, yPathPos, 0);
-        currentLength -= (alignment[0] * letters[i].an) * .005;
+        currentLength -= (alignment[0] * letters[i].an) * 0.005;
         if (letters[i + 1] && ind !== letters[i + 1].ind) {
           currentLength += letters[i].an / 2;
-          currentLength += (documentData.tr * .001) * documentData.finalSize;
+          currentLength += (documentData.tr * 0.001) * documentData.finalSize;
         }
       } else {
         matrixHelper.translate(xPos, yPos, 0);
@@ -548,8 +548,8 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         }
         matrixHelper.translate(0, -documentData.ls);
         matrixHelper.translate(offf, 0, 0);
-        matrixHelper.translate((alignment[0] * letters[i].an) * .005, (alignment[1] * yOff) * .01, 0);
-        xPos += letters[i].l + (documentData.tr * .001) * documentData.finalSize;
+        matrixHelper.translate((alignment[0] * letters[i].an) * 0.005, (alignment[1] * yOff) * 0.01, 0);
+        xPos += letters[i].l + (documentData.tr * 0.001) * documentData.finalSize;
       }
       if (renderType === 'html') {
         letterM = matrixHelper.toCSS();
