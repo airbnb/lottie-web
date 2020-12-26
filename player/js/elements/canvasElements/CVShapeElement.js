@@ -267,57 +267,56 @@ CVShapeElement.prototype.drawLayer = function () {
     // style should not be rendered (extra unused repeaters)
     // current opacity equals 0
     // global opacity equals 0
-    if (((type === 'st' || type === 'gs') && currentStyle.wi === 0) || !currentStyle.data._shouldRender || currentStyle.coOp === 0 || this.globalData.currentGlobalAlpha === 0) {
-      continue;
-    }
-    renderer.save();
-    elems = currentStyle.elements;
-    if (type === 'st' || type === 'gs') {
-      ctx.strokeStyle = type === 'st' ? currentStyle.co : currentStyle.grd;
-      ctx.lineWidth = currentStyle.wi;
-      ctx.lineCap = currentStyle.lc;
-      ctx.lineJoin = currentStyle.lj;
-      ctx.miterLimit = currentStyle.ml || 0;
-    } else {
-      ctx.fillStyle = type === 'fl' ? currentStyle.co : currentStyle.grd;
-    }
-    renderer.ctxOpacity(currentStyle.coOp);
-    if (type !== 'st' && type !== 'gs') {
-      ctx.beginPath();
-    }
-    renderer.ctxTransform(currentStyle.preTransforms.finalTransform.props);
-    jLen = elems.length;
-    for (j = 0; j < jLen; j += 1) {
+    if (!(((type === 'st' || type === 'gs') && currentStyle.wi === 0) || !currentStyle.data._shouldRender || currentStyle.coOp === 0 || this.globalData.currentGlobalAlpha === 0)) {
+      renderer.save();
+      elems = currentStyle.elements;
       if (type === 'st' || type === 'gs') {
+        ctx.strokeStyle = type === 'st' ? currentStyle.co : currentStyle.grd;
+        ctx.lineWidth = currentStyle.wi;
+        ctx.lineCap = currentStyle.lc;
+        ctx.lineJoin = currentStyle.lj;
+        ctx.miterLimit = currentStyle.ml || 0;
+      } else {
+        ctx.fillStyle = type === 'fl' ? currentStyle.co : currentStyle.grd;
+      }
+      renderer.ctxOpacity(currentStyle.coOp);
+      if (type !== 'st' && type !== 'gs') {
         ctx.beginPath();
-        if (currentStyle.da) {
-          ctx.setLineDash(currentStyle.da);
-          ctx.lineDashOffset = currentStyle.do;
-        }
       }
-      nodes = elems[j].trNodes;
-      kLen = nodes.length;
+      renderer.ctxTransform(currentStyle.preTransforms.finalTransform.props);
+      jLen = elems.length;
+      for (j = 0; j < jLen; j += 1) {
+        if (type === 'st' || type === 'gs') {
+          ctx.beginPath();
+          if (currentStyle.da) {
+            ctx.setLineDash(currentStyle.da);
+            ctx.lineDashOffset = currentStyle.do;
+          }
+        }
+        nodes = elems[j].trNodes;
+        kLen = nodes.length;
 
-      for (k = 0; k < kLen; k += 1) {
-        if (nodes[k].t == 'm') {
-          ctx.moveTo(nodes[k].p[0], nodes[k].p[1]);
-        } else if (nodes[k].t == 'c') {
-          ctx.bezierCurveTo(nodes[k].pts[0], nodes[k].pts[1], nodes[k].pts[2], nodes[k].pts[3], nodes[k].pts[4], nodes[k].pts[5]);
-        } else {
-          ctx.closePath();
+        for (k = 0; k < kLen; k += 1) {
+          if (nodes[k].t == 'm') {
+            ctx.moveTo(nodes[k].p[0], nodes[k].p[1]);
+          } else if (nodes[k].t == 'c') {
+            ctx.bezierCurveTo(nodes[k].pts[0], nodes[k].pts[1], nodes[k].pts[2], nodes[k].pts[3], nodes[k].pts[4], nodes[k].pts[5]);
+          } else {
+            ctx.closePath();
+          }
+        }
+        if (type === 'st' || type === 'gs') {
+          ctx.stroke();
+          if (currentStyle.da) {
+            ctx.setLineDash(this.dashResetter);
+          }
         }
       }
-      if (type === 'st' || type === 'gs') {
-        ctx.stroke();
-        if (currentStyle.da) {
-          ctx.setLineDash(this.dashResetter);
-        }
+      if (type !== 'st' && type !== 'gs') {
+        ctx.fill(currentStyle.r);
       }
+      renderer.restore();
     }
-    if (type !== 'st' && type !== 'gs') {
-      ctx.fill(currentStyle.r);
-    }
-    renderer.restore();
   }
 };
 

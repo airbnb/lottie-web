@@ -13,41 +13,40 @@ function dataFunctionManager() {
       kLen;
     for (i = 0; i < len; i += 1) {
       layerData = layers[i];
-      if (!('ks' in layerData) || layerData.completed) {
-        continue;
-      }
-      layerData.completed = true;
-      if (layerData.tt) {
-        layers[i - 1].td = layerData.tt;
-      }
-      animArray = [];
-      lastFrame = -1;
-      if (layerData.hasMask) {
-        var maskProps = layerData.masksProperties;
-        jLen = maskProps.length;
-        for (j = 0; j < jLen; j += 1) {
-          if (maskProps[j].pt.k.i) {
-            convertPathsToAbsoluteValues(maskProps[j].pt.k);
-          } else {
-            kLen = maskProps[j].pt.k.length;
-            for (k = 0; k < kLen; k += 1) {
-              if (maskProps[j].pt.k[k].s) {
-                convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
-              }
-              if (maskProps[j].pt.k[k].e) {
-                convertPathsToAbsoluteValues(maskProps[j].pt.k[k].e[0]);
+      if (('ks' in layerData) && !layerData.completed) {
+        layerData.completed = true;
+        if (layerData.tt) {
+          layers[i - 1].td = layerData.tt;
+        }
+        animArray = [];
+        lastFrame = -1;
+        if (layerData.hasMask) {
+          var maskProps = layerData.masksProperties;
+          jLen = maskProps.length;
+          for (j = 0; j < jLen; j += 1) {
+            if (maskProps[j].pt.k.i) {
+              convertPathsToAbsoluteValues(maskProps[j].pt.k);
+            } else {
+              kLen = maskProps[j].pt.k.length;
+              for (k = 0; k < kLen; k += 1) {
+                if (maskProps[j].pt.k[k].s) {
+                  convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
+                }
+                if (maskProps[j].pt.k[k].e) {
+                  convertPathsToAbsoluteValues(maskProps[j].pt.k[k].e[0]);
+                }
               }
             }
           }
         }
-      }
-      if (layerData.ty === 0) {
-        layerData.layers = findCompLayers(layerData.refId, comps);
-        completeLayers(layerData.layers, comps, fontManager);
-      } else if (layerData.ty === 4) {
-        completeShapes(layerData.shapes);
-      } else if (layerData.ty == 5) {
-        completeText(layerData, fontManager);
+        if (layerData.ty === 0) {
+          layerData.layers = findCompLayers(layerData.refId, comps);
+          completeLayers(layerData.layers, comps, fontManager);
+        } else if (layerData.ty === 4) {
+          completeShapes(layerData.shapes);
+        } else if (layerData.ty == 5) {
+          completeText(layerData, fontManager);
+        }
       }
     }
   }

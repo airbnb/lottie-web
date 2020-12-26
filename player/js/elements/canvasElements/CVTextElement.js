@@ -138,76 +138,75 @@ CVTextElement.prototype.renderInnerContent = function () {
     commands,
     pathArr;
   for (i = 0; i < len; i += 1) {
-    if (letters[i].n) {
-      continue;
-    }
-    renderedLetter = renderedLetters[i];
-    if (renderedLetter) {
-      this.globalData.renderer.save();
-      this.globalData.renderer.ctxTransform(renderedLetter.p);
-      this.globalData.renderer.ctxOpacity(renderedLetter.o);
-    }
-    if (this.fill) {
-      if (renderedLetter && renderedLetter.fc) {
-        if (lastFill !== renderedLetter.fc) {
-          lastFill = renderedLetter.fc;
-          ctx.fillStyle = renderedLetter.fc;
-        }
-      } else if (lastFill !== this.values.fill) {
-        lastFill = this.values.fill;
-        ctx.fillStyle = this.values.fill;
+    if (!letters[i].n) {
+      renderedLetter = renderedLetters[i];
+      if (renderedLetter) {
+        this.globalData.renderer.save();
+        this.globalData.renderer.ctxTransform(renderedLetter.p);
+        this.globalData.renderer.ctxOpacity(renderedLetter.o);
       }
-      commands = this.textSpans[i].elem;
-      jLen = commands.length;
-      this.globalData.canvasContext.beginPath();
-      for (j = 0; j < jLen; j += 1) {
-        pathArr = commands[j];
-        kLen = pathArr.length;
-        this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
-        for (k = 2; k < kLen; k += 6) {
-          this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
+      if (this.fill) {
+        if (renderedLetter && renderedLetter.fc) {
+          if (lastFill !== renderedLetter.fc) {
+            lastFill = renderedLetter.fc;
+            ctx.fillStyle = renderedLetter.fc;
+          }
+        } else if (lastFill !== this.values.fill) {
+          lastFill = this.values.fill;
+          ctx.fillStyle = this.values.fill;
         }
-      }
-      this.globalData.canvasContext.closePath();
-      this.globalData.canvasContext.fill();
-      /// ctx.fillText(this.textSpans[i].val,0,0);
-    }
-    if (this.stroke) {
-      if (renderedLetter && renderedLetter.sw) {
-        if (lastStrokeW !== renderedLetter.sw) {
-          lastStrokeW = renderedLetter.sw;
-          ctx.lineWidth = renderedLetter.sw;
+        commands = this.textSpans[i].elem;
+        jLen = commands.length;
+        this.globalData.canvasContext.beginPath();
+        for (j = 0; j < jLen; j += 1) {
+          pathArr = commands[j];
+          kLen = pathArr.length;
+          this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
+          for (k = 2; k < kLen; k += 6) {
+            this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
+          }
         }
-      } else if (lastStrokeW !== this.values.sWidth) {
-        lastStrokeW = this.values.sWidth;
-        ctx.lineWidth = this.values.sWidth;
+        this.globalData.canvasContext.closePath();
+        this.globalData.canvasContext.fill();
+        /// ctx.fillText(this.textSpans[i].val,0,0);
       }
-      if (renderedLetter && renderedLetter.sc) {
-        if (lastStroke !== renderedLetter.sc) {
-          lastStroke = renderedLetter.sc;
-          ctx.strokeStyle = renderedLetter.sc;
+      if (this.stroke) {
+        if (renderedLetter && renderedLetter.sw) {
+          if (lastStrokeW !== renderedLetter.sw) {
+            lastStrokeW = renderedLetter.sw;
+            ctx.lineWidth = renderedLetter.sw;
+          }
+        } else if (lastStrokeW !== this.values.sWidth) {
+          lastStrokeW = this.values.sWidth;
+          ctx.lineWidth = this.values.sWidth;
         }
-      } else if (lastStroke !== this.values.stroke) {
-        lastStroke = this.values.stroke;
-        ctx.strokeStyle = this.values.stroke;
-      }
-      commands = this.textSpans[i].elem;
-      jLen = commands.length;
-      this.globalData.canvasContext.beginPath();
-      for (j = 0; j < jLen; j += 1) {
-        pathArr = commands[j];
-        kLen = pathArr.length;
-        this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
-        for (k = 2; k < kLen; k += 6) {
-          this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
+        if (renderedLetter && renderedLetter.sc) {
+          if (lastStroke !== renderedLetter.sc) {
+            lastStroke = renderedLetter.sc;
+            ctx.strokeStyle = renderedLetter.sc;
+          }
+        } else if (lastStroke !== this.values.stroke) {
+          lastStroke = this.values.stroke;
+          ctx.strokeStyle = this.values.stroke;
         }
+        commands = this.textSpans[i].elem;
+        jLen = commands.length;
+        this.globalData.canvasContext.beginPath();
+        for (j = 0; j < jLen; j += 1) {
+          pathArr = commands[j];
+          kLen = pathArr.length;
+          this.globalData.canvasContext.moveTo(pathArr[0], pathArr[1]);
+          for (k = 2; k < kLen; k += 6) {
+            this.globalData.canvasContext.bezierCurveTo(pathArr[k], pathArr[k + 1], pathArr[k + 2], pathArr[k + 3], pathArr[k + 4], pathArr[k + 5]);
+          }
+        }
+        this.globalData.canvasContext.closePath();
+        this.globalData.canvasContext.stroke();
+        /// ctx.strokeText(letters[i].val,0,0);
       }
-      this.globalData.canvasContext.closePath();
-      this.globalData.canvasContext.stroke();
-      /// ctx.strokeText(letters[i].val,0,0);
-    }
-    if (renderedLetter) {
-      this.globalData.renderer.restore();
+      if (renderedLetter) {
+        this.globalData.renderer.restore();
+      }
     }
   }
 };

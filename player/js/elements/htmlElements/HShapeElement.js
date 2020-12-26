@@ -123,30 +123,24 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
     a |= 0; // eslint-disable-line no-bitwise
     c |= 0; // eslint-disable-line no-bitwise
 
-    if (a === 0) {
-      if (b === 0) {
-        continue;
-      }
-
+    if (a === 0 && b === 0) {
+      //
+    } else if (a === 0) {
       t = -c / b;
 
       if (t > 0 && t < 1) {
         bounds[i].push(this.calculateF(t, p0, p1, p2, p3, i));
       }
-      continue;
+    } else {
+      b2ac = b * b - 4 * c * a;
+
+      if (b2ac >= 0) {
+        t1 = (-b + bm_sqrt(b2ac)) / (2 * a);
+        if (t1 > 0 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
+        t2 = (-b - bm_sqrt(b2ac)) / (2 * a);
+        if (t2 > 0 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
+      }
     }
-
-    b2ac = b * b - 4 * c * a;
-
-    if (b2ac < 0) {
-      continue;
-    }
-
-    t1 = (-b + bm_sqrt(b2ac)) / (2 * a);
-    if (t1 > 0 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
-
-    t2 = (-b - bm_sqrt(b2ac)) / (2 * a);
-    if (t2 > 0 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
   }
 
   this.shapeBoundingBox.left = bm_min.apply(null, bounds[0]);

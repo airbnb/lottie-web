@@ -194,25 +194,24 @@ SVGTextElement.prototype.renderInnerContent = function () {
       var renderedLetter,
         textSpan;
       for (i = 0; i < len; i += 1) {
-        if (letters[i].n) {
-          continue;
-        }
-        renderedLetter = renderedLetters[i];
-        textSpan = this.textSpans[i];
-        if (renderedLetter._mdf.m) {
-          textSpan.setAttribute('transform', renderedLetter.m);
-        }
-        if (renderedLetter._mdf.o) {
-          textSpan.setAttribute('opacity', renderedLetter.o);
-        }
-        if (renderedLetter._mdf.sw) {
-          textSpan.setAttribute('stroke-width', renderedLetter.sw);
-        }
-        if (renderedLetter._mdf.sc) {
-          textSpan.setAttribute('stroke', renderedLetter.sc);
-        }
-        if (renderedLetter._mdf.fc) {
-          textSpan.setAttribute('fill', renderedLetter.fc);
+        if (!letters[i].n) {
+          renderedLetter = renderedLetters[i];
+          textSpan = this.textSpans[i];
+          if (renderedLetter._mdf.m) {
+            textSpan.setAttribute('transform', renderedLetter.m);
+          }
+          if (renderedLetter._mdf.o) {
+            textSpan.setAttribute('opacity', renderedLetter.o);
+          }
+          if (renderedLetter._mdf.sw) {
+            textSpan.setAttribute('stroke-width', renderedLetter.sw);
+          }
+          if (renderedLetter._mdf.sc) {
+            textSpan.setAttribute('stroke', renderedLetter.sc);
+          }
+          if (renderedLetter._mdf.fc) {
+            textSpan.setAttribute('fill', renderedLetter.fc);
+          }
         }
       }
     }

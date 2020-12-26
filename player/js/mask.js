@@ -50,74 +50,74 @@ function MaskElement(data, element, globalData) {
         lastPath: '',
       };
       defs.appendChild(path);
-      continue;
-    }
-    count += 1;
-
-    path.setAttribute('fill', properties[i].mode === 's' ? '#000000' : '#ffffff');
-    path.setAttribute('clip-rule', 'nonzero');
-    var filterID;
-
-    if (properties[i].x.k !== 0) {
-      maskType = 'mask';
-      maskRef = 'mask';
-      x = PropertyFactory.getProp(this.element, properties[i].x, 0, null, this.element);
-      filterID = createElementID();
-      expansor = createNS('filter');
-      expansor.setAttribute('id', filterID);
-      feMorph = createNS('feMorphology');
-      feMorph.setAttribute('operator', 'erode');
-      feMorph.setAttribute('in', 'SourceGraphic');
-      feMorph.setAttribute('radius', '0');
-      expansor.appendChild(feMorph);
-      defs.appendChild(expansor);
-      path.setAttribute('stroke', properties[i].mode === 's' ? '#000000' : '#ffffff');
     } else {
-      feMorph = null;
-      x = null;
-    }
+      count += 1;
 
-    // TODO move this to a factory or to a constructor
-    this.storedData[i] = {
-      elem: path,
-      x: x,
-      expan: feMorph,
-      lastPath: '',
-      lastOperator: '',
-      filterId: filterID,
-      lastRadius: 0,
-    };
-    if (properties[i].mode == 'i') {
-      jLen = currentMasks.length;
-      var g = createNS('g');
-      for (j = 0; j < jLen; j += 1) {
-        g.appendChild(currentMasks[j]);
+      path.setAttribute('fill', properties[i].mode === 's' ? '#000000' : '#ffffff');
+      path.setAttribute('clip-rule', 'nonzero');
+      var filterID;
+
+      if (properties[i].x.k !== 0) {
+        maskType = 'mask';
+        maskRef = 'mask';
+        x = PropertyFactory.getProp(this.element, properties[i].x, 0, null, this.element);
+        filterID = createElementID();
+        expansor = createNS('filter');
+        expansor.setAttribute('id', filterID);
+        feMorph = createNS('feMorphology');
+        feMorph.setAttribute('operator', 'erode');
+        feMorph.setAttribute('in', 'SourceGraphic');
+        feMorph.setAttribute('radius', '0');
+        expansor.appendChild(feMorph);
+        defs.appendChild(expansor);
+        path.setAttribute('stroke', properties[i].mode === 's' ? '#000000' : '#ffffff');
+      } else {
+        feMorph = null;
+        x = null;
       }
-      var mask = createNS('mask');
-      mask.setAttribute('mask-type', 'alpha');
-      mask.setAttribute('id', layerId + '_' + count);
-      mask.appendChild(path);
-      defs.appendChild(mask);
-      g.setAttribute('mask', 'url(' + locationHref + '#' + layerId + '_' + count + ')');
 
-      currentMasks.length = 0;
-      currentMasks.push(g);
-    } else {
-      currentMasks.push(path);
-    }
-    if (properties[i].inv && !this.solidPath) {
-      this.solidPath = this.createLayerSolidPath();
-    }
-    // TODO move this to a factory or to a constructor
-    this.viewData[i] = {
-      elem: path,
-      lastPath: '',
-      op: PropertyFactory.getProp(this.element, properties[i].o, 0, 0.01, this.element),
-      prop: ShapePropertyFactory.getShapeProp(this.element, properties[i], 3),
-      invRect: rect,
-    };
-    if (!this.viewData[i].prop.k) {
-      this.drawPath(properties[i], this.viewData[i].prop.v, this.viewData[i]);
+      // TODO move this to a factory or to a constructor
+      this.storedData[i] = {
+        elem: path,
+        x: x,
+        expan: feMorph,
+        lastPath: '',
+        lastOperator: '',
+        filterId: filterID,
+        lastRadius: 0,
+      };
+      if (properties[i].mode == 'i') {
+        jLen = currentMasks.length;
+        var g = createNS('g');
+        for (j = 0; j < jLen; j += 1) {
+          g.appendChild(currentMasks[j]);
+        }
+        var mask = createNS('mask');
+        mask.setAttribute('mask-type', 'alpha');
+        mask.setAttribute('id', layerId + '_' + count);
+        mask.appendChild(path);
+        defs.appendChild(mask);
+        g.setAttribute('mask', 'url(' + locationHref + '#' + layerId + '_' + count + ')');
+
+        currentMasks.length = 0;
+        currentMasks.push(g);
+      } else {
+        currentMasks.push(path);
+      }
+      if (properties[i].inv && !this.solidPath) {
+        this.solidPath = this.createLayerSolidPath();
+      }
+      // TODO move this to a factory or to a constructor
+      this.viewData[i] = {
+        elem: path,
+        lastPath: '',
+        op: PropertyFactory.getProp(this.element, properties[i].o, 0, 0.01, this.element),
+        prop: ShapePropertyFactory.getShapeProp(this.element, properties[i], 3),
+        invRect: rect,
+      };
+      if (!this.viewData[i].prop.k) {
+        this.drawPath(properties[i], this.viewData[i].prop.v, this.viewData[i]);
+      }
     }
   }
 

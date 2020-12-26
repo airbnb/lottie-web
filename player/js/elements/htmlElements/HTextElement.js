@@ -207,31 +207,31 @@ HTextElement.prototype.renderInnerContent = function () {
   for (i = 0; i < len; i += 1) {
     if (letters[i].n) {
       count += 1;
-      continue;
-    }
-    textSpan = this.textSpans[i];
-    textPath = this.textPaths[i];
-    renderedLetter = renderedLetters[count];
-    count += 1;
-    if (renderedLetter._mdf.m) {
-      if (!this.isMasked) {
-        textSpan.style.webkitTransform = renderedLetter.m;
-        textSpan.style.transform = renderedLetter.m;
-      } else {
-        textSpan.setAttribute('transform', renderedLetter.m);
+    } else {
+      textSpan = this.textSpans[i];
+      textPath = this.textPaths[i];
+      renderedLetter = renderedLetters[count];
+      count += 1;
+      if (renderedLetter._mdf.m) {
+        if (!this.isMasked) {
+          textSpan.style.webkitTransform = renderedLetter.m;
+          textSpan.style.transform = renderedLetter.m;
+        } else {
+          textSpan.setAttribute('transform', renderedLetter.m);
+        }
       }
-    }
-    /// /textSpan.setAttribute('opacity',renderedLetter.o);
-    textSpan.style.opacity = renderedLetter.o;
-    if (renderedLetter.sw && renderedLetter._mdf.sw) {
-      textPath.setAttribute('stroke-width', renderedLetter.sw);
-    }
-    if (renderedLetter.sc && renderedLetter._mdf.sc) {
-      textPath.setAttribute('stroke', renderedLetter.sc);
-    }
-    if (renderedLetter.fc && renderedLetter._mdf.fc) {
-      textPath.setAttribute('fill', renderedLetter.fc);
-      textPath.style.color = renderedLetter.fc;
+      /// /textSpan.setAttribute('opacity',renderedLetter.o);
+      textSpan.style.opacity = renderedLetter.o;
+      if (renderedLetter.sw && renderedLetter._mdf.sw) {
+        textPath.setAttribute('stroke-width', renderedLetter.sw);
+      }
+      if (renderedLetter.sc && renderedLetter._mdf.sc) {
+        textPath.setAttribute('stroke', renderedLetter.sc);
+      }
+      if (renderedLetter.fc && renderedLetter._mdf.fc) {
+        textPath.setAttribute('fill', renderedLetter.fc);
+        textPath.style.color = renderedLetter.fc;
+      }
     }
   }
 

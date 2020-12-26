@@ -59,9 +59,7 @@ var FontManager = (function () {
     for (i = 0; i < len; i += 1) {
       if (this.fonts[i].loaded) {
         loadedCount -= 1;
-        continue;
-      }
-      if (this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0) {
+      } else if (this.fonts[i].fOrigin === 'n' || this.fonts[i].origin === 0) {
         this.fonts[i].loaded = true;
       } else {
         node = this.fonts[i].monoCase.node;
