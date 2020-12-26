@@ -73,7 +73,6 @@
         "no-useless-concat": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",
-        "no-unneeded-ternary": "off",
         "eqeqeq": "off"
     }
 }

@@ -32,7 +32,7 @@ function SVGRenderer(animationItem, config) {
     preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
     imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
     progressiveLoad: (config && config.progressiveLoad) || false,
-    hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
+    hideOnTransparent: !((config && config.hideOnTransparent === false)),
     viewBoxOnly: (config && config.viewBoxOnly) || false,
     viewBoxSize: (config && config.viewBoxSize) || false,
     className: (config && config.className) || '',
