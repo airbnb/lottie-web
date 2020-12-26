@@ -22,8 +22,6 @@ var ProjectInterface = (function () {
 
     _thisProjectFunction.registerComposition = registerComposition;
 
-
-
     return _thisProjectFunction;
   };
 }());

@@ -78,4 +78,3 @@ AudioElement.prototype.sourceRectAtTime = function () {
 
 AudioElement.prototype.initExpressions = function () {
 };
-

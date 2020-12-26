@@ -68,7 +68,6 @@ ITextElement.prototype.applyTextPropertiesToMatrix = function (documentData, mat
   matrixHelper.translate(xPos, yPos, 0);
 };
 
-
 ITextElement.prototype.buildColor = function (colorData) {
   return 'rgb(' + Math.round(colorData[0] * 255) + ',' + Math.round(colorData[1] * 255) + ',' + Math.round(colorData[2] * 255) + ')';
 };

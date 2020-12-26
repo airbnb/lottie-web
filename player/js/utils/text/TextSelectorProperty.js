@@ -143,5 +143,3 @@ var TextSelectorProp = (function () {
     getTextSelectorProp: getTextSelectorProp,
   };
 }());
-
-

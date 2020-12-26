@@ -254,8 +254,6 @@ function dataFunctionManager() {
   var checkShapes = (function () {
     var minimumVersion = [4, 4, 18];
 
-
-
     function completeShapes(arr) {
       var i, len = arr.length;
       var j, jLen;

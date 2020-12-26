@@ -39,7 +39,6 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     positions.v[i][0] = (Math.cos(theta) * Math.max(0, this.data.maxDist - positions.distV[i])) / 2 + (path.v[i][0]);
     positions.v[i][1] = (Math.sin(theta) * Math.max(0, this.data.maxDist - positions.distV[i])) / 2 + (path.v[i][1]);
 
-
     theta = Math.atan2(
       path.o[i][1] - mouseCoords[1],
       path.o[i][0] - mouseCoords[0]
@@ -52,7 +51,6 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
     positions.o[i][0] = (Math.cos(theta) * Math.max(0, this.data.maxDist - positions.distO[i])) / 2 + (path.o[i][0]);
     positions.o[i][1] = (Math.sin(theta) * Math.max(0, this.data.maxDist - positions.distO[i])) / 2 + (path.o[i][1]);
-
 
     theta = Math.atan2(
       path.i[i][1] - mouseCoords[1],
@@ -72,28 +70,21 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
     oValues.push(positions.o[i]);
     iValues.push(positions.i[i]);
 
-
-
     /// //OPTION 2
     // vValues.push(positions.v[i]);
     // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
     // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
-
-
 
     /// //OPTION 3
     // vValues.push(positions.v[i]);
     // iValues.push(path.i[i]);
     // oValues.push(path.o[i]);
 
-
     /// //OPTION 4
     // vValues.push(path.v[i]);
     // oValues.push(positions.o[i]);
     // iValues.push(positions.i[i]);
   }
-
-
 
   /// / OPTION B
   /* for(i=0;i<len;i+=1){
@@ -115,7 +106,6 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         positions.v[i][0] += Math.cos(theta) * distance + (path.v[i][0] - positions.v[i][0]) * this.data.dc;
         positions.v[i][1] += Math.sin(theta) * distance + (path.v[i][1] - positions.v[i][1]) * this.data.dc;
 
-
         theta = Math.atan2(
             positions.o[i][1] - mouseCoords[1],
             positions.o[i][0] - mouseCoords[0]
@@ -126,7 +116,6 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
 
         positions.o[i][0] += Math.cos(theta) * distance + (path.o[i][0] - positions.o[i][0]) * this.data.dc;
         positions.o[i][1] += Math.sin(theta) * distance + (path.o[i][1] - positions.o[i][1]) * this.data.dc;
-
 
         theta = Math.atan2(
             positions.i[i][1] - mouseCoords[1],
@@ -144,27 +133,21 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
         // oValues.push(positions.o[i]);
         // iValues.push(positions.i[i]);
 
-
-
         /////OPTION 2
         //vValues.push(positions.v[i]);
         // iValues.push([path.i[i][0]+(positions.v[i][0]-path.v[i][0]),path.i[i][1]+(positions.v[i][1]-path.v[i][1])]);
         // oValues.push([path.o[i][0]+(positions.v[i][0]-path.v[i][0]),path.o[i][1]+(positions.v[i][1]-path.v[i][1])]);
-
-
 
         /////OPTION 3
         //vValues.push(positions.v[i]);
         //iValues.push(path.i[i]);
         //oValues.push(path.o[i]);
 
-
         /////OPTION 4
         //vValues.push(path.v[i]);
         // oValues.push(positions.o[i]);
         // iValues.push(positions.i[i]);
     } */
-
 
   return {
     v: vValues,
@@ -218,7 +201,5 @@ MouseModifier.prototype.initModifierProperties = function (elem, data) {
   this.data = data;
   this.positions = [];
 };
-
-
 
 ShapeModifiers.registerModifier('ms', MouseModifier);

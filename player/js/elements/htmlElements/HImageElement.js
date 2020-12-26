@@ -5,7 +5,6 @@ function HImageElement(data, globalData, comp) {
 
 extendPrototype([BaseElement, TransformElement, HBaseElement, HSolidElement, HierarchyElement, FrameElement, RenderableElement], HImageElement);
 
-
 HImageElement.prototype.createContent = function () {
   var assetPath = this.globalData.getAssetsPath(this.assetData);
   var img = new Image();

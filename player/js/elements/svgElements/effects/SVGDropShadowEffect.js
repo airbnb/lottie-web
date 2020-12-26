@@ -34,7 +34,6 @@ function SVGDropShadowEffect(filter, filterManager) {
   feComposite.setAttribute('result', 'drop_shadow_4');
   filter.appendChild(feComposite);
 
-
   var feMerge = createNS('feMerge');
   filter.appendChild(feMerge);
   var feMergeNode;

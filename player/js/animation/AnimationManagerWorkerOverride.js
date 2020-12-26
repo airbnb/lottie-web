@@ -73,7 +73,6 @@ animationManager = (function () {
     return animItem;
   }
 
-
   function setSpeed(val, animation) {
     var i;
     for (i = 0; i < len; i += 1) {

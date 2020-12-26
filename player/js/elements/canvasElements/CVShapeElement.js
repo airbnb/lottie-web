@@ -444,7 +444,6 @@ CVShapeElement.prototype.renderStroke = function (styleData, itemData, groupTran
   }
 };
 
-
 CVShapeElement.prototype.destroy = function () {
   this.shapesData = null;
   this.globalData = null;
@@ -452,4 +451,3 @@ CVShapeElement.prototype.destroy = function () {
   this.stylesList.length = 0;
   this.itemsData.length = 0;
 };
-

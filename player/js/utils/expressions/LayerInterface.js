@@ -71,7 +71,6 @@ var LayerExpressionInterface = (function () {
     return [1, 1, 1, 1];
   }
 
-
   return function (elem) {
     var transformInterface;
 

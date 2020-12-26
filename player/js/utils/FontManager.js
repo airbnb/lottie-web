@@ -120,7 +120,6 @@ var FontManager = (function () {
       return;
     }
 
-
     var fontArr = fontData.list;
     var i, len = fontArr.length;
     var _pendingFonts = len;

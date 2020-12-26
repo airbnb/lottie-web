@@ -10,7 +10,6 @@ function MaskElement(data, element, globalData) {
   this.viewData = createSizedArray(len);
   this.solidPath = '';
 
-
   var path, properties = this.masksProperties;
   var count = 0;
   var currentMasks = [];

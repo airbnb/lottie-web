@@ -76,7 +76,6 @@ SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
       this.feFuncBComposed.setAttribute('tableValues', val);
     }
 
-
     if (this.feFuncR && (forceRender || effectElements[10].p._mdf || effectElements[11].p._mdf || effectElements[12].p._mdf || effectElements[13].p._mdf || effectElements[14].p._mdf)) {
       val = this.getTableValue(effectElements[10].p.v, effectElements[11].p.v, effectElements[12].p.v, effectElements[13].p.v, effectElements[14].p.v);
       this.feFuncR.setAttribute('tableValues', val);

@@ -119,7 +119,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
     partialLength = currentPoint.partialLength;
   }
 
-
   len = letters.length;
   xPos = 0;
   yPos = 0;

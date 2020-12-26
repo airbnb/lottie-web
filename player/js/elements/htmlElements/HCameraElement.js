@@ -105,9 +105,6 @@ HCameraElement.prototype.renderFrame = function () {
     this.mat.translate(this.globalData.compSize.w / 2, this.globalData.compSize.h / 2, 0);
     this.mat.translate(0, 0, this.pe.v);
 
-
-
-
     var hasMatrixChanged = !this._prevMat.equals(this.mat);
     if ((hasMatrixChanged || this.pe._mdf) && this.comp.threeDElements) {
       len = this.comp.threeDElements.length;

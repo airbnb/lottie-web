@@ -36,7 +36,6 @@
         "no-continue": "off",
         "no-plusplus": "off",
         "no-underscore-dangle": "off",
-        "no-multiple-empty-lines": "off",
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",

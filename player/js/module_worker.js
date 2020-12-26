@@ -76,4 +76,3 @@ var onmessage = function (evt) {
   animations.push(animation);
   animation.play();
 };
-

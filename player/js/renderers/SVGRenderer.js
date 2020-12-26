@@ -135,7 +135,6 @@ SVGRenderer.prototype.configAnimation = function (animData) {
   this.elements = createSizedArray(animData.layers.length);
 };
 
-
 SVGRenderer.prototype.destroy = function () {
   if (this.animationItem.wrapper) {
     this.animationItem.wrapper.innerText = '';
