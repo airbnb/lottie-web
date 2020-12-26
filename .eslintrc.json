@@ -42,7 +42,6 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "no-redeclare": "off",
         "radix": "off",
         "camelcase": "off",
         "no-eval": "off",
