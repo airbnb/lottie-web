@@ -120,7 +120,7 @@ var ShapePropertyFactory = (function () {
 
   function setVValue(newPath) {
     if (!shapesEqual(this.v, newPath)) {
-      this.v = shape_pool.clone(newPath);
+      this.v = shapePool.clone(newPath);
       this.localShapeCollection.releaseShapes();
       this.localShapeCollection.addShape(this.v);
       this._mdf = true;
@@ -169,9 +169,9 @@ var ShapePropertyFactory = (function () {
     this.kf = false;
     this._mdf = false;
     var pathData = type === 3 ? data.pt.k : data.ks.k;
-    this.v = shape_pool.clone(pathData);
-    this.pv = shape_pool.clone(this.v);
-    this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+    this.v = shapePool.clone(pathData);
+    this.pv = shapePool.clone(this.v);
+    this.localShapeCollection = shapeCollectionPool.newShapeCollection();
     this.paths = this.localShapeCollection;
     this.paths.addShape(this.v);
     this.reset = resetShape;
@@ -200,10 +200,10 @@ var ShapePropertyFactory = (function () {
     var i,
       len = this.keyframes[0].s[0].i.length;
     var jLen = this.keyframes[0].s[0].i[0].length;
-    this.v = shape_pool.newElement();
+    this.v = shapePool.newElement();
     this.v.setPathData(this.keyframes[0].s[0].c, len);
-    this.pv = shape_pool.clone(this.v);
-    this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+    this.pv = shapePool.clone(this.v);
+    this.localShapeCollection = shapeCollectionPool.newShapeCollection();
     this.paths = this.localShapeCollection;
     this.paths.addShape(this.v);
     this.lastFrame = initFrame;
@@ -226,9 +226,9 @@ var ShapePropertyFactory = (function () {
                 o: createSizedArray(4),
                 c: true
             }; */
-      this.v = shape_pool.newElement();
+      this.v = shapePool.newElement();
       this.v.setPathData(true, 4);
-      this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+      this.localShapeCollection = shapeCollectionPool.newShapeCollection();
       this.paths = this.localShapeCollection;
       this.localShapeCollection.addShape(this.v);
       this.d = data.d;
@@ -300,7 +300,7 @@ var ShapePropertyFactory = (function () {
 
   var StarShapeProperty = (function () {
     function StarShapePropertyFactory(elem, data) {
-      this.v = shape_pool.newElement();
+      this.v = shapePool.newElement();
       this.v.setPathData(true, 0);
       this.elem = elem;
       this.comp = elem.comp;
@@ -320,7 +320,7 @@ var ShapePropertyFactory = (function () {
       this.r = PropertyFactory.getProp(elem, data.r, 0, degToRads, this);
       this.or = PropertyFactory.getProp(elem, data.or, 0, 0, this);
       this.os = PropertyFactory.getProp(elem, data.os, 0, 0.01, this);
-      this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+      this.localShapeCollection = shapeCollectionPool.newShapeCollection();
       this.localShapeCollection.addShape(this.v);
       this.paths = this.localShapeCollection;
       if (this.dynamicProperties.length) {
@@ -417,9 +417,9 @@ var ShapePropertyFactory = (function () {
 
   var RectShapeProperty = (function () {
     function RectShapePropertyFactory(elem, data) {
-      this.v = shape_pool.newElement();
+      this.v = shapePool.newElement();
       this.v.c = true;
-      this.localShapeCollection = shapeCollection_pool.newShapeCollection();
+      this.localShapeCollection = shapeCollectionPool.newShapeCollection();
       this.localShapeCollection.addShape(this.v);
       this.paths = this.localShapeCollection;
       this.elem = elem;
@@ -444,7 +444,7 @@ var ShapePropertyFactory = (function () {
           p1 = this.p.v[1],
           v0 = this.s.v[0] / 2,
           v1 = this.s.v[1] / 2;
-        var round = bm_min(v0, v1, this.r.v);
+        var round = bmMin(v0, v1, this.r.v);
         var cPoint = round * (1 - roundCorner);
         this.v._length = 0;
 

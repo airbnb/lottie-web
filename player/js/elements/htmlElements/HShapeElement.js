@@ -89,10 +89,10 @@ HShapeElement.prototype.calculateShapeBoundingBox = function (item, boundingBox)
 HShapeElement.prototype.checkBounds = function (vPoint, oPoint, nextIPoint, nextVPoint, boundingBox) {
   this.getBoundsOfCurve(vPoint, oPoint, nextIPoint, nextVPoint);
   var bounds = this.shapeBoundingBox;
-  boundingBox.x = bm_min(bounds.left, boundingBox.x);
-  boundingBox.xMax = bm_max(bounds.right, boundingBox.xMax);
-  boundingBox.y = bm_min(bounds.top, boundingBox.y);
-  boundingBox.yMax = bm_max(bounds.bottom, boundingBox.yMax);
+  boundingBox.x = bmMin(bounds.left, boundingBox.x);
+  boundingBox.xMax = bmMax(bounds.right, boundingBox.xMax);
+  boundingBox.y = bmMin(bounds.top, boundingBox.y);
+  boundingBox.yMax = bmMax(bounds.bottom, boundingBox.yMax);
 };
 
 HShapeElement.prototype.shapeBoundingBox = {
@@ -135,25 +135,25 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
       b2ac = b * b - 4 * c * a;
 
       if (b2ac >= 0) {
-        t1 = (-b + bm_sqrt(b2ac)) / (2 * a);
+        t1 = (-b + bmSqrt(b2ac)) / (2 * a);
         if (t1 > 0 && t1 < 1) bounds[i].push(this.calculateF(t1, p0, p1, p2, p3, i));
-        t2 = (-b - bm_sqrt(b2ac)) / (2 * a);
+        t2 = (-b - bmSqrt(b2ac)) / (2 * a);
         if (t2 > 0 && t2 < 1) bounds[i].push(this.calculateF(t2, p0, p1, p2, p3, i));
       }
     }
   }
 
-  this.shapeBoundingBox.left = bm_min.apply(null, bounds[0]);
-  this.shapeBoundingBox.top = bm_min.apply(null, bounds[1]);
-  this.shapeBoundingBox.right = bm_max.apply(null, bounds[0]);
-  this.shapeBoundingBox.bottom = bm_max.apply(null, bounds[1]);
+  this.shapeBoundingBox.left = bmMin.apply(null, bounds[0]);
+  this.shapeBoundingBox.top = bmMin.apply(null, bounds[1]);
+  this.shapeBoundingBox.right = bmMax.apply(null, bounds[0]);
+  this.shapeBoundingBox.bottom = bmMax.apply(null, bounds[1]);
 };
 
 HShapeElement.prototype.calculateF = function (t, p0, p1, p2, p3, i) {
-  return bm_pow(1 - t, 3) * p0[i]
-        + 3 * bm_pow(1 - t, 2) * t * p1[i]
-        + 3 * (1 - t) * bm_pow(t, 2) * p2[i]
-        + bm_pow(t, 3) * p3[i];
+  return bmPow(1 - t, 3) * p0[i]
+        + 3 * bmPow(1 - t, 2) * t * p1[i]
+        + 3 * (1 - t) * bmPow(t, 2) * p2[i]
+        + bmPow(t, 3) * p3[i];
 };
 
 HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox) {

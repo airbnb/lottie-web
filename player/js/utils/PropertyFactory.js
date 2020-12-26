@@ -1,6 +1,6 @@
 var PropertyFactory = (function () {
   var initFrame = initialDefaultFrame;
-  var math_abs = Math.abs;
+  var mathAbs = Math.abs;
 
   function interpolateValue(frameNum, caching) {
     var offsetTime = this.offsetTime;
@@ -268,7 +268,7 @@ var PropertyFactory = (function () {
     var multipliedValue;
     if (this.propType === 'unidimensional') {
       multipliedValue = val * this.mult;
-      if (math_abs(this.v - multipliedValue) > 0.00001) {
+      if (mathAbs(this.v - multipliedValue) > 0.00001) {
         this.v = multipliedValue;
         this._mdf = true;
       }
@@ -277,7 +277,7 @@ var PropertyFactory = (function () {
         len = this.v.length;
       while (i < len) {
         multipliedValue = val[i] * this.mult;
-        if (math_abs(this.v[i] - multipliedValue) > 0.00001) {
+        if (mathAbs(this.v[i] - multipliedValue) > 0.00001) {
           this.v[i] = multipliedValue;
           this._mdf = true;
         }

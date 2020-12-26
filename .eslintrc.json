@@ -43,7 +43,6 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "camelcase": "off",
         "eqeqeq": "off"
     }
 }

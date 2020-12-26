@@ -17,8 +17,8 @@ PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
   }
   centerPoint[0] /= pathLength;
   centerPoint[1] /= pathLength;
-  var cloned_path = shape_pool.newElement();
-  cloned_path.c = path.c;
+  var clonedPath = shapePool.newElement();
+  clonedPath.c = path.c;
   var vX,
     vY,
     oX,
@@ -32,9 +32,9 @@ PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
     oY = path.o[i][1] + (centerPoint[1] - path.o[i][1]) * -percent;
     iX = path.i[i][0] + (centerPoint[0] - path.i[i][0]) * -percent;
     iY = path.i[i][1] + (centerPoint[1] - path.i[i][1]) * -percent;
-    cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, i);
+    clonedPath.setTripleAt(vX, vY, oX, oY, iX, iY, i);
   }
-  return cloned_path;
+  return clonedPath;
 };
 
 PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {

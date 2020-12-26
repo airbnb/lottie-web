@@ -16,7 +16,7 @@ ShapeCollection.prototype.addShape = function (shapeData) {
 ShapeCollection.prototype.releaseShapes = function () {
   var i;
   for (i = 0; i < this._length; i += 1) {
-    shape_pool.release(this.shapes[i]);
+    shapePool.release(this.shapes[i]);
   }
   this._length = 0;
 };

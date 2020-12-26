@@ -1,6 +1,6 @@
-var point_pool = (function () {
+var pointPool = (function () {
   function create() {
     return createTypedArray('float32', 2);
   }
-  return pool_factory(8, create);
+  return poolFactory(8, create);
 }());

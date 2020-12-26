@@ -311,7 +311,7 @@
     // For now this caching object is created only when needed instead of creating it when the shape is initialized.
     if (!this._cachingAtTime) {
       this._cachingAtTime = {
-        shapeValue: shape_pool.clone(this.pv),
+        shapeValue: shapePool.clone(this.pv),
         lastIndex: 0,
         lastTime: initialDefaultFrame,
       };

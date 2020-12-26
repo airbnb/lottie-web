@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 var ExpressionManager = (function () {
   'use strict';
   var ob = {};
@@ -349,7 +351,7 @@ var ExpressionManager = (function () {
   function createPath(points, inTangents, outTangents, closed) {
     var i,
       len = points.length;
-    var path = shape_pool.newElement();
+    var path = shapePool.newElement();
     path.setPathData(!!closed, len);
     var arrPlaceholder = [0, 0],
       inVertexPoint,

@@ -35,7 +35,7 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   if (data.ty == 'fl' || data.ty == 'st') {
     elementData.c = PropertyFactory.getProp(this, data.c, 1, 255, this);
     if (!elementData.c.k) {
-      styleElem.co = 'rgb(' + bm_floor(elementData.c.v[0]) + ',' + bm_floor(elementData.c.v[1]) + ',' + bm_floor(elementData.c.v[2]) + ')';
+      styleElem.co = 'rgb(' + bmFloor(elementData.c.v[0]) + ',' + bmFloor(elementData.c.v[1]) + ',' + bmFloor(elementData.c.v[2]) + ')';
     }
   } else if (data.ty === 'gf' || data.ty === 'gs') {
     elementData.s = PropertyFactory.getProp(this, data.s, 1, null, this);
@@ -410,9 +410,9 @@ CVShapeElement.prototype.renderFill = function (styleData, itemData, groupTransf
 
   if (itemData.c._mdf || this._isFirstFrame) {
     styleElem.co = 'rgb('
-        + bm_floor(itemData.c.v[0]) + ','
-        + bm_floor(itemData.c.v[1]) + ','
-        + bm_floor(itemData.c.v[2]) + ')';
+        + bmFloor(itemData.c.v[0]) + ','
+        + bmFloor(itemData.c.v[1]) + ','
+        + bmFloor(itemData.c.v[2]) + ')';
   }
   if (itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame) {
     styleElem.coOp = itemData.o.v * groupTransform.opacity;
@@ -468,7 +468,7 @@ CVShapeElement.prototype.renderStroke = function (styleData, itemData, groupTran
     styleElem.do = d.dashoffset[0];
   }
   if (itemData.c._mdf || this._isFirstFrame) {
-    styleElem.co = 'rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')';
+    styleElem.co = 'rgb(' + bmFloor(itemData.c.v[0]) + ',' + bmFloor(itemData.c.v[1]) + ',' + bmFloor(itemData.c.v[2]) + ')';
   }
   if (itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame) {
     styleElem.coOp = itemData.o.v * groupTransform.opacity;

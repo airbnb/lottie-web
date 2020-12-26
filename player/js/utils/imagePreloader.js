@@ -18,7 +18,7 @@ var ImagePreloader = (function () {
     }
   }
 
-  function getAssetsPath(assetData, assetsPath, original_path) {
+  function getAssetsPath(assetData, assetsPath, originalPath) {
     var path = '';
     if (assetData.e) {
       path = assetData.p;
@@ -29,7 +29,7 @@ var ImagePreloader = (function () {
       }
       path = assetsPath + imagePath;
     } else {
-      path = original_path;
+      path = originalPath;
       path += assetData.u ? assetData.u : '';
       path += assetData.p;
     }

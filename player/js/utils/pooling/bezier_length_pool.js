@@ -1,4 +1,4 @@
-var bezier_length_pool = (function () {
+var bezierLengthPool = (function () {
   function create() {
     return {
       addedLength: 0,
@@ -6,5 +6,5 @@ var bezier_length_pool = (function () {
       lengths: createTypedArray('float32', defaultCurveSegments),
     };
   }
-  return pool_factory(8, create);
+  return poolFactory(8, create);
 }());

@@ -104,7 +104,7 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
   if (this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
     if (forceRender || this.filterManager.effectElements[3].p._mdf) {
       var color = this.filterManager.effectElements[3].p.v;
-      this.pathMasker.setAttribute('stroke', 'rgb(' + bm_floor(color[0] * 255) + ',' + bm_floor(color[1] * 255) + ',' + bm_floor(color[2] * 255) + ')');
+      this.pathMasker.setAttribute('stroke', 'rgb(' + bmFloor(color[0] * 255) + ',' + bmFloor(color[1] * 255) + ',' + bmFloor(color[2] * 255) + ')');
     }
   }
 };

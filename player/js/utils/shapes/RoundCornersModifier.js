@@ -7,8 +7,8 @@ RoundCornersModifier.prototype.initModifierProperties = function (elem, data) {
 };
 
 RoundCornersModifier.prototype.processPath = function (path, round) {
-  var cloned_path = shape_pool.newElement();
-  cloned_path.c = path.c;
+  var clonedPath = shapePool.newElement();
+  clonedPath.c = path.c;
   var i,
     len = path._length;
   var currentV,
@@ -33,10 +33,10 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
     currentI = path.i[i];
     if (currentV[0] === currentO[0] && currentV[1] === currentO[1] && currentV[0] === currentI[0] && currentV[1] === currentI[1]) {
       if ((i === 0 || i === len - 1) && !path.c) {
-        cloned_path.setTripleAt(currentV[0], currentV[1], currentO[0], currentO[1], currentI[0], currentI[1], index);
-        /* cloned_path.v[index] = currentV;
-                cloned_path.o[index] = currentO;
-                cloned_path.i[index] = currentI; */
+        clonedPath.setTripleAt(currentV[0], currentV[1], currentO[0], currentO[1], currentI[0], currentI[1], index);
+        /* clonedPath.v[index] = currentV;
+                clonedPath.o[index] = currentO;
+                clonedPath.i[index] = currentI; */
         index += 1;
       } else {
         if (i === 0) {
@@ -52,7 +52,7 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
         vY = iY;
         oX = vX - (vX - currentV[0]) * roundCorner;
         oY = vY - (vY - currentV[1]) * roundCorner;
-        cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, index);
+        clonedPath.setTripleAt(vX, vY, oX, oY, iX, iY, index);
         index += 1;
 
         if (i === len - 1) {
@@ -68,15 +68,15 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
         vY = oY;
         iX = vX - (vX - currentV[0]) * roundCorner;
         iY = vY - (vY - currentV[1]) * roundCorner;
-        cloned_path.setTripleAt(vX, vY, oX, oY, iX, iY, index);
+        clonedPath.setTripleAt(vX, vY, oX, oY, iX, iY, index);
         index += 1;
       }
     } else {
-      cloned_path.setTripleAt(path.v[i][0], path.v[i][1], path.o[i][0], path.o[i][1], path.i[i][0], path.i[i][1], index);
+      clonedPath.setTripleAt(path.v[i][0], path.v[i][1], path.o[i][0], path.o[i][1], path.i[i][0], path.i[i][1], index);
       index += 1;
     }
   }
-  return cloned_path;
+  return clonedPath;
 };
 
 RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {

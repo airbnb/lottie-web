@@ -2,15 +2,12 @@ var subframeEnabled = true;
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
-var bm_rounder = Math.round;
-var bm_rnd;
-var bm_pow = Math.pow;
-var bm_sqrt = Math.sqrt;
-var bm_abs = Math.abs;
-var bm_floor = Math.floor;
-var bm_max = Math.max;
-var bm_min = Math.min;
-var blitter = 10;
+var bmRnd;
+var bmPow = Math.pow;
+var bmSqrt = Math.sqrt;
+var bmFloor = Math.floor;
+var bmMax = Math.max;
+var bmMin = Math.min;
 
 var BMMath = {};
 (function () {
@@ -44,9 +41,9 @@ var roundCorner = 0.5519;
 
 function roundValues(flag) {
   if (flag) {
-    bm_rnd = Math.round;
+    bmRnd = Math.round;
   } else {
-    bm_rnd = function (val) {
+    bmRnd = function (val) {
       return val;
     };
   }

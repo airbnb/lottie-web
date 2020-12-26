@@ -1,4 +1,4 @@
-var shapeCollection_pool = (function () {
+var shapeCollectionPool = (function () {
   var ob = {
     newShapeCollection: newShapeCollection,
     release: release,
@@ -23,7 +23,7 @@ var shapeCollection_pool = (function () {
     var i,
       len = shapeCollection._length;
     for (i = 0; i < len; i += 1) {
-      shape_pool.release(shapeCollection.shapes[i]);
+      shapePool.release(shapeCollection.shapes[i]);
     }
     shapeCollection._length = 0;
 

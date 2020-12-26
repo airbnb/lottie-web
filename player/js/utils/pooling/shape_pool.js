@@ -1,4 +1,4 @@
-var shape_pool = (function () {
+var shapePool = (function () {
   function create() {
     return new ShapePath();
   }
@@ -7,9 +7,9 @@ var shape_pool = (function () {
     var len = shapePath._length,
       i;
     for (i = 0; i < len; i += 1) {
-      point_pool.release(shapePath.v[i]);
-      point_pool.release(shapePath.i[i]);
-      point_pool.release(shapePath.o[i]);
+      pointPool.release(shapePath.v[i]);
+      pointPool.release(shapePath.i[i]);
+      pointPool.release(shapePath.o[i]);
       shapePath.v[i] = null;
       shapePath.i[i] = null;
       shapePath.o[i] = null;
@@ -32,7 +32,7 @@ var shape_pool = (function () {
     return cloned;
   }
 
-  var factory = pool_factory(4, create, release);
+  var factory = poolFactory(4, create, release);
   factory.clone = clone;
 
   return factory;

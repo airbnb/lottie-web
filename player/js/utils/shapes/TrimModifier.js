@@ -70,7 +70,7 @@ TrimModifier.prototype.releasePathsData = function (pathsData) {
   var i,
     len = pathsData.length;
   for (i = 0; i < len; i += 1) {
-    segments_length_pool.release(pathsData[i]);
+    segmentsLengthPool.release(pathsData[i]);
   }
   pathsData.length = 0;
   return pathsData;
@@ -273,7 +273,7 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
   var initPos;
   var newShape = true;
   if (!shapePath) {
-    shapePath = shape_pool.newElement();
+    shapePath = shapePool.newElement();
     segmentCount = 0;
     initPos = 0;
   } else {
@@ -336,7 +336,7 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
       break;
     }
     if (i < len - 1) {
-      shapePath = shape_pool.newElement();
+      shapePath = shapePool.newElement();
       newShape = true;
       shapes.push(shapePath);
       segmentCount = 0;

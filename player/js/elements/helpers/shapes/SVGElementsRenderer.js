@@ -99,7 +99,7 @@ var SVGElementsRenderer = (function () {
     var styleElem = itemData.style;
 
     if (itemData.c._mdf || isFirstFrame) {
-      styleElem.pElem.setAttribute('fill', 'rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
+      styleElem.pElem.setAttribute('fill', 'rgb(' + bmFloor(itemData.c.v[0]) + ',' + bmFloor(itemData.c.v[1]) + ',' + bmFloor(itemData.c.v[2]) + ')');
     }
     if (itemData.o._mdf || isFirstFrame) {
       styleElem.pElem.setAttribute('fill-opacity', itemData.o.v);
@@ -213,7 +213,7 @@ var SVGElementsRenderer = (function () {
       styleElem.pElem.setAttribute('stroke-dashoffset', d.dashoffset[0]);
     }
     if (itemData.c && (itemData.c._mdf || isFirstFrame)) {
-      styleElem.pElem.setAttribute('stroke', 'rgb(' + bm_floor(itemData.c.v[0]) + ',' + bm_floor(itemData.c.v[1]) + ',' + bm_floor(itemData.c.v[2]) + ')');
+      styleElem.pElem.setAttribute('stroke', 'rgb(' + bmFloor(itemData.c.v[0]) + ',' + bmFloor(itemData.c.v[1]) + ',' + bmFloor(itemData.c.v[2]) + ')');
     }
     if (itemData.o._mdf || isFirstFrame) {
       styleElem.pElem.setAttribute('stroke-opacity', itemData.o.v);
