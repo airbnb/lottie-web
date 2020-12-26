@@ -39,7 +39,6 @@
         "no-shadow": "off",
         "no-restricted-globals": "off",
         "default-case": "off",
-        "curly": "off",
         "nonblock-statement-body-position": "off",
         "no-else-return": "off",
         "no-unused-expressions": "off",

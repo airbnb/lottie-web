@@ -107,8 +107,7 @@ var BezierFactory = (function () {
         mX2 = this._p[2],
         mY2 = this._p[3];
       this._precomputed = true;
-      if (mX1 !== mY1 || mX2 !== mY2)
-        this._calcSampleValues();
+      if (mX1 !== mY1 || mX2 !== mY2) { this._calcSampleValues(); }
     },
 
     _calcSampleValues: function () {
