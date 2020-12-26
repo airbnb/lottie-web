@@ -49,7 +49,6 @@
         "no-return-assign": "off",
         "no-sequences": "off",
         "no-void": "off",
-        "new-parens": "off",
         "no-redeclare": "off",
         "prefer-arrow-callback": "off",
         "no-console": "off",
