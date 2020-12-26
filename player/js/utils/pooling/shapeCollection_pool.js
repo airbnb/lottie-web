@@ -28,7 +28,7 @@ var shapeCollection_pool = (function () {
 
     if (_length === _maxLength) {
       pool = pooling.double(pool);
-      _maxLength = _maxLength * 2;
+      _maxLength *= 2;
     }
     pool[_length] = shapeCollection;
     _length += 1;

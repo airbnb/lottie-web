@@ -71,7 +71,6 @@
         "no-new-wrappers": "off",
         "camelcase": "off",
         "no-useless-return": "off",
-        "operator-assignment": "off",
         "no-lonely-if": "off",
         "newline-per-chained-call": "off",
         "no-useless-concat": "off",

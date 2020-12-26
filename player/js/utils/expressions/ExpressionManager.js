@@ -47,7 +47,7 @@ var ExpressionManager = (function () {
     }
     if ($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
       a = a.slice(0);
-      a[0] = a[0] + b;
+      a[0] += b;
       return a;
     }
     if (isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {
@@ -86,7 +86,7 @@ var ExpressionManager = (function () {
     }
     if ($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
       a = a.slice(0);
-      a[0] = a[0] - b;
+      a[0] -= b;
       return a;
     }
     if (isNumerable(tOfA, a) && $bm_isInstanceOfArray(b)) {

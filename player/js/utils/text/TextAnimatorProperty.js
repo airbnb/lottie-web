@@ -406,9 +406,9 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         if (documentData.strokeColorAnim && animatorProps.sc.propType) {
           for (k = 0; k < 3; k += 1) {
             if (mult.length) {
-              sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k]) * mult[0];
+              sc[k] += (animatorProps.sc.v[k] - sc[k]) * mult[0];
             } else {
-              sc[k] = sc[k] + (animatorProps.sc.v[k] - sc[k]) * mult;
+              sc[k] += (animatorProps.sc.v[k] - sc[k]) * mult;
             }
           }
         }
@@ -416,9 +416,9 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           if (animatorProps.fc.propType) {
             for (k = 0; k < 3; k += 1) {
               if (mult.length) {
-                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k]) * mult[0];
+                fc[k] += (animatorProps.fc.v[k] - fc[k]) * mult[0];
               } else {
-                fc[k] = fc[k] + (animatorProps.fc.v[k] - fc[k]) * mult;
+                fc[k] += (animatorProps.fc.v[k] - fc[k]) * mult;
               }
             }
           }

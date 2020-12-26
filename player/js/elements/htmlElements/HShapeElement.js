@@ -112,9 +112,9 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
     a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
     c = 3 * p1[i] - 3 * p0[i];
 
-    b = b | 0;
-    a = a | 0;
-    c = c | 0;
+    b |= 0;
+    a |= 0;
+    c |= 0;
 
     if (a === 0) {
       if (b === 0) {

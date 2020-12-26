@@ -153,7 +153,7 @@ var Matrix = (function () {
       _p[12] = _p[12] * a2 + _p[15] * m2;
       _p[13] = _p[13] * f2 + _p[15] * n2;
       _p[14] = _p[14] * k2 + _p[15] * o2;
-      _p[15] = _p[15] * p2;
+      _p[15] *= p2;
       // }
       this._identityCalculated = false;
       return this;
