@@ -324,7 +324,7 @@ var ShapePropertyFactory = (function () {
       },
       convertStarToPath: function () {
         var numPts = Math.floor(this.pt.v) * 2;
-        var angle = Math.PI * 2 / numPts;
+        var angle = (Math.PI * 2) / numPts;
         /* this.v.v.length = numPts;
                 this.v.i.length = numPts;
                 this.v.o.length = numPts; */
@@ -333,8 +333,8 @@ var ShapePropertyFactory = (function () {
         var shortRad = this.ir.v;
         var longRound = this.os.v;
         var shortRound = this.is.v;
-        var longPerimSegment = 2 * Math.PI * longRad / (numPts * 2);
-        var shortPerimSegment = 2 * Math.PI * shortRad / (numPts * 2);
+        var longPerimSegment = (2 * Math.PI * longRad) / (numPts * 2);
+        var shortPerimSegment = (2 * Math.PI * shortRad) / (numPts * 2);
         var i, rad, roundness, perimSegment, currentAng = -Math.PI / 2;
         currentAng += this.r.v;
         var dir = this.data.d === 3 ? -1 : 1;
@@ -361,11 +361,11 @@ var ShapePropertyFactory = (function () {
       },
       convertPolygonToPath: function () {
         var numPts = Math.floor(this.pt.v);
-        var angle = Math.PI * 2 / numPts;
+        var angle = (Math.PI * 2) / numPts;
         var rad = this.or.v;
         var roundness = this.os.v;
-        var perimSegment = 2 * Math.PI * rad / (numPts * 4);
-        var i, currentAng = -Math.PI / 2;
+        var perimSegment = (2 * Math.PI * rad) / (numPts * 4);
+        var i, currentAng = -Math.PI * .5;
         var dir = this.data.d === 3 ? -1 : 1;
         currentAng += this.r.v;
         this.v._length = 0;

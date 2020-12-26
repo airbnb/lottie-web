@@ -98,7 +98,7 @@ var TextSelectorProp = (function () {
           mult = 0;
         } else {
           ind = min(max(0, ind + 0.5 - s), e - s);
-          mult = (1 + (Math.cos((Math.PI + Math.PI * 2 * (ind) / (e - s))))) / 2;
+          mult = (1 + (Math.cos((Math.PI + Math.PI * 2 * (ind) / (e - s))))) / 2; // eslint-disable-line
         }
         mult = easer(mult);
       } else {

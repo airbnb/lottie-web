@@ -63,7 +63,7 @@ SVGTextElement.prototype.buildNewText = function () {
   var matrixHelper = this.mHelper;
   var shapes, shapeStr = '', singleShape = this.data.singleShape;
   var xPos = 0, yPos = 0, firstLine = true;
-  var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
+  var trackingOffset = documentData.tr * .001 * documentData.finalSize;
   if (singleShape && !usesGlyphs && !documentData.sz) {
     var tElement = this.textContainer;
     var justify = 'start';
@@ -124,7 +124,7 @@ SVGTextElement.prototype.buildNewText = function () {
       }
       if (usesGlyphs) {
         charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        shapeData = charData && charData.data || {};
+        shapeData = (charData && charData.data) || {};
         shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
         if (!singleShape) {
           tSpan.setAttribute('d', this.createPathShape(matrixHelper, shapes));

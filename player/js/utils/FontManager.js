@@ -237,7 +237,7 @@ var FontManager = (function () {
       }
       i += 1;
     }
-    if ((typeof char === 'string' && char.charCodeAt(0) !== 13 || !char)
+    if (((typeof char === 'string' && char.charCodeAt(0) !== 13) || !char)
             && console
             && console.warn
             && !this._warned

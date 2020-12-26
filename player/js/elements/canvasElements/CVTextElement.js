@@ -48,12 +48,12 @@ CVTextElement.prototype.buildNewText = function () {
   len = documentData.finalText.length;
   // this.tHelper.font = this.values.fValue;
   var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
-  var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
+  var trackingOffset = documentData.tr * .001 * documentData.finalSize;
   var xPos = 0, yPos = 0, firstLine = true;
   var cnt = 0;
   for (i = 0; i < len; i += 1) {
     charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-    shapeData = charData && charData.data || {};
+    shapeData = (charData && charData.data) || {};
     matrixHelper.reset();
     if (singleShape && letters[i].n) {
       xPos = -trackingOffset;

@@ -7,10 +7,10 @@ function HybridRenderer(animationItem, config) {
     imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
     hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
     filterSize: {
-      width: config && config.filterSize && config.filterSize.width || '400%',
-      height: config && config.filterSize && config.filterSize.height || '400%',
-      x: config && config.filterSize && config.filterSize.x || '-100%',
-      y: config && config.filterSize && config.filterSize.y || '-100%',
+      width: (config && config.filterSize && config.filterSize.width) || '400%',
+      height: (config && config.filterSize && config.filterSize.height) || '400%',
+      x: (config && config.filterSize && config.filterSize.x) || '-100%',
+      y: (config && config.filterSize && config.filterSize.y) || '-100%',
     },
   };
   this.globalData = {

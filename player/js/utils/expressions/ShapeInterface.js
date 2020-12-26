@@ -219,10 +219,10 @@ var ShapeExpressionInterface = (function () {
       if (shape.s.ix === value || value === 'Scale') {
         return interfaceFunction.scale;
       }
-      if (shape.sk && shape.sk.ix === value || value === 'Skew') {
+      if ((shape.sk && shape.sk.ix === value) || value === 'Skew') {
         return interfaceFunction.skew;
       }
-      if (shape.sa && shape.sa.ix === value || value === 'Skew Axis') {
+      if ((shape.sa && shape.sa.ix === value) || value === 'Skew Axis') {
         return interfaceFunction.skewAxis;
       }
     }

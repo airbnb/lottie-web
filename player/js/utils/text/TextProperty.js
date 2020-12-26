@@ -213,7 +213,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   documentData.finalText = this.buildFinalText(documentData.t);
   len = documentData.finalText.length;
   documentData.finalLineHeight = documentData.lh;
-  var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
+  var trackingOffset = (documentData.tr / 1000) * documentData.finalSize;
   var charCode;
   if (documentData.sz) {
     var flag = true;
@@ -225,7 +225,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
       currentHeight = 0;
       lineWidth = 0;
       len = finalText.length;
-      trackingOffset = documentData.tr / 1000 * documentData.finalSize;
+      trackingOffset = (documentData.tr / 1000) * documentData.finalSize;
       var lastSpaceIndex = -1;
       for (i = 0; i < len; i += 1) {
         charCode = finalText[i].charCodeAt(0);
@@ -239,7 +239,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
         }
         if (fontManager.chars) {
           charData = fontManager.getCharData(finalText[i], fontData.fStyle, fontData.fFamily);
-          cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
+          cLength = newLineFlag ? 0 : (charData.w * documentData.finalSize) / 100;
         } else {
           // tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
           cLength = fontManager.measureText(finalText[i], documentData.f, documentData.finalSize);
@@ -260,10 +260,10 @@ TextProperty.prototype.completeTextData = function (documentData) {
           lineWidth += trackingOffset;
         }
       }
-      currentHeight += fontData.ascent * documentData.finalSize / 100;
+      currentHeight += (fontData.ascent * documentData.finalSize) / 100;
       if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < currentHeight) {
         documentData.finalSize -= 1;
-        documentData.finalLineHeight = documentData.finalSize * documentData.lh / documentData.s;
+        documentData.finalLineHeight = (documentData.finalSize * documentData.lh) / documentData.s;
       } else {
         documentData.finalText = finalText;
         len = documentData.finalText.length;
@@ -293,7 +293,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
     if (fontManager.chars) {
       charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
-      cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
+      cLength = newLineFlag ? 0 : (charData.w * documentData.finalSize) / 100;
     } else {
       // var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
       // tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
@@ -406,7 +406,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
   }
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
-  documentData.ascent = fontData.ascent * documentData.finalSize / 100;
+  documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
 };
 
 TextProperty.prototype.updateDocumentData = function (newData, index) {

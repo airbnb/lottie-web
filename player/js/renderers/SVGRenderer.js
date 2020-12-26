@@ -39,10 +39,10 @@ function SVGRenderer(animationItem, config) {
     id: (config && config.id) || '',
     focusable: config && config.focusable,
     filterSize: {
-      width: config && config.filterSize && config.filterSize.width || '100%',
-      height: config && config.filterSize && config.filterSize.height || '100%',
-      x: config && config.filterSize && config.filterSize.x || '0%',
-      y: config && config.filterSize && config.filterSize.y || '0%',
+      width: (config && config.filterSize && config.filterSize.width) || '100%',
+      height: (config && config.filterSize && config.filterSize.height) || '100%',
+      x: (config && config.filterSize && config.filterSize.x) || '0%',
+      y: (config && config.filterSize && config.filterSize.y) || '0%',
     },
   };
 
