@@ -137,7 +137,7 @@ var ShapePropertyFactory = (function () {
     this.setVValue(finalValue);
     this.lock = false;
     this.frameId = this.elem.globalData.frameId;
-  };
+  }
 
   function ShapeProperty(elem, data, type) {
     this.propType = 'shape';
@@ -223,7 +223,7 @@ var ShapePropertyFactory = (function () {
         this.k = false;
         this.convertEllToPath();
       }
-    };
+    }
 
     EllShapeProperty.prototype = {
       reset: resetShape,
@@ -305,7 +305,7 @@ var ShapePropertyFactory = (function () {
         this.k = false;
         this.convertToPath();
       }
-    };
+    }
 
     StarShapeProperty.prototype = {
       reset: resetShape,
@@ -407,7 +407,7 @@ var ShapePropertyFactory = (function () {
         this.k = false;
         this.convertRectToPath();
       }
-    };
+    }
 
     RectShapeProperty.prototype = {
       convertRectToPath: function () {

@@ -48,4 +48,4 @@ function ExpressionValue(elementProp, mult, type) {
     },
   });
   return expressionValue;
-};
+}

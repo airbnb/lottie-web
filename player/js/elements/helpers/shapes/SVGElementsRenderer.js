@@ -94,7 +94,7 @@ var SVGElementsRenderer = (function () {
     if (itemData.o._mdf || isFirstFrame) {
       styleElem.pElem.setAttribute('fill-opacity', itemData.o.v);
     }
-  };
+  }
 
   function renderGradientStroke(styleData, itemData, isFirstFrame) {
     renderGradient(styleData, itemData, isFirstFrame);
@@ -184,7 +184,7 @@ var SVGElementsRenderer = (function () {
       }
       // gfill.setAttribute('fy','200');
     }
-  };
+  }
 
   function renderStroke(styleData, itemData, isFirstFrame) {
     var styleElem = itemData.style;
@@ -205,7 +205,7 @@ var SVGElementsRenderer = (function () {
         styleElem.msElem.setAttribute('stroke-width', itemData.w.v);
       }
     }
-  };
+  }
 
   return ob;
 }());

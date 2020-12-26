@@ -143,7 +143,7 @@ var ImagePreloader = (function () {
     this.loadedAssets = 0;
     this.imagesLoadedCb = null;
     this.images = [];
-  };
+  }
 
   ImagePreloader.prototype = {
     loadAssets: loadAssets,

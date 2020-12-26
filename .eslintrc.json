@@ -67,7 +67,6 @@
         "no-bitwise": "off",
         "no-multi-assign": "off",
         "no-prototype-builtins": "off",
-        "no-extra-semi": "off",
         "no-restricted-properties": "off",
         "no-new-wrappers": "off",
         "camelcase": "off",

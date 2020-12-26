@@ -1,4 +1,4 @@
-function DynamicPropertyContainer() {};
+function DynamicPropertyContainer() {}
 DynamicPropertyContainer.prototype = {
   addDynamicProperty: function (prop) {
     if (this.dynamicProperties.indexOf(prop) === -1) {
