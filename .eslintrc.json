@@ -46,7 +46,6 @@
         "no-redeclare": "off",
         "prefer-rest-params": "off",
         "no-floating-decimal": "off",
-        "object-curly-newline": "off",
         "radix": "off",
         "no-bitwise": "off",
         "no-multi-assign": "off",
