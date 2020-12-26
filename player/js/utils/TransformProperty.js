@@ -17,7 +17,9 @@ var TransformPropertyFactory = (function () {
     if (this.r) {
       mat.rotate(-this.r.v);
     } else {
-      mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+      mat.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2])
+        .rotateY(this.or.v[1])
+        .rotateX(this.or.v[0]);
     }
     if (this.data.p.s) {
       if (this.data.p.z) {
@@ -54,7 +56,9 @@ var TransformPropertyFactory = (function () {
       if (this.r && this.appliedTransformations < 4) {
         this.v.rotate(-this.r.v);
       } else if (!this.r && this.appliedTransformations < 4) {
-        this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+        this.v.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2])
+          .rotateY(this.or.v[1])
+          .rotateX(this.or.v[0]);
       }
       if (this.autoOriented) {
         var v1, v2, frameRate = this.elem.globalData.frameRate;
@@ -133,7 +137,9 @@ var TransformPropertyFactory = (function () {
         this.appliedTransformations = 4;
       }
     } else if (!this.rz.effectsSequence.length && !this.ry.effectsSequence.length && !this.rx.effectsSequence.length && !this.or.effectsSequence.length) {
-      this.pre.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2]).rotateY(this.or.v[1]).rotateX(this.or.v[0]);
+      this.pre.rotateZ(-this.rz.v).rotateY(this.ry.v).rotateX(this.rx.v).rotateZ(-this.or.v[2])
+        .rotateY(this.or.v[1])
+        .rotateX(this.or.v[0]);
       this.appliedTransformations = 4;
     }
   }
