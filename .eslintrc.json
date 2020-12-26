@@ -41,7 +41,6 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "no-sequences": "off",
         "no-void": "off",
         "no-redeclare": "off",
         "prefer-arrow-callback": "off",
