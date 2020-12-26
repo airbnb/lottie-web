@@ -33,7 +33,7 @@ extendPrototype([BaseRenderer], HybridRenderer);
 HybridRenderer.prototype.buildItem = SVGRenderer.prototype.buildItem;
 
 HybridRenderer.prototype.checkPendingElements = function () {
-  while(this.pendingElements.length) {
+  while (this.pendingElements.length) {
     var element = this.pendingElements.pop();
     element.checkParenting();
   }
@@ -41,30 +41,30 @@ HybridRenderer.prototype.checkPendingElements = function () {
 
 HybridRenderer.prototype.appendElementInPos = function (element, pos) {
   var newDOMElement = element.getBaseElement();
-  if(!newDOMElement) {
+  if (!newDOMElement) {
     return;
   }
   var layer = this.layers[pos];
-  if(!layer.ddd || !this.supports3d) {
-    if(this.threeDElements) {
+  if (!layer.ddd || !this.supports3d) {
+    if (this.threeDElements) {
       this.addTo3dContainer(newDOMElement, pos);
     } else {
       var i = 0;
       var nextDOMElement, nextLayer, tmpDOMElement;
-      while(i < pos) {
-        if(this.elements[i] && this.elements[i] !== true && this.elements[i].getBaseElement) {
+      while (i < pos) {
+        if (this.elements[i] && this.elements[i] !== true && this.elements[i].getBaseElement) {
           nextLayer = this.elements[i];
           tmpDOMElement = this.layers[i].ddd ? this.getThreeDContainerByPos(i) : nextLayer.getBaseElement();
           nextDOMElement = tmpDOMElement || nextDOMElement;
         }
         i += 1;
       }
-      if(nextDOMElement) {
-        if(!layer.ddd || !this.supports3d) {
+      if (nextDOMElement) {
+        if (!layer.ddd || !this.supports3d) {
           this.layerElement.insertBefore(newDOMElement, nextDOMElement);
         }
       } else {
-        if(!layer.ddd || !this.supports3d) {
+        if (!layer.ddd || !this.supports3d) {
           this.layerElement.appendChild(newDOMElement);
         }
       }
@@ -76,14 +76,14 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
 };
 
 HybridRenderer.prototype.createShape = function (data) {
-  if(!this.supports3d) {
+  if (!this.supports3d) {
     return new SVGShapeElement(data, this.globalData, this);
   }
   return new HShapeElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createText = function (data) {
-  if(!this.supports3d) {
+  if (!this.supports3d) {
     return new SVGTextElement(data, this.globalData, this);
   }
   return new HTextElement(data, this.globalData, this);
@@ -95,14 +95,14 @@ HybridRenderer.prototype.createCamera = function (data) {
 };
 
 HybridRenderer.prototype.createImage = function (data) {
-  if(!this.supports3d) {
+  if (!this.supports3d) {
     return new IImageElement(data, this.globalData, this);
   }
   return new HImageElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createComp = function (data) {
-  if(!this.supports3d) {
+  if (!this.supports3d) {
     return new SVGCompElement(data, this.globalData, this);
   }
   return new HCompElement(data, this.globalData, this);
@@ -110,7 +110,7 @@ HybridRenderer.prototype.createComp = function (data) {
 };
 
 HybridRenderer.prototype.createSolid = function (data) {
-  if(!this.supports3d) {
+  if (!this.supports3d) {
     return new ISolidElement(data, this.globalData, this);
   }
   return new HSolidElement(data, this.globalData, this);
@@ -120,8 +120,8 @@ HybridRenderer.prototype.createNull = SVGRenderer.prototype.createNull;
 
 HybridRenderer.prototype.getThreeDContainerByPos = function (pos) {
   var i = 0, len = this.threeDElements.length;
-  while(i < len) {
-    if(this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
+  while (i < len) {
+    if (this.threeDElements[i].startPos <= pos && this.threeDElements[i].endPos >= pos) {
       return this.threeDElements[i].perspectiveElem;
     }
     i += 1;
@@ -133,7 +133,7 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
   styleDiv(perspectiveElem);
   var container = createTag('div');
   styleDiv(container);
-  if(type === '3d') {
+  if (type === '3d') {
     perspectiveElem.style.width = this.globalData.compSize.w + 'px';
     perspectiveElem.style.height = this.globalData.compSize.h + 'px';
     perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = '50% 50%';
@@ -157,15 +157,15 @@ HybridRenderer.prototype.build3dContainers = function () {
   var i, len = this.layers.length;
   var lastThreeDContainerData;
   var currentContainer = '';
-  for(i = 0; i < len; i += 1) {
-    if(this.layers[i].ddd && this.layers[i].ty !== 3) {
-      if(currentContainer !== '3d') {
+  for (i = 0; i < len; i += 1) {
+    if (this.layers[i].ddd && this.layers[i].ty !== 3) {
+      if (currentContainer !== '3d') {
         currentContainer = '3d';
         lastThreeDContainerData = this.createThreeDContainer(i, '3d');
       }
       lastThreeDContainerData.endPos = Math.max(lastThreeDContainerData.endPos, i);
     } else {
-      if(currentContainer !== '2d') {
+      if (currentContainer !== '2d') {
         currentContainer = '2d';
         lastThreeDContainerData = this.createThreeDContainer(i, '2d');
       }
@@ -173,24 +173,24 @@ HybridRenderer.prototype.build3dContainers = function () {
     }
   }
   len = this.threeDElements.length;
-  for(i = len - 1; i >= 0; i--) {
+  for (i = len - 1; i >= 0; i--) {
     this.resizerElem.appendChild(this.threeDElements[i].perspectiveElem);
   }
 };
 
 HybridRenderer.prototype.addTo3dContainer = function (elem, pos) {
   var i = 0, len = this.threeDElements.length;
-  while(i < len) {
-    if(pos <= this.threeDElements[i].endPos) {
+  while (i < len) {
+    if (pos <= this.threeDElements[i].endPos) {
       var j = this.threeDElements[i].startPos;
       var nextElement;
-      while(j < pos) {
-        if(this.elements[j] && this.elements[j].getBaseElement) {
+      while (j < pos) {
+        if (this.elements[j] && this.elements[j].getBaseElement) {
           nextElement = this.elements[j].getBaseElement();
         }
         j += 1;
       }
-      if(nextElement) {
+      if (nextElement) {
         this.threeDElements[i].container.insertBefore(elem, nextElement);
       } else {
         this.threeDElements[i].container.appendChild(elem);
@@ -209,7 +209,7 @@ HybridRenderer.prototype.configAnimation = function (animData) {
   this.resizerElem = resizerElem;
   styleDiv(resizerElem);
   resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = 'flat';
-  if(this.renderConfig.className) {
+  if (this.renderConfig.className) {
     resizerElem.setAttribute('class', this.renderConfig.className);
   }
   wrapper.appendChild(resizerElem);
@@ -253,12 +253,12 @@ HybridRenderer.prototype.updateContainerSize = function () {
   var elementRel = elementWidth / elementHeight;
   var animationRel = this.globalData.compSize.w / this.globalData.compSize.h;
   var sx, sy, tx, ty;
-  if(animationRel > elementRel) {
+  if (animationRel > elementRel) {
     sx = elementWidth / (this.globalData.compSize.w);
     sy = elementWidth / (this.globalData.compSize.w);
     tx = 0;
     ty = ((elementHeight - this.globalData.compSize.h * (elementWidth / this.globalData.compSize.w)) / 2);
-  }else{
+  } else {
     sx = elementHeight / (this.globalData.compSize.h);
     sy = elementHeight / (this.globalData.compSize.h);
     tx = (elementWidth - this.globalData.compSize.w * (elementHeight / this.globalData.compSize.h)) / 2;
@@ -279,13 +279,13 @@ HybridRenderer.prototype.show = function () {
 
 HybridRenderer.prototype.initItems = function () {
   this.buildAllItems();
-  if(this.camera) {
+  if (this.camera) {
     this.camera.setup();
   } else {
     var cWidth = this.globalData.compSize.w;
     var cHeight = this.globalData.compSize.h;
     var i, len = this.threeDElements.length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       this.threeDElements[i].perspectiveElem.style.perspective = this.threeDElements[i].perspectiveElem.style.webkitPerspective = Math.sqrt(Math.pow(cWidth, 2) + Math.pow(cHeight, 2)) + 'px';
     }
   }
@@ -294,8 +294,8 @@ HybridRenderer.prototype.initItems = function () {
 HybridRenderer.prototype.searchExtraCompositions = function (assets) {
   var i, len = assets.length;
   var floatingContainer = createTag('div');
-  for(i = 0; i < len; i += 1) {
-    if(assets[i].xt) {
+  for (i = 0; i < len; i += 1) {
+    if (assets[i].xt) {
       var comp = this.createComp(assets[i], floatingContainer, this.globalData.comp, null);
       comp.initExpressions();
       this.globalData.projectInterface.registerComposition(comp);

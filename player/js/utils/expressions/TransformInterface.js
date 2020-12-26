@@ -1,7 +1,7 @@
 var TransformExpressionInterface = (function () {
   return function (transform) {
     function _thisFunction(name) {
-      switch(name) {
+      switch (name) {
         case 'scale':
         case 'Scale':
         case 'ADBE Scale':
@@ -59,7 +59,7 @@ var TransformExpressionInterface = (function () {
       get: ExpressionPropertyInterface(transform.s),
     });
 
-    if(transform.p) {
+    if (transform.p) {
       var _transformFactory = ExpressionPropertyInterface(transform.p);
     } else {
       var _px = ExpressionPropertyInterface(transform.px);
@@ -71,7 +71,7 @@ var TransformExpressionInterface = (function () {
     }
     Object.defineProperty(_thisFunction, 'position', {
       get: function () {
-        if(transform.p) {
+        if (transform.p) {
           return _transformFactory();
         } else {
           return [

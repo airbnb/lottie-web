@@ -35,7 +35,7 @@ var ExpressionPropertyInterface = (function () {
   }
 
   function UnidimensionalPropertyInterface(property) {
-    if(!property || !('pv' in property)) {
+    if (!property || !('pv' in property)) {
       property = defaultUnidimensionalValue;
     }
     var mult = 1 / property.mult;
@@ -49,7 +49,7 @@ var ExpressionPropertyInterface = (function () {
         property.getValue();
       }
       val = property.v * mult;
-      if(expressionValue.value !== val) {
+      if (expressionValue.value !== val) {
         expressionValue = new Number(val);
         expressionValue.value = val;
         completeProperty(expressionValue, property, 'unidimensional');
@@ -59,7 +59,7 @@ var ExpressionPropertyInterface = (function () {
   }
 
   function MultidimensionalPropertyInterface(property) {
-    if(!property || !('pv' in property)) {
+    if (!property || !('pv' in property)) {
       property = defaultMultidimensionalValue;
     }
     var mult = 1 / property.mult;
@@ -86,7 +86,7 @@ var ExpressionPropertyInterface = (function () {
   }
     
   return function (property) {
-    if(!property) {
+    if (!property) {
       return defaultGetter;
     } else if (property.propType === 'unidimensional') {
       return UnidimensionalPropertyInterface(property);

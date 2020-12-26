@@ -3,7 +3,7 @@ function EffectsManager(data, element) {
   this.effectElements = [];
   var i, len = effects.length;
   var effectItem;
-  for(i = 0; i < len; i++) {
+  for (i = 0; i < len; i++) {
     effectItem = new GroupEffect(effects[i], element);
     this.effectElements.push(effectItem);
   }
@@ -23,9 +23,9 @@ GroupEffect.prototype.init = function (data, element) {
   this.initDynamicPropertyContainer(element);
   var i, len = this.data.ef.length;
   var eff, effects = this.data.ef;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     eff = null;
-    switch(effects[i].ty) {
+    switch (effects[i].ty) {
       case 0:
         eff = new SliderEffect(effects[i], element, this);
         break;
@@ -56,7 +56,7 @@ GroupEffect.prototype.init = function (data, element) {
         eff = new NoValueEffect(effects[i], element, this);
         break;
     }
-    if(eff) {
+    if (eff) {
       this.effectElements.push(eff);
     }
   }

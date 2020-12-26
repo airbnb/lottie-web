@@ -1,11 +1,11 @@
 var assetLoader = (function () {
 
   function formatResponse(xhr) {
-    if(xhr.response && typeof xhr.response === 'object') {
+    if (xhr.response && typeof xhr.response === 'object') {
       return xhr.response;
-    } else if(xhr.response && typeof xhr.response === 'string') {
+    } else if (xhr.response && typeof xhr.response === 'string') {
       return JSON.parse(xhr.response);
-    } else if(xhr.responseText) {
+    } else if (xhr.responseText) {
       return JSON.parse(xhr.responseText);
     }
   }
@@ -22,15 +22,15 @@ var assetLoader = (function () {
     xhr.send();
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4) {
-        if(xhr.status == 200) {
+        if (xhr.status == 200) {
           response = formatResponse(xhr);
           callback(response);
-        }else{
-          try{
+        } else {
+          try {
             response = formatResponse(xhr);
             callback(response);
-          }catch(err) {
-            if(errorCallback) {
+          } catch (err) {
+            if (errorCallback) {
               errorCallback(err);
             }
           }

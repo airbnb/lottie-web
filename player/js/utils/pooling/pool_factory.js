@@ -12,7 +12,7 @@ var pool_factory = (function () {
 
     function newElement() {
       var element;
-      if(_length) {
+      if (_length) {
         _length -= 1;
         element = pool[_length];
       } else {
@@ -22,7 +22,7 @@ var pool_factory = (function () {
     }
 
     function release(element) {
-      if(_length === _maxLength) {
+      if (_length === _maxLength) {
         pool = pooling.double(pool);
         _maxLength = _maxLength * 2;
       }

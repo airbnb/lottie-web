@@ -22,7 +22,7 @@ CVImageElement.prototype.createContent = function () {
     var canvasRel = this.assetData.w / this.assetData.h;
     var widthCrop, heightCrop;
     var par = this.assetData.pr || this.globalData.renderConfig.imagePreserveAspectRatio;
-    if((imgRel > canvasRel && par === 'xMidYMid slice') || (imgRel < canvasRel && par !== 'xMidYMid slice')) {
+    if ((imgRel > canvasRel && par === 'xMidYMid slice') || (imgRel < canvasRel && par !== 'xMidYMid slice')) {
       heightCrop = imgH;
       widthCrop = heightCrop * canvasRel;
     } else {

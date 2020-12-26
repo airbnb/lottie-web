@@ -18,7 +18,7 @@ var PropertyFactory = (function () {
       keyData = this.keyframes[i];
       nextKeyData = this.keyframes[i + 1];
       if (i === len - 1 && frameNum >= nextKeyData.t - offsetTime) {
-        if(keyData.h) {
+        if (keyData.h) {
           keyData = nextKeyData;
         }
         iterationIndex = 0;
@@ -114,14 +114,14 @@ var PropertyFactory = (function () {
         }
                 
       } else {
-        for(i = 0; i < len; i += 1) {
+        for (i = 0; i < len; i += 1) {
           if (keyData.h !== 1) {
             if (frameNum >= nextKeyTime) {
               perc = 1;
-            } else if(frameNum < keyTime) {
+            } else if (frameNum < keyTime) {
               perc = 0;
             } else {
-              if(keyData.o.x.constructor === Array) {
+              if (keyData.o.x.constructor === Array) {
                 if (!keyData.__fnct) {
                   keyData.__fnct = [];
                 }
@@ -234,8 +234,8 @@ var PropertyFactory = (function () {
     var frameNum = this.comp.renderedFrame - this.offsetTime;
     var initTime = this.keyframes[0].t - this.offsetTime;
     var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
-    if(!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))) {
-      if(this._caching.lastFrame >= frameNum) {
+    if (!(frameNum === this._caching.lastFrame || (this._caching.lastFrame !== initFrame && ((this._caching.lastFrame >= endTime && frameNum >= endTime) || (this._caching.lastFrame < initTime && frameNum < initTime))))) {
+      if (this._caching.lastFrame >= frameNum) {
         this._caching._lastKeyframeIndex = -1;
         this._caching.lastIndex = 0;
       }
@@ -249,9 +249,9 @@ var PropertyFactory = (function () {
 
   function setVValue(val) {
     var multipliedValue;
-    if(this.propType === 'unidimensional') {
+    if (this.propType === 'unidimensional') {
       multipliedValue = val * this.mult;
-      if(math_abs(this.v - multipliedValue) > 0.00001) {
+      if (math_abs(this.v - multipliedValue) > 0.00001) {
         this.v = multipliedValue;
         this._mdf = true;
       }
@@ -272,7 +272,7 @@ var PropertyFactory = (function () {
     if (this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) {
       return;
     }
-    if(this.lock) {
+    if (this.lock) {
       this.setVValue(this.pv);
       return;
     }
@@ -281,7 +281,7 @@ var PropertyFactory = (function () {
     var multipliedValue;
     var i, len = this.effectsSequence.length;
     var finalValue = this.kf ? this.pv : this.data.k;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       finalValue = this.effectsSequence[i](finalValue);
     }
     this.setVValue(finalValue);
@@ -375,12 +375,12 @@ var PropertyFactory = (function () {
         e = data.k[i + 1].s;
         to = data.k[i].to;
         ti = data.k[i].ti;
-        if((s.length === 2 && !(s[0] === e[0] && s[1] === e[1]) && bez.pointOnLine2D(s[0], s[1], e[0], e[1], s[0] + to[0], s[1] + to[1]) && bez.pointOnLine2D(s[0], s[1], e[0], e[1], e[0] + ti[0], e[1] + ti[1])) || (s.length === 3 && !(s[0] === e[0] && s[1] === e[1] && s[2] === e[2]) && bez.pointOnLine3D(s[0], s[1], s[2], e[0], e[1], e[2], s[0] + to[0], s[1] + to[1], s[2] + to[2]) && bez.pointOnLine3D(s[0], s[1], s[2], e[0], e[1], e[2], e[0] + ti[0], e[1] + ti[1], e[2] + ti[2]))) {
+        if ((s.length === 2 && !(s[0] === e[0] && s[1] === e[1]) && bez.pointOnLine2D(s[0], s[1], e[0], e[1], s[0] + to[0], s[1] + to[1]) && bez.pointOnLine2D(s[0], s[1], e[0], e[1], e[0] + ti[0], e[1] + ti[1])) || (s.length === 3 && !(s[0] === e[0] && s[1] === e[1] && s[2] === e[2]) && bez.pointOnLine3D(s[0], s[1], s[2], e[0], e[1], e[2], s[0] + to[0], s[1] + to[1], s[2] + to[2]) && bez.pointOnLine3D(s[0], s[1], s[2], e[0], e[1], e[2], e[0] + ti[0], e[1] + ti[1], e[2] + ti[2]))) {
           data.k[i].to = null;
           data.k[i].ti = null;
         }
-        if(s[0] === e[0] && s[1] === e[1] && to[0] === 0 && to[1] === 0 && ti[0] === 0 && ti[1] === 0) {
-          if(s.length === 2 || (s[2] === e[2] && to[2] === 0 && ti[2] === 0)) {
+        if (s[0] === e[0] && s[1] === e[1] && to[0] === 0 && to[1] === 0 && ti[0] === 0 && ti[1] === 0) {
+          if (s.length === 2 || (s[2] === e[2] && to[2] === 0 && ti[2] === 0)) {
             data.k[i].to = null;
             data.k[i].ti = null;
           }
@@ -415,12 +415,12 @@ var PropertyFactory = (function () {
 
   function getProp(elem, data, type, mult, container) {
     var p;
-    if(!data.k.length) {
+    if (!data.k.length) {
       p = new ValueProperty(elem, data, mult, container);
-    }else if(typeof (data.k[0]) === 'number') {
+    } else if (typeof (data.k[0]) === 'number') {
       p = new MultiDimensionalProperty(elem, data, mult, container);
-    }else{
-      switch(type) {
+    } else {
+      switch (type) {
         case 0:
           p = new KeyframedValueProperty(elem, data, mult, container);
           break;
@@ -429,7 +429,7 @@ var PropertyFactory = (function () {
           break;
       }
     }
-    if(p.effectsSequence.length) {
+    if (p.effectsSequence.length) {
       container.addDynamicProperty(p);
     }
     return p;

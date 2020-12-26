@@ -1,7 +1,7 @@
 function PlayerManager() {}
 
 PlayerManager.prototype.createPlayer = function (type) {
-  switch(type) {
+  switch (type) {
     case '1':
       return createElement(BasicPlayer);
   }

@@ -7,42 +7,42 @@ function dataFunctionManager() {
     var animArray, lastFrame;
     var i, len = layers.length;
     var j, jLen, k, kLen;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       layerData = layers[i];
-      if(!('ks' in layerData) || layerData.completed) {
+      if (!('ks' in layerData) || layerData.completed) {
         continue;
       }
       layerData.completed = true;
-      if(layerData.tt) {
+      if (layerData.tt) {
         layers[i - 1].td = layerData.tt;
       }
       animArray = [];
       lastFrame = -1;
-      if(layerData.hasMask) {
+      if (layerData.hasMask) {
         var maskProps = layerData.masksProperties;
         jLen = maskProps.length;
-        for(j = 0; j < jLen; j += 1) {
-          if(maskProps[j].pt.k.i) {
+        for (j = 0; j < jLen; j += 1) {
+          if (maskProps[j].pt.k.i) {
             convertPathsToAbsoluteValues(maskProps[j].pt.k);
-          }else{
+          } else {
             kLen = maskProps[j].pt.k.length;
-            for(k = 0; k < kLen; k += 1) {
-              if(maskProps[j].pt.k[k].s) {
+            for (k = 0; k < kLen; k += 1) {
+              if (maskProps[j].pt.k[k].s) {
                 convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
               }
-              if(maskProps[j].pt.k[k].e) {
+              if (maskProps[j].pt.k[k].e) {
                 convertPathsToAbsoluteValues(maskProps[j].pt.k[k].e[0]);
               }
             }
           }
         }
       }
-      if(layerData.ty === 0) {
+      if (layerData.ty === 0) {
         layerData.layers = findCompLayers(layerData.refId, comps);
         completeLayers(layerData.layers, comps, fontManager);
-      }else if(layerData.ty === 4) {
+      } else if (layerData.ty === 4) {
         completeShapes(layerData.shapes);
-      }else if(layerData.ty == 5) {
+      } else if (layerData.ty == 5) {
         completeText(layerData, fontManager);
       }
     }
@@ -50,9 +50,9 @@ function dataFunctionManager() {
 
   function findCompLayers(id, comps) {
     var i = 0, len = comps.length;
-    while(i < len) {
-      if(comps[i].id === id) {
-        if(!comps[i].layers.__used) {
+    while (i < len) {
+      if (comps[i].id === id) {
+        if (!comps[i].layers.__used) {
           comps[i].layers.__used = true;
           return comps[i].layers;
         }
@@ -66,23 +66,23 @@ function dataFunctionManager() {
     var i, len = arr.length;
     var j, jLen;
     var hasPaths = false;
-    for(i = len - 1; i >= 0; i -= 1) {
-      if(arr[i].ty == 'sh') {
-        if(arr[i].ks.k.i) {
+    for (i = len - 1; i >= 0; i -= 1) {
+      if (arr[i].ty == 'sh') {
+        if (arr[i].ks.k.i) {
           convertPathsToAbsoluteValues(arr[i].ks.k);
-        }else{
+        } else {
           jLen = arr[i].ks.k.length;
-          for(j = 0; j < jLen; j += 1) {
-            if(arr[i].ks.k[j].s) {
+          for (j = 0; j < jLen; j += 1) {
+            if (arr[i].ks.k[j].s) {
               convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
             }
-            if(arr[i].ks.k[j].e) {
+            if (arr[i].ks.k[j].e) {
               convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
             }
           }
         }
         hasPaths = true;
-      }else if(arr[i].ty == 'gr') {
+      } else if (arr[i].ty == 'gr') {
         completeShapes(arr[i].it);
       }
     }
@@ -102,7 +102,7 @@ function dataFunctionManager() {
 
   function convertPathsToAbsoluteValues(path) {
     var i, len = path.i.length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       path.i[i][0] += path.v[i][0];
       path.i[i][1] += path.v[i][1];
       path.o[i][0] += path.v[i][0];
@@ -112,19 +112,19 @@ function dataFunctionManager() {
 
   function checkVersion(minimum, animVersionString) {
     var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
-    if(minimum[0] > animVersion[0]) {
+    if (minimum[0] > animVersion[0]) {
       return true;
-    } else if(animVersion[0] > minimum[0]) {
+    } else if (animVersion[0] > minimum[0]) {
       return false;
     }
-    if(minimum[1] > animVersion[1]) {
+    if (minimum[1] > animVersion[1]) {
       return true;
-    } else if(animVersion[1] > minimum[1]) {
+    } else if (animVersion[1] > minimum[1]) {
       return false;
     }
-    if(minimum[2] > animVersion[2]) {
+    if (minimum[2] > animVersion[2]) {
       return true;
-    } else if(animVersion[2] > minimum[2]) {
+    } else if (animVersion[2] > minimum[2]) {
       return false;
     }
   }
@@ -146,20 +146,20 @@ function dataFunctionManager() {
 
     function iterateLayers(layers) {
       var i, len = layers.length;
-      for(i = 0; i < len; i += 1) {
-        if(layers[i].ty === 5) {
+      for (i = 0; i < len; i += 1) {
+        if (layers[i].ty === 5) {
           updateTextLayer(layers[i]);
         }
       }
     }
 
     return function (animationData) {
-      if(checkVersion(minimumVersion, animationData.v)) {
+      if (checkVersion(minimumVersion, animationData.v)) {
         iterateLayers(animationData.layers);
-        if(animationData.assets) {
+        if (animationData.assets) {
           var i, len = animationData.assets.length;
-          for(i = 0; i < len; i += 1) {
-            if(animationData.assets[i].layers) {
+          for (i = 0; i < len; i += 1) {
+            if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
 
             }
@@ -172,17 +172,17 @@ function dataFunctionManager() {
   var checkChars = (function () {
     var minimumVersion = [4, 7, 99];
     return function (animationData) {
-      if(animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
+      if (animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
         var i, len = animationData.chars.length, j, jLen, k, kLen;
         var pathData, paths;
-        for(i = 0; i < len; i += 1) {
-          if(animationData.chars[i].data && animationData.chars[i].data.shapes) {
+        for (i = 0; i < len; i += 1) {
+          if (animationData.chars[i].data && animationData.chars[i].data.shapes) {
             paths = animationData.chars[i].data.shapes[0].it;
             jLen = paths.length;
 
-            for(j = 0; j < jLen; j += 1) {
+            for (j = 0; j < jLen; j += 1) {
               pathData = paths[j].ks.k;
-              if(!pathData.__converted) {
+              if (!pathData.__converted) {
                 convertPathsToAbsoluteValues(paths[j].ks.k);
                 pathData.__converted = true;
               }
@@ -199,20 +199,20 @@ function dataFunctionManager() {
     function iterateShapes(shapes) {
       var i, len = shapes.length;
       var j, jLen;
-      for(i = 0; i < len; i += 1) {
-        if(shapes[i].ty === 'gr') {
+      for (i = 0; i < len; i += 1) {
+        if (shapes[i].ty === 'gr') {
           iterateShapes(shapes[i].it);
-        }else if(shapes[i].ty === 'fl' || shapes[i].ty === 'st') {
-          if(shapes[i].c.k && shapes[i].c.k[0].i) {
+        } else if (shapes[i].ty === 'fl' || shapes[i].ty === 'st') {
+          if (shapes[i].c.k && shapes[i].c.k[0].i) {
             jLen = shapes[i].c.k.length;
-            for(j = 0; j < jLen; j += 1) {
-              if(shapes[i].c.k[j].s) {
+            for (j = 0; j < jLen; j += 1) {
+              if (shapes[i].c.k[j].s) {
                 shapes[i].c.k[j].s[0] /= 255;
                 shapes[i].c.k[j].s[1] /= 255;
                 shapes[i].c.k[j].s[2] /= 255;
                 shapes[i].c.k[j].s[3] /= 255;
               }
-              if(shapes[i].c.k[j].e) {
+              if (shapes[i].c.k[j].e) {
                 shapes[i].c.k[j].e[0] /= 255;
                 shapes[i].c.k[j].e[1] /= 255;
                 shapes[i].c.k[j].e[2] /= 255;
@@ -231,20 +231,20 @@ function dataFunctionManager() {
 
     function iterateLayers(layers) {
       var i, len = layers.length;
-      for(i = 0; i < len; i += 1) {
-        if(layers[i].ty === 4) {
+      for (i = 0; i < len; i += 1) {
+        if (layers[i].ty === 4) {
           iterateShapes(layers[i].shapes);
         }
       }
     }
 
     return function (animationData) {
-      if(checkVersion(minimumVersion, animationData.v)) {
+      if (checkVersion(minimumVersion, animationData.v)) {
         iterateLayers(animationData.layers);
-        if(animationData.assets) {
+        if (animationData.assets) {
           var i, len = animationData.assets.length;
-          for(i = 0; i < len; i += 1) {
-            if(animationData.assets[i].layers) {
+          for (i = 0; i < len; i += 1) {
+            if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
 
             }
@@ -263,23 +263,23 @@ function dataFunctionManager() {
       var i, len = arr.length;
       var j, jLen;
       var hasPaths = false;
-      for(i = len - 1; i >= 0; i -= 1) {
-        if(arr[i].ty == 'sh') {
-          if(arr[i].ks.k.i) {
+      for (i = len - 1; i >= 0; i -= 1) {
+        if (arr[i].ty == 'sh') {
+          if (arr[i].ks.k.i) {
             arr[i].ks.k.c = arr[i].closed;
-          }else{
+          } else {
             jLen = arr[i].ks.k.length;
-            for(j = 0; j < jLen; j += 1) {
-              if(arr[i].ks.k[j].s) {
+            for (j = 0; j < jLen; j += 1) {
+              if (arr[i].ks.k[j].s) {
                 arr[i].ks.k[j].s[0].c = arr[i].closed;
               }
-              if(arr[i].ks.k[j].e) {
+              if (arr[i].ks.k[j].e) {
                 arr[i].ks.k[j].e[0].c = arr[i].closed;
               }
             }
           }
           hasPaths = true;
-        }else if(arr[i].ty == 'gr') {
+        } else if (arr[i].ty == 'gr') {
           completeShapes(arr[i].it);
         }
       }
@@ -289,40 +289,40 @@ function dataFunctionManager() {
       var layerData;
       var i, len = layers.length;
       var j, jLen, k, kLen;
-      for(i = 0; i < len; i += 1) {
+      for (i = 0; i < len; i += 1) {
         layerData = layers[i];
-        if(layerData.hasMask) {
+        if (layerData.hasMask) {
           var maskProps = layerData.masksProperties;
           jLen = maskProps.length;
-          for(j = 0; j < jLen; j += 1) {
-            if(maskProps[j].pt.k.i) {
+          for (j = 0; j < jLen; j += 1) {
+            if (maskProps[j].pt.k.i) {
               maskProps[j].pt.k.c = maskProps[j].cl;
-            }else{
+            } else {
               kLen = maskProps[j].pt.k.length;
-              for(k = 0; k < kLen; k += 1) {
-                if(maskProps[j].pt.k[k].s) {
+              for (k = 0; k < kLen; k += 1) {
+                if (maskProps[j].pt.k[k].s) {
                   maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
                 }
-                if(maskProps[j].pt.k[k].e) {
+                if (maskProps[j].pt.k[k].e) {
                   maskProps[j].pt.k[k].e[0].c = maskProps[j].cl;
                 }
               }
             }
           }
         }
-        if(layerData.ty === 4) {
+        if (layerData.ty === 4) {
           completeShapes(layerData.shapes);
         }
       }
     }
 
     return function (animationData) {
-      if(checkVersion(minimumVersion, animationData.v)) {
+      if (checkVersion(minimumVersion, animationData.v)) {
         iterateLayers(animationData.layers);
-        if(animationData.assets) {
+        if (animationData.assets) {
           var i, len = animationData.assets.length;
-          for(i = 0; i < len; i += 1) {
-            if(animationData.assets[i].layers) {
+          for (i = 0; i < len; i += 1) {
+            if (animationData.assets[i].layers) {
               iterateLayers(animationData.assets[i].layers);
 
             }
@@ -333,7 +333,7 @@ function dataFunctionManager() {
   }());
 
   function completeData(animationData, fontManager) {
-    if(animationData.__complete) {
+    if (animationData.__complete) {
       return;
     }
     checkColors(animationData);
@@ -346,7 +346,7 @@ function dataFunctionManager() {
   }
 
   function completeText(data, fontManager) {
-    if(data.t.a.length === 0 && !('m' in data.t.p)) {
+    if (data.t.a.length === 0 && !('m' in data.t.p)) {
       data.singleShape = true;
     }
   }

@@ -3,7 +3,7 @@ HBaseElement.prototype = {
   checkBlendMode: function () {},
   initRendererElement: function () {
     this.baseElement = createTag(this.data.tg || 'div');
-    if(this.data.hasMask) {
+    if (this.data.hasMask) {
       this.svgElement = createNS('svg');
       this.layerElement = createNS('g');
       this.maskedElement = this.layerElement;
@@ -29,10 +29,10 @@ HBaseElement.prototype = {
     }
   },
   renderElement: function () {
-    if(this.finalTransform._matMdf) {
+    if (this.finalTransform._matMdf) {
       this.transformedElement.style.transform = this.transformedElement.style.webkitTransform = this.finalTransform.mat.toCSS();
     }
-    if(this.finalTransform._opMdf) {
+    if (this.finalTransform._opMdf) {
       this.transformedElement.style.opacity = this.finalTransform.mProp.o.v;
     }
   },
@@ -53,10 +53,10 @@ HBaseElement.prototype = {
   destroy: function () {
     this.layerElement = null;
     this.transformedElement = null;
-    if(this.matteElement) {
+    if (this.matteElement) {
       this.matteElement = null;
     }
-    if(this.maskManager) {
+    if (this.maskManager) {
       this.maskManager.destroy();
       this.maskManager = null;
     }

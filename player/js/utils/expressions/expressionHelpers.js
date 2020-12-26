@@ -1,7 +1,7 @@
 var expressionHelpers = (function () {
 
   function searchExpressions(elem, data, prop) {
-    if(data.x) {
+    if (data.x) {
       prop.k = true;
       prop.x = true;
       prop.initiateExpression = ExpressionManager.initiateExpression;
@@ -12,7 +12,7 @@ var expressionHelpers = (function () {
   function getValueAtTime(frameNum) {
     frameNum *= this.elem.globalData.frameRate;
     frameNum -= this.offsetTime;
-    if(frameNum !== this._cachingAtTime.lastFrame) {
+    if (frameNum !== this._cachingAtTime.lastFrame) {
       this._cachingAtTime.lastIndex = this._cachingAtTime.lastFrame < frameNum ? this._cachingAtTime.lastIndex : 0;
       this._cachingAtTime.value = this.interpolateValue(frameNum, this._cachingAtTime);
       this._cachingAtTime.lastFrame = frameNum;
@@ -26,9 +26,9 @@ var expressionHelpers = (function () {
     var v1 = this.getValueAtTime(frameNum);
     var v2 = this.getValueAtTime(frameNum + delta);
     var speed = 0;
-    if(v1.length) {
+    if (v1.length) {
       var i;
-      for(i = 0; i < v1.length; i += 1) {
+      for (i = 0; i < v1.length; i += 1) {
         speed += Math.pow(v2[i] - v1[i], 2);
       }
       speed = Math.sqrt(speed) * 100;
@@ -39,7 +39,7 @@ var expressionHelpers = (function () {
   }
 
   function getVelocityAtTime(frameNum) {
-    if(this.vel !== undefined) {
+    if (this.vel !== undefined) {
       return this.vel;
     }
     var delta = -0.001;
@@ -47,10 +47,10 @@ var expressionHelpers = (function () {
     var v1 = this.getValueAtTime(frameNum);
     var v2 = this.getValueAtTime(frameNum + delta);
     var velocity;
-    if(v1.length) {
+    if (v1.length) {
       velocity = createTypedArray('float32', v1.length);
       var i;
-      for(i = 0; i < v1.length; i += 1) {
+      for (i = 0; i < v1.length; i += 1) {
         // removing frameRate
         // if needed, don't add it here
         // velocity[i] = this.elem.globalData.frameRate*((v2[i] - v1[i])/delta);

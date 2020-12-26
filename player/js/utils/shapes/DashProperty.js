@@ -9,19 +9,19 @@ function DashProperty(elem, data, renderer, container) {
   this.dashoffset = createTypedArray('float32', 1);
   this.initDynamicPropertyContainer(container);
   var i, len = data.length || 0, prop;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     prop = PropertyFactory.getProp(elem, data[i].v, 0, 0, this);
     this.k = prop.k || this.k;
     this.dataProps[i] = {n: data[i].n, p: prop};
   }
-  if(!this.k) {
+  if (!this.k) {
     this.getValue(true);
   }
   this._isAnimated = this.k;
 }
 
 DashProperty.prototype.getValue = function (forceRender) {
-  if(this.elem.globalData.frameId === this.frameId && !forceRender) {
+  if (this.elem.globalData.frameId === this.frameId && !forceRender) {
     return;
   }
   this.frameId = this.elem.globalData.frameId;
@@ -29,17 +29,17 @@ DashProperty.prototype.getValue = function (forceRender) {
   this._mdf = this._mdf || forceRender;
   if (this._mdf) {
     var i = 0, len = this.dataProps.length;
-    if(this.renderer === 'svg') {
+    if (this.renderer === 'svg') {
       this.dashStr = '';
     }
-    for(i = 0; i < len; i += 1) {
-      if(this.dataProps[i].n != 'o') {
-        if(this.renderer === 'svg') {
+    for (i = 0; i < len; i += 1) {
+      if (this.dataProps[i].n != 'o') {
+        if (this.renderer === 'svg') {
           this.dashStr += ' ' + this.dataProps[i].p.v;
-        }else{
+        } else {
           this.dashArray[i] = this.dataProps[i].p.v;
         }
-      }else{
+      } else {
         this.dashoffset[0] = this.dataProps[i].p.v;
       }
     }

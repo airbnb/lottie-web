@@ -14,12 +14,12 @@ RenderableElement.prototype = {
     this.renderableComponents = [];
   },
   addRenderableComponent: function (component) {
-    if(this.renderableComponents.indexOf(component) === -1) {
+    if (this.renderableComponents.indexOf(component) === -1) {
       this.renderableComponents.push(component);
     }
   },
   removeRenderableComponent: function (component) {
-    if(this.renderableComponents.indexOf(component) !== -1) {
+    if (this.renderableComponents.indexOf(component) !== -1) {
       this.renderableComponents.splice(this.renderableComponents.indexOf(component), 1);
     }
   },
@@ -27,12 +27,12 @@ RenderableElement.prototype = {
     this.checkLayerLimits(num);
   },
   checkTransparency: function () {
-    if(this.finalTransform.mProp.o.v <= 0) {
-      if(!this.isTransparent && this.globalData.renderConfig.hideOnTransparent) {
+    if (this.finalTransform.mProp.o.v <= 0) {
+      if (!this.isTransparent && this.globalData.renderConfig.hideOnTransparent) {
         this.isTransparent = true;
         this.hide();
       }
-    } else if(this.isTransparent) {
+    } else if (this.isTransparent) {
       this.isTransparent = false;
       this.show();
     }
@@ -46,15 +46,15 @@ RenderableElement.prototype = {
      * 
      */
   checkLayerLimits: function (num) {
-    if(this.data.ip - this.data.st <= num && this.data.op - this.data.st > num) {
-      if(this.isInRange !== true) {
+    if (this.data.ip - this.data.st <= num && this.data.op - this.data.st > num) {
+      if (this.isInRange !== true) {
         this.globalData._mdf = true;
         this._mdf = true;
         this.isInRange = true;
         this.show();
       }
     } else {
-      if(this.isInRange !== false) {
+      if (this.isInRange !== false) {
         this.globalData._mdf = true;
         this.isInRange = false;
         this.hide();
@@ -63,7 +63,7 @@ RenderableElement.prototype = {
   },
   renderRenderable: function () {
     var i, len = this.renderableComponents.length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       this.renderableComponents[i].renderFrame(this._isFirstFrame);
     }
     /* this.maskManager.renderFrame(this.finalTransform.mat);
@@ -78,9 +78,9 @@ RenderableElement.prototype = {
     };
   },
   getLayerSize: function () {
-    if(this.data.ty === 5) {
+    if (this.data.ty === 5) {
       return {w: this.data.textData.width, h: this.data.textData.height};
-    }else{
+    } else {
       return {w: this.data.width, h: this.data.height};
     }
   },

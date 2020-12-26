@@ -45,7 +45,7 @@ function TextProperty(elem, data) {
   };
   this.copyData(this.currentData, this.data.d.k[0].s);
 
-  if(!this.searchProperty()) {
+  if (!this.searchProperty()) {
     this.completeTextData(this.currentData);
   }
 }
@@ -53,8 +53,8 @@ function TextProperty(elem, data) {
 TextProperty.prototype.defaultBoxWidth = [0, 0];
 
 TextProperty.prototype.copyData = function (obj, data) {
-  for(var s in data) {
-    if(data.hasOwnProperty(s)) {
+  for (var s in data) {
+    if (data.hasOwnProperty(s)) {
       obj[s] = data[s];
     }
   }
@@ -62,7 +62,7 @@ TextProperty.prototype.copyData = function (obj, data) {
 };
 
 TextProperty.prototype.setCurrentData = function (data) {
-  if(!data.__complete) {
+  if (!data.__complete) {
     this.completeTextData(data);
   }
   this.currentData = data;
@@ -76,7 +76,7 @@ TextProperty.prototype.searchProperty = function () {
 
 TextProperty.prototype.searchKeyframes = function () {
   this.kf = this.data.d.k.length > 1;
-  if(this.kf) {
+  if (this.kf) {
     this.addEffect(this.getKeyframeValue.bind(this));
   }
   return this.kf;
@@ -88,13 +88,13 @@ TextProperty.prototype.addEffect = function (effectFunction) {
 };
 
 TextProperty.prototype.getValue = function (_finalValue) {
-  if((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
+  if ((this.elem.globalData.frameId === this.frameId || !this.effectsSequence.length) && !_finalValue) {
     return;
   }
   this.currentData.t = this.data.d.k[this.keysIndex].s.t;
   var currentValue = this.currentData;
   var currentIndex = this.keysIndex;
-  if(this.lock) {
+  if (this.lock) {
     this.setCurrentData(this.currentData);
     return;
   }
@@ -103,15 +103,15 @@ TextProperty.prototype.getValue = function (_finalValue) {
   var multipliedValue;
   var i, len = this.effectsSequence.length;
   var finalValue = _finalValue || this.data.d.k[this.keysIndex].s;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     // Checking if index changed to prevent creating a new object every time the expression updates.
-    if(currentIndex !== this.keysIndex) {
+    if (currentIndex !== this.keysIndex) {
       finalValue = this.effectsSequence[i](finalValue, finalValue.t);
     } else {
       finalValue = this.effectsSequence[i](this.currentData, finalValue.t);
     }
   }
-  if(currentValue !== finalValue) {
+  if (currentValue !== finalValue) {
     this.setCurrentData(finalValue);
   }
   this.pv = this.v = this.currentData;
@@ -123,14 +123,14 @@ TextProperty.prototype.getKeyframeValue = function () {
   var textKeys = this.data.d.k, textDocumentData;
   var frameNum = this.elem.comp.renderedFrame;
   var i = 0, len = textKeys.length;
-  while(i <= len - 1) {
+  while (i <= len - 1) {
     textDocumentData = textKeys[i].s;
-    if(i === len - 1 || textKeys[i + 1].t > frameNum) {
+    if (i === len - 1 || textKeys[i + 1].t > frameNum) {
       break;
     }
     i += 1;
   }
-  if(this.keysIndex !== i) {
+  if (this.keysIndex !== i) {
     this.keysIndex = i;
   }
   return this.data.d.k[this.keysIndex].s;
@@ -182,9 +182,9 @@ TextProperty.prototype.completeTextData = function (documentData) {
   var fWeight = 'normal', fStyle = 'normal';
   len = styles.length;
   var styleName;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     styleName = styles[i].toLowerCase();
-    switch(styleName) {
+    switch (styleName) {
       case 'italic':
         fStyle = 'italic';
         break;
@@ -215,37 +215,37 @@ TextProperty.prototype.completeTextData = function (documentData) {
   documentData.finalLineHeight = documentData.lh;
   var trackingOffset = documentData.tr / 1000 * documentData.finalSize;
   var charCode;
-  if(documentData.sz) {
+  if (documentData.sz) {
     var flag = true;
     var boxWidth = documentData.sz[0];
     var boxHeight = documentData.sz[1];
     var currentHeight, finalText;
-    while(flag) {
+    while (flag) {
       finalText = this.buildFinalText(documentData.t);
       currentHeight = 0;
       lineWidth = 0;
       len = finalText.length;
       trackingOffset = documentData.tr / 1000 * documentData.finalSize;
       var lastSpaceIndex = -1;
-      for(i = 0; i < len; i += 1) {
+      for (i = 0; i < len; i += 1) {
         charCode = finalText[i].charCodeAt(0);
         newLineFlag = false;
-        if(finalText[i] === ' ') {
+        if (finalText[i] === ' ') {
           lastSpaceIndex = i;
-        }else if(charCode === 13 || charCode === 3) {
+        } else if (charCode === 13 || charCode === 3) {
           lineWidth = 0;
           newLineFlag = true;
           currentHeight += documentData.finalLineHeight || documentData.finalSize * 1.2;
         }
-        if(fontManager.chars) {
+        if (fontManager.chars) {
           charData = fontManager.getCharData(finalText[i], fontData.fStyle, fontData.fFamily);
           cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
-        }else{
+        } else {
           // tCanvasHelper.font = documentData.s + 'px '+ fontData.fFamily;
           cLength = fontManager.measureText(finalText[i], documentData.f, documentData.finalSize);
         }
-        if(lineWidth + cLength > boxWidth && finalText[i] !== ' ') {
-          if(lastSpaceIndex === -1) {
+        if (lineWidth + cLength > boxWidth && finalText[i] !== ' ') {
+          if (lastSpaceIndex === -1) {
             len += 1;
           } else {
             i = lastSpaceIndex;
@@ -255,13 +255,13 @@ TextProperty.prototype.completeTextData = function (documentData) {
           // finalText = finalText.substr(0,i) + "\r" + finalText.substr(i === lastSpaceIndex ? i + 1 : i);
           lastSpaceIndex = -1;
           lineWidth = 0;
-        }else {
+        } else {
           lineWidth += cLength;
           lineWidth += trackingOffset;
         }
       }
       currentHeight += fontData.ascent * documentData.finalSize / 100;
-      if(this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < currentHeight) {
+      if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < currentHeight) {
         documentData.finalSize -= 1;
         documentData.finalLineHeight = documentData.finalSize * documentData.lh / documentData.s;
       } else {
@@ -288,33 +288,33 @@ TextProperty.prototype.completeTextData = function (documentData) {
       val = '';
       newLineFlag = true;
       currentLine += 1;
-    }else{
+    } else {
       val = currentChar;
     }
-    if(fontManager.chars) {
+    if (fontManager.chars) {
       charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
       cLength = newLineFlag ? 0 : charData.w * documentData.finalSize / 100;
-    }else{
+    } else {
       // var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
       // tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
       cLength = fontManager.measureText(val, documentData.f, documentData.finalSize);
     }
 
     //
-    if(currentChar === ' ') {
+    if (currentChar === ' ') {
       uncollapsedSpaces += cLength + trackingOffset;
     } else {
       lineWidth += cLength + trackingOffset + uncollapsedSpaces;
       uncollapsedSpaces = 0;
     }
     letters.push({l: cLength, an: cLength, add: currentSize, n: newLineFlag, anIndexes: [], val: val, line: currentLine, animatorJustifyOffset: 0});
-    if(anchorGrouping == 2) {
+    if (anchorGrouping == 2) {
       currentSize += cLength;
-      if(val === '' || val === ' ' || i === len - 1) {
-        if(val === '' || val === ' ') {
+      if (val === '' || val === ' ' || i === len - 1) {
+        if (val === '' || val === ' ') {
           currentSize -= cLength;
         }
-        while(currentPos <= i) {
+        while (currentPos <= i) {
           letters[currentPos].an = currentSize;
           letters[currentPos].ind = index;
           letters[currentPos].extra = cLength;
@@ -323,13 +323,13 @@ TextProperty.prototype.completeTextData = function (documentData) {
         index += 1;
         currentSize = 0;
       }
-    }else if(anchorGrouping == 3) {
+    } else if (anchorGrouping == 3) {
       currentSize += cLength;
-      if(val === '' || i === len - 1) {
-        if(val === '') {
+      if (val === '' || i === len - 1) {
+        if (val === '') {
           currentSize -= cLength;
         }
-        while(currentPos <= i) {
+        while (currentPos <= i) {
           letters[currentPos].an = currentSize;
           letters[currentPos].ind = index;
           letters[currentPos].extra = cLength;
@@ -338,7 +338,7 @@ TextProperty.prototype.completeTextData = function (documentData) {
         currentSize = 0;
         index += 1;
       }
-    }else{
+    } else {
       letters[index].ind = index;
       letters[index].extra = 0;
       index += 1;
@@ -347,12 +347,12 @@ TextProperty.prototype.completeTextData = function (documentData) {
   documentData.l = letters;
   maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
   lineWidths.push(lineWidth);
-  if(documentData.sz) {
+  if (documentData.sz) {
     documentData.boxWidth = documentData.sz[0];
     documentData.justifyOffset = 0;
-  }else{
+  } else {
     documentData.boxWidth = maxLineWidth;
-    switch(documentData.j) {
+    switch (documentData.j) {
       case 1:
         documentData.justifyOffset = -documentData.boxWidth;
         break;
@@ -368,24 +368,24 @@ TextProperty.prototype.completeTextData = function (documentData) {
   var animators = data.a, animatorData, letterData;
   jLen = animators.length;
   var based, ind, indexes = [];
-  for(j = 0; j < jLen; j += 1) {
+  for (j = 0; j < jLen; j += 1) {
     animatorData = animators[j];
-    if(animatorData.a.sc) {
+    if (animatorData.a.sc) {
       documentData.strokeColorAnim = true;
     }
-    if(animatorData.a.sw) {
+    if (animatorData.a.sw) {
       documentData.strokeWidthAnim = true;
     }
-    if(animatorData.a.fc || animatorData.a.fh || animatorData.a.fs || animatorData.a.fb) {
+    if (animatorData.a.fc || animatorData.a.fh || animatorData.a.fs || animatorData.a.fb) {
       documentData.fillColorAnim = true;
     }
     ind = 0;
     based = animatorData.s.b;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       letterData = letters[i];
       letterData.anIndexes[j] = ind;
-      if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) {
-        if(animatorData.s.rn === 1) {
+      if ((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) {
+        if (animatorData.s.rn === 1) {
           indexes.push(ind);
         }
         ind += 1;
@@ -393,10 +393,10 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
     data.a[j].s.totalChars = ind;
     var currentInd = -1, newInd;
-    if(animatorData.s.rn === 1) {
-      for(i = 0; i < len; i += 1) {
+    if (animatorData.s.rn === 1) {
+      for (i = 0; i < len; i += 1) {
         letterData = letters[i];
-        if(currentInd != letterData.anIndexes[j]) {
+        if (currentInd != letterData.anIndexes[j]) {
           currentInd = letterData.anIndexes[j];
           newInd = indexes.splice(Math.floor(Math.random() * indexes.length), 1)[0];
         }

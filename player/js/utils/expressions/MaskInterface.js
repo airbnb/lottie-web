@@ -6,7 +6,7 @@ var MaskManagerInterface = (function () {
   }
   Object.defineProperty(MaskInterface.prototype, 'maskPath', {
     get: function () {
-      if(this._mask.prop.k) {
+      if (this._mask.prop.k) {
         this._mask.prop.getValue();
       }
       return this._mask.prop;
@@ -14,7 +14,7 @@ var MaskManagerInterface = (function () {
   });
   Object.defineProperty(MaskInterface.prototype, 'maskOpacity', {
     get: function () {
-      if(this._mask.op.k) {
+      if (this._mask.op.k) {
         this._mask.op.getValue();
       }
       return this._mask.op.v * 100;
@@ -26,14 +26,14 @@ var MaskManagerInterface = (function () {
     var _elem = elem;
     var _masksInterfaces = createSizedArray(maskManager.viewData.length);
     var i, len = maskManager.viewData.length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       _masksInterfaces[i] = new MaskInterface(maskManager.viewData[i], maskManager.masksProperties[i]);
     }
 
     var maskFunction = function (name) {
       i = 0;
-      while(i < len) {
-        if(maskManager.masksProperties[i].nm === name) {
+      while (i < len) {
+        if (maskManager.masksProperties[i].nm === name) {
           return _masksInterfaces[i];
         }
         i += 1;

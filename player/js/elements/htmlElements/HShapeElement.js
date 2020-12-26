@@ -50,7 +50,7 @@ HShapeElement.prototype.createContent = function () {
 
 HShapeElement.prototype.getTransformedPoint = function (transformers, point) {
   var i, len = transformers.length;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     point = transformers[i].mProps.v.applyToPointArray(point[0], point[1], 0);
   }
   return point;
@@ -70,7 +70,7 @@ HShapeElement.prototype.calculateShapeBoundingBox = function (item, boundingBox)
     nextVPoint = this.getTransformedPoint(transformers, shape.v[i + 1]);
     this.checkBounds(vPoint, oPoint, nextIPoint, nextVPoint, boundingBox);
   }
-  if(shape.c) {
+  if (shape.c) {
     vPoint = this.getTransformedPoint(transformers, shape.v[i]);
     oPoint = this.getTransformedPoint(transformers, shape.o[i]);
     nextIPoint = this.getTransformedPoint(transformers, shape.i[0]);
@@ -161,10 +161,10 @@ HShapeElement.prototype.calculateF = function (t, p0, p1, p2, p3, i) {
 
 HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox) {
   var i, len = itemsData.length, path;
-  for(i = 0; i < len; i += 1) {
-    if(itemsData[i] && itemsData[i].sh) {
+  for (i = 0; i < len; i += 1) {
+    if (itemsData[i] && itemsData[i].sh) {
       this.calculateShapeBoundingBox(itemsData[i], boundingBox);
-    } else if(itemsData[i] && itemsData[i].it) {
+    } else if (itemsData[i] && itemsData[i].it) {
       this.calculateBoundingBox(itemsData[i].it, boundingBox);
     }
   }
@@ -180,7 +180,7 @@ HShapeElement.prototype.currentBoxContains = function (box) {
 HShapeElement.prototype.renderInnerContent = function () {
   this._renderShapeFrame();
 
-  if(!this.hidden && (this._isFirstFrame || this._mdf)) {
+  if (!this.hidden && (this._isFirstFrame || this._mdf)) {
     var tempBoundingBox = this.tempBoundingBox;
     var max = 999999;
     tempBoundingBox.x = max;
@@ -191,21 +191,21 @@ HShapeElement.prototype.renderInnerContent = function () {
     tempBoundingBox.width = tempBoundingBox.xMax < tempBoundingBox.x ? 0 : tempBoundingBox.xMax - tempBoundingBox.x;
     tempBoundingBox.height = tempBoundingBox.yMax < tempBoundingBox.y ? 0 : tempBoundingBox.yMax - tempBoundingBox.y;
     // var tempBoundingBox = this.shapeCont.getBBox();
-    if(this.currentBoxContains(tempBoundingBox)) {
+    if (this.currentBoxContains(tempBoundingBox)) {
       return;
     }
     var changed = false;
-    if(this.currentBBox.w !== tempBoundingBox.width) {
+    if (this.currentBBox.w !== tempBoundingBox.width) {
       this.currentBBox.w = tempBoundingBox.width;
       this.shapeCont.setAttribute('width', tempBoundingBox.width);
       changed = true;
     }
-    if(this.currentBBox.h !== tempBoundingBox.height) {
+    if (this.currentBBox.h !== tempBoundingBox.height) {
       this.currentBBox.h = tempBoundingBox.height;
       this.shapeCont.setAttribute('height', tempBoundingBox.height);
       changed = true;
     }
-    if(changed || this.currentBBox.x !== tempBoundingBox.x || this.currentBBox.y !== tempBoundingBox.y) {
+    if (changed || this.currentBBox.x !== tempBoundingBox.x || this.currentBBox.y !== tempBoundingBox.y) {
       this.currentBBox.w = tempBoundingBox.width;
       this.currentBBox.h = tempBoundingBox.height;
       this.currentBBox.x = tempBoundingBox.x;

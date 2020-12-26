@@ -6,7 +6,7 @@ var shape_pool = (function () {
 
   function release(shapePath) {
     var len = shapePath._length, i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       point_pool.release(shapePath.v[i]);
       point_pool.release(shapePath.i[i]);
       point_pool.release(shapePath.o[i]);
@@ -25,7 +25,7 @@ var shape_pool = (function () {
     cloned.c = shape.c;
     var pt;
 
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       cloned.setTripleAt(shape.v[i][0], shape.v[i][1], shape.o[i][0], shape.o[i][1], shape.i[i][0], shape.i[i][1], i);
     }
     return cloned;

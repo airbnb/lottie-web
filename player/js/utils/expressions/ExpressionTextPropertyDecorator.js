@@ -1,7 +1,7 @@
 (function addDecorator() {
 
   function searchExpressions() {
-    if(this.data.d.x) {
+    if (this.data.d.x) {
       this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem, this.data.d, this);
       this.addEffect(this.getExpressionValue.bind(this));
       return true;
@@ -10,7 +10,7 @@
 
   TextProperty.prototype.getExpressionValue = function (currentValue, text) {
     var newValue = this.calculateExpression(text);
-    if(currentValue.t !== newValue) {
+    if (currentValue.t !== newValue) {
       var newData = {};
       this.copyData(newData, currentValue);
       newData.t = newValue.toString();

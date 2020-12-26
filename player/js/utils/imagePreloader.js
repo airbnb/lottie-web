@@ -12,8 +12,8 @@ var ImagePreloader = (function () {
 
   function imageLoaded() {
     this.loadedAssets += 1;
-    if(this.loadedAssets === this.totalImages) {
-      if(this.imagesLoadedCb) {
+    if (this.loadedAssets === this.totalImages) {
+      if (this.imagesLoadedCb) {
         this.imagesLoadedCb(null);
       }
     }
@@ -23,7 +23,7 @@ var ImagePreloader = (function () {
     var path = '';
     if (assetData.e) {
       path = assetData.p;
-    } else if(assetsPath) {
+    } else if (assetsPath) {
       var imagePath = assetData.p;
       if (imagePath.indexOf('images/') !== -1) {
         imagePath = imagePath.split('/')[1];
@@ -91,7 +91,7 @@ var ImagePreloader = (function () {
     this.imagesLoadedCb = cb;
     var i, len = assets.length;
     for (i = 0; i < len; i += 1) {
-      if(!assets[i].layers) {
+      if (!assets[i].layers) {
         this.totalImages += 1;
         this.images.push(this._createImageData(assets[i]));
       }

@@ -8,11 +8,11 @@ ShapeTransformManager.prototype = {
   addTransformSequence: function (transforms) {
     var i, len = transforms.length;
     var key = '_';
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       key += transforms[i].transform.key + '_';
     }
     var sequence = this.sequences[key];
-    if(!sequence) {
+    if (!sequence) {
       sequence = {
         transforms: [].concat(transforms),
         finalTransform: new Matrix(),

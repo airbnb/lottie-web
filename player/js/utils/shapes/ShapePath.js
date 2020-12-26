@@ -11,7 +11,7 @@ ShapePath.prototype.setPathData = function (closed, len) {
   this.c = closed;
   this.setLength(len);
   var i = 0;
-  while(i < len) {
+  while (i < len) {
     this.v[i] = point_pool.newElement();
     this.o[i] = point_pool.newElement();
     this.i[i] = point_pool.newElement();
@@ -20,7 +20,7 @@ ShapePath.prototype.setPathData = function (closed, len) {
 };
 
 ShapePath.prototype.setLength = function (len) {
-  while(this._maxLength < len) {
+  while (this._maxLength < len) {
     this.doubleArrayLength();
   }
   this._length = len;
@@ -36,10 +36,10 @@ ShapePath.prototype.doubleArrayLength = function () {
 ShapePath.prototype.setXYAt = function (x, y, type, pos, replace) {
   var arr;
   this._length = Math.max(this._length, pos + 1);
-  if(this._length >= this._maxLength) {
+  if (this._length >= this._maxLength) {
     this.doubleArrayLength();
   }
-  switch(type) {
+  switch (type) {
     case 'v':
       arr = this.v;
       break;
@@ -50,7 +50,7 @@ ShapePath.prototype.setXYAt = function (x, y, type, pos, replace) {
       arr = this.o;
       break;
   }
-  if(!arr[pos] || (arr[pos] && !replace)) {
+  if (!arr[pos] || (arr[pos] && !replace)) {
     arr[pos] = point_pool.newElement();
   }
   arr[pos][0] = x;

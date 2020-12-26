@@ -114,9 +114,9 @@ BasicPlayer.prototype.scrollAnimation = function (perc) {
   var self = this;
   var mouseMoveFunc = function (ev) {
     var mousePos = ev.pageX - self.boundingRect.left;
-    if(mousePos < 0) {
+    if (mousePos < 0) {
       mousePos = 0;
-    }else if(mousePos >= self.scrollBarWidth) {
+    } else if (mousePos >= self.scrollBarWidth) {
       mousePos = self.scrollBarWidth - 1;
     }
     self.animationItem.updateAnimation(mousePos / self.scrollBarWidth);
@@ -128,7 +128,7 @@ BasicPlayer.prototype.scrollAnimation = function (perc) {
   };
   window.addEventListener('mousemove', mouseMoveFunc);
   window.addEventListener('mouseup', mouseUpFunc);
-  if(perc !== undefined) {
+  if (perc !== undefined) {
     self.animationItem.updateAnimation(perc);
   }
 };

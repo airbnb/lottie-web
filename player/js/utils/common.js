@@ -16,7 +16,7 @@ var BMMath = {};
 (function () {
   var propertyNames = ['abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'atan2', 'ceil', 'cbrt', 'expm1', 'clz32', 'cos', 'cosh', 'exp', 'floor', 'fround', 'hypot', 'imul', 'log', 'log1p', 'log2', 'log10', 'max', 'min', 'pow', 'random', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc', 'E', 'LN10', 'LN2', 'LOG10E', 'LOG2E', 'PI', 'SQRT1_2', 'SQRT2'];
   var i, len = propertyNames.length;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     BMMath[propertyNames[i]] = Math[propertyNames[i]];
   }
 }());
@@ -26,10 +26,10 @@ function ProjectInterface() { return {}; }
 BMMath.random = Math.random;
 BMMath.abs = function (val) {
   var tOfVal = typeof val;
-  if(tOfVal === 'object' && val.length) {
+  if (tOfVal === 'object' && val.length) {
     var absArr = createSizedArray(val.length);
     var i, len = val.length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       absArr[i] = Math.abs(val[i]);
     }
     return absArr;
@@ -42,9 +42,9 @@ var degToRads = Math.PI / 180;
 var roundCorner = 0.5519;
 
 function roundValues(flag) {
-  if(flag) {
+  if (flag) {
     bm_rnd = Math.round;
-  }else{
+  } else {
     bm_rnd = function (val) {
       return val;
     };
@@ -194,19 +194,19 @@ var rgbToHex = (function () {
   var colorMap = [];
   var i;
   var hex;
-  for(i = 0; i < 256; i += 1) {
+  for (i = 0; i < 256; i += 1) {
     hex = i.toString(16);
     colorMap[i] = hex.length == 1 ? '0' + hex : hex;
   }
 
   return function (r, g, b) {
-    if(r < 0) {
+    if (r < 0) {
       r = 0;
     }
-    if(g < 0) {
+    if (g < 0) {
       g = 0;
     }
-    if(b < 0) {
+    if (b < 0) {
       b = 0;
     }
     return '#' + colorMap[r] + colorMap[g] + colorMap[b];

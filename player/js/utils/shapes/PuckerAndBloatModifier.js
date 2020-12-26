@@ -19,7 +19,7 @@ PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
   var cloned_path = shape_pool.newElement();
   cloned_path.c = path.c;
   var vX, vY, oX, oY, iX, iY;
-  for(i = 0; i < pathLength; i += 1) {
+  for (i = 0; i < pathLength; i += 1) {
     vX = path.v[i][0] + (centerPoint[0] - path.v[i][0]) * percent;
     vY = path.v[i][1] + (centerPoint[1] - path.v[i][1]) * percent;
     oX = path.o[i][0] + (centerPoint[0] - path.o[i][0]) * -percent;
@@ -37,25 +37,25 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
   var j, jLen;
   var amount = this.amount.v;
 
-  if(amount !== 0) {
+  if (amount !== 0) {
     var shapeData, newPaths, localShapeCollection;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       newPaths = shapeData.shape.paths;
       localShapeCollection = shapeData.localShapeCollection;
-      if(!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)) {
+      if (!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)) {
         localShapeCollection.releaseShapes();
         shapeData.shape._mdf = true;
         shapePaths = shapeData.shape.paths.shapes;
         jLen = shapeData.shape.paths._length;
-        for(j = 0; j < jLen; j += 1) {
+        for (j = 0; j < jLen; j += 1) {
           localShapeCollection.addShape(this.processPath(shapePaths[j], amount));
         }
       }
       shapeData.shape.paths = shapeData.localShapeCollection;
     }
   }
-  if(!this.dynamicProperties.length) {
+  if (!this.dynamicProperties.length) {
     this._mdf = false;
   }
 };

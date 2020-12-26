@@ -6,11 +6,11 @@ var ShapePropertyFactory = (function () {
     var iterationIndex = caching.lastIndex;
     var keyPropS, keyPropE, isHold, j, k, jLen, kLen, perc, vertexValue;
     var kf = this.keyframes;
-    if(frameNum < kf[0].t - this.offsetTime) {
+    if (frameNum < kf[0].t - this.offsetTime) {
       keyPropS = kf[0].s[0];
       isHold = true;
       iterationIndex = 0;
-    }else if(frameNum >= kf[kf.length - 1].t - this.offsetTime) {
+    } else if (frameNum >= kf[kf.length - 1].t - this.offsetTime) {
       keyPropS = kf[kf.length - 1].s ? kf[kf.length - 1].s[0] : kf[kf.length - 2].e[0];
       /* if(kf[kf.length - 1].s){
                 keyPropS = kf[kf.length - 1].s[0];
@@ -18,33 +18,33 @@ var ShapePropertyFactory = (function () {
                 keyPropS = kf[kf.length - 2].e[0];
             } */
       isHold = true;
-    }else{
+    } else {
       var i = iterationIndex;
       var len = kf.length - 1, flag = true, keyData, nextKeyData;
-      while(flag) {
+      while (flag) {
         keyData = kf[i];
         nextKeyData = kf[i + 1];
-        if((nextKeyData.t - this.offsetTime) > frameNum) {
+        if ((nextKeyData.t - this.offsetTime) > frameNum) {
           break;
         }
-        if(i < len - 1) {
+        if (i < len - 1) {
           i += 1;
-        }else{
+        } else {
           flag = false;
         }
       }
       isHold = keyData.h === 1;
       iterationIndex = i;
-      if(!isHold) {
-        if(frameNum >= nextKeyData.t - this.offsetTime) {
+      if (!isHold) {
+        if (frameNum >= nextKeyData.t - this.offsetTime) {
           perc = 1;
-        }else if(frameNum < keyData.t - this.offsetTime) {
+        } else if (frameNum < keyData.t - this.offsetTime) {
           perc = 0;
-        }else{
+        } else {
           var fnc;
-          if(keyData.__fnct) {
+          if (keyData.__fnct) {
             fnc = keyData.__fnct;
-          }else{
+          } else {
             fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y).get;
             keyData.__fnct = fnc;
           }
@@ -58,8 +58,8 @@ var ShapePropertyFactory = (function () {
     kLen = keyPropS.i[0].length;
     caching.lastIndex = iterationIndex;
 
-    for(j = 0; j < jLen; j += 1) {
-      for(k = 0; k < kLen; k += 1) {
+    for (j = 0; j < jLen; j += 1) {
+      for (k = 0; k < kLen; k += 1) {
         vertexValue = isHold ? keyPropS.i[j][k] : keyPropS.i[j][k] + (keyPropE.i[j][k] - keyPropS.i[j][k]) * perc;
         previousValue.i[j][k] = vertexValue;
         vertexValue = isHold ? keyPropS.o[j][k] : keyPropS.o[j][k] + (keyPropE.o[j][k] - keyPropS.o[j][k]) * perc;
@@ -75,7 +75,7 @@ var ShapePropertyFactory = (function () {
     var initTime = this.keyframes[0].t - this.offsetTime;
     var endTime = this.keyframes[this.keyframes.length - 1].t - this.offsetTime;
     var lastFrame = this._caching.lastFrame;
-    if(!(lastFrame !== initFrame && ((lastFrame < initTime && frameNum < initTime) || (lastFrame > endTime && frameNum > endTime)))) {
+    if (!(lastFrame !== initFrame && ((lastFrame < initTime && frameNum < initTime) || (lastFrame > endTime && frameNum > endTime)))) {
       /// /
       this._caching.lastIndex = lastFrame < frameNum ? this._caching.lastIndex : 0;
       this.interpolateShape(frameNum, this.pv, this._caching);
@@ -90,12 +90,12 @@ var ShapePropertyFactory = (function () {
   }
 
   function shapesEqual(shape1, shape2) {
-    if(shape1._length !== shape2._length || shape1.c !== shape2.c) {
+    if (shape1._length !== shape2._length || shape1.c !== shape2.c) {
       return false;
     }
     var i, len = shape1._length;
-    for(i = 0; i < len; i += 1) {
-      if(shape1.v[i][0] !== shape2.v[i][0] 
+    for (i = 0; i < len; i += 1) {
+      if (shape1.v[i][0] !== shape2.v[i][0] 
             || shape1.v[i][1] !== shape2.v[i][1] 
             || shape1.o[i][0] !== shape2.o[i][0] 
             || shape1.o[i][1] !== shape2.o[i][1] 
@@ -108,7 +108,7 @@ var ShapePropertyFactory = (function () {
   }
 
   function setVValue(newPath) {
-    if(!shapesEqual(this.v, newPath)) {
+    if (!shapesEqual(this.v, newPath)) {
       this.v = shape_pool.clone(newPath);
       this.localShapeCollection.releaseShapes();
       this.localShapeCollection.addShape(this.v);
@@ -132,7 +132,7 @@ var ShapePropertyFactory = (function () {
     this._mdf = false;
     var finalValue = this.kf ? this.pv : this.data.ks ? this.data.ks.k : this.data.pt.k;
     var i, len = this.effectsSequence.length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       finalValue = this.effectsSequence[i](finalValue);
     }
     this.setVValue(finalValue);
@@ -219,9 +219,9 @@ var ShapePropertyFactory = (function () {
       this.initDynamicPropertyContainer(elem);
       this.p = PropertyFactory.getProp(elem, data.p, 1, 0, this);
       this.s = PropertyFactory.getProp(elem, data.s, 1, 0, this);
-      if(this.dynamicProperties.length) {
+      if (this.dynamicProperties.length) {
         this.k = true;
-      }else{
+      } else {
         this.k = false;
         this.convertEllToPath();
       }
@@ -230,13 +230,13 @@ var ShapePropertyFactory = (function () {
     EllShapeProperty.prototype = {
       reset: resetShape,
       getValue: function () {
-        if(this.elem.globalData.frameId === this.frameId) {
+        if (this.elem.globalData.frameId === this.frameId) {
           return;
         }
         this.frameId = this.elem.globalData.frameId;
         this.iterateDynamicProperties();
 
-        if(this._mdf) {
+        if (this._mdf) {
           this.convertEllToPath();
         }
       },
@@ -287,7 +287,7 @@ var ShapePropertyFactory = (function () {
       this.frameId = -1;
       this.d = data.d;
       this.initDynamicPropertyContainer(elem);
-      if(data.sy === 1) {
+      if (data.sy === 1) {
         this.ir = PropertyFactory.getProp(elem, data.ir, 0, 0, this);
         this.is = PropertyFactory.getProp(elem, data.is, 0, 0.01, this);
         this.convertToPath = this.convertStarToPath;
@@ -302,9 +302,9 @@ var ShapePropertyFactory = (function () {
       this.localShapeCollection = shapeCollection_pool.newShapeCollection();
       this.localShapeCollection.addShape(this.v);
       this.paths = this.localShapeCollection;
-      if(this.dynamicProperties.length) {
+      if (this.dynamicProperties.length) {
         this.k = true;
-      }else{
+      } else {
         this.k = false;
         this.convertToPath();
       }
@@ -313,12 +313,12 @@ var ShapePropertyFactory = (function () {
     StarShapeProperty.prototype = {
       reset: resetShape,
       getValue: function () {
-        if(this.elem.globalData.frameId === this.frameId) {
+        if (this.elem.globalData.frameId === this.frameId) {
           return;
         }
         this.frameId = this.elem.globalData.frameId;
         this.iterateDynamicProperties();
-        if(this._mdf) {
+        if (this._mdf) {
           this.convertToPath();
         }
       },
@@ -339,7 +339,7 @@ var ShapePropertyFactory = (function () {
         currentAng += this.r.v;
         var dir = this.data.d === 3 ? -1 : 1;
         this.v._length = 0;
-        for(i = 0; i < numPts; i += 1) {
+        for (i = 0; i < numPts; i += 1) {
           rad = longFlag ? longRad : shortRad;
           roundness = longFlag ? longRound : shortRound;
           perimSegment = longFlag ? longPerimSegment : shortPerimSegment;
@@ -369,7 +369,7 @@ var ShapePropertyFactory = (function () {
         var dir = this.data.d === 3 ? -1 : 1;
         currentAng += this.r.v;
         this.v._length = 0;
-        for(i = 0; i < numPts; i += 1) {
+        for (i = 0; i < numPts; i += 1) {
           var x = rad * Math.cos(currentAng);
           var y = rad * Math.sin(currentAng);
           var ox = x === 0 && y === 0 ? 0 : y / Math.sqrt(x * x + y * y);
@@ -405,9 +405,9 @@ var ShapePropertyFactory = (function () {
       this.p = PropertyFactory.getProp(elem, data.p, 1, 0, this);
       this.s = PropertyFactory.getProp(elem, data.s, 1, 0, this);
       this.r = PropertyFactory.getProp(elem, data.r, 0, 0, this);
-      if(this.dynamicProperties.length) {
+      if (this.dynamicProperties.length) {
         this.k = true;
-      }else{
+      } else {
         this.k = false;
         this.convertRectToPath();
       }
@@ -420,10 +420,10 @@ var ShapePropertyFactory = (function () {
         var cPoint = round * (1 - roundCorner);
         this.v._length = 0;
 
-        if(this.d === 2 || this.d === 1) {
+        if (this.d === 2 || this.d === 1) {
           this.v.setTripleAt(p0 + v0, p1 - v1 + round, p0 + v0, p1 - v1 + round, p0 + v0, p1 - v1 + cPoint, 0, true);
           this.v.setTripleAt(p0 + v0, p1 + v1 - round, p0 + v0, p1 + v1 - cPoint, p0 + v0, p1 + v1 - round, 1, true);
-          if(round !== 0) {
+          if (round !== 0) {
             this.v.setTripleAt(p0 + v0 - round, p1 + v1, p0 + v0 - round, p1 + v1, p0 + v0 - cPoint, p1 + v1, 2, true);
             this.v.setTripleAt(p0 - v0 + round, p1 + v1, p0 - v0 + cPoint, p1 + v1, p0 - v0 + round, p1 + v1, 3, true);
             this.v.setTripleAt(p0 - v0, p1 + v1 - round, p0 - v0, p1 + v1 - round, p0 - v0, p1 + v1 - cPoint, 4, true);
@@ -434,9 +434,9 @@ var ShapePropertyFactory = (function () {
             this.v.setTripleAt(p0 - v0, p1 + v1, p0 - v0 + cPoint, p1 + v1, p0 - v0, p1 + v1, 2);
             this.v.setTripleAt(p0 - v0, p1 - v1, p0 - v0, p1 - v1 + cPoint, p0 - v0, p1 - v1, 3);
           }
-        }else{
+        } else {
           this.v.setTripleAt(p0 + v0, p1 - v1 + round, p0 + v0, p1 - v1 + cPoint, p0 + v0, p1 - v1 + round, 0, true);
-          if(round !== 0) {
+          if (round !== 0) {
             this.v.setTripleAt(p0 + v0 - round, p1 - v1, p0 + v0 - round, p1 - v1, p0 + v0 - cPoint, p1 - v1, 1, true);
             this.v.setTripleAt(p0 - v0 + round, p1 - v1, p0 - v0 + cPoint, p1 - v1, p0 - v0 + round, p1 - v1, 2, true);
             this.v.setTripleAt(p0 - v0, p1 - v1 + round, p0 - v0, p1 - v1 + round, p0 - v0, p1 - v1 + cPoint, 3, true);
@@ -453,12 +453,12 @@ var ShapePropertyFactory = (function () {
         }
       },
       getValue: function (frameNum) {
-        if(this.elem.globalData.frameId === this.frameId) {
+        if (this.elem.globalData.frameId === this.frameId) {
           return;
         }
         this.frameId = this.elem.globalData.frameId;
         this.iterateDynamicProperties();
-        if(this._mdf) {
+        if (this._mdf) {
           this.convertRectToPath();
         }
 
@@ -472,22 +472,22 @@ var ShapePropertyFactory = (function () {
 
   function getShapeProp(elem, data, type) {
     var prop;
-    if(type === 3 || type === 4) {
+    if (type === 3 || type === 4) {
       var dataProp = type === 3 ? data.pt : data.ks;
       var keys = dataProp.k;
-      if(keys.length) {
+      if (keys.length) {
         prop = new KeyframedShapeProperty(elem, data, type);
-      }else{
+      } else {
         prop = new ShapeProperty(elem, data, type);
       }
-    }else if(type === 5) {
+    } else if (type === 5) {
       prop = new RectShapeProperty(elem, data);
-    }else if(type === 6) {
+    } else if (type === 6) {
       prop = new EllShapeProperty(elem, data);
-    }else if(type === 7) {
+    } else if (type === 7) {
       prop = new StarShapeProperty(elem, data);
     }
-    if(prop.k) {
+    if (prop.k) {
       elem.addDynamicProperty(prop);
     }
     return prop;

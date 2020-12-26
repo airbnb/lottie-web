@@ -2,11 +2,11 @@ function CVShapeData(element, data, styles, transformsManager) {
   this.styledShapes = [];
   this.tr = [0, 0, 0, 0, 0, 0];
   var ty = 4;
-  if(data.ty == 'rc') {
+  if (data.ty == 'rc') {
     ty = 5;
-  }else if(data.ty == 'el') {
+  } else if (data.ty == 'el') {
     ty = 6;
-  }else if(data.ty == 'sr') {
+  } else if (data.ty == 'sr') {
     ty = 7;
   }
   this.sh = ShapePropertyFactory.getShapeProp(element, data, ty, element);

@@ -16,7 +16,7 @@ var BezierFactory = (function () {
 
   function getBezierEasing(a, b, c, d, nm) {
     var str = nm || ('bez_' + a + '_' + b + '_' + c + '_' + d).replace(/\./g, 'p');
-    if(beziers[str]) {
+    if (beziers[str]) {
       return beziers[str];
     }
     var bezEasing = new BezierEasing([a, b, c, d]);

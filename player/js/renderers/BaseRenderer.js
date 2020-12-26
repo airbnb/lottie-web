@@ -5,7 +5,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
   for (i = len - 1; i >= 0; i--) {
     if (!this.elements[i]) {
       data = this.layers[i];
-      if(data.ip - data.st <= (num - this.layers[i].st) && data.op - data.st > (num - this.layers[i].st)) {
+      if (data.ip - data.st <= (num - this.layers[i].st) && data.op - data.st > (num - this.layers[i].st)) {
         this.buildItem(i);
       }
     }
@@ -15,7 +15,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
 };
 
 BaseRenderer.prototype.createItem = function (layer) {
-  switch(layer.ty) {
+  switch (layer.ty) {
     case 2:
       return this.createImage(layer);
     case 0:
@@ -46,7 +46,7 @@ BaseRenderer.prototype.createAudio = function (data) {
 
 BaseRenderer.prototype.buildAllItems = function () {
   var i, len = this.layers.length;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     this.buildItem(i);
   }
   this.checkPendingElements();
@@ -56,10 +56,10 @@ BaseRenderer.prototype.includeLayers = function (newLayers) {
   this.completeLayers = false;
   var i, len = newLayers.length;
   var j, jLen = this.layers.length;
-  for(i = 0; i < len; i += 1) {
+  for (i = 0; i < len; i += 1) {
     j = 0;
-    while(j < jLen) {
-      if(this.layers[j].id == newLayers[i].id) {
+    while (j < jLen) {
+      if (this.layers[j].id == newLayers[i].id) {
         this.layers[j] = newLayers[i];
         break;
       }
@@ -73,7 +73,7 @@ BaseRenderer.prototype.setProjectInterface = function (pInterface) {
 };
 
 BaseRenderer.prototype.initItems = function () {
-  if(!this.globalData.progressiveLoad) {
+  if (!this.globalData.progressiveLoad) {
     this.buildAllItems();
   }
 };
@@ -89,7 +89,7 @@ BaseRenderer.prototype.buildElementParenting = function (element, parentName, hi
       } else {
         hierarchy.push(elements[i]);
         elements[i].setAsParent();
-        if(layers[i].parent !== undefined) {
+        if (layers[i].parent !== undefined) {
           this.buildElementParenting(element, layers[i].parent, hierarchy);
         } else {
           element.setHierarchy(hierarchy);
@@ -106,8 +106,8 @@ BaseRenderer.prototype.addPendingElement = function (element) {
 
 BaseRenderer.prototype.searchExtraCompositions = function (assets) {
   var i, len = assets.length;
-  for(i = 0; i < len; i += 1) {
-    if(assets[i].xt) {
+  for (i = 0; i < len; i += 1) {
+    if (assets[i].xt) {
       var comp = this.createComp(assets[i]);
       comp.initExpressions();
       this.globalData.projectInterface.registerComposition(comp);

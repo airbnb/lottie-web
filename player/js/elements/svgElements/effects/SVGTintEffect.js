@@ -13,7 +13,7 @@ function SVGTintFilter(filter, filterManager) {
   feColorMatrix.setAttribute('result', 'f2');
   filter.appendChild(feColorMatrix);
   this.matrixFilter = feColorMatrix;
-  if(filterManager.effectElements[2].p.v !== 100 || filterManager.effectElements[2].p.k) {
+  if (filterManager.effectElements[2].p.v !== 100 || filterManager.effectElements[2].p.k) {
     var feMerge = createNS('feMerge');
     filter.appendChild(feMerge);
     var feMergeNode;
@@ -27,7 +27,7 @@ function SVGTintFilter(filter, filterManager) {
 }
 
 SVGTintFilter.prototype.renderFrame = function (forceRender) {
-  if(forceRender || this.filterManager._mdf) {
+  if (forceRender || this.filterManager._mdf) {
     var colorBlack = this.filterManager.effectElements[0].p.v;
     var colorWhite = this.filterManager.effectElements[1].p.v;
     var opacity = this.filterManager.effectElements[2].p.v / 100;

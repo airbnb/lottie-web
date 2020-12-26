@@ -10,12 +10,12 @@ animationManager = (function () {
   function removeElement(ev) {
     var i = 0;
     var animItem = ev.target;
-    while(i < len) {
+    while (i < len) {
       if (registeredAnimations[i].animation === animItem) {
         registeredAnimations.splice(i, 1);
         i -= 1;
         len -= 1;
-        if(!animItem.isPaused) {
+        if (!animItem.isPaused) {
           subtractPlayingCount();
         }
       }
@@ -24,12 +24,12 @@ animationManager = (function () {
   }
 
   function registerAnimation(element, animationData) {
-    if(!element) {
+    if (!element) {
       return null;
     }
     var i = 0;
-    while(i < len) {
-      if(registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null) {
+    while (i < len) {
+      if (registeredAnimations[i].elem == element && registeredAnimations[i].elem !== null) {
         return registeredAnimations[i].animation;
       }
       i += 1;
@@ -43,7 +43,7 @@ animationManager = (function () {
   function getRegisteredAnimations() {
     var i, len = registeredAnimations.length;
     var animations = [];
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       animations.push(registeredAnimations[i].animation);
     }
     return animations;
@@ -76,32 +76,32 @@ animationManager = (function () {
 
   function setSpeed(val, animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.setSpeed(val, animation);
     }
   }
 
   function setDirection(val, animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.setDirection(val, animation);
     }
   }
 
   function play(animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.play(animation);
     }
   }
   function resume(nowTime) {
     var elapsedTime = nowTime - initTime;
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.advanceTime(elapsedTime);
     }
     initTime = nowTime;
-    if(playingAnimationsNum && !_isFrozen) {
+    if (playingAnimationsNum && !_isFrozen) {
       requestAnimationFrame(resume);
     } else {
       _stopped = true;
@@ -115,35 +115,35 @@ animationManager = (function () {
 
   function pause(animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.pause(animation);
     }
   }
 
   function goToAndStop(value, isFrame, animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.goToAndStop(value, isFrame, animation);
     }
   }
 
   function stop(animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.stop(animation);
     }
   }
 
   function togglePause(animation) {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.togglePause(animation);
     }
   }
 
   function destroy(animation) {
     var i;
-    for(i = (len - 1); i >= 0; i -= 1) {
+    for (i = (len - 1); i >= 0; i -= 1) {
       registeredAnimations[i].animation.destroy(animation);
     }
   }
@@ -154,14 +154,14 @@ animationManager = (function () {
 
   function resize() {
     var i;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       registeredAnimations[i].animation.resize();
     }
   }
 
   function activate() {
-    if(!_isFrozen && playingAnimationsNum) {
-      if(_stopped) {
+    if (!_isFrozen && playingAnimationsNum) {
+      if (_stopped) {
         requestAnimationFrame(first);
         _stopped = false;
       }

@@ -1,5 +1,5 @@
 CanvasRenderer.prototype.configAnimation = function (animData) {
-  if(this.animationItem.wrapper) {
+  if (this.animationItem.wrapper) {
     this.animationItem.container = createTag('canvas');
     this.animationItem.container.style.width = '100%';
     this.animationItem.container.style.height = '100%';
@@ -8,10 +8,10 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
     this.animationItem.container.style.transformOrigin = this.animationItem.container.style.mozTransformOrigin = this.animationItem.container.style.webkitTransformOrigin = this.animationItem.container.style['-webkit-transform'] = '0px 0px 0px';
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.canvasContext = this.animationItem.container.getContext('2d');
-    if(this.renderConfig.className) {
+    if (this.renderConfig.className) {
       this.animationItem.container.setAttribute('class', this.renderConfig.className);
     }
-  }else{
+  } else {
     this.canvasContext = this.renderConfig.context;
   }
   this.data = animData;

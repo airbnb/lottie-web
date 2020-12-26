@@ -55,7 +55,7 @@ var Matrix = (function () {
   }
 
   function rotate(angle) {
-    if(angle === 0) {
+    if (angle === 0) {
       return this;
     }
     var mCos = _cos(angle);
@@ -64,7 +64,7 @@ var Matrix = (function () {
   }
 
   function rotateX(angle) {
-    if(angle === 0) {
+    if (angle === 0) {
       return this;
     }
     var mCos = _cos(angle);
@@ -73,7 +73,7 @@ var Matrix = (function () {
   }
 
   function rotateY(angle) {
-    if(angle === 0) {
+    if (angle === 0) {
       return this;
     }
     var mCos = _cos(angle);
@@ -82,7 +82,7 @@ var Matrix = (function () {
   }
 
   function rotateZ(angle) {
-    if(angle === 0) {
+    if (angle === 0) {
       return this;
     }
     var mCos = _cos(angle);
@@ -108,10 +108,10 @@ var Matrix = (function () {
   }
 
   function scale(sx, sy, sz) {
-    if(!sz && sz !== 0) {
+    if (!sz && sz !== 0) {
       sz = 1;
     }
-    if(sx === 1 && sy === 1 && sz === 1) {
+    if (sx === 1 && sy === 1 && sz === 1) {
       return this;
     }
     return this._t(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1);
@@ -139,7 +139,7 @@ var Matrix = (function () {
 
   function translate(tx, ty, tz) {
     tz = tz || 0;
-    if(tx !== 0 || ty !== 0 || tz !== 0) {
+    if (tx !== 0 || ty !== 0 || tz !== 0) {
       return this._t(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
     }
     return this;
@@ -149,7 +149,7 @@ var Matrix = (function () {
 
     var _p = this.props;
 
-    if(a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0) {
+    if (a2 === 1 && b2 === 0 && c2 === 0 && d2 === 0 && e2 === 0 && f2 === 1 && g2 === 0 && h2 === 0 && i2 === 0 && j2 === 0 && k2 === 1 && l2 === 0) {
       // NOTE: commenting this condition because TurboFan deoptimizes code when present
       // if(m2 !== 0 || n2 !== 0 || o2 !== 0){
       _p[12] = _p[12] * a2 + _p[15] * m2;
@@ -208,7 +208,7 @@ var Matrix = (function () {
   }
 
   function isIdentity() {
-    if(!this._identityCalculated) {
+    if (!this._identityCalculated) {
       this._identity = !(this.props[0] !== 1 || this.props[1] !== 0 || this.props[2] !== 0 || this.props[3] !== 0 || this.props[4] !== 0 || this.props[5] !== 1 || this.props[6] !== 0 || this.props[7] !== 0 || this.props[8] !== 0 || this.props[9] !== 0 || this.props[10] !== 1 || this.props[11] !== 0 || this.props[12] !== 0 || this.props[13] !== 0 || this.props[14] !== 0 || this.props[15] !== 1);
       this._identityCalculated = true;
     }
@@ -218,7 +218,7 @@ var Matrix = (function () {
   function equals(matr) {
     var i = 0;
     while (i < 16) {
-      if(matr.props[i] !== this.props[i]) {
+      if (matr.props[i] !== this.props[i]) {
         return false;
       }
       i += 1;
@@ -228,7 +228,7 @@ var Matrix = (function () {
 
   function clone(matr) {
     var i;
-    for(i = 0; i < 16; i += 1) {
+    for (i = 0; i < 16; i += 1) {
       matr.props[i] = this.props[i];
     }
     return matr;
@@ -236,7 +236,7 @@ var Matrix = (function () {
 
   function cloneFromProps(props) {
     var i;
-    for(i = 0; i < 16; i += 1) {
+    for (i = 0; i < 16; i += 1) {
       this.props[i] = props[i];
     }
   }
@@ -288,7 +288,7 @@ var Matrix = (function () {
 
   function inversePoints(pts) {
     var i, len = pts.length, retPts = [];
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       retPts[i] = inversePoint(pts[i]);
     }
     return retPts;
@@ -296,7 +296,7 @@ var Matrix = (function () {
 
   function applyToTriplePoints(pt1, pt2, pt3) {
     var arr = createTypedArray('float32', 6);
-    if(this.isIdentity()) {
+    if (this.isIdentity()) {
       arr[0] = pt1[0];
       arr[1] = pt1[1];
       arr[2] = pt2[0];
@@ -317,7 +317,7 @@ var Matrix = (function () {
 
   function applyToPointArray(x, y, z) {
     var arr;
-    if(this.isIdentity()) {
+    if (this.isIdentity()) {
       arr = [x, y, z];
     } else {
       arr = [
@@ -330,7 +330,7 @@ var Matrix = (function () {
   }
 
   function applyToPointStringified(x, y) {
-    if(this.isIdentity()) {
+    if (this.isIdentity()) {
       return x + ',' + y;
     }
     var _p = this.props;
@@ -346,7 +346,7 @@ var Matrix = (function () {
     var props = this.props;
     var cssValue = 'matrix3d(';
     var v = 10000;
-    while(i < 16) {
+    while (i < 16) {
       cssValue += _rnd(props[i] * v) / v;
       cssValue += i === 15 ? ')' : ',';
       i += 1;
@@ -356,7 +356,7 @@ var Matrix = (function () {
 
   function roundMatrixProperty(val) {
     var v = 10000;
-    if((val < 0.000001 && val > 0) || (val > -0.000001 && val < 0)) {
+    if ((val < 0.000001 && val > 0) || (val > -0.000001 && val < 0)) {
       return _rnd(val * v) / v;
     }
     return val;

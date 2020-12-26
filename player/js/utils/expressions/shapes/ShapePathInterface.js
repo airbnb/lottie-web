@@ -6,7 +6,7 @@ var ShapePathInterface = (
       var prop = view.sh;
 
       function interfaceFunction(val) {
-        if(val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2) {
+        if (val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2) {
           return interfaceFunction.path;
         }
       }
@@ -16,7 +16,7 @@ var ShapePathInterface = (
       Object.defineProperties(interfaceFunction, {
         path: {
           get: function () {
-            if(prop.k) {
+            if (prop.k) {
               prop.getValue();
             }
             return prop;
@@ -24,7 +24,7 @@ var ShapePathInterface = (
         },
         shape: {
           get: function () {
-            if(prop.k) {
+            if (prop.k) {
               prop.getValue();
             }
             return prop;

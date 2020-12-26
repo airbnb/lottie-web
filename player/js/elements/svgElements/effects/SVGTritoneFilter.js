@@ -25,7 +25,7 @@ function SVGTritoneFilter(filter, filterManager) {
 }
 
 SVGTritoneFilter.prototype.renderFrame = function (forceRender) {
-  if(forceRender || this.filterManager._mdf) {
+  if (forceRender || this.filterManager._mdf) {
     var color1 = this.filterManager.effectElements[0].p.v;
     var color2 = this.filterManager.effectElements[1].p.v;
     var color3 = this.filterManager.effectElements[2].p.v;

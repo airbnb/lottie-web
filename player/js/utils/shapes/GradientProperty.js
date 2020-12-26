@@ -15,9 +15,9 @@ function GradientProperty(elem, data, container) {
 
 GradientProperty.prototype.comparePoints = function (values, points) {
   var i = 0, len = this.o.length / 2, diff;
-  while(i < len) {
+  while (i < len) {
     diff = Math.abs(values[i * 4] - values[points * 4 + i * 2]);
-    if(diff > 0.01) {
+    if (diff > 0.01) {
       return false;
     }
     i += 1;
@@ -37,7 +37,7 @@ GradientProperty.prototype.checkCollapsable = function () {
       }
       i += 1;
     }
-  } else if(!this.comparePoints(this.data.k.k, this.data.p)) {
+  } else if (!this.comparePoints(this.data.k.k, this.data.p)) {
     return false;
   }
   return true;
@@ -48,23 +48,23 @@ GradientProperty.prototype.getValue = function (forceRender) {
   this._mdf = false;
   this._cmdf = false;
   this._omdf = false;
-  if(this.prop._mdf || forceRender) {
+  if (this.prop._mdf || forceRender) {
     var i, len = this.data.p * 4;
     var mult, val;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       mult = i % 4 === 0 ? 100 : 255;
       val = Math.round(this.prop.v[i] * mult);
-      if(this.c[i] !== val) {
+      if (this.c[i] !== val) {
         this.c[i] = val;
         this._cmdf = !forceRender;
       }
     }
-    if(this.o.length) {
+    if (this.o.length) {
       len = this.prop.v.length;
-      for(i = this.data.p * 4; i < len; i += 1) {
+      for (i = this.data.p * 4; i < len; i += 1) {
         mult = i % 2 === 0 ? 100 : 1;
         val = i % 2 === 0 ? Math.round(this.prop.v[i] * 100) : this.prop.v[i];
-        if(this.o[i - this.data.p * 4] !== val) {
+        if (this.o[i - this.data.p * 4] !== val) {
           this.o[i - this.data.p * 4] = val;
           this._omdf = !forceRender;
         }

@@ -3,12 +3,12 @@ function BaseElement() {
 
 BaseElement.prototype = {
   checkMasks: function () {
-    if(!this.data.hasMask) {
+    if (!this.data.hasMask) {
       return false;
     }
     var i = 0, len = this.data.masksProperties.length;
-    while(i < len) {
-      if((this.data.masksProperties[i].mode !== 'n' && this.data.masksProperties[i].cl !== false)) {
+    while (i < len) {
+      if ((this.data.masksProperties[i].mode !== 'n' && this.data.masksProperties[i].cl !== false)) {
         return true;
       }
       i += 1;
@@ -17,18 +17,18 @@ BaseElement.prototype = {
   },
   initExpressions: function () {
     this.layerInterface = LayerExpressionInterface(this);
-    if(this.data.hasMask && this.maskManager) {
+    if (this.data.hasMask && this.maskManager) {
       this.layerInterface.registerMaskInterface(this.maskManager);
     }
     var effectsInterface = EffectsExpressionInterface.createEffectsInterface(this, this.layerInterface);
     this.layerInterface.registerEffectsInterface(effectsInterface);
 
-    if(this.data.ty === 0 || this.data.xt) {
+    if (this.data.ty === 0 || this.data.xt) {
       this.compInterface = CompExpressionInterface(this);
-    } else if(this.data.ty === 4) {
+    } else if (this.data.ty === 4) {
       this.layerInterface.shapeInterface = ShapeExpressionInterface(this.shapesData, this.itemsData, this.layerInterface);
       this.layerInterface.content = this.layerInterface.shapeInterface;
-    } else if(this.data.ty === 5) {
+    } else if (this.data.ty === 5) {
       this.layerInterface.textInterface = TextExpressionInterface(this);
       this.layerInterface.text = this.layerInterface.textInterface;
     }
@@ -46,7 +46,7 @@ BaseElement.prototype = {
     this.layerId = createElementID();
         
     // Stretch factor for old animations missing this property.
-    if(!this.data.sr) {
+    if (!this.data.sr) {
       this.data.sr = 1;
     }
     // effects manager

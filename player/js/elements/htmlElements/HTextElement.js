@@ -16,7 +16,7 @@ extendPrototype([BaseElement, TransformElement, HBaseElement, HierarchyElement, 
 
 HTextElement.prototype.createContent = function () {
   this.isMasked = this.checkMasks();
-  if(this.isMasked) {
+  if (this.isMasked) {
     this.renderType = 'svg';
     this.compW = this.comp.data.w;
     this.compH = this.comp.data.h;
@@ -39,15 +39,15 @@ HTextElement.prototype.buildNewText = function () {
   this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
   var innerElemStyle = this.innerElem.style;
   innerElemStyle.color = innerElemStyle.fill = documentData.fc ? this.buildColor(documentData.fc) : 'rgba(0,0,0,0)';
-  if(documentData.sc) {
+  if (documentData.sc) {
     innerElemStyle.stroke = this.buildColor(documentData.sc);
     innerElemStyle.strokeWidth = documentData.sw + 'px';
   }
   var fontData = this.globalData.fontManager.getFontByName(documentData.f);
-  if(!this.globalData.fontManager.chars) {
+  if (!this.globalData.fontManager.chars) {
     innerElemStyle.fontSize = documentData.finalSize + 'px';
     innerElemStyle.lineHeight = documentData.finalSize + 'px';
-    if(fontData.fClass) {
+    if (fontData.fClass) {
       this.innerElem.className = fontData.fClass;
     } else {
       innerElemStyle.fontFamily = fontData.fFamily;
@@ -65,8 +65,8 @@ HTextElement.prototype.buildNewText = function () {
   var shapes, shapeStr = '';
   var cnt = 0;
   for (i = 0; i < len; i += 1) {
-    if(this.globalData.fontManager.chars) {
-      if(!this.textPaths[cnt]) {
+    if (this.globalData.fontManager.chars) {
+      if (!this.textPaths[cnt]) {
         tSpan = createNS('path');
         tSpan.setAttribute('stroke-linecap', 'butt');
         tSpan.setAttribute('stroke-linejoin', 'round');
@@ -74,8 +74,8 @@ HTextElement.prototype.buildNewText = function () {
       } else {
         tSpan = this.textPaths[cnt];
       }
-      if(!this.isMasked) {
-        if(this.textSpans[cnt]) {
+      if (!this.isMasked) {
+        if (this.textSpans[cnt]) {
           tParent = this.textSpans[cnt];
           tCont = tParent.children[0];
         } else {
@@ -87,9 +87,9 @@ HTextElement.prototype.buildNewText = function () {
           styleDiv(tParent);
         }
       }
-    }else{
-      if(!this.isMasked) {
-        if(this.textSpans[cnt]) {
+    } else {
+      if (!this.isMasked) {
+        if (this.textSpans[cnt]) {
           tParent = this.textSpans[cnt];
           tSpan = this.textPaths[cnt];
         } else {
@@ -104,24 +104,24 @@ HTextElement.prototype.buildNewText = function () {
       }
     }
     // tSpan.setAttribute('visibility', 'hidden');
-    if(this.globalData.fontManager.chars) {
+    if (this.globalData.fontManager.chars) {
       var charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
       var shapeData;
-      if(charData) {
+      if (charData) {
         shapeData = charData.data;
       } else {
         shapeData = null;
       }
       matrixHelper.reset();
-      if(shapeData && shapeData.shapes) {
+      if (shapeData && shapeData.shapes) {
         shapes = shapeData.shapes[0].it;
         matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
         shapeStr = this.createPathShape(matrixHelper, shapes);
         tSpan.setAttribute('d', shapeStr);
       }
-      if(!this.isMasked) {
+      if (!this.isMasked) {
         this.innerElem.appendChild(tParent);
-        if(shapeData && shapeData.shapes) {
+        if (shapeData && shapeData.shapes) {
 
           // document.body.appendChild is needed to get exact measure of shape
           document.body.appendChild(tCont);
@@ -133,18 +133,18 @@ HTextElement.prototype.buildNewText = function () {
 
           letters[i].yOffset = boundingBox.y - 1;
 
-        } else{
+        } else {
           tCont.setAttribute('width', 1);
           tCont.setAttribute('height', 1);
         }
         tParent.appendChild(tCont);
-      }else{
+      } else {
         this.innerElem.appendChild(tSpan);
       }
-    }else{
+    } else {
       tSpan.textContent = letters[i].val;
       tSpan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space', 'preserve');
-      if(!this.isMasked) {
+      if (!this.isMasked) {
         this.innerElem.appendChild(tParent);
         //
         tSpan.style.transform = tSpan.style.webkitTransform = 'translate3d(0,' + -documentData.finalSize / 1.2 + 'px,0)';
@@ -153,16 +153,16 @@ HTextElement.prototype.buildNewText = function () {
       }
     }
     //
-    if(!this.isMasked) {
+    if (!this.isMasked) {
       this.textSpans[cnt] = tParent;
-    }else{
+    } else {
       this.textSpans[cnt] = tSpan;
     }
     this.textSpans[cnt].style.display = 'block';
     this.textPaths[cnt] = tSpan;
     cnt += 1;
   }
-  while(cnt < this.textSpans.length) {
+  while (cnt < this.textSpans.length) {
     this.textSpans[cnt].style.display = 'none';
     cnt += 1;
   }
@@ -170,12 +170,12 @@ HTextElement.prototype.buildNewText = function () {
 
 HTextElement.prototype.renderInnerContent = function () {
 
-  if(this.data.singleShape) {
-    if(!this._isFirstFrame && !this.lettersChangedFlag) {
+  if (this.data.singleShape) {
+    if (!this._isFirstFrame && !this.lettersChangedFlag) {
       return;
     } else {
       // Todo Benchmark if using this is better than getBBox
-      if(this.isMasked && this.finalTransform._matMdf) {
+      if (this.isMasked && this.finalTransform._matMdf) {
         this.svgElement.setAttribute('viewBox', -this.finalTransform.mProp.p.v[0] + ' ' + -this.finalTransform.mProp.p.v[1] + ' ' + this.compW + ' ' + this.compH);
         this.svgElement.style.transform = this.svgElement.style.webkitTransform = 'translate(' + -this.finalTransform.mProp.p.v[0] + 'px,' + -this.finalTransform.mProp.p.v[1] + 'px)';
       }
@@ -183,7 +183,7 @@ HTextElement.prototype.renderInnerContent = function () {
   }
 
   this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
-  if(!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag) {
+  if (!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag) {
     return;
   }
   var i, len, count = 0;
@@ -193,8 +193,8 @@ HTextElement.prototype.renderInnerContent = function () {
 
   len = letters.length;
   var renderedLetter, textSpan, textPath;
-  for(i = 0; i < len; i += 1) {
-    if(letters[i].n) {
+  for (i = 0; i < len; i += 1) {
+    if (letters[i].n) {
       count += 1;
       continue;
     }
@@ -202,41 +202,41 @@ HTextElement.prototype.renderInnerContent = function () {
     textPath = this.textPaths[i];
     renderedLetter = renderedLetters[count];
     count += 1;
-    if(renderedLetter._mdf.m) {
-      if(!this.isMasked) {
+    if (renderedLetter._mdf.m) {
+      if (!this.isMasked) {
         textSpan.style.transform = textSpan.style.webkitTransform = renderedLetter.m;
-      }else{
+      } else {
         textSpan.setAttribute('transform', renderedLetter.m);
       }
     }
     /// /textSpan.setAttribute('opacity',renderedLetter.o);
     textSpan.style.opacity = renderedLetter.o;
-    if(renderedLetter.sw && renderedLetter._mdf.sw) {
+    if (renderedLetter.sw && renderedLetter._mdf.sw) {
       textPath.setAttribute('stroke-width', renderedLetter.sw);
     }
-    if(renderedLetter.sc && renderedLetter._mdf.sc) {
+    if (renderedLetter.sc && renderedLetter._mdf.sc) {
       textPath.setAttribute('stroke', renderedLetter.sc);
     }
-    if(renderedLetter.fc && renderedLetter._mdf.fc) {
+    if (renderedLetter.fc && renderedLetter._mdf.fc) {
       textPath.setAttribute('fill', renderedLetter.fc);
       textPath.style.color = renderedLetter.fc;
     }
   }
 
-  if(this.innerElem.getBBox && !this.hidden && (this._isFirstFrame || this._mdf)) {
+  if (this.innerElem.getBBox && !this.hidden && (this._isFirstFrame || this._mdf)) {
     var boundingBox = this.innerElem.getBBox();
 
-    if(this.currentBBox.w !== boundingBox.width) {
+    if (this.currentBBox.w !== boundingBox.width) {
       this.currentBBox.w = boundingBox.width;
       this.svgElement.setAttribute('width', boundingBox.width);
     }
-    if(this.currentBBox.h !== boundingBox.height) {
+    if (this.currentBBox.h !== boundingBox.height) {
       this.currentBBox.h = boundingBox.height;
       this.svgElement.setAttribute('height', boundingBox.height);
     }
 
     var margin = 1;
-    if(this.currentBBox.w !== (boundingBox.width + margin * 2) || this.currentBBox.h !== (boundingBox.height + margin * 2) || this.currentBBox.x !== (boundingBox.x - margin) || this.currentBBox.y !== (boundingBox.y - margin)) {
+    if (this.currentBBox.w !== (boundingBox.width + margin * 2) || this.currentBBox.h !== (boundingBox.height + margin * 2) || this.currentBBox.x !== (boundingBox.x - margin) || this.currentBBox.y !== (boundingBox.y - margin)) {
       this.currentBBox.w = boundingBox.width + margin * 2;
       this.currentBBox.h = boundingBox.height + margin * 2;
       this.currentBBox.x = boundingBox.x - margin;

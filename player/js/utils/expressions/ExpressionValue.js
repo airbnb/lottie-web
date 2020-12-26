@@ -7,7 +7,7 @@ function ExpressionValue(elementProp, mult, type) {
   }
   var i, len, arrValue, val;
   if (type) {
-    if(type === 'color') {
+    if (type === 'color') {
       len = 4;
       expressionValue = createTypedArray('float32', len);
       arrValue = createTypedArray('float32', len);

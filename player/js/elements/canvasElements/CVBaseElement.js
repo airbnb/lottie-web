@@ -11,7 +11,7 @@ CVBaseElement.prototype = {
   createContent: function () {},
   setBlendMode: function () {
     var globalData = this.globalData;
-    if(globalData.blendMode !== this.data.bm) {
+    if (globalData.blendMode !== this.data.bm) {
       globalData.blendMode = this.data.bm;
       var blendModeValue = getBlendMode(this.data.bm);
       globalData.canvasContext.globalCompositeOperation = blendModeValue;
@@ -45,7 +45,7 @@ CVBaseElement.prototype = {
     this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
     this.renderInnerContent();
     this.globalData.renderer.restore(forceRealStack);
-    if(this.maskManager.hasMasks) {
+    if (this.maskManager.hasMasks) {
       this.globalData.renderer.restore(true);
     }
     if (this._isFirstFrame) {

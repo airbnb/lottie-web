@@ -10,7 +10,7 @@ var shapeCollection_pool = (function () {
 
   function newShapeCollection() {
     var shapeCollection;
-    if(_length) {
+    if (_length) {
       _length -= 1;
       shapeCollection = pool[_length];
     } else {
@@ -21,12 +21,12 @@ var shapeCollection_pool = (function () {
 
   function release(shapeCollection) {
     var i, len = shapeCollection._length;
-    for(i = 0; i < len; i += 1) {
+    for (i = 0; i < len; i += 1) {
       shape_pool.release(shapeCollection.shapes[i]);
     }
     shapeCollection._length = 0;
 
-    if(_length === _maxLength) {
+    if (_length === _maxLength) {
       pool = pooling.double(pool);
       _maxLength = _maxLength * 2;
     }

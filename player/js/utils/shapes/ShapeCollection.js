@@ -5,7 +5,7 @@ function ShapeCollection() {
 }
 
 ShapeCollection.prototype.addShape = function (shapeData) {
-  if(this._length === this._maxLength) {
+  if (this._length === this._maxLength) {
     this.shapes = this.shapes.concat(createSizedArray(this._maxLength));
     this._maxLength *= 2;
   }
@@ -15,7 +15,7 @@ ShapeCollection.prototype.addShape = function (shapeData) {
 
 ShapeCollection.prototype.releaseShapes = function () {
   var i;
-  for(i = 0; i < this._length; i += 1) {
+  for (i = 0; i < this._length; i += 1) {
     shape_pool.release(this.shapes[i]);
   }
   this._length = 0;

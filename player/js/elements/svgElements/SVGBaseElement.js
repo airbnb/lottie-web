@@ -34,7 +34,7 @@ SVGBaseElement.prototype = {
           masker.appendChild(gg);
           gg.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
         }
-      } else if(this.data.td == 2) {
+      } else if (this.data.td == 2) {
         var maskGroup = createNS('mask');
         maskGroup.setAttribute('id', this.layerId);
         maskGroup.setAttribute('mask-type', 'alpha');

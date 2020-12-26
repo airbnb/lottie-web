@@ -1,9 +1,9 @@
 AnimationItem.prototype.setParams = function (params) {
-  if(params.context) {
+  if (params.context) {
     this.context = params.context;
   }
   var animType = params.animType ? params.animType : params.renderer ? params.renderer : 'svg';
-  switch(animType) {
+  switch (animType) {
     case 'canvas':
       this.renderer = new CanvasRenderer(this, params.rendererSettings);
       break;
@@ -14,21 +14,21 @@ AnimationItem.prototype.setParams = function (params) {
   this.renderer.setProjectInterface(this.projectInterface);
   this.animType = animType;
 
-  if(params.loop === '' || params.loop === null) {
-  }else if(params.loop === false) {
+  if (params.loop === '' || params.loop === null) {
+  } else if (params.loop === false) {
     this.loop = false;
-  }else if(params.loop === true) {
+  } else if (params.loop === true) {
     this.loop = true;
-  }else{
+  } else {
     this.loop = parseInt(params.loop);
   }
   this.autoplay = 'autoplay' in params ? params.autoplay : true;
   this.name = params.name ? params.name : '';
   this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments : true;
   this.assetsPath = null;
-  if(params.animationData) {
+  if (params.animationData) {
     this.configAnimation(params.animationData);
-  }else if(params.path) {
+  } else if (params.path) {
     throw new Error('Canvas worker renderer cannot load animation from url');
   }
 };
@@ -38,7 +38,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
 };
 
 AnimationItem.prototype.includeLayers = function (data) {
-  if(data.op > this.animationData.op) {
+  if (data.op > this.animationData.op) {
     this.animationData.op = data.op;
     this.totalFrames = Math.floor(data.op - this.animationData.ip);
   }
@@ -46,10 +46,10 @@ AnimationItem.prototype.includeLayers = function (data) {
   var i, len = layers.length;
   var newLayers = data.layers;
   var j, jLen = newLayers.length;
-  for(j = 0; j < jLen; j += 1) {
+  for (j = 0; j < jLen; j += 1) {
     i = 0;
-    while(i < len) {
-      if(layers[i].id == newLayers[j].id) {
+    while (i < len) {
+      if (layers[i].id == newLayers[j].id) {
         layers[i] = newLayers[j];
         break;
       }
@@ -59,7 +59,7 @@ AnimationItem.prototype.includeLayers = function (data) {
   this.animationData.__complete = false;
   dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
   this.renderer.includeLayers(data.layers);
-  if(expressionsPlugin) {
+  if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
   }
   this.loadNextSegment();
@@ -67,7 +67,7 @@ AnimationItem.prototype.includeLayers = function (data) {
 
 AnimationItem.prototype.loadNextSegment = function () {
   var segments = this.animationData.segments;
-  if(!segments || segments.length === 0 || !this.autoloadSegments) {
+  if (!segments || segments.length === 0 || !this.autoloadSegments) {
     this.timeCompleted = this.totalFrames;
     return;
   }
@@ -76,7 +76,7 @@ AnimationItem.prototype.loadNextSegment = function () {
 
 AnimationItem.prototype.loadSegments = function () {
   var segments = this.animationData.segments;
-  if(!segments) {
+  if (!segments) {
     this.timeCompleted = this.totalFrames;
   }
   this.loadNextSegment();
@@ -87,13 +87,13 @@ AnimationItem.prototype.imagesLoaded = null;
 AnimationItem.prototype.preloadImages = null;
 
 AnimationItem.prototype.configAnimation = function (animData) {
-  if(!this.renderer) {
+  if (!this.renderer) {
     return;
   }
   this.animationData = animData;
   this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
   this.renderer.configAnimation(animData);
-  if(!animData.assets) {
+  if (!animData.assets) {
     animData.assets = [];
   }
   this.renderer.searchExtraCompositions(animData.assets);
@@ -113,7 +113,7 @@ AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded) {
     this.isLoaded = true;
     dataManager.completeData(this.animationData, null);
-    if(expressionsPlugin) {
+    if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }
     this.renderer.initItems();

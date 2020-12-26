@@ -13,8 +13,8 @@ function SVGMatte3Effect(filterElem, filterManager, elem) {
 
 SVGMatte3Effect.prototype.findSymbol = function (mask) {
   var i = 0, len = _svgMatteSymbols.length;
-  while(i < len) {
-    if(_svgMatteSymbols[i] === mask) {
+  while (i < len) {
+    if (_svgMatteSymbols[i] === mask) {
       return _svgMatteSymbols[i];
     }
     i += 1;
@@ -24,7 +24,7 @@ SVGMatte3Effect.prototype.findSymbol = function (mask) {
 
 SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
   var parentNode = mask.layerElement.parentNode;
-  if(!parentNode) {
+  if (!parentNode) {
     return;
   }
   var children = parentNode.children;
@@ -41,7 +41,7 @@ SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
   }
   var useElem = createNS('use');
   useElem.setAttribute('href', '#' + symbolId);
-  if(nextChild) {
+  if (nextChild) {
     parentNode.insertBefore(useElem, nextChild);
   } else {
     parentNode.appendChild(useElem);
@@ -49,7 +49,7 @@ SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
 };
 
 SVGMatte3Effect.prototype.setElementAsMask = function (elem, mask) {
-  if(!this.findSymbol(mask)) {
+  if (!this.findSymbol(mask)) {
     var symbolId = createElementID();
     var masker = createNS('mask');
     masker.setAttribute('id', mask.layerId);
@@ -85,7 +85,7 @@ SVGMatte3Effect.prototype.initialize = function () {
 };
 
 SVGMatte3Effect.prototype.renderFrame = function () {
-  if(!this.initialized) {
+  if (!this.initialized) {
     this.initialize();
   }
 };

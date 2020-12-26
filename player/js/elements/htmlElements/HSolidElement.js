@@ -5,7 +5,7 @@ extendPrototype([BaseElement, TransformElement, HBaseElement, HierarchyElement, 
 
 HSolidElement.prototype.createContent = function () {
   var rect;
-  if(this.data.hasMask) {
+  if (this.data.hasMask) {
     rect = createNS('rect');
     rect.setAttribute('width', this.data.sw);
     rect.setAttribute('height', this.data.sh);
