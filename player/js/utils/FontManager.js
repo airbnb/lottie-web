@@ -243,11 +243,11 @@ var FontManager = (function () {
     }
     if (((typeof char === 'string' && char.charCodeAt(0) !== 13) || !char)
             && console
-            && console.warn
+            && console.warn // eslint-disable-line no-console
             && !this._warned
     ) {
       this._warned = true;
-      console.warn('Missing character from exported characters list: ', char, style, font);
+      console.warn('Missing character from exported characters list: ', char, style, font); // eslint-disable-line no-console
     }
     return emptyChar;
   }
