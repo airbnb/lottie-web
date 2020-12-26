@@ -40,7 +40,6 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "no-useless-escape": "off",
         "no-shadow": "off",
         "no-restricted-globals": "off",
         "default-case": "off",

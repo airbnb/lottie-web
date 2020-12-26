@@ -127,7 +127,7 @@ if (standalone) {
   var myScript = scripts[index] || {
     src: '',
   };
-  queryString = myScript.src.replace(/^[^\?]+\??/, '');
+  queryString = myScript.src.replace(/^[^\?]+\??/, ''); // eslint-disable-line no-useless-escape
   renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
