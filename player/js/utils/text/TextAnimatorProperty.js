@@ -217,6 +217,8 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             case 2:
               currentLength += (totalLength - documentData.lineWidths[letters[i].line]) / 2;
               break;
+            default:
+              break;
           }
           currentLine = letters[i].line;
         }
@@ -504,6 +506,8 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             break;
           case 2:
             matrixHelper.translate(letters[i].animatorJustifyOffset + documentData.justifyOffset + (documentData.boxWidth - documentData.lineWidths[letters[i].line]) / 2, 0, 0);
+            break;
+          default:
             break;
         }
         matrixHelper.translate(0, -documentData.ls);

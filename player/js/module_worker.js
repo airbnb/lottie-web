@@ -15,6 +15,7 @@ var lottiejs = (function (window) {
         case 'high':
           defaultCurveSegments = 200;
           break;
+        default:
         case 'medium':
           defaultCurveSegments = 50;
           break;

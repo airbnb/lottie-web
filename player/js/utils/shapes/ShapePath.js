@@ -49,6 +49,9 @@ ShapePath.prototype.setXYAt = function (x, y, type, pos, replace) {
     case 'o':
       arr = this.o;
       break;
+    default:
+      arr = [];
+      break;
   }
   if (!arr[pos] || (arr[pos] && !replace)) {
     arr[pos] = point_pool.newElement();

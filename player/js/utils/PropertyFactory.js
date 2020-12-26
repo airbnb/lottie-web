@@ -423,6 +423,8 @@ var PropertyFactory = (function () {
         case 1:
           p = new KeyframedMultidimensionalProperty(elem, data, mult, container);
           break;
+        default:
+          break;
       }
     }
     if (p.effectsSequence.length) {

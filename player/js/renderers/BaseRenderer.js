@@ -32,8 +32,9 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createAudio(layer);
     case 13:
       return this.createCamera(layer);
+    default:
+      return this.createNull(layer);
   }
-  return this.createNull(layer);
 };
 
 BaseRenderer.prototype.createCamera = function () {

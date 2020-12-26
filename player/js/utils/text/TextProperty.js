@@ -203,6 +203,8 @@ TextProperty.prototype.completeTextData = function (documentData) {
       case 'thin':
         fWeight = '200';
         break;
+      default:
+        break;
     }
   }
   documentData.fWeight = fontData.fWeight || fWeight;

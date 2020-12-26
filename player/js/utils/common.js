@@ -129,6 +129,7 @@ function HSVtoRGB(h, s, v) {
     case 3: r = p; g = q; b = v; break;
     case 4: r = t; g = p; b = v; break;
     case 5: r = v; g = p; b = q; break;
+    default: break;
   }
   return [r,
     g,
@@ -147,6 +148,7 @@ function RGBtoHSV(r, g, b) {
     case r: h = (g - b) + d * (g < b ? 6 : 0); h /= 6 * d; break;
     case g: h = (b - r) + d * 2; h /= 6 * d; break;
     case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    default: break;
   }
 
   return [

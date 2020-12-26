@@ -73,6 +73,9 @@ SVGTextElement.prototype.buildNewText = function () {
       case 2:
         justify = 'middle';
         break;
+      default:
+        justify = 'start';
+        break;
     }
     tElement.setAttribute('text-anchor', justify);
     tElement.setAttribute('letter-spacing', trackingOffset);

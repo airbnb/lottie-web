@@ -42,7 +42,6 @@
         "strict": "off",
         "lines-around-directive": "off",
         "no-restricted-globals": "off",
-        "default-case": "off",
         "no-sequences": "off",
         "no-void": "off",
         "no-redeclare": "off",
