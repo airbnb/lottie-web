@@ -1,5 +1,4 @@
 const fs = require('fs');
-const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
@@ -558,31 +557,6 @@ const scripts = [
 	}
 ]
 
-function loadIndex() {
-	return new Promise((resolve, reject)=>{
-
-		function onLoad(err, result) {
-			if(err) {
-				reject(err);
-			} else {
-				resolve(result);
-			}
-		}
-		fs.readFile(`${rootFolder}index.html`, 'utf8', onLoad);
-	})
-}
-
-function parseHTML(html) {
-	return new Promise((resolve, reject)=> {
-		try {
-			const $ = cheerio.load(html);
-			resolve($);
-		} catch(err) {
-			reject(err);
-		}
-	})
-}
-
 function concatScripts(scripts, build) {
 	return new Promise((resolve, reject)=>{
 		// Concatenating scripts
@@ -664,7 +638,7 @@ async function buildVersion(scripts, version) {
 	const processedCode = await version.process(wrappedCode)
 	const modularizedCode = await modularizeCode(processedCode)
 	const saved = await save(modularizedCode, version.fileName)
-	return true
+	return saved
 }
 
 function save(code, fileName) {
@@ -673,7 +647,7 @@ function save(code, fileName) {
 			if (err) {
 				reject(err)
 			} else {
-				resolve('File Saved')
+				resolve(true)
 			}
 		});
 	})
@@ -790,10 +764,7 @@ function handleError(err) {
 
 async function build() {
 	try {
-		const htmlData = await loadIndex();
-		const parsedData = await parseHTML(htmlData);
 		const result = await buildVersions(scripts);
-		console.log(result);
 
 	} catch(err) {
 		handleError(err);
