@@ -319,7 +319,7 @@ AnimationItem.prototype.setSubframe = function (flag) {
 };
 
 AnimationItem.prototype.gotoFrame = function () {
-  this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
+  this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame; // eslint-disable-line no-bitwise
 
   if (this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted) {
     this.currentFrame = this.timeCompleted;

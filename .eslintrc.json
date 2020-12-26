@@ -45,7 +45,6 @@
         "no-redeclare": "off",
         "prefer-rest-params": "off",
         "radix": "off",
-        "no-bitwise": "off",
         "camelcase": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",

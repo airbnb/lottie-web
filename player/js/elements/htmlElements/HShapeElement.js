@@ -119,9 +119,9 @@ HShapeElement.prototype.getBoundsOfCurve = function (p0, p1, p2, p3) {
     a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
     c = 3 * p1[i] - 3 * p0[i];
 
-    b |= 0;
-    a |= 0;
-    c |= 0;
+    b |= 0; // eslint-disable-line no-bitwise
+    a |= 0; // eslint-disable-line no-bitwise
+    c |= 0; // eslint-disable-line no-bitwise
 
     if (a === 0) {
       if (b === 0) {
