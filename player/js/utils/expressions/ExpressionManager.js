@@ -404,17 +404,9 @@ var ExpressionManager = (function () {
       mask,
       valueAtTime,
       velocityAtTime;
-    var __expression_functions = [];
-    if (data.xf) {
-      var i,
-        len = data.xf.length;
-      for (i = 0; i < len; i += 1) {
-        __expression_functions[i] = eval('(function(){ return ' + data.xf[i] + '}())');
-      }
-    }
 
     var scoped_bm_rt;
-    var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0];
+    var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
     var numKeys = property.kf ? data.k.length : 0;
 
     var active = !this.data || this.data.hd !== true;

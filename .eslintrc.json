@@ -44,7 +44,6 @@
         "lines-around-directive": "off",
         "radix": "off",
         "camelcase": "off",
-        "no-eval": "off",
         "no-restricted-syntax": "off",
         "eqeqeq": "off"
     }
