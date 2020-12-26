@@ -24,6 +24,8 @@ var SVGElementsRenderer = (function () {
         return renderPath;
       case 'tr':
         return renderContentTransform;
+      default:
+        return null;
     }
   }
 

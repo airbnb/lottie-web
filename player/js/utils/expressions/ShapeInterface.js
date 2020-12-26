@@ -43,6 +43,7 @@ var ShapeExpressionInterface = (function () {
       if (typeof value === 'number') {
         return interfaces[value - 1];
       }
+      return null;
     };
 
     interfaceFunction.propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -95,6 +96,7 @@ var ShapeExpressionInterface = (function () {
       } else if (val === 'Opacity' || val === 'opacity') {
         return interfaceFunction.opacity;
       }
+      return null;
     }
     Object.defineProperties(interfaceFunction, {
       color: {
@@ -135,6 +137,7 @@ var ShapeExpressionInterface = (function () {
       } else if (val === 'Stroke Width' || val === 'stroke width') {
         return interfaceFunction.strokeWidth;
       }
+      return null;
     }
     Object.defineProperties(interfaceFunction, {
       color: {
@@ -172,6 +175,7 @@ var ShapeExpressionInterface = (function () {
       if (val === shape.o.ix) {
         return interfaceFunction.offset;
       }
+      return null;
     }
 
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -222,6 +226,7 @@ var ShapeExpressionInterface = (function () {
       if ((shape.sa && shape.sa.ix === value) || value === 'Skew Axis') {
         return interfaceFunction.skewAxis;
       }
+      return null;
     }
 
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -273,6 +278,7 @@ var ShapeExpressionInterface = (function () {
       if (shape.s.ix === value) {
         return interfaceFunction.size;
       }
+      return null;
     }
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
     interfaceFunction.propertyIndex = shape.ix;
@@ -316,6 +322,7 @@ var ShapeExpressionInterface = (function () {
       if (shape.is && shape.is.ix === value) {
         return interfaceFunction.innerRoundness;
       }
+      return null;
     }
 
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -370,6 +377,7 @@ var ShapeExpressionInterface = (function () {
       if (shape.s.ix === value || value === 'Size' || value === 'ADBE Vector Rect Size') {
         return interfaceFunction.size;
       }
+      return null;
     }
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
 
@@ -400,6 +408,7 @@ var ShapeExpressionInterface = (function () {
       if (shape.r.ix === value || value === 'Round Corners 1') {
         return interfaceFunction.radius;
       }
+      return null;
     }
 
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -424,6 +433,7 @@ var ShapeExpressionInterface = (function () {
       } else if (shape.o.ix === value || value === 'Offset') {
         return interfaceFunction.offset;
       }
+      return null;
     }
 
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
@@ -462,6 +472,7 @@ var ShapeExpressionInterface = (function () {
           }
           i += 1;
         }
+        return null;
       }
     }
     function parentGroupWrapper() {

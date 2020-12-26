@@ -39,7 +39,6 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "consistent-return": "off",
         "no-useless-escape": "off",
         "block-scoped-var": "off",
         "wrap-iife": "off",

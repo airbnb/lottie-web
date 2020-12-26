@@ -15,6 +15,7 @@ var ProjectInterface = (function () {
         }
         i += 1;
       }
+      return null;
     }
 
     _thisProjectFunction.compositions = [];

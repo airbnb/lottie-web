@@ -29,6 +29,7 @@ var ExpressionManager = (function () {
     if (a.propType) {
       return a.v;
     }
+    return -a;
   }
 
   var easeInBez = BezierFactory.getBezierEasing(0.333, 0, .833, .833, 'easeIn').get;

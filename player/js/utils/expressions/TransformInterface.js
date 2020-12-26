@@ -38,6 +38,8 @@ var TransformExpressionInterface = (function () {
         case 'Opacity':
         case 11:
           return _thisFunction.opacity;
+        default:
+          return null;
       }
     }
     Object.defineProperty(_thisFunction, 'rotation', {

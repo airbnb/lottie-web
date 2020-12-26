@@ -123,6 +123,7 @@ HybridRenderer.prototype.getThreeDContainerByPos = function (pos) {
     }
     i += 1;
   }
+  return null;
 };
 
 HybridRenderer.prototype.createThreeDContainer = function (pos, type) {

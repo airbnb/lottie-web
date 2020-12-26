@@ -68,6 +68,8 @@ function getFactory(name) {
       return ShapePropertyFactory;
     case 'matrix':
       return Matrix;
+    default:
+      return null;
   }
 }
 
@@ -113,6 +115,7 @@ function getQueryVariable(variable) {
       return decodeURIComponent(pair[1]);
     }
   }
+  return null;
 }
 var standalone = '__[STANDALONE]__';
 var animationData = '__[ANIMATIONDATA]__';

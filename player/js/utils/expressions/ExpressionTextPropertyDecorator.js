@@ -5,6 +5,7 @@
       this.addEffect(this.getExpressionValue.bind(this));
       return true;
     }
+    return null;
   }
 
   TextProperty.prototype.getExpressionValue = function (currentValue, text) {

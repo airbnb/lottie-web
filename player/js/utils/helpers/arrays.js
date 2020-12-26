@@ -23,6 +23,7 @@ var createTypedArray = (function () {
     } else if (type === 'uint8c') {
       return new Uint8ClampedArray(len);
     }
+    return createRegularArray(type, len);
   }
   if (typeof Uint8ClampedArray === 'function' && typeof Float32Array === 'function') {
     return createTypedArray;

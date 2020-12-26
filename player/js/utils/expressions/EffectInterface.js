@@ -21,6 +21,7 @@ var EffectsExpressionInterface = (function () {
           }
           i += 1;
         }
+        return null;
       };
       Object.defineProperty(groupInterface, 'numProperties', {
         get: function () {
@@ -29,6 +30,7 @@ var EffectsExpressionInterface = (function () {
       });
       return groupInterface;
     }
+    return null;
   }
 
   function createGroupInterface(data, elements, propertyGroup, elem) {

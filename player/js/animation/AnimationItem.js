@@ -569,6 +569,7 @@ AnimationItem.prototype.getAssetData = function (id) {
     }
     i += 1;
   }
+  return null;
 };
 
 AnimationItem.prototype.hide = function () {

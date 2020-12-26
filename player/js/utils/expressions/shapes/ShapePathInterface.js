@@ -8,6 +8,7 @@ var ShapePathInterface = (
         if (val === 'Shape' || val === 'shape' || val === 'Path' || val === 'path' || val === 'ADBE Vector Shape' || val === 2) {
           return interfaceFunction.path;
         }
+        return null;
       }
 
       var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);

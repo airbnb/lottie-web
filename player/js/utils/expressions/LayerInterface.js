@@ -100,6 +100,8 @@ var LayerExpressionInterface = (function () {
           return _thisLayerFunction.effect;
         case 'ADBE Text Properties':
           return _thisLayerFunction.textInterface;
+        default:
+          return null;
       }
     }
     _thisLayerFunction.getMatrix = getMatrix;

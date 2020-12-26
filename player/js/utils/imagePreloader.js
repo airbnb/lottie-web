@@ -113,6 +113,7 @@ var ImagePreloader = (function () {
       }
       i += 1;
     }
+    return null;
   }
 
   function destroy() {

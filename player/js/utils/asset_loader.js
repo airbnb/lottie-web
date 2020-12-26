@@ -7,6 +7,7 @@ var assetLoader = (function () {
     } else if (xhr.responseText) {
       return JSON.parse(xhr.responseText);
     }
+    return null;
   }
 
   function loadAsset(path, callback, errorCallback) {

@@ -59,6 +59,7 @@ function dataFunctionManager() {
       }
       i += 1;
     }
+    return null;
   }
 
   function completeShapes(arr) {
@@ -126,6 +127,7 @@ function dataFunctionManager() {
     } else if (animVersion[2] > minimum[2]) {
       return false;
     }
+    return null;
   }
 
   var checkText = (function () {

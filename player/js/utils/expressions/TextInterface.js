@@ -5,6 +5,8 @@ var TextExpressionInterface = (function () {
       switch (name) {
         case 'ADBE Text Document':
           return _thisLayerFunction.sourceText;
+        default:
+          return null;
       }
     }
     Object.defineProperty(_thisLayerFunction, 'sourceText', {

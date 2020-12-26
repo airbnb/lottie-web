@@ -37,6 +37,7 @@ var MaskManagerInterface = (function () {
         }
         i += 1;
       }
+      return null;
     };
     return maskFunction;
   };
