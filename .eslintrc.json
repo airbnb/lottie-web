@@ -42,7 +42,6 @@
         "no-use-before-define": "off",
         "strict": "off",
         "lines-around-directive": "off",
-        "no-void": "off",
         "no-redeclare": "off",
         "prefer-rest-params": "off",
         "radix": "off",
