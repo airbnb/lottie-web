@@ -308,12 +308,10 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
               } else {
                 currentLength += animatorProps.t.v * mult;
               }
+            } else if (mult.length) {
+              xPos += animatorProps.t.v * mult[0];
             } else {
-              if (mult.length) {
-                xPos += animatorProps.t.v * mult[0];
-              } else {
-                xPos += animatorProps.t.v * mult;
-              }
+              xPos += animatorProps.t.v * mult;
             }
           }
         }
@@ -458,12 +456,10 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
             } else {
               matrixHelper.translate(0, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
             }
+          } else if (mult.length) {
+            matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
           } else {
-            if (mult.length) {
-              matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
-            } else {
-              matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
-            }
+            matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
           }
         }
       }

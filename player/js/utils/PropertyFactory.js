@@ -133,17 +133,15 @@ var PropertyFactory = (function () {
                 } else {
                   fnc = keyData.__fnct[i];
                 }
+              } else if (!keyData.__fnct) {
+                outX = keyData.o.x;
+                outY = keyData.o.y;
+                inX = keyData.i.x;
+                inY = keyData.i.y;
+                fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
+                keyData.__fnct = fnc;
               } else {
-                if (!keyData.__fnct) {
-                  outX = keyData.o.x;
-                  outY = keyData.o.y;
-                  inX = keyData.i.x;
-                  inY = keyData.i.y;
-                  fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
-                  keyData.__fnct = fnc;
-                } else {
-                  fnc = keyData.__fnct;
-                }
+                fnc = keyData.__fnct;
               }
               perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
             }

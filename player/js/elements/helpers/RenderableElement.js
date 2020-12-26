@@ -53,12 +53,10 @@ RenderableElement.prototype = {
         this.isInRange = true;
         this.show();
       }
-    } else {
-      if (this.isInRange !== false) {
-        this.globalData._mdf = true;
-        this.isInRange = false;
-        this.hide();
-      }
+    } else if (this.isInRange !== false) {
+      this.globalData._mdf = true;
+      this.isInRange = false;
+      this.hide();
     }
   },
   renderRenderable: function () {

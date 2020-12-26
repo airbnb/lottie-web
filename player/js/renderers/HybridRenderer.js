@@ -62,10 +62,8 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
         if (!layer.ddd || !this.supports3d) {
           this.layerElement.insertBefore(newDOMElement, nextDOMElement);
         }
-      } else {
-        if (!layer.ddd || !this.supports3d) {
-          this.layerElement.appendChild(newDOMElement);
-        }
+      } else if (!layer.ddd || !this.supports3d) {
+        this.layerElement.appendChild(newDOMElement);
       }
     }
   } else {

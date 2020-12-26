@@ -145,18 +145,16 @@ TextProperty.prototype.buildFinalText = function (text) {
     charCode = text.charCodeAt(i);
     if (combinedCharacters.indexOf(charCode) !== -1) {
       charactersArray[charactersArray.length - 1] += text.charAt(i);
-    } else {
-      if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-        charCode = text.charCodeAt(i + 1);
-        if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
-          charactersArray.push(text.substr(i, 2));
-          ++i;
-        } else {
-          charactersArray.push(text.charAt(i));
-        }
+    } else if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+      charCode = text.charCodeAt(i + 1);
+      if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+        charactersArray.push(text.substr(i, 2));
+        ++i;
       } else {
         charactersArray.push(text.charAt(i));
       }
+    } else {
+      charactersArray.push(text.charAt(i));
     }
     i += 1;
   }
