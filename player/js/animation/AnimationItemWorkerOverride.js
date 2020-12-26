@@ -13,11 +13,13 @@ AnimationItem.prototype.setParams = function (params) {
   this.renderer.setProjectInterface(this.projectInterface);
   this.animType = animType;
 
-  if (params.loop === '' || params.loop === null) {
+  if (params.loop === ''
+        || params.loop === null
+        || params.loop === undefined
+        || params.loop === true) {
+    this.loop = true;
   } else if (params.loop === false) {
     this.loop = false;
-  } else if (params.loop === true) {
-    this.loop = true;
   } else {
     this.loop = parseInt(params.loop);
   }

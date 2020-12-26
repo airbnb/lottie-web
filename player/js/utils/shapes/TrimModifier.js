@@ -42,9 +42,7 @@ TrimModifier.prototype.calculateShapeEdges = function (s, e, shapeLength, addedL
   var i, len = segments.length, segmentOb;
   for (i = 0; i < len; i += 1) {
     segmentOb = segments[i];
-    if (segmentOb.e * totalModifierLength < addedLength || segmentOb.s * totalModifierLength > addedLength + shapeLength) {
-
-    } else {
+    if (!(segmentOb.e * totalModifierLength < addedLength || segmentOb.s * totalModifierLength > addedLength + shapeLength)) {
       var shapeS, shapeE;
       if (segmentOb.s * totalModifierLength <= addedLength) {
         shapeS = 0;
@@ -83,9 +81,7 @@ TrimModifier.prototype.processShapes = function (_isFirstFrame) {
     }
     s = (this.s.v > 1 ? 1 : this.s.v < 0 ? 0 : this.s.v) + o;
     e = (this.e.v > 1 ? 1 : this.e.v < 0 ? 0 : this.e.v) + o;
-    if (s === e) {
 
-    }
     if (s > e) {
       var _s = s;
       s = e;
