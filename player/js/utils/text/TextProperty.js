@@ -54,7 +54,7 @@ TextProperty.prototype.defaultBoxWidth = [0, 0];
 
 TextProperty.prototype.copyData = function (obj, data) {
   for (var s in data) {
-    if (data.hasOwnProperty(s)) {
+    if (Object.prototype.hasOwnProperty.call(data, s)) {
       obj[s] = data[s];
     }
   }

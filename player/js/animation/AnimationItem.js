@@ -69,7 +69,7 @@ AnimationItem.prototype.setParams = function (params) {
   }
   this.autoplay = 'autoplay' in params ? params.autoplay : true;
   this.name = params.name ? params.name : '';
-  this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments : true;
+  this.autoloadSegments = Object.prototype.hasOwnProperty.call(params, 'autoloadSegments') ? params.autoloadSegments : true;
   this.assetsPath = params.assetsPath;
   this.initialSegment = params.initialSegment;
   if (params.audioFactory) {

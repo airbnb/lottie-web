@@ -579,7 +579,7 @@ var ExpressionManager = (function () {
         time: data.k[ind].t / elem.comp.globalData.frameRate,
         value: [],
       };
-      var arr = data.k[ind].hasOwnProperty('s') ? data.k[ind].s : data.k[ind - 1].e;
+      var arr = Object.prototype.hasOwnProperty.call(data.k[ind], 's') ? data.k[ind].s : data.k[ind - 1].e;
 
       lenKey = arr.length;
       for (iKey = 0; iKey < lenKey; iKey += 1) {

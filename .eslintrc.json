@@ -48,7 +48,6 @@
         "radix": "off",
         "no-bitwise": "off",
         "no-multi-assign": "off",
-        "no-prototype-builtins": "off",
         "camelcase": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",
