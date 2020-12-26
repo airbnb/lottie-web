@@ -76,5 +76,5 @@ ITextElement.prototype.buildColor = function (colorData) {
 ITextElement.prototype.emptyProp = new LetterProps();
 
 ITextElement.prototype.destroy = function () {
-    
+
 };

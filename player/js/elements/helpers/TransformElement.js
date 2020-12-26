@@ -36,7 +36,7 @@ TransformElement.prototype = {
           i += 1;
         }
       }
-            
+
       if (this.finalTransform._matMdf) {
         mat = this.finalTransform.mProp.v.props;
         finalMat.cloneFromProps(mat);

@@ -300,7 +300,7 @@ var FontManager = (function () {
     this.setIsLoadedBinded = this.setIsLoaded.bind(this);
     this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this);
   };
-    // TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
+    // TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it.
   Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
 
   var fontPrototype = {

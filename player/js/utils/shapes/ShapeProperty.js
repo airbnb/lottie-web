@@ -95,11 +95,11 @@ var ShapePropertyFactory = (function () {
     }
     var i, len = shape1._length;
     for (i = 0; i < len; i += 1) {
-      if (shape1.v[i][0] !== shape2.v[i][0] 
-            || shape1.v[i][1] !== shape2.v[i][1] 
-            || shape1.o[i][0] !== shape2.o[i][0] 
-            || shape1.o[i][1] !== shape2.o[i][1] 
-            || shape1.i[i][0] !== shape2.i[i][0] 
+      if (shape1.v[i][0] !== shape2.v[i][0]
+            || shape1.v[i][1] !== shape2.v[i][1]
+            || shape1.o[i][0] !== shape2.o[i][0]
+            || shape1.o[i][1] !== shape2.o[i][1]
+            || shape1.i[i][0] !== shape2.i[i][0]
             || shape1.i[i][1] !== shape2.i[i][1]) {
         return false;
       }

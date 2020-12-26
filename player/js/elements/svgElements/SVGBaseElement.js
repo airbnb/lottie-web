@@ -118,7 +118,7 @@ SVGBaseElement.prototype = {
       } else {
         this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#' + clipId + ')');
       }
-            
+
     }
     if (this.data.bm !== 0) {
       this.setBlendMode();

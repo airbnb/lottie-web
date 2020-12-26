@@ -55,7 +55,7 @@ var ExpressionManager = (function () {
       return b;
     }
     if ($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)) {
-            
+
       var i = 0, lenA = a.length, lenB = b.length;
       var retArr = [];
       while (i < lenA || i < lenB) {
@@ -513,7 +513,7 @@ var ExpressionManager = (function () {
             keyTime = data.k[i].t;
           }
         }
-                
+
       }
       var ob = {};
       ob.index = index;
@@ -541,7 +541,7 @@ var ExpressionManager = (function () {
       return ob;
     }
 
-    function framesToTime(frames, fps) { 
+    function framesToTime(frames, fps) {
       if (!fps) {
         fps = elem.comp.globalData.frameRate;
       }
@@ -632,7 +632,7 @@ var ExpressionManager = (function () {
                     scale = transform.scale; */
         }
       }
-            
+
       if (elemType === 4 && !content) {
         content = thisLayer('ADBE Root Vectors Group');
       }

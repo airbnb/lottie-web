@@ -94,7 +94,7 @@ CVShapeElement.prototype.createTransformElement = function (data) {
 
 CVShapeElement.prototype.createShapeElement = function (data) {
   var elementData = new CVShapeData(this, data, this.stylesList, this.transformsManager);
-    
+
   this.shapes.push(elementData);
   this.addShapeToModifiers(elementData);
   return elementData;
@@ -158,7 +158,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
       } else {
         itemsData[i].style.closed = false;
       }
-            
+
       ownStyles.push(itemsData[i].style);
     } else if (arr[i].ty == 'gr') {
       if (!processedPos) {
@@ -181,7 +181,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
       if (!processedPos) {
         itemsData[i] = this.createShapeElement(arr[i]);
       }
-            
+
     } else if (arr[i].ty == 'tm' || arr[i].ty == 'rd' || arr[i].ty == 'pb') {
       if (!processedPos) {
         modifier = ShapeModifiers.getModifier(arr[i].ty);
@@ -324,7 +324,7 @@ CVShapeElement.prototype.renderShape = function (parentTransform, items, data, i
   if (isMain) {
     this.drawLayer();
   }
-    
+
 };
 
 CVShapeElement.prototype.renderStyledShape = function (styledShape, shape) {
@@ -384,9 +384,9 @@ CVShapeElement.prototype.renderFill = function (styleData, itemData, groupTransf
   var styleElem = itemData.style;
 
   if (itemData.c._mdf || this._isFirstFrame) {
-    styleElem.co = 'rgb(' 
-        + bm_floor(itemData.c.v[0]) + ',' 
-        + bm_floor(itemData.c.v[1]) + ',' 
+    styleElem.co = 'rgb('
+        + bm_floor(itemData.c.v[0]) + ','
+        + bm_floor(itemData.c.v[1]) + ','
         + bm_floor(itemData.c.v[2]) + ')';
   }
   if (itemData.o._mdf || groupTransform._opMdf || this._isFirstFrame) {
@@ -426,7 +426,7 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
     styleElem.grd = grd;
   }
   styleElem.coOp = itemData.o.v * groupTransform.opacity;
-    
+
 };
 
 CVShapeElement.prototype.renderStroke = function (styleData, itemData, groupTransform) {

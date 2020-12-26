@@ -41,7 +41,7 @@ ShapeTransformManager.prototype = {
       }
     }
     sequence._mdf = _mdf;
-        
+
   },
   processSequences: function (isFirstFrame) {
     var i, len = this.sequenceList.length;

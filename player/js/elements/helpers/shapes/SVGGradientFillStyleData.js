@@ -35,7 +35,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
     stops.push(stop);
   }
   pathElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
-    
+
   this.gf = gfill;
   this.cst = stops;
 };

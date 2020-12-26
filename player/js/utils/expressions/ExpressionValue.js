@@ -29,7 +29,7 @@ function ExpressionValue(elementProp, mult, type) {
     }
     expressionValue.value = arrValue;
   }
-    
+
   expressionValue.numKeys = elementProp.keyframes ? elementProp.keyframes.length : 0;
   expressionValue.key = function (pos) {
     if (!expressionValue.numKeys) {

@@ -90,7 +90,7 @@ SVGTextElement.prototype.buildNewText = function () {
       this.textSpans[i] = tSpan;
       yPos += documentData.finalLineHeight;
     }
-        
+
     this.layerElement.appendChild(tElement);
   } else {
     var cachedSpansLength = this.textSpans.length;
@@ -107,7 +107,7 @@ SVGTextElement.prototype.buildNewText = function () {
         }
         tSpan.style.display = 'inherit';
       }
-            
+
       matrixHelper.reset();
       matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
       if (singleShape) {
@@ -148,7 +148,7 @@ SVGTextElement.prototype.buildNewText = function () {
     this.textSpans[i].style.display = 'none';
     i += 1;
   }
-    
+
   this._sizeChanged = true;
 };
 

@@ -29,5 +29,5 @@
   };
 
   TextProperty.prototype.searchExpressions = searchExpressions;
-    
+
 }());

@@ -171,8 +171,8 @@ HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox)
 };
 
 HShapeElement.prototype.currentBoxContains = function (box) {
-  return this.currentBBox.x <= box.x 
-    && this.currentBBox.y <= box.y 
+  return this.currentBBox.x <= box.x
+    && this.currentBBox.y <= box.y
     && this.currentBBox.width + this.currentBBox.x >= box.x + box.width
     && this.currentBBox.height + this.currentBBox.y >= box.y + box.height;
 };

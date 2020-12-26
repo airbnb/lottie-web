@@ -96,7 +96,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
           ty: 'gr',
         };
         group.it.push({ a: { a: 0, ix: 1, k: [0, 0] }, nm: 'Transform', o: { a: 0, ix: 7, k: 100 }, p: { a: 0, ix: 2, k: [0, 0] }, r: { a: 1, ix: 6, k: [{ s: 0, e: 0, t: 0 }, { s: 0, e: 0, t: 1 }] }, s: { a: 0, ix: 3, k: [100, 100] }, sa: { a: 0, ix: 5, k: 0 }, sk: { a: 0, ix: 4, k: 0 }, ty: 'tr' });
-                
+
         this.arr.splice(0, 0, group);
         this._groups.splice(0, 0, group);
         this._currentCopies += 1;
@@ -111,7 +111,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       this.changeGroupRender(this._groups[i].it, renderFlag);
       cont += 1;
     }
-        
+
     this._currentCopies = copies;
     /// /
 
@@ -167,7 +167,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
         this.matrix.transform(rProps[0], rProps[1], rProps[2], rProps[3], rProps[4], rProps[5], rProps[6], rProps[7], rProps[8], rProps[9], rProps[10], rProps[11], rProps[12], rProps[13], rProps[14], rProps[15]);
         this.matrix.transform(sProps[0], sProps[1], sProps[2], sProps[3], sProps[4], sProps[5], sProps[6], sProps[7], sProps[8], sProps[9], sProps[10], sProps[11], sProps[12], sProps[13], sProps[14], sProps[15]);
         this.matrix.transform(pProps[0], pProps[1], pProps[2], pProps[3], pProps[4], pProps[5], pProps[6], pProps[7], pProps[8], pProps[9], pProps[10], pProps[11], pProps[12], pProps[13], pProps[14], pProps[15]);
-                
+
         for (j = 0; j < jLen; j += 1) {
           itemsTransform[j] = this.matrix.props[j];
         }

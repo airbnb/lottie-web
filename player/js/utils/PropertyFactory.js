@@ -112,7 +112,7 @@ var PropertyFactory = (function () {
           var time = (frameNum - keyTime) / (nextKeyTime - keyTime);
           quaternionToEuler(newValue, slerp(quatStart, quatEnd, time));
         }
-                
+
       } else {
         for (i = 0; i < len; i += 1) {
           if (keyData.h !== 1) {
@@ -205,7 +205,7 @@ var PropertyFactory = (function () {
     var qz = quat[2];
     var qw = quat[3];
     var heading = Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy * qy - 2 * qz * qz);
-    var attitude = Math.asin(2 * qx * qy + 2 * qz * qw); 
+    var attitude = Math.asin(2 * qx * qy + 2 * qz * qw);
     var bank = Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx * qx - 2 * qz * qz);
     out[0] = heading / degToRads;
     out[1] = attitude / degToRads;

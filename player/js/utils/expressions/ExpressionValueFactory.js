@@ -84,7 +84,7 @@ var ExpressionPropertyInterface = (function () {
   function defaultGetter() {
     return defaultUnidimensionalValue;
   }
-    
+
   return function (property) {
     if (!property) {
       return defaultGetter;

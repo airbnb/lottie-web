@@ -470,7 +470,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
               matrixHelper.translate(animatorProps.p.v[0] * mult[0], animatorProps.p.v[1] * mult[1], -animatorProps.p.v[2] * mult[2]);
             } else {
               matrixHelper.translate(animatorProps.p.v[0] * mult, animatorProps.p.v[1] * mult, -animatorProps.p.v[2] * mult);
-                        
+
             }
           }
         }

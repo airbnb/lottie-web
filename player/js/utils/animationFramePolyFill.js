@@ -15,11 +15,11 @@
       timeToCall);
       lastTime = currTime + timeToCall;
       return id;
-    }; 
+    };
   }
   if (!window.cancelAnimationFrame) {
     window.cancelAnimationFrame = function (id) {
       clearTimeout(id);
-    }; 
+    };
   }
 }());

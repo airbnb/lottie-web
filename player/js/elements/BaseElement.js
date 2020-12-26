@@ -44,14 +44,14 @@ BaseElement.prototype = {
     this.comp = comp;
     this.data = data;
     this.layerId = createElementID();
-        
+
     // Stretch factor for old animations missing this property.
     if (!this.data.sr) {
       this.data.sr = 1;
     }
     // effects manager
     this.effectsManager = new EffectsManager(this.data, this, this.dynamicProperties);
-        
+
   },
   getType: function () {
     return this.type;

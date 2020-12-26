@@ -69,7 +69,7 @@ HybridRenderer.prototype.appendElementInPos = function (element, pos) {
         }
       }
     }
-        
+
   } else {
     this.addTo3dContainer(newDOMElement, pos);
   }
@@ -139,7 +139,7 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
     perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = '50% 50%';
     container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
   }
-    
+
   perspectiveElem.appendChild(container);
   // this.resizerElem.appendChild(perspectiveElem);
   var threeDContainerData = {

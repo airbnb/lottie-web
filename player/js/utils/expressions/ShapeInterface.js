@@ -226,7 +226,7 @@ var ShapeExpressionInterface = (function () {
         return interfaceFunction.skewAxis;
       }
     }
-        
+
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
     view.transform.mProps.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
     view.transform.mProps.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
@@ -404,7 +404,7 @@ var ShapeExpressionInterface = (function () {
   }
 
   function roundedInterfaceFactory(shape, view, propertyGroup) {
-       
+
     function interfaceFunction(value) {
       if (shape.r.ix === value || value === 'Round Corners 1') {
         return interfaceFunction.radius;

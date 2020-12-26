@@ -38,12 +38,12 @@ RenderableElement.prototype = {
     }
   },
   /**
-     * @function 
+     * @function
      * Initializes frame related properties.
      *
      * @param {number} num
      * current frame number in Layer's time
-     * 
+     *
      */
   checkLayerLimits: function (num) {
     if (this.data.ip - this.data.st <= num && this.data.op - this.data.st > num) {

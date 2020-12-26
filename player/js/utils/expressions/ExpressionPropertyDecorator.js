@@ -311,7 +311,7 @@
         lastTime: initialDefaultFrame,
       };
     }
-        
+
     frameNum *= this.elem.globalData.frameRate;
     frameNum -= this.offsetTime;
     if (frameNum !== this._cachingAtTime.lastTime) {
@@ -345,7 +345,7 @@
         } else {
           arr[i] = [vertices[i][0], vertices[i][1]];
         }
-                
+
       }
       return arr;
     },

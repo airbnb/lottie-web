@@ -29,7 +29,7 @@ function HCameraElement(data, globalData, comp) {
   this.mat = new Matrix();
   this._prevMat = new Matrix();
   this._isFirstFrame = true;
-    
+
   // TODO: find a better way to make the HCamera element to be compatible with the LayerInterface and TransformInterface.
   this.finalTransform = {
     mProp: this,
@@ -107,7 +107,7 @@ HCameraElement.prototype.renderFrame = function () {
     this.mat.translate(0, 0, this.pe.v);
 
 
-        
+
 
     var hasMatrixChanged = !this._prevMat.equals(this.mat);
     if ((hasMatrixChanged || this.pe._mdf) && this.comp.threeDElements) {

@@ -16,7 +16,7 @@ SVGStrokeEffect.prototype.initialize = function () {
     i = this.filterManager.effectElements[0].p.v - 1;
     len = i + 1;
   }
-  groupPath = createNS('g'); 
+  groupPath = createNS('g');
   groupPath.setAttribute('fill', 'none');
   groupPath.setAttribute('stroke-linecap', 'round');
   groupPath.setAttribute('stroke-dashoffset', 1);
@@ -94,7 +94,7 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
   if (forceRender || this.filterManager.effectElements[4].p._mdf) {
     this.pathMasker.setAttribute('stroke-width', this.filterManager.effectElements[4].p.v * 2);
   }
-    
+
   if (forceRender || this.filterManager.effectElements[6].p._mdf) {
     this.pathMasker.setAttribute('opacity', this.filterManager.effectElements[6].p.v);
   }
