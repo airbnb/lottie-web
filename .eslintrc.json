@@ -16,6 +16,7 @@
         "prefer-template": "off",
         "linebreak-style": "off",
         "object-shorthand": "off",
+        "prefer-object-spread": "off",
         "------": "off",
         "no-undef": "off",
         "func-names": "off",
@@ -61,7 +62,6 @@
         "radix": "off",
         "no-bitwise": "off",
         "no-multi-assign": "off",
-        "no-unreachable": "off",
         "no-prototype-builtins": "off",
         "no-extra-semi": "off",
         "no-restricted-properties": "off",
@@ -75,7 +75,6 @@
         "no-useless-concat": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",
-        "prefer-object-spread": "off",
         "no-unneeded-ternary": "off",
         "eqeqeq": "off"
     }

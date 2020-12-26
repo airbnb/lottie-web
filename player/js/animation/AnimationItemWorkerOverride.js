@@ -9,7 +9,6 @@ AnimationItem.prototype.setParams = function (params) {
       break;
     default:
       throw new Error('Only canvas renderer is supported when using worker.');
-      break;
   }
   this.renderer.setProjectInterface(this.projectInterface);
   this.animType = animType;
