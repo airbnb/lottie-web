@@ -371,7 +371,7 @@ var ExpressionManager = (function () {
     }
 
     var scoped_bm_rt;
-    var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}' + ']')[0];
+    var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0];
     var numKeys = property.kf ? data.k.length : 0;
 
     var active = !this.data || this.data.hd !== true;

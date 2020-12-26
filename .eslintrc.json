@@ -70,7 +70,6 @@
         "no-restricted-properties": "off",
         "camelcase": "off",
         "newline-per-chained-call": "off",
-        "no-useless-concat": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",
         "eqeqeq": "off"

@@ -146,7 +146,7 @@ var FontManager = (function () {
           s.setAttribute('f-origin', fontArr[i].origin);
           s.setAttribute('f-family', fontArr[i].fFamily);
           s.type = 'text/css';
-          s.innerText = '@font-face {' + 'font-family: ' + fontArr[i].fFamily + "; font-style: normal; src: url('" + fontArr[i].fPath + "');}";
+          s.innerText = '@font-face {font-family: ' + fontArr[i].fFamily + "; font-style: normal; src: url('" + fontArr[i].fPath + "');}";
           defs.appendChild(s);
         }
       } else if (fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1) {

@@ -99,7 +99,7 @@ SVGBaseElement.prototype = {
     if (this.data.ty === 0 && !this.data.hd) {
       var cp = createNS('clipPath');
       var pt = createNS('path');
-      pt.setAttribute('d', 'M0,0 L' + this.data.w + ',0' + ' L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
+      pt.setAttribute('d', 'M0,0 L' + this.data.w + ',0 L' + this.data.w + ',' + this.data.h + ' L0,' + this.data.h + 'z');
       var clipId = createElementID();
       cp.setAttribute('id', clipId);
       cp.appendChild(pt);
